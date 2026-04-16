@@ -812,8 +812,7 @@ bool ExistingUserController::MaybeShowRemoveLocalAuthFactorsScreen(
   auto auth_setup_flow = GetLoginDisplayHost()
                              ->GetWizardContext()
                              ->knowledge_factor_setup.auth_setup_flow;
-  if (!has_required_feature_flags ||
-      auth_setup_flow != WizardContext::AuthChangeFlow::kReauthentication) {
+  if (auth_setup_flow != WizardContext::AuthChangeFlow::kReauthentication) {
     return false;
   }
 
@@ -826,10 +825,12 @@ bool ExistingUserController::MaybeShowRemoveLocalAuthFactorsScreen(
   auto allowed_local_auth_factors =
       AuthPolicyConnector::Get()->AllowedLocalAuthFactors(
           user_context.GetAccountId());
+  // Policy is only unset for unmanaged users.
+  bool policy_unset = !allowed_local_auth_factors.has_value();
   bool policy_allows_local_auth_factors =
       allowed_local_auth_factors.has_value() &&
       !allowed_local_auth_factors->empty();
-  if (policy_allows_local_auth_factors ||
+  if (policy_unset || policy_allows_local_auth_factors ||
       !UserHasAnyLocalAuthFactors(user_context)) {
     return false;
   }
@@ -842,17 +843,17 @@ bool ExistingUserController::MaybeShowRemoveLocalAuthFactorsScreen(
 
 bool ExistingUserController::MaybeShowPasswordSelectionScreen(
     const UserContext& user_context) {
+  auto* wizard_context = GetLoginDisplayHost()->GetWizardContext();
   if (!ash::features::IsRecoveryFlowReorderEnabled() ||
       auth_mode_ != LoginPerformer::AuthorizationMode::kExternal ||
-      GetLoginDisplayHost()
-              ->GetWizardContext()
-              ->knowledge_factor_setup.auth_setup_flow !=
+      !wizard_context->allow_factor_change_during_recovery ||
+      wizard_context->knowledge_factor_setup.auth_setup_flow !=
           WizardContext::AuthChangeFlow::kRecovery) {
     return false;
   }
-  GetLoginDisplayHost()->GetWizardContext()->extra_factors_token =
-      AuthSessionStorage::Get()->Store(
-          std::make_unique<UserContext>(user_context));
+  wizard_context->allow_factor_change_during_recovery = false;
+  wizard_context->extra_factors_token = AuthSessionStorage::Get()->Store(
+      std::make_unique<UserContext>(user_context));
   GetLoginDisplayHost()->GetSigninUI()->ShowPasswordSelectionScreen();
 
   return true;

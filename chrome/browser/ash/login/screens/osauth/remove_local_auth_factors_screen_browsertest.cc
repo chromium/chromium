@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAuthFactorsScreenTest,
                        PRE_AuthFactorsRemovedForGaiaPasswordPinUser) {
   // Test Setup: Log the user in offline and apply a policy disabling all
   // local auth factors.
-  LoginOfflineAndSetPolicy(pin_only_user_.account_id);
+  LoginOfflineAndSetPolicy(gaia_password_and_pin_user_.account_id);
 }
 
 IN_PROC_BROWSER_TEST_F(RemoveLocalAuthFactorsScreenTest,

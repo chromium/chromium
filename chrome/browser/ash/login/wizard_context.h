@@ -278,6 +278,12 @@ class WizardContext {
   // True when user is inside the "Add Person" flow.
   bool is_add_person_flow = false;
 
+  // Whether the password selection screen should be shown during the
+  // recovery flow. This is used to ensure the screen is shown only when
+  // intended, as some recovery-like flows (e.g., manual GAIA password change)
+  // should bypass it.
+  bool allow_factor_change_during_recovery = false;
+
   // True if user clicked "Select more fatures" button on the last CHOOBE
   // selected screen.
   bool return_to_choobe_screen = false;

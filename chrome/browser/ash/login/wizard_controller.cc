@@ -1924,6 +1924,7 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
           NOTREACHED() << "Recovery can not be used during initial setup.";
         case WizardContext::AuthChangeFlow::kRecovery:
           if (ash::features::IsRecoveryFlowReorderEnabled()) {
+            wizard_context_->allow_factor_change_during_recovery = true;
             ObtainContextAndLoginAuthenticated();
           } else {
             ShowPasswordSelectionScreen();
@@ -2864,6 +2865,15 @@ void WizardController::ObtainContextAndFinalizeAuth() {
 
 void WizardController::FinalizeAuthWithContext(
     std::unique_ptr<UserContext> context) {
+  auto mount_state = context->GetMountState();
+  if (!mount_state.has_value()) {
+    // In certain edge cases, such as a Reauthentication that transitions into
+    // recovery with an automatic online password update, we can reach this
+    // point before the cryptohome is mounted. In these cases, we need to
+    // perform a login instead of just finalizing the auth.
+    LoginAuthenticatedWithContext(std::move(context));
+    return;
+  }
   ash::LoginDisplayHost::default_host()
       ->GetExistingUserController()
       ->FinalizeAuthAndStartSession(*context);
