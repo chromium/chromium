@@ -2660,6 +2660,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="User has clicked OK on the notification bubble."/>
 </enum>
 
+<!-- LINT.IfChange(OidcInterceptionFunnelStep) -->
+
 <enum name="OidcInterceptionFunnelStep">
   <int value="0" label="Created throttle for valid redirection"/>
   <int value="1" label="Successfuly parsed out required info for registration"/>
@@ -2667,6 +2669,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Showed unified consent dialog"/>
   <int value="4" label="Started OIDC profile registration"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/oidc_metrics_utils.h:OidcInterceptionFunnelStep) -->
+
+<!-- LINT.IfChange(OidcInterceptionResult) -->
 
 <enum name="OidcInterceptionResult">
   <int value="0" label="Other interception in progress"/>
@@ -2679,11 +2685,19 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="No enrollment due to browser sign in being disabled"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/oidc_metrics_utils.h:OidcInterceptionResult) -->
+
+<!-- LINT.IfChange(OidcProfileCreationFunnelStep) -->
+
 <enum name="OidcProfileCreationFunnelStep">
   <int value="0" label="OIDC-managed profile created"/>
   <int value="1" label="Started policy fetch"/>
   <int value="2" label="Adding GAIA user as primary account"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/oidc_metrics_utils.h:OidcProfileCreationFunnelStep) -->
+
+<!-- LINT.IfChange(OidcProfileCreationResult) -->
 
 <enum name="OidcProfileCreationResult">
   <int value="0" label="OIDC profile flow succeeds"/>
@@ -2694,6 +2708,8 @@ chromium-metrics-reviews@google.com.
       label="Dasher-based OIDC profile can't add/set primary account"/>
   <int value="5" label="Profile ID mismatch with registration request"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/oidc_metrics_utils.h:OidcProfileCreationResult) -->
 
 <enum name="OktaSSOFailureReason">
   <int value="0" label="An unexpected error has occurred."/>

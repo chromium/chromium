@@ -10,8 +10,8 @@
 #include "base/time/time.h"
 
 // Steps of the OIDC profile enrolllment flow before profile registration. These
-// values are persisted to logs and should not be renumbered. Please update
-// the OidcInterceptionFunnelStep enum in enums.xml when adding a new step here.
+// values are persisted to logs and should not be renumbered.
+// LINT.IfChange(OidcInterceptionFunnelStep)
 enum class OidcInterceptionFunnelStep {
   kValidRedirectionCaptured = 0,
   kSuccessfulInfoParsed = 1,
@@ -20,22 +20,22 @@ enum class OidcInterceptionFunnelStep {
   kProfileRegistrationStarted = 4,
   kMaxValue = kProfileRegistrationStarted,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OidcInterceptionFunnelStep)
 
 // Steps of the OIDC profile enrolllment flow after profile registration. These
-// values are persisted to logs and should not be renumbered. Please update
-// the OidcProfileCreationFunnelStep enum in enums.xml when adding a new step
-// here.
+// values are persisted to logs and should not be renumbered.
+// LINT.IfChange(OidcProfileCreationFunnelStep)
 enum class OidcProfileCreationFunnelStep {
   kProfileCreated = 0,
   kPolicyFetchStarted = 1,
   kAddingPrimaryAccount = 2,
   kMaxValue = kAddingPrimaryAccount,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OidcProfileCreationFunnelStep)
 
 // Outcomes of the OIDC profile enrolllment flow before profile registration.
-// These values are persisted to logs and should not be renumbered. Please
-// update the OidcInterceptionResult enum in enums.xml when adding a new value
-// here.
+// These values are persisted to logs and should not be renumbered.
+// LINT.IfChange(OidcInterceptionResult)
 enum class OidcInterceptionResult {
   kInterceptionInProgress = 0,
   kNoInterceptForCurrentProfile = 1,
@@ -47,11 +47,11 @@ enum class OidcInterceptionResult {
   kBrowserSigninDisabled = 7,
   kMaxValue = kBrowserSigninDisabled,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OidcInterceptionResult)
 
 // Outcomes of the OIDC profile enrolllment flow after profile registration.
-// These values are persisted to logs and should not be renumbered. Please
-// update the OidcProfileCreationResult enum in enums.xml when adding a new
-// value here.
+// These values are persisted to logs and should not be renumbered.
+// LINT.IfChange(OidcProfileCreationResult)
 enum class OidcProfileCreationResult {
   kEnrollmentSucceeded = 0,
   kSwitchedToExistingProfile = 1,
@@ -61,6 +61,7 @@ enum class OidcProfileCreationResult {
   kMismatchingProfileId = 5,
   kMaxValue = kMismatchingProfileId,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OidcProfileCreationResult)
 
 void RecordOidcInterceptionFunnelStep(OidcInterceptionFunnelStep step);
 
