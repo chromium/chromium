@@ -29,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -93,7 +94,7 @@ public class SiteDataCleanerUnitTest {
 
         doAnswer(this::mockBDMCallback)
                 .when(mSiteSettingsDelegate)
-                .getBrowsingDataModel(any(Callback.class));
+                .getBrowsingDataModel(MockitoHelper.anyCallback());
 
         doAnswer(this::mockBDMRemoveCallback)
                 .when(mBrowsingDataModel)

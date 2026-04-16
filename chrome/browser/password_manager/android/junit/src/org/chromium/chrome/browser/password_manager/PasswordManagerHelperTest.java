@@ -68,6 +68,7 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Set;
 
@@ -166,8 +167,8 @@ public class PasswordManagerHelperTest {
                 .getAccountCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS),
-                        any(Callback.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback(),
+                        MockitoHelper.anyCallback());
     }
 
     @Test
@@ -801,8 +802,8 @@ public class PasswordManagerHelperTest {
                 .getAccountCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS),
-                        any(Callback.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback(),
+                        MockitoHelper.anyCallback());
     }
 
     private void returnErrorWhenFetchingIntentForAccount(@CredentialManagerError int error) {
@@ -816,8 +817,8 @@ public class PasswordManagerHelperTest {
                 .getAccountCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS),
-                        any(Callback.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback(),
+                        MockitoHelper.anyCallback());
     }
 
     private void returnExceptionWhenFetchingIntentForAccount(Exception exception) {
@@ -831,8 +832,8 @@ public class PasswordManagerHelperTest {
                 .getAccountCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS),
-                        any(Callback.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback(),
+                        MockitoHelper.anyCallback());
     }
 
     private void returnExceptionWhenFetchingIntentForLocal(Exception exception) {
@@ -845,7 +846,7 @@ public class PasswordManagerHelperTest {
                 .when(mCredentialManagerLauncherMock)
                 .getLocalCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.CHROME_SETTINGS),
-                        any(Callback.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback(),
+                        MockitoHelper.anyCallback());
     }
 }

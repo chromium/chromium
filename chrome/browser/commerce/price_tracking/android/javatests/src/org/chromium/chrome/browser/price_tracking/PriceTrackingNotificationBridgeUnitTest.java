@@ -35,6 +35,7 @@ import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.CurrencyFormatterJni;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Unit test for {@link PriceTrackingNotificationBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -84,7 +85,7 @@ public class PriceTrackingNotificationBridgeUnitTest {
                             return null;
                         })
                 .when(mPriceDropNotificationManager)
-                .canPostNotification(Mockito.any(Callback.class));
+                .canPostNotification(MockitoHelper.anyCallback());
     }
 
     // Creates a ChromeNotification.Builder that sets a valid ChromeNotification proto.

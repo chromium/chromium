@@ -79,6 +79,7 @@ import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.nio.charset.StandardCharsets;
@@ -458,20 +459,20 @@ public class FeedStreamTest {
 
         // loadMore not triggered due to not enough accumulated scrolling distance.
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
-        verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(MockitoHelper.anyCallback());
 
         // loadMore not triggered due to last visible item not falling into lookahead range.
         mLayoutManager.setLastVisiblePosition(lookAheadRange - 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
-        verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(MockitoHelper.anyCallback());
 
         // loadMore triggered.
         mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock).loadMore(MockitoHelper.anyCallback());
         histogramWatcher.assertExpected();
     }
 
@@ -490,7 +491,7 @@ public class FeedStreamTest {
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock).loadMore(MockitoHelper.anyCallback());
 
         // loadMore triggered again after hide&show.
         mFeedStream.checkScrollingForLoadMore(-triggerDistance);
@@ -501,7 +502,7 @@ public class FeedStreamTest {
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock).loadMore(MockitoHelper.anyCallback());
         histogramWatcher.assertExpected();
     }
 
@@ -1108,14 +1109,14 @@ public class FeedStreamTest {
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD - 1);
         mLayoutManager.setItemCount(itemCount);
         handler.commitDismissal(0);
-        verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock, never()).loadMore(MockitoHelper.anyCallback());
 
         // loadMore triggered.
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
         mLayoutManager.setItemCount(itemCount);
         handler.commitDismissal(0);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
+        verify(mFeedSurfaceRendererBridgeMock).loadMore(MockitoHelper.anyCallback());
     }
 
     @Test

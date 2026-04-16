@@ -136,6 +136,7 @@ import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -1890,7 +1891,7 @@ public class BookmarkManagerMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
         mMediator
                 .getBatchUploadCardCoordinatorForTesting()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
@@ -1962,7 +1963,7 @@ public class BookmarkManagerMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
         mMediator
                 .getBatchUploadCardCoordinatorForTesting()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
@@ -2036,7 +2037,7 @@ public class BookmarkManagerMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
         mMediator
                 .getBatchUploadCardCoordinatorForTesting()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();

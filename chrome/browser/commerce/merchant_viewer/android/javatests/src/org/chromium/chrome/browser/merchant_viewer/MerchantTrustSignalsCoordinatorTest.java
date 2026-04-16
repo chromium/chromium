@@ -60,6 +60,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -214,7 +215,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMerchantMessageScheduler, times(1))
                 .clear(eq(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN));
         verify(mMockMerchantTrustDataProvider, times(1))
-                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), any(Callback.class));
+                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
     @SmallTest
@@ -231,7 +232,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMerchantMessageScheduler, times(1))
                 .clear(eq(MessageClearReason.NAVIGATE_TO_SAME_DOMAIN));
         verify(mMockMerchantTrustDataProvider, times(1))
-                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), any(Callback.class));
+                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
     @SmallTest
@@ -248,7 +249,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMerchantMessageScheduler, times(1))
                 .clear(eq(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN));
         verify(mMockMerchantTrustDataProvider, times(1))
-                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), any(Callback.class));
+                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
     @SmallTest
@@ -265,7 +266,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMerchantMessageScheduler, times(1))
                 .clear(eq(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN));
         verify(mMockMerchantTrustDataProvider, times(1))
-                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), any(Callback.class));
+                .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
     @SmallTest
@@ -610,7 +611,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                             }
                         })
                 .when(mMockMerchantTrustDataProvider)
-                .getDataForUrl(any(Profile.class), any(GURL.class), any(Callback.class));
+                .getDataForUrl(any(Profile.class), any(GURL.class), MockitoHelper.anyCallback());
     }
 
     private void setMockTrustSignalsEventData(String hostname, MerchantTrustSignalsEvent event) {
@@ -624,7 +625,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                             }
                         })
                 .when(mMockMerchantTrustStorage)
-                .load(eq(hostname), any(Callback.class));
+                .load(eq(hostname), MockitoHelper.anyCallback());
     }
 
     private void verifySchedulingMessage(boolean messageScheduled, boolean shouldExpediteMessage) {
@@ -640,7 +641,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                                             : (long)
                                                     MerchantViewerConfig
                                                             .getDefaultTrustSignalsMessageDelay()),
-                            any(Callback.class));
+                            MockitoHelper.anyCallback());
         } else {
             verify(mMockMerchantMessageScheduler, times(0))
                     .schedule(
@@ -648,7 +649,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                             anyDouble(),
                             any(MerchantTrustMessageContext.class),
                             anyLong(),
-                            any(Callback.class));
+                            MockitoHelper.anyCallback());
         }
     }
 }

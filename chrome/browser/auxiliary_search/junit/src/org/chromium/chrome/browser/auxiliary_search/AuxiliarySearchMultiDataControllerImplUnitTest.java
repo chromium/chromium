@@ -41,6 +41,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
 
         histogramWatcher.assertExpected();
         verify(mAuxiliarySearchDonor, never())
-                .donateEntries(eq(entries), any(int[].class), any(Callback.class));
+                .donateEntries(eq(entries), any(int[].class), MockitoHelper.anyCallback());
         verify(runnableMock).run();
     }
 

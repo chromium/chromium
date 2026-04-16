@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Ntp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -169,7 +170,7 @@ public class NtpThemeMediatorUnitTest {
                             return null;
                         })
                 .when(mNtpThemeCollectionManager)
-                .getBackgroundCollections(any(Callback.class));
+                .getBackgroundCollections(MockitoHelper.anyCallback());
 
         mMediator.handleThemeCollectionsSectionClick(mView);
 
@@ -357,7 +358,7 @@ public class NtpThemeMediatorUnitTest {
                             return null;
                         })
                 .when(mNtpThemeCollectionManager)
-                .getBackgroundCollections(any(Callback.class));
+                .getBackgroundCollections(MockitoHelper.anyCallback());
 
         mMediator.fetchAndSetThemeCollectionsLeadingIcon();
 

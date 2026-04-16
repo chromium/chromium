@@ -62,6 +62,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -162,7 +163,7 @@ public class PriceChangeModuleMediatorUnitTest {
         mMediator.showModule();
 
         verify(mService).initialize(eq(new HashSet<>(Arrays.asList(tab1, tab2))));
-        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(any(Callback.class));
+        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(MockitoHelper.anyCallback());
     }
 
     @Test
@@ -364,7 +365,7 @@ public class PriceChangeModuleMediatorUnitTest {
 
         verify(mTabModelSelector).removeObserver(eq(mMediator));
         verify(mService).initialize(eq(new HashSet<>(Arrays.asList(tab1, tab2))));
-        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(any(Callback.class));
+        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(MockitoHelper.anyCallback());
     }
 
     public void showModuleWithInitializedService() {

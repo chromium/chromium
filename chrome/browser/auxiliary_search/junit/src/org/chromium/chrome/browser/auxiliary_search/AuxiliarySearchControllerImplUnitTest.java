@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -143,7 +144,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                         AuxiliarySearchHostType.CTA);
         mAuxiliarySearchControllerImpl.onResumeWithNative();
 
-        verify(mAuxiliarySearchDonor).deleteAll(any(Callback.class));
+        verify(mAuxiliarySearchDonor).deleteAll(MockitoHelper.anyCallback());
         assertFalse(mAuxiliarySearchControllerImpl.getHasDeletingTaskForTesting());
 
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();
@@ -172,7 +173,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         mAuxiliarySearchControllerImpl.onPauseWithNative();
 
         verify(mAuxiliarySearchProvider, never())
-                .getTabsSearchableDataProtoAsync(any(Callback.class));
+                .getTabsSearchableDataProtoAsync(MockitoHelper.anyCallback());
     }
 
     @Test
@@ -262,7 +263,8 @@ public class AuxiliarySearchControllerImplUnitTest {
         mAuxiliarySearchControllerImpl.onBackgroundTaskStart(
                 entries, map, Mockito.mock(Callback.class), now);
 
-        verify(mAuxiliarySearchDonor, never()).donateFavicons(any(), eq(map), any(Callback.class));
+        verify(mAuxiliarySearchDonor, never())
+                .donateFavicons(any(), eq(map), MockitoHelper.anyCallback());
 
         // Verifies that Donor will donate if it can.
         var histogramWatcher =
@@ -436,16 +438,16 @@ public class AuxiliarySearchControllerImplUnitTest {
         mCallbackCaptor.getAllValues().get(0).onResult(tabs);
 
         verify(mAuxiliarySearchDonor, never())
-                .donateEntries(any(List.class), any(int[].class), any(Callback.class));
+                .donateEntries(any(List.class), any(int[].class), MockitoHelper.anyCallback());
     }
 
     @Test
     public void testOnConfigChanged() {
         mAuxiliarySearchControllerImpl.onConfigChanged(false);
-        verify(mAuxiliarySearchDonor).onConfigChanged(eq(false), any(Callback.class));
+        verify(mAuxiliarySearchDonor).onConfigChanged(eq(false), MockitoHelper.anyCallback());
 
         mAuxiliarySearchControllerImpl.onConfigChanged(true);
-        verify(mAuxiliarySearchDonor).onConfigChanged(eq(true), any(Callback.class));
+        verify(mAuxiliarySearchDonor).onConfigChanged(eq(true), MockitoHelper.anyCallback());
     }
 
     private void createController() {

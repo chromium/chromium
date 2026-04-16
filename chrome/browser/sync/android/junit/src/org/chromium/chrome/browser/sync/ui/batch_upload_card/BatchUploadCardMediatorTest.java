@@ -43,6 +43,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -122,7 +123,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -163,7 +164,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -204,7 +205,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -245,7 +246,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -286,7 +287,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -327,7 +328,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -368,7 +369,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()
@@ -409,7 +410,7 @@ public class BatchUploadCardMediatorTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mActivityScenarioRule
                 .getScenario()

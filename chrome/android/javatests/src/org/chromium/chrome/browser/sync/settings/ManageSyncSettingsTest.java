@@ -116,6 +116,7 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
@@ -712,7 +713,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
@@ -860,7 +861,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -898,7 +899,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -936,7 +937,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -974,7 +975,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1021,7 +1022,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1067,7 +1068,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1101,7 +1102,8 @@ public class ManageSyncSettingsTest {
         startManageSyncPreferences();
         verify(mSyncService, atLeast(1))
                 .getLocalDataDescriptions(
-                        eq(Set.of(DataType.BOOKMARKS, DataType.READING_LIST)), any(Callback.class));
+                        eq(Set.of(DataType.BOOKMARKS, DataType.READING_LIST)),
+                        MockitoHelper.anyCallback());
     }
 
     @Test
@@ -1236,7 +1238,7 @@ public class ManageSyncSettingsTest {
                 .when(mSyncService)
                 .getLocalDataDescriptions(
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();

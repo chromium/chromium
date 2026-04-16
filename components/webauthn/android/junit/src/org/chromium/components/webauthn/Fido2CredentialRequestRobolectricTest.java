@@ -73,6 +73,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.net.GURLUtils;
 import org.chromium.net.GURLUtilsJni;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -179,7 +180,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         anyBoolean(),
                         Mockito.nullable(Origin.class),
                         Mockito.nullable(String.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
         Mockito.doAnswer(
                         (invocation) -> {
                             ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
@@ -195,7 +196,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         anyBoolean(),
                         Mockito.nullable(Origin.class),
                         Mockito.nullable(String.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
@@ -658,7 +659,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         anyBoolean(),
                         Mockito.nullable(Origin.class),
                         Mockito.nullable(String.class),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         handleGetCredentialRequest();
 

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
 import static android.app.NotificationManager.IMPORTANCE_NONE;
 
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,6 +40,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class DisclosureUiPickerTest {
                             return null;
                         })
                 .when(mNotificationManager)
-                .getNotificationChannels(any(Callback.class));
+                .getNotificationChannels(MockitoHelper.anyCallback());
     }
 
     @After

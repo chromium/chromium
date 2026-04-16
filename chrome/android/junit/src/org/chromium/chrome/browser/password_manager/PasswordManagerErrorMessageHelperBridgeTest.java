@@ -56,6 +56,7 @@ import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.lang.ref.WeakReference;
 
@@ -253,7 +254,9 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 mWindowAndroidMock, mProfile);
         verify(mFakeAccountManagerFacade, never())
                 .updateCredentials(
-                        any(CoreAccountInfo.class), any(Activity.class), any(Callback.class));
+                        any(CoreAccountInfo.class),
+                        any(Activity.class),
+                        MockitoHelper.anyCallback());
     }
 
     @Test

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests for {@link NotificationChannelPreserverTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,7 +60,7 @@ public class NotificationChannelPreserverTest {
                         })
                 .when(mSiteChannelsManager)
                 .getChannelIdForOriginAsync(
-                        eq(ORIGIN_WITH_CHANNEL.toString()), any(Callback.class));
+                        eq(ORIGIN_WITH_CHANNEL.toString()), MockitoHelper.anyCallback());
         doAnswer(
                         (invocation) -> {
                             Callback<String> callback = invocation.getArgument(1);
@@ -68,7 +69,7 @@ public class NotificationChannelPreserverTest {
                         })
                 .when(mSiteChannelsManager)
                 .getChannelIdForOriginAsync(
-                        eq(ORIGIN_WITHOUT_CHANNEL.toString()), any(Callback.class));
+                        eq(ORIGIN_WITHOUT_CHANNEL.toString()), MockitoHelper.anyCallback());
     }
 
     @Test
@@ -144,7 +145,7 @@ public class NotificationChannelPreserverTest {
                             }
                         })
                 .when(mSiteChannelsManager)
-                .getChannelStatusAsync(eq(CHANNEL_ID), any(Callback.class));
+                .getChannelStatusAsync(eq(CHANNEL_ID), MockitoHelper.anyCallback());
     }
 
     private void setPreInstallNotificationPermission(

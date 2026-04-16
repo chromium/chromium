@@ -59,6 +59,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -444,7 +445,7 @@ public class SignOutCoordinatorTest {
                             return null;
                         })
                 .when(mSyncService)
-                .getTypesWithUnsyncedData(any(Callback.class));
+                .getTypesWithUnsyncedData(MockitoHelper.anyCallback());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

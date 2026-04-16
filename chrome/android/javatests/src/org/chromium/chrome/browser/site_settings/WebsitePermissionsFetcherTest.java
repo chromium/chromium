@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.site_settings;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
@@ -68,6 +67,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -861,7 +861,7 @@ public class WebsitePermissionsFetcherTest {
 
             doAnswer(this::mockBdmCallback)
                     .when(mSiteSettingsDelegate)
-                    .getBrowsingDataModel(any(Callback.class));
+                    .getBrowsingDataModel(MockitoHelper.anyCallback());
         } else {
             // Add storage info.
             websitePreferenceBridge.addStorageInfo(new StorageInfo(ORIGIN, storageSize));

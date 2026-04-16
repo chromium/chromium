@@ -83,6 +83,7 @@ import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link AutofillServerCardEditor}. */
@@ -553,7 +554,7 @@ public class AutofillServerCardEditorTest {
         // the dialog.
         verify(mNativeMock, times(0))
                 .enrollOfferedVirtualCard(
-                        eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE), any(Callback.class));
+                        eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE), MockitoHelper.anyCallback());
     }
 
     @Test

@@ -59,6 +59,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -448,7 +449,7 @@ public final class WebFeedFollowIntroControllerTest {
                             return null;
                         })
                 .when(mWebFeedBridgeJniMock)
-                .getRecentVisitCountsToHost(eq(sTestUrl), any(Callback.class));
+                .getRecentVisitCountsToHost(eq(sTestUrl), MockitoHelper.anyCallback());
     }
 
     private void invokePageLoad(
@@ -484,7 +485,7 @@ public final class WebFeedFollowIntroControllerTest {
                 .findWebFeedInfoForPage(
                         any(WebFeedBridge.WebFeedPageInformation.class),
                         anyInt(),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         // Respond to the findWebFeedInfoForWebFeedId JNI api by calling the callback.
         doAnswer(
@@ -495,7 +496,7 @@ public final class WebFeedFollowIntroControllerTest {
                             return null;
                         })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForWebFeedId(any(), any(Callback.class));
+                .findWebFeedInfoForWebFeedId(any(), MockitoHelper.anyCallback());
 
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);

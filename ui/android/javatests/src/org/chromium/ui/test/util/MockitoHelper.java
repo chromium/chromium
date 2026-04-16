@@ -96,4 +96,20 @@ public class MockitoHelper {
                 Mockito.timeout(
                         ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
+
+    /**
+     * Type-safe wrapper around {@code any(Callback.class)} that avoids unchecked warnings.
+     *
+     * <p>Using {@code any(Callback.class)} directly produces an unchecked warning because {@code
+     * Callback.class} is a raw type — Java generics are erased at runtime so {@code
+     * Callback<Foo>.class} does not exist. This method centralizes the suppression and returns a
+     * properly typed {@code Callback<T>} via type inference.
+     *
+     * <p>Matches any non-null {@link Callback} argument (same behavior as {@code
+     * any(Callback.class)}).
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Callback<T> anyCallback() {
+        return any(Callback.class);
+    }
 }

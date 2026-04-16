@@ -20,4 +20,7 @@ specific_include_rules = {
   "CredManHelperRobolectricTest.java": [
     "+components/payments/content/android/junit",
   ],
+  "Fido2CredentialRequestRobolectricTest.java": [
+    "+ui/android/javatests",
+  ],
 }

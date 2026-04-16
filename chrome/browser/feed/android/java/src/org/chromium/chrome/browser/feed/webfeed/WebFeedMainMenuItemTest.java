@@ -53,6 +53,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -119,7 +120,7 @@ public final class WebFeedMainMenuItemTest {
                 .findWebFeedInfoForPage(
                         any(WebFeedBridge.WebFeedPageInformation.class),
                         anyInt(),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
 
         // Initialize an empty class for mCreatorActivityClass
         class CreatorActivityClassTest {}

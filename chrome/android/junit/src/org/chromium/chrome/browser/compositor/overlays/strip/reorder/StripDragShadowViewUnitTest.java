@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Unit tests for {@link StripDragShadowView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -245,7 +246,7 @@ public class StripDragShadowViewUnitTest {
                         any(MultiThumbnailMetadata.class),
                         any(Size.class),
                         eq(false),
-                        any(Callback.class));
+                        MockitoHelper.anyCallback());
     }
 
     @Test
