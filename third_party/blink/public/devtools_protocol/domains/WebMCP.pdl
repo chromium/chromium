@@ -64,6 +64,12 @@ experimental domain WebMCP
       # Unique identifier for this invocation. Response is sent before tool events.
       string invocationId
 
+  # Cancels a pending tool invocation.
+  command cancelInvocation
+    parameters
+      # Invocation identifier to cancel.
+      string invocationId
+
   # Event fired when new tools are added.
   event toolsAdded
     parameters

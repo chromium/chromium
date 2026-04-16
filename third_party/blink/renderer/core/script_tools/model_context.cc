@@ -384,10 +384,10 @@ bool ModelContext::ExecuteTool(const base::UnguessableToken& invocation_id,
   return success;
 }
 
-void ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
+bool ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
   auto it = pending_executions_.find(String(invocation_id.ToString()));
   if (it == pending_executions_.end()) {
-    return;
+    return false;
   }
   String tool_name = it->value.tool_name;
 
@@ -402,11 +402,12 @@ void ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
   auto pending_execution =
       pending_executions_.find(String(invocation_id.ToString()));
   if (pending_execution == pending_executions_.end()) {
-    return;
+    return false;
   }
   OnToolFailed(std::move(pending_execution->value.callback), invocation_id,
                ScriptToolError(ScriptToolErrorCode::kToolCancelled));
   pending_executions_.erase(pending_execution);
+  return true;
 }
 
 void ModelContext::GetCrossDocumentScriptToolResult(
@@ -535,8 +536,9 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
   // to ensure the abort algorithm is unregistered when the tool finishes.
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (signal && !signal->aborted()) {
-    auto callback = blink::BindOnce(&ModelContext::CancelTool,
-                                    WrapWeakPersistent(this), invocation_id);
+    auto callback =
+        blink::BindOnce(base::IgnoreResult(&ModelContext::CancelTool),
+                        WrapWeakPersistent(this), invocation_id);
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }

@@ -132,7 +132,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void GetCrossDocumentScriptToolResult(
       CrossDocumentScriptToolResultCallback result_callback);
 
-  void CancelTool(const base::UnguessableToken& invocation_id);
+  bool CancelTool(const base::UnguessableToken& invocation_id);
 
   void SetToolChangeCallback(std::optional<base::RepeatingClosure> cb) {
     tool_change_closure_ = std::move(cb);

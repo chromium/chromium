@@ -1,0 +1,20 @@
+Tests WebMCP cancelInvocation command.
+Enabling WebMCP Domain
+--- Invoking test_tool ---
+invokeTool response: {
+    invocationId : <string 0>
+}
+--- Canceling test_tool with invalid ID ---
+Invalid invocation id
+--- Canceling test_tool ---
+cancelInvocation response: {
+}
+--- Canceling test_tool again ---
+No pending execution for invocation id
+toolResponded invocationId matches
+toolResponded event: {
+    errorText :
+    invocationId : <string 0>
+    status : Canceled
+}
+

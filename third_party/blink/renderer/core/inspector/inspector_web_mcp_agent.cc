@@ -175,6 +175,34 @@ protocol::Response InspectorWebMCPAgent::invokeTool(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorWebMCPAgent::cancelInvocation(
+    const String& invocationId) {
+  auto invocation_token =
+      base::UnguessableToken::DeserializeFromString(invocationId.Ascii());
+  if (!invocation_token) {
+    return protocol::Response::InvalidParams("Invalid invocation id");
+  }
+
+  // Find the model context. Since we don't have the frame ID, we have to
+  // iterate over all frames.
+  bool cancelled = false;
+  for (LocalFrame* frame : *inspected_frames_) {
+    if (auto* model_context = GetModelContext(frame)) {
+      if (model_context->CancelTool(*invocation_token)) {
+        cancelled = true;
+        break;
+      }
+    }
+  }
+
+  if (!cancelled) {
+    return protocol::Response::InvalidParams(
+        "No pending execution for invocation id");
+  }
+
+  return protocol::Response::Success();
+}
+
 void InspectorWebMCPAgent::WebMCPToolAdded(Document* document,
                                            const ToolData& tool) {
   LocalFrame* frame = document->GetFrame();
