@@ -12690,22 +12690,12 @@ void Element::SetActive(bool active) {
 
   GetDocument().UserActionElements().SetActive(this, active);
 
-  if (!GetLayoutObject()) {
-    if (!ChildrenOrSiblingsAffectedByActive()) {
-      SetNeedsStyleRecalc(kLocalStyleChange,
-                          StyleChangeReasonForTracing::CreateWithExtraData(
-                              style_change_reason::kPseudoClass,
-                              style_change_extra_data::g_active));
+  const ComputedStyle* style = GetComputedStyle();
+  if (!style || style->AffectedByActive()) {
+    StyleChangeType change_type = kLocalStyleChange;
+    if (style && style->HasPseudoElementStyle(kPseudoIdFirstLetter)) {
+      change_type = kSubtreeStyleChange;
     }
-    PseudoStateChanged(CSSSelector::kPseudoActive);
-    return;
-  }
-
-  if (GetComputedStyle()->AffectedByActive()) {
-    StyleChangeType change_type =
-        GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
-            ? kSubtreeStyleChange
-            : kLocalStyleChange;
     SetNeedsStyleRecalc(change_type,
                         StyleChangeReasonForTracing::CreateWithExtraData(
                             style_change_reason::kPseudoClass,

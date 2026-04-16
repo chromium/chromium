@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- Regression test for crbug.com/406525485: display:contents should not trigger
+     unnecessary repaints of elements with CSS Custom Highlights on click. -->
+<script src="resources/text-based-repaint.js"></script>
+<style>
+  ::highlight(test-highlight) {
+    background-color: yellow;
+  }
+</style>
+<div id="container" style="display: contents">
+  <p id="target">This text has a custom highlight applied via the Highlight API.</p>
+</div>
+<script>
+  // Register a custom highlight on the target text.
+  const target = document.getElementById('target');
+  const range = new Range();
+  range.selectNodeContents(target);
+  const highlight = new Highlight(range);
+  CSS.highlights.set('test-highlight', highlight);
+
+  function repaintTest() {
+    // Simulate a click. This triggers :active on ancestors including the
+    // display:contents container. This shouldn't cause unnecessary
+    // repaints of the highlighted text.
+    const rect = target.getBoundingClientRect();
+    const x = rect.left + 5;
+    const y = rect.top + 5;
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence([{
+        source: 'mouse',
+        actions: [
+          { name: 'pointerMove', x: x, y: y },
+          { name: 'pointerDown', x: x, y: y },
+          { name: 'pointerUp' },
+        ],
+      }], finishRepaintTest);
+    }
+  }
+
+  window.testIsAsync = true;
+  window.onload = runRepaintTest;
+</script>

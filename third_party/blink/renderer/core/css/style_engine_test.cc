@@ -7730,4 +7730,65 @@ TEST_F(StyleEngineTest, TestRandomValueCacheCleanedWhenElementIsGone) {
   EXPECT_EQ(GetRandomBaseValueCacheSize(), 1);
 }
 
+// Regression test for crbug.com/406525485: SetActive() on a display:contents
+// element without :active rules should not trigger unnecessary style recalc.
+TEST_F(StyleEngineTest, DisplayContentsSetActiveNoUnnecessaryRecalc) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::highlight(test-highlight) { background-color: yellow; }
+    </style>
+    <div id="container" style="display: contents">
+      <span id="child">Highlighted text</span>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(child);
+  ASSERT_FALSE(container->GetLayoutObject());
+  ASSERT_TRUE(child->GetLayoutObject());
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  container->SetActive(true);
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  // No :active rules match the container, so no style resolutions should occur.
+  EXPECT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  container->SetActive(false);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  EXPECT_EQ(0U, element_count);
+}
+
+// Verify that SetActive() still works correctly for display:contents elements
+// when :active rules DO match.
+TEST_F(StyleEngineTest, DisplayContentsSetActiveWithActiveRules) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container:active { color: red; }
+    </style>
+    <div id="container" style="display: contents">
+      <span id="child">Text</span>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetLayoutObject());
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  container->SetActive(true);
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  // :active rule matches container, so style resolution should happen.
+  EXPECT_GT(element_count, 0U);
+}
+
 }  // namespace blink
