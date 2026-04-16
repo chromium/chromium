@@ -38,6 +38,26 @@ cover the whole repository.
 
 ## Best Practices
 
+> ℹ️️ An AI agent (e.g., Gemini CLI) can help you write your traffic
+> annotation. Add the
+> [network-traffic-annotations](https://source.chromium.org/chromium/chromium/src/+/main:agents/skills/network-traffic-annotations/)
+> skill, then ask your agent to write the annotation.
+>
+> Example for Gemini CLI:
+>
+> ```sh
+> gemini skills link agents/skills/network-traffic-annotations
+> ```
+>
+> If you want to use an agent, we recommend this workflow:
+>
+> 1. Develop your feature using `MISSING_TRAFFIC_ANNOTATION` as a placeholder
+>    until your CL is ready for review.
+> 2. Add the `network-traffic-annotations` agent skill.
+> 3. Ask the agent: "write the traffic annotation in path/to/file.cc".
+> 4. Review and edit the generated annotation. Assume the agent **WILL** make
+>    mistakes; only use the generated doc as a starting point.
+
 ### Where to add annotation?
 All network requests are ultimately sending data through sockets or native API
 functions, but we should note that the concern is about the main intent of the

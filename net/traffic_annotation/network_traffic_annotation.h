@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// See also docs/network_traffic_annotations.md for the complete documentation.
+
 #ifndef NET_TRAFFIC_ANNOTATION_NETWORK_TRAFFIC_ANNOTATION_H_
 #define NET_TRAFFIC_ANNOTATION_NETWORK_TRAFFIC_ANNOTATION_H_
 
@@ -48,6 +50,9 @@ namespace net {
 struct PartialNetworkTrafficAnnotationTag;
 
 // Defined types for network traffic annotation tags.
+//
+// Typically created via DefineNetworkTrafficAnnotation(). See
+// docs/network_traffic_annotations.md for more details.
 struct NetworkTrafficAnnotationTag {
   const int32_t unique_id_hash_code;
 
@@ -144,6 +149,8 @@ struct PartialNetworkTrafficAnnotationTag {
 //
 // An empty and a sample template for the text-encoded protobuf can be found in
 // tools/traffic_annotation/sample_traffic_annotation.cc.
+//
+// See docs/network_traffic_annotations.md.
 inline constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
     internal::StringLiteralToHash unique_id,
     const char* proto) {
