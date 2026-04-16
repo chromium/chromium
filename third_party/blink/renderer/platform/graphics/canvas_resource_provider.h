@@ -414,7 +414,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
   }
-  virtual int NumInflightResourcesForTesting() const = 0;
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool HasUnusedResourcesForTesting() const;
 
@@ -564,9 +563,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
-  int NumInflightResourcesForTesting() const override {
-    return num_inflight_resources_;
-  }
+  int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
 
@@ -697,9 +694,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
-  int NumInflightResourcesForTesting() const override {
-    return num_inflight_resources_;
-  }
   base::ByteSize EstimatedSizeInBytes() const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
 
