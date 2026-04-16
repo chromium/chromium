@@ -222,33 +222,6 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   return trimmed_password_data;
 }
 
-sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form,
-    const sync_pb::PasswordSpecificsData& base_password_data) {
-  // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
-  // you need to update the following functions accordingly:
-  // `TrimPasswordSpecificsDataForCaching`
-  // `TrimAllSupportedFieldsFromRemoteSpecificsPreservesOnlyUnknownFields`
-  DCHECK_EQ(0u, TrimPasswordSpecificsDataForCaching(
-                    SpecificsDataFromPassword(password_form,
-                                              /*base_password_data=*/{}))
-                    .ByteSizeLong());
-
-  sync_pb::PasswordSpecifics specifics;
-  *specifics.mutable_client_only_encrypted_data() =
-      SpecificsDataFromPassword(password_form, base_password_data);
-  *specifics.mutable_unencrypted_metadata() =
-      SpecificsMetadataFromPassword(password_form);
-  return specifics;
-}
-
-sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
-    const PasswordForm& password_form,
-    const sync_pb::PasswordSpecificsData& base_password_data) {
-  return SpecificsDataFromStoredCredential(FromPasswordForm(password_form),
-                                           base_password_data);
-}
-
 sync_pb::PasswordSpecificsData SpecificsDataFromStoredCredential(
     const StoredCredential& credential) {
   return SpecificsDataFromStoredCredential(credential, {});
@@ -320,6 +293,15 @@ sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
 sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
     const StoredCredential& credential,
     const sync_pb::PasswordSpecificsData& base_password_data) {
+  // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
+  // you need to update the following functions accordingly:
+  // `TrimPasswordSpecificsDataForCaching`
+  // `TrimAllSupportedFieldsFromRemoteSpecificsPreservesOnlyUnknownFields`
+  CHECK_EQ(0u, TrimPasswordSpecificsDataForCaching(
+                   SpecificsDataFromStoredCredential(credential,
+                                                     /*base_password_data=*/{}))
+                   .ByteSizeLong());
+
   sync_pb::PasswordSpecifics specifics;
   *specifics.mutable_client_only_encrypted_data() =
       SpecificsDataFromStoredCredential(credential, base_password_data);
@@ -335,72 +317,6 @@ sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
   password_metadata->set_type(static_cast<int>(credential.type));
 
   return specifics;
-}
-
-sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
-    const PasswordForm& password_form) {
-  sync_pb::PasswordSpecificsMetadata password_metadata;
-  password_metadata.set_url(password_form.signon_realm);
-  password_metadata.set_blacklisted(password_form.blocked_by_user);
-  password_metadata.set_date_last_used_windows_epoch_micros(
-      password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  *password_metadata.mutable_password_issues() =
-      PasswordIssuesMapToProto(password_form.password_issues);
-  password_metadata.set_type(static_cast<int>(password_form.type));
-  return password_metadata;
-}
-
-PasswordForm PasswordFromSpecifics(
-    const sync_pb::PasswordSpecificsData& password_data) {
-  PasswordForm password;
-  password.scheme = static_cast<PasswordForm::Scheme>(password_data.scheme());
-  password.signon_realm = password_data.signon_realm();
-  password.url = GURL(password_data.origin());
-  password.action = GURL(password_data.action());
-  password.username_element =
-      base::UTF8ToUTF16(password_data.username_element());
-  password.password_element =
-      base::UTF8ToUTF16(password_data.password_element());
-  password.username_value = base::UTF8ToUTF16(password_data.username_value());
-  password.password_value = base::UTF8ToUTF16(password_data.password_value());
-  if (password_data.has_date_last_used()) {
-    password.date_last_used = ConvertToBaseTime(password_data.date_last_used());
-  } else if (password_data.preferred()) {
-    // For legacy passwords that don't have the |date_last_used| field set, we
-    // should it similar to the logic in login database migration.
-    password.date_last_used =
-        base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
-  }
-
-  password.date_last_filled =
-      ConvertToBaseTime(password_data.date_last_filled_windows_epoch_micros());
-  password.date_password_modified = ConvertToBaseTime(
-      password_data.has_date_password_modified_windows_epoch_micros()
-          ? password_data.date_password_modified_windows_epoch_micros()
-          : password_data.date_created());
-  password.date_created = ConvertToBaseTime(password_data.date_created());
-  password.blocked_by_user = password_data.blacklisted();
-  password.type = static_cast<PasswordForm::Type>(password_data.type());
-  password.times_used_in_html_form = password_data.times_used();
-  password.display_name = base::UTF8ToUTF16(password_data.display_name());
-  password.icon_url = GURL(password_data.avatar_url());
-  password.federation_origin =
-      url::SchemeHostPort(GURL(password_data.federation_url()));
-  password.password_issues = PasswordIssuesMapFromProto(password_data);
-  password.notes = PasswordNotesFromProto(password_data.notes());
-  password.sender_email = base::UTF8ToUTF16(password_data.sender_email());
-  password.sender_name = base::UTF8ToUTF16(password_data.sender_name());
-  password.date_received =
-      ConvertToBaseTime(password_data.date_received_windows_epoch_micros());
-  password.sharing_notification_displayed =
-      password_data.sharing_notification_displayed();
-  password.sender_profile_image_url =
-      GURL(password_data.sender_profile_image_url());
-  if (base::FeatureList::IsEnabled(
-          features::kActorLoginSyncsPasswordPermissions)) {
-    password.actor_login_approved = password_data.actor_login_approved();
-  }
-  return password;
 }
 
 StoredCredential StoredCredentialFromSpecifics(

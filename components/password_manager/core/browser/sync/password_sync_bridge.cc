@@ -21,7 +21,9 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -92,19 +94,19 @@ sync_pb::PasswordSpecificsData PasswordFromEntityChange(
   return entity_change.data().specifics.password().client_only_encrypted_data();
 }
 
-// Returns syncer::EntityData based on given `form`.
+// Returns syncer::EntityData based on given `cred`.
 // `base_password_data` is intended for carrying over unknown and unsupported
-// fields when there is a local modification to an existing sync entity. `form`
+// fields when there is a local modification to an existing sync entity. `cred`
 // and `base_password_data` are combined such that all supported proto fields
-// are read from `form` while unsupported field are read from
+// are read from `cred` while unsupported field are read from
 // `base_password_data`.
 std::unique_ptr<syncer::EntityData> CreateEntityData(
-    const PasswordForm& form,
+    const StoredCredential& cred,
     const sync_pb::PasswordSpecificsData& base_password_data) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   *entity_data->specifics.mutable_password() =
-      SpecificsFromPassword(form, base_password_data);
-  entity_data->name = form.signon_realm;
+      SpecificsFromStoredCredential(cred, base_password_data);
+  entity_data->name = cred.signon_realm;
   return entity_data;
 }
 
@@ -113,7 +115,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
 std::unique_ptr<syncer::EntityData> CreateEntityData(
     const sync_pb::PasswordSpecificsData& password_data,
     const sync_pb::PasswordSpecificsData& base_password_data) {
-  return CreateEntityData(PasswordFromSpecifics(password_data),
+  return CreateEntityData(StoredCredentialFromSpecifics(password_data),
                           base_password_data);
 }
 
@@ -397,7 +399,7 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
         change_processor()->Put(
             storage_key,
             CreateEntityData(
-                change.form(),
+                FromPasswordForm(change.form()),
                 GetPossiblyTrimmedPasswordSpecificsData(storage_key)),
             &metadata_change_list);
 
@@ -954,10 +956,11 @@ void PasswordSyncBridge::ApplyDisableSyncChanges(
       password_store_sync_->ReadAllCredentials(&credentials);
   if (result == FormRetrievalResult::kSuccess) {
     for (const auto& [primary_key, specifics] : credentials) {
-      PasswordForm form = PasswordFromSpecifics(*specifics);
-      form.primary_key = primary_key;
-      form.in_store = password_manager::PasswordForm::Store::kAccountStore;
-      password_store_changes.emplace_back(PasswordStoreChange::REMOVE, form);
+      StoredCredential cred = StoredCredentialFromSpecifics(*specifics);
+      cred.primary_key = primary_key;
+      cred.in_store = password_manager::PasswordForm::Store::kAccountStore;
+      password_store_changes.emplace_back(PasswordStoreChange::REMOVE,
+                                          ToPasswordForm(std::move(cred)));
     }
   }
   password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(

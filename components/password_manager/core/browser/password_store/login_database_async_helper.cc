@@ -348,15 +348,14 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::AddCredentialSync(
     const sync_pb::PasswordSpecificsData& password,
     AddCredentialError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddLoginImpl(FromPasswordForm(PasswordFromSpecifics(password)), error);
+  return AddLoginImpl(StoredCredentialFromSpecifics(password), error);
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateCredentialSync(
     const sync_pb::PasswordSpecificsData& password,
     UpdateCredentialError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpdateLoginImpl(FromPasswordForm(PasswordFromSpecifics(password)),
-                         error);
+  return UpdateLoginImpl(StoredCredentialFromSpecifics(password), error);
 }
 
 void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(

@@ -16,7 +16,6 @@ class PasswordSpecifics;
 class PasswordSpecificsData;
 class PasswordIssues;
 class PasswordSpecificsData_Notes;
-class PasswordSpecificsMetadata;
 }  // namespace sync_pb
 
 namespace password_manager {
@@ -45,23 +44,11 @@ sync_pb::PasswordSpecificsData_Notes PasswordNotesToProto(
     const std::vector<PasswordNote>& notes,
     const sync_pb::PasswordSpecificsData_Notes& base_notes);
 
-// Returns sync_pb::PasswordSpecifics based on given `password_form`.
-// `base_password_data` is intended for carrying over unknown and unsupported
-// fields when there is a local modification to an existing sync entity.
-sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form,
-    const sync_pb::PasswordSpecificsData& base_password_data);
-
-// Returns sync_pb::PasswordSpecificsData based on given `password_form`.
+// Returns sync_pb::PasswordSpecificsData based on given `credential`.
 // `base_password_data` is intended for carrying over unknown and unsupported
 // fields when there is a local modification to an existing sync entity. The
-// resulting proto contains all supported fields from `password_form` combined
-// with unsupported from `base_password_data`
-sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
-    const PasswordForm& password_form,
-    const sync_pb::PasswordSpecificsData& base_password_data);
-
-// Returns sync_pb::PasswordSpecificsData based on given `credential`.
+// resulting proto contains all supported fields from `credential` combined
+// with unsupported fields from `base_password_data`
 sync_pb::PasswordSpecificsData SpecificsDataFromStoredCredential(
     const StoredCredential& credential);
 sync_pb::PasswordSpecificsData SpecificsDataFromStoredCredential(
@@ -74,16 +61,6 @@ sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
 sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
     const StoredCredential& credential,
     const sync_pb::PasswordSpecificsData& base_password_data);
-
-// Returns sync_pb::PasswordSpecificsMetadata based on the given
-// `password_form`.
-sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
-    const PasswordForm& password_form);
-
-// Returns a partial PasswordForm for a given set of `password_data`. In
-// contrast to `PasswordFromProtoWithLocalData`, this method resets local data.
-PasswordForm PasswordFromSpecifics(
-    const sync_pb::PasswordSpecificsData& password_data);
 
 // Returns a partial StoredCredential for a given set of `password_data`.
 StoredCredential StoredCredentialFromSpecifics(

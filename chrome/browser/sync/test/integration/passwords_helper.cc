@@ -22,6 +22,7 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
@@ -270,7 +271,8 @@ void InjectEncryptedServerPassword(
     const syncer::KeyDerivationParams& key_derivation_params,
     fake_server::FakeServer* fake_server) {
   sync_pb::PasswordSpecificsData password_data =
-      password_manager::SpecificsFromPassword(form, /*base_password_data=*/{})
+      password_manager::SpecificsFromStoredCredential(
+          password_manager::FromPasswordForm(form), /*base_password_data=*/{})
           .client_only_encrypted_data();
   InjectEncryptedServerPassword(password_data, encryption_passphrase,
                                 key_derivation_params, fake_server);
@@ -295,7 +297,8 @@ void InjectKeystoreEncryptedServerPassword(
     const password_manager::PasswordForm& form,
     fake_server::FakeServer* fake_server) {
   sync_pb::PasswordSpecificsData password_data =
-      password_manager::SpecificsFromPassword(form, /*base_password_data=*/{})
+      password_manager::SpecificsFromStoredCredential(
+          password_manager::FromPasswordForm(form), /*base_password_data=*/{})
           .client_only_encrypted_data();
   InjectKeystoreEncryptedServerPassword(password_data, fake_server);
 }
@@ -504,7 +507,8 @@ bool ServerPasswordsEqualityChecker::IsExitConditionSatisfied(
     }
     server_password_forms.push_back(
         std::make_unique<password_manager::PasswordForm>(
-            password_manager::PasswordFromSpecifics(decrypted)));
+            password_manager::ToPasswordForm(
+                password_manager::StoredCredentialFromSpecifics(decrypted))));
   }
 
   std::ostringstream mismatch_details_stream;

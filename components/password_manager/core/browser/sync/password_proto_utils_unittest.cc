@@ -9,6 +9,7 @@
 #include "base/test/with_feature_override.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -227,11 +228,12 @@ TEST_P(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
   *specifics.mutable_unencrypted_metadata() =
       CreateSpecificsMetadata(specifics.client_only_encrypted_data());
 
-  EXPECT_EQ(SpecificsFromPassword(
-                PasswordFromSpecifics(specifics.client_only_encrypted_data()),
-                /*base_password_data=*/{})
-                .SerializeAsString(),
-            specifics.SerializeAsString());
+  EXPECT_EQ(
+      SpecificsFromStoredCredential(
+          StoredCredentialFromSpecifics(specifics.client_only_encrypted_data()),
+          /*base_password_data=*/{})
+          .SerializeAsString(),
+      specifics.SerializeAsString());
 }
 
 TEST_P(PasswordProtoUtilsTest, CopiesPasswordIssuesToMetadata) {
@@ -250,15 +252,17 @@ TEST_P(PasswordProtoUtilsTest, CopiesPasswordIssuesToMetadata) {
   *specifics.mutable_unencrypted_metadata() =
       CreateSpecificsMetadata(specifics.client_only_encrypted_data());
 
-  EXPECT_THAT(SpecificsFromPassword(
-                  PasswordFromSpecifics(specifics.client_only_encrypted_data()),
-                  /*base_password_data=*/{})
-                  .SerializeAsString(),
-              Eq(specifics.SerializeAsString()));
+  EXPECT_THAT(
+      SpecificsFromStoredCredential(
+          StoredCredentialFromSpecifics(specifics.client_only_encrypted_data()),
+          /*base_password_data=*/{})
+          .SerializeAsString(),
+      Eq(specifics.SerializeAsString()));
 }
 
-TEST_P(PasswordProtoUtilsTest,
-       SpecificsDataFromPasswordPreservesUnknownFieldsWithActorPermission) {
+TEST_P(
+    PasswordProtoUtilsTest,
+    SpecificsDataFromStoredCredentialPreservesUnknownFieldsWithActorPermission) {
   if (!IsParamFeatureEnabled()) {
     GTEST_SKIP() << "This test checks the feature enabled case.";
   }
@@ -267,7 +271,7 @@ TEST_P(PasswordProtoUtilsTest,
                           "username_value", "password_element", "signon_realm",
                           /*issue_types=*/{}, /*actor_login_approved=*/true);
 
-  PasswordForm form = PasswordFromSpecifics(specifics);
+  StoredCredential credential = StoredCredentialFromSpecifics(specifics);
 
   *specifics.mutable_unknown_fields() = "unknown_fields";
 
@@ -275,7 +279,8 @@ TEST_P(PasswordProtoUtilsTest,
   *specifics_with_only_unknown_fields.mutable_unknown_fields() =
       "unknown_fields";
 
-  EXPECT_EQ(SpecificsDataFromPassword(form, specifics_with_only_unknown_fields)
+  EXPECT_EQ(SpecificsDataFromStoredCredential(
+                credential, specifics_with_only_unknown_fields)
                 .SerializeAsString(),
             specifics.SerializeAsString());
 }
@@ -284,8 +289,9 @@ TEST_P(PasswordProtoUtilsTest,
 // If the feature is enabled, the permission bit will exist in the end result,
 // but because `PasswordFromSpecifics` sets it to true, NOT because it's being
 // preserved via the unknown fields logic.
-TEST_P(PasswordProtoUtilsTest,
-       SpecificsDataFromPasswordPreservesUnknownFieldsNoActorPermission) {
+TEST_P(
+    PasswordProtoUtilsTest,
+    SpecificsDataFromStoredCredentialPreservesUnknownFieldsNoActorPermission) {
   if (IsParamFeatureEnabled()) {
     GTEST_SKIP() << "This test checks the feature disabled case.";
   }
@@ -294,7 +300,7 @@ TEST_P(PasswordProtoUtilsTest,
                           "username_value", "password_element", "signon_realm",
                           /*issue_types=*/{}, /*actor_login_approved=*/true);
 
-  PasswordForm form = PasswordFromSpecifics(specifics);
+  StoredCredential credential = StoredCredentialFromSpecifics(specifics);
 
   *specifics.mutable_unknown_fields() = "unknown_fields";
 
@@ -303,13 +309,14 @@ TEST_P(PasswordProtoUtilsTest,
       "unknown_fields";
   specifics_with_only_unknown_fields.set_actor_login_approved(true);
 
-  EXPECT_EQ(SpecificsDataFromPassword(form, specifics_with_only_unknown_fields)
+  EXPECT_EQ(SpecificsDataFromStoredCredential(
+                credential, specifics_with_only_unknown_fields)
                 .SerializeAsString(),
             specifics.SerializeAsString());
 }
 
 TEST_P(PasswordProtoUtilsTest,
-       SpecificsFromPasswordPreservesUnknownFieldsWithActorPermission) {
+       SpecificsFromStoredCredentialPreservesUnknownFieldsWithActorPermission) {
   if (!IsParamFeatureEnabled()) {
     GTEST_SKIP() << "This test checks the feature enabled case.";
   }
@@ -318,7 +325,7 @@ TEST_P(PasswordProtoUtilsTest,
                           "username_value", "password_element", "signon_realm",
                           /*issue_types=*/{}, /*actor_login_approved=*/true);
 
-  PasswordForm form = PasswordFromSpecifics(specifics);
+  StoredCredential credential = StoredCredentialFromSpecifics(specifics);
 
   *specifics.mutable_unknown_fields() = "unknown_fields";
 
@@ -326,7 +333,8 @@ TEST_P(PasswordProtoUtilsTest,
   *specifics_with_only_unknown_fields.mutable_unknown_fields() =
       "unknown_fields";
 
-  EXPECT_EQ(SpecificsFromPassword(form, specifics_with_only_unknown_fields)
+  EXPECT_EQ(SpecificsFromStoredCredential(credential,
+                                          specifics_with_only_unknown_fields)
                 .client_only_encrypted_data()
                 .SerializeAsString(),
             specifics.SerializeAsString());
@@ -337,7 +345,7 @@ TEST_P(PasswordProtoUtilsTest,
 // but because `PasswordFromSpecifics` sets it to true, NOT because it's being
 // preserved via the unknown fields logic.
 TEST_P(PasswordProtoUtilsTest,
-       SpecificsFromPasswordPreservesUnknownFieldsNoActorPermission) {
+       SpecificsFromStoredCredentialPreservesUnknownFieldsNoActorPermission) {
   if (IsParamFeatureEnabled()) {
     GTEST_SKIP() << "This test checks the feature disabled case.";
   }
@@ -346,7 +354,7 @@ TEST_P(PasswordProtoUtilsTest,
                           "username_value", "password_element", "signon_realm",
                           /*issue_types=*/{}, /*actor_login_approved=*/true);
 
-  PasswordForm form = PasswordFromSpecifics(specifics);
+  StoredCredential credential = StoredCredentialFromSpecifics(specifics);
 
   *specifics.mutable_unknown_fields() = "unknown_fields";
 
@@ -355,7 +363,8 @@ TEST_P(PasswordProtoUtilsTest,
       "unknown_fields";
   specifics_with_only_unknown_fields.set_actor_login_approved(true);
 
-  EXPECT_EQ(SpecificsFromPassword(form, specifics_with_only_unknown_fields)
+  EXPECT_EQ(SpecificsFromStoredCredential(credential,
+                                          specifics_with_only_unknown_fields)
                 .client_only_encrypted_data()
                 .SerializeAsString(),
             specifics.SerializeAsString());

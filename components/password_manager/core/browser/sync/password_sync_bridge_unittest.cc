@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -87,13 +88,13 @@ MATCHER_P(EntityDataHasSecurityIssueTypes, expected_issue_types, "") {
 }
 
 // |*arg| must be of type sync_pb::PasswordSpecificsData.
-MATCHER_P(FormHasSignonRealm, expected_signon_realm, "") {
+MATCHER_P(CredHasSignonRealm, expected_signon_realm, "") {
   return arg.signon_realm() == expected_signon_realm;
 }
 
 // |*arg| must be of type sync_pb::PasswordSpecificsData..
-MATCHER_P(FormHasPasswordIssues, expected_issues, "") {
-  return PasswordFromSpecifics(arg).password_issues == expected_issues;
+MATCHER_P(CredHasPasswordIssues, expected_issues, "") {
+  return StoredCredentialFromSpecifics(arg).password_issues == expected_issues;
 }
 
 // |*arg| must be of type PasswordStoreChange.
@@ -219,7 +220,8 @@ class FakeDatabase {
       map->emplace(
           primary_key,
           std::make_unique<sync_pb::PasswordSpecificsData>(
-              SpecificsDataFromPassword(*form, /*base_password_data=*/{})));
+              SpecificsDataFromStoredCredential(FromPasswordForm(*form),
+                                                /*base_password_data=*/{})));
     }
     return FormRetrievalResult::kSuccess;
   }
@@ -231,7 +233,8 @@ class FakeDatabase {
       *error = error_;
     }
     if (error_ == AddCredentialError::kNone) {
-      PasswordForm form = PasswordFromSpecifics(specifics);
+      PasswordForm form =
+          ToPasswordForm(StoredCredentialFromSpecifics(specifics));
       form.primary_key = FormPrimaryKey(primary_key_);
       data_[FormPrimaryKey(primary_key_++)] =
           std::make_unique<PasswordForm>(form);
@@ -253,7 +256,8 @@ class FakeDatabase {
     if (error) {
       *error = UpdateCredentialError::kNone;
     }
-    PasswordForm form = PasswordFromSpecifics(specifics);
+    PasswordForm form =
+        ToPasswordForm(StoredCredentialFromSpecifics(specifics));
     FormPrimaryKey key = GetPrimaryKey(form);
     form.primary_key = key;
     DCHECK_NE(-1, key.value());
@@ -571,7 +575,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteCreation) {
   testing::InSequence in_sequence;
   EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
-              AddCredentialSync(FormHasSignonRealm(kSignonRealm1), _));
+              AddCredentialSync(CredHasSignonRealm(kSignonRealm1), _));
   EXPECT_CALL(mock_processor(), UpdateStorageKey(_, kStorageKey, _));
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
   EXPECT_CALL(
@@ -625,8 +629,8 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteUpdate) {
   base::flat_map<InsecureType, InsecurityMetadata> no_issues;
   EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
-              UpdateCredentialSync(AllOf(FormHasSignonRealm(kSignonRealm1),
-                                         FormHasPasswordIssues(no_issues)),
+              UpdateCredentialSync(AllOf(CredHasSignonRealm(kSignonRealm1),
+                                         CredHasPasswordIssues(no_issues)),
                                    _));
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
@@ -762,11 +766,11 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
       .InSequence(s2);
 
   EXPECT_CALL(*mock_password_store_sync(),
-              UpdateCredentialSync(FormHasSignonRealm(kSignonRealm2), _))
+              UpdateCredentialSync(CredHasSignonRealm(kSignonRealm2), _))
       .InSequence(s3);
 
   EXPECT_CALL(*mock_password_store_sync(),
-              AddCredentialSync(FormHasSignonRealm(kSignonRealm3), _))
+              AddCredentialSync(CredHasSignonRealm(kSignonRealm3), _))
       .InSequence(s4);
   EXPECT_CALL(mock_processor(), UpdateStorageKey(_, kExpectedPrimaryKeyStr3, _))
       .InSequence(s4);
@@ -838,7 +842,7 @@ TEST_F(PasswordSyncBridgeTest,
   // Since the remote Form 2 is more recent, it will be updated in the password
   // store.
   EXPECT_CALL(*mock_password_store_sync(),
-              UpdateCredentialSync(FormHasSignonRealm(kSignonRealm2), _));
+              UpdateCredentialSync(CredHasSignonRealm(kSignonRealm2), _));
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       /*storage_key=*/"", SpecificsToEntity(specifics1)));
@@ -1525,7 +1529,7 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
   EXPECT_CALL(
       *mock_password_store_sync(),
-      AddCredentialSync(FormHasPasswordIssues(kForm.password_issues), _));
+      AddCredentialSync(CredHasPasswordIssues(kForm.password_issues), _));
 
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
 
@@ -1557,7 +1561,7 @@ TEST_F(PasswordSyncBridgeTest,
 
   EXPECT_CALL(
       *mock_password_store_sync(),
-      AddCredentialSync(FormHasPasswordIssues(kForm.password_issues), _));
+      AddCredentialSync(CredHasPasswordIssues(kForm.password_issues), _));
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
 
   syncer::EntityChangeList entity_change_list;
@@ -1646,7 +1650,7 @@ TEST_F(PasswordSyncBridgeTest,
       MakePasswordFormWithIssues(kSignonRealm1, kPrimaryKey, kIssuesTypes);
   EXPECT_CALL(*mock_password_store_sync(),
               UpdateCredentialSync(
-                  FormHasPasswordIssues(kExpectedForm.password_issues), _));
+                  CredHasPasswordIssues(kExpectedForm.password_issues), _));
 
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
@@ -1844,10 +1848,12 @@ TEST_F(PasswordSyncBridgeTest, ShouldIgnoreDuplicateClientTagsInLocalStorage) {
 
   // The two local passwords share the same client tag hash.
   ASSERT_EQ(SpecificsToEntity(
-                SpecificsFromPassword(form1, sync_pb::PasswordSpecificsData()))
+                SpecificsFromStoredCredential(FromPasswordForm(form1),
+                                              sync_pb::PasswordSpecificsData()))
                 .client_tag_hash,
             SpecificsToEntity(
-                SpecificsFromPassword(form2, sync_pb::PasswordSpecificsData()))
+                SpecificsFromStoredCredential(FromPasswordForm(form2),
+                                              sync_pb::PasswordSpecificsData()))
                 .client_tag_hash);
 
   const sync_pb::PasswordSpecifics specifics =
