@@ -580,6 +580,7 @@ source_set("unit_tests") {
       "service/metrics/glic_instance_coordinator_metrics_unittest.cc",
       "service/metrics/glic_instance_metrics_unittest.cc",
       "service/metrics/glic_metrics_session_manager_unittest.cc",
+      "service/metrics/metrics_types_unittest.cc",
       "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
       "widget/glic_view_unittest.cc",
     ]

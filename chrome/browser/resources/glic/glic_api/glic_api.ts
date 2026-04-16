@@ -2871,6 +2871,9 @@ export enum InvocationSource {
   ZERO_STATE_AUTO_SUMMARIZE = 26,
   // From the universal cart.
   UNIVERSAL_CART = 27,
+  // Used exclusively for invocations originating from the
+  // GlicExperimentalTriggeringMessageHandler.
+  EXPERIMENTAL_TRIGGERING = 28,
 }
 
 ///////////////////////////////////////////////

@@ -1619,6 +1619,9 @@ enum InvocationSource {
   [MinVersion=17] kZeroStateAutoSummarize = 26,
   // From the universal cart.
   [MinVersion=18] kUniversalCart = 27,
+  // Used exclusively for invocations originating from the
+  // GlicExperimentalTriggeringMessageHandler.
+  [MinVersion=19] kExperimentalTriggering = 28,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)
