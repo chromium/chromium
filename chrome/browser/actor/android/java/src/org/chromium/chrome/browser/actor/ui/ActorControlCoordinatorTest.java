@@ -138,6 +138,12 @@ public class ActorControlCoordinatorTest {
         actorControlButton.performClick();
     }
 
+    private void performPeekViewClick() {
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        assertNotNull("Peek view should be attached", view);
+        view.performClick();
+    }
+
     private void performCloseClick() {
         ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
         assertNotNull("Peek view should be attached", view);
@@ -442,5 +448,14 @@ public class ActorControlCoordinatorTest {
         performCloseClick();
 
         verify(mTabBottomSheetManager).tryToCloseBottomSheet();
+    }
+
+    @Test
+    public void testOnPeekViewClick_expandsBottomSheet() {
+        setUpProfileSupplierAndAttachPeekView();
+
+        performPeekViewClick();
+
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
     }
 }

@@ -31,6 +31,9 @@ public class ActorControlViewBinder {
         } else if (ActorControlProperties.ON_CLOSE_CLICKED == propertyKey) {
             view.setCloseClickListener(
                     v -> model.get(ActorControlProperties.ON_CLOSE_CLICKED).run());
+        } else if (ActorControlProperties.ON_PEEK_VIEW_CLICKED == propertyKey) {
+            view.setPeekViewClickListener(
+                    v -> model.get(ActorControlProperties.ON_PEEK_VIEW_CLICKED).run());
         }
     }
 }

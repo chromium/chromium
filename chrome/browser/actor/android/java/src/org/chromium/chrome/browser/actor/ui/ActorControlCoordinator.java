@@ -73,6 +73,7 @@ public class ActorControlCoordinator
                                 ActorControlProperties.ON_ACTOR_CONTROL_CLICKED,
                                 this::onActorControlClicked)
                         .with(ActorControlProperties.ON_CLOSE_CLICKED, this::onCloseClicked)
+                        .with(ActorControlProperties.ON_PEEK_VIEW_CLICKED, this::onPeekViewClicked)
                         .build();
 
         mMediator = new ActorControlMediator(mModel);
@@ -278,6 +279,11 @@ public class ActorControlCoordinator
     /* package */ void onCloseClicked() {
         assert mTabBottomSheetManager.isSheetInitialized();
         mTabBottomSheetManager.tryToCloseBottomSheet();
+    }
+
+    /** Called when the peek view is clicked. */
+    /* package */ void onPeekViewClicked() {
+        mTabBottomSheetManager.hidePeekViewAndShowExpandedContent();
     }
 
     /**

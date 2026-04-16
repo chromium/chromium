@@ -32,8 +32,16 @@ class ActorControlProperties {
     public static final ReadableObjectPropertyKey<Runnable> ON_CLOSE_CLICKED =
             new ReadableObjectPropertyKey<>();
 
+    /** The click listener for the peek view. */
+    public static final ReadableObjectPropertyKey<Runnable> ON_PEEK_VIEW_CLICKED =
+            new ReadableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                TASK_TITLE, PEEK_VIEW_UI_STATE, ON_ACTOR_CONTROL_CLICKED, ON_CLOSE_CLICKED,
+                TASK_TITLE,
+                PEEK_VIEW_UI_STATE,
+                ON_ACTOR_CONTROL_CLICKED,
+                ON_CLOSE_CLICKED,
+                ON_PEEK_VIEW_CLICKED,
             };
 }

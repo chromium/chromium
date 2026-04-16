@@ -72,6 +72,15 @@ public class ActorControlView extends RelativeLayout {
     }
 
     /**
+     * Sets the click listener for the peek view.
+     *
+     * @param listener The callback to be invoked when the peek view is clicked.
+     */
+    void setPeekViewClickListener(OnClickListener listener) {
+        setOnClickListener(listener);
+    }
+
+    /**
      * Configures the actor control button for the given state.
      *
      * @param state The state of the peek view UI.
