@@ -283,6 +283,8 @@ source_set("impl") {
     "service/glic_instance_impl.h",
     "service/glic_invoke_handler.cc",
     "service/glic_invoke_handler.h",
+    "service/glic_invoke_task.cc",
+    "service/glic_invoke_task.h",
     "service/glic_state_tracker.cc",
     "service/glic_state_tracker.h",
     "service/glic_ui_embedder.h",
@@ -553,7 +555,10 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "host/context/glic_sharing_utils_unittest.cc" ]
+  sources = [
+    "host/context/glic_sharing_utils_unittest.cc",
+    "service/glic_invoke_task_unittest.cc",
+  ]
   if (!is_android) {
     sources += [
       "common/glic_panel_hotkey_delegate_unittest.cc",

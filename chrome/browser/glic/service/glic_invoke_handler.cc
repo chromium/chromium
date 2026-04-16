@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_invoke_task.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -25,7 +28,9 @@
 #include "content/public/browser/navigation_handle.h"
 namespace glic {
 
+namespace {
 constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
+}  // namespace
 
 static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
   BrowserWindowCreateParams params(*profile, /*from_user_gesture=*/false);
@@ -108,7 +113,7 @@ GlicInvokeHandler::GlicInvokeHandler(
     // NOTE: This simple check won't do the right thing for chained navigations
     // or potentially redirects, as the first navigation will finish and we will
     // proceed, but then another navigation will start.
-    waiting_for_load_ = true;
+    should_wait_for_load_ = true;
   }
 }
 
@@ -120,22 +125,18 @@ void GlicInvokeHandler::Invoke() {
                                       weak_ptr_factory_.GetWeakPtr(),
                                       GlicInvokeError::kTimeout));
 
-  // If we weren't able to set up tab destruction subscription, we should
-  // treat this as an error.
   if (!tab_destruction_subscription_ || !tab_) {
     OnError(GlicInvokeError::kInvalidTab);
     return;
   }
 
-  if (waiting_for_load_) {
-    Observe(tab_->GetContents());
-    return;
+  std::vector<std::unique_ptr<GlicInvokeTask>> tasks;
+
+  if (should_wait_for_load_) {
+    tasks.push_back(
+        std::make_unique<WaitForNavigationTask>(tab_->GetContents()));
   }
 
-  ContinueInvoke();
-}
-
-void GlicInvokeHandler::ContinueInvoke() {
   auto show_options = ShowOptions::ForSidePanel(
       *tab_, GlicPinTrigger::kInstanceCreation, options_.invocation_source);
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
@@ -152,66 +153,21 @@ void GlicInvokeHandler::ContinueInvoke() {
     return;
   }
 
-  instance_->Show(show_options);
-
-  MaybeWaitForWebClientReady();
-}
-
-void GlicInvokeHandler::MaybeWaitForWebClientReady() {
-  if (instance_->host().IsWebClientConnected()) {
-    OnWebClientReady();
-  } else {
-    host_observation_.Observe(&instance_->host());
-  }
-}
-
-void GlicInvokeHandler::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-  Observe(nullptr);
-  waiting_for_load_ = false;
-  ContinueInvoke();
-}
-
-void GlicInvokeHandler::WebClientConnected() {
-  host_observation_.Reset();
-  OnWebClientReady();
-}
-
-void GlicInvokeHandler::OnWebClientReady() {
-  MaybeWaitForPanelOpen();
-}
-
-void GlicInvokeHandler::MaybeWaitForPanelOpen() {
+  tasks.push_back(
+      std::make_unique<ShowInstanceTask>(&*instance_, show_options));
+  tasks.push_back(
+      std::make_unique<WaitForClientConnectedTask>(&instance_->host()));
   if (options_.wait_for_panel_open) {
-    MaybeWaitForStableWidth();
-  } else {
-    MaybeWaitForFreCompletion();
-  }
-}
-
-void GlicInvokeHandler::MaybeWaitForStableWidth() {
-  if (tab_ && tab_->GetContents()) {
-    Observe(tab_->GetContents());
+    tasks.push_back(std::make_unique<StabilizationTask>(tab_->GetContents()));
   }
 
-  stabilization_timer_.Start(FROM_HERE, base::Milliseconds(300),
-                             base::BindOnce(&GlicInvokeHandler::OnStabilized,
-                                            weak_ptr_factory_.GetWeakPtr()));
-}
+  tasks.push_back(std::make_unique<WaitForFreCompletionTask>(
+      instance_->profile(), options_.fre_override));
 
-void GlicInvokeHandler::PrimaryMainFrameWasResized(bool width_changed) {
-  if (stabilization_timer_.IsRunning()) {
-    stabilization_timer_.Reset();
-  }
-}
+  main_task_ = std::make_unique<SequentialTaskGroup>(std::move(tasks));
 
-void GlicInvokeHandler::OnStabilized() {
-  Observe(nullptr);
-  MaybeWaitForFreCompletion();
+  main_task_->Start(base::BindOnce(&GlicInvokeHandler::SendToClient,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
@@ -233,43 +189,6 @@ bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
   }
   return !GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
       instance_->profile());
-}
-
-bool GlicInvokeHandler::ShouldWaitForFreCompletion() const {
-  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
-    return false;
-  }
-  if (options_.fre_override == mojom::FreOverride::kTrustFirstClick) {
-    return true;
-  }
-  if (options_.fre_override == mojom::FreOverride::kUnspecified) {
-    return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
-               instance_->profile()) &&
-           features::kGlicTrustFirstOnboardingArmParam.Get() == 2;
-  }
-  return false;
-}
-
-void GlicInvokeHandler::MaybeWaitForFreCompletion() {
-  if (ShouldWaitForFreCompletion()) {
-    if (!profile_ready_state_subscription_) {
-      profile_ready_state_subscription_ =
-          GlicKeyedService::Get(instance_->profile())
-              ->enabling()
-              .RegisterProfileReadyStateChanged(base::BindRepeating(
-                  &GlicInvokeHandler::OnProfileReadyStateChanged,
-                  weak_ptr_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-  SendToClient();
-}
-
-void GlicInvokeHandler::OnProfileReadyStateChanged() {
-  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
-    profile_ready_state_subscription_ = {};
-    SendToClient();
-  }
 }
 
 void GlicInvokeHandler::SendToClient() {

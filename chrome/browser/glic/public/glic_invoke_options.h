@@ -52,7 +52,6 @@ struct DefaultSurface {
 struct NewTab {
   raw_ptr<BrowserWindowInterface> window = nullptr;
 };
-
 // The target for the invocation.
 struct Target {
   Target();

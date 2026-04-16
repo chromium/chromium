@@ -18,12 +18,14 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_invoke_task.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
@@ -1214,13 +1216,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWhenWebClientAlreadySet) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 
-  // Call invoke twice. The first one will set it up.
-  base::test::TestFuture<void> initial_success_future;
-  GlicInvokeOptions initial_options(glic::Target(tab),
-                                    mojom::InvocationSource::kOsButton);
-  initial_options.on_success = initial_success_future.GetCallback();
-  coordinator().Invoke(std::move(initial_options));
-  EXPECT_TRUE(initial_success_future.Wait());
+  // Open Glic to set it up.
+  ASSERT_OK(OpenGlicForActiveTab());
 
   auto* instance = coordinator().GetInstanceForTab(tab);
 
@@ -1252,12 +1249,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // Call invoke. This will create the instance and wait for WebClientSet.
   coordinator().Invoke(std::move(options));
-
-  auto* instance = coordinator().GetInstanceForTab(tab);
-  ASSERT_TRUE(instance);
-
-  // Wait for the instance to open, which also sets the web client.
-  ASSERT_OK(WaitForGlicOpen(instance));
 
   // The success callback should be called after observing WebClientSet.
   EXPECT_TRUE(success_future.Wait());
@@ -1790,4 +1781,29 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorNoWarmingTest,
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       StabilizationTaskSafeWithDestroyedWebContents) {
+  // Create a tab.
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  // Create the task.
+  auto task = std::make_unique<StabilizationTask>(web_contents);
+
+  base::test::TestFuture<void> done_future;
+  task->Start(done_future.GetCallback());
+
+  // Destroy the tab.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(web_contents),
+      TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // Wait for the task to complete. It should complete when the timer fires,
+  // and it should not crash.
+  EXPECT_TRUE(done_future.Wait());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace glic
