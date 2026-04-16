@@ -9722,3 +9722,6 @@ crbug.com/502777858 [ Linux ] external/wpt/largest-contentful-paint/multiple-ima
 # Likely flaky on Mac bacause native overlay scrollbars can hide before the
 # second drag, causing scrollPromise to time out. see crbug.com/501810437.
 crbug.com/501810437 [ Mac ] external/wpt/inert/inert-scrollbar-hittest.html [ Pass Timeout ]
+# Looks like imperceptible antialiasing differences.
+crbug.com/503254576 [ Win11-arm64 ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
+crbug.com/503254576 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
