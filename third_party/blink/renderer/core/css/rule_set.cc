@@ -476,6 +476,7 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
       }
       break;
     case CSSSelector::kAttributeSet:
+      values.is_exact_attr = false;
       values.attr_name = selector->Attribute().LocalName();
       values.attr_value = g_empty_atom;
       break;
