@@ -97,12 +97,15 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUiBackend;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
@@ -2248,6 +2251,32 @@ public class LocationBarMediatorTest {
         mMediator.onSearchBoxHintTextChanged();
 
         verify(mUrlCoordinator, never()).setUrlBarHintText(any());
+    }
+
+    @Test
+    public void testLoadUrl_chromeExtensionScheme() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        ExtensionUiBackend mockExtensionUiBackend = mock(ExtensionUiBackend.class);
+        ExtensionUi.setBackendForTesting(mockExtensionUiBackend);
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+
+        String url = UrlConstants.CHROME_EXTENSION_SCHEME + "://id/?q=test";
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(url, PageTransition.TYPED)
+                        .setOpenInNewTab(true)
+                        .build());
+
+        verify(mockExtensionUiBackend)
+                .onOmniboxExtensionInputEntered(mWebContents, url, true, false);
+        verify(mTab, never()).loadUrl(any());
+        verify(mTabModelSelector, never()).openNewTab(any(), anyInt(), any(), anyBoolean());
+        verify(mMultiInstanceOrchestrator, never())
+                .openUrlInOtherWindow(any(), any(), anyInt(), anyBoolean(), anyBoolean());
+
+        ExtensionUi.setBackendForTesting(null);
     }
 
     private FuseboxSessionState getSession() {

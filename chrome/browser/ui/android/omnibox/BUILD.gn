@@ -578,6 +578,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
+    "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/multiwindow:java",
