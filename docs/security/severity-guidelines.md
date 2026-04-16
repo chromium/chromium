@@ -76,17 +76,22 @@ severity of high and could potentially be reduced by other mitigating factors.
 
 ### Memory Safety
 
-* A bug that allows arbitrary code execution within the confines of the sandbox,
-such as memory corruption in the renderer process
-([570427](https://crbug.com/570427), [468936](https://crbug.com/468936)).
+* A bug that allows arbitrary code execution within the confines of the sandbox.
+  * memory corruption in the renderer process ([570427](https://crbug.com/570427).
+  * memory corruption in v8.
+  * DCHECK correctness failures in v8.
+  * memory corruption in the gpu process where it is sandboxed ([468936](https://crbug.com/468936)).
 * Memory corruption in the browser or another high privileged process (e.g. a
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md)),
   that can only be triggered from a compromised renderer,
   leading to a sandbox escape ([1393177](https://crbug.com/1393177),
   [1421268](crbug.com/1421268)).
+* Controlled read of 16 or more bytes of data from the browser, gpu or network
+  process by a compromised renderer.
 * Memory corruption in the browser or another high privileged process (e.g.
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md))
-  that requires specific user interaction, such as granting a permission ([455735](https://crbug.com/455735)).
+  that requires specific, but common, user interaction, such as granting a
+  permission ([455735](https://crbug.com/455735)).
 * Kernel memory corruption that could be used as a sandbox escape from a
   compromised renderer ([377392](https://crbug.com/377392)).
 
@@ -117,39 +122,21 @@ should be marked as medium severity.
 
 ### Memory Safety
 
-* An out-of-bounds read in a renderer process
-([281480](https://crbug.com/281480)).
-* An uninitialized memory read in the browser process where the values are
-passed to a compromised renderer via IPC ([469151](https://crbug.com/469151)).
+* V8 correctness issues where different compiler tiers return different results.
 * Memory corruption that requires a specific extension to be installed
 ([313743](https://crbug.com/313743)).
-* Memory corruption in the browser process, triggered by a browser shutdown that
-  is not reliably triggered and/or is difficult to trigger ([1230513](https://crbug.com/1230513)).
 * Memory corruption in the browser process, requiring a non-standard flag and
   user interaction ([1255332](https://crbug.com/1255332)).
-* Memory corruption in a renderer process that requires specific user
-  interaction, such as dragging an object ([303772](https://crbug.com/303772)).
 
 ### Web Platform & UX
 
 * An HSTS bypass ([461481](https://crbug.com/461481)).
 * A bypass of the same origin policy for pages that meet several preconditions
   ([419383](https://crbug.com/419383)).
-* A bug that allows web content to tamper with trusted browser UI
-  ([550047](https://crbug.com/550047)).
-* A bug that reduces the effectiveness of the sandbox
-  ([338538](https://crbug.com/338538)).
 * A bug that allows arbitrary pages to bypass security interstitials
   ([540949](https://crbug.com/540949)).
-* A bug that allows an attacker to reliably read or infer browsing history
+* A bug that allows an attacker to reliably read or infer complete browsing history
   ([381808](https://crbug.com/381808)).
-* An address bar spoof where only certain URLs can be displayed, or with other
-  mitigating factors ([265221](https://crbug.com/265221)).
-* A clickjacking bug that does **not** require convincing the user to do
-  something unusual (click repeated and quickly, hold down Enter, similar)
-  ([364508693](https://issues.chromium.org/issues/364508693))
-* A UI spoof on primary security UI surfaces other than the address bar
-  (permission prompts, site info dialog) ([418214610](https://issues.chromium.org/issues/418214610))
 
 ## Low severity (S3) {#TOC-Low-severity}
 
@@ -159,18 +146,46 @@ scope.
 
 ### Memory Safety
 
-* An uncontrolled single-byte out-of-bounds read
+* An uncontrolled single-byte out-of-bounds read in any process
   ([128163](https://crbug.com/128163)).
+* Any out-of-bounds read in a renderer process
+  ([281480](https://crbug.com/281480)). Note that ASAN READs
+  are treated as WRITEs unless they are small-sized reads.
+* Memory corruption in a renderer process that requires specific user
+  interaction, such as dragging an object ([303772](https://crbug.com/303772)).
+* Memory corruption in the browser process, triggered by a browser shutdown that
+  is not reliably triggered and/or is difficult to trigger ([1230513](https://crbug.com/1230513)).
+* Memory corruption in the browser process from a compromised renderer that
+  requires browser shutdown to trigger.
+* Memory corruption in the browser process which requires an extension with the
+  debugger permission.
+* An uncontrolled uninitialized memory read in the browser, network or gpu
+  process where the values are passed to a compromised renderer via IPC
+  ([469151](https://crbug.com/469151)). Note that evidence of an
+  controlled leak of 16 or more bytes of data from the browser, network or gpu
+  process is High Severity.
 
 ### Web Platform & UX
 
+* A bug that allows web content to draw over browser UI
+  ([550047](https://crbug.com/550047)).
+* A bug that reduces the effectiveness of the sandbox
+  ([338538](https://crbug.com/338538)).
 * Bypass requirement for a user gesture ([256057](https://crbug.com/256057)).
 * Partial CSP bypass ([534570](https://crbug.com/534570)).
 * A limited extension permission bypass ([169632](https://crbug.com/169632)).
-* A UI spoof on a surface that isn't primary security UI
+* An omnibox spoof where only certain URLs can be displayed, or with other
+  mitigating factors ([265221](https://crbug.com/265221)).
+* A UI spoof on a surface other than the omnibox or the site information panel
   ([421690383](https://issues.chromium.org/issues/421690383))
-* Clickjacking bugs that require unusual user behavior (rapid clicks, holding
-  down a key, etc) ([400923](https://issues.chromium.org/issues/40092362))
+* A bug that allows an attacker to reliably read or infer limited browsing
+  history.
+* Spoofs that hide important warnings under other obvious UI elements.
+* Split-view dialog confusion.
+* Clickjacking and enterjacking bugs of any kind (rapid clicks, holding
+  down a key, etc) ([400923](https://issues.chromium.org/issues/40092362)). Any
+  complex gestures or preconditions render these usability bugs and not security
+  issues.
 
 ## Can't impact Chrome users by default {#TOC-No-impact}
 
@@ -206,14 +221,9 @@ The crash occurred while a raw_ptr<T> object containing a dangling pointer was b
 MiraclePtr should make this crash non-exploitable in regular builds.
 ```
 
-MiraclePtr is now active on all Chrome platforms in non-renderer processes as of
-118 and on Fuchsia as of 128. Severity assessments are made with consideration
-of all active release channels (Dev, Beta, Stable, and Extended Stable); BRP is
-now enabled in all active release channels.
-
-As of 128, if a bug is marked `MiraclePtr Status:PROTECTED`, it is not
-considered a security issue. It should be converted to type:Bug and assigned to
-the appropriate engineering team as functional issue.
+If a bug is marked `MiraclePtr Status:PROTECTED`, it is not considered a
+security issue. It should be converted to type:Bug and assigned to the
+appropriate engineering team as functional issue.
 
 ## Sandboxed GPU Shader Compilers {#TOC-Sandboxed-shader-compilers}
 
