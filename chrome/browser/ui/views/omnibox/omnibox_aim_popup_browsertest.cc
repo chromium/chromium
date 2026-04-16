@@ -6,11 +6,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -101,4 +104,50 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest, ClearEventuallyDetaches) {
   // either immediately if there's no handler, or after the Mojo callback if
   // there is.
   EXPECT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       DraftTextPreservedOnTabSwitch) {
+  // 1. Setup: Ensure we are in AIM state and show the popup.
+  location_bar()->GetOmniboxController()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  presenter->Show();
+
+  auto* content =
+      static_cast<OmniboxAimPopupWebUIContent*>(presenter->GetWebUIContent());
+  ASSERT_TRUE(content);
+
+  content::WebContents* original_tab = location_bar()->GetWebContents();
+  base::WeakPtr<content::WebContents> original_tab_ptr =
+      original_tab->GetWeakPtr();
+
+  // Ensure original tab has an OmniboxState (normally created on blur).
+  static_cast<OmniboxViewViews*>(location_bar()->GetOmniboxView())
+      ->SaveStateToTab(original_tab);
+  ASSERT_NE(nullptr, original_tab->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+
+  // 2. Simulate opening a new tab (Ctrl+T scenario).
+  // We don't actually need to press Ctrl+T, just adding a new tab to the
+  // browser is enough to shift focus.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  ASSERT_NE(original_tab, location_bar()->GetWebContents());
+
+  // 3. Simulate the Mojo callback returning with draft text.
+  // We manually call the private `OnClearCallback`.
+  const std::string draft_text = "typed in composebox";
+  content->OnClearCallback(original_tab_ptr, draft_text);
+
+  // 4. Verify the text was injected into the ORIGINAL tab's state.
+  auto* state = static_cast<OmniboxState*>(
+      original_tab->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state);
+  EXPECT_EQ(base::UTF8ToUTF16(draft_text), state->model_state.user_text);
+  EXPECT_TRUE(state->model_state.user_input_in_progress);
+
+  // 5. Verify the NEW tab's Omnibox DOES NOT contain the draft text.
+  EXPECT_NE(base::UTF8ToUTF16(draft_text),
+            location_bar()->GetOmniboxView()->GetText());
 }

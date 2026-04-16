@@ -15,8 +15,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -54,6 +56,24 @@ class RenderText;
 namespace ui {
 class OSExchangeData;
 }  // namespace ui
+
+// Stores omnibox state for each tab.
+struct OmniboxState : public base::SupportsUserData::Data {
+  OmniboxState(const OmniboxEditModel::State& model_state,
+               const gfx::Range& selection,
+               const gfx::Range& saved_selection_for_focus_change);
+
+  ~OmniboxState() override;
+
+  const OmniboxEditModel::State model_state;
+
+  // We store both the actual selection and any saved selection (for when the
+  // omnibox is not focused).  This allows us to properly handle cases like
+  // selecting text, tabbing out of the omnibox, switching tabs away and back,
+  // and tabbing back into the omnibox.
+  const gfx::Range selection;
+  const gfx::Range saved_selection_for_focus_change;
+};
 
 // Views-implementation of OmniboxView.
 class OmniboxViewViews
@@ -108,6 +128,10 @@ class OmniboxViewViews
 
   // Called to clear the saved state for |web_contents|.
   void ResetTabState(content::WebContents* web_contents);
+
+  // Updates the saved state for |web_contents| with the provided |text|.
+  static void SetUserTextForTab(content::WebContents* web_contents,
+                                const std::u16string& text);
 
   // Installs the placeholder text with the name of the current default search
   // provider. For example, if Google is the default search provider, this shows

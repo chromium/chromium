@@ -58,8 +58,9 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -151,35 +152,6 @@ namespace {
 using ::metrics::OmniboxEventProto;
 using ::ui::mojom::DragOperation;
 
-// OmniboxState ---------------------------------------------------------------
-
-// Stores omnibox state for each tab.
-struct OmniboxState : public base::SupportsUserData::Data {
-  OmniboxState(const OmniboxEditModel::State& model_state,
-               const gfx::Range& selection,
-               const gfx::Range& saved_selection_for_focus_change);
-
-  ~OmniboxState() override;
-
-  const OmniboxEditModel::State model_state;
-
-  // We store both the actual selection and any saved selection (for when the
-  // omnibox is not focused).  This allows us to properly handle cases like
-  // selecting text, tabbing out of the omnibox, switching tabs away and back,
-  // and tabbing back into the omnibox.
-  const gfx::Range selection;
-  const gfx::Range saved_selection_for_focus_change;
-};
-
-OmniboxState::OmniboxState(const OmniboxEditModel::State& model_state,
-                           const gfx::Range& selection,
-                           const gfx::Range& saved_selection_for_focus_change)
-    : model_state(model_state),
-      selection(selection),
-      saved_selection_for_focus_change(saved_selection_for_focus_change) {}
-
-OmniboxState::~OmniboxState() = default;
-
 bool IsClipboardDataMarkedAsConfidential() {
   return ui::Clipboard::GetForCurrentThread()
       ->IsMarkedByOriginatorAsConfidential();
@@ -250,6 +222,16 @@ enum class OpenMatchWithKeyboardModifiers {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OpenMatchWithKeyboardModifiers)
 
 }  // namespace
+
+// OmniboxState ---------------------------------------------------------------
+OmniboxState::OmniboxState(const OmniboxEditModel::State& model_state,
+                           const gfx::Range& selection,
+                           const gfx::Range& saved_selection_for_focus_change)
+    : model_state(model_state),
+      selection(selection),
+      saved_selection_for_focus_change(saved_selection_for_focus_change) {}
+
+OmniboxState::~OmniboxState() = default;
 
 // OmniboxViewViews -----------------------------------------------------------
 
@@ -400,6 +382,28 @@ void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
   web_contents->SetUserData(OmniboxTabHelper::kOmniboxStateKey, nullptr);
+}
+
+// static
+void OmniboxViewViews::SetUserTextForTab(content::WebContents* web_contents,
+                                         const std::u16string& text) {
+  auto* existing_state = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  if (existing_state) {
+    OmniboxEditModel::State model_state(
+        /*user_input_in_progress=*/true,
+        /*user_text=*/text, existing_state->model_state.keyword,
+        existing_state->model_state.keyword_placeholder,
+        existing_state->model_state.is_keyword_hint,
+        existing_state->model_state.keyword_mode_entry_method,
+        existing_state->model_state.focus_state,
+        existing_state->model_state.autocomplete_input);
+    web_contents->SetUserData(
+        OmniboxTabHelper::kOmniboxStateKey,
+        std::make_unique<OmniboxState>(
+            model_state, existing_state->selection,
+            existing_state->saved_selection_for_focus_change));
+  }
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
