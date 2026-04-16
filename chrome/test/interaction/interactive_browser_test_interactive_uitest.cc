@@ -798,3 +798,87 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestHoverUiTest,
       WaitForState(kHoverView3State,
                    testing::Contains(ui::EventType::kMouseExited)));
 }
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDraggableViewId);
+
+// A view that records drag operations.
+class DraggableView : public views::View {
+  METADATA_HEADER(DraggableView, views::View)
+ public:
+  DraggableView() {
+    SetProperty(views::kElementIdentifierKey, kDraggableViewId);
+    SetBackground(views::CreateSolidBackground(SK_ColorRED));
+  }
+
+  int GetDragOperations(const gfx::Point& press_pt) override {
+    return ui::DragDropTypes::DRAG_MOVE;
+  }
+
+  void WriteDragData(const gfx::Point& press_pt,
+                     ui::OSExchangeData* data) override {
+    data->SetString(u"placeholder");
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(/*width=*/10, /*height=*/10);
+    data->provider().SetDragImage(gfx::ImageSkia::CreateFrom1xBitmap(bitmap),
+                                  gfx::Vector2d());
+  }
+
+  int OnDragUpdated(const ui::DropTargetEvent& event) override {
+    last_drag_position_ =
+        views::View::ConvertPointToScreen(this, event.location());
+    return ui::DragDropTypes::DRAG_MOVE;
+  }
+
+  bool CanDrop(const OSExchangeData& data) override { return true; }
+
+  gfx::Point last_drag_position() const { return last_drag_position_; }
+
+ private:
+  gfx::Point last_drag_position_;
+};
+
+BEGIN_METADATA(DraggableView)
+END_METADATA
+}  // namespace
+
+class DragInteractiveUiTest : public InteractiveBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.bounds = gfx::Rect(0, 0, 1000, 1000);
+    params.context = browser()->window()->GetNativeWindow();
+    test_widget_ = std::make_unique<views::Widget>();
+    test_widget_->Init(std::move(params));
+    draggable_view_ =
+        test_widget_->SetContentsView(std::make_unique<DraggableView>());
+    test_widget_->Show();
+  }
+
+  auto CheckLastDragPosition(gfx::Point expected_pos) {
+    return Do([&, expected_pos]() {
+      EXPECT_EQ(draggable_view_->last_drag_position(), expected_pos);
+    });
+  }
+
+ protected:
+  std::unique_ptr<views::Widget> test_widget_;
+  raw_ptr<DraggableView> draggable_view_ = nullptr;
+};
+
+// A simple test that verifies widget dragging works by dragging a view that
+// records the location of drag events.
+// TODO(crbug.com/40249472): Dragging views does not work on all platforms.
+IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, DISABLED_DragView) {
+  RunTestSequence(
+      InAnyContext(MoveMouseTo(kDraggableViewId)),
+      Log("Start drag to (100, 100)"), DragMouseTo(gfx::Point(100, 100), false),
+      CheckLastDragPosition({100, 100}), Log("Continue drag to (400, 400)"),
+      MoveMouseTo(gfx::Point(400, 400)), CheckLastDragPosition({400, 400}),
+      Log("Continue drag to (200, 200)"), MoveMouseTo(gfx::Point(200, 200)),
+      CheckLastDragPosition({200, 200}), Log("End drag"), ReleaseMouse());
+}
