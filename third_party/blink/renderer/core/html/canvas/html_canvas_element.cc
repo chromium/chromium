@@ -374,8 +374,19 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
-  CanvasResource::ReleaseCallback release_callback;
-  if (!frame->PrepareTransferableResource(out_resource, &release_callback,
+  CanvasResource::ReleaseCallback release_callback =
+      base::BindOnce([](scoped_refptr<CanvasResource>&& resource,
+                        const gpu::SyncToken& sync_token, bool lost_resource) {
+        CHECK(resource);
+        resource->WaitSyncToken(sync_token);
+        if (lost_resource) {
+          resource->NotifyResourceLost();
+        }
+
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      });
+
+  if (!frame->PrepareTransferableResource(out_resource,
                                           /*needs_verified_synctoken=*/false) ||
       *out_resource == cc_layer_->current_transferable_resource()) {
     // If the resource did not change, the release will be handled correctly

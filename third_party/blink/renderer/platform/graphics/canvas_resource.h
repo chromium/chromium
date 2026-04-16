@@ -70,6 +70,8 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   virtual void OnRefReturned(scoped_refptr<CanvasResource>&& resource) {}
 
+  static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
+
   // Returns true if the resource is still usable. It maybe not be valid in the
   // case of a context loss or if we fail to initialize the memory backing for
   // the resource.
@@ -91,7 +93,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   // Provides a TransferableResource representation of this resource to share it
   // with the compositor.
   bool PrepareTransferableResource(viz::TransferableResource*,
-                                   ReleaseCallback*,
                                    bool needs_verified_synctoken);
 
   // Issues a wait for this sync token on the context used by this resource for
@@ -146,8 +147,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
  private:
   friend class CanvasResourceProviderTest;
   friend class WebGPUMailboxTexture;
-
-  static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
 
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;

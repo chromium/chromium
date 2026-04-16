@@ -143,12 +143,8 @@ void CanvasResource::DropRefOnOwningThread(
 
 bool CanvasResource::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
-    CanvasResource::ReleaseCallback* out_callback,
     bool needs_verified_synctoken) {
   DCHECK(IsValid());
-
-  DCHECK(out_callback);
-  *out_callback = blink::BindOnce(&ReleaseFrameResources);
 
   if (!out_resource)
     return true;

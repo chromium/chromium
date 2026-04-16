@@ -275,9 +275,19 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // value will have no effect.
   const bool nearest_neighbor = false;
 
-  CanvasResource::ReleaseCallback release_callback;
+  CanvasResource::ReleaseCallback release_callback =
+      base::BindOnce([](scoped_refptr<CanvasResource>&& resource,
+                        const gpu::SyncToken& sync_token, bool lost_resource) {
+        CHECK(resource);
+        resource->WaitSyncToken(sync_token);
+        if (lost_resource) {
+          resource->NotifyResourceLost();
+        }
+
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      });
   canvas_resource->PrepareTransferableResource(
-      &resource, &release_callback,
+      &resource,
       /*needs_verified_synctoken=*/true);
 
   const viz::ResourceId resource_id = next_resource_id;
