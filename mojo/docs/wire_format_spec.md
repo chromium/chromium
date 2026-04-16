@@ -298,6 +298,46 @@ Note that since handle values should be globally unique, no index should be
 re-used within a message. Similarly, each handle in the separate vector should
 be referenced exactly once.
 
+### Remotes and Receivers
+
+The `pending_receiver` type is represented on the wire as its underlying
+message pipe [handle value](#handles).
+
+The `pending_remote` type is represented as 64-bit _pair_ of the underlying handle
+value and a 32-bit [version field](https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/cpp/bindings/pending_associated_remote.h;l=112;drc=8abea14deda089834ba142a35e8342014812df55).
+
+1. The first 32 bits of the `pending_remote` value are the handle value.
+2. The second 32 bits contain the 32-bit version value.
+3. The two values are encoded independently, but unlike
+[nullable primitives](#nullability) the two halves cannot get separated during
+packing.
+   1. Because they are independent, a null remote is encoded as `0xffffffff` in
+      the first 32 bits. The remaining 32 bits may still contain a valid version
+      number.
+4. Despite being 8 bytes, pending remotes are 4-byte-aligned.
+
+### Associated Remotes and Receivers
+
+The `pending_associated_remote` and `pending_associated_receiver` types are
+encoded like the `pending_remote` and `pending_receiver` types, but
+rather than indexing into an external array of handle values, they index into
+a separate array of interface IDs.
+
+If (and only if) a message contains an associated remote or receiver, the
+payload will be immediately followed by an `array<uint32>`, and the
+`payload_interface_ids` header field will contain a pointer to that array. The
+array is encoded like [any other array](#arrays). It is not considered part of
+the payload. Interface IDs are 32-bit integers.
+
+Associated remotes and receivers are otherwise encoded identically to their
+non-associated equivalents. Since they index into a different array, their
+indices are independent of the ones used by remote/receivers/raw handles.
+
+Note that interface IDs are generated and attached to associated endpoints as
+part of (de)serialization. That is, encoding an associated remote or receiver
+is a stateful operation and has side-effects on other parts of the system. That
+process is independent of the wire format, however.
+
 ## Other Details
 
 ### Field Packing
@@ -345,10 +385,10 @@ Because:
 1. `n16_1` fits between them, but is 2-byte-aligned and so must be placed one
 byte after `n8`.
 1. `b1` fits between `n8` and `n16_1` and starts a new bitfield in the 1s place.
-1. `b2` joins that bitfield in the 2s place.
 1. `n16_2` fits exactly between `n16_1` and `n64`.
 1. `n32` doesn't fit in the remaining 16 bytes between `n16_2` and `n64`, so it
 stays where it is.
+1. `b2` fits into the existing bitfield in the 2s place.
 
 ## Header Format
 
