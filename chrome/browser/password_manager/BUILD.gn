@@ -76,19 +76,6 @@ source_set("password_manager") {
     sources += [ "password_manager_util_win.cc" ]
   }
 
-  if (!is_android) {
-    public += [
-      "password_change/password_change_from_checkup_delegate.h",
-      "web_app_profile_switcher.h",
-    ]
-    public_deps += [
-      "//chrome/browser/actor",
-      "//chrome/browser/password_manager/password_change",
-      "//chrome/browser/web_applications",
-      "//components/webapps/common",
-    ]
-  }
-
   if (is_android) {
     public += [
       "android/account_chooser_dialog_android.h",
@@ -122,6 +109,19 @@ source_set("password_manager") {
       "//components/browser_ui/device_lock/android",
       "//components/device_reauth",
       "//components/messages/android",
+    ]
+  } else {
+    public += [
+      # TODO(crbug.com/485620841): Make delegate not dependent on client and
+      # move this back to /password_change.
+      "password_change/password_change_from_checkup_delegate.h",
+      "web_app_profile_switcher.h",
+    ]
+    public_deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/web_applications",
+      "//components/webapps/common",
     ]
   }
 
@@ -195,27 +195,6 @@ source_set("impl") {
     "//extensions/buildflags",
   ]
 
-  if (!is_android) {
-    sources += [
-      "generated_password_leak_detection_pref.cc",
-      "generated_password_leak_detection_pref.h",
-      "password_change/password_change_from_checkup_delegate.cc",
-      "password_change_delegate_impl.cc",
-      "password_change_delegate_impl.h",
-      "web_app_profile_switcher.cc",
-    ]
-    deps += [
-      "//chrome/browser/actor",
-      "//chrome/browser/password_manager/password_change",
-      "//chrome/browser/ui/passwords",
-      "//chrome/browser/ui/passwords:impl",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/user_education",
-      "//chrome/browser/ui/web_applications",
-      "//chrome/browser/web_applications",
-    ]
-  }
-
   if (is_android) {
     sources += [
       "android/account_chooser_dialog_android.cc",
@@ -251,6 +230,25 @@ source_set("impl") {
       "//components/password_manager/core/browser/leak_detection",
       "//components/plus_addresses/core/browser",
       "//components/webauthn/android",
+    ]
+  } else {
+    sources += [
+      "generated_password_leak_detection_pref.cc",
+      "generated_password_leak_detection_pref.h",
+      "password_change/password_change_from_checkup_delegate.cc",
+      "password_change_delegate_impl.cc",
+      "password_change_delegate_impl.h",
+      "web_app_profile_switcher.cc",
+    ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/passwords:impl",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
     ]
   }
 

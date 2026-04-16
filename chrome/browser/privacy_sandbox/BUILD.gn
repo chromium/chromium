@@ -447,15 +447,17 @@ if (!is_android && !is_chromeos_device) {
 if (!is_android) {
   source_set("attestations_mixin") {
     testonly = true
-    sources = [
-      "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
-      "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
-    ]
-    public_deps = [ "//chrome/test:in_process_browser_test_mixin" ]
-    deps = [
+    public =
+        [ "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h" ]
+    sources =
+        [ "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc" ]
+    public_deps = [
       "//base/test:test_support",
-      "//components/privacy_sandbox:features",
+      "//chrome/test:in_process_browser_test_mixin",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
+    ]
+    deps = [
+      "//components/privacy_sandbox:features",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//ui/views",
     ]
