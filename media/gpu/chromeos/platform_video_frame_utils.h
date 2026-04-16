@@ -86,6 +86,7 @@ MEDIA_GPU_EXPORT scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
 scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     gfx::GpuMemoryBufferHandle gmb_handle,
     VideoPixelFormat pixel_format,
+    const gfx::ColorSpace& color_space,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,

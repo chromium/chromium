@@ -499,8 +499,8 @@ NativePixmapFrameResource::CreateMappableSharedImageVideoFrame(
          "MappableSharedImage VideoFrame.";
   // Creates a MappableSI-backed frame using duplicated file descriptors.
   auto video_frame = CreateVideoFrameFromGpuMemoryBufferHandle(
-      CreateGpuMemoryBufferHandle(), format(), coded_size(), visible_rect(),
-      natural_size(), timestamp(), *buffer_usage_, sii);
+      CreateGpuMemoryBufferHandle(), format(), ColorSpace(), coded_size(),
+      visible_rect(), natural_size(), timestamp(), *buffer_usage_, sii);
   if (!video_frame) {
     DLOGF(ERROR) << "Unable to create a VideoFrame";
     return nullptr;
@@ -508,7 +508,6 @@ NativePixmapFrameResource::CreateMappableSharedImageVideoFrame(
 
   // Copies VideoFrameMetadata from |this| to the output VideoFrame.
   video_frame->metadata().MergeMetadataFrom(metadata());
-  video_frame->set_color_space(ColorSpace());
   video_frame->set_hdr_metadata(hdr_metadata());
 
   // Adds a reference to |this| from the output VideoFrame to make sure the

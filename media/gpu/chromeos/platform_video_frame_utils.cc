@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -279,6 +280,9 @@ class GbmDeviceWrapper {
   std::unique_ptr<ui::GbmDevice> gbm_device_ GUARDED_BY(lock_);
 };
 
+BASE_FEATURE(kPlatformVideoFrameUseCorrectColorSpace,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 std::optional<gfx::NativePixmapHandle> AllocateNativePixmapHandle(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
@@ -385,13 +389,14 @@ scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
   }
 
   return CreateVideoFrameFromGpuMemoryBufferHandle(
-      std::move(gmb_handle), pixel_format, coded_size, visible_rect,
-      natural_size, timestamp, buffer_usage, sii);
+      std::move(gmb_handle), pixel_format, gfx::ColorSpace(), coded_size,
+      visible_rect, natural_size, timestamp, buffer_usage, sii);
 }
 
 scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     gfx::GpuMemoryBufferHandle gmb_handle,
     VideoPixelFormat pixel_format,
+    const gfx::ColorSpace& color_space,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
@@ -407,8 +412,15 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
 
   const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gfx::ColorSpace color_space_to_use = color_space;
+  if (!color_space.IsValid() &&
+      base::FeatureList::IsEnabled(kPlatformVideoFrameUseCorrectColorSpace)) {
+    color_space_to_use = si_format->is_multi_plane()
+                             ? gfx::ColorSpace::CreateREC709()
+                             : gfx::ColorSpace::CreateSRGB();
+  }
   auto shared_image = sii->CreateSharedImage(
-      {*si_format, coded_size, gfx::ColorSpace(),
+      {*si_format, coded_size, color_space_to_use,
        gpu::SharedImageUsageSet(si_usage), "PlatformVideoFrameUtils"},
       gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
 
@@ -419,6 +431,8 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
   if (!video_frame) {
     return nullptr;
   }
+
+  video_frame->set_color_space(color_space_to_use);
 
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
   // TODO(crbug.com/40201271): Add DISJOINT support.
