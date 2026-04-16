@@ -231,3 +231,10 @@ external/wpt/wai-aria/manual [ Skip ]
 # This is a reference file for a non-denylisted test, so it should be included
 # despite a general exclusion of `css/CSS2/syntax/`.
 external/wpt/css/CSS2/syntax/character-encoding-041-ref.xht [ Pass ]
+
+# v8 already has test262 coverage, so testing in Chromium would be redundant.
+# Also, there's not enough infrastructure capacity to run all 50k+ tests.
+external/wpt/infrastructure/metadata/infrastructure/test262 [ Skip ]
+external/wpt/infrastructure/test262 [ Skip ]
+external/wpt/resources/test262 [ Skip ]
+external/wpt/third_party/test262 [ Skip ]

@@ -11,8 +11,7 @@
 <div id="wrapper"></div>
 
 <script>
-  // Attribute serialization order follows the ShadowRoot IDL attribute order:
-  // mode, delegatesFocus, slotAssignment, clonable, serializable
+  // Serialization order: mode, delegatesFocus, serializable, slotAssignment, clonable
 
   test((t) => {
     t.add_cleanup(() => wrapper.replaceChildren());
@@ -23,7 +22,7 @@
     assert_equals(host.shadowRoot.slotAssignment, "manual");
     assert_equals(
       host.getHTML({ serializableShadowRoots: true }),
-      `<template shadowrootmode="open" shadowrootslotassignment="manual" shadowrootserializable=""></template>`,
+      `<template shadowrootmode="open" shadowrootserializable="" shadowrootslotassignment="manual"></template>`,
     );
   }, "shadowrootslotassignment=manual is serialized and appears before shadowrootclonable and shadowrootserializable");
 
@@ -49,7 +48,7 @@
     assert_equals(host.shadowRoot.slotAssignment, "manual");
     assert_equals(
       host.getHTML({ serializableShadowRoots: true }),
-      `<template shadowrootmode="open" shadowrootdelegatesfocus="" shadowrootslotassignment="manual" shadowrootclonable="" shadowrootserializable=""></template>`,
+      `<template shadowrootmode="open" shadowrootdelegatesfocus="" shadowrootserializable="" shadowrootslotassignment="manual" shadowrootclonable=""></template>`,
     );
   }, "shadowrootslotassignment=manual serializes between shadowrootdelegatesfocus and shadowrootclonable");
 </script>
