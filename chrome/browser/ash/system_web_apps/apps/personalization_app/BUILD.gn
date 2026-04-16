@@ -102,6 +102,7 @@ static_library("personalization_app") {
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared",

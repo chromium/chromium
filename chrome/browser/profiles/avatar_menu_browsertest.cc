@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -108,10 +110,11 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
 
   // A new browser is opened.
   EXPECT_EQ(chrome::GetBrowserCount(profile), 1U);
-  Browser* new_browser = chrome::FindBrowserWithProfile(profile);
+  BrowserWindowInterface* new_browser =
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser);
   content::WebContents* web_contents =
-      new_browser->tab_strip_model()->GetActiveWebContents();
+      new_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(web_contents->GetVisibleURL(),
             chrome::GetSettingsUrl(chrome::kManageProfileSubPage));
 }

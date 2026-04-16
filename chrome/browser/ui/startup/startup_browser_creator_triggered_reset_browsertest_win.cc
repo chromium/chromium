@@ -18,9 +18,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
@@ -261,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   }
 
   BrowserWindowInterface* other_profile_browser =
-      chrome::FindBrowserWithProfile(other_profile_ptr);
+      ProfileBrowserCollection::GetForProfile(other_profile_ptr)
+          ->GetLastActiveBrowser();
   ASSERT_NE(nullptr, other_profile_browser);
 
   // Check for the expected reset dialog in the second browser too.

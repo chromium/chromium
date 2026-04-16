@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -1628,7 +1629,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
   ash::NewWindowDelegate::GetInstance()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false);
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithProfile(primary_user_profile);
+      ProfileBrowserCollection::GetForProfile(primary_user_profile)
+          ->GetLastActiveBrowser();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
   BrowserFrameViewChromeOSTestApi test_api(frame_view);

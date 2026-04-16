@@ -51,6 +51,7 @@ static_library("mahi") {
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/browser_window",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",

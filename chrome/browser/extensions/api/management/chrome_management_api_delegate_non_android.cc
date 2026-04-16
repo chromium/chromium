@@ -19,9 +19,10 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -300,8 +301,10 @@ bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
     ManagementCreateAppShortcutFunction* function,
     const Extension* extension,
     std::string* error) const {
-  Browser* browser = chrome::FindBrowserWithProfile(
-      Profile::FromBrowserContext(function->browser_context()));
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(
+          Profile::FromBrowserContext(function->browser_context()))
+          ->GetLastActiveBrowser();
   if (!browser) {
     // Shouldn't happen if we have user gesture.
     *error = extension_management_api_constants::kNoBrowserToCreateShortcut;
@@ -309,7 +312,7 @@ bool ChromeManagementAPIDelegate::CreateAppShortcutFunctionDelegate(
   }
 
   chrome::ShowCreateChromeAppShortcutsDialog(
-      browser->window()->GetNativeWindow(), browser->profile(), extension,
+      browser->GetWindow()->GetNativeWindow(), browser->GetProfile(), extension,
       base::BindOnce(
           &ManagementCreateAppShortcutFunction::OnCloseShortcutPrompt,
           function));

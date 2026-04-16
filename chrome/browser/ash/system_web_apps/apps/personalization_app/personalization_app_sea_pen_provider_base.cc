@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
@@ -374,7 +374,8 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
 
   base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
   chrome::ShowFeedbackPage(
-      /*browser=*/chrome::FindBrowserWithProfile(profile_),
+      /*browser=*/ProfileBrowserCollection::GetForProfile(profile_)
+          ->GetLastActiveBrowser(),
       /*source=*/feedback::kFeedbackSourceAI,
       /*description_template=*/feedback_text,
       /*description_placeholder_text=*/

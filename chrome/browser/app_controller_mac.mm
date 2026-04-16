@@ -1384,7 +1384,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         // Create a new browser window (if necessary) and navigate to the
         // downloads page if the user chooses to wait.
         BrowserWindowInterface* browser =
-            chrome::FindBrowserWithProfile(profile);
+            ProfileBrowserCollection::GetForProfile(profile)
+                ->GetLastActiveBrowser();
         if (!browser) {
           browser = Browser::Create(Browser::CreateParams(profile, true));
           browser->GetWindow()->Show();
