@@ -1383,7 +1383,7 @@ void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
   }
 }
 
-void CanvasResourceProviderSharedImage::OnMemoryDump(
+void Canvas2DResourceProviderSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   if (is_software_) {
     // This class creates software SharedImages only on demand and might not
@@ -2272,6 +2272,25 @@ base::ByteSize CanvasNon2DResourceProviderSharedImage::EstimatedSizeInBytes()
     result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
   }
   return result;
+}
+
+void CanvasNon2DResourceProviderSharedImage::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (is_software_) {
+    // This class creates software SharedImages only on demand and might not
+    // have one here - invoke the base class implementation of this method
+    // instead.
+    CanvasResourceProvider::OnMemoryDump(pmd);
+    return;
+  }
+
+  std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
+                                        reinterpret_cast<uintptr_t>(this));
+
+  resource()->OnMemoryDump(pmd, path);
+
+  std::string cached_path = path + "/cached";
+  image_pool_->OnMemoryDump(pmd, cached_path);
 }
 
 bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(

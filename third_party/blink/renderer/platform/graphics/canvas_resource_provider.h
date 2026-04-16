@@ -426,7 +426,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override = 0;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
 
   // Indicates that the compositing path is single buffered, meaning that
   // ProduceCanvasResource() return a reference to the same resource each time,
@@ -569,6 +568,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
     return num_inflight_resources_;
   }
   base::ByteSize EstimatedSizeInBytes() const override;
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
 
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
@@ -701,6 +701,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
     return num_inflight_resources_;
   }
   base::ByteSize EstimatedSizeInBytes() const override;
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
 
   void EnsureWriteAccess() override;
   void EndWriteAccess() override;
