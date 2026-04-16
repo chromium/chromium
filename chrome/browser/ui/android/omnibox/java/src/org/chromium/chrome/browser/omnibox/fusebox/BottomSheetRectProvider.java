@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.RectProvider;
 
 /** A RectProvider that dynamically tracks the Activity's bottom bounds. */
@@ -41,6 +42,18 @@ class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChang
                 WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
         var bounds = new Rect(windowMetrics.getBounds());
         bounds.top = bounds.bottom; // Anchor to the bottom
+
+        // Apply maximum width constraint and center horizontally
+        int maxWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_max_width);
+        if (bounds.width() > maxWidth) {
+            int centerX = bounds.centerX();
+            int halfWidth = maxWidth / 2;
+            bounds.left = centerX - halfWidth;
+            bounds.right = centerX + halfWidth;
+        }
 
         if (!bounds.equals(getRect())) {
             setRect(bounds);

@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.window.layout.WindowMetricsCalculator;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +24,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link BottomSheetRectProvider}. */
@@ -63,5 +66,28 @@ public class BottomSheetRectProviderUnitTest {
     public void testDestroy_removesListener() {
         mProvider.destroy();
         verify(mAnchorView).removeOnLayoutChangeListener(mProvider);
+    }
+
+    @Test
+    @Config(qualifiers = "w800dp-h1000dp")
+    public void testUpdateRect_constrainsMaxWidth() {
+        // The window width is 800dp. Max width is 600dp.
+        // Trigger updateRect via layout change.
+        mProvider.onLayoutChange(mAnchorView, 0, 0, 800, 1000, 0, 0, 0, 0);
+        Rect r = mProvider.getRect();
+
+        int expectedMaxWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_max_width);
+        var windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
+        var bounds = windowMetrics.getBounds();
+
+        assertEquals("Width should be constrained to max width", expectedMaxWidthPx, r.width());
+        int centerX = bounds.centerX();
+        int halfWidth = expectedMaxWidthPx / 2;
+        assertEquals("Left should be centered", centerX - halfWidth, r.left);
+        assertEquals("Right should be centered", centerX + halfWidth, r.right);
     }
 }
