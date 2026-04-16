@@ -23,6 +23,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final float mFullHeightRatio;
     private final GlowSpec mGlowSpec;
+    private final int mPeekViewHeight;
 
     /**
      * Constructor.
@@ -38,6 +39,10 @@ public class TabBottomSheetContent implements BottomSheetContent {
                 new GlowSpec(
                         mContentView.getContext().getColor(R.color.default_bg_color_blue),
                         GlowSpec.ShadowSize.LONG);
+        mPeekViewHeight =
+                mContentView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
     }
 
     @Override
@@ -98,8 +103,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getPeekHeight() {
-        // TODO(crbug.com/489070365): Update min height based on java toolbar or webUi header.
-        return Math.round(mContentView.getHeight() * 0.1f);
+        return mPeekViewHeight;
     }
 
     @Override
