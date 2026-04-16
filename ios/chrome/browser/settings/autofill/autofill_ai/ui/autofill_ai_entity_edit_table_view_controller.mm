@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              target:self
                              action:@selector(didTapCancel)];
     [self setupBottomSaveButton];
+    [self updateSaveButtonState];
   } else {
     self.navigationItem.rightBarButtonItem = [self editButtonItem];
   }
@@ -194,6 +195,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self loadModel];
     [self.tableView reloadData];
   }
+  [self updateSaveButtonState];
 }
 
 - (void)setEditingAllowed:(BOOL)editingAllowed {
@@ -219,6 +221,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self updateAccessoryAndSelectionStyleForCountryItem:countryItem];
   }
   [self reconfigureCellsForItems:@[ item ]];
+  [self updateSaveButtonState];
 }
 
 - (void)reloadData {
@@ -433,9 +436,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewTextEditItem {
-  // We don't have to monitor every keystroke. When the user finishes editing,
-  // switches to another field, or hits the Done button or Save button, that
-  // will trigger the validation.
+  // We don't have to monitor every keystroke for full validation, but we
+  // update the save button state.
+  [self updateSaveButtonState];
 }
 
 - (void)tableViewItemDidEndEditing:
@@ -445,10 +448,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(
             tableViewTextEditItem);
 
-    const autofill::DenseSet<autofill::AttributeType> presentAttributes =
-        [self presentAttributes];
     const autofill::DenseSet<autofill::AttributeType> missingFields =
-        [self.mutator getMissingRequiredFieldsFor:presentAttributes];
+        [self missingRequiredFields];
 
     BOOL isValid = !missingFields.contains(
         autofill::AttributeType(editItem.attributeType));
@@ -456,6 +457,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       editItem.hasValidValueStatus = isValid;
       [self reconfigureCellsForItems:@[ editItem ]];
     }
+    [self updateSaveButtonState];
   }
 }
 
@@ -487,11 +489,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return present;
 }
 
-- (BOOL)validateFields {
+- (autofill::DenseSet<autofill::AttributeType>)missingRequiredFields {
   const autofill::DenseSet<autofill::AttributeType> presentAttributes =
       [self presentAttributes];
+  return [self.mutator getMissingRequiredFieldsFor:presentAttributes];
+}
+
+- (void)updateSaveButtonState {
+  if (_saveButton) {
+    _saveButton.enabled = [self validateFields];
+  }
+}
+
+- (BOOL)validateFields {
   const autofill::DenseSet<autofill::AttributeType> missingFields =
-      [self.mutator getMissingRequiredFieldsFor:presentAttributes];
+      [self missingRequiredFields];
 
   NSMutableArray<TableViewItem*>* itemsToReconfigure =
       [[NSMutableArray alloc] init];
@@ -534,6 +546,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     countryItem.editingAccessoryType = UITableViewCellAccessoryNone;
     countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
   }
+}
+
+- (UIButton*)saveButton {
+  return _saveButton;
 }
 
 @end
