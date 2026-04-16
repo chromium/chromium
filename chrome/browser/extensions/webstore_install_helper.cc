@@ -8,13 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/gfx/image/image.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -43,7 +44,7 @@ WebstoreInstallHelper::WebstoreInstallHelper(Delegate* delegate,
 WebstoreInstallHelper::~WebstoreInstallHelper() = default;
 
 void WebstoreInstallHelper::Start(
-    network::mojom::URLLoaderFactory* loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -52,9 +53,7 @@ void WebstoreInstallHelper::Start(
   if (icon_url_.is_empty()) {
     icon_decode_complete_ = true;
   } else {
-    // No existing |icon_fetcher_| to avoid unbalanced AddRef().
     CHECK(!icon_fetcher_.get());
-    AddRef();  // Balanced in OnFetchComplete().
 
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("webstore_install_helper", R"(
@@ -83,33 +82,49 @@ void WebstoreInstallHelper::Start(
               "Not implemented, considered not useful."
           })");
 
-    icon_fetcher_ =
-        std::make_unique<BitmapFetcher>(icon_url_, this, traffic_annotation);
-    icon_fetcher_->Init(
-        net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-        network::mojom::CredentialsMode::kOmit);
-    icon_fetcher_->Start(loader_factory);
+    icon_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
+        std::make_unique<ImageDecoderImpl>(), loader_factory);
+    image_fetcher::ImageFetcherParams params(traffic_annotation,
+                                             "WebstoreInstallHelper");
+    icon_fetcher_->FetchImage(
+        icon_url_,
+        base::BindOnce(&WebstoreInstallHelper::OnFetchComplete, this),
+        std::move(params));
   }
 }
 
-void WebstoreInstallHelper::OnFetchComplete(const GURL& url,
-                                            const SkBitmap* image) {
+void WebstoreInstallHelper::OnFetchComplete(
+    const gfx::Image& fetched_image,
+    const image_fetcher::RequestMetadata& metadata) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  // OnFetchComplete should only be called as icon_fetcher_ delegate to avoid
-  // unbalanced Release().
+  // OnFetchComplete should only be invoked as a callback of `icon_fetcher_`.
   CHECK(icon_fetcher_.get());
 
-  if (image)
-    icon_ = *image;
-  icon_decode_complete_ = true;
-  if (icon_.empty()) {
+  if (metadata.http_response_code ==
+          image_fetcher::RequestMetadata::ResponseCode::RESPONSE_CODE_INVALID ||
+      fetched_image.IsEmpty()) {
     error_ = kImageDecodeError;
     parse_error_ = Delegate::ICON_ERROR;
+  } else {
+    icon_ = fetched_image.AsBitmap();
   }
-  icon_fetcher_.reset();
+
+  icon_decode_complete_ = true;
 
   ReportResultsIfComplete();
-  Release();  // Balanced in Start().
+
+  // `icon_fetcher_` must remain valid after returning to the caller so that
+  // any ongoing work can complete safely.
+  // Keep this object a reference to `this` until ReleaseIconFetcher runs.
+  // Otherwise, this object could be destroyed immediately after this point.
+  // Note that it may be deleted as soon as the callback executes.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebstoreInstallHelper::ReleaseIconFetcher, this));
+}
+
+void WebstoreInstallHelper::ReleaseIconFetcher() {
+  icon_fetcher_.reset();
 }
 
 void WebstoreInstallHelper::OnJSONParsed(

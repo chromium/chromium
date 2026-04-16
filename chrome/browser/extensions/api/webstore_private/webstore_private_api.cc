@@ -486,12 +486,11 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
   scoped_active_install_ =
       std::make_unique<ScopedActiveInstall>(tracker, install_data);
 
-  network::mojom::URLLoaderFactory* loader_factory = nullptr;
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory = nullptr;
   if (!icon_url.is_empty()) {
     loader_factory = browser_context()
                          ->GetDefaultStoragePartition()
-                         ->GetURLLoaderFactoryForBrowserProcess()
-                         .get();
+                         ->GetURLLoaderFactoryForBrowserProcess();
   }
 
   auto helper = base::MakeRefCounted<WebstoreInstallHelper>(

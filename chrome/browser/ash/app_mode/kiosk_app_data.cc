@@ -204,7 +204,7 @@ class KioskAppData::WebstoreDataParser
   void Start(const std::string& app_id,
              const std::string& manifest,
              const GURL& icon_url,
-             network::mojom::URLLoaderFactory* loader_factory) {
+             scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
     scoped_refptr<extensions::WebstoreInstallHelper> webstore_helper =
         new extensions::WebstoreInstallHelper(this, app_id, manifest, icon_url);
     webstore_helper->Start(loader_factory);
@@ -505,7 +505,7 @@ void KioskAppData::OnFetchItemSnippetParseSuccess(
   // WebstoreDataParser deletes itself when done.
   (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
       ->Start(app_id(), item_snippet.manifest(), icon_url,
-              shared_url_loader_factory_.get());
+              shared_url_loader_factory_);
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(

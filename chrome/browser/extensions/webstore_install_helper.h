@@ -12,21 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
-
-class BitmapFetcher;
-
-namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}
-}  // namespace network
 
 namespace extensions {
 
@@ -34,8 +27,7 @@ namespace extensions {
 // sending work to the utility process for parsing manifests and
 // fetching/decoding icon data. Clients must implement the
 // WebstoreInstallHelper::Delegate interface to receive the parsed data.
-class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
-                              public BitmapFetcherDelegate {
+class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper> {
  public:
   class Delegate {
    public:
@@ -63,18 +55,22 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
                         const std::string& id,
                         const std::string& manifest,
                         const GURL& icon_url);
-  void Start(network::mojom::URLLoaderFactory* loader_factory);
+  void Start(scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
  private:
   friend class base::RefCounted<WebstoreInstallHelper>;
 
-  ~WebstoreInstallHelper() override;
+  ~WebstoreInstallHelper();
 
   // Callback for the DataDecoder.
   void OnJSONParsed(data_decoder::DataDecoder::ValueOrError result);
 
-  // Implementing the BitmapFetcherDelegate interface.
-  void OnFetchComplete(const GURL& url, const SkBitmap* image) override;
+  void OnFetchComplete(const gfx::Image& fetched_image,
+                       const image_fetcher::RequestMetadata& metadata);
+
+  // This is invoked as a callback holding a retained reference to `this`.
+  // The object may be destroyed immediately after this method returns.
+  void ReleaseIconFetcher();
 
   void ReportResultsIfComplete();
 
@@ -90,7 +86,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
   // If `icon_url_` is non-empty, it needs to be fetched and decoded into an
   // SkBitmap.
   GURL icon_url_;
-  std::unique_ptr<BitmapFetcher> icon_fetcher_;
+  std::unique_ptr<image_fetcher::ImageFetcher> icon_fetcher_;
 
   // Flags for whether we're done doing icon decoding and manifest parsing.
   bool icon_decode_complete_;
