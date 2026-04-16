@@ -39,10 +39,6 @@ MachineLevelUserCloudPolicyManager::MachineLevelUserCloudPolicyManager(
                          std::move(extension_install_store),
                          task_runner,
                          std::move(network_connection_tracker_getter)),
-      user_store_(static_cast<MachineLevelUserCloudPolicyStore*>(
-          CloudPolicyManager::store())),
-      extension_install_store_(static_cast<MachineLevelUserCloudPolicyStore*>(
-          CloudPolicyManager::extension_install_store())),
       external_data_manager_(std::move(external_data_manager)),
       policy_dir_(policy_dir) {}
 
@@ -81,23 +77,32 @@ void MachineLevelUserCloudPolicyManager::RemoveClientObserver(
     client()->RemoveObserver(observer);
 }
 
+MachineLevelUserCloudPolicyStore* MachineLevelUserCloudPolicyManager::store() {
+  return static_cast<MachineLevelUserCloudPolicyStore*>(
+      CloudPolicyManager::store());
+}
+
+MachineLevelUserCloudPolicyStore*
+MachineLevelUserCloudPolicyManager::extension_install_store() {
+  return static_cast<MachineLevelUserCloudPolicyStore*>(
+      CloudPolicyManager::extension_install_store());
+}
+
 void MachineLevelUserCloudPolicyManager::DisconnectAndRemovePolicy() {
   if (external_data_manager_)
     external_data_manager_->Disconnect();
 
-  core()->Disconnect();
-
   // store_->Clear() will publish the updated, empty policy. The component
   // policy service must be cleared before OnStoreLoaded() is issued, so that
   // component policies are also empty at CheckAndPublishPolicy().
-  ClearAndDestroyComponentCloudPolicyService();
+  CloudPolicyManager::DisconnectAndRemovePolicy();
 
-  // When the |user_store_| is cleared, it informs the |external_data_manager_|
+  // When the store is cleared, it informs the |external_data_manager_|
   // that all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
-  user_store_->Clear();
-  if (extension_install_store_) {
-    extension_install_store_->Clear();
+  store()->Clear();
+  if (extension_install_store()) {
+    extension_install_store()->Clear();
   }
 }
 

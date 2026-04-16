@@ -131,6 +131,14 @@ void CloudPolicyManager::InitExtensionInstallPolicies(
   }
 }
 
+void CloudPolicyManager::DisconnectAndRemovePolicy() {
+  core_.Disconnect();
+  if (extension_install_core_) {
+    extension_install_core_->Disconnect();
+  }
+  ClearAndDestroyComponentCloudPolicyService();
+}
+
 void CloudPolicyManager::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
 
@@ -187,17 +195,13 @@ void CloudPolicyManager::RefreshPolicies(PolicyFetchReason reason) {
     OnRefreshComplete(false);
     return;
   }
-  if (service()) {
-    service()->RefreshPolicy(
-        base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
-                       base::Unretained(this)),
-        reason);
-  }
-  if (extension_install_service()) {
-    extension_install_service()->RefreshPolicy(
-        base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
-                       base::Unretained(this)),
-        reason);
+  for (CloudPolicyService* service : services) {
+    if (service) {
+      service->RefreshPolicy(
+          base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
+                         base::Unretained(this)),
+          reason);
+    }
   }
 }
 

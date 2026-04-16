@@ -83,7 +83,9 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // ConfigurationPolicyProvider:
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
-  UserCloudPolicyStore* user_store() const { return user_store_; }
+  UserCloudPolicyStore* store();
+
+  UserCloudPolicyStore* extension_install_store();
 
  private:
   // CloudPolicyManager:
@@ -93,12 +95,6 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   void StartRecordingMetric();
 
   bool policies_required_ = false;
-
-  // Typed pointer to the store owned by CloudPolicyManager.
-  raw_ptr<UserCloudPolicyStore> user_store_;
-
-  // Typed pointer to the extension install store owned by CloudPolicyManager.
-  raw_ptr<UserCloudPolicyStore> extension_install_store_;
 
   // Path where policy for components will be cached.
   base::FilePath component_policy_cache_path_;

@@ -64,9 +64,11 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
   // refreshing the cached cloud policy).
   void DisconnectAndRemovePolicy() override;
 
+  ProfileCloudPolicyStore* store();
+
+  ProfileCloudPolicyStore* extension_install_store();
+
  private:
-  raw_ptr<ProfileCloudPolicyStore> profile_store_;
-  raw_ptr<ProfileCloudPolicyStore> extension_install_store_;
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
   const base::FilePath component_policy_cache_path_;
   bool is_dasherless_;

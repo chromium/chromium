@@ -93,7 +93,7 @@ class POLICY_EXPORT CloudPolicyManager
 
   // Shuts down the CloudPolicyManager (removes and stops refreshing any
   // cached cloud policy).
-  virtual void DisconnectAndRemovePolicy() {}
+  virtual void DisconnectAndRemovePolicy();
 
   // ConfigurationPolicyProvider:
   void Init(SchemaRegistry* registry) override;

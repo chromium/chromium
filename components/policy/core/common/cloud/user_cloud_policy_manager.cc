@@ -55,9 +55,6 @@ UserCloudPolicyManager::UserCloudPolicyManager(
                          std::move(extension_install_user_store),
                          task_runner,
                          network_connection_tracker_getter),
-      user_store_(static_cast<UserCloudPolicyStore*>(store())),
-      extension_install_store_(
-          static_cast<UserCloudPolicyStore*>(extension_install_store())),
       component_policy_cache_path_(component_policy_cache_path),
       external_data_manager_(std::move(external_data_manager)) {}
 
@@ -114,9 +111,9 @@ void UserCloudPolicyManager::SetSigninAccountId(const AccountId& account_id) {
     StartRecordingMetric();
   }
 
-  user_store_->SetSigninAccountId(account_id);
-  if (extension_install_store_) {
-    extension_install_store_->SetSigninAccountId(account_id);
+  store()->SetSigninAccountId(account_id);
+  if (extension_install_store()) {
+    extension_install_store()->SetSigninAccountId(account_id);
   }
 }
 
@@ -152,22 +149,18 @@ void UserCloudPolicyManager::Connect(
 void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   if (external_data_manager_)
     external_data_manager_->Disconnect();
-  core()->Disconnect();
-  if (extension_install_core()) {
-    extension_install_core()->Disconnect();
-  }
 
   // store_->Clear() will publish the updated, empty policy. The component
   // policy service must be cleared before OnStoreLoaded() is issued, so that
   // component policies are also empty at CheckAndPublishPolicy().
-  ClearAndDestroyComponentCloudPolicyService();
+  CloudPolicyManager::DisconnectAndRemovePolicy();
 
   // When the |user_store_| is cleared, it informs the |external_data_manager_|
   // that all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
-  user_store_->Clear();
-  if (extension_install_store_) {
-    extension_install_store_->Clear();
+  store()->Clear();
+  if (extension_install_store()) {
+    extension_install_store()->Clear();
   }
   SetPoliciesRequired(false, PolicyFetchReason::kDisconnect);
 }
@@ -192,6 +185,15 @@ bool UserCloudPolicyManager::IsFirstPolicyLoadComplete(
     PolicyDomain domain) const {
   return !policies_required_ ||
          CloudPolicyManager::IsFirstPolicyLoadComplete(domain);
+}
+
+UserCloudPolicyStore* UserCloudPolicyManager::store() {
+  return static_cast<UserCloudPolicyStore*>(CloudPolicyManager::store());
+}
+
+UserCloudPolicyStore* UserCloudPolicyManager::extension_install_store() {
+  return static_cast<UserCloudPolicyStore*>(
+      CloudPolicyManager::extension_install_store());
 }
 
 void UserCloudPolicyManager::StartRecordingMetric() {

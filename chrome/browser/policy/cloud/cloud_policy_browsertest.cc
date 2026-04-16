@@ -371,7 +371,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     base::RunLoop run_loop;
     profile()
         ->GetUserCloudPolicyManager()
-        ->user_store()
+        ->store()
         ->background_task_runner()
         ->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
                           base::Milliseconds(0));
