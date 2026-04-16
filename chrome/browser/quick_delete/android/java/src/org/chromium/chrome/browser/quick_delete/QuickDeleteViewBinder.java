@@ -16,9 +16,11 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegate.DomainVisitsData;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
@@ -36,7 +38,8 @@ class QuickDeleteViewBinder {
                     model.get(QuickDeleteProperties.CONTEXT),
                     quickDeleteView,
                     model.get(QuickDeleteProperties.DOMAIN_VISITED_DATA),
-                    model.get(QuickDeleteProperties.TIME_PERIOD));
+                    model.get(QuickDeleteProperties.TIME_PERIOD),
+                    model.get(QuickDeleteProperties.IS_HISTORY_DELETION_ALLOWED));
         } else if (QuickDeleteProperties.CLOSED_TABS_COUNT == propertyKey
                 || QuickDeleteProperties.TIME_PERIOD == propertyKey) {
             if (model.get(QuickDeleteProperties.HAS_MULTI_WINDOWS)) {
@@ -58,8 +61,48 @@ class QuickDeleteViewBinder {
             updateBrowsingHistoryRowIfPending(
                     model.get(QuickDeleteProperties.CONTEXT),
                     quickDeleteView,
-                    model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
+                    model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING),
+                    model.get(QuickDeleteProperties.IS_HISTORY_DELETION_ALLOWED));
+        } else if (QuickDeleteProperties.IS_HISTORY_DELETION_ALLOWED == propertyKey) {
+            if (model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING)) {
+                updateBrowsingHistoryRowIfPending(
+                        model.get(QuickDeleteProperties.CONTEXT),
+                        quickDeleteView,
+                        model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING),
+                        model.get(QuickDeleteProperties.IS_HISTORY_DELETION_ALLOWED));
+            } else {
+                updateBrowsingHistoryRow(
+                        model.get(QuickDeleteProperties.CONTEXT),
+                        quickDeleteView,
+                        model.get(QuickDeleteProperties.DOMAIN_VISITED_DATA),
+                        model.get(QuickDeleteProperties.TIME_PERIOD),
+                        model.get(QuickDeleteProperties.IS_HISTORY_DELETION_ALLOWED));
+            }
         }
+    }
+
+    private static void disableHistoryRow(Context context, View quickDeleteView) {
+        ViewGroup historyRow = quickDeleteView.findViewById(R.id.quick_delete_history_row);
+        TextView title = historyRow.findViewById(R.id.quick_delete_history_row_title);
+        TextView subtitle = historyRow.findViewById(R.id.quick_delete_history_row_subtitle);
+        ImageView icon = historyRow.findViewById(R.id.quick_delete_history_row_icon);
+        View managedDisclaimer =
+                historyRow.findViewById(R.id.quick_delete_managed_disclaimer_text);
+
+        title.setEnabled(false);
+        // Set the default title as we don't want to show the last visited domain when disabled.
+        title.setText(context.getString(R.string.clear_history_title));
+
+        subtitle.setVisibility(GONE);
+
+        managedDisclaimer.setVisibility(VISIBLE);
+        TooltipCompat.setTooltipText(
+                managedDisclaimer, context.getString(R.string.managed_by_your_organization));
+
+        final @ColorInt int color =
+                ContextCompat.getColor(historyRow.getContext(), R.color.default_icon_color_disabled);
+
+        icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
     private static void disableTabsRow(Context context, View quickDeleteView) {
@@ -97,12 +140,25 @@ class QuickDeleteViewBinder {
     }
 
     private static void updateBrowsingHistoryRowIfPending(
-            Context context, View quickDeleteView, boolean isPending) {
-        if (!isPending) return;
+            Context context, View quickDeleteView, boolean isPending, boolean isAllowed) {
+        if (!isAllowed) {
+            disableHistoryRow(context, quickDeleteView);
+            return;
+        }
+
         ViewGroup quickDeleteHistoryRow =
                 quickDeleteView.findViewById(R.id.quick_delete_history_row);
         TemplatePreservingTextView title =
                 quickDeleteHistoryRow.findViewById(R.id.quick_delete_history_row_title);
+
+        title.setEnabled(true);
+        ImageView icon = quickDeleteHistoryRow.findViewById(R.id.quick_delete_history_row_icon);
+        icon.setColorFilter(null);
+        View managedDisclaimer =
+                quickDeleteHistoryRow.findViewById(R.id.quick_delete_managed_disclaimer_text);
+        managedDisclaimer.setVisibility(GONE);
+
+        if (!isPending) return;
         title.setTemplate(null);
         title.setText(context.getString(R.string.quick_delete_dialog_data_pending));
         quickDeleteHistoryRow.setVisibility(VISIBLE);
@@ -111,13 +167,26 @@ class QuickDeleteViewBinder {
     private static void updateBrowsingHistoryRow(
             Context context,
             View quickDeleteView,
-            DomainVisitsData domainVisitsData,
-            @TimePeriod int timePeriod) {
+            @Nullable DomainVisitsData domainVisitsData,
+            @TimePeriod int timePeriod,
+            boolean isAllowed) {
+        if (!isAllowed) {
+            disableHistoryRow(context, quickDeleteView);
+            return;
+        }
+        if (domainVisitsData == null) return;
         String browsingHistoryRowTitleTemplate = null;
         int domainsCount = domainVisitsData.mDomainsCount;
         ViewGroup historyRow = quickDeleteView.findViewById(R.id.quick_delete_history_row);
         TemplatePreservingTextView title =
                 historyRow.findViewById(R.id.quick_delete_history_row_title);
+
+        title.setEnabled(true);
+        ImageView icon = historyRow.findViewById(R.id.quick_delete_history_row_icon);
+        icon.setColorFilter(null);
+        View managedDisclaimer =
+                historyRow.findViewById(R.id.quick_delete_managed_disclaimer_text);
+        managedDisclaimer.setVisibility(GONE);
 
         if (domainsCount == 0) {
             title.setTemplate(browsingHistoryRowTitleTemplate);

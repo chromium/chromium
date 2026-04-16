@@ -26,6 +26,8 @@ class QuickDeleteProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_DOMAIN_VISITED_DATA_PENDING =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_HISTORY_DELETION_ALLOWED =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.ReadableObjectPropertyKey<Context> CONTEXT =
             new PropertyModel.ReadableObjectPropertyKey<>();
@@ -39,6 +41,7 @@ class QuickDeleteProperties {
         IS_SIGNED_IN,
         IS_SYNCING_HISTORY,
         IS_DOMAIN_VISITED_DATA_PENDING,
+        IS_HISTORY_DELETION_ALLOWED,
         CONTEXT,
         HAS_MULTI_WINDOWS
     };

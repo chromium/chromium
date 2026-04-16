@@ -57,7 +57,8 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
         historyInfoElement =
                 declareView(
                         dialogElement.descendant(
-                                TextView.class, withId(R.id.quick_delete_history_row_title)));
+                                TextView.class, withId(R.id.quick_delete_history_row_title)),
+                        ViewElement.allowDisabledOption());
         tabsInfoElement =
                 declareView(
                         dialogElement.descendant(

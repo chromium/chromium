@@ -76,6 +76,18 @@ found in the LICENSE file.
                         android:layout_below="@id/quick_delete_history_row_title"
                         android:text="@string/quick_delete_dialog_browsing_history_secondary_text"
                         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+                    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+                        android:id="@+id/quick_delete_managed_disclaimer_text"
+                        style="@style/ManagedDisclaimerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="viewStart"
+                        android:layout_marginTop="4dp"
+                        android:drawablePadding="8dp"
+                        android:layout_below="@id/quick_delete_history_row_subtitle"
+                        android:layout_alignStart="@id/quick_delete_history_row_title"
+                        android:visibility="gone" />
             </RelativeLayout>
         </RelativeLayout>
 

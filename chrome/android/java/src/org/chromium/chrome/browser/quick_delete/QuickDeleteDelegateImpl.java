@@ -11,9 +11,11 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -41,15 +43,19 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
 
     @Override
     public void performQuickDelete(Runnable onDeleteFinished, @TimePeriod int timePeriod) {
+
+        int[] dataTypes;
+        if (UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
+            dataTypes =
+                    new int[] {
+                        BrowsingDataType.HISTORY, BrowsingDataType.SITE_DATA, BrowsingDataType.CACHE
+                    };
+        } else {
+            dataTypes = new int[] {BrowsingDataType.SITE_DATA, BrowsingDataType.CACHE};
+        }
+
         BrowsingDataBridge.getForProfile(mProfile)
-                .clearBrowsingData(
-                        onDeleteFinished::run,
-                        new int[] {
-                            BrowsingDataType.HISTORY,
-                            BrowsingDataType.SITE_DATA,
-                            BrowsingDataType.CACHE
-                        },
-                        timePeriod);
+                .clearBrowsingData(onDeleteFinished::run, dataTypes, timePeriod);
     }
 
     @Override

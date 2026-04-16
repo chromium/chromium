@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
@@ -102,6 +103,9 @@ public class QuickDeleteController {
                         .with(
                                 QuickDeleteProperties.HAS_MULTI_WINDOWS,
                                 delegate.isInMultiWindowMode())
+                        .with(
+                                QuickDeleteProperties.IS_HISTORY_DELETION_ALLOWED,
+                                UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY))
                         .build();
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(

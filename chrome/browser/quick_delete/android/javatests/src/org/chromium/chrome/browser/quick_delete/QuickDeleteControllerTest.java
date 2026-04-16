@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -296,6 +297,28 @@ public class QuickDeleteControllerTest {
 
         assertEquals(1, realPage.getTabModel().getCount());
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testDelete_HistoryDeletionDisabledByPolicy() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY, false);
+                });
+
+        QuickDeleteDialogFacility dialog = mSecondPage.openRegularTabAppMenu().clearBrowsingData();
+        mTabSwitcher = dialog.confirmDelete(/* regularTabsExistAfterDeletion= */ true).first;
+
+        // Verify that HISTORY is NOT in the cleared types.
+        assertDataTypesCleared(
+                TimePeriod.LAST_15_MINUTES, BrowsingDataType.SITE_DATA, BrowsingDataType.CACHE);
+
+        // Reset the preference for other tests.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).clearPref(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+                });
     }
 
     private void assertDataTypesCleared(@TimePeriod int timePeriod, int... types)
