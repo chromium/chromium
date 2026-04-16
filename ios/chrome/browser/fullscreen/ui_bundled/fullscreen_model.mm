@@ -40,6 +40,11 @@ class ScopedIncrementer {
 }  // namespace
 
 FullscreenModel::FullscreenModel() {
+  // TODO(crbug.com/500417603): This can be removed once all calls to
+  // FullscreenController are flag guarded.
+  if (IsFullscreenRefactoringEnabled()) {
+    return;
+  }
   UpdateSpeed();
   if (web::features::IsFullscreenScrollThresholdEnabled()) {
     scroll_threshold_ = GetFieldTrialParamByFeatureAsDouble(

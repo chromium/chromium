@@ -5211,9 +5211,12 @@ const char kChromeAppStoreUrl[] =
 
 - (CGFloat)initialContentOffsetForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return ios::provider::IsFullscreenSmoothScrollingSupported()
-             ? -[self headerInsetForOverscrollActionsController:controller]
-             : 0.0;
+  if (IsFullscreenRefactoringEnabled() ||
+      ios::provider::IsFullscreenSmoothScrollingSupported()) {
+    return -[self headerInsetForOverscrollActionsController:controller];
+  } else {
+    return 0.0;
+  }
 }
 
 - (FullscreenController*)fullscreenControllerForOverscrollActionsController:

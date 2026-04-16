@@ -688,5 +688,8 @@ web::CobaltController* ChromeWebClient::GetCobaltController(
 }
 
 bool ChromeWebClient::IsSmoothScrollingSupported() const {
-  return ios::provider::IsFullscreenSmoothScrollingSupported();
+  // For the purpose of ChromeWebClient, FullscreenRefactoring can be
+  // considered the same as FullscreenSmoothScrolling.
+  return IsFullscreenRefactoringEnabled() ||
+         ios::provider::IsFullscreenSmoothScrollingSupported();
 }

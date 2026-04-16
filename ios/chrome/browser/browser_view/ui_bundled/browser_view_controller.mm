@@ -466,6 +466,11 @@ const CGFloat kTopDynamicIslandInset = 24;
 }
 
 - (void)setBroadcasting:(BOOL)broadcasting {
+  if (IsFullscreenRefactoringEnabled()) {
+    // Broadcasting is not needed for FullscreenRefactoring.
+    return;
+  }
+
   if (_broadcasting == broadcasting) {
     return;
   }
@@ -1073,7 +1078,8 @@ const CGFloat kTopDynamicIslandInset = 24;
   // change on rotation.
   [self updateToolbarState];
   // Resize horizontal viewport if Smooth Scrolling is on.
-  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
+  if (!IsFullscreenRefactoringEnabled() &&
+      ios::provider::IsFullscreenSmoothScrollingSupported()) {
     self.fullscreenController->ResizeHorizontalViewport();
   }
 
@@ -1394,7 +1400,8 @@ const CGFloat kTopDynamicIslandInset = 24;
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
     CGRect viewFrame = self.contentArea.bounds;
-    if (!ios::provider::IsFullscreenSmoothScrollingSupported()) {
+    if (!IsFullscreenRefactoringEnabled() &&
+        !ios::provider::IsFullscreenSmoothScrollingSupported()) {
       // If the Smooth Scrolling is on, the WebState view is not
       // resized, and should always match the bounds of the content area.  When
       // the provider is not initialized, viewport insets resize the webview, so
@@ -1427,18 +1434,13 @@ const CGFloat kTopDynamicIslandInset = 24;
     } else {
       self.browserContentViewController.contentView = view;
       if (IsFullscreenRefactoringEnabled()) {
-        if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
-          view.translatesAutoresizingMaskIntoConstraints = NO;
-          AddSameConstraints(self.browserContentViewController.view, view);
-        } else {
-          // TODO(crbug.com/483998779): Handle the rotation of the web content
-          // in a better way.
-          view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        }
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        AddSameConstraints(self.browserContentViewController.view, view);
       }
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
-    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
+    if (!IsFullscreenRefactoringEnabled() &&
+        ios::provider::IsFullscreenSmoothScrollingSupported()) {
       self.fullscreenController->ResizeHorizontalViewport();
     }
   }
@@ -1853,7 +1855,8 @@ const CGFloat kTopDynamicIslandInset = 24;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   [self updateHeadersForFullscreenProgress:progress];
   [self updateFootersForFullscreenProgress:progress];
-  if (!ios::provider::IsFullscreenSmoothScrollingSupported()) {
+  if (!IsFullscreenRefactoringEnabled() &&
+      !ios::provider::IsFullscreenSmoothScrollingSupported()) {
     [self updateBrowserViewportForFullscreenProgress:progress];
   }
 }
@@ -1990,6 +1993,10 @@ const CGFloat kTopDynamicIslandInset = 24;
 // Returns the height difference between the fully expanded and fully collapsed
 // primary toolbar.
 - (CGFloat)primaryToolbarHeightDelta {
+  if (IsFullscreenRefactoringEnabled()) {
+    return std::max(0.0, _fullscreenBrowserAgent->max_insets().top -
+                             _fullscreenBrowserAgent->min_insets().top);
+  }
   CGFloat fullyExpandedHeight =
       self.fullscreenController->GetMaxViewportInsets().top;
   CGFloat fullyCollapsedHeight =
@@ -2000,6 +2007,10 @@ const CGFloat kTopDynamicIslandInset = 24;
 // Returns the height difference between the fully expanded and fully collapsed
 // secondary toolbar.
 - (CGFloat)secondaryToolbarHeightDelta {
+  if (IsFullscreenRefactoringEnabled()) {
+    return std::max(0.0, _fullscreenBrowserAgent->max_insets().bottom -
+                             _fullscreenBrowserAgent->min_insets().bottom);
+  }
   CGFloat fullyExpandedHeight =
       self.fullscreenController->GetMaxViewportInsets().bottom;
   CGFloat fullyCollapsedHeight =
@@ -2026,8 +2037,13 @@ const CGFloat kTopDynamicIslandInset = 24;
     return;
   }
 
-  const CGFloat expandedToolbarHeight =
-      self.fullscreenController->GetMaxViewportInsets().bottom;
+  CGFloat expandedToolbarHeight;
+  if (IsFullscreenRefactoringEnabled()) {
+    expandedToolbarHeight = _fullscreenBrowserAgent->max_insets().bottom;
+  } else {
+    expandedToolbarHeight =
+        self.fullscreenController->GetMaxViewportInsets().bottom;
+  }
   if (!expandedToolbarHeight) {
     // If `expandedToolbarHeight` is 0, secondary toolbar is hidden. In that
     // case don't update it's height on fullscreen progress.

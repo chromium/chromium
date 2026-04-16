@@ -375,6 +375,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   // No-op, should be handled by the primary toolbar.
 }
 
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  [self updateAllButtonsVisibility];
+}
+
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {

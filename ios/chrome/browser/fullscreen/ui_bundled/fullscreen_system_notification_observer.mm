@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/common/features.h"
 
@@ -36,6 +37,12 @@
 - (instancetype)initWithController:(FullscreenController*)controller
                           mediator:(LegacyFullscreenMediator*)mediator {
   if ((self = [super init])) {
+    // TODO(crbug.com/500417603): This can be removed once all calls to
+    // FullscreenController are flag guarded.
+    if (IsFullscreenRefactoringEnabled()) {
+      return self;
+    }
+
     _controller = controller;
     DCHECK(_controller);
     _mediator = mediator;
