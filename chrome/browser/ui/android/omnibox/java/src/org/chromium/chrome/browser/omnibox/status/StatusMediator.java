@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -518,6 +519,14 @@ public class StatusMediator
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
 
         updateStatusViewVisibility();
+    }
+
+    void onFuseboxStateChanged(int state) {
+        if (state == FuseboxState.COMPACT) {
+            mModel.set(StatusProperties.IMPORTANT_FOR_A11Y, false);
+        } else {
+            mModel.set(StatusProperties.IMPORTANT_FOR_A11Y, true);
+        }
     }
 
     /** Returns true if the security icon has been set for the search engine icon. */

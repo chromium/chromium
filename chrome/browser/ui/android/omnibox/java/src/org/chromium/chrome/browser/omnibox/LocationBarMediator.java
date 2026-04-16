@@ -1636,6 +1636,7 @@ class LocationBarMediator
     private void onFuseboxStateChanged(@FuseboxState int state) {
         updateNavigateButtonVisibility();
         mLocationBarLayout.onFuseboxStateChanged(state);
+        mStatusCoordinator.onFuseboxStateChanged(state);
     }
 
     private void updateNavigateButtonVisibility() {

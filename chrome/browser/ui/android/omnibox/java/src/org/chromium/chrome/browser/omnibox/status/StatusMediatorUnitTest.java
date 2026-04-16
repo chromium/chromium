@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
@@ -729,6 +730,16 @@ public final class StatusMediatorUnitTest {
     public void testStatusClickListener_whenUrlHasFocus() {
         mMediator.setUrlHasFocus(true);
         assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
+    }
+
+    @Test
+    @SmallTest
+    public void testFuseboxState() {
+        mMediator.onFuseboxStateChanged(FuseboxState.COMPACT);
+        assertFalse(mModel.get(StatusProperties.IMPORTANT_FOR_A11Y));
+
+        mMediator.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        assertTrue(mModel.get(StatusProperties.IMPORTANT_FOR_A11Y));
     }
 
     private String getIconIdentifierForTesting() {
