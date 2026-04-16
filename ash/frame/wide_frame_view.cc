@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -26,7 +27,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
@@ -52,9 +52,7 @@ class WideFrameTargeter : public aura::WindowTargeter {
                        gfx::Rect* hit_test_rect_touch) const override {
     auto* header_view =
         views::AsViewClass<chromeos::HeaderView>(header_view_tracker_.view());
-    if (!header_view) {
-      return false;
-    }
+    CHECK(header_view);
     if (header_view->in_immersive_mode() && !header_view->is_revealed()) {
       aura::Window* source = header_view->GetWidget()->GetNativeWindow();
       *hit_test_rect_mouse = source->bounds();
@@ -154,6 +152,13 @@ void WideFrameView::AddedToWidget() {
   window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
   WindowState::Get(window)->set_allow_set_bounds_direct(true);
+}
+
+void WideFrameView::RemovedFromWidget() {
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  if (window) {
+    window->SetEventTargeter(nullptr);
+  }
 }
 
 void WideFrameView::OnMouseEvent(ui::MouseEvent* event) {

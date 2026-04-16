@@ -13,7 +13,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
-#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/view.h"
 
 namespace chromeos {
 class ImmersiveFullscreenController;
@@ -67,6 +67,7 @@ class ASH_EXPORT WideFrameView
   void Layout(PassKey) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
