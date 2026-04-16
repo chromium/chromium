@@ -105,6 +105,10 @@ if (is_android) {
     if (is_chromeos) {
       deps += [ "//chromeos/components/mgs" ]
     }
+
+    if (is_chrome_for_testing) {
+      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+    }
   }
 
   source_set("unit_tests") {

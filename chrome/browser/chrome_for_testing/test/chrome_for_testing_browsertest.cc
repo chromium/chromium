@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/headless/clipboard/headless_clipboard.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -121,6 +122,43 @@ IN_PROC_BROWSER_TEST_P(ChromeForTestingSearchEngineChoiceDialogBrowserTest,
 
   EXPECT_EQ(EnableSearchEngineChoiceDialog(),
             IsSearchEngineChoiceDialogEnabled());
+}
+
+// User education UI tests ----------------------------------------------------
+
+class ChromeForTestingUserEducationUIBrowserTest
+    : public ChromeForTestingBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool EnableUserEducationUI() { return GetParam(); }
+
+  std::string GetConfigJson() override {
+    return FormatConfigJsonBoolean("enableUserEducationUI",
+                                   EnableUserEducationUI());
+  }
+
+  bool IsUserEducationUIEnabled(Profile* profile) {
+    return UserEducationServiceFactory::ProfileAllowsUserEducation(profile);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ChromeForTestingUserEducationUIBrowserTest,
+    testing::Bool(),
+    BooleanParamStringProvider);
+
+IN_PROC_BROWSER_TEST_P(ChromeForTestingUserEducationUIBrowserTest,
+                       UserEducationUIOption) {
+  EXPECT_EQ(EnableUserEducationUI(), IsEnableUserEducationUI());
+
+  Profile* profile = browser()->profile();
+  ASSERT_FALSE(profile->IsIncognitoProfile());
+  ASSERT_FALSE(profile->IsGuestSession());
+  ASSERT_FALSE(profiles::IsDemoSession());
+  ASSERT_FALSE(profiles::IsChromeAppKioskSession());
+
+  EXPECT_EQ(EnableUserEducationUI(), IsUserEducationUIEnabled(profile));
 }
 
 // Virtual clipboard tests ----------------------------------------------------

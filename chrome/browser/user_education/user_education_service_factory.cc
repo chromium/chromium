@@ -29,6 +29,10 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "chrome/browser/chrome_for_testing/config.h"
+#endif
+
 namespace {
 
 // Idle observer that doesn't do anything.
@@ -114,9 +118,10 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
 // static
 bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
 #if BUILDFLAG(CHROME_FOR_TESTING)
-  // IPH is always disabled in Chrome for Testing.
-  return false;
-#else
+  if (!chrome_for_testing::IsEnableUserEducationUI()) {
+    return false;
+  }
+#endif
 
   // In order to do user education, the browser must have a UI and not be an
   // "off-the-record" or in a demo or guest mode.
@@ -155,7 +160,6 @@ bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
   }
 
   return true;
-#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 std::unique_ptr<KeyedService>
