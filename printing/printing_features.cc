@@ -13,12 +13,6 @@
 
 namespace printing::features {
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Controls whether chrome.printing API uses margins and scale ticket items when
-// submitting a print job.
-BASE_FEATURE(kApiPrintingMarginsAndScale, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Align PDF default print settings (scale&center) with HTML.
 BASE_FEATURE(kAlignPdfDefaultPrintSettingsWithHTML,
              base::FEATURE_DISABLED_BY_DEFAULT);

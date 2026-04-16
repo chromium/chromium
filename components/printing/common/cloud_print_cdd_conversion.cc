@@ -21,10 +21,6 @@
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "printing/printing_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace printer = cloud_devices::printer;
 
 namespace cloud_print {
@@ -470,22 +466,18 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
     vendor_capabilities.SaveTo(&description);
   }
 
-  if (base::FeatureList::IsEnabled(
-          printing::features::kApiPrintingMarginsAndScale)) {
-    if (!semantic_info.print_scaling_types.empty()) {
-      printer::FitToPageCapability fit_to_page =
-          GetFitToPageCapabilities(semantic_info);
-      if (fit_to_page.IsValid()) {
-        fit_to_page.SaveTo(&description);
-      }
+  if (!semantic_info.print_scaling_types.empty()) {
+    printer::FitToPageCapability fit_to_page =
+        GetFitToPageCapabilities(semantic_info);
+    if (fit_to_page.IsValid()) {
+      fit_to_page.SaveTo(&description);
     }
+  }
 
-    if (!semantic_info.papers.empty()) {
-      printer::MarginsCapability margins =
-          GetMarginsCapabilities(semantic_info);
-      if (margins.IsValid()) {
-        margins.SaveTo(&description);
-      }
+  if (!semantic_info.papers.empty()) {
+    printer::MarginsCapability margins = GetMarginsCapabilities(semantic_info);
+    if (margins.IsValid()) {
+      margins.SaveTo(&description);
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

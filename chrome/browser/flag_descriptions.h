@@ -2096,11 +2096,6 @@ inline constexpr char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
 
-inline constexpr char kEnablePrintingMarginsAndScale[] =
-    "Enable printing margins and scale support in chrome.printing API.";
-inline constexpr char kEnablePrintingMarginsAndScaleDescription[] =
-    "Allows extensions to specify margins and scale in chrome.printing API "
-    "based on supported values provided by the printer.";
 
 inline constexpr char kAlignPdfDefaultPrintSettingsWithHTMLName[] =
     "Align PDF default print settings with HTML";

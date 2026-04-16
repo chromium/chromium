@@ -3836,11 +3836,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-printing-margins-and-scale",
-    "owners": [ "msisov@igalia.com", "nmuggli@google.com", "poromov@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-process-isolation-ui",
     "owners": [ "wfh@chromium.org", "chrome-platform-security@google.com" ],
     "expiry_milestone": 152

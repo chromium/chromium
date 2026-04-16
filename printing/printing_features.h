@@ -16,11 +16,6 @@ namespace printing::features {
 // The following features are declared alphabetically. The features should be
 // documented with descriptions of their behaviors in the .cc file.
 
-#if BUILDFLAG(IS_CHROMEOS)
-COMPONENT_EXPORT(PRINTING_BASE)
-BASE_DECLARE_FEATURE(kApiPrintingMarginsAndScale);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 COMPONENT_EXPORT(PRINTING_BASE)
 BASE_DECLARE_FEATURE(kAlignPdfDefaultPrintSettingsWithHTML);
 

@@ -6,7 +6,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -14,7 +13,6 @@
 #include "printing/backend/print_backend_test_constants.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
-#include "printing/printing_features.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -378,9 +376,6 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket) {
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        printing::features::kApiPrintingMarginsAndScale);
     base::DictValue cjt_ticket = base::test::ParseJsonDict(kCjt);
     std::unique_ptr<printing::PrintSettings> settings =
         ParsePrintTicket(std::move(cjt_ticket));
@@ -397,24 +392,6 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
     EXPECT_FALSE(settings->collate());
     EXPECT_THAT(settings->advanced_settings(),
                 Contains(Pair(kVendorItemId, kVendorItemValue)));
-    // Since the feature is disabled, no print-scaling should be applied and the
-    // margin type should be the default.
-    EXPECT_EQ(printing::mojom::PrintScalingType::kUnknownPrintScalingType,
-              settings->print_scaling());
-    EXPECT_EQ(settings->margin_type(),
-              printing::mojom::MarginType::kDefaultMargins);
-    EXPECT_EQ(settings->requested_custom_margins_in_microns(),
-              printing::PageMargins());
-  }
-
-  // Once the feature is enabled, print-scaling should be applied and the margin
-  // type should be custom.
-  {
-    base::test::ScopedFeatureList feature_list(
-        printing::features::kApiPrintingMarginsAndScale);
-    std::unique_ptr<printing::PrintSettings> settings =
-        ParsePrintTicket(base::test::ParseJsonDict(kCjt));
-    ASSERT_TRUE(settings);
     EXPECT_EQ(printing::mojom::PrintScalingType::kFit,
               settings->print_scaling());
 
@@ -435,9 +412,6 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
 // Test that parsing CJT with FitToPage values either succeeds or fails
 // if the value is unknown.
 TEST(PrintingApiUtilsTest, ParsePrintTicketFitToPage) {
-  base::test::ScopedFeatureList feature_list(
-      printing::features::kApiPrintingMarginsAndScale);
-
   struct test_case {
     std::string_view fit_to_page_type;
     printing::mojom::PrintScalingType expected_print_scaling;
@@ -463,9 +437,6 @@ TEST(PrintingApiUtilsTest, ParsePrintTicketFitToPage) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicketNoFitToPageAndNoMargins) {
-  base::test::ScopedFeatureList feature_list(
-      printing::features::kApiPrintingMarginsAndScale);
-
   base::DictValue cjt_ticket =
       base::test::ParseJsonDict(kCjtNoFitToPageAndMargins);
   std::unique_ptr<printing::PrintSettings> settings =
@@ -492,14 +463,6 @@ TEST(PrintingApiUtilsTest, ParsePrintTicketInvalidVendorItem) {
 TEST(PrintingApiUtilsTest, ParsePrintTicketInvalidMarginsItem) {
   const std::string kInvalidMarginsCjt =
       base::StringPrintf(kTemplateMargingsItemCjt, -40, 20, -30, 40);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      printing::features::kApiPrintingMarginsAndScale);
-  EXPECT_TRUE(ParsePrintTicket(base::test::ParseJsonDict(kInvalidMarginsCjt)));
-
-  feature_list.Reset();
-  feature_list.InitAndEnableFeature(
-      printing::features::kApiPrintingMarginsAndScale);
   EXPECT_FALSE(ParsePrintTicket(base::test::ParseJsonDict(kInvalidMarginsCjt)));
 }
 
@@ -508,10 +471,6 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket_IncompleteCjt) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_BorderlessMargins) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      printing::features::kApiPrintingMarginsAndScale);
-
   const std::string kBorderlessCjt =
       base::StringPrintf(kTemplateMargingsItemCjt, 0, 0, 0, 0);
   std::unique_ptr<printing::PrintSettings> settings =
@@ -532,10 +491,6 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket_BorderlessMargins) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_MixedMargins) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      printing::features::kApiPrintingMarginsAndScale);
-
   const std::string kMixedMarginsCjt =
       base::StringPrintf(kTemplateMargingsItemCjt, 0, 3150, 0, 2830);
   std::unique_ptr<printing::PrintSettings> settings =
@@ -712,22 +667,6 @@ TEST(PrintingApiUtilsTest,
       printing::mojom::PrintScalingType::kNone,
   };
 
-  base::test::ScopedFeatureList feature_list;
-  // Test with feature disabled - all types should pass as check is skipped.
-  feature_list.InitAndDisableFeature(
-      printing::features::kApiPrintingMarginsAndScale);
-  for (const auto& scaling_type : kScalingTypes) {
-    settings->set_print_scaling(scaling_type);
-    EXPECT_TRUE(
-        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
-  }
-
-  // Re-enable feature for further tests.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeature(
-      printing::features::kApiPrintingMarginsAndScale);
-
-  capabilities.print_scaling_types.clear();
   // Capabilities have no print scaling types, so all types except unknown
   // should fail.
   for (const auto& scaling_type : kScalingTypes) {
@@ -792,19 +731,10 @@ TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilitiesCompatibility_Margins) {
     ASSERT_FALSE(paper.supported_margins_um().has_value());
   }
 
-  {
-    // Test with feature disabled - despite margins not being supported and
-    // provided, the check should pass as the feature is disabled.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        printing::features::kApiPrintingMarginsAndScale);
-    EXPECT_TRUE(
-        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
-  }
-
-  // Re-enable feature for further tests.
-  base::test::ScopedFeatureList feature_list(
-      printing::features::kApiPrintingMarginsAndScale);
+  // Since the settings contain custom margins but the capabilities do not
+  // support any, the compatibility check should fail.
+  EXPECT_FALSE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
 
   // Add a paper with supported margins.
   const printing::PaperMargins kSupportedMargins(1500, 500, 3241, 3451);
@@ -879,31 +809,6 @@ TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilities_PrintScalingHistogram) {
   capabilities.print_scaling_types = {printing::mojom::PrintScalingType::kFit,
                                       printing::mojom::PrintScalingType::kAuto};
 
-  // Try with the feature disabled first - no matter if the print scaling is
-  // correct or not, the histogram should not be recorded.
-  {
-    base::HistogramTester histogram_tester;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        printing::features::kApiPrintingMarginsAndScale);
-
-    // Unsupported print scaling.
-    settings->set_print_scaling(printing::mojom::PrintScalingType::kFill);
-    ASSERT_TRUE(
-        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
-
-    // Supported print scaling.
-    settings->set_print_scaling(printing::mojom::PrintScalingType::kFit);
-    ASSERT_TRUE(
-        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
-    histogram_tester.ExpectTotalCount(
-        "Extensions.Printing.UsesSupportedPrintScaling", 0);
-  }
-
-  // Enable the feature now.
-  base::test::ScopedFeatureList feature_list(
-      printing::features::kApiPrintingMarginsAndScale);
-
   // Verify that the UMA histogram is recorded with false when unsupported
   // print scaling is passed.
   {
@@ -951,41 +856,6 @@ TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilities_MarginHistogram) {
       /*bottom=*/kSupportedMargins.bottom_margin_um};
   settings->SetCustomMarginsForBackend(kMargins);
 
-  // Try with the feature disabled first - no matter if the margins are correct
-  // or not, the histogram should not be recorded.
-  {
-    base::HistogramTester histogram_tester;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        printing::features::kApiPrintingMarginsAndScale);
-
-    printing::PrinterSemanticCapsAndDefaults capabilities =
-        ConstructPrinterCapabilities();
-    // There must be no supported margins first.
-    for (const auto& paper : capabilities.papers) {
-      ASSERT_FALSE(paper.supported_margins_um().has_value());
-    }
-
-    ASSERT_TRUE(
-        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
-
-    // Add a paper with supported margins.
-    capabilities.papers.emplace_back(
-        /*display_name=*/"", /*vendor_id=*/"",
-        /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
-        /*printable_area_um=*/gfx::Rect(kMediaSizeWidth, kMediaSizeHeight),
-        /*max_height_um=*/0, /*has_borderless_variant=*/false,
-        /*supported_margins_um=*/kSupportedMargins);
-
-    ASSERT_TRUE(
-        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
-    histogram_tester.ExpectTotalCount(
-        "Extensions.Printing.UsesSupportedMargins", 0);
-  }
-
-  // Enable the feature now. The histogram should be recorded.
-  base::test::ScopedFeatureList feature_list(
-      printing::features::kApiPrintingMarginsAndScale);
   // Test with margins that are not supported.
   {
     base::HistogramTester histogram_tester;

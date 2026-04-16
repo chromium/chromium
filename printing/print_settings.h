@@ -139,10 +139,8 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   }
   void set_margin_type(mojom::MarginType margin_type) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
-      CHECK_NE(margin_type,
-               printing::mojom::MarginType::kPrecomputedMarginsForBackend);
-    }
+    CHECK_NE(margin_type,
+             printing::mojom::MarginType::kPrecomputedMarginsForBackend);
 #endif  // BUILDFLAG(IS_CHROMEOS)
     margin_type_ = margin_type;
   }

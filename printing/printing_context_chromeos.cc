@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -33,7 +32,6 @@
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
-#include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 
@@ -128,7 +126,6 @@ void EncodeMediaCol(ipp_t* options,
     // the margins will be applied not only to the prerendered document, but
     // also to the actual print job, which is not what is required.
     const bool use_requested_custom_margins =
-        base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale) &&
         settings.margin_type() ==
             mojom::MarginType::kPrecomputedMarginsForBackend;
     if (use_requested_custom_margins) {

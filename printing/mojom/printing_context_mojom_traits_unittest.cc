@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -630,34 +629,16 @@ TEST(PrintingContextMojomTraitsTest,
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(PrintingContextMojomTraitsTest,
      TestSerializeAndDeserializePrintSettingsPrecomputedMargins) {
-  constexpr std::array<bool, 2> kApiPrintingMarginsAndScaleEnabled = {false,
-                                                                      true};
-  for (bool enabled : kApiPrintingMarginsAndScaleEnabled) {
-    base::test::ScopedFeatureList feature_list;
-    if (enabled) {
-      feature_list.InitAndEnableFeature(
-          printing::features::kApiPrintingMarginsAndScale);
-    } else {
-      feature_list.InitAndDisableFeature(
-          printing::features::kApiPrintingMarginsAndScale);
-    }
+  PrintSettings input = GenerateSamplePrintSettingsCustomMargins();
+  input.SetCustomMarginsForBackend(kPrintSettingsCustomMarginsInMicrons);
+  PrintSettings output;
 
-    PrintSettings input = GenerateSamplePrintSettingsCustomMargins();
-    input.SetCustomMarginsForBackend(kPrintSettingsCustomMarginsInMicrons);
-    PrintSettings output;
-
-    if (enabled) {
-      EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(
-          input, output));
-      EXPECT_EQ(output.margin_type(),
-                mojom::MarginType::kPrecomputedMarginsForBackend);
-      EXPECT_EQ(output.requested_custom_margins_in_microns(),
-                kPrintSettingsCustomMarginsInMicrons);
-    } else {
-      EXPECT_EQ(output.margin_type(), mojom::MarginType::kDefaultMargins);
-      EXPECT_EQ(output.requested_custom_margins_in_microns(), PageMargins());
-    }
-  }
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+  EXPECT_EQ(output.margin_type(),
+            mojom::MarginType::kPrecomputedMarginsForBackend);
+  EXPECT_EQ(output.requested_custom_margins_in_microns(),
+            kPrintSettingsCustomMarginsInMicrons);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

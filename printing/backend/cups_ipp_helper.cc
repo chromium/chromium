@@ -29,13 +29,11 @@
 #include "printing/units.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "printing/backend/ipp_handler_map.h"
 #include "printing/backend/ipp_handlers.h"
-#include "printing/printing_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace printing {
@@ -606,9 +604,7 @@ void CapsAndDefaultsFromPrinter(const CupsPrinter& printer,
 #if BUILDFLAG(IS_CHROMEOS)
   printer_info->pin_supported = PinSupported(printer);
   ExtractAdvancedCapabilities(printer, printer_info);
-  if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
-    ExtractPrintScaling(printer, printer_info);
-  }
+  ExtractPrintScaling(printer, printer_info);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ExtractCopies(printer, printer_info);

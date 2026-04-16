@@ -25,7 +25,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_setup.h"
 #include "printing/print_settings.h"
-#include "printing/printing_features.h"
 #include "printing/units.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -292,58 +291,55 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          printing::features::kApiPrintingMarginsAndScale)) {
-    // This item is optional - don't fail if it doesn't exist.
-    cloud_devices::printer::FitToPageTicketItem fit_to_page_ticket;
-    if (fit_to_page_ticket.LoadFrom(description)) {
-      switch (fit_to_page_ticket.value()) {
-        case cloud_devices::printer::FitToPageType::AUTO:
-          settings->set_print_scaling(printing::mojom::PrintScalingType::kAuto);
-          break;
-        case cloud_devices::printer::FitToPageType::AUTO_FIT:
-          settings->set_print_scaling(
-              printing::mojom::PrintScalingType::kAutoFit);
-          break;
-        case cloud_devices::printer::FitToPageType::FILL:
-          settings->set_print_scaling(printing::mojom::PrintScalingType::kFill);
-          break;
-        case cloud_devices::printer::FitToPageType::FIT:
-          settings->set_print_scaling(printing::mojom::PrintScalingType::kFit);
-          break;
-        case cloud_devices::printer::FitToPageType::NONE:
-          settings->set_print_scaling(printing::mojom::PrintScalingType::kNone);
-          break;
-        default:
-          NOTREACHED();
-      }
+  // This item is optional - don't fail if it doesn't exist.
+  cloud_devices::printer::FitToPageTicketItem fit_to_page_ticket;
+  if (fit_to_page_ticket.LoadFrom(description)) {
+    switch (fit_to_page_ticket.value()) {
+      case cloud_devices::printer::FitToPageType::AUTO:
+        settings->set_print_scaling(printing::mojom::PrintScalingType::kAuto);
+        break;
+      case cloud_devices::printer::FitToPageType::AUTO_FIT:
+        settings->set_print_scaling(
+            printing::mojom::PrintScalingType::kAutoFit);
+        break;
+      case cloud_devices::printer::FitToPageType::FILL:
+        settings->set_print_scaling(printing::mojom::PrintScalingType::kFill);
+        break;
+      case cloud_devices::printer::FitToPageType::FIT:
+        settings->set_print_scaling(printing::mojom::PrintScalingType::kFit);
+        break;
+      case cloud_devices::printer::FitToPageType::NONE:
+        settings->set_print_scaling(printing::mojom::PrintScalingType::kNone);
+        break;
+      default:
+        NOTREACHED();
     }
+  }
 
-    // This item is optional - don't fail if it doesn't exist.
-    cloud_devices::printer::MarginsTicketItem margin_ticket;
-    if (!margin_ticket.LoadFrom(description)) {
-      settings->set_margin_type(printing::mojom::MarginType::kDefaultMargins);
-    } else if (margin_ticket.value().left_um < 0 ||
-               margin_ticket.value().right_um < 0 ||
-               margin_ticket.value().top_um < 0 ||
-               margin_ticket.value().bottom_um < 0) {
-      LOG(ERROR) << "Loaded invalid margins from print ticket.";
-      return nullptr;
+  // This item is optional - don't fail if it doesn't exist.
+  cloud_devices::printer::MarginsTicketItem margin_ticket;
+  if (!margin_ticket.LoadFrom(description)) {
+    settings->set_margin_type(printing::mojom::MarginType::kDefaultMargins);
+  } else if (margin_ticket.value().left_um < 0 ||
+             margin_ticket.value().right_um < 0 ||
+             margin_ticket.value().top_um < 0 ||
+             margin_ticket.value().bottom_um < 0) {
+    LOG(ERROR) << "Loaded invalid margins from print ticket.";
+    return nullptr;
+  } else {
+    settings->SetCustomMarginsForBackend(
+        {/*header=*/0, /*footer=*/0, margin_ticket.value().left_um,
+         margin_ticket.value().right_um, margin_ticket.value().top_um,
+         margin_ticket.value().bottom_um});
+    if (margin_ticket.value().left_um == 0 &&
+        margin_ticket.value().right_um == 0 &&
+        margin_ticket.value().top_um == 0 &&
+        margin_ticket.value().bottom_um == 0) {
+      settings->set_margin_type(printing::mojom::MarginType::kNoMargins);
+      settings->set_borderless(true);
     } else {
-      settings->SetCustomMarginsForBackend(
-          {/*header=*/0, /*footer=*/0, margin_ticket.value().left_um,
-           margin_ticket.value().right_um, margin_ticket.value().top_um,
-           margin_ticket.value().bottom_um});
-      if (margin_ticket.value().left_um == 0 &&
-          margin_ticket.value().right_um == 0 &&
-          margin_ticket.value().top_um == 0 &&
-          margin_ticket.value().bottom_um == 0) {
-        settings->set_margin_type(printing::mojom::MarginType::kNoMargins);
-        settings->set_borderless(true);
-      } else {
-        CHECK_EQ(settings->margin_type(),
-                 printing::mojom::MarginType::kPrecomputedMarginsForBackend);
-      }
+      CHECK_EQ(settings->margin_type(),
+               printing::mojom::MarginType::kPrecomputedMarginsForBackend);
     }
   }
 
@@ -399,59 +395,54 @@ bool CheckSettingsAndCapabilitiesCompatibility(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          printing::features::kApiPrintingMarginsAndScale)) {
-    // Default value is `kUnknownPrintScalingType`, so we only need to check if
-    // the value is not the default.
-    if (settings.print_scaling() !=
-        printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
-      const bool uses_supported_print_scaling = std::ranges::contains(
-          capabilities.print_scaling_types, settings.print_scaling());
-      base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedPrintScaling",
-                                uses_supported_print_scaling);
-      if (!uses_supported_print_scaling) {
-        LOG(ERROR) << "Print scaling '" << settings.print_scaling()
-                   << "' is not compatible with printer capabilities";
-        return false;
-      }
+  // Default value is `kUnknownPrintScalingType`, so we only need to check if
+  // the value is not the default.
+  if (settings.print_scaling() !=
+      printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+    const bool uses_supported_print_scaling = std::ranges::contains(
+        capabilities.print_scaling_types, settings.print_scaling());
+    base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedPrintScaling",
+                              uses_supported_print_scaling);
+    if (!uses_supported_print_scaling) {
+      LOG(ERROR) << "Print scaling '" << settings.print_scaling()
+                 << "' is not compatible with printer capabilities";
+      return false;
     }
+  }
 
-    if (settings.margin_type() !=
-        printing::mojom::MarginType::kDefaultMargins) {
-      CHECK_NE(settings.margin_type(),
-               printing::mojom::MarginType::kCustomMargins);
-      const auto& requested_margins_um =
-          settings.requested_custom_margins_in_microns();
-      bool margins_value_supported = std::ranges::any_of(
-          capabilities.papers,
-          [requested_margins_um,
-           needs_borderless_variant = settings.borderless()](
-              const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
-            // Borderless variant doesn't have margins stored separately. Thus,
-            // check if there is a paper with borderless variant.
-            if (needs_borderless_variant) {
-              return paper.has_borderless_variant() &&
-                     requested_margins_um.IsEmpty();
-            }
-            if (!paper.supported_margins_um().has_value()) {
-              return false;
-            }
-            const auto& supported_margins =
-                paper.supported_margins_um().value();
-            return requested_margins_um ==
-                   printing::PageMargins(/*header=*/0, /*footer=*/0,
-                                         supported_margins.left_margin_um,
-                                         supported_margins.right_margin_um,
-                                         supported_margins.top_margin_um,
-                                         supported_margins.bottom_margin_um);
-          });
-      base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedMargins",
-                                margins_value_supported);
-      if (!margins_value_supported) {
-        LOG(ERROR) << "Margin values " << requested_margins_um.ToString()
-                   << " are not supported by the printer";
-        return false;
-      }
+  if (settings.margin_type() != printing::mojom::MarginType::kDefaultMargins) {
+    CHECK_NE(settings.margin_type(),
+             printing::mojom::MarginType::kCustomMargins);
+    const auto& requested_margins_um =
+        settings.requested_custom_margins_in_microns();
+    bool margins_value_supported = std::ranges::any_of(
+        capabilities.papers,
+        [requested_margins_um,
+         needs_borderless_variant = settings.borderless()](
+            const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
+          // Borderless variant doesn't have margins stored separately. Thus,
+          // check if there is a paper with borderless variant.
+          if (needs_borderless_variant) {
+            return paper.has_borderless_variant() &&
+                   requested_margins_um.IsEmpty();
+          }
+          if (!paper.supported_margins_um().has_value()) {
+            return false;
+          }
+          const auto& supported_margins = paper.supported_margins_um().value();
+          return requested_margins_um ==
+                 printing::PageMargins(/*header=*/0, /*footer=*/0,
+                                       supported_margins.left_margin_um,
+                                       supported_margins.right_margin_um,
+                                       supported_margins.top_margin_um,
+                                       supported_margins.bottom_margin_um);
+        });
+    base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedMargins",
+                              margins_value_supported);
+    if (!margins_value_supported) {
+      LOG(ERROR) << "Margin values " << requested_margins_um.ToString()
+                 << " are not supported by the printer";
+      return false;
     }
   }
 

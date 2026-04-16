@@ -10981,14 +10981,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          enterprise::webstore::kChromeWebStoreNavigationThrottle)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_CHROMEOS)
-    {"enable-printing-margins-and-scale",
-     flag_descriptions::kEnablePrintingMarginsAndScale,
-     flag_descriptions::kEnablePrintingMarginsAndScaleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(printing::features::kApiPrintingMarginsAndScale)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"align-pdf-default-print-settings-with-html",
      flag_descriptions::kAlignPdfDefaultPrintSettingsWithHTMLName,
      flag_descriptions::kAlignPdfDefaultPrintSettingsWithHTMLDescription,

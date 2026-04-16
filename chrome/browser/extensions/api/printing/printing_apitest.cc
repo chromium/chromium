@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/test_extension_dir.h"
-#include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -24,21 +23,10 @@ constexpr char kName[] = "name";
 
 }  // namespace
 
-// TODO(crbug.com/308709702): Remove the bool param from this as soon as
-// the `kPrintingMarginsAndScale` feature is enabled by default. At the moment,
-// this is used to run the same test with and without the feature enabled.
-class PrintingApiTestBase
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<std::tuple<bool, ExtensionType>> {
+class PrintingApiTestBase : public ExtensionApiTest,
+                            public testing::WithParamInterface<ExtensionType> {
  public:
   void SetUp() override {
-    if (GetEnableMarginAndScale()) {
-      feature_list_.InitAndEnableFeature(
-          printing::features::kApiPrintingMarginsAndScale);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          printing::features::kApiPrintingMarginsAndScale);
-    }
     ExtensionApiTest::SetUp();
   }
 
@@ -48,8 +36,7 @@ class PrintingApiTestBase
   }
 
  protected:
-  bool GetEnableMarginAndScale() const { return std::get<0>(GetParam()); }
-  ExtensionType GetExtensionType() const { return std::get<1>(GetParam()); }
+  ExtensionType GetExtensionType() const { return GetParam(); }
 
   void RunTest(const char* html_test_page, bool expect_success = true) {
     auto dir = CreatePrintingExtension(GetExtensionType());
@@ -60,9 +47,6 @@ class PrintingApiTestBase
     ASSERT_EQ(RunExtensionTest(dir->UnpackedPath(), run_options, {}),
               expect_success);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrintingApiTest : public PrintingApiTestBase {
@@ -108,11 +92,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
 
   RunTest("get_printer_info.html");
 
-  // Expect failure/success depending on whether the feature is enabled or not.
-  // TODO(crbug.com/308709702): Remove this and merge two files once the feature
-  // is enabled by default.
-  const bool expect_success = GetEnableMarginAndScale();
-  RunTest("get_printer_info_margin_and_scale.html", expect_success);
+  RunTest("get_printer_info_margin_and_scale.html");
 }
 
 // Verifies that:
@@ -141,13 +121,6 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobWithMarginsAndScale) {
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobWithUnsupportedMargins) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  // If the feature is disabled, the test must succeed regardless of the margins
-  // used.
-  // TODO(crbug.com/308709702): Remove this and expect the test to always fail
-  // once the feature is enabled by default as provided margins in this test
-  // are not supported by the setup printer.
-  const bool expect_success = !GetEnableMarginAndScale();
-
   auto caps = ConstructPrinterCapabilities();
   std::vector<printing::PrinterSemanticCapsAndDefaults::Paper> papers;
   // Override papers with custom margins.
@@ -160,18 +133,11 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobWithUnsupportedMargins) {
   caps->papers = std::move(papers);
   AddPrinterWithSemanticCaps(kId, kName, std::move(caps));
 
-  RunTest("submit_job_margins_and_scale.html", expect_success);
+  RunTest("submit_job_margins_and_scale.html", /*expect_success=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobWithUnsupportedScale) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-
-  // If the feature is disabled, the test must succeed regardless of the scale
-  // used.
-  // TODO(crbug.com/308709702): Remove this and expect the test to always fail
-  // once the feature is enabled by default as provided scale in this test
-  // is not supported by the setup printer.
-  const bool expect_success = !GetEnableMarginAndScale();
 
   auto caps = ConstructPrinterCapabilities();
   // Override with custom scaling type different from defined in the js/html
@@ -180,7 +146,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobWithUnsupportedScale) {
   caps->print_scaling_type_default = printing::mojom::PrintScalingType::kFill;
   AddPrinterWithSemanticCaps(kId, kName, std::move(caps));
 
-  RunTest("submit_job_margins_and_scale.html", expect_success);
+  RunTest("submit_job_margins_and_scale.html", /*expect_success=*/false);
 }
 
 // As above, but tests using promise based API calls.
@@ -222,17 +188,15 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetJobStatus) {
 INSTANTIATE_TEST_SUITE_P(
     /**/,
     PrintingApiTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(ExtensionType::kChromeApp,
-                                     ExtensionType::kExtensionMV2,
-                                     ExtensionType::kExtensionMV3)));
+    testing::Values(ExtensionType::kChromeApp,
+                    ExtensionType::kExtensionMV2,
+                    ExtensionType::kExtensionMV3));
 
 // We only run the promise based tests for MV3 extensions as promise based API
 // calls are only exposed to MV3.
 INSTANTIATE_TEST_SUITE_P(
     /**/,
     PrintingPromiseApiTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(ExtensionType::kExtensionMV3)));
+    testing::Values(ExtensionType::kExtensionMV3));
 
 }  // namespace extensions
