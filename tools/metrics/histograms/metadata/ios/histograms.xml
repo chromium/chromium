@@ -5972,18 +5972,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ResetDismissCount.Password.BottomSheet" units="dismisses"
-    expires_after="2025-10-08">
-  <owner>sugoi@chromium.org</owner>
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Tracks the number of times in a row the Credential Bottom Sheet had been
-    dismissed at the moment the dismiss count was reset to 0 (between 1 and 3).
-
-    Note: this metric was expired from 2024-05 to 2025-05; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="IOS.RestoreNavigationItemCount" units="rank"
     expires_after="2026-08-10">
   <owner>gambard@chromium.org</owner>
