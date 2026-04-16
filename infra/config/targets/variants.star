@@ -51,17 +51,6 @@ targets.variant(
 )
 
 targets.variant(
-    name = "CROS_PUBLIC_LKGM",
-    identifier = "PUBLIC_LKGM",
-    skylab = targets.skylab(
-        bucket = "chromiumos-image-archive",
-        public_builder = "cros_test_platform_public",
-        public_builder_bucket = "testplatform-public",
-        use_lkgm = True,
-    ),
-)
-
-targets.variant(
     name = "CROS_JACUZZI_RELEASE_LKGM",
     identifier = "JACUZZI_RELEASE_LKGM",
     skylab = targets.skylab(

@@ -1399,59 +1399,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "chromeos_jacuzzi_rel_skylab_tests",
-    targets = [
-        targets.bundle(
-            targets = "chromeos_chrome_all_tast_tests",
-            mixins = [
-                "chromeos-tast-public-builder",
-                "tfc-exclude-public",
-                # jacuzzi is slow. So that we use run fewer tests per shard.
-                "skylab-20-tests-per-shard",
-                "skylab-rdb-tast",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "chromeos_chrome_criticalstaging_tast_tests",
-            mixins = [
-                "chromeos-tast-public-builder",
-                "skylab-20-tests-per-shard",
-                "skylab-rdb-tast",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "chromeos_chrome_disabled_tast_tests",
-            mixins = [
-                "chromeos-tast-public-builder",
-                "tfc-run-public",
-                "skylab-20-tests-per-shard",
-                "skylab-rdb-tast",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        targets.bundle(
-            targets = "chromeos_device_only_gtests",
-            mixins = [
-                "skylab-rdb-gtest",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "chromeos_js_code_coverage_browser_tests_suite",
     targets = [
         "chromeos_js_code_coverage_browser_tests",
@@ -1463,58 +1410,6 @@ targets.bundle(
             ),
         ),
     },
-)
-
-targets.bundle(
-    name = "chromeos_octopus_rel_skylab_tests",
-    targets = [
-        targets.bundle(
-            targets = "chromeos_chrome_all_tast_tests",
-            mixins = [
-                "chromeos-tast-public-builder",
-                "tfc-exclude-public",
-                "skylab-50-tests-per-shard",
-                "skylab-rdb-tast",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "chromeos_chrome_criticalstaging_tast_tests",
-            mixins = [
-                "chromeos-tast-public-builder",
-                "skylab-50-tests-per-shard",
-                "skylab-rdb-tast",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "chromeos_chrome_disabled_tast_tests",
-            mixins = [
-                "chromeos-tast-public-builder",
-                "tfc-run-public",
-                "skylab-20-tests-per-shard",
-                "skylab-rdb-tast",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        targets.bundle(
-            targets = "chromeos_device_only_gtests",
-            mixins = [
-                "skylab-rdb-gtest",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    ],
 )
 
 targets.bundle(
