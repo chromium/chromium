@@ -3620,10 +3620,6 @@ static_library("browser") {
 
       # Circular dependency on file_select_helper.h.
       "//chrome/browser/indigo/onboarding",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/profiles/profile_manager.h gets componentized.
-      "//chrome/browser/status_icons:impl",
     ]
 
     if (is_win || is_chromeos) {
