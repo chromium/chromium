@@ -30,7 +30,6 @@ void AddConsoleMessage(const InlineNode node,
 // Returns true if LogicalLineBuilder needs to scale line-height.
 bool ScaleLine(bool is_grow,
                float scale_factor,
-               bool is_scaled_inline_only,
                std::optional<float> limit,
                LineInfo& line_info) {
   bool should_scale_line_height = false;
@@ -55,7 +54,6 @@ bool ScaleLine(bool is_grow,
     } else {
       item.fit_text_scale->scale = scale_factor;
     }
-    item.fit_text_scale->is_scaled_inline_only = is_scaled_inline_only;
     if (item.fit_text_scale->scale != 1.0f) {
       should_scale_line_height = true;
     }
@@ -63,7 +61,7 @@ bool ScaleLine(bool is_grow,
   }
   line_info.SetWidth(line_info.AvailableWidth(), inline_size);
   line_info.SetTextFitScale(scale_factor);
-  return !is_scaled_inline_only && should_scale_line_height;
+  return should_scale_line_height;
 }
 
 ShapeResult* ShapeForFit(const InlineItem& item,
@@ -468,8 +466,7 @@ bool LineFitter::FitLine(float scale_factor,
   }
 
   if (fit_text.Method() == FitTextMethod::kScale && !has_fixed_spacing) {
-    return ScaleLine(is_grow, scale_factor,
-                     /* is_scaled_inline_only */ false, limit, line_info_);
+    return ScaleLine(is_grow, scale_factor, limit, line_info_);
   }
 
   LayoutUnit static_total_size;
@@ -488,7 +485,6 @@ bool LineFitter::FitLine(float scale_factor,
         }
         item.fit_text_scale->font = scaled_font;
         item.fit_text_scale->scale = 1.0f;
-        item.fit_text_scale->is_scaled_inline_only = false;
       }
       static_total_size += item.inline_size;
       continue;
@@ -518,7 +514,6 @@ bool LineFitter::FitLine(float scale_factor,
     }
     item.fit_text_scale->font = scaled_font;
     item.fit_text_scale->scale = 1.0f;
-    item.fit_text_scale->is_scaled_inline_only = false;
     flexible_total_size += size_without_spacing;
   }
   // Final adjustment by paint-time scaling. We skip it if font-size
@@ -528,8 +523,7 @@ bool LineFitter::FitLine(float scale_factor,
     if (additional_paint_time_scale) {
       // FitTextTarget::kConsistent case:
       if (*additional_paint_time_scale != 1.0f) {
-        ScaleLine(is_grow, *additional_paint_time_scale,
-                  /* is_scaled_inline_only */ false, limit, line_info_);
+        ScaleLine(is_grow, *additional_paint_time_scale, limit, line_info_);
       }
     } else {
       // FitTextTarget::kPerLine case:
@@ -537,8 +531,7 @@ bool LineFitter::FitLine(float scale_factor,
       if ((container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
         scale_factor = (container_width - static_total_size).ToFloat() /
                        flexible_total_size.ToFloat();
-        ScaleLine(is_grow, scale_factor, /* is_scaled_inline_only */ false,
-                  limit, line_info_);
+        ScaleLine(is_grow, scale_factor, limit, line_info_);
       }
     }
   }

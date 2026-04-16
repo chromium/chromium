@@ -233,7 +233,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       float block_scale = 1.0f;
       if (const auto* fit_text_scale = item_result.fit_text_scale.Get()) {
         scale = fit_text_scale->scale;
-        block_scale = fit_text_scale->is_scaled_inline_only ? 1.0f : scale;
+        block_scale = scale;
       }
       if (quirks_mode_) [[unlikely]] {
         FitTextBlockScale fit_text_block_scale = {block_scale, block_scale,

@@ -451,7 +451,7 @@ float FragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
     return inline_offset.ToFloat() * SvgScalingFactor() /
            svg_data->length_adjust_scale;
   }
-  auto [scale, is_inline] = GetFitTextScale();
+  float scale = GetFitTextScale();
   if (scale != 1.0f) {
     return inline_offset.ToFloat() / scale;
   }
@@ -600,17 +600,12 @@ TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
   const auto fit_text_scale = GetFitTextScale();
   if (Type() == kText) {
-    return {items.Text(UsesFirstLineStyle()),
-            text_.text_offset.start,
-            text_.text_offset.end,
-            text_.shape_result.Get(),
-            fit_text_scale.first,
-            fit_text_scale.second};
+    return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
+            text_.text_offset.end, text_.shape_result.Get(), fit_text_scale};
   }
   if (Type() == kGeneratedText) {
-    return {generated_text_.text,          0,
-            generated_text_.text.length(), generated_text_.shape_result.Get(),
-            fit_text_scale.first,          fit_text_scale.second};
+    return {generated_text_.text, 0, generated_text_.text.length(),
+            generated_text_.shape_result.Get(), fit_text_scale};
   }
   NOTREACHED();
 }
@@ -798,7 +793,6 @@ void FragmentItem::SetTextRareData(const FitTextScale* scale,
   data->annotation_metrics = annotation_metrics;
   data->is_svg = false;
   if (is_fit_text) {
-    data->is_fit_text_inline = scale->is_scaled_inline_only;
     data->length_adjust_scale = scale->scale;
     data->scaled_font = scale->font;
     if (Type() == kText) {
@@ -809,31 +803,30 @@ void FragmentItem::SetTextRareData(const FitTextScale* scale,
       // Do not call this function for this Type().
       NOTREACHED();
     }
-    DCHECK_EQ(scale->scale, GetFitTextScale().first);
+    DCHECK_EQ(scale->scale, GetFitTextScale());
   } else {
     DCHECK_EQ(Type(), kText);
-    data->is_fit_text_inline = false;
     data->length_adjust_scale = 1.0f;
     text_.rare_data = data;
   }
 }
 
-std::pair<float, bool> FragmentItem::GetFitTextScale() const {
+float FragmentItem::GetFitTextScale() const {
   if (Type() == kText) {
     if (const auto* data = text_.rare_data.Get()) {
       if (!data->is_svg) {
-        return {data->length_adjust_scale, data->is_fit_text_inline};
+        return data->length_adjust_scale;
       }
     }
   } else if (Type() == kGeneratedText) {
     if (const auto* data = generated_text_.rare_data.Get()) {
       DCHECK(!data->is_svg);
-      return {data->length_adjust_scale, data->is_fit_text_inline};
+      return data->length_adjust_scale;
     }
   } else if (Type() == kLine) {
-    return {line_.text_fit_scale, false};
+    return line_.text_fit_scale;
   }
-  return {1.0f, false};
+  return 1.0f;
 }
 
 void FragmentItem::SetLineTextFitScale(float scale) {
@@ -1090,7 +1083,7 @@ LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
     return LayoutUnit::FromFloatRound(
         TextShapeResult()->CreateShapeResult()->CaretPositionForOffset(
             offset, text, AdjustMidCluster::kToEnd) *
-        GetFitTextScale().first);
+        GetFitTextScale());
   }
 
   // This fragment is a flow control because otherwise ShapeResult exists.
@@ -1125,7 +1118,7 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
   LayoutUnit start_position;
   LayoutUnit end_position;
   if (TextShapeResult()) {
-    float scaling_factor = GetFitTextScale().first;
+    float scaling_factor = GetFitTextScale();
     // TODO(layout-dev): Move caret position out of ShapeResult and into a
     // separate support class that can take a ShapeResult or ShapeResultView.
     // Allows for better code separation and avoids the extra copy below.

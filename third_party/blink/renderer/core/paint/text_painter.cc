@@ -358,16 +358,7 @@ void DrawPaintOrderPasses(const OrderedPaints& ordered_paints,
 }
 
 AffineTransform ComputeTextFitTransform(float scaling_factor,
-                                        bool is_scaled_inline_only,
                                         const LineRelativeOffset& text_origin) {
-  if (is_scaled_inline_only) {
-    return {scaling_factor,
-            0,
-            0,
-            1,
-            text_origin.line_left - scaling_factor * text_origin.line_left,
-            0};
-  }
   return {scaling_factor,
           0,
           0,
@@ -801,9 +792,8 @@ void TextPainter::ApplyTextFitScale(
     state_saver->emplace(graphics_context_);
   }
 
-  graphics_context_.ConcatCTM(
-      ComputeTextFitTransform(paint_info.text_fit_scaling_factor,
-                              paint_info.is_scaled_inline_only, text_origin_));
+  graphics_context_.ConcatCTM(ComputeTextFitTransform(
+      paint_info.text_fit_scaling_factor, text_origin_));
 }
 
 }  // namespace blink

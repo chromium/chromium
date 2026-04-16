@@ -16,7 +16,6 @@ struct FitTextScale : public GarbageCollected<FitTextScale> {
   float scale = 1.0f;
   // `font` is non-null only if the method is `font-size`.
   Member<Font> font;
-  bool is_scaled_inline_only = false;
 
   void Trace(Visitor* visitor) const { visitor->Trace(font); }
 };

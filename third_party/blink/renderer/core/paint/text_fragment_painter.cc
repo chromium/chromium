@@ -307,7 +307,6 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   const auto* const svg_inline_text =
       DynamicTo<LayoutSVGInlineText>(layout_object);
   float scaling_factor = 1.0f;
-  bool is_scaled_inline_only = false;
   if (svg_inline_text) [[unlikely]] {
     DCHECK(text_item.IsSvgText());
     scaling_factor = svg_inline_text->ScalingFactor();
@@ -317,9 +316,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   } else {
     DCHECK(!text_item.IsSvgText());
     if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
-      auto fit_text_scale = text_item.GetFitTextScale();
-      scaling_factor = fit_text_scale.first;
-      is_scaled_inline_only = fit_text_scale.second;
+      scaling_factor = text_item.GetFitTextScale();
     }
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);
@@ -415,8 +412,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   LayoutUnit top = physical_box.offset.top + ascent;
-  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() &&
-      !is_scaled_inline_only && !svg_inline_text) {
+  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() && !svg_inline_text) {
     top = LayoutUnit(physical_box.offset.top + ascent * scaling_factor);
   }
   LineRelativeOffset text_origin{physical_box.offset.left, top};

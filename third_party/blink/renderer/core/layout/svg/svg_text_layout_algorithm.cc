@@ -862,7 +862,6 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     data->rect = scaled_rect;
     data->length_adjust_scale = info.length_adjust_scale;
     data->is_svg = true;
-    data->is_fit_text_inline = false;
     data->angle = info.rotate.value_or(0.0f);
     data->baseline_shift = info.baseline_shift;
     data->in_text_path = info.in_text_path;

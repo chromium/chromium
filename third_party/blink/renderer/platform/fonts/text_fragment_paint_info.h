@@ -35,7 +35,6 @@ struct PLATFORM_EXPORT TextFragmentPaintInfo {
 
   // Paint-time scaling factor for `text-fit`. It's 1.0 for SVG text.
   float text_fit_scaling_factor = 1.0f;
-  bool is_scaled_inline_only = false;
 };
 
 }  // namespace blink

@@ -35,7 +35,7 @@ struct TextFragmentPaintInfo;
 //
 // * Each text items for SVG <text> has this instance.
 // * An item with ruby annotation has this instance.
-// * An item with text-grow or text-shrunk has this instance.
+// * An item with `text-fit` has this instance.
 struct TextFragmentRareData : public GarbageCollected<TextFragmentRareData> {
  public:
   void Trace(Visitor* visitor) const { visitor->Trace(scaled_font); }
@@ -51,8 +51,6 @@ struct TextFragmentRareData : public GarbageCollected<TextFragmentRareData> {
   FontHeight annotation_metrics;
   // A flag whether SVG or not
   bool is_svg;
-  // A flag whether FitTextInline or not
-  bool is_fit_text_inline;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -557,9 +555,8 @@ class CORE_EXPORT FragmentItem final {
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
 
-  // Returns a pair of text scaling factor and is_scaled_inline_only flag for
-  // text-grow and text-shrink properties.
-  std::pair<float, bool> GetFitTextScale() const;
+  // Returns a paint-time text scaling factor for text-fit property.
+  float GetFitTextScale() const;
   void SetLineTextFitScale(float scale);
 
   // Get a description of |this| for the debug purposes.

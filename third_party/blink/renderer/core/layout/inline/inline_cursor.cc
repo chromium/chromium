@@ -504,9 +504,8 @@ PhysicalRect InlineCursor::CurrentLocalSelectionRectForText(
       Current().IsLineBreak() &&
       // This is for old compatible that old doesn't paint last br in a page.
       !IsLastBRInPage(*Current().GetLayoutObject())) {
-    logical_rect.size.inline_size =
-        LayoutUnit(Current()->ScaledFont().SpaceWidth() *
-                   Current()->GetFitTextScale().first);
+    logical_rect.size.inline_size = LayoutUnit(
+        Current()->ScaledFont().SpaceWidth() * Current()->GetFitTextScale());
   }
   const LogicalRect line_break_extended_rect =
       Current().IsLineBreak() ? logical_rect
