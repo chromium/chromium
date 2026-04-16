@@ -77,7 +77,7 @@ public class FuseboxMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentButtonType)
 
-    // LINT.IfChange(ContextualSearchAimModel)
+    // LINT.IfChange(OmniboxModelMode)
     private static final int MODEL_MODE_HISTOGRAM_BOUND = 5;
 
     /* If adding new enums to the switch, make sure the above constant is 1 larger than new max. */
@@ -94,7 +94,7 @@ public class FuseboxMetrics {
         }
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ContextualSearchAimModel)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxModelMode)
 
     private boolean mSessionStarted;
     private boolean mAttachmentsPopupButtonUsedInSession;
