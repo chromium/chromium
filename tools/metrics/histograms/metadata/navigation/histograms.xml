@@ -3281,6 +3281,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Navigation.URLLoader.OnAcceptCHFrameReceived.RestartTime{OffTheRecordStatus}"
+    units="ms" expires_after="2026-08-09">
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time elapsed between the original navigation start and the restarted
+    navigation start due to an ACCEPT_CH frame, estimating the additional time
+    incurred by an ACCEPT_CH frame restart. This is recorded every time a
+    navigation is restarted due to an ACCEPT_CH frame{OffTheRecordStatus}.
+  </summary>
+  <token key="OffTheRecordStatus" variants="OffTheRecordStatus"/>
+</histogram>
+
+<histogram
     name="Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation{OffTheRecordStatus}"
     enum="OnAcceptCHFrameReceivedReturnLocation" expires_after="2026-10-26">
   <owner>yyanagisawa@chromium.org</owner>

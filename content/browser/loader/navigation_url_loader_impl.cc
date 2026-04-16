@@ -830,6 +830,9 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
 void NavigationURLLoaderImpl::Restart() {
   TRACE_EVENT("navigation", "NavigationURLLoaderImpl::Restart",
               perfetto::Flow::FromPointer(this));
+
+  last_restart_time_ = base::TimeTicks::Now();
+
   // Cancel all inflight early hints preloads except for same origin redirects.
   if (!IsSameOriginRedirect(resource_request_->navigation_redirect_chain)) {
     early_hints_manager_.reset();
@@ -1890,6 +1893,16 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   DUMP_WILL_BE_CHECK(!loader_holder_.receiver_is_bound_for_check());
 
   loader_holder_.Reset();
+
+  const auto restart_time = base::TimeTicks::Now() - last_restart_time_;
+  base::UmaHistogramTimes(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.RestartTime", restart_time);
+  if (is_off_the_record) {
+    base::UmaHistogramTimes(
+        "Navigation.URLLoader.OnAcceptCHFrameReceived.RestartTime.OffTheRecord",
+        restart_time);
+  }
+
   Restart();
 }
 

@@ -588,6 +588,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Whether the navigation processed an ACCEPT_CH frame in the TLS handshake.
   bool received_accept_ch_frame_ = false;
 
+  // The time the most recent `Restart()` was called.
+  base::TimeTicks last_restart_time_;
+
   // UKM source id used for recording events associated with navigation loading.
   const ukm::SourceId ukm_source_id_;
 
