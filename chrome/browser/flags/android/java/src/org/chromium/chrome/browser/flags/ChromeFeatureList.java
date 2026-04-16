@@ -1947,4 +1947,7 @@ public abstract class ChromeFeatureList {
 
     public static final MutableBooleanParamWithSafeDefault sTabBottomSheetResizeWebview =
             sTabBottomSheet.newBooleanParam("resize_webview", false);
+    public static final MutableBooleanParamWithSafeDefault
+            sTabBottomSheetSuppressBottomToolbarWhileOpen =
+                    sTabBottomSheet.newBooleanParam("suppress_bottom_toolbar_while_open", false);
 }

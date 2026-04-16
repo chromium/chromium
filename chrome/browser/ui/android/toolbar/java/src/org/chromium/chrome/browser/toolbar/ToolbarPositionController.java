@@ -967,7 +967,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         // is in a HALF or FULL state, hide the Android UI toolbar and the composited toolbar.
         @LayerVisibility int targetVisibility;
         boolean changed;
-        if (isBottomToolbar
+        if (ChromeFeatureList.sTabBottomSheetSuppressBottomToolbarWhileOpen.getValue()
+                && isBottomToolbar
                 && bottomSheetContent != null
                 && bottomSheetContent.actsAsBrowserControls()
                 && (bottomSheetState == SheetState.HALF || bottomSheetState == SheetState.FULL)) {

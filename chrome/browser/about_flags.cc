@@ -726,6 +726,13 @@ const FeatureEntry::FeatureVariation kAndroidBottomToolbarV2Variations[] = {
     {"Reverse list and force bottom for focused omnibox",
      kAndroidBottomToolbarV2ReverseAndForce, nullptr}};
 
+const FeatureEntry::FeatureParam kTabBottomSheetSuppressToolbarParam[] = {
+    {"suppress_bottom_toolbar_while_open", "true"}};
+
+const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
+    {"Suppress bottom toolbar while open", kTabBottomSheetSuppressToolbarParam,
+     nullptr}};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -9837,7 +9844,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabBottomSheet)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
+                                    kTabBottomSheetVariations,
+                                    "TabBottomSheet")},
 
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,

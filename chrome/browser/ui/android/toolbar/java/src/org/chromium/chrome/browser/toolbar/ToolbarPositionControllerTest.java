@@ -1187,6 +1187,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":suppress_bottom_toolbar_while_open/true")
     public void testUpdateLayerVisibility_BottomSheetHalf() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -1221,6 +1222,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":suppress_bottom_toolbar_while_open/true")
     public void testUpdateLayerVisibility_BottomSheetFull() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
