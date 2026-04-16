@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -753,6 +754,11 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     CHECK(!upcoming_non_traverse_api_method_tracker_);
     CHECK(upcoming_traverse_api_method_trackers_.empty());
     return DispatchResult::kContinue;
+  }
+
+  if (params->source_element && !BindingSecurity::ShouldAllowAccessTo(
+                                    window_, params->source_element.Get())) {
+    params->source_element = nullptr;
   }
 
   LocalFrame* frame = window_->GetFrame();

@@ -246,6 +246,8 @@ struct CORE_EXPORT FrameLoadRequest {
   std::optional<base::UnguessableToken> script_tool_invocation_id_;
   mojom::blink::TriggeringEventInfo triggering_event_info_ =
       mojom::blink::TriggeringEventInfo::kNotFromEvent;
+  // The element that triggered the navigation. This may be cross-origin to the
+  // navigation's destination, and should be checked before use.
   Element* source_element_ = nullptr;
   ShouldSendReferrer should_send_referrer_;
   const DOMWrapperWorld* world_ = nullptr;

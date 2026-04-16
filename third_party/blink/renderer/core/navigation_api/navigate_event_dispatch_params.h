@@ -39,6 +39,8 @@ struct CORE_EXPORT NavigateEventDispatchParams
   const NavigateEventType event_type;
   const WebFrameLoadType frame_load_type;
   UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
+  // The element that triggered the navigation. This may be cross-origin to the
+  // navigation's destination, and should be checked before use.
   Member<Element> source_element;
   scoped_refptr<SerializedScriptValue> state_object;
   Member<HistoryItem> destination_item;
