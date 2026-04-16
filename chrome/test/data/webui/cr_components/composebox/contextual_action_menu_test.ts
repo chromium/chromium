@@ -509,6 +509,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test('Uses configured menu labels', async () => {
+    const toolsHeader = 'Tools Header';
     const deepSearchLabel = 'Custom Deep Search Label';
     const geminiLabel = 'Custom Gemini Label';
     const imageUploadLabel = 'Custom Image Upload Label';
@@ -523,7 +524,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
       }],
-      toolsSectionConfig: {header: ''},
+      toolsSectionConfig: {header: toolsHeader},
       allowedModels: [ModelMode.kGeminiRegular],
       modelConfigs: [{
         model: ModelMode.kGeminiRegular,
@@ -547,7 +548,13 @@ suite('ContextualActionMenu', () => {
     const imageUpload = $$(actionMenu, '#imageUpload');
 
     assertTrue(deepSearch!.textContent.includes(deepSearchLabel));
+    assertEquals(
+        `${toolsHeader}: ${deepSearchLabel}`,
+        deepSearch!.getAttribute('aria-label'));
     assertTrue(geminiRegular!.textContent.includes(geminiLabel));
+    assertEquals(
+        `${geminiLabel}`,
+        geminiRegular!.getAttribute('aria-label'));
     assertTrue(imageUpload!.textContent.includes(imageUploadLabel));
   });
 });
