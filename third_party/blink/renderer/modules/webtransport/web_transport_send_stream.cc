@@ -48,6 +48,19 @@ void WebTransportSendStream::setSendOrder(int64_t order) {
   send_order_ = order;
 }
 
+void WebTransportSendStream::ApplySendStreamOptions(
+    WebTransportSendGroup* send_group,
+    int64_t send_order,
+    ExceptionState& exception_state) {
+  if (send_group) {
+    setSendGroup(send_group, exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
+  setSendOrder(send_order);
+}
+
 ScriptPromise<WebTransportSendStreamStats> WebTransportSendStream::getStats(
     ScriptState* script_state) {
   if (!script_state->ContextIsValid()) {

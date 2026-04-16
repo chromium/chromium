@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -197,6 +198,10 @@ class WebTransportTest : public ::testing::Test {
     return MakeGarbageCollected<WebTransportOptions>();
   }
 
+  static WebTransportSendStreamOptions* EmptySendStreamOptions() {
+    return MakeGarbageCollected<WebTransportSendStreamOptions>();
+  }
+
   // Creates a WebTransport object with the given |url|.
   WebTransport* Create(const V8TestingScope& scope,
                        const String& url,
@@ -292,7 +297,7 @@ class WebTransportTest : public ::testing::Test {
 
     auto* script_state = scope.GetScriptState();
     auto send_stream_promise = web_transport->createUnidirectionalStream(
-        script_state, ASSERT_NO_EXCEPTION);
+        script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, send_stream_promise);
 
     tester.WaitUntilSettled();
@@ -1463,7 +1468,7 @@ TEST_F(WebTransportTest, CreateSendStream) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -1481,8 +1486,8 @@ TEST_F(WebTransportTest, CreateSendStreamBeforeConnect) {
   auto* web_transport = WebTransport::Create(
       script_state, "https://example.com", EmptyOptions(), ASSERT_NO_EXCEPTION);
   auto& exception_state = scope.GetExceptionState();
-  auto send_stream_promise =
-      web_transport->createUnidirectionalStream(script_state, exception_state);
+  auto send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, EmptySendStreamOptions(), exception_state);
   EXPECT_TRUE(send_stream_promise.IsEmpty());
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kNetworkError),
@@ -1502,7 +1507,7 @@ TEST_F(WebTransportTest, CreateSendStreamFailure) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -1851,7 +1856,7 @@ TEST_F(WebTransportTest, CreateSendStreamAbortedByClose) {
   EXPECT_CALL(*mock_web_transport_, Close());
 
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   test::RunPendingTasks();
@@ -1977,7 +1982,7 @@ TEST_F(WebTransportTest, CreateBidirectionalStream) {
 
   auto* script_state = scope.GetScriptState();
   auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2141,7 +2146,7 @@ TEST_F(WebTransportTest, ReceivedResetStream) {
 
   auto* script_state = scope.GetScriptState();
   auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2189,7 +2194,7 @@ TEST_F(WebTransportTest, ReceivedStopSending) {
 
   auto* script_state = scope.GetScriptState();
   auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2335,7 +2340,7 @@ TEST_F(WebTransportTest, CreateUnidirectionalStreamReturnsSendStream) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2370,7 +2375,7 @@ TEST_F(WebTransportTest, SendStreamSetSendGroup) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2409,7 +2414,7 @@ TEST_F(WebTransportTest, SendStreamSetSendGroupCrossTransportThrows) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport1->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2454,7 +2459,7 @@ TEST_F(WebTransportTest, SendStreamSetSendOrder) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2488,7 +2493,7 @@ TEST_F(WebTransportTest, SendStreamGetStats) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2549,7 +2554,7 @@ TEST_F(WebTransportTest, BidirectionalStreamWritableIsSendStream) {
 
   auto* script_state = scope.GetScriptState();
   auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2586,7 +2591,7 @@ TEST_F(WebTransportTest, CreateSendStreamFlagOffReturnsSendStream) {
 
   auto* script_state = scope.GetScriptState();
   auto send_stream_promise = web_transport->createUnidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2617,7 +2622,7 @@ TEST_F(WebTransportTest, BidirectionalStreamFlagOffWritableIsNotSendStream) {
 
   auto* script_state = scope.GetScriptState();
   auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
-      script_state, ASSERT_NO_EXCEPTION);
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
   tester.WaitUntilSettled();
@@ -2633,6 +2638,269 @@ TEST_F(WebTransportTest, BidirectionalStreamFlagOffWritableIsNotSendStream) {
   ASSERT_TRUE(writable);
   auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
   EXPECT_FALSE(send_stream);
+}
+
+// Tests for crbug.com/487117768 — sendGroup/sendOrder options at stream
+// creation time.
+
+TEST_F(WebTransportTest, CreateUnidirectionalStreamWithSendGroupOption) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendGroup(group);
+  options->setSendOrder(42);
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
+      .WillOnce([](mojo::ScopedDataPipeConsumerHandle, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, options, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, send_stream_promise);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
+                                                 tester.Value().V8Value());
+  ASSERT_TRUE(writable);
+  auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
+  ASSERT_TRUE(send_stream);
+  EXPECT_EQ(send_stream->sendGroup(), group);
+  EXPECT_EQ(send_stream->sendOrder(), 42);
+}
+
+TEST_F(WebTransportTest, CreateUnidirectionalStreamWithSendOrderOnly) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendOrder(99);
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
+      .WillOnce([](mojo::ScopedDataPipeConsumerHandle, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, options, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, send_stream_promise);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
+                                                 tester.Value().V8Value());
+  ASSERT_TRUE(writable);
+  auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
+  ASSERT_TRUE(send_stream);
+  EXPECT_EQ(send_stream->sendGroup(), nullptr);
+  EXPECT_EQ(send_stream->sendOrder(), 99);
+}
+
+TEST_F(WebTransportTest, CreateBidirectionalStreamWithSendGroupOption) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  auto* group = web_transport->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(group);
+
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendGroup(group);
+  options->setSendOrder(7);
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
+      .WillOnce([](mojo::ScopedDataPipeConsumerHandle,
+                   mojo::ScopedDataPipeProducerHandle,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto bidirectional_stream_promise = web_transport->createBidirectionalStream(
+      script_state, options, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* bidirectional_stream = V8WebTransportBidirectionalStream::ToWrappable(
+      scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(bidirectional_stream);
+  auto* send_stream =
+      DynamicTo<WebTransportSendStream>(bidirectional_stream->writable());
+  ASSERT_TRUE(send_stream);
+  EXPECT_EQ(send_stream->sendGroup(), group);
+  EXPECT_EQ(send_stream->sendOrder(), 7);
+}
+
+TEST_F(WebTransportTest,
+       CreateUnidirectionalStreamWithCrossTransportGroupThrows) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport1 =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  // Create a second (unconnected) WebTransport — only needs createSendGroup(),
+  // which is client-side bookkeeping and doesn't require a connection.
+  // Using Create() instead of CreateAndConnectSuccessfully() avoids the
+  // single-connection DCHECK in the test fixture.
+  auto* web_transport2 = Create(scope, "https://example2.com", EmptyOptions());
+  auto* other_group = web_transport2->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(other_group);
+
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendGroup(other_group);
+
+  // Using a group from a different transport should throw.
+  auto& exception_state = scope.GetExceptionState();
+  auto send_stream_promise = web_transport1->createUnidirectionalStream(
+      script_state, options, exception_state);
+  EXPECT_TRUE(send_stream_promise.IsEmpty());
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
+            exception_state.Code());
+}
+
+TEST_F(WebTransportTest, CreateUnidirectionalStreamWithEmptyOptions) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  // Pass default-constructed options — should behave identically to nullptr.
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
+      .WillOnce([](mojo::ScopedDataPipeConsumerHandle, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, options, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, send_stream_promise);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
+                                                 tester.Value().V8Value());
+  ASSERT_TRUE(writable);
+  auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
+  ASSERT_TRUE(send_stream);
+  EXPECT_EQ(send_stream->sendGroup(), nullptr);
+  EXPECT_EQ(send_stream->sendOrder(), 0);
+}
+
+TEST_F(WebTransportTest, CreateUnidirectionalStreamWithExplicitNullGroup) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  // Explicitly set sendGroup to null — spec allows this.
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendGroup(nullptr);
+  options->setSendOrder(5);
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
+      .WillOnce([](mojo::ScopedDataPipeConsumerHandle, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, options, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, send_stream_promise);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
+                                                 tester.Value().V8Value());
+  ASSERT_TRUE(writable);
+  auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
+  ASSERT_TRUE(send_stream);
+  EXPECT_EQ(send_stream->sendGroup(), nullptr);
+  EXPECT_EQ(send_stream->sendOrder(), 5);
+}
+
+TEST_F(WebTransportTest, CreateUnidirectionalStreamWithOptionsFlagOff) {
+  // When the WebTransportSendGroup flag is OFF, options should be accepted
+  // but sendGroup is not available. The stream is a plain SendStream.
+  ScopedWebTransportSendGroupForTest scoped_feature(false);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  // Pass options with sendOrder — sendGroup is not available when flag is off.
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendOrder(10);
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
+      .WillOnce([](mojo::ScopedDataPipeConsumerHandle, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, options, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, send_stream_promise);
+
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* writable = V8WritableStream::ToWrappable(scope.GetIsolate(),
+                                                 tester.Value().V8Value());
+  ASSERT_TRUE(writable);
+  // When the flag is off, the stream should NOT be a WebTransportSendStream.
+  auto* send_stream = DynamicTo<WebTransportSendStream>(writable);
+  EXPECT_FALSE(send_stream);
+}
+
+TEST_F(WebTransportTest,
+       CreateBidirectionalStreamWithCrossTransportGroupThrows) {
+  ScopedWebTransportSendGroupForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport1 =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* script_state = scope.GetScriptState();
+
+  // Second transport is unconnected — only needs createSendGroup().
+  auto* web_transport2 = Create(scope, "https://example2.com", EmptyOptions());
+  auto* other_group = web_transport2->createSendGroup(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(other_group);
+
+  auto* options = MakeGarbageCollected<WebTransportSendStreamOptions>();
+  options->setSendGroup(other_group);
+
+  auto& exception_state = scope.GetExceptionState();
+  auto bidirectional_stream_promise = web_transport1->createBidirectionalStream(
+      script_state, options, exception_state);
+  EXPECT_TRUE(bidirectional_stream_promise.IsEmpty());
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
+            exception_state.Code());
 }
 
 }  // namespace

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -48,6 +50,7 @@ class ScriptState;
 class WebTransportCloseInfo;
 class WebTransportOptions;
 class WebTransportSendGroup;
+class WebTransportSendStreamOptions;
 class WritableStream;
 
 // https://wicg.github.io/web-transport/#web-transport
@@ -71,12 +74,16 @@ class MODULES_EXPORT WebTransport final
   ~WebTransport() override;
 
   // WebTransport IDL implementation.
-  ScriptPromise<WritableStream> createUnidirectionalStream(ScriptState*,
-                                                           ExceptionState&);
+  ScriptPromise<WritableStream> createUnidirectionalStream(
+      ScriptState*,
+      WebTransportSendStreamOptions*,
+      ExceptionState&);
   ReadableStream* incomingUnidirectionalStreams();
 
-  ScriptPromise<BidirectionalStream> createBidirectionalStream(ScriptState*,
-                                                               ExceptionState&);
+  ScriptPromise<BidirectionalStream> createBidirectionalStream(
+      ScriptState*,
+      WebTransportSendStreamOptions*,
+      ExceptionState&);
   ReadableStream* incomingBidirectionalStreams();
 
   DatagramDuplexStream* datagrams();
@@ -185,14 +192,35 @@ class MODULES_EXPORT WebTransport final
   void OnConnectionError();
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
+
+  // Result type for ExtractSendStreamOptions().
+  struct SendStreamOptions {
+    STACK_ALLOCATED();
+
+   public:
+    WebTransportSendGroup* send_group = nullptr;
+    int64_t send_order = 0;
+  };
+
+  // Extracts sendGroup and sendOrder from options, validating that sendGroup
+  // (if present) belongs to this WebTransport instance. Returns std::nullopt
+  // and throws on validation failure.
+  std::optional<SendStreamOptions> ExtractSendStreamOptions(
+      const WebTransportSendStreamOptions*,
+      ExceptionState&);
+
   void OnCreateSendStreamResponse(ScriptPromiseResolver<WritableStream>*,
                                   mojo::ScopedDataPipeProducerHandle,
+                                  WebTransportSendGroup* send_group,
+                                  int64_t send_order,
                                   bool succeeded,
                                   uint32_t stream_id);
   void OnCreateBidirectionalStreamResponse(
       ScriptPromiseResolver<BidirectionalStream>*,
       mojo::ScopedDataPipeProducerHandle,
       mojo::ScopedDataPipeConsumerHandle,
+      WebTransportSendGroup* send_group,
+      int64_t send_order,
       bool succeeded,
       uint32_t stream_id);
   void OnGetStatsResponse(network::mojom::blink::WebTransportStatsPtr);
@@ -287,8 +315,9 @@ class MODULES_EXPORT WebTransport final
   const uint64_t inspector_transport_id_;
 
   // Tracks send groups created via createSendGroup().
-  // Uses WeakMember to allow garbage collection when the caller discards the
-  // group reference.
+  // WeakMember allows groups to be garbage-collected when JS drops all
+  // references. In-flight stream creation callbacks capture groups via
+  // WrapPersistent to ensure the group survives until the callback fires.
   HeapHashSet<WeakMember<WebTransportSendGroup>> send_groups_;
   // Counter for assigning unique group IDs.
   uint32_t next_send_group_id_ = 0;

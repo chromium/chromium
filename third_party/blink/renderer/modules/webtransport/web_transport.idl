@@ -9,12 +9,21 @@
     SecureContext
 ] interface WebTransport {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
+  // TODO(crbug.com/487117768): Change return type to
+  // Promise<WebTransportSendStream> once WebTransportSendGroup ships and the
+  // old SendStream code path is removed. The actual resolved object is already
+  // a WebTransportSendStream when the flag is enabled.
+  // The options dictionary members (sendGroup, sendOrder) are individually
+  // gated behind RuntimeEnabled=WebTransportSendGroup. When the flag is off,
+  // the dictionary is accepted but effectively empty.
   [CallWith=ScriptState, RaisesException] Promise<WritableStream>
-      createUnidirectionalStream();
+      createUnidirectionalStream(
+          optional WebTransportSendStreamOptions options = {});
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 
   [CallWith=ScriptState, RaisesException] Promise<WebTransportBidirectionalStream>
-      createBidirectionalStream();
+      createBidirectionalStream(
+          optional WebTransportSendStreamOptions options = {});
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
   readonly attribute WebTransportDatagramDuplexStream datagrams;

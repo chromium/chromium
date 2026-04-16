@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -842,8 +843,10 @@ WebTransport::WebTransport(ScriptState* script_state,
 
 ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
     ScriptState* script_state,
+    WebTransportSendStreamOptions* options,
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createUnidirectionalStream() this=" << this;
+  CHECK(options);
 
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kQuicTransportStreamApis);
@@ -851,6 +854,11 @@ ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
     // TODO(ricea): Should we wait if we're still connecting?
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
+    return EmptyPromise();
+  }
+
+  auto stream_options = ExtractSendStreamOptions(options, exception_state);
+  if (!stream_options) {
     return EmptyPromise();
   }
 
@@ -865,11 +873,19 @@ ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WritableStream>>(
       script_state, exception_state.GetContext());
   create_stream_resolvers_.insert(resolver);
+  // Capture send_group via WrapPersistent so it survives the asynchronous
+  // Mojo round-trip (between CreateStream() and the callback). The
+  // transport's send_groups_ registry uses WeakMember, so without this
+  // strong reference the group could be garbage-collected if JS drops all
+  // references before the callback fires. nullptr is safe — Persistent<T>
+  // accepts null.
   transport_remote_->CreateStream(
       std::move(data_pipe_consumer), mojo::ScopedDataPipeProducerHandle(),
       BindOnce(&WebTransport::OnCreateSendStreamResponse,
                WrapWeakPersistent(this), WrapWeakPersistent(resolver),
-               std::move(data_pipe_producer)));
+               std::move(data_pipe_producer),
+               WrapPersistent(stream_options->send_group),
+               stream_options->send_order));
 
   return resolver->Promise();
 }
@@ -882,8 +898,10 @@ ReadableStream* WebTransport::incomingUnidirectionalStreams() {
 
 ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
     ScriptState* script_state,
+    WebTransportSendStreamOptions* options,
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createBidirectionalStream() this=" << this;
+  CHECK(options);
 
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kQuicTransportStreamApis);
@@ -891,6 +909,11 @@ ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
     // TODO(ricea): We should wait if we are still connecting.
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
+    return EmptyPromise();
+  }
+
+  auto stream_options = ExtractSendStreamOptions(options, exception_state);
+  if (!stream_options) {
     return EmptyPromise();
   }
 
@@ -912,11 +935,15 @@ ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
       MakeGarbageCollected<ScriptPromiseResolver<BidirectionalStream>>(
           script_state, exception_state.GetContext());
   create_stream_resolvers_.insert(resolver);
+  // See createUnidirectionalStream — send_group captured via WrapPersistent
+  // to survive the Mojo round-trip; the registry uses WeakMember.
   transport_remote_->CreateStream(
       std::move(outgoing_consumer), std::move(incoming_producer),
       BindOnce(&WebTransport::OnCreateBidirectionalStreamResponse,
                WrapWeakPersistent(this), WrapWeakPersistent(resolver),
-               std::move(outgoing_producer), std::move(incoming_consumer)));
+               std::move(outgoing_producer), std::move(incoming_consumer),
+               WrapPersistent(stream_options->send_group),
+               stream_options->send_order));
 
   return resolver->Promise();
 }
@@ -1650,6 +1677,8 @@ void WebTransport::HandlePendingGetStatsResolvers(v8::Local<v8::Value> error) {
 void WebTransport::OnCreateSendStreamResponse(
     ScriptPromiseResolver<WritableStream>* resolver,
     mojo::ScopedDataPipeProducerHandle producer,
+    WebTransportSendGroup* send_group,
+    int64_t send_order,
     bool succeeded,
     uint32_t stream_id) {
   DVLOG(1) << "WebTransport::OnCreateSendStreamResponse() this=" << this
@@ -1683,14 +1712,25 @@ void WebTransport::OnCreateSendStreamResponse(
     auto* send_stream = MakeGarbageCollected<WebTransportSendStream>(
         script_state_, this, stream_id, std::move(producer));
     send_stream->Init(PassThroughException(isolate));
-    outgoing_stream = send_stream->GetOutgoingStream();
-    writable_stream = send_stream;
+    // Apply options from createUnidirectionalStream(). setSendGroup() can
+    // throw (e.g. InvalidStateError if the group belongs to another
+    // transport), so this must be inside the try_catch scope.
+    if (!try_catch.HasCaught()) {
+      send_stream->ApplySendStreamOptions(send_group, send_order,
+                                          PassThroughException(isolate));
+    }
+    if (!try_catch.HasCaught()) {
+      outgoing_stream = send_stream->GetOutgoingStream();
+      writable_stream = send_stream;
+    }
   } else {
     auto* send_stream = MakeGarbageCollected<SendStream>(
         script_state_, this, stream_id, std::move(producer));
     send_stream->Init(PassThroughException(isolate));
-    outgoing_stream = send_stream->GetOutgoingStream();
-    writable_stream = send_stream;
+    if (!try_catch.HasCaught()) {
+      outgoing_stream = send_stream->GetOutgoingStream();
+      writable_stream = send_stream;
+    }
   }
   if (try_catch.HasCaught()) {
     resolver->Reject(try_catch.Exception());
@@ -1708,6 +1748,8 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
     ScriptPromiseResolver<BidirectionalStream>* resolver,
     mojo::ScopedDataPipeProducerHandle outgoing_producer,
     mojo::ScopedDataPipeConsumerHandle incoming_consumer,
+    WebTransportSendGroup* send_group,
+    int64_t send_order,
     bool succeeded,
     uint32_t stream_id) {
   DVLOG(1) << "WebTransport::OnCreateBidirectionalStreamResponse() this="
@@ -1737,8 +1779,20 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
   V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   v8::TryCatch try_catch(isolate);
   bidirectional_stream->Init(PassThroughException(isolate));
+
+  // Apply options from createBidirectionalStream(). Must be inside the
+  // try_catch scope to properly catch any exception from setSendGroup().
+  if (!try_catch.HasCaught()) {
+    if (auto* send_stream = DynamicTo<WebTransportSendStream>(
+            bidirectional_stream->writable())) {
+      send_stream->ApplySendStreamOptions(send_group, send_order,
+                                          PassThroughException(isolate));
+    }
+  }
+
   if (try_catch.HasCaught()) {
     resolver->Reject(try_catch.Exception());
+    // Don't insert into stream maps — the stream is in an inconsistent state.
     return;
   }
 
@@ -1802,6 +1856,24 @@ WebTransportSendGroup* WebTransport::createSendGroup(
   auto* group = MakeGarbageCollected<WebTransportSendGroup>(this, group_id);
   send_groups_.insert(group);
   return group;
+}
+
+std::optional<WebTransport::SendStreamOptions>
+WebTransport::ExtractSendStreamOptions(
+    const WebTransportSendStreamOptions* options,
+    ExceptionState& exception_state) {
+  CHECK(options);
+  SendStreamOptions result;
+
+  result.send_group = options->sendGroup();
+  if (result.send_group && result.send_group->GetTransport() != this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The sendGroup belongs to a different WebTransport instance.");
+    return std::nullopt;
+  }
+  result.send_order = options->sendOrder();
+  return result;
 }
 
 }  // namespace blink
