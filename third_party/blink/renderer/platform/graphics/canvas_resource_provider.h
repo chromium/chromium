@@ -410,14 +410,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       image_pool_->Clear();
     }
   }
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override { --num_inflight_resources_; }
 
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
   }
-  int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
+  virtual int NumInflightResourcesForTesting() const = 0;
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool HasUnusedResourcesForTesting() const;
 
@@ -426,7 +423,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool IsAccelerated() const final { return is_accelerated_; }
   bool IsGpuContextLost() const override;
-  base::ByteSize EstimatedSizeInBytes() const override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override = 0;
@@ -490,7 +486,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
 
-  int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 
  private:
@@ -567,6 +562,14 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
+  int NumInflightResourcesForTesting() const override {
+    return num_inflight_resources_;
+  }
+  base::ByteSize EstimatedSizeInBytes() const override;
+
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
   void EnsureWriteAccess() override;
@@ -623,6 +626,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // by this provider.
   void WillDrawUnaccelerated();
   void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
+
+  int num_inflight_resources_ = 0;
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -688,6 +693,14 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
+
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
+  int NumInflightResourcesForTesting() const override {
+    return num_inflight_resources_;
+  }
+  base::ByteSize EstimatedSizeInBytes() const override;
 
   void EnsureWriteAccess() override;
   void EndWriteAccess() override;
@@ -769,6 +782,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
+
+  int num_inflight_resources_ = 0;
 };
 
 }  // namespace blink

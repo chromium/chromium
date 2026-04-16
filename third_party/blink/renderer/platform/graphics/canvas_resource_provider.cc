@@ -435,7 +435,7 @@ Canvas2DResourceProviderSharedImage::NewOrRecycledResource() {
   return resource;
 }
 
-void CanvasResourceProviderSharedImage::OnResourceRefReturned(
+void Canvas2DResourceProviderSharedImage::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() &&
       resource_recycling_enabled_ && image_pool_) {
@@ -829,7 +829,8 @@ CanvasNon2DResourceProviderSharedImage::BeginExternalOverwrite(
   return resource_->GetSharedImage();
 }
 
-base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
+base::ByteSize Canvas2DResourceProviderSharedImage::EstimatedSizeInBytes()
+    const {
   base::ByteSize result;
   if (resource_) {
     result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
@@ -2255,6 +2256,23 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
 
 CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() = default;
+
+void CanvasNon2DResourceProviderSharedImage::OnResourceRefReturned(
+    scoped_refptr<CanvasResourceSharedImage>&& resource) {
+  if (!resource->IsLost() && resource->HasOneRef() &&
+      resource_recycling_enabled_ && image_pool_) {
+    image_pool_->ReleaseImage(std::move(resource));
+  }
+}
+
+base::ByteSize CanvasNon2DResourceProviderSharedImage::EstimatedSizeInBytes()
+    const {
+  base::ByteSize result;
+  if (resource_) {
+    result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
+  }
+  return result;
+}
 
 bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
     const SkImageInfo& orig_info,
