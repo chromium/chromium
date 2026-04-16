@@ -2107,7 +2107,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             this,
                             new NoOpkeyboardVisibilityDelegate(),
                             isIncognitoBranded(),
-                            /* onLongClickListener= */ null);
+                            /* onLongClickListener= */ null,
+                            /* textChangeListener= */ null,
+                            /* richTextChangeListener= */ null,
+                            /* keyDownListener= */ null);
             mUrlCoordinator.setIsInCct(true);
             mTabCreator = tabCreator;
             mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
@@ -2399,7 +2402,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     || securityLevel == ConnectionSecurityLevel.SECURE;
         }
 
-        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
         public int getSecurityIconResourceForTesting() {
             return mSecurityIconResourceForTesting;
         }

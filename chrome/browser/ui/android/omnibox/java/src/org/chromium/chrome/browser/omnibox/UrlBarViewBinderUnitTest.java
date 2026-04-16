@@ -63,7 +63,12 @@ public class UrlBarViewBinderUnitTest {
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
         mMediator =
                 new UrlBarMediator(
-                        ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback);
+                        ContextUtils.getApplicationContext(),
+                        mModel,
+                        mFocusChangeCallback,
+                        /* textChangeListener= */ null,
+                        /* richTextChangeListener= */ null,
+                        /* keyDownListener= */ null);
         mUrlBar = new UrlBarApi26(mActivity, null);
         mUrlBar.setLayoutParams(mUrlBarLayoutParams);
         PropertyModelChangeProcessor.create(mModel, mUrlBar, UrlBarViewBinder::bind);

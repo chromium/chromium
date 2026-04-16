@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.util.Range;
 import android.view.ActionMode;
-import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -58,6 +58,12 @@ public class UrlBarCoordinator
      * @param isIncognitoBranded Whether incognito mode is initially enabled. This can later be
      *     changed using {@link #setIncognitoColorsEnabled(boolean)}. @{@link OnLongClickListener}
      *     for the url bar.
+     * @param onLongClickListener The listener for long clicks.
+     * @param textChangeListener The listener for text changes. Invoked every time omnibox content
+     *     changes and used for autocomplete.
+     * @param richTextChangeListener The listener for rich text changes. Invoked on each keypress.
+     *     Used for site-search triggering.
+     * @param keyDownListener The listener for key down events.
      */
     public UrlBarCoordinator(
             Context context,
@@ -67,7 +73,10 @@ public class UrlBarCoordinator
             UrlBarDelegate delegate,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             boolean isIncognitoBranded,
-            @Nullable OnLongClickListener onLongClickListener) {
+            @Nullable OnLongClickListener onLongClickListener,
+            @Nullable Callback<String> textChangeListener,
+            @Nullable Callback<UrlBarTextChangeInfo> richTextChangeListener,
+            @Nullable OnKeyListener keyDownListener) {
         mUrlBar = urlBar;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mFocusChangeCallback = focusChangeCallback;
@@ -84,7 +93,14 @@ public class UrlBarCoordinator
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
-        mMediator = new UrlBarMediator(context, model, this::onUrlFocusChangeInternal);
+        mMediator =
+                new UrlBarMediator(
+                        context,
+                        model,
+                        this::onUrlFocusChangeInternal,
+                        textChangeListener,
+                        richTextChangeListener,
+                        keyDownListener);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
     }
 
@@ -125,27 +141,6 @@ public class UrlBarCoordinator
         for (Callback<Boolean> listener : mTextWrapListeners) {
             listener.onResult(isWrapped);
         }
-    }
-
-    /** Set the callback that will be invoked each time the content of the Omnibox changes. */
-    public void setTextChangeListener(Callback<String> listener) {
-        mMediator.setTextChangeListener(listener);
-    }
-
-    public void setRichTextChangeListener(Callback<UrlBarTextChangeInfo> listener) {
-        mMediator.setRichTextChangeListener(listener);
-    }
-
-    /**
-     * Set the callback that will be invoked for:
-     *
-     * <ul>
-     *   <li>All hardware keyboard sourced key events,
-     *   <li>All enter key events, regardless of source.
-     * </ul>
-     */
-    public void setKeyDownListener(View.OnKeyListener listener) {
-        mMediator.setKeyDownListener(listener);
     }
 
     /**
