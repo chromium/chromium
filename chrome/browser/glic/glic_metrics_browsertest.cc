@@ -69,6 +69,30 @@ class GlicMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<GlicTestEnvironment> glic_test_environment_;
 };
 
+class GlicMetricsBrowserTestWithMessageFirstFre
+    : public GlicMetricsBrowserTest {
+ public:
+  GlicMetricsBrowserTestWithMessageFirstFre()
+      : GlicMetricsBrowserTest({features::kGlicMessageFirstFre}, {}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
+                       GlicFreShown_MessageFirstFreEnabled) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
+
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
+
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
   base::UserActionTester user_action_tester;
 
