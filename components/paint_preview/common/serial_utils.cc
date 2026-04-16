@@ -178,12 +178,18 @@ SkSerialReturnType SerializeImage(SkImage* image, void* ctx) {
   return encoded_data;
 }
 
-sk_sp<SkImage> DeserializeImage(const void* bytes, size_t length, void*) {
+sk_sp<SkImage> DeserializeImage(sk_sp<SkData> data,
+                                std::optional<SkAlphaType>,
+                                void*) {
   TRACE_EVENT0("paint_preview", "DeserializeImage");
+  if (!data) {
+    return nullptr;
+  }
   // Although we usually serialize images to the PNG format, if an image was
   // already encoded as a JPEG or WEBP, those bytes are written to the
   // SKP as-is, so we should try to decode those as well.
-  sk_sp<SkData> data = SkData::MakeWithoutCopy(bytes, length);
+  const void* bytes = data->data();
+  size_t length = data->size();
   const auto get_image = [](std::unique_ptr<SkCodec> codec) -> sk_sp<SkImage> {
     if (!codec) {
       return nullptr;
@@ -314,7 +320,7 @@ SkDeserialProcs MakeDeserialProcs(DeserializationContext* ctx) {
   SkDeserialProcs procs;
   procs.fPictureProc = DeserializePictureAsRectData;
   procs.fPictureCtx = ctx;
-  procs.fImageProc = DeserializeImage;
+  procs.fImageDataProc = DeserializeImage;
   procs.fTypefaceStreamProc = DeserializeTypeface;
   sktext::gpu::Slug::AddDeserialProcs(&procs, nullptr);
   return procs;
@@ -324,7 +330,7 @@ SkDeserialProcs MakeDeserialProcs(LoadedFramesDeserialContext* ctx) {
   SkDeserialProcs procs;
   procs.fPictureProc = GetPictureFromDeserialContext;
   procs.fPictureCtx = ctx;
-  procs.fImageProc = DeserializeImage;
+  procs.fImageDataProc = DeserializeImage;
   procs.fTypefaceStreamProc = DeserializeTypeface;
   return procs;
 }

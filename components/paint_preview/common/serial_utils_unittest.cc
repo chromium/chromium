@@ -233,9 +233,10 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitBudget) {
   SkDeserialProcs deserial_procs;
   size_t deserialized_images = 0;
   deserial_procs.fImageCtx = &deserialized_images;
-  deserial_procs.fImageProc = [](const void* data, size_t length,
-                                 void* ctx) -> sk_sp<SkImage> {
-    if (length > 0U) {
+  deserial_procs.fImageDataProc = [](sk_sp<SkData> data,
+                                     std::optional<SkAlphaType>,
+                                     void* ctx) -> sk_sp<SkImage> {
+    if (data && data->size() > 0U) {
       size_t* images = reinterpret_cast<size_t*>(ctx);
       *images += 1;
     }
@@ -281,9 +282,10 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitSize) {
   SkDeserialProcs deserial_procs;
   size_t deserialized_images = 0;
   deserial_procs.fImageCtx = &deserialized_images;
-  deserial_procs.fImageProc = [](const void* data, size_t length,
-                                 void* ctx) -> sk_sp<SkImage> {
-    if (length > 0U) {
+  deserial_procs.fImageDataProc = [](sk_sp<SkData> data,
+                                     std::optional<SkAlphaType>,
+                                     void* ctx) -> sk_sp<SkImage> {
+    if (data && data->size() > 0U) {
       size_t* images = reinterpret_cast<size_t*>(ctx);
       *images += 1;
     }
@@ -297,7 +299,7 @@ namespace {
 
 struct DeserialImageContext {
   size_t image_count = 0;
-  SkDeserialImageProc deserial_image_proc = nullptr;
+  SkDeserialImageFromDataProc deserial_image_proc = nullptr;
 };
 
 static void TrySerialAndDeserial(sk_sp<SkData> image_data) {
@@ -328,24 +330,25 @@ static void TrySerialAndDeserial(sk_sp<SkData> image_data) {
   DeserializationContext deserial_ctx;
   SkDeserialProcs deserial_procs = MakeDeserialProcs(&deserial_ctx);
   EXPECT_EQ(deserial_procs.fPictureCtx, &deserial_ctx);
-  EXPECT_NE(deserial_procs.fImageProc, nullptr);
+  EXPECT_NE(deserial_procs.fImageDataProc, nullptr);
 
-  // Spy on the operation by taking `fImageProc` (`DeserializeImage`) from the
-  // production procs and wrapping it as part of the `DeserialImageContext`.
-  // This allows end-to-end validation of its behavior.
+  // Spy on the operation by taking `fImageDataProc` (`DeserializeImage`) from
+  // the production procs and wrapping it as part of the
+  // `DeserialImageContext`. This allows end-to-end validation of its behavior.
   DeserialImageContext deserial_image_ctx;
-  deserial_image_ctx.deserial_image_proc = deserial_procs.fImageProc;
+  deserial_image_ctx.deserial_image_proc = deserial_procs.fImageDataProc;
   deserial_procs.fImageCtx = &deserial_image_ctx;
-  deserial_procs.fImageProc = [](const void* data, size_t length,
-                                 void* ctx) -> sk_sp<SkImage> {
-    if (length == 0U) {
+  deserial_procs.fImageDataProc = [](sk_sp<SkData> data,
+                                     std::optional<SkAlphaType> at,
+                                     void* ctx) -> sk_sp<SkImage> {
+    if (!data || data->size() == 0U) {
       return nullptr;
     }
     DeserialImageContext* deserial_image_ctx =
         reinterpret_cast<DeserialImageContext*>(ctx);
     deserial_image_ctx->image_count += 1;
     sk_sp<SkImage> image =
-        (*(deserial_image_ctx->deserial_image_proc))(data, length, nullptr);
+        (*(deserial_image_ctx->deserial_image_proc))(data, at, nullptr);
     EXPECT_NE(image, nullptr) << "Invalid decoded image.";
     return image;
   };

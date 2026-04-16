@@ -66,6 +66,7 @@ config("skia_config") {
 
     # Staging
     "SK_ENABLE_LEGACY_SHADERCONTEXT",
+    "SK_LEGACY_DESERIAL_IMAGE_PROC",
 
     # Let Skia and Skia clients know whether to use `libpng`-based or
     # Rust-based PNG decoder and encoder.  This mimics what is done in

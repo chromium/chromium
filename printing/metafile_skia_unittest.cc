@@ -389,12 +389,14 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   SkDeserialProcs d_procs =
       DeserializationProcs(&d_subframes, nullptr, &d_images);
 
-  sk_sp<SkImage> decoded_image1 = (*d_procs.fImageProc)(
-      encoded_data1->data(), encoded_data1->size(), d_procs.fImageCtx);
+  sk_sp<SkImage> decoded_image1 = (*d_procs.fImageDataProc)(
+      sk_ref_sp(const_cast<SkData*>(encoded_data1.get())), std::nullopt,
+      d_procs.fImageCtx);
   ASSERT_TRUE(decoded_image1);
 
-  sk_sp<SkImage> decoded_image2 = (*d_procs.fImageProc)(
-      encoded_data2->data(), encoded_data2->size(), d_procs.fImageCtx);
+  sk_sp<SkImage> decoded_image2 = (*d_procs.fImageDataProc)(
+      sk_ref_sp(const_cast<SkData*>(encoded_data2.get())), std::nullopt,
+      d_procs.fImageCtx);
   ASSERT_TRUE(decoded_image2);
   EXPECT_EQ(decoded_image1->uniqueID(), decoded_image2->uniqueID());
 }

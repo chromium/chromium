@@ -571,14 +571,15 @@ SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
   return data;
 }
 
-sk_sp<SkImage> DeserializeRasterImage(const void* bytes,
-                                      size_t length,
+sk_sp<SkImage> DeserializeRasterImage(sk_sp<SkData> data,
+                                      std::optional<SkAlphaType>,
                                       void* ctx) {
+  if (!data) {
+    return nullptr;
+  }
   auto* context = reinterpret_cast<ImageDeserializationContext*>(ctx);
 
-  // SAFETY: The caller must provide a valid pointer and length.
-  base::SpanReader reader{
-      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bytes), length))};
+  base::SpanReader reader{gfx::SkDataToSpan(data)};
 
   uint32_t img_id;
   if (!reader.ReadU32NativeEndian(img_id)) {
@@ -628,7 +629,7 @@ SkDeserialProcs DeserializationProcs(
     TypefaceDeserializationContext* typeface_ctx,
     ImageDeserializationContext* image_ctx) {
   SkDeserialProcs procs;
-  procs.fImageProc = DeserializeRasterImage;
+  procs.fImageDataProc = DeserializeRasterImage;
   procs.fImageCtx = image_ctx;
   procs.fPictureProc = DeserializeOopPicture;
   procs.fPictureCtx = picture_ctx;
