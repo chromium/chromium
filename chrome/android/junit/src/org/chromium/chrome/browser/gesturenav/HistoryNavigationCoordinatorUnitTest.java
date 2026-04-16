@@ -30,8 +30,6 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.base.TestActivity;
 
-import java.util.function.Supplier;
-
 @RunWith(BaseRobolectricTestRunner.class)
 public class HistoryNavigationCoordinatorUnitTest {
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -48,7 +46,6 @@ public class HistoryNavigationCoordinatorUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private ViewGroup mParentView;
-    @Mock private Supplier<TouchEventProvider> mTouchEventProviderSupplier;
     @Mock private TouchEventProvider mTouchEventProvider;
     @Mock private FullscreenManager mFullscreenManager;
 
@@ -61,7 +58,6 @@ public class HistoryNavigationCoordinatorUnitTest {
 
     private void onActivity(TestActivity activity) {
         when(mParentView.getContext()).thenReturn(activity);
-        when(mTouchEventProviderSupplier.get()).thenReturn(mTouchEventProvider);
     }
 
     private void initializeHistoryNavigationCoordinator() {
@@ -74,7 +70,7 @@ public class HistoryNavigationCoordinatorUnitTest {
                         ObservableSuppliers.alwaysNull(),
                         null,
                         null,
-                        mTouchEventProviderSupplier,
+                        mTouchEventProvider,
                         mFullscreenManager);
     }
 

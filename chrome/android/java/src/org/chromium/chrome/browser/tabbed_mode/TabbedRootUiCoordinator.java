@@ -497,7 +497,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             BooleanSupplier supportsAppMenuSupplier,
             Supplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<TabContentManager> tabContentManagerSupplier,
             MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier,
             SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
@@ -1055,6 +1055,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (AndroidSidePanelEnabledFn.isEnabled()) {
             mCompositorViewHolderSupplier
+                    .asNonNull()
                     .get()
                     .setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
         }
@@ -1073,11 +1074,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 UiUtils.isGestureNavigationMode(mActivity.getWindow())
                         ? "GestureNav"
                         : "ThreeButton");
+
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.asNonNull().get();
         mHistoryNavigationCoordinator =
                 HistoryNavigationCoordinator.create(
                         mWindowAndroid,
                         mActivityLifecycleDispatcher,
-                        mCompositorViewHolderSupplier.get(),
+                        compositorViewHolder,
                         mCallbackController.makeCancelable(
                                 () -> mLayoutManager.getActiveLayout().requestUpdate()),
                         mActivityTabProvider.asObservable(),
@@ -1123,7 +1126,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 }
                             }
                         },
-                        mCompositorViewHolderSupplier::get,
+                        compositorViewHolder,
                         mFullscreenManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
@@ -1139,7 +1142,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             mLayoutStateProviderOneShotSupplier);
 
-            mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
+            compositorViewHolder.setOnDragListener(chromeTabbedOnDragListener);
 
             // Disable touch event while drag is in progress.
             mDragDropTouchObserver = e -> DragDropGlobalState.hasValue();
@@ -1743,7 +1746,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusIndicatorCoordinator =
                 new StatusIndicatorCoordinator(
                         mActivity,
-                        mCompositorViewHolderSupplier.get().getResourceManager(),
+                        mCompositorViewHolderSupplier.asNonNull().get().getResourceManager(),
                         mBrowserControlsManager,
                         mTabObscuringHandlerSupplier.get(),
                         mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
@@ -2374,7 +2377,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mLayoutManager,
                             mLayoutManager::requestUpdate,
                             mFullscreenManager,
-                            mCompositorViewHolderSupplier.get().getResourceManager(),
+                            mCompositorViewHolderSupplier.asNonNull().get().getResourceManager(),
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ result -> updateTopControlsHeight(false),
                             mProfileSupplier,

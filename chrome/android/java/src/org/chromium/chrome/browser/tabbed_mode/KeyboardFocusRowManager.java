@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType.APP;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
     private final Supplier</* @Nullable */ BookmarkBarCoordinator> mBookmarkBarCoordinatorSupplier;
 
     @SuppressWarnings("unused")
-    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
 
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier</* Nullable */ StripLayoutHelperManager>
@@ -65,7 +66,7 @@ import java.util.function.Supplier;
      */
     KeyboardFocusRowManager(
             Supplier</* @Nullable */ BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier</* @Nullable */ StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
             TabObscuringHandler tabObscuringHandler,
@@ -91,7 +92,10 @@ import java.util.function.Supplier;
         @KeyboardFocusRow int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow);
         switch (newKeyboardFocusRow) {
             case KeyboardFocusRow.NONE -> {
-                mCompositorViewHolderSupplier.get().setFocusOnFirstContentViewItem();
+                CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+                if (compositorViewHolder != null) {
+                    compositorViewHolder.setFocusOnFirstContentViewItem();
+                }
             }
             case KeyboardFocusRow.TAB_STRIP -> {
                 var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();

@@ -385,7 +385,7 @@ public class RootUiCoordinator
     private final BooleanSupplier mSupportsAppMenuSupplier;
     protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
     protected final FullscreenManager mFullscreenManager;
-    protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    protected final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected StatusBarColorController mStatusBarColorController;
     protected final MonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final SettableMonotonicObservableSupplier<EdgeToEdgeController>
@@ -515,7 +515,7 @@ public class RootUiCoordinator
             BooleanSupplier supportsAppMenuSupplier,
             Supplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<TabContentManager> tabContentManagerSupplier,
             MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier,
             SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
@@ -1286,7 +1286,7 @@ public class RootUiCoordinator
                             mActivity,
                             mActivity.findViewById(R.id.automotive_base_frame_layout),
                             mFullscreenManager,
-                            mCompositorViewHolderSupplier.get(),
+                            mCompositorViewHolderSupplier.asNonNull().get(),
                             mBackPressManager);
         }
 
@@ -1322,7 +1322,7 @@ public class RootUiCoordinator
         mAnchoredDialogCoordinator =
                 new AnchoredDialogCoordinator(
                         mActivity,
-                        mCompositorViewHolderSupplier.get(),
+                        mCompositorViewHolderSupplier.asNonNull().get(),
                         () -> mBrowserControlsManager.getContentOffset());
         AnchoredDialogCoordinatorProvider.attach(mWindowAndroid, mAnchoredDialogCoordinator);
     }
@@ -1363,7 +1363,7 @@ public class RootUiCoordinator
         manager.initialize(
                 mActivity.findViewById(android.R.id.content),
                 mLayoutManager,
-                mCompositorViewHolderSupplier.get(),
+                mCompositorViewHolderSupplier.asNonNull().get(),
                 toolbarHeightDp,
                 assertNonNull(mToolbarManager),
                 canContextualSearchPromoteToNewTab(),
@@ -1961,7 +1961,7 @@ public class RootUiCoordinator
                             mFullscreenManager,
                             mEdgeToEdgeControllerSupplier,
                             mToolbarContainer,
-                            mCompositorViewHolderSupplier.get(),
+                            mCompositorViewHolderSupplier.asNonNull().get(),
                             urlFocusChangedCallback,
                             mTopUiThemeColorProvider,
                             mAdjustedTopUiThemeColorProvider,

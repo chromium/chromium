@@ -34,8 +34,6 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.function.Supplier;
-
 /** Coordinator object for gesture navigation. */
 @NullMarked
 public class HistoryNavigationCoordinator
@@ -57,7 +55,7 @@ public class HistoryNavigationCoordinator
 
     private @MonotonicNonNull NavigationHandler mNavigationHandler;
 
-    private Supplier<TouchEventProvider> mTouchEventProvider;
+    private TouchEventProvider mTouchEventProvider;
 
     private @Nullable Boolean mForceFeatureEnabledForTesting;
 
@@ -83,7 +81,7 @@ public class HistoryNavigationCoordinator
             NullableObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,
-            Supplier<TouchEventProvider> touchEventProvider,
+            TouchEventProvider touchEventProvider,
             FullscreenManager fullscreenManager) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(
@@ -107,7 +105,7 @@ public class HistoryNavigationCoordinator
             NullableObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,
-            Supplier<TouchEventProvider> touchEventProvider,
+            TouchEventProvider touchEventProvider,
             FullscreenManager fullscreenManager) {
         mForceFeatureEnabledForTesting = null;
         mNavigationLayout =
@@ -168,18 +166,16 @@ public class HistoryNavigationCoordinator
                         @Override
                         public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
                             mIsFullscreen = true;
-                            if (mTouchEventProvider.get() != null && mNavigationHandler != null) {
-                                mTouchEventProvider
-                                        .get()
-                                        .removeTouchEventObserver(mNavigationHandler);
+                            if (mNavigationHandler != null) {
+                                mTouchEventProvider.removeTouchEventObserver(mNavigationHandler);
                             }
                         }
 
                         @Override
                         public void onExitFullscreen(Tab tab) {
                             mIsFullscreen = false;
-                            if (mTouchEventProvider.get() != null && mNavigationHandler != null) {
-                                mTouchEventProvider.get().addTouchEventObserver(mNavigationHandler);
+                            if (mNavigationHandler != null) {
+                                mTouchEventProvider.addTouchEventObserver(mNavigationHandler);
                             }
                         }
                     };
@@ -249,9 +245,7 @@ public class HistoryNavigationCoordinator
 
         // Check against |mActivityLifecycleDisptacher|/|mTouchEventProvider| prevents the flow
         // after the destruction.
-        if (!mEnabled
-                || mActivityLifecycleDispatcher == null
-                || mTouchEventProvider.get() == null) {
+        if (!mEnabled || mActivityLifecycleDispatcher == null) {
             return;
         }
 
@@ -275,7 +269,7 @@ public class HistoryNavigationCoordinator
                         mNavigationLayout,
                         mBackActionDelegate,
                         mNavigationLayout::willNavigate);
-        mTouchEventProvider.get().addTouchEventObserver(mNavigationHandler);
+        mTouchEventProvider.addTouchEventObserver(mNavigationHandler);
     }
 
     @Override
@@ -352,9 +346,7 @@ public class HistoryNavigationCoordinator
         if (mNavigationHandler != null) {
             mNavigationHandler.setTab(null);
             mNavigationHandler.destroy();
-            if (mTouchEventProvider.get() != null) {
-                mTouchEventProvider.get().removeTouchEventObserver(mNavigationHandler);
-            }
+            mTouchEventProvider.removeTouchEventObserver(mNavigationHandler);
             mNavigationHandler = null;
         }
         if (mActivityLifecycleDispatcher != null) {
