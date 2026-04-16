@@ -568,6 +568,7 @@ crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_VP
 
 # MeetEffects failures
 crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
+crbug.com/286989320 [ linux amd-0x7340 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
 
 # Mac AMD flaky directory failures
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]

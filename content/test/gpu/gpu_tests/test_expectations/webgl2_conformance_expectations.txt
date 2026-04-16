@@ -839,6 +839,7 @@ crbug.com/488451405 [ linux nvidia angle-opengl passthrough ] conformance/textur
 ## Linux AMD RX 5500 XT ##
 
 crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
+crbug.com/445727124 [ linux amd-0x7340 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
 
 ## Linux AMD RX 7600 ##
 
