@@ -190,7 +190,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void SetupAnimation(AnimationDirection direction,
                       int64_t duration_ms,
                       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  void SetupSnapAnimation(const gfx::Vector2dF& scroll_delta);
+  void SetupSnapAnimation(AnimationDirection direction,
+                          const gfx::Vector2dF& scroll_delta);
   void StartAnimationIfNecessary();
   void ResetBaseline();
   float OldTopControlsMinShownRatio();
