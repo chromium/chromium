@@ -86,8 +86,12 @@ class ExtensionActionDispatcher : public BrowserContextKeyedAPI {
                                   bool is_pinned);
 
   // Clears the values for all ExtensionActions for the tab associated with the
-  // given `web_contents` (and signals that page actions changed).
-  void ClearAllValuesForTab(content::WebContents* web_contents);
+  // given `web_contents` (and signals that page actions changed). If
+  // `web_contents_being_destroyed` is true, also clears declarative state,
+  // which is only needed on destruction (the ContentRulesRegistry reverts it
+  // on navigations).
+  void ClearAllValuesForTab(content::WebContents* web_contents,
+                            bool web_contents_being_destroyed = false);
 
   void set_prefs_for_testing(ExtensionPrefs* prefs) {
     extension_prefs_ = prefs;

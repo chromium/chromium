@@ -222,4 +222,26 @@ TEST(ExtensionActiontest, DeclarativeShows) {
   EXPECT_TRUE(action->GetIsVisibleIgnoringDeclarative(100));
 }
 
+// Regression test for https://493286570. Verifies that
+// ClearDeclarativeValuesForTab erases per-tab declarative show state.
+TEST(ExtensionActionTest, ClearDeclarativeValuesForTab) {
+  std::unique_ptr<ExtensionAction> action =
+      CreateAction(ActionInfo(ActionInfo::Type::kAction));
+
+  action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
+  EXPECT_FALSE(action->GetIsVisible(1));
+
+  // Apply a declarative show; the tab becomes visible.
+  action->DeclarativeShow(1);
+  EXPECT_TRUE(action->GetIsVisible(1));
+
+  // ClearAllValuesForTab does not touch declarative state.
+  action->ClearAllValuesForTab(1);
+  EXPECT_TRUE(action->GetIsVisible(1));
+
+  // ClearDeclarativeValuesForTab cleans up the declarative show count.
+  action->ClearDeclarativeValuesForTab(1);
+  EXPECT_FALSE(action->GetIsVisible(1));
+}
+
 }  // namespace extensions

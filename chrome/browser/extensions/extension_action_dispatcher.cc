@@ -101,7 +101,8 @@ void ExtensionActionDispatcher::DispatchExtensionActionClicked(
 }
 
 void ExtensionActionDispatcher::ClearAllValuesForTab(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool web_contents_being_destroyed) {
   DCHECK(web_contents);
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
@@ -115,6 +116,11 @@ void ExtensionActionDispatcher::ClearAllValuesForTab(
         action_manager->GetExtensionAction(*extension);
     if (extension_action) {
       extension_action->ClearAllValuesForTab(tab_id.id());
+      // Declarative state is reverted by the ContentRulesRegistry on
+      // navigations, but must be explicitly cleaned up on destruction.
+      if (web_contents_being_destroyed) {
+        extension_action->ClearDeclarativeValuesForTab(tab_id.id());
+      }
       NotifyChange(extension_action, web_contents, browser_context);
     }
   }

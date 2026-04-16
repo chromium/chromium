@@ -189,8 +189,13 @@ class ExtensionAction {
     return GetIsVisibleInternal(tab_id, /*include_declarative=*/false);
   }
 
-  // Remove all tab-specific state.
+  // Remove all tab-specific state except declarative state, which is managed
+  // by the ContentRulesRegistry.
   void ClearAllValuesForTab(TabID tab_id);
+
+  // Clears per-tab declarative show count and icon entries. Called on tab
+  // destruction to prevent leaks.
+  void ClearDeclarativeValuesForTab(TabID tab_id);
 
   // Sets the default IconImage for this action.
   void SetDefaultIconImage(std::unique_ptr<IconImage> icon_image);

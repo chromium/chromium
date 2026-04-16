@@ -442,8 +442,10 @@ void ExtensionActionRunner::DidFinishNavigation(
 
 void ExtensionActionRunner::WebContentsDestroyed() {
   ExtensionActionDispatcher::Get(browser_context_)
-      ->ClearAllValuesForTab(web_contents());
+      ->ClearAllValuesForTab(web_contents(),
+                             /*web_contents_being_destroyed=*/true);
 
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents());
   declarative_net_request::RulesMonitorService* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context_);
 
@@ -452,7 +454,6 @@ void ExtensionActionRunner::WebContentsDestroyed() {
     declarative_net_request::ActionTracker& action_tracker =
         rules_monitor_service->action_tracker();
 
-    int tab_id = ExtensionTabUtil::GetTabId(web_contents());
     action_tracker.ClearTabData(tab_id);
   }
 }

@@ -187,10 +187,11 @@ void ExtensionAction::ClearAllValuesForTab(TabID tab_id) {
   badge_text_color_.erase(tab_id);
   badge_background_color_.erase(tab_id);
   is_visible_.erase(tab_id);
-  // TODO(jyasskin): Erase the element from declarative_show_count_
-  // when the tab's closed.  There's a race between the
-  // LocationBarController and the ContentRulesRegistry on navigation,
-  // which prevents me from cleaning everything up now.
+}
+
+void ExtensionAction::ClearDeclarativeValuesForTab(TabID tab_id) {
+  declarative_show_count_.erase(tab_id);
+  declarative_icon_.erase(tab_id);
 }
 
 void ExtensionAction::SetDefaultIconImage(
