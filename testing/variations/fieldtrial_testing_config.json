@@ -23481,6 +23481,27 @@
             ]
         }
     ],
+    "V8CompactionOnRegularGCs": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8Flag_compaction_on_regular_gcs"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8DisableEagerAllocationFailures": [
         {
             "platforms": [
