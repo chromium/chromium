@@ -19,6 +19,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/buildflags.h"
+#include "ui/base/template_expressions.h"
 #include "url/origin.h"
 
 namespace content {
@@ -66,6 +67,9 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   std::string GetSource() override;
   url::Origin GetOrigin() override;
   void SetSupportedScheme(std::string_view scheme) override;
+
+  // URLDataSourceImpl:
+  const ui::TemplateReplacements* GetReplacements() const override;
 
   // Add the locale to the load time data defaults. May be called repeatedly.
   void EnsureLoadTimeDataDefaultsAdded();

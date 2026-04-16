@@ -184,9 +184,6 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
     return parent_->deny_xframe_options_;
   }
   bool ShouldServeMimeTypeAsContentTypeHeader() override { return true; }
-  const ui::TemplateReplacements* GetReplacements() override {
-    return &parent_->replacements_;
-  }
   bool ShouldReplaceI18nInJS() override {
     return parent_->ShouldReplaceI18nInJS();
   }
@@ -360,6 +357,10 @@ void WebUIDataSourceImpl::DisableDenyXFrameOptions() {
 
 void WebUIDataSourceImpl::EnableReplaceI18nInJS() {
   should_replace_i18n_in_js_ = true;
+}
+
+const ui::TemplateReplacements* WebUIDataSourceImpl::GetReplacements() const {
+  return &replacements_;
 }
 
 void WebUIDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {

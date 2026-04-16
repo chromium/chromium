@@ -42,6 +42,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/template_expressions.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace {
@@ -89,6 +90,7 @@ bool ReadUncompressedOrGzip(base::FilePath path, std::string* content) {
 
 void ReadFile(const base::FilePath downloads,
               const std::string& relative_path,
+              const ui::TemplateReplacements& replacements,
               content::URLDataSource::GotDataCallback callback) {
   base::FilePath path;
   std::string content;
@@ -123,6 +125,10 @@ void ReadFile(const base::FilePath downloads,
   }
 
   DCHECK(result) << path;
+  if (!replacements.empty()) {
+    content = ui::ReplaceTemplateExpressions(content, replacements);
+  }
+
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(content)));
 }
@@ -182,7 +188,10 @@ void TerminalSource::StartDataRequest(
     path = "html/terminal.html";
   }
 
-  // Refresh the $i8n{themeColor} replacement for css files.
+  // Refresh the $i8n{themeColor} replacement for css files. Since we modify
+  // replacements, create a new copy for each request and do replacements
+  // internally rather than override GetReplacements() (crbug.com/501346792).
+  ui::TemplateReplacements replacements;
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     GURL contents_url;
     std::optional<SkColor> opener_background_color;
@@ -200,14 +209,15 @@ void TerminalSource::StartDataRequest(
             opener_tab->GetContents()->GetBackgroundColor();
       }
     }
-    replacements_["themeColor"] =
+    replacements["themeColor"] =
         base::EscapeForHTML(guest_os::GetTerminalSettingBackgroundColor(
             profile_, contents_url, opener_background_color));
   }
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadFile, downloads_, path, std::move(callback)));
+      base::BindOnce(&ReadFile, downloads_, path, std::move(replacements),
+                     std::move(callback)));
 }
 
 std::string TerminalSource::GetMimeType(const GURL& url) {
@@ -223,10 +233,6 @@ std::string TerminalSource::GetMimeType(const GURL& url) {
 bool TerminalSource::ShouldServeMimeTypeAsContentTypeHeader() {
   // TerminalSource pages include js modules which require an explicit MimeType.
   return true;
-}
-
-const ui::TemplateReplacements* TerminalSource::GetReplacements() {
-  return &replacements_;
 }
 
 std::string TerminalSource::GetContentSecurityPolicy(
