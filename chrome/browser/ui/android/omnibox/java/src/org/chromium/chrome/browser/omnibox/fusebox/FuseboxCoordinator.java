@@ -13,8 +13,10 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.ContextUtils;
@@ -148,6 +150,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                                         mContext, BrandedColorScheme.APP_DEFAULT),
                                 () -> popupView,
                                 dynamicRectProvider)
+                        .setFocusable(true)
+                        .addOnDismissListener(this::onContextPopupDismissed)
                         .setOutsideTouchable(true)
                         .setAnimateFromAnchor(true)
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
@@ -313,6 +317,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     @Nullable FuseboxMediator getMediatorForTesting() {
         return mMediator;
+    }
+
+    @VisibleForTesting
+    void onContextPopupDismissed() {
+        if (mViewHolder == null || mViewHolder.addButton == null) return;
+        mViewHolder.addButton.requestFocus();
+        mViewHolder.addButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Initializer
