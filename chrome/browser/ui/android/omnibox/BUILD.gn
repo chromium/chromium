@@ -333,6 +333,8 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/anim/fusebox_slide_in_up.xml",
+    "java/res/anim/fusebox_slide_out_down.xml",
     "java/res/drawable-night/search_spark_rainbow.xml",
     "java/res/drawable/action_button_foreground_selector.xml",
     "java/res/drawable/create_image_24dp.xml",

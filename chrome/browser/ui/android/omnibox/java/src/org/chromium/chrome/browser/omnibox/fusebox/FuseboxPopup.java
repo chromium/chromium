@@ -164,6 +164,12 @@ class FuseboxPopup {
      * @param state The target state of the popup.
      */
     void setPopupState(@PopupState int state) {
+        if (state == FuseboxProperties.PopupState.BOTTOM) {
+            mPopupWindow.setAnimationStyle(R.style.FuseboxBottomSheetAnimation);
+        } else {
+            mPopupWindow.setAnimationStyle(0);
+        }
+
         // ALWAYS update the DynamicRectProvider state first.
         // This ensures it correctly unregisters layout observers when transitioning to HIDDEN.
         mDynamicRectProvider.setPopupState(state);

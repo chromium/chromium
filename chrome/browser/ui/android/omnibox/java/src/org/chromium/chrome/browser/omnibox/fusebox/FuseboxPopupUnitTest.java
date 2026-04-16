@@ -124,4 +124,16 @@ public class FuseboxPopupUnitTest {
         verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.BOTTOM);
         verify(mPopupWindow).show();
     }
+
+    @Test
+    public void testSetPopupState_Bottom_setsAnimation() {
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        verify(mPopupWindow).setAnimationStyle(R.style.FuseboxBottomSheetAnimation);
+    }
+
+    @Test
+    public void testSetPopupState_Floating_clearsAnimation() {
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        verify(mPopupWindow).setAnimationStyle(0);
+    }
 }

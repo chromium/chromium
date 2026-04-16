@@ -110,4 +110,10 @@ found in the LICENSE file.
         <item name="colorContainer">?attr/colorSurface</item>
         <item name="colorOnContainer">?attr/colorOnSurface</item>
     </style>
+
+    <!-- Bottom Sheet Animation for Fusebox -->
+    <style name="FuseboxBottomSheetAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/fusebox_slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/fusebox_slide_out_down</item>
+    </style>
 </resources>
