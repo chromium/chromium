@@ -54,6 +54,8 @@ constexpr CGFloat kTabGroupLabelOffset = 3;
 constexpr CGFloat kStackViewSpacing = 4;
 // The horizontal margins of the stack view.
 constexpr CGFloat kStackViewHorizontalMargin = 8;
+// The vertical offset of the stack view in portrait.
+constexpr CGFloat kStackViewLandscapeVerticalOffset = 2;
 
 // The inner padding of the buttons.
 constexpr CGFloat kButtonHorizontalPadding = 4;
@@ -131,6 +133,9 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   UIImage* _assistantButtonAvatar;
   // The background view.
   AppBarView* _backgroundView;
+  // The stack view constraints that are updated on rotation.
+  NSLayoutConstraint* _stackViewTopConstraint;
+  NSLayoutConstraint* _stackViewBottomConstraint;
 }
 
 #pragma mark - Accessors & Mutators
@@ -154,6 +159,8 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   _assistantButton.transform = transform;
   _openNewTabButton.transform = transform;
   _tabGridButton.transform = transform;
+
+  [self updateStackViewConstraintsForPortrait:(angle == 0)];
 }
 
 - (void)toggleSpotlightView:(BOOL)shouldShow {
@@ -189,6 +196,11 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   UIView* view = self.view;
   [view addSubview:stackView];
 
+  _stackViewTopConstraint =
+      [stackView.topAnchor constraintEqualToAnchor:view.topAnchor];
+  _stackViewBottomConstraint =
+      [stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor];
+
   [NSLayoutConstraint activateConstraints:@[
     [_backgroundView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
     [_backgroundView.trailingAnchor
@@ -199,15 +211,18 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
     [stackView.leadingAnchor
         constraintEqualToAnchor:view.leadingAnchor
                        constant:kStackViewHorizontalMargin],
-    [stackView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    _stackViewTopConstraint,
     [stackView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor
                        constant:-kStackViewHorizontalMargin],
-    [stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    _stackViewBottomConstraint,
     [view.heightAnchor constraintEqualToConstant:kAppBarHeight],
   ]];
 
   [self.layoutGuideCenter referenceView:stackView underName:kAppBarGuide];
+
+  // The AppBar is created in "portrait" orientation.
+  [self updateStackViewConstraintsForPortrait:YES];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -338,6 +353,13 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
 }
 
 #pragma mark - Private
+
+// Updates the stack view constraints based on the orientation.
+- (void)updateStackViewConstraintsForPortrait:(BOOL)portrait {
+  CGFloat offset = portrait ? 0 : -kStackViewLandscapeVerticalOffset;
+  _stackViewTopConstraint.constant = offset;
+  _stackViewBottomConstraint.constant = offset;
+}
 
 // Handles updating the UI for a size transition.
 - (void)updateUIForTransitionToSize:(CGSize)size {
