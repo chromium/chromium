@@ -11,14 +11,20 @@ import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('Movement', () => {
   let nodeStore: NodeStore;
+  let originalInnerHeight: number;
 
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    originalInnerHeight = window.innerHeight;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     nodeStore = NodeStore.getInstance();
     nodeStore.clear();
+  });
+
+  teardown(() => {
+    window.innerHeight = originalInnerHeight;
   });
 
   function assertHtml(html: string, id: number) {
@@ -222,10 +228,6 @@ suite('Movement', () => {
       bounds = element.getBoundingClientRect();
       assertGT(bounds.top, 0);
       assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
-
-      // Reset window.innerHeight after it's modified to not cause flakiness
-      // with other tests relying on window.innerHeight.
-      window.innerHeight = document.documentElement.clientHeight;
     });
 
     test('scrollIntoView scrolls to make the current highlight visible', () => {
