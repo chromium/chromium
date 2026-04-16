@@ -933,6 +933,7 @@ class PromoStateProviderCoordinator
       case ButtonState::kSigninPending:
       case ButtonState::kSyncPaused:
       case ButtonState::kExplicitTextShowing:
+      case ButtonState::kPasskeysLockedError:
         Collapse();
         return;
       case ButtonState::kOnSignin:
@@ -940,7 +941,6 @@ class PromoStateProviderCoordinator
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
         break;
-      case ButtonState::kPasskeysLockedError:
       case ButtonState::kNormal:
       case ButtonState::kManagement:
         CHECK(!collapse_timer_.IsRunning());

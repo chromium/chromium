@@ -3738,6 +3738,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
       .Times(testing::AtLeast(1));
   passkey_unlock_manager()->NotifyObserversForTesting();
 
+  // Once the error disappeared, the button should return to the normal state.
   EXPECT_EQ(avatar->GetText(), std::u16string());
   histogram_tester.ExpectBucketCount(
       kPasskeyUnlockErrorUiEventHistogram,
