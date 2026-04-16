@@ -22,7 +22,7 @@ OOPVideoDecoderFactoryProcessService::OOPVideoDecoderFactoryProcessService(
 
 OOPVideoDecoderFactoryProcessService::~OOPVideoDecoderFactoryProcessService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (shared_image_interface_ && !shared_image_interface_->IsLost()) {
+  if (shared_image_interface_) {
     shared_image_interface_->RemoveGpuChannelLostObserver(this);
   }
 }
