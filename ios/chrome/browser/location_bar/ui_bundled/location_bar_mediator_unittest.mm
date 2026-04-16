@@ -99,12 +99,8 @@ TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderTextImmediately) {
 }
 
 // Tests that the consumer is updated with the placeholder icon immediately
-// upon being set, provided the `omnibox::kOmniboxMobileParityUpdateV2` feature
-// is enabled.
+// upon being set.
 TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderIconImmediately) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxMobileParityUpdateV2);
-
   id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
 
   OCMExpect(

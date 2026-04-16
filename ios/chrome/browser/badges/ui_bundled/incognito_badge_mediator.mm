@@ -161,9 +161,6 @@
 }
 
 - (void)maybeUpdateIncognitoBadgeVisibility {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    return;
-  }
   _consumer.disabled = [self isCurrentWebStateShowingNTP];
 }
 

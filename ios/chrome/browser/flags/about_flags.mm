@@ -1056,12 +1056,6 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Force FRE", kForceBWGFirstTimeRun, nullptr},
     {"Skip new user delay", kSkipNewUserDelay, nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxMobileParityEnableFeedForGoogleOnly[] =
-    {{OmniboxFieldTrial::kMobileParityEnableFeedForGoogleOnly.name, "true"}};
-const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
-    {"- feed only when searching with Google",
-     kOmniboxMobileParityEnableFeedForGoogleOnly, nullptr}};
-
 const FeatureEntry::FeatureParam kPageActionMenuDirectEntryPoint[] = {
     {kPageActionMenuDirectEntryPointParam, "true"},
 };
@@ -1505,17 +1499,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kLocalHistoryZeroSuggestBeyondNTP)},
-    {"omnibox-mobile-parity-update",
-     flag_descriptions::kOmniboxMobileParityUpdateName,
-     flag_descriptions::kOmniboxMobileParityUpdateDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdate,
-                                    kOmniboxMobileParityVariations,
-                                    "OmniboxMobileParityUpdate")},
-    {"omnibox-mobile-parity-update-v2",
-     flag_descriptions::kOmniboxMobileParityUpdateV2Name,
-     flag_descriptions::kOmniboxMobileParityUpdateV2Description,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdateV2)},
     {"force-startup-signin-promo",
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, flags_ui::kOsIos,

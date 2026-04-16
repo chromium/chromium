@@ -84,10 +84,8 @@ const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 const CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
 
 // The constants for the constraints the leading-edge aligned UI elements.
-const CGFloat kHintLabelFakeboxLeadingSpace = 28.0;
 const CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
 const CGFloat kHintLabelFakeboxLeadingSpaceWithPlus = 46.0;
-const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
 const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
 const CGFloat kHintLabelOmniboxLeadingSpaceWithWithPlus = 52.0;
 
@@ -487,8 +485,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self createPlusButton];
     leadingView = self.plusButton;
     leadingViewYOffset = -3;
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kOmniboxMobileParityUpdateV2)) {
+  } else {
     _logoView = [[UIImageView alloc] init];
     _logoView.contentMode = UIViewContentModeScaleAspectFit;
     leadingView = _logoView;
@@ -1325,22 +1322,16 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (CGFloat)hintLabelFakeboxLeadingSpace {
   if ([self shouldShowPlusButton]) {
     return kHintLabelFakeboxLeadingSpaceWithPlus;
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kOmniboxMobileParityUpdateV2)) {
-    return kHintLabelFakeboxLeadingSpaceWithIcon;
   } else {
-    return kHintLabelFakeboxLeadingSpace;
+    return kHintLabelFakeboxLeadingSpaceWithIcon;
   }
 }
 
 - (CGFloat)hintLabelOmniboxLeadingSpace {
   if ([self shouldShowPlusButton]) {
     return kHintLabelOmniboxLeadingSpaceWithWithPlus;
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kOmniboxMobileParityUpdateV2)) {
-    return kHintLabelOmniboxLeadingSpaceWithIcon;
   } else {
-    return kHintLabelOmniboxLeadingSpace;
+    return kHintLabelOmniboxLeadingSpaceWithIcon;
   }
 }
 

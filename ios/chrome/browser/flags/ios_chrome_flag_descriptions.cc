@@ -1292,17 +1292,6 @@ const char kOmniboxMlUrlSearchBlendingName[] = "Omnibox ML URL Search Blending";
 const char kOmniboxMlUrlSearchBlendingDescription[] =
     "Specifies how to blend URL ML scores and search traditional scores.";
 
-const char kOmniboxMobileParityUpdateName[] = "Omnibox Mobile parity update";
-const char kOmniboxMobileParityUpdateDescription[] =
-    "When set, applies certain assets to match Desktop visuals and "
-    "descriptions";
-
-const char kOmniboxMobileParityUpdateV2Name[] =
-    "Omnibox Mobile parity update V2";
-const char kOmniboxMobileParityUpdateV2Description[] =
-    "When set, applies certain assets to match Desktop visuals and "
-    "descriptions";
-
 const char kOmniboxOnClobberFocusTypeOnIOSName[] =
     "Omnibox On Clobber Focus Type On IOS";
 const char kOmniboxOnClobberFocusTypeOnIOSDescription[] =

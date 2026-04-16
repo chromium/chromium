@@ -590,9 +590,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 - (void)setDefaultSearchEngineImage:(UIImage*)image {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    return;
-  }
   // The header view might not be created yet. Store the logo image until it is
   // consumed.
   if (!self.headerView) {
@@ -1254,12 +1251,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 // Returns the omnibox placeholder text.
 - (NSString*)placeholderText {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
-    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
-                                   self.defaultSearchEngineName.cr_UTF16String);
-  } else {
-    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-  }
+  return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
+                                 self.defaultSearchEngineName.cr_UTF16String);
 }
 
 @end

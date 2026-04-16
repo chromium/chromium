@@ -790,12 +790,10 @@
   NTPMediator.NTPContentDelegate = self;
   NTPMediator.headerConsumer = self.headerViewController;
   NTPMediator.consumer = self.NTPViewController;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    PlaceholderService* placeholderService =
-        ios::PlaceholderServiceFactory::GetForProfile(self.profile);
-    NTPMediator.placeholderService = placeholderService;
-  }
+  PlaceholderService* placeholderService =
+      ios::PlaceholderServiceFactory::GetForProfile(self.profile);
+  NTPMediator.placeholderService = placeholderService;
+
   [NTPMediator setUp];
 }
 

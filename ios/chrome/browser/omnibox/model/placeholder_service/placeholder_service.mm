@@ -113,10 +113,6 @@ UIImage* PlaceholderService::GetDefaultSearchEngineIcon(
 }
 
 NSString* PlaceholderService::GetCurrentPlaceholderText() {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
-    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-  }
-
   CHECK(template_url_service_);
 
   std::u16string provider_name = u"";

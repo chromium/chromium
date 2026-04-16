@@ -273,12 +273,7 @@
   [self.secondaryToolbarCoordinator start];
 
   if (!IsChromeNextIaEnabled()) {
-    if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-      self.orchestrator = [[OmniboxFocusOrchestratorParity alloc] init];
-    } else {
-      self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
-    }
-
+    self.orchestrator = [[OmniboxFocusOrchestratorParity alloc] init];
     [self updateOrchestratorAnimatee];
   }
 
@@ -1079,42 +1074,24 @@
 /// an incognito browser, the NTP is displayed, and whether the fakebox was
 /// pinned if it was selected.
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    web::WebState* webState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    if (!webState) {
-      return OmniboxFocusTrigger::kOther;
-    }
-    if (!IsVisibleURLNewTabPage(webState)) {
-      return OmniboxFocusTrigger::kOther;
-    }
-
-    // (De)focusing on NTP.
-
-    if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
-      return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
-                                 : OmniboxFocusTrigger::kNTPOmnibox;
-    }
-
-    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
-                          : OmniboxFocusTrigger::kUnpinnedFakebox;
-
-  } else {
-    if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
-      return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
-                                 : OmniboxFocusTrigger::kOther;
-    }
-    web::WebState* webState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    if (!webState) {
-      return OmniboxFocusTrigger::kOther;
-    }
-    if (!IsVisibleURLNewTabPage(webState)) {
-      return OmniboxFocusTrigger::kOther;
-    }
-    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
-                          : OmniboxFocusTrigger::kUnpinnedFakebox;
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return OmniboxFocusTrigger::kOther;
   }
+  if (!IsVisibleURLNewTabPage(webState)) {
+    return OmniboxFocusTrigger::kOther;
+  }
+
+  // (De)focusing on NTP.
+
+  if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
+    return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
+                               : OmniboxFocusTrigger::kNTPOmnibox;
+  }
+
+  return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
+                        : OmniboxFocusTrigger::kUnpinnedFakebox;
 }
 
 - (void)updateOrchestratorAnimatee {

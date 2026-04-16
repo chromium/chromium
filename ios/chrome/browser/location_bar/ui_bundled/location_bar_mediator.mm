@@ -93,10 +93,8 @@ const CGFloat kIconPointSize = 16.0;
   }
   _webStateListObserver = nullptr;
   _searchEngineObserver = nullptr;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    self.placeholderService = nullptr;
-  }
+  self.placeholderService = nullptr;
+
   _fullscreenUIElements = nil;
 }
 
@@ -180,8 +178,6 @@ const CGFloat kIconPointSize = 16.0;
 }
 
 - (void)setPlaceholderService:(PlaceholderService*)placeholderService {
-  CHECK((base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
-         base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)));
   _placeholderService = placeholderService;
 
   if (!placeholderService) {
@@ -249,10 +245,6 @@ const CGFloat kIconPointSize = 16.0;
 #pragma mark - PlaceholderServiceObserving
 
 - (void)placeholderImageUpdated {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    return;
-  }
-
   __weak __typeof(self) weakSelf = self;
   if (self.placeholderService) {
     self.placeholderService->FetchDefaultSearchEngineIcon(
@@ -343,8 +335,7 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2) &&
-      [self isCurrentPageNTP]) {
+  if ([self isCurrentPageNTP]) {
     [self.consumer setPlaceholderType:LocationBarPlaceholderType::
                                           kDefaultSearchEngineIcon];
     return;

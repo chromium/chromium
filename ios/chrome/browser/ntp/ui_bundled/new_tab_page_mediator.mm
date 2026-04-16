@@ -435,10 +435,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   _backgroundCustomizationService = nullptr;
   _imageFetcherService = nullptr;
   _backgroundImageCacheService = nullptr;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    self.placeholderService = nullptr;
-  }
+  self.placeholderService = nullptr;
   base::UmaHistogramBoolean("IOS.NTP.LandscapeMode", _wasNTPInLandscape);
 }
 
@@ -454,9 +451,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)setPlaceholderService:(PlaceholderService*)placeholderService {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
-        base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2));
-
   _placeholderService = placeholderService;
 
   if (!placeholderService) {
@@ -526,10 +520,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 #pragma mark - PlaceholderServiceObserving
 
 - (void)placeholderImageUpdated {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    return;
-  }
-
   // Show Default Search Engine favicon.
   // Remember what is the Default Search Engine provider that the icon is
   // for, in case the user changes Default Search Engine while this is being

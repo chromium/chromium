@@ -414,12 +414,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.webStateList;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    PlaceholderService* placeholderService =
-        ios::PlaceholderServiceFactory::GetForProfile(self.profile);
-    self.mediator.placeholderService = placeholderService;
-  }
+  PlaceholderService* placeholderService =
+      ios::PlaceholderServiceFactory::GetForProfile(self.profile);
+  self.mediator.placeholderService = placeholderService;
 
   self.viewController.mutator = self.mediator;
 
