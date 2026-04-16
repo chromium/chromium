@@ -30,11 +30,11 @@ export class ValueDisplayElement extends CustomElement {
     return getTemplate();
   }
 
-  flattenValue(value: Value): any {
+  flattenValue(value: Value): unknown {
     if (value.listValue != null) {
       return value.listValue.storage.map(v => this.flattenValue(v));
     } else if (value.dictionaryValue != null) {
-      const flattenedDictionary: {[key: string]: any} = {};
+      const flattenedDictionary: {[key: string]: unknown} = {};
       for (const [k, v] of Object.entries(value.dictionaryValue.storage)) {
         flattenedDictionary[k] = this.flattenValue(v);
       }

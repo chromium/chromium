@@ -7,7 +7,6 @@ export interface RouteObserver {
 }
 
 export class Router {
-  private static instance: Router;
   private observers: Set<RouteObserver> = new Set();
   private currentPage: string|null = null;
   private currentSearchQuery: string|null = null;
@@ -17,17 +16,6 @@ export class Router {
       const {page, searchQuery} = this.getRouteFromUrl();
       this.setRoute(page, searchQuery);
     });
-  }
-
-  static resetInstanceForTesting(): void {
-    Router.instance = undefined as any;
-  }
-
-  static getInstance(): Router {
-    if (!Router.instance) {
-      Router.instance = new Router();
-    }
-    return Router.instance;
   }
 
   navigateTo(pageName: string) {
@@ -105,4 +93,14 @@ export class Router {
       observer.onRouteChanged(this.currentPage, this.currentSearchQuery);
     }
   }
+
+  static getInstance(): Router {
+    return instance || (instance = new Router());
+  }
+
+  static resetInstanceForTesting(): void {
+    instance = null;
+  }
 }
+
+let instance: Router|null = null;

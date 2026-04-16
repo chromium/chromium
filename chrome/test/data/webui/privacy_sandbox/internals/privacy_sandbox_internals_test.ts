@@ -13,6 +13,7 @@ import 'chrome://privacy-sandbox-internals/value_display.js';
 import type {CrFrameListElement} from 'chrome://privacy-sandbox-internals/cr_frame_list.js';
 import type {ExpandableJsonViewerElement} from 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
 import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_page.js';
+import {NavigatorProxy} from 'chrome://privacy-sandbox-internals/navigator_proxy.js';
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
 import type {PrivacySandboxInternalsPrefGroup, PrivacySandboxInternalsPrefPageConfig} from 'chrome://privacy-sandbox-internals/pref_page.js';
 import type {PrivacySandboxInternalsPref} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
@@ -26,6 +27,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestNavigatorProxy} from './test_navigator_proxy.js';
 import {TestPrivacySandboxInternalsBrowserProxy} from './test_privacy_sandbox_internals_browser_proxy.js';
 
 async function waitForElement(
@@ -1066,28 +1068,13 @@ suite('ExpandableJsonViewerElement', function() {
 
 // Test the <text-copy-button> element.
 suite('TextCopyButton', function() {
-  let clipboardData = '';
+  let navigatorProxy: TestNavigatorProxy;
   let textCopyButton: TextCopyButton;
   const kTextToCopy = 'Sample text';
   const textRecentlyCopiedAttribute = 'text-recently-copied';
 
   suiteSetup(async function() {
     await customElements.whenDefined('text-copy-button');
-
-    const mockClipboard = {
-      writeText: async (data: string) => {
-        clipboardData = data;
-        return Promise.resolve();
-      },
-      readText: async () => {
-        return Promise.resolve(clipboardData);
-      },
-    };
-
-    Object.defineProperty(navigator, 'clipboard', {
-      configurable: true,
-      get: () => mockClipboard,
-    });
   });
 
   const getCopyIconElementOrFail = () => {
@@ -1102,11 +1089,10 @@ suite('TextCopyButton', function() {
     return span;
   };
 
-  suiteTeardown(function() {
-    delete (navigator as any).clipboard;
-  });
-
   setup(function() {
+    navigatorProxy = new TestNavigatorProxy();
+    NavigatorProxy.setInstance(navigatorProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     textCopyButton = document.createElement('text-copy-button');
     textCopyButton.setAttribute('text-to-copy', kTextToCopy);
@@ -1115,19 +1101,20 @@ suite('TextCopyButton', function() {
 
   test('clickingButtonCopiesTextFromAttribute', async () => {
     textCopyButton.click();
-    const clipboardText = await navigator.clipboard.readText();
-    assertEquals(clipboardText, kTextToCopy);
+    const text = await navigatorProxy.whenCalled('writeToClipboard');
+    assertEquals(text, kTextToCopy);
   });
 
   test('updatesTextToCopyWhenTextToCopyAttributeIsChanged', async () => {
     textCopyButton.click();
-    let clipboardText = await navigator.clipboard.readText();
-    assertEquals(clipboardText, kTextToCopy);
+    let text = await navigatorProxy.whenCalled('writeToClipboard');
+    assertEquals(text, kTextToCopy);
+    navigatorProxy.resetResolver('writeToClipboard');
 
     textCopyButton.setAttribute('text-to-copy', 'updated text');
     textCopyButton.click();
-    clipboardText = await navigator.clipboard.readText();
-    assertEquals(clipboardText, 'updated text');
+    text = await navigatorProxy.whenCalled('writeToClipboard');
+    assertEquals(text, 'updated text');
   });
 
   test('clickingButtonSetsRecentlyTextCopiedAttribute', async () => {
@@ -1143,11 +1130,7 @@ suite('TextCopyButton', function() {
     mockTimer.install();
 
     textCopyButton.click();
-    // Awaiting navigator.clipboard.readText() allows us to make sure that the
-    // writeText() call is completed. await waitForCondition() would have been
-    // more ideal here, but MockTimer mocks setTimeout and prevents us from
-    // being able to rely on waitForCondition.
-    await navigator.clipboard.readText();
+    await navigatorProxy.whenCalled('writeToClipboard');
     await Promise.resolve();
     assertTrue(textCopyButton.hasAttribute(textRecentlyCopiedAttribute));
     mockTimer.tick(textCopyButton.revertIconWaitDuration);
@@ -1170,7 +1153,7 @@ suite('TextCopyButton', function() {
 
     // Just tick icon should be shown after the icon is clicked
     textCopyButton.click();
-    await navigator.clipboard.readText();
+    await navigatorProxy.whenCalled('writeToClipboard');
     await Promise.resolve();
     assertEquals(
         window.getComputedStyle(copyIcon).getPropertyValue('display'), 'none');
@@ -1184,7 +1167,6 @@ suite('TextCopyButton', function() {
         window.getComputedStyle(copyIcon).getPropertyValue('display'), 'block');
     assertEquals(
         window.getComputedStyle(tickIcon).getPropertyValue('display'), 'none');
-
 
     mockTimer.uninstall();
   });

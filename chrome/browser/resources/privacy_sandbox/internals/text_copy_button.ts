@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
+import {NavigatorProxy} from './navigator_proxy.js';
 import {getTemplate} from './text_copy_button.html.js';
 
 export class TextCopyButton extends CustomElement {
@@ -42,7 +43,7 @@ export class TextCopyButton extends CustomElement {
   async onClickHandler() {
     {
       try {
-        await navigator.clipboard.writeText(this.textToCopy);
+        await NavigatorProxy.getInstance().writeToClipboard(this.textToCopy);
         this.setAttribute('text-recently-copied', '');
 
         if (this.revertIconTimeoutId_) {

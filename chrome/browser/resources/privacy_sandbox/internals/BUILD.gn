@@ -25,6 +25,7 @@ build_webui("build") {
   ts_files = [
     "content_settings_groups.ts",
     "highlight_utils.ts",
+    "navigator_proxy.ts",
     "privacy_sandbox_internals_browser_proxy.ts",
     "router.ts",
   ]

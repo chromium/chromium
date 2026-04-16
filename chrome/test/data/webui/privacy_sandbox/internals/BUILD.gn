@@ -10,6 +10,7 @@ build_webui_tests("build") {
   files = [
     "content_settings_test.ts",
     "privacy_sandbox_internals_test.ts",
+    "test_navigator_proxy.ts",
     "test_privacy_sandbox_internals_browser_proxy.ts",
   ]
   ts_path_mappings = [ "chrome://privacy-sandbox-internals/*|" + rebase_path(

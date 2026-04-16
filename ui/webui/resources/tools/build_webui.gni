@@ -647,7 +647,6 @@ template("build_webui") {
         "//chrome/browser/resources/password_manager",
         "//chrome/browser/resources/pdf",
         "//chrome/browser/resources/print_preview",
-        "//chrome/browser/resources/privacy_sandbox/internals",
         "//chrome/browser/resources/settings",
         "//chrome/browser/resources/settings_shared",
         "//chrome/browser/resources/side_panel/read_anything",
