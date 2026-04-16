@@ -49,25 +49,13 @@ TEST(CanvasResourceTest, PrepareTransferableResource_Software) {
       /*context_provider_wrapper=*/nullptr, shared_image_interface_provider);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
-  CanvasResource::ReleaseCallback release_callback =
-      base::BindOnce([](scoped_refptr<CanvasResource>&& resource,
-                        const gpu::SyncToken& sync_token, bool lost_resource) {
-        CHECK(resource);
-        resource->WaitSyncToken(sync_token);
-        if (lost_resource) {
-          resource->NotifyResourceLost();
-        }
-
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
-      });
   bool success = canvas_resource->PrepareTransferableResource(
       &resource, /*needs_verified_synctoken=*/false);
 
   EXPECT_TRUE(success);
   EXPECT_TRUE(resource.GetIsSoftware());
 
-  std::move(release_callback)
-      .Run(std::move(canvas_resource), gpu::SyncToken(), false);
+  CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
 }
 
 TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {

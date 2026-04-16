@@ -128,22 +128,11 @@ class CanvasResourceProviderTest : public Test {
   void EnsureResourceRecycled(CanvasResourceProvider* provider,
                               scoped_refptr<CanvasResource>&& resource) {
     viz::TransferableResource transferable_resource;
-    CanvasResource::ReleaseCallback release_callback = base::BindOnce(
-        [](scoped_refptr<CanvasResource>&& resource,
-           const gpu::SyncToken& sync_token, bool lost_resource) {
-          CHECK(resource);
-          resource->WaitSyncToken(sync_token);
-          if (lost_resource) {
-            resource->NotifyResourceLost();
-          }
-
-          CanvasResource::DropRefOnOwningThread(std::move(resource));
-        });
     CHECK(resource->PrepareTransferableResource(
         &transferable_resource,
         /*needs_verified_synctoken=*/false));
-    std::move(release_callback)
-        .Run(std::move(resource), resource->sync_token(), false);
+
+    CanvasResource::DropRefOnOwningThread(std::move(resource));
   }
 
   test::TaskEnvironment task_environment_{
