@@ -216,6 +216,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
   switchItem.on = on;
+  [self reconfigureCellsForItems:@[ switchItem ]];
 }
 
 // Sets switchItem's enabled status to `enabled` and reconfigures the
