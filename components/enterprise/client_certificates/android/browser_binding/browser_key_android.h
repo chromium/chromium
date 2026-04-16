@@ -29,7 +29,7 @@ class BrowserKeyAndroid : public BrowserKey {
   std::vector<uint8_t> GetPublicKeyAsSPKI() const override;
   scoped_refptr<net::SSLPrivateKey> GetSSLPrivateKey() const override;
   std::optional<std::vector<uint8_t>> Sign(
-      const std::vector<uint8_t>& data) const override;
+      base::span<const uint8_t> data) const override;
   SecurityLevel GetSecurityLevel() const override;
 
  private:

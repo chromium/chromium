@@ -74,7 +74,7 @@ scoped_refptr<net::SSLPrivateKey> BrowserKeyAndroid::GetSSLPrivateKey() const {
 }
 
 std::optional<std::vector<uint8_t>> BrowserKeyAndroid::Sign(
-    const std::vector<uint8_t>& data) const {
+    base::span<const uint8_t> data) const {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   jni_zero::ScopedJavaLocalRef<jbyteArray> data_json_jarray =
       base::android::ToJavaByteArray(env, data);

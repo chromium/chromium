@@ -49,7 +49,7 @@ class BrowserKey {
   // Signs the provided data with the private key of this browser key and
   // returns the signature.
   virtual std::optional<std::vector<uint8_t>> Sign(
-      const std::vector<uint8_t>& data) const = 0;
+      base::span<const uint8_t> data) const = 0;
 
   // Returns the security level of the key.
   virtual SecurityLevel GetSecurityLevel() const = 0;

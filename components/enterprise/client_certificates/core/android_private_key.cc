@@ -26,7 +26,7 @@ AndroidPrivateKey::~AndroidPrivateKey() = default;
 
 std::optional<std::vector<uint8_t>> AndroidPrivateKey::SignSlowly(
     base::span<const uint8_t> data) const {
-  return key_->Sign(std::vector<uint8_t>(data.begin(), data.end()));
+  return key_->Sign(data);
 }
 
 std::vector<uint8_t> AndroidPrivateKey::GetSubjectPublicKeyInfo() const {
