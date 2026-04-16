@@ -299,8 +299,9 @@ WebApp::WebApp(const webapps::ManifestId& manifest_id,
   RunWebAppConstructionValidations(manifest_id, start_url, scope_);
   // Set the correct metadata so that the appropriate fields in the
   // `sync_proto_` can be initialized accordingly.
+  SetStartUrl(start_url_);
   SetManifestId(manifest_id_);
-  SetStartUrlAndScope(start_url_, scope_);
+  SetScope(scope_);
 }
 
 WebApp::WebApp(const sync_pb::WebAppSpecifics& sync_proto)
@@ -310,16 +311,21 @@ WebApp::WebApp(const sync_pb::WebAppSpecifics& sync_proto)
       sync_proto_(sync_proto) {
   CHECK(sync_proto_.has_start_url() && GURL(sync_proto_.start_url()).is_valid())
       << "Invalid start_url in sync proto: " << sync_proto_.start_url();
-  CHECK(sync_proto_.has_scope() && GURL(sync_proto_.scope()).is_valid())
-      << "Invalid scope in sync proto: " << sync_proto_.scope();
   GURL start_url = GURL(sync_proto_.start_url());
+  SetStartUrl(start_url);
 
   webapps::ManifestId manifest_id_from_sync =
       GenerateManifestId(sync_proto_.relative_manifest_id(), start_url);
   SetManifestId(manifest_id_from_sync);
   app_id_ = GenerateAppIdFromManifestId(manifest_id_from_sync);
 
-  SetStartUrlAndScope(start_url, GURL(sync_proto_.scope()));
+  // If sync_proto_ does not have a valid scope, `SetStartUrl()` will take care
+  // of explicitly setting it to start_url without the filename.
+  if (sync_proto_.has_scope() && GURL(sync_proto_.scope()).is_valid()) {
+    SetScope(GURL(sync_proto_.scope()));
+  } else {
+    sync_proto_.clear_scope();
+  }
 
   // All other fields of the web app are set by the `Set<Field>()` methods. They
   // should be sanitizing the fields, but still good to check it here just in
@@ -486,31 +492,44 @@ void WebApp::SetDescription(const std::string& description) {
   description_ = description;
 }
 
-void WebApp::SetStartUrlAndScope(const GURL& start_url, const GURL& scope) {
+void WebApp::SetStartUrl(const GURL& start_url) {
   CHECK(start_url.is_valid());
-  CHECK(manifest_id_.is_valid());
+  if (manifest_id_.is_empty()) {
+    manifest_id_ = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
   CHECK(url::IsSameOriginWith(manifest_id(), start_url))
       << manifest_id().spec() << " " << start_url.spec();
-  CHECK(scope.is_valid());
-  CHECK(base::StartsWith(start_url.spec(), scope.spec(),
-                         base::CompareCase::SENSITIVE));
-
   start_url_ = start_url;
 
+  // Ensure that the start_url in the sync proto is set correctly and
+  // consistently.
+  sync_proto_.clear_start_url();
+  sync_proto_.set_start_url(start_url_.spec());
+  // Ensure that scope is always set, which in turn, also sets the sync_proto_.
+  if (scope_.is_empty()) {
+    SetScope(start_url_.GetWithoutFilename());
+  }
+}
+
+void WebApp::SetScope(const GURL& scope) {
+  GURL scope_for_app = scope;
+  // If the given scope is empty, populate the scope from the `start_url_`.
+  if (scope.is_empty()) {
+    CHECK(start_url_.is_valid());
+    scope_for_app = start_url_.GetWithoutFilename();
+  }
+  CHECK(scope_for_app.is_valid());
   // Ensure that the scope can never include queries or fragments, as per spec.
   GURL::Replacements scope_replacements;
   scope_replacements.ClearRef();
   scope_replacements.ClearQuery();
-  scope_ = scope.ReplaceComponents(scope_replacements);
+  scope_ = scope_for_app.ReplaceComponents(scope_replacements);
 
   // Post-migration check: Scope should never be empty after setting.
   CHECK(!scope_.is_empty());
 
-  // Ensure that the start_url and scope in the sync proto is set correctly and
-  // consistently.
-  sync_proto_.clear_start_url();
+  // Set up scope for syncing.
   sync_proto_.clear_scope();
-  sync_proto_.set_start_url(start_url_.spec());
   sync_proto_.set_scope(scope_.spec());
 }
 
@@ -1451,6 +1470,8 @@ base::Value WebApp::AsDebugValue() const {
 
 void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
   CHECK(manifest_id.is_valid());
+  CHECK(start_url_.is_empty() || url::IsSameOriginWith(start_url_, manifest_id))
+      << start_url_.spec() << " vs " << manifest_id.spec();
   CHECK(!manifest_id.has_ref());
   manifest_id_ = manifest_id;
 

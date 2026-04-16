@@ -662,7 +662,6 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
                           base::CompareCase::SENSITIVE)) {
       scope = start_url.GetWithoutFilename();
     }
-    specifics.set_scope(scope.spec());
 
     web_app = std::make_unique<WebApp>(specifics);
 

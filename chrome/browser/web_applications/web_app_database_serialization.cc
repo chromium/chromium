@@ -408,7 +408,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(
     return nullptr;
   }
 
-  sync_pb::WebAppSpecifics sync_data(proto.sync_data());
+  const sync_pb::WebAppSpecifics& sync_data = proto.sync_data();
 
   if (!sync_data.has_start_url()) {
     RecordProtoParseResult(ProtoParseResult::kNoStartUrlInSyncData);
@@ -499,19 +499,13 @@ std::unique_ptr<WebApp> ParseWebAppProto(
     return nullptr;
   }
 
-  if (start_url.spec() != sync_data.start_url()) {
-    sync_data.clear_start_url();
-    sync_data.set_start_url(start_url.spec());
-  }
-  if (scope.spec() != sync_data.scope()) {
-    sync_data.clear_scope();
-    sync_data.set_scope(scope.spec());
-  }
-
   std::unique_ptr<WebApp> web_app = std::make_unique<WebApp>(sync_data);
   if (proto.has_parent_app_id()) {
     web_app->SetParentAppId(proto.parent_app_id());
   }
+
+  web_app->SetStartUrl(start_url);
+  web_app->SetScope(scope);
 
   if (!sync_data.has_user_display_mode_cros() &&
       !sync_data.has_user_display_mode_default()) {
