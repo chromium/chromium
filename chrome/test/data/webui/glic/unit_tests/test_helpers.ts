@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BrowserProxy} from 'chrome://glic/browser_proxy.js';
-import type {PageHandlerInterface} from 'chrome://glic/glic.mojom-webui.js';
-import type {ApiHostEmbedder} from 'chrome://glic/glic_api_impl/host/glic_api_host.js';
-import type {PageType, WebviewDelegate} from 'chrome://glic/webview.js';
+import type {ApiHostEmbedder, BrowserProxy, PageHandlerInterface, PageType, WebviewDelegate} from 'chrome://glic/glic.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 /**

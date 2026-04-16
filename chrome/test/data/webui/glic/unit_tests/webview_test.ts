@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ZoomAction} from 'chrome://glic/glic.mojom-webui.js';
-import {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState} from 'chrome://glic/webview.js';
+import {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState, ZoomAction} from 'chrome://glic/glic.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

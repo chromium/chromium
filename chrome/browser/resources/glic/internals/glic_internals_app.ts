@@ -71,9 +71,10 @@ export class GlicInternalsAppElement extends CrLitElement {
     InternalsPageHandlerFactory.getRemote().createInternalsPageHandler(
         this.pageHandler_.$.bindNewPipeAndPassReceiver());
 
-    this.pageHandler_.getInternalsDataPayload().then(({internalsData}) => {
-      this.data_ = internalsData;
-    });
+    this.pageHandler_.getInternalsDataPayload().then(
+        ({internalsData}: {internalsData: InternalsDataPayload}) => {
+          this.data_ = internalsData;
+        });
   }
 
   protected onAutopushInputChange(e: Event) {
@@ -275,7 +276,7 @@ export class GlicInternalsAppElement extends CrLitElement {
     };
 
     this.pageHandler_.triggerInvokeFromInternalsAction(options).then(
-        ({success, errorMessage}) => {
+        ({success, errorMessage}: {success: boolean, errorMessage: string}) => {
           const timestamp = new Date().toLocaleTimeString();
           const logEntry = `[${timestamp}] ${
               success ? 'SUCCESS' : 'ERROR: ' + errorMessage}`;

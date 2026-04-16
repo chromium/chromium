@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GatedSender} from 'chrome://glic/glic_api_impl/host/gated_sender.js';
-import type {RequestMessage} from 'chrome://glic/glic_api_impl/post_message_transport.js';
-import {PostMessageRequestSender, PostMessageRouter, Queue} from 'chrome://glic/glic_api_impl/post_message_transport.js';
+import {GatedSender, PostMessageRequestSender, PostMessageRouter, Queue} from 'chrome://glic/glic.js';
+import type {RequestMessage} from 'chrome://glic/glic.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // To trigger these tests, run tests in
