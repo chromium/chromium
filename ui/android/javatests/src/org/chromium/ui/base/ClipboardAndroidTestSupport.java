@@ -30,6 +30,10 @@ public class ClipboardAndroidTestSupport {
         return ClipboardAndroidTestSupportJni.get().nativeTestClipboardNotifications();
     }
 
+    public static boolean hasCustomData() {
+        return ClipboardAndroidTestSupportJni.get().nativeHasCustomData();
+    }
+
     @NativeMethods
     interface Natives {
         boolean nativeWriteHtml(String htmlText);
@@ -37,5 +41,7 @@ public class ClipboardAndroidTestSupport {
         boolean nativeClipboardContains(String text);
 
         boolean nativeTestClipboardNotifications();
+
+        boolean nativeHasCustomData();
     }
 }
