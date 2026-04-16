@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
@@ -29,6 +31,10 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/public/web/win/web_font_rendering.h"
+#endif
 
 namespace blink {
 
@@ -579,6 +585,27 @@ TEST_F(AccessibilityTest, CanvasWithContentVisibilityAutoShouldNotCrash) {
       <div>Canvas fallback content</div>
     </canvas>
   )HTML");
+}
+
+TEST_F(AccessibilityTest, ValidationMessageIncludedInRootChildren) {
+#if BUILDFLAG(IS_WIN)
+  blink::WebFontRendering::SetMenuFontMetrics(
+      blink::WebString::FromAscii("Arial"), 12);
+#endif
+  SetBodyInnerHTML(R"HTML(<input id="input">)HTML");
+
+  AXObject* root = GetAXRootObject();
+  ASSERT_TRUE(root);
+
+  auto* input = To<HTMLInputElement>(GetElementById("input"));
+  ASSERT_TRUE(input);
+  input->setCustomValidity("Error");
+  input->reportValidity();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  AXObject* message = GetAXObjectCache().ValidationMessageObjectIfInvalid();
+  ASSERT_TRUE(message);
+  EXPECT_TRUE(root->CachedChildrenIncludingIgnored().Contains(message));
 }
 
 }  // namespace blink
