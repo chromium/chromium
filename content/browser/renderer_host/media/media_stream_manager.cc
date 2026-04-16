@@ -93,7 +93,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/jpeg_accelerator_provider.h"
@@ -135,20 +134,6 @@ namespace {
 void FilterAudioEffects(const StreamControls& controls, int* effects) {
   DCHECK(effects);
   // TODO(ajm): Should we handle ECHO_CANCELLER here?
-}
-
-// Unlike other effects, hotword is off by default, so turn it on if it's
-// requested and available.
-void EnableHotwordEffect(const StreamControls& controls, int* effects) {
-  DCHECK(effects);
-  if (controls.hotword_enabled) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Only enable if a hotword device exists.
-    if (ash::CrasAudioHandler::Get()->HasHotwordDevice()) {
-      *effects |= media::AudioParameters::HOTWORD;
-    }
-#endif
-  }
 }
 
 // Gets raw |device_id| and |group_id| when given a hashed device_id
@@ -775,7 +760,6 @@ class MediaStreamManager::DeviceRequest {
   void DisableAudioSharing() {
     SetAudioType(MediaStreamType::NO_SERVICE);
     stream_controls_.audio.stream_type = MediaStreamType::NO_SERVICE;
-    stream_controls_.hotword_enabled = false;
     stream_controls_.disable_local_echo = false;
     stream_controls_.suppress_local_audio_playback = false;
     stream_controls_.restrict_own_audio = false;
@@ -3025,7 +3009,6 @@ bool MediaStreamManager::FindExistingRequestedDevice(
             // is set to and not what the capabilities are.
             int effects = existing_device->input.effects();
             FilterAudioEffects(request->stream_controls(), &effects);
-            EnableHotwordEffect(request->stream_controls(), &effects);
             existing_device->input.set_effects(effects);
             *existing_request_state = request->state(device.type);
             return true;
@@ -3394,7 +3377,6 @@ void MediaStreamManager::Opened(
               // what the request asks for.
               int effects = device.input.effects();
               FilterAudioEffects(request->stream_controls(), &effects);
-              EnableHotwordEffect(request->stream_controls(), &effects);
               device.input.set_effects(effects);
             }
           }

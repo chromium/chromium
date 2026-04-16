@@ -98,10 +98,6 @@ struct BLINK_COMMON_EXPORT
     return controls.video;
   }
 
-  static bool hotword_enabled(const blink::StreamControls& controls) {
-    return controls.hotword_enabled;
-  }
-
   static bool disable_local_echo(const blink::StreamControls& controls) {
     return controls.disable_local_echo;
   }

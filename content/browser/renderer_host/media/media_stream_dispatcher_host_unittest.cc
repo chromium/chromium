@@ -648,23 +648,6 @@ TEST_F(MediaStreamDispatcherHostTest,
 }
 
 TEST_F(MediaStreamDispatcherHostTest,
-       BadMessageIfAudioNotRequestedAndHotwordEnabled) {
-  blink::StreamControls controls;
-  controls.audio.stream_type = MediaStreamType::NO_SERVICE;
-  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-  controls.hotword_enabled = true;
-
-  SetupFakeUI(true);
-
-  EXPECT_CALL(*this,
-              MockOnBadMessage(
-                  main_rfh()->GetGlobalId().child_id,
-                  bad_message::MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED))
-      .Times(1);
-  host_->OnGenerateStreams(kPageRequestId, controls);
-}
-
-TEST_F(MediaStreamDispatcherHostTest,
        BadMessageIfAudioNotRequestedAndDisableLocalEcho) {
   blink::StreamControls controls;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
