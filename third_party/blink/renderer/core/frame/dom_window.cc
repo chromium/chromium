@@ -761,7 +761,9 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     // We are depending on user activation twice since IsFocusAllowed() will
     // check for activation. This should be addressed in
     // https://crbug.com/959815.
-    if (!local_frame->GetDocument()->IsFocusAllowed(FocusTrigger::kScript)) {
+    if (!originating_frame ||
+        !local_frame->GetDocument()->IsFocusAllowed(FocusTrigger::kScript,
+                                                    *originating_frame)) {
       return;
     }
   }

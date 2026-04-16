@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_animations_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
@@ -8109,9 +8110,20 @@ Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
 }
 
 void Element::focusForBindings(const FocusOptions* options) {
-  Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                    mojom::blink::FocusType::kScript,
-                    /*capabilities=*/nullptr, options));
+  FocusParams params(SelectionBehaviorOnFocus::kRestore,
+                     mojom::blink::FocusType::kScript,
+                     /*capabilities=*/nullptr, options);
+  // Capture the calling frame so IsFocusAllowed checks the
+  // focus-without-user-activation policy against the correct setter when the
+  // target element is in a different document (e.g.
+  // iframeC.contentDocument.getElementById('x').focus() called from frame B).
+  if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled()) {
+    v8::Isolate* isolate = GetDocument().GetAgent().isolate();
+    if (LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate)) {
+      params.initiator_frame = incumbent_window->GetFrame();
+    }
+  }
+  Focus(params);
 }
 
 void Element::Focus() {
@@ -8129,7 +8141,16 @@ void Element::Focus(const FocusParams& params) {
     return;
   }
 
-  if (!GetDocument().IsFocusAllowed(params.focus_trigger)) {
+  // Default initiator_frame to this element's document frame when not set.
+  // JS entry points (focusForBindings, DOMWindow::focus) set it explicitly to
+  // the calling frame. Internal C++ callers (dialog.showModal, reportValidity,
+  // etc.) leave it null but they always focus within their own document, so
+  // the element's frame is the correct focus setter.
+  LocalFrame* initiator = params.initiator_frame ? params.initiator_frame
+                                                 : GetDocument().GetFrame();
+
+  if (!initiator || !GetDocument().IsFocusAllowed(params.focus_trigger,
+                                                    *initiator)) {
     return;
   }
 

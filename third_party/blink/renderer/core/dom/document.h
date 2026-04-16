@@ -1964,7 +1964,8 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
-  bool IsFocusAllowed(FocusTrigger trigger) const;
+  bool IsFocusAllowed(FocusTrigger trigger,
+                      const LocalFrame& initiator_frame) const;
 
   LazyLoadMediaObserver& EnsureLazyLoadMediaObserver();
 

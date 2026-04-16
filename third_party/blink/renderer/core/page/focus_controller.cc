@@ -1762,7 +1762,9 @@ void FocusController::FocusDocumentView(Frame* frame, bool notify_embedder) {
 }
 
 LocalFrame* FocusController::FocusedFrame() const {
-  // All callsites only care about *local* focused frames.
+  // Most callsites only care about *local* focused frames. Use
+  // `FocusedFrameIncludingRemote()` when remote frames matter (e.g. ancestry
+  // checks across process boundaries).
   return DynamicTo<LocalFrame>(focused_frame_.Get());
 }
 

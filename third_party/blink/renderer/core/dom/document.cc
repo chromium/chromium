@@ -9546,7 +9546,8 @@ bool Document::IsSlotAssignmentDirty() const {
          slot_assignment_engine_->HasPendingSlotAssignmentRecalc();
 }
 
-bool Document::IsFocusAllowed(FocusTrigger trigger) const {
+bool Document::IsFocusAllowed(FocusTrigger trigger,
+                              const LocalFrame& initiator_frame) const {
   LocalFrame* frame = GetFrame();
   if (!frame || frame->IsMainFrame() ||
       LocalFrame::HasTransientUserActivation(frame)) {
@@ -9573,12 +9574,34 @@ bool Document::IsFocusAllowed(FocusTrigger trigger) const {
            : WebFeature::kFocusWithoutUserActivationNotSandboxedNotAdFrame;
   }
   CountUse(uma_type);
+
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
     return true;
-  return trigger == FocusTrigger::kUserGesture ||
-         GetExecutionContext()->IsFeatureEnabled(
-             network::mojom::PermissionsPolicyFeature::
-                 kFocusWithoutUserActivation);
+
+  if (trigger == FocusTrigger::kUserGesture) {
+    return true;
+  }
+  if (GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::
+              kFocusWithoutUserActivation)) {
+    return true;
+  }
+
+  // Allow focus if the currently focused frame is an inclusive descendant of
+  // the focus setter's frame. This means the setter (or one of its children)
+  // already has focus, so moving focus within is not stealing it from a parent.
+  // `initiator_frame` is the frame whose script (or internal API) initiated the
+  // focus call. See Element::Focus() and DOMWindow::focus().
+  // See https://github.com/whatwg/html/issues/11839
+  if (Page* page = frame->GetPage()) {
+    Frame* focused_frame =
+        page->GetFocusController().FocusedFrameIncludingRemote();
+    if (focused_frame && focused_frame->IsDescendantOf(&initiator_frame)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 LazyLoadMediaObserver& Document::EnsureLazyLoadMediaObserver() {

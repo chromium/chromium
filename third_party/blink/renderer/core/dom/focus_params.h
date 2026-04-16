@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class LocalFrame;
+
 // Focus changes that cross a fenced frame boundary are observable by both
 // frames involved in the focus change. Because of that, focus calls that
 // originate from a JavaScript call can be used as a communication channel
@@ -53,6 +55,10 @@ struct FocusParams {
   const FocusOptions* options = nullptr;
   bool omit_blur_events = false;
   FocusTrigger focus_trigger = FocusTrigger::kScript;
+  // The frame whose script initiated the focus call. Used by the
+  // `focus-without-user-activation` policy to check against the correct setter
+  // when the target element is in a different document.
+  LocalFrame* initiator_frame = nullptr;
 };
 
 }  // namespace blink

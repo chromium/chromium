@@ -69,6 +69,9 @@ class CORE_EXPORT FocusController final
   void SetFocusedFrame(Frame*, bool notify_embedder = true);
   void FocusDocumentView(Frame*, bool notify_embedder = true);
   LocalFrame* FocusedFrame() const;
+  // Returns the focused frame even when it is a RemoteFrame (unlike
+  // `FocusedFrame()` which returns nullptr for remote frames).
+  Frame* FocusedFrameIncludingRemote() const { return focused_frame_.Get(); }
   Frame* FocusedOrMainFrame() const;
 
   // Clears |focused_frame_| if it's been detached.
