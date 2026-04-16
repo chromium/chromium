@@ -320,7 +320,7 @@ TEST_F(OverviewControllerTest, ExcludedWindowsHidden) {
   // so should be hidden) and one specifically set to be hidden in overview.
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 =
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP);
+      CreateTestWindowInShell({.window_type = aura::client::WINDOW_TYPE_POPUP});
   std::unique_ptr<aura::Window> window3 = CreateTestWindow();
   window3->SetProperty(kHideInOverviewKey, true);
 

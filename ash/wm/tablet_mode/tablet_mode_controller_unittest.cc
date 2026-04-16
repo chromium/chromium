@@ -1440,7 +1440,7 @@ TEST_F(TabletModeControllerTest, StartTabletActiveRightSnapPreviousLeftSnap) {
 TEST_F(TabletModeControllerTest, StartTabletActiveTransientChildOfLeftSnap) {
   std::unique_ptr<aura::Window> parent = CreateDesktopWindowSnappedLeft();
   std::unique_ptr<aura::Window> child =
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP);
+      CreateTestWindowInShell({.window_type = aura::client::WINDOW_TYPE_POPUP});
   ::wm::AddTransientChild(parent.get(), child.get());
   wm::ActivateWindow(child.get());
   tablet_mode_controller()->SetEnabledForTest(true);
@@ -1519,7 +1519,7 @@ TEST_F(TabletModeControllerTest,
   std::unique_ptr<aura::Window> dragged_window = CreateTestWindow();
   std::unique_ptr<aura::Window> parent = CreateDesktopWindowSnappedLeft();
   std::unique_ptr<aura::Window> child =
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP);
+      CreateTestWindowInShell({.window_type = aura::client::WINDOW_TYPE_POPUP});
   ::wm::AddTransientChild(parent.get(), child.get());
   wm::ActivateWindow(child.get());
   wm::ActivateWindow(dragged_window.get());

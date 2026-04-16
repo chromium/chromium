@@ -332,8 +332,9 @@ TEST_F(ScopedOverviewTransformWindowTest, EventTargetingPolicy) {
 
   // Helper for creating popups that will be transients for testing.
   auto create_popup = [this] {
-    std::unique_ptr<aura::Window> popup =
-        CreateTestWindow(gfx::Rect(10, 10), aura::client::WINDOW_TYPE_POPUP);
+    std::unique_ptr<aura::Window> popup = CreateTestWindowInShell(
+        {.bounds = gfx::Rect(10, 10),
+         .window_type = aura::client::WINDOW_TYPE_POPUP});
     popup->SetEventTargetingPolicy(etp::kTargetAndDescendants);
     return popup;
   };

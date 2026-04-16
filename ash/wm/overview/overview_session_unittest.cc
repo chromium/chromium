@@ -1366,8 +1366,8 @@ TEST_P(OverviewSessionTest,
   UpdateDisplay("800x600");
   EnterTabletMode();
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShell(
+      {.window_type = aura::client::WINDOW_TYPE_POPUP}));
   EXPECT_TRUE(window_util::ShouldExcludeForOverview(window2.get()));
   ToggleOverview();
   auto* item1 = GetOverviewItemForWindow(window1.get());

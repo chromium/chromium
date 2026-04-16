@@ -376,7 +376,7 @@ TEST_F(OverviewButtonTrayTest, TransientChildQuickSwitch) {
 
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 =
-      CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_POPUP);
+      CreateTestWindowInShell({.window_type = aura::client::WINDOW_TYPE_POPUP});
   std::unique_ptr<aura::Window> window3 = CreateTestWindow();
 
   // Add |window2| as a transient child of |window1|, and focus |window1|.

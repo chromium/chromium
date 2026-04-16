@@ -146,7 +146,8 @@ TEST_F(TabletModeMultitaskCueControllerTest, TransientChildFocus) {
   // Create a second window with a transient child.
   auto window2 = CreateAppWindow();
   auto transient_child2 =
-      CreateTestWindow(gfx::Rect(100, 10), aura::client::WINDOW_TYPE_POPUP);
+      CreateTestWindowInShell({.bounds = gfx::Rect(100, 10),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
   wm::AddTransientChild(window2.get(), transient_child2.get());
   wm::ActivateWindow(transient_child2.get());
 
