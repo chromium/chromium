@@ -316,11 +316,9 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
         int effectiveHeight = getTopControlHeight();
         if (isInTransition()) {
-            assert mBrowserControls.getBottomControlsMinHeightOffset() == 0;
-
-            // Assuming tab strip is the top most layer, and there's no minHeight available.
-            // The top controls offset stands for the folded portion of the tab strip when negative
-            // (tab strip showing), or remaining portion when offset > 0 (tab strip hiding).
+            // Assuming tab strip is the top most layer,the top controls offset stands for the
+            // folded portion of the tab strip when negative (tab strip showing), or remaining
+            // portion when offset > 0 (tab strip hiding).
             int topControlOffset = mBrowserControls.getTopControlOffset();
             if (topControlOffset <= 0) {
                 effectiveHeight += topControlOffset;
