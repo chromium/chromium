@@ -542,7 +542,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &visited_url_ranking::features::kGroupSuggestionService,
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kAndroidAutoMintedTWA,
-    &webapps::features::kAndroidTWAOriginDisplay,
     &webapps::features::kWebApkInstallFailureNotification,
 // go/keep-sorted end
 // FEATURE_EXPORT_LIST_END

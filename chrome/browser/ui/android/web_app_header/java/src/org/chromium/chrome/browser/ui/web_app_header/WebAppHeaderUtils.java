@@ -15,7 +15,6 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -109,8 +108,8 @@ public class WebAppHeaderUtils {
     }
 
     /**
-     * Checks whether standalone display mode is enabled. This includes checking that the the
-     * standalone feature flag is enabled, as well as the type of web app of the intent.
+     * Checks whether standalone display mode is enabled. This includes checking the type of web app
+     * of the intent.
      *
      * @param intentDataProvider contains intent data related to the current browser service.
      * @return true when currently running a trusted web app in standalone mode, else return false.
@@ -122,8 +121,7 @@ public class WebAppHeaderUtils {
 
         return intentDataProvider.isTrustedWebActivity()
                 && displayMode == DisplayMode.STANDALONE
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled();
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     /**

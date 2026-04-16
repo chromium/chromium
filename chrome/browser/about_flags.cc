@@ -11825,13 +11825,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-twa-origin-display",
-     flag_descriptions::kAndroidEnableTWAOriginDisplayName,
-     flag_descriptions::kAndroidEnableTWAOriginDisplayDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kAndroidTWAOriginDisplay)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"android-animated-progress-bar-in-browser",
      flag_descriptions::kAndroidAnimatedProgressBarInBrowserName,
      flag_descriptions::kAndroidAnimatedProgressBarInBrowserDescription,

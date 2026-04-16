@@ -215,7 +215,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_THEME_RESOURCE_PROVIDER = "AndroidThemeResourceProvider";
     public static final String ANDROID_TIPS_NOTIFICATIONS = "AndroidTipsNotifications";
     public static final String ANDROID_TIPS_NOTIFICATIONS_V2 = "AndroidTipsNotificationsV2";
-    public static final String ANDROID_TWA_ORIGIN_DISPLAY = "AndroidTWAOriginDisplay";
     public static final String ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO =
             "AndroidUseAdminsForEnterpriseInfo";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
@@ -805,8 +804,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, true);
     public static final CachedFlag sAndroidThemeResourceProvider =
             newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
-    public static final CachedFlag sAndroidTwaOriginDisplay =
-            newCachedFlag(ANDROID_TWA_ORIGIN_DISPLAY, true);
     public static final CachedFlag sAndroidUseAdminsForEnterpriseInfo =
             newCachedFlag(ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO, true);
     public static final CachedFlag sAndroidWindowManagementWebApi =
@@ -1244,7 +1241,6 @@ public abstract class ChromeFeatureList {
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidThemeModule,
                     sAndroidThemeResourceProvider,
-                    sAndroidTwaOriginDisplay,
                     sAndroidUseAdminsForEnterpriseInfo,
                     sAndroidWindowManagementWebApi,
                     sAndroidWindowPopupCustomTabUi,

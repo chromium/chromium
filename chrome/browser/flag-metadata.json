@@ -4099,12 +4099,7 @@
     "owners": [ "danieltwhite@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 141
   },
-  {
-    "name": "enable-twa-origin-display",
-    "owners": [ "aixba@google.com",
-      "japhet@google.com", "capabilities-team@google.com"],
-    "expiry_milestone": 160
-  },
+
   {
     "name": "enable-ui-devtools",
     "owners": [ "//components/ui_devtools/OWNERS" ],
