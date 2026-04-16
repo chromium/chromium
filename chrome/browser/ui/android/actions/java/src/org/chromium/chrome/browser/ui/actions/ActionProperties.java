@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -20,12 +21,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class ActionProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
-            new WritableObjectPropertyKey<>();
 
     /** This property should have a {@link ButtonState} value. */
     public static final WritableIntPropertyKey BUTTON_STATE = new WritableIntPropertyKey();
 
+    public static final WritableObjectPropertyKey<TextResolver> CONTENT_DESCRIPTION_RESOLVER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TextResolver> TOOLTIP_TEXT_RESOLVER =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Callback<View>> ON_PRESS_CALLBACK =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Callback<View>> ON_LONG_PRESS_CALLBACK =
@@ -39,11 +42,12 @@ public class ActionProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ICON,
-                CONTENT_DESCRIPTION,
-                BUTTON_STATE,
+                CONTENT_DESCRIPTION_RESOLVER,
+                TOOLTIP_TEXT_RESOLVER,
                 ON_PRESS_CALLBACK,
                 ON_LONG_PRESS_CALLBACK,
                 IPH_INTENT,
                 USER_EDUCATION_HELPER,
+                BUTTON_STATE,
             };
 }

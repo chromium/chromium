@@ -8,9 +8,12 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.TooltipCompat;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -20,8 +23,13 @@ public class ActionButtonBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (ActionProperties.ICON == propertyKey) {
             if (view instanceof ImageView v) v.setImageDrawable(model.get(ActionProperties.ICON));
-        } else if (ActionProperties.CONTENT_DESCRIPTION == propertyKey) {
-            view.setContentDescription(model.get(ActionProperties.CONTENT_DESCRIPTION));
+        } else if (ActionProperties.CONTENT_DESCRIPTION_RESOLVER == propertyKey) {
+            TextResolver resolver = model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);
+            view.setContentDescription(resolver != null ? resolver.resolve(view.getContext()) : "");
+        } else if (ActionProperties.TOOLTIP_TEXT_RESOLVER == propertyKey) {
+            TextResolver resolver = model.get(ActionProperties.TOOLTIP_TEXT_RESOLVER);
+            TooltipCompat.setTooltipText(
+                    view, resolver != null ? resolver.resolve(view.getContext()) : null);
         } else if (ActionProperties.ON_PRESS_CALLBACK == propertyKey
                 || ActionProperties.BUTTON_STATE == propertyKey) {
             Callback<View> callback = model.get(ActionProperties.ON_PRESS_CALLBACK);

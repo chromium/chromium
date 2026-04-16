@@ -8,11 +8,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -82,16 +87,59 @@ public class ActionButtonBinderUnitTest {
     @SmallTest
     public void testContentDescription() {
         String description = "Test description";
-        mModel.set(ActionProperties.CONTENT_DESCRIPTION, description);
-        assertTrue(mView.getContentDescription().equals(description));
+        mModel.set(ActionProperties.CONTENT_DESCRIPTION_RESOLVER, context -> description);
+        assertEquals(description, mView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testContentDescription_PluralString() {
+        int count = 5;
+        int pluralResId = 12345;
+        String expectedDescription = "5 items";
+
+        PropertyModel model = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        ImageView mockView = spy(new ImageView(mActivity));
+        Context mockContext = mock(Context.class);
+        Resources mockResources = mock(Resources.class);
+
+        doReturn(mockContext).when(mockView).getContext();
+        doReturn(mockResources).when(mockContext).getResources();
+        doReturn(expectedDescription)
+                .when(mockResources)
+                .getQuantityString(pluralResId, count, count);
+
+        PropertyModelChangeProcessor.create(model, mockView, ActionButtonBinder::bind);
+
+        model.set(
+                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
+                new ResourceTextResolver(pluralResId, count));
+
+        assertEquals(expectedDescription, mockView.getContentDescription());
     }
 
     @Test
     @SmallTest
     public void testContentDescription_NullString() {
-        mModel.set(ActionProperties.CONTENT_DESCRIPTION, "Test");
-        mModel.set(ActionProperties.CONTENT_DESCRIPTION, null);
-        assertNull(mView.getContentDescription());
+        mModel.set(ActionProperties.CONTENT_DESCRIPTION_RESOLVER, context -> "Test description");
+        mModel.set(ActionProperties.CONTENT_DESCRIPTION_RESOLVER, null);
+        assertEquals("", mView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testTooltipText() {
+        String tooltip = "Test tooltip";
+        mModel.set(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> tooltip);
+        assertEquals(tooltip, mView.getTooltipText());
+    }
+
+    @Test
+    @SmallTest
+    public void testTooltipText_NullString() {
+        mModel.set(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Test tooltip");
+        mModel.set(ActionProperties.TOOLTIP_TEXT_RESOLVER, null);
+        assertNull(mView.getTooltipText());
     }
 
     @Test
