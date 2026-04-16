@@ -48,6 +48,8 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.browserProxy_.callbackRouter.onContentAnnotationsAdded.addListener(
+        (content: Value) => this.updateLogContent_(content));
     this.loadLogContent_();
   }
 
@@ -56,11 +58,15 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     this.selectedVisitIds_.clear();
     try {
       const {content} = await this.browserProxy_.handler.getAnnotatedContent();
-      this.logContent_ = this.flattenValue_(content) || [];
+      this.updateLogContent_(content);
     } catch (e) {
       this.errorMessage_ = 'Error: could not get content annotations.';
       this.logContent_ = [];
     }
+  }
+
+  private updateLogContent_(content: Value) {
+    this.logContent_ = this.flattenValue_(content) || [];
   }
 
   protected async onClearCacheClick_() {

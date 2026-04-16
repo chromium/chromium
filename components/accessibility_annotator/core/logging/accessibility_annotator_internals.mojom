@@ -29,4 +29,7 @@ interface PageHandler {
 };
 
 // Called from C++ side of chrome://content-annotator-internals
-interface Page {};
+interface Page {
+  // Notifies the UI that the annotated content has changed.
+  OnContentAnnotationsAdded(mojo_base.mojom.Value content);
+};

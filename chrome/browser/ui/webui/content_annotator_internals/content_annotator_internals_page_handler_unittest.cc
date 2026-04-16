@@ -29,8 +29,11 @@
 namespace content_annotator_internals {
 
 using ::base::test::DictionaryHasValues;
+using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Invoke;
 using ::testing::Pointee;
+using ::testing::Property;
 
 namespace {
 
@@ -40,6 +43,11 @@ class MockPage : public accessibility_annotator_internals::mojom::Page {
   BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
+
+  MOCK_METHOD(void,
+              OnContentAnnotationsAdded,
+              (base::Value content),
+              (override));
 
  private:
   mojo::Receiver<accessibility_annotator_internals::mojom::Page> receiver_{
@@ -276,6 +284,34 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
         }));
     run_loop.Run();
   }
+}
+
+TEST_F(ContentAnnotatorInternalsPageHandlerTest,
+       OnContentAnnotationsAddedPushesToUI) {
+  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
+  base::test::ScopedRestoreDefaultTimezone timezone("UTC");
+
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
+  ASSERT_TRUE(backend);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page(), OnContentAnnotationsAdded(Property(
+                               &base::Value::GetList,
+                               ElementsAre(DictionaryHasValues(
+                                   base::DictValue()
+                                       .Set("url", "https://example.com/")
+                                       .Set("title", "Title")
+                                       .Set("visit_id", "123"))))))
+      .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
+
+  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
+      data;
+  data.page_title = "Title";
+  data.url = GURL("https://example.com");
+  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(123),
+                                          std::move(data));
+  run_loop.Run();
 }
 
 }  // namespace

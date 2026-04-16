@@ -21,10 +21,39 @@ ContentAnnotatorInternalsPageHandler::ContentAnnotatorInternalsPageHandler(
     Profile* profile)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile) {}
+      profile_(profile) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile_);
+  if (backend) {
+    backend_observation_.Observe(backend);
+  }
+}
 
 ContentAnnotatorInternalsPageHandler::~ContentAnnotatorInternalsPageHandler() =
     default;
+
+void ContentAnnotatorInternalsPageHandler::OnContentAnnotationsAdded(
+    history::VisitID visit_id,
+    const accessibility_annotator::AccessibilityAnnotatorBackend::
+        ContentAnnotationsData& annotation_data) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile_);
+  if (!backend) {
+    return;
+  }
+  page_->OnContentAnnotationsAdded(backend->GetDebugUICacheData());
+}
+
+void ContentAnnotatorInternalsPageHandler::OnContentAnnotationsDeleted(
+    base::span<const history::VisitID> visit_ids) {
+  // TODO(crbug.com/496384941): Implement this function when data is persisted
+  // and can be deleted via Chrome History / TTL.
+}
+
+void ContentAnnotatorInternalsPageHandler::OnContentAnnotationsCleared() {
+  // TODO(crbug.com/496384941): Implement this function when data is persisted
+  // and can be deleted via Chrome History / TTL.
+}
 
 void ContentAnnotatorInternalsPageHandler::GetAnnotatedContent(
     GetAnnotatedContentCallback callback) {
