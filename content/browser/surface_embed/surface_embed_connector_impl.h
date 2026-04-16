@@ -118,6 +118,10 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
 
   void OnRenderFrameCreated();
 
+  // Updates the `view_` member to track the current RenderWidgetHostView
+  // associated with the child WebContents.
+  void UpdateViewForCurrentRenderFrameHost();
+
  private:
   class WCObserver;
 
@@ -135,10 +139,6 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   WebContentsImpl* child_web_contents() const {
     return child_web_contents_.get();
   }
-
-  // Updates the `view_` member to track the current RenderWidgetHostView
-  // associated with the child WebContents.
-  void UpdateViewForCurrentRenderFrameHost();
 
   // Resets the rect and the viz::LocalSurfaceId of the connector to ensure the
   // unguessable surface ID is not reused after a navigation.

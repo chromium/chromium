@@ -3502,10 +3502,19 @@ void WebContentsImpl::SetSurfaceEmbedConnector(
   }
 
   RecursivelyRegisterRenderWidgetHostViews();
+
+  surface_embed_connector_->UpdateViewForCurrentRenderFrameHost();
 }
 
 void WebContentsImpl::ClearSurfaceEmbedConnector() {
   CHECK(surface_embed_connector_);
+
+  // Because there may be child frames, we need to unregister all RWHVs before
+  // destroying main frames views which could prevent child frames from finding
+  // the root view for unregistering observer from
+  // TouchSelectionControllerClient, and before clearing the connector, which
+  // will change the TextInputManager and InputEventRouter for this WebContents.
+  RecursivelyUnregisterRenderWidgetHostViews();
 
   // RenderWidgetHostView of main frames that are of type
   // RenderWidgetHostViewChildFrame should be re-created with appropriate
@@ -3527,11 +3536,6 @@ void WebContentsImpl::ClearSurfaceEmbedConnector() {
     render_view_host_delegate_view_ = nullptr;
     view_ = nullptr;
   }
-
-  // Because there may be child frames, we need to unregister all RWHVs before
-  // clearing the connector, which will change the TextInputManager and
-  // InputEventRouter for this WebContents.
-  RecursivelyUnregisterRenderWidgetHostViews();
 
   surface_embed_connector_.reset();
 

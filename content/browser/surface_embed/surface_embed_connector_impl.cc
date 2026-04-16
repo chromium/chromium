@@ -52,10 +52,8 @@ void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
   CHECK(!child_web_contents->GetSurfaceEmbedConnector());
   auto connector = base::WrapUnique(new SurfaceEmbedConnectorImpl(
       child_web_contents, parent_web_contents, delegate));
-  auto* connector_ptr = connector.get();
   static_cast<WebContentsImpl*>(child_web_contents)
       ->SetSurfaceEmbedConnector(std::move(connector));
-  connector_ptr->UpdateViewForCurrentRenderFrameHost();
 }
 
 // static
