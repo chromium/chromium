@@ -12,12 +12,12 @@
   }
 </style>
 
-<settings-subpage page-title="$i18n{stsSettingsEntrypointAiModeSearch}">
+<settings-subpage page-title="$i18n{stsSettingsEntrypointGoogleSearchAiMode}">
   <div class="settings-row first">
-    <cr-link-row label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThread}"
+    <cr-link-row label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV2}"
         on-click="onLearnMoreRowClick_" external>
       <div slot="sub-label">
-        <span>$i18n{stsSettingsOption1ShareOpenTabsByDefault}</span>
+        <span>$i18n{stsSettingsOption1ChooseHowRelevantOpenTabsCanBeUsedV2}</span>
         <a href="https://support.google.com/chrome?p=ai_mode_search"
             aria-label="$i18n{stsSettingsOption1LearnMore}"
             aria-description="$i18n{opensInNewTab}"
@@ -29,7 +29,7 @@
     <div class="separator"></div>
     <settings-toggle-button
         id="shareTabsEveryThreadToggle"
-        aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThread}"
+        aria-label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV2}"
         pref="{{prefs.contextual_tasks.share_open_tabs_every_thread}}">
     </settings-toggle-button>
   </div>
@@ -72,7 +72,7 @@
     <div class="flex cr-padded-text">
       <h2>$i18n{stsSettingsOption1SiteExclusions}</h2>
       <div class="secondary">
-        $i18n{stsSettingsOption1SitesAddedHereWontBeReferenced}
+        $i18n{stsSettingsOption1SitesAddedHereWontBeReferencedV2}
       </div>
     </div>
     <cr-button id="addSiteButton" on-click="onAddSiteClick_">

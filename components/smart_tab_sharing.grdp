@@ -4,11 +4,17 @@
   <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_HEADER" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share relevant open tabs for better responses in this thread?
   </message>
+  <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_HEADER_V2" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    Turn on tab sharing for this thread?
+  </message>
   <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_MESSAGE_BODY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Get faster, more tailored responses by sharing your open tabs with this thread.
   </message>
   <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_MESSAGE_BODY_ALT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     For the most personalized responses, allow this thread to reference your open tabs.
+  </message>
+  <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_MESSAGE_BODY_V2" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    When on, Chrome will automatically identify and use your relevant tabs for better responses.
   </message>
   <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_LEARN_MORE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Learn more
@@ -24,17 +30,29 @@
   <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_HEADER_ALT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share relevant open tabs for better responses for all threads?
   </message>
+  <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_HEADER_V2" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    Share tabs in every thread?
+  </message>
   <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_MESSAGE_BODY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Get faster, more tailored responses in every thread by sharing your relevant open tabs by default.
   </message>
   <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_MESSAGE_BODY_ALT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     For the most personalized responses, allow all threads to reference your relevant open tabs.
   </message>
+  <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_MESSAGE_BODY_V2" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    You can save time by turning on tab sharing automatically for all threads.
+  </message>
   <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_LEARN_MORE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Learn more
   </message>
   <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_TURN_ON" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Turn on
+  </message>
+  <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_NOT_NOW" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    Not now
+  </message>
+  <message name="IDS_STS_IPH_PROMPT_TURN_ON_FOR_ALL_THREADS_GO_TO_SETTINGS" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    Go to settings
   </message>
 
   <!-- Reminding users when Smart Tab Sharing is on for all threads and providing a pathway to manage the setting -->
@@ -62,8 +80,14 @@
   <message name="IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_FOR_EVERY_THREAD" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share open tabs for every thread
   </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_FOR_EVERY_THREAD_V2" desc="Label for a setting that allows users to share relevant tabs in every Google Search AI Mode thread.">
+    Share relevant tabs in every thread
+  </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_SHARE_OPEN_TABS_BY_DEFAULT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share relevant open tabs by default for faster, more tailored responses.
+  </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_CHOOSE_HOW_RELEVANT_OPEN_TABS_CAN_BE_USED_V2" desc="This string is the subheading of a setting for 'Share relevant tabs in every thread'. This string explains what Chrome shares with Google Search AI Mode when turned on.">
+    Chrome will share relevant open tabs by default to help you get more tailored answers to your questions.
   </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_LEARN_MORE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Learn more
@@ -91,6 +115,9 @@
   </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Sites added here won't be referenced for responses, even if the tabs are open.
+  </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V2" desc="This string is a subheading of a label for how a user can exclude certain sites from being shared with Google Search AI Mode when 'Share relevant tabs in every thread' is on.">
+    Sites you add here won't be referenced for responses, even if the tab is open.
   </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_MY_GOOGLE_SEARCH_HISTORY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     My Google Search History
@@ -124,7 +151,7 @@
   <message name="IDS_STS_OPTION_2_SITE_EXCLUSIONS" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Site exclusions
   </message>
-  <message name="IDS_STS_OPTION_2_SITES_ADDED_HERE_WONT_BE_REFERENCED" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+  <message name="IDS_STS_OPTION_2_SITES_ADDED_HERE_WONT_BE_REFERENCED" desc="This string is a subheading of a label for how a user can exclude certain sites from being shared with Google Search AI Mode when 'Share relevant tabs in every thread' is on.">
     Sites added here won't be referenced for responses, even if the tabs are open.
   </message>
   <message name="IDS_STS_OPTION_2_MY_GOOGLE_SEARCH_HISTORY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
@@ -138,6 +165,9 @@
   <message name="IDS_STS_SETTINGS_ENTRYPOINT_AI_MODE_SEARCH" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     AI Mode Search
   </message>
+  <message name="IDS_STS_SETTINGS_ENTRYPOINT_GOOGLE_SEARCH_AI_MODE" desc="Title of the page of the settings for Google Search AI Mode.">
+    Google Search AI Mode
+  </message>
   <message name="IDS_STS_SETTINGS_ENTRYPOINT_GET_RESPONSES_WITH_CONTEXT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Get AI-powered responses with context from the web.
   </message>
@@ -148,6 +178,9 @@
   <!-- Megaplus menu: Location where user can turn Smart Tab Sharing on and off (per thread only) -->
   <message name="IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share relevant open tabs
+  </message>
+  <message name="IDS_STS_CONTEXT_MENU_TOGGLE_LABEL" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
+    Share open tabs
   </message>
 
   <!-- Global ON thread promo card: Location where user can turn Smart Tab Sharing on and off (per thread only) -->
