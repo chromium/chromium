@@ -69,6 +69,7 @@ blink_modules_sources("ai") {
     "//components/language_detection/content/common:common_blink",
     "//components/language_detection/content/renderer",
     "//components/language_detection/core",
+    "//services/on_device_model/public/cpp",
     "//third_party/blink/renderer/modules/canvas",
     "//third_party/blink/renderer/modules/webaudio",
   ]
