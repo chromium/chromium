@@ -4462,7 +4462,7 @@
     ],
     "bases": [
       "external/wpt/websockets/back-forward-cache-with-open-websocket-connection.window.js",
-      "wpt_internal/websockets/back-forward-cache/disconnect-websocket-on-bfcache.window.js"
+      "external/wpt/websockets/back-forward-cache-closes-open-websocket-connection.tentative.window.js"
     ],
     "args": [
       "--disable-blink-features=DisconnectWebSocketOnBFCache"
