@@ -202,6 +202,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     configuration.additional_args.push_back(base::StringPrintf(
         "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
   }
+  if ([self isRunningTest:@selector(testSignedOutDisablesSaveToDrive)]) {
+    configuration.features_disabled.push_back(kIOSSaveToDriveSignedOut);
+  }
   return configuration;
 }
 

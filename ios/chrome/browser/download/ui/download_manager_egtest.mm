@@ -80,6 +80,7 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   // enabled.
   configuration.features_disabled.push_back(
       kDownloadAutoDeletionFeatureEnabled);
+  configuration.features_disabled.push_back(kIOSSaveToDriveSignedOut);
   return configuration;
 }
 

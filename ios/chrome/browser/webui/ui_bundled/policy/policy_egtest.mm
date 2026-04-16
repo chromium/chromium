@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -184,6 +185,7 @@ id<GREYMatcher> DownloadButton() {
     // can only be accessed in non-stable channels.
     config.additional_args = {"--fake-variations-channel=canary"};
   }
+  config.features_disabled.push_back(kIOSSaveToDriveSignedOut);
   return config;
 }
 
