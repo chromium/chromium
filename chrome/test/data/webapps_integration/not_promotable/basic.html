@@ -2,6 +2,14 @@
 <html>
 <head>
   <title>Site C</title>
+  <script src="/webapps_integration/test_utils.js"></script>
+  <script>
+    const manifestUrl = new URL(window.location.href).searchParams.get(
+        'manifest');
+    if (manifestUrl) {
+      addManifestLinkTag(manifestUrl);
+    }
+  </script>
 </head>
   <h1>Site C</h1>
   <div>

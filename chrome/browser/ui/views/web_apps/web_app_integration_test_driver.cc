@@ -361,7 +361,8 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .relative_manifest_id = "webapps_integration/not_promotable/basic.html",
       .app_name = "Site C",
       .wco_not_enabled_title = u"Site C",
-      .icon_color = SK_ColorTRANSPARENT}},
+      .icon_color = SK_ColorTRANSPARENT,
+      .alternate_titles = {"Site C - Updated name"}}},
     {Site::kWco,
      {.relative_url = "/webapps_integration/wco/basic.html",
       .relative_manifest_id = "webapps_integration/wco/basic.html",
@@ -2423,12 +2424,14 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(Site site, Title title) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  ASSERT_EQ(Site::kStandalone, site)
-      << "Only site mode of 'Standalone' is supported";
-  ASSERT_EQ(Title::kStandaloneUpdated, title)
-      << "Only site mode of 'kStandaloneUpdated' is supported";
+  ASSERT_TRUE(site == Site::kStandalone || site == Site::kNotPromotable)
+      << "Only site modes of 'Standalone' and 'NotPromotable' are supported";
+  ASSERT_TRUE(
+      (site == Site::kStandalone && title == Title::kStandaloneUpdated) ||
+      (site == Site::kNotPromotable && title == Title::kNotPromotableUpdated))
+      << "Only supported title updates are Standalone->StandaloneUpdated and "
+         "NotPromotable->NotPromotableUpdated";
 
-  auto relative_url_path = GetSiteConfiguration(site).relative_url;
   GURL url = GetUrlForSite(site, "?manifest=manifest_title.json");
   webapps::AppId app_id = GetAppIdBySiteMode(site);
 
@@ -3371,6 +3374,12 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
   ASSERT_TRUE(app_state);
   std::string expected;
   switch (title) {
+    case Title::kNotPromotableOriginal:
+      expected = "Site C";
+      break;
+    case Title::kNotPromotableUpdated:
+      expected = "Site C - Updated name";
+      break;
     case Title::kStandaloneOriginal:
       expected = "Site A";
       break;

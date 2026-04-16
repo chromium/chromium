@@ -125,6 +125,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckAppInListWindowed(Site::kNotPromotable);
   helper_.CheckPlatformShortcutAndIcon(Site::kNotPromotable);
   helper_.LaunchFromPlatformShortcut(Site::kNotPromotable);
+  helper_.CheckAppTitle(Site::kNotPromotable, Title::kNotPromotableOriginal);
   helper_.CheckWindowNotCreated();
 }
 

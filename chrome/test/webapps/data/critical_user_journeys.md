@@ -22,9 +22,11 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_by_user(Standalone) |  launch(Standalone) | check_app_title(Standalone, StandaloneOriginal) |
 | WMLC | install_by_user(Standalone) |  launch(Standalone) | check_menu_button_pending_update(NotExpanded) |
+| WMLC | install_menu_option(NotPromotable) | launch(NotPromotable) | check_app_title(NotPromotable, NotPromotableOriginal) |
 
 # Accept update (title)
 | WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(AcceptUpdate) |  check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_menu_option(NotPromotable) | manifest_update_title(NotPromotable, NotPromotableUpdated) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(AcceptUpdate) |  check_app_title(NotPromotable, NotPromotableUpdated) |
 # Cancel update and uninstall (title)
 | WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) |  check_app_not_in_list | check_platform_shortcut_not_exists |
 # Ignore update first, then update from menu. (title)

@@ -98,6 +98,8 @@ enum class InstallableSite {
 };
 
 enum class Title {
+  kNotPromotableOriginal,
+  kNotPromotableUpdated,
   kStandaloneOriginal,
   kStandaloneUpdated,
   kStandaloneMigratedSuggested,
