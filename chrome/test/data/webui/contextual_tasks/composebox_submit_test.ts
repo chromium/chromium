@@ -765,9 +765,6 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test('Composebox submits by pressing enter, then clears input', async () => {
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    await microtasksFinished();
-
     await uploadFileAndVerify(
         FAKE_TOKEN_STRING, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
         composebox, mockSearchboxPageHandler);
@@ -815,75 +812,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertNotEquals(
+    assertEquals(
         composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Query is submitted but animation is suppressed on first submit');
+        'Query is submitted via submitQuery_()');
 
     assertEquals(0, composebox.files.size);
-  });
-
-  test('Composebox zero state open triggers animation', async () => {
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    assertEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Opening zero state triggers animation');
-  });
-
-  test('Composebox subsequent submit triggers animation', async () => {
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    await microtasksFinished();
-
-    await uploadFileAndVerify(
-        FAKE_TOKEN_STRING, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
-        composebox, mockSearchboxPageHandler);
-
-    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        FAKE_TOKEN_STRING,
-        ContextUploadStatus.kUploadSuccessful,
-        /*error_type=*/ null,
-    );
-
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
-    assertTrue(!!submitContainer, 'Submit container button should exist');
-
-    // First submit (should not trigger animation).
-    pressEnter(submitContainer);
-    await composebox.updateComplete;
-    await microtasksFinished();
-
-    assertNotEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'First submit suppresses animation');
-
-    await uploadFileAndVerify(
-        FAKE_TOKEN_STRING_2,
-        new File(['foo2'], 'foo2.jpg', {type: 'image/jpeg'}), composebox,
-        mockSearchboxPageHandler, /*expectedInitialFilesCount=*/ 0);
-
-    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        FAKE_TOKEN_STRING_2,
-        ContextUploadStatus.kUploadSuccessful,
-        /*error_type=*/ null,
-    );
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    // Second submit!
-    pressEnter(submitContainer);
-    await composebox.updateComplete;
-    await microtasksFinished();
-
-    assertEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Subsequent submit triggers animation');
   });
 
   test('delayed tabs do not delay submission', async () => {
