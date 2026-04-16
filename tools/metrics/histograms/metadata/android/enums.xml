@@ -760,36 +760,6 @@ chromium-metrics-reviews@google.com.
 
 </enum>
 
-<enum name="ArmCpuPart">
-  <summary>
-    Defines a subset of ARM CPU (implementer, part-number) pairs composed as a
-    20-bit number. This is a non-exhaustive enumeration. See
-    https://goto.google.com/cyqss for details.
-  </summary>
-  <int value="269319" label="ARM Cortex-A7"/>
-  <int value="269320" label="ARM Cortex-A8 *"/>
-  <int value="269321" label="ARM Cortex-A9 *"/>
-  <int value="269326" label="ARM Cortex-A17 *"/>
-  <int value="269327" label="ARM Cortex-A15 *"/>
-  <int value="269335" label="ARM Cortex-R7 *"/>
-  <int value="269336" label="ARM Cortex-R8 *"/>
-  <int value="269571" label="ARM Cortex-A53"/>
-  <int value="269573" label="ARM Cortex-A55"/>
-  <int value="269575" label="ARM Cortex-A57 *"/>
-  <int value="269576" label="ARM Cortex-A72 *"/>
-  <int value="269577" label="ARM Cortex-A73 *"/>
-  <int value="269578" label="ARM Cortex-A75 *"/>
-  <int value="269579" label="ARM Cortex-A76 *"/>
-  <int value="269580" label="ARM Neoverse N1 *"/>
-  <int value="269581" label="ARM Cortex-A77 *"/>
-  <int value="269633" label="ARM Cortex-A78 *"/>
-  <int value="269638" label="ARM Cortex-A510"/>
-  <int value="332305" label="Qualcomm Snapdragon 820 **"/>
-  <int value="333825" label="Qualcomm Kyro 260/280 Silver *"/>
-  <int value="333827" label="Qualcomm Kryo 385 Silver *"/>
-  <int value="333829" label="Qualcomm Kryo 485 Silver *"/>
-</enum>
-
 <enum name="AsyncTaskStatus">
   <int value="0" label="PENDING">AsyncTask was not started when waited on.</int>
   <int value="1" label="RUNNING">AsyncTask was running when waited on.</int>

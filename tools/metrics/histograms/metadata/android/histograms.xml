@@ -598,21 +598,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ArmCpuPart" enum="ArmCpuPart"
-    expires_after="2024-07-21">
-  <owner>rsesek@chromium.org</owner>
-  <owner>clank-security@google.com</owner>
-  <summary>
-    Reports information about the ARM CPU of a device. This composes the 8-bit
-    ARM implementer identifier and the 12-bit part number into a single 20-bit
-    CPU identifier, ranging from [0x00000,0xFFFFF]. Depending on the CPU
-    package, processor configuration, and/or kernel version, this may only
-    report information about the processor on which the metric was collected.
-    This can happen on heterogeneous-processor SoCs. The metric is logged once
-    every startup.
-  </summary>
-</histogram>
-
 <histogram name="Android.AssistContent.AttachedUrl" enum="BooleanSuccess"
     expires_after="2026-09-13">
   <owner>salg@google.com</owner>
