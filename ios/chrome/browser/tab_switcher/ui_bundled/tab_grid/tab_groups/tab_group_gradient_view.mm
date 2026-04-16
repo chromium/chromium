@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_gradient_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -23,13 +24,13 @@ const CGFloat kBackgroundGradientAlpha = 0.6;
                     startPoint:CGPointMake(0.5, 0)
                       endPoint:CGPointMake(0.5, 1)];
   if (self) {
-    UIView* background = [[UIView alloc] init];
-    background.translatesAutoresizingMaskIntoConstraints = NO;
-    background.backgroundColor =
-        [UIColor.blackColor colorWithAlphaComponent:kBackgroundGradientAlpha];
+    UIView* overlay = [[UIView alloc] init];
+    overlay.translatesAutoresizingMaskIntoConstraints = NO;
+    overlay.backgroundColor = [[UIColor colorNamed:kSolidWhiteColor]
+        colorWithAlphaComponent:kBackgroundGradientAlpha];
 
-    [self addSubview:background];
-    AddSameConstraints(self, background);
+    [self addSubview:overlay];
+    AddSameConstraints(self, overlay);
   }
   return self;
 }
