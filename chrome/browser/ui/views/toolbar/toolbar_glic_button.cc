@@ -43,7 +43,18 @@ ToolbarGlicButton::ToolbarGlicButton(
                                 mouse_down_callback,
                                 expansion_animation_done_callback,
                                 tooltip,
-                                pressed_callback) {}
+                                kToolbarGlicIconSize,
+                                pressed_callback) {
+  UpdateIcon();
+  auto* image_view = static_cast<views::ImageView*>(image_container_view());
+  image_view->SetImageSize({kToolbarGlicIconSize, kToolbarGlicIconSize});
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_left(kIconLeftMargin));
+
+  SetLabelMargins();
+
+  UpdateColors();
+}
 
 ToolbarGlicButton::~ToolbarGlicButton() = default;
 
@@ -89,10 +100,6 @@ float ToolbarGlicButton::GetCornerRadiusFor(ToolbarButton::Edge edge) const {
 
 int ToolbarGlicButton::GetSplitRoundedEdgeRadius() {
   return split_rounded_edge_radius_;
-}
-
-int ToolbarGlicButton::GetGlicIconSize() {
-  return kToolbarGlicIconSize;
 }
 
 int ToolbarGlicButton::GetIconSize() const {
@@ -173,8 +180,20 @@ void ToolbarGlicButton::Expand() {
   GlicButton<ToolbarButton>::Expand();
 }
 
+bool ToolbarGlicButton::GetIsShowingNudge() const {
+  return width_state_ == WidthState::kNudge;
+}
+
 void ToolbarGlicButton::ResetSplitButtonCornerStyling() {
   SetLeftRightCornerRadii(GetRoundedCornerRadius(), GetRoundedCornerRadius());
+}
+
+float ToolbarGlicButton::GetWidthFactor() const {
+  return width_factor_;
+}
+void ToolbarGlicButton::SetWidthFactor(float factor) {
+  width_factor_ = factor;
+  this->PreferredSizeChanged();
 }
 
 BEGIN_METADATA(ToolbarGlicButton)

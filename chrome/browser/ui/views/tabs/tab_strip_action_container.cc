@@ -645,10 +645,6 @@ TabStripActionContainer::CreateGlicButton() {
   std::unique_ptr<glic::TabStripGlicButton> glic_button =
       std::make_unique<glic::TabStripGlicButton>(
           browser_window_interface_,
-          base::BindRepeating(&TabStripActionContainer::OnGlicButtonClicked,
-                              base::Unretained(this)),
-          base::BindRepeating(&TabStripActionContainer::OnGlicButtonDismissed,
-                              base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonHovered,
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonMouseDown,
@@ -656,7 +652,11 @@ TabStripActionContainer::CreateGlicButton() {
           base::BindRepeating(
               &TabStripActionContainer::OnGlicButtonAnimationEnded,
               base::Unretained(this)),
-          tooltip_text);
+          tooltip_text,
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonClicked,
+                              base::Unretained(this)),
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonDismissed,
+                              base::Unretained(this)));
 
   glic_button->SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kCenter);

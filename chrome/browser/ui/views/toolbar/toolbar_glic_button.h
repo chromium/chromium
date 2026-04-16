@@ -35,7 +35,6 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   bool IsWidgetAlive() const;
   void AddedToWidget() override;
   void UpdateColors() override;
-  void SetWidthFactor(float factor);
   void AddCloseButton(PressedCallback pressed_callback);
   BrowserFrameView* GetBrowserFrameView() const;
   void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) override;
@@ -47,20 +46,26 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
   int GetSplitRoundedEdgeRadius() override;
   int GetIconSize() const override;
-  int GetGlicIconSize() override;
   ui::ColorId GetBackgroundColor();
 
   void Collapse() override;
   void Expand() override;
 
+  bool GetIsShowingNudge() const override;
+
  private:
   void UpdateBackground();
   void UpdateInkDrop();
+
+  float GetWidthFactor() const override;
+  void SetWidthFactor(float factor) override;
 
   std::optional<int> left_corner_radius_;
   std::optional<int> right_corner_radius_;
 
   int split_rounded_edge_radius_ = kDefaultSplitButtonRoundedCornerRadius;
+
+  float width_factor_ = 0;
 };
 }  // namespace glic
 

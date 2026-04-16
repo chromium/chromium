@@ -205,7 +205,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   }
 
   float GetWidthFactor() const override { return width_factor_; }
-  void SetWidthFactor(float factor) {
+  void SetWidthFactor(float factor) override {
     width_factor_ = factor;
     this->PreferredSizeChanged();
   }
