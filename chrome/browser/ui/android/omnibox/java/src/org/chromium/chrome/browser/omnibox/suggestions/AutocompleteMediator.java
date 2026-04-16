@@ -169,11 +169,6 @@ class AutocompleteMediator
     private @Nullable PropertyModel mDeleteDialogModel;
 
     private boolean mNativeInitialized;
-    // Tracks whether the activity window is currently focused.
-    // This flag is updated via the onTopResumedActivityChanged(boolean) callback:
-    // https://developer.android.com/reference/android/app/Activity#onTopResumedActivityChanged(boolean)
-    // Default value is true, as this API is only available starting from API level 29.
-    private boolean mActivityWindowFocused = true;
     // When set, specifies the system time of the most recent suggestion list request.
     private @Nullable Long mLastSuggestionRequestTime;
     // When set, specifies the time when the suggestion list was shown the first time.
@@ -632,17 +627,20 @@ class AutocompleteMediator
     }
 
     private void setAutocompleteController(@Nullable AutocompleteController controller) {
-        if (mAutocomplete != null) {
-            cancelAutocompleteRequests();
-            mAutocomplete.removeOnSuggestionsReceivedListener(this);
-            mAutocomplete = null;
-        }
-
+        removeAutocompleteObservers();
         mAutocomplete = controller;
+        installAutocompleteObservers();
+    }
 
-        if (mAutocomplete != null) {
-            mAutocomplete.addOnSuggestionsReceivedListener(this);
-        }
+    private void installAutocompleteObservers() {
+        if (mAutocomplete == null) return;
+        mAutocomplete.addOnSuggestionsReceivedListener(this);
+    }
+
+    private void removeAutocompleteObservers() {
+        if (mAutocomplete == null) return;
+        cancelAutocompleteRequests();
+        mAutocomplete.removeOnSuggestionsReceivedListener(this);
     }
 
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
@@ -1872,8 +1870,16 @@ class AutocompleteMediator
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        mActivityWindowFocused = isTopResumedActivity;
         if (!isInInputSession()) return;
+
+        if (isTopResumedActivity) {
+            installAutocompleteObservers();
+            onInputChanged(/* isOnFocusContext= */ false);
+        } else {
+            stopAutocomplete(/* clear= */ true);
+            removeAutocompleteObservers();
+        }
+
         // Always set the window activity focused property to true for hub search so that the
         // dropdown container persists when search activity is dismissed.
         // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
@@ -1883,22 +1889,17 @@ class AutocompleteMediator
                 mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE
                         ? true
                         : isTopResumedActivity);
-
-        onInputChanged(/* isOnFocusContext= */ false);
     }
 
     /**
-     * @return Whether there is currently an active omnibox session. An active session is defined by
-     *     the presence of an {@link AutocompleteInput} and the activity window having focus.
+     * @return Whether there is currently an active omnibox session, regardless of whether the
+     *     current activity window is active.
      */
     @EnsuresNonNullIf(
             value = {"mAutocompleteInput", "mSessionState", "mAutocomplete"},
             result = true)
     /* package */ boolean isInInputSession() {
-        return mSessionState != null
-                && mAutocompleteInput != null
-                && mAutocomplete != null
-                && mActivityWindowFocused;
+        return mSessionState != null && mAutocompleteInput != null && mAutocomplete != null;
     }
 
     @Override
