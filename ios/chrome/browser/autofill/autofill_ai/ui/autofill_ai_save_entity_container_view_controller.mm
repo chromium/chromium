@@ -151,7 +151,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   // Update the button title based on whether it's an update or save.
   _buttonTitle = l10n_util::GetNSString(
       oldEntity.has_value() ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
-                            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+                            : autofill::GetSaveEntityAcceptButtonStringId());
 
   if (_saveButton) {
     [_saveButton setTitle:_buttonTitle forState:UIControlStateNormal];

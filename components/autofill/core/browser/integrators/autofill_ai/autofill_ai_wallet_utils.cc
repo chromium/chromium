@@ -136,26 +136,23 @@ std::string GetWalletManagementURL(const EntityInstance& entity) {
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
     int consent_string_id,
     int clicked_button_string_id,
-    AutofillClient& client) {
+    consent_auditor::ConsentAuditor& consent_auditor,
+    signin::IdentityManager& identity_manager) {
   CHECK(base::FeatureList::IsEnabled(
       wallet::features::kWalletApiPrivatePassesConsent));
-  consent_auditor::ConsentAuditor* consent_auditor = client.GetConsentAuditor();
-  // As a profile keyed service, the `consent_auditor` exists.
-  CHECK(consent_auditor);
+
   // Since saves to Wallet are only offered to signed-in users, a `gaia_id` is
   // available.
-  signin::IdentityManager* identity_manager = client.GetIdentityManager();
-  CHECK(identity_manager);
   GaiaId gaia_id =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+      identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   CHECK(!gaia_id.empty());
   consent_auditor::ConsentAuditor::SessionId session_id =
-      consent_auditor->GenerateSessionId();
+      consent_auditor.GenerateSessionId();
   sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
   consent.mutable_description_grd_ids()->Add(consent_string_id);
   consent.set_confirmation_grd_id(clicked_button_string_id);
-  consent_auditor->RecordWalletPrivatePassConsent(gaia_id, session_id, consent);
+  consent_auditor.RecordWalletPrivatePassConsent(gaia_id, session_id, consent);
   return session_id;
 }
 

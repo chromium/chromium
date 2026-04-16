@@ -14,6 +14,9 @@
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/proto/server.pb.h"
+#import "components/consent_auditor/consent_auditor.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/wallet/core/common/wallet_features.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
@@ -62,6 +65,12 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   // The Wallet pass manager. It outlives the mediator.
   raw_ptr<autofill::WalletPassAccessManager> _walletPassManager;
 
+  // The Consent Auditor. It outlives the mediator.
+  raw_ptr<consent_auditor::ConsentAuditor> _consentAuditor;
+
+  // The Identity Manager. It outlives the mediator.
+  raw_ptr<signin::IdentityManager> _identityManager;
+
   // The locale used to get info from the entity instance.
   std::string _locale;
 
@@ -91,6 +100,8 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
     initWithEntityInstance:(EntityInstance)entityInstance
          entityDataManager:(EntityDataManager*)entityDataManager
          walletPassManager:(autofill::WalletPassAccessManager*)walletPassManager
+            consentAuditor:(consent_auditor::ConsentAuditor*)consentAuditor
+           identityManager:(signin::IdentityManager*)identityManager
               reauthModule:(id<ReauthenticationProtocol>)reauthModule
                  userEmail:(NSString*)userEmail {
   self = [super init];
@@ -100,6 +111,8 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
     _entityInstance = std::move(entityInstance);
     _entityDataManager = entityDataManager;
     _walletPassManager = walletPassManager;
+    _consentAuditor = consentAuditor;
+    _identityManager = identityManager;
     _locale = GetApplicationContext()->GetApplicationLocaleStorage()->Get();
     _dateFormatter = CreateDateFormatterForLocale(_locale);
     _itemFactory =
@@ -206,13 +219,23 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 
   BOOL isSaveAsynchronous = autofill::IsMaskedStorageSupported(
       _entityInstance->type(), _entityInstance->record_type());
+
+  // TODO(crbug.com/496450943): Guard against the user signing out while the
+  // settings view is still open.
   if (isSaveAsynchronous && _walletPassManager) {
     [self.consumer showLoadingState];
 
     autofill::EntityInstance originalEntity = *_entityInstance;
 
-    // TODO(crbug.com/496450943): Set appropriate sessionId.
     consent_auditor::ConsentAuditor::SessionId sessionId;
+    if (base::FeatureList::IsEnabled(
+            wallet::features::kWalletApiPrivatePassesConsent)) {
+      sessionId = autofill::RecordWalletPrivatePassConsent(
+          /*consent_string_id=*/autofill::GetSaveToWalletSubtitleStringId(),
+          /*clicked_button_string_id=*/
+          autofill::GetSaveEntityAcceptButtonStringId(), *_consentAuditor,
+          *_identityManager);
+    }
     __weak __typeof(self) weakSelf = self;
     auto callback = base::BindOnce(
         [](__typeof(self) weakSelf,

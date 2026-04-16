@@ -13,6 +13,9 @@
 #import "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/consent_auditor/fake_consent_auditor.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/wallet/core/common/wallet_features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/fake_autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
@@ -31,7 +34,8 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
   AutofillAIEntityEditMediatorTest() {
     scoped_feature_list_.InitWithFeatures(
         {autofill::features::kAutofillAiWithDataSchema,
-         autofill::features::kAutofillAiCreateEntityDataManager},
+         autofill::features::kAutofillAiCreateEntityDataManager,
+         wallet::features::kWalletApiPrivatePassesConsent},
         {});
 
     TestProfileIOS::Builder builder;
@@ -47,6 +51,10 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
         testing::StrictMock<autofill::MockWalletPassAccessManager>>();
 
     mockReauthModule_ = OCMProtocolMock(@protocol(ReauthenticationProtocol));
+
+    // Sign in a primary account so IdentityManager can provide a valid GaiaId.
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
   }
 
   void TearDown() override {
@@ -61,6 +69,8 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
         initWithEntityInstance:instance
              entityDataManager:entity_data_manager_
              walletPassManager:mock_wallet_pass_manager_.get()
+                consentAuditor:&fake_consent_auditor_
+               identityManager:identity_test_env_.identity_manager()
                   reauthModule:mockReauthModule_
                      userEmail:nil];
     mediator_.consumer = consumer_;
@@ -96,6 +106,8 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
   raw_ptr<autofill::EntityDataManager> entity_data_manager_;
   std::unique_ptr<autofill::MockWalletPassAccessManager>
       mock_wallet_pass_manager_;
+  testing::NiceMock<consent_auditor::FakeConsentAuditor> fake_consent_auditor_;
+  signin::IdentityTestEnvironment identity_test_env_;
   FakeAutofillAIEntityEditConsumer* consumer_;
   AutofillAIEntityEditMediator* mediator_;
   id mockReauthModule_;
@@ -189,6 +201,10 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveWalletEligibleEntity_Success) {
                autofill::EntityInstance::RecordType::kServerWallet}));
   CreateMediator(instance);
 
+  consent_auditor::ConsentAuditor::SessionId captured_session_id;
+  EXPECT_CALL(fake_consent_auditor_, RecordWalletPrivatePassConsent)
+      .WillOnce(testing::SaveArg<1>(&captured_session_id));
+
   EXPECT_CALL(*mock_wallet_pass_manager_,
               SaveWalletEntityInstance(testing::_, testing::_, testing::_))
       .WillOnce(
@@ -196,6 +212,7 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveWalletEligibleEntity_Success) {
               const consent_auditor::ConsentAuditor::SessionId& session_id,
               autofill::WalletPassAccessManager::UpsertEntityInstanceCallback
                   callback) {
+            EXPECT_EQ(session_id, captured_session_id);
             autofill::EntityInstance masked_saved_entity =
                 autofill::test::MaskEntityInstance(entity);
             std::move(callback).Run(masked_saved_entity);

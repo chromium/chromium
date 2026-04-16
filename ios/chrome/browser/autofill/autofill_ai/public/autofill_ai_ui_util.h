@@ -57,6 +57,16 @@ GURL GetGoogleWalletPassesURL();
 // saves. `title` is the desired text to display (e.g., "Add Passport").
 UIView* CreateBrandedTitleForWalletSave(NSString* title);
 
+// Returns the message ID for the subtitle shown in the save-to-wallet dialog.
+// Exposed so the Consent Auditor records the exact string shown in the UI.
+// Note: The string contains placeholders for the Google Wallet title, a
+// link, the Google Wallet title again, and the user's email.
+int GetSaveToWalletSubtitleStringId();
+
+// Returns the message ID for the accept button in the save entity dialog.
+// Exposed so the Consent Auditor records the exact string shown in the UI.
+int GetSaveEntityAcceptButtonStringId();
+
 }  // namespace autofill
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_AUTOFILL_AI_UI_UTIL_H_

@@ -177,12 +177,11 @@ NSString* GetSaveEntityToWalletFooterText(NSString* user_email) {
       l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
   NSString* formattedLink =
       [NSString stringWithFormat:@"BEGIN_LINK%@END_LINK", linkText];
-  return l10n_util::GetNSStringF(
-      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
-      base::SysNSStringToUTF16(googleWallet),
-      base::SysNSStringToUTF16(formattedLink),
-      base::SysNSStringToUTF16(googleWallet),
-      base::SysNSStringToUTF16(user_email));
+  return l10n_util::GetNSStringF(GetSaveToWalletSubtitleStringId(),
+                                 base::SysNSStringToUTF16(googleWallet),
+                                 base::SysNSStringToUTF16(formattedLink),
+                                 base::SysNSStringToUTF16(googleWallet),
+                                 base::SysNSStringToUTF16(user_email));
 }
 
 NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email) {
@@ -218,6 +217,14 @@ UIView* CreateBrandedTitleForWalletSave(NSString* title) {
   titleView.titleLogoSpacing = kWalletLogoSpacing;
   titleView.accessibilityLabel = title;
   return titleView;
+}
+
+int GetSaveToWalletSubtitleStringId() {
+  return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
+}
+
+int GetSaveEntityAcceptButtonStringId() {
+  return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
 }
 
 }  // namespace autofill

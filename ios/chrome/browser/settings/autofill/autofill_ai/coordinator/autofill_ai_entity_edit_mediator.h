@@ -17,6 +17,13 @@ class EntityInstance;
 class WalletPassAccessManager;
 }  // namespace autofill
 
+namespace consent_auditor {
+class ConsentAuditor;
+}
+namespace signin {
+class IdentityManager;
+}
+
 @protocol AutofillAIEntityEditConsumer;
 @protocol ReauthenticationProtocol;
 
@@ -37,6 +44,8 @@ class WalletPassAccessManager;
     initWithEntityInstance:(autofill::EntityInstance)entityInstance
          entityDataManager:(autofill::EntityDataManager*)entityDataManager
          walletPassManager:(autofill::WalletPassAccessManager*)walletPassManager
+            consentAuditor:(consent_auditor::ConsentAuditor*)consentAuditor
+           identityManager:(signin::IdentityManager*)identityManager
               reauthModule:(id<ReauthenticationProtocol>)reauthModule
                  userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 

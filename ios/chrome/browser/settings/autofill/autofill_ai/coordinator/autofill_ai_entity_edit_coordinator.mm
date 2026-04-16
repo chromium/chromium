@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
+#import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -138,6 +139,10 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
       initWithEntityInstance:std::move(*instance)
            entityDataManager:entityDataManager
            walletPassManager:walletPassManager
+              consentAuditor:ConsentAuditorFactory::GetForProfile(
+                                 self.browser->GetProfile())
+             identityManager:IdentityManagerFactory::GetForProfile(
+                                 self.browser->GetProfile())
                 reauthModule:reauthService->GetReauthModule()
                    userEmail:[self userEmail]];
 

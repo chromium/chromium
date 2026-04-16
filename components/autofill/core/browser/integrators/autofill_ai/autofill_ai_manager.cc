@@ -424,7 +424,8 @@ void AutofillAiManager::HandlePromptResult(
           session_id = RecordWalletPrivatePassConsent(
               ui_context.consent_string_id.value_or(
                   IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW),
-              ui_context.clicked_button_string_id.value_or(IDS_SAVE), *client_);
+              ui_context.clicked_button_string_id.value_or(IDS_SAVE),
+              *client_->GetConsentAuditor(), *client_->GetIdentityManager());
         }
         wallet_manager->SaveWalletEntityInstance(entity, session_id,
                                                  std::move(callback));

@@ -133,7 +133,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setupBottomSaveButton {
   _saveButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   _saveButton.title =
-      l10n_util::GetNSString(IDS_IOS_SAVE_ENTITY_IN_SETTINGS_BUTTON_TEXT);
+      l10n_util::GetNSString(autofill::GetSaveEntityAcceptButtonStringId());
   _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_saveButton addTarget:self
                   action:@selector(didTapSaveNewEntity)
