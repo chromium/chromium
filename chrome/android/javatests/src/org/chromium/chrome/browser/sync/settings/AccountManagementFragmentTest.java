@@ -69,7 +69,7 @@ import java.util.Set;
 })
 public class AccountManagementFragmentTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
-    private static final int RENDER_TEST_REVISION = 2;
+    private static final int RENDER_TEST_REVISION = 3;
 
     private final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);

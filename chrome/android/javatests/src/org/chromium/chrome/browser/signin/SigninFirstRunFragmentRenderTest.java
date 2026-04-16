@@ -117,7 +117,7 @@ public class SigninFirstRunFragmentRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_FIRST_RUN)
                     .build();
 
