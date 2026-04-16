@@ -9723,9 +9723,11 @@ crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/n
 crbug.com/502777858 [ Linux ] external/wpt/largest-contentful-paint/multiple-image-same-src.html [ Failure Pass ]
 
 # Gardener 2026-04-16
-# Likely flaky on Mac bacause native overlay scrollbars can hide before the
-# second drag, causing scrollPromise to time out. see crbug.com/501810437.
-crbug.com/501810437 [ Mac ] external/wpt/inert/inert-scrollbar-hittest.html [ Pass Timeout ]
+# Skipped on Mac because native overlay scrollbars can hide before the second
+# drag, causing scrollPromise to time out. Coverage retained on other platforms
+# where classic scrollbars are used. see crbug.com/501810437.
+crbug.com/501810437 [ Mac ] external/wpt/inert/inert-scrollbar-hittest.html [ Skip Timeout ]
+
 # Looks like imperceptible antialiasing differences.
 crbug.com/503254576 [ Win11-arm64 ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
 crbug.com/503254576 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
