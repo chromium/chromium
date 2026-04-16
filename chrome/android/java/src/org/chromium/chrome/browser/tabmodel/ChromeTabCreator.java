@@ -16,6 +16,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
@@ -54,6 +55,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
+@NullMarked
 public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabModelOrderController {
     /**
      * The application ID used for tabs opened from an application that does not specify an app ID
@@ -534,6 +536,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             futureAddTabToModel.thenAccept(
                     addTabToModel -> {
                         if (addTabToModel) {
+                            assumeNonNull(mTabModel);
                             mTabModel.addTab(tab, position, type, creationState);
                         }
                     });
