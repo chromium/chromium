@@ -549,15 +549,13 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testDontAllowAddWebMessageListenerWithTheSameJsObjectName() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        TestWebMessageListener listener = new TestWebMessageListener();
         RuntimeException exception =
                 Assert.assertThrows(
                         RuntimeException.class,
                         () ->
                                 addWebMessageListenerOnUiThread(
-                                        mAwContents,
-                                        JS_OBJECT_NAME,
-                                        new String[] {"*"},
-                                        new TestWebMessageListener()));
+                                        mAwContents, JS_OBJECT_NAME, new String[] {"*"}, listener));
         Assert.assertTrue(exception.getCause() instanceof IllegalArgumentException);
     }
 

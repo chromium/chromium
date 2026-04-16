@@ -374,14 +374,11 @@ public class GURLJavaTest {
                 new GURL("http://example.test/"));
 
         // When an assertion does fail, make sure that the failure message is human readable.
+        GURL expected = new GURL("https://example.test/");
+        GURL actual = new GURL("https://different.test/");
         Throwable exception =
                 Assert.assertThrows(
-                        AssertionError.class,
-                        () -> {
-                            Assert.assertEquals(
-                                    new GURL("https://example.test/"),
-                                    new GURL("https://different.test/"));
-                        });
+                        AssertionError.class, () -> Assert.assertEquals(expected, actual));
         if (BuildConfig.ENABLE_ASSERTS) {
             String expectedMessage =
                     "expected:<GURL(https://example.test/)> but"

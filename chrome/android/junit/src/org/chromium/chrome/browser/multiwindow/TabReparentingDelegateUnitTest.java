@@ -227,12 +227,13 @@ public class TabReparentingDelegateUnitTest {
 
     @Test
     public void testReparentTabsToExistingWindow_invalidDestTabIds() {
+        List<Tab> tabs = List.of(mTab1, mTab2);
         assertThrows(
                 AssertionError.class,
                 () ->
                         mDelegate.reparentTabsToExistingWindow(
                                 mDestActivity,
-                                List.of(mTab1, mTab2),
+                                tabs,
                                 /* destTabIndex= */ 2,
                                 /* destGroupTabId= */ 3,
                                 /* bringToFront= */ true));

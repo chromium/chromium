@@ -100,31 +100,25 @@ public class AutofillSaveIbanUiInfoTest {
 
     @Test
     public void uiInfo_noIbanValue() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new AutofillSaveIbanUiInfo.Builder()
-                                        .withAcceptText("")
-                                        .withCancelText("")
-                                        .withTitleText("")
-                                        .build());
+        AutofillSaveIbanUiInfo.Builder builder =
+                new AutofillSaveIbanUiInfo.Builder()
+                        .withAcceptText("")
+                        .withCancelText("")
+                        .withTitleText("");
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage()).isEqualTo("IBAN value cannot be null or empty.");
     }
 
     @Test
     public void uiInfo_emptyIbanValue() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new AutofillSaveIbanUiInfo.Builder()
-                                        .withAcceptText("")
-                                        .withCancelText("")
-                                        .withIbanValue("")
-                                        .withTitleText("")
-                                        .build());
+        AutofillSaveIbanUiInfo.Builder builder =
+                new AutofillSaveIbanUiInfo.Builder()
+                        .withAcceptText("")
+                        .withCancelText("")
+                        .withIbanValue("")
+                        .withTitleText("");
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage()).isEqualTo("IBAN value cannot be null or empty.");
     }

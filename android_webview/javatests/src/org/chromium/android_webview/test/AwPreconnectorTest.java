@@ -17,6 +17,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwPreconnector;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -100,15 +101,14 @@ public class AwPreconnectorTest extends AwParameterizedTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    AwPreconnector awPreconnector = profile.getPreconnector();
+                    GURL url = new GURL("invalid");
                     assertThrows(
-                            IllegalArgumentException.class,
-                            () -> profile.getPreconnector().preconnect(new GURL("invalid")));
+                            IllegalArgumentException.class, () -> awPreconnector.preconnect(url));
                     // Note: We require the scheme (so https://www.example.com).
+                    GURL url2 = new GURL("www.example.com");
                     assertThrows(
-                            IllegalArgumentException.class,
-                            () ->
-                                    profile.getPreconnector()
-                                            .preconnect(new GURL("www.example.com")));
+                            IllegalArgumentException.class, () -> awPreconnector.preconnect(url2));
                 });
     }
 

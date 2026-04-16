@@ -974,13 +974,11 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act & Assert.
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        ChromeAndroidTaskFeatureKey featureKey =
+                new ChromeAndroidTaskFeatureKey(TestChromeAndroidTaskFeature.class, profile);
         assertThrows(
                 AssertionError.class,
-                () ->
-                        chromeAndroidTask.addFeature(
-                                new ChromeAndroidTaskFeatureKey(
-                                        TestChromeAndroidTaskFeature.class, profile),
-                                () -> testFeature));
+                () -> chromeAndroidTask.addFeature(featureKey, () -> testFeature));
     }
 
     @Test

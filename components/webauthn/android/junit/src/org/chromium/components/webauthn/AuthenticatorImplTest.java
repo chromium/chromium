@@ -244,9 +244,7 @@ public class AuthenticatorImplTest {
 
         assertThrows(
                 AssertionError.class,
-                () -> {
-                    authenticator.makeCredential(/* options= */ null, /* callback= */ null);
-                });
+                () -> authenticator.makeCredential(/* options= */ null, /* callback= */ null));
     }
 
     /** Test that makeCredential() throws when the intenSender is not set. */
@@ -263,9 +261,7 @@ public class AuthenticatorImplTest {
 
         assertThrows(
                 AssertionError.class,
-                () -> {
-                    authenticator.makeCredential(/* options= */ null, /* callback= */ null);
-                });
+                () -> authenticator.makeCredential(/* options= */ null, /* callback= */ null));
     }
 
     /** Test that getCredential() throws when the renderFrameHost is not set. */
@@ -282,9 +278,7 @@ public class AuthenticatorImplTest {
 
         assertThrows(
                 AssertionError.class,
-                () -> {
-                    authenticator.getCredential(/* options= */ null, /* callback= */ null);
-                });
+                () -> authenticator.getCredential(/* options= */ null, /* callback= */ null));
     }
 
     /** Test that getCredential() throws when the intentSender is not set. */
@@ -301,8 +295,6 @@ public class AuthenticatorImplTest {
 
         assertThrows(
                 AssertionError.class,
-                () -> {
-                    authenticator.getCredential(/* options= */ null, /* callback= */ null);
-                });
+                () -> authenticator.getCredential(/* options= */ null, /* callback= */ null));
     }
 }

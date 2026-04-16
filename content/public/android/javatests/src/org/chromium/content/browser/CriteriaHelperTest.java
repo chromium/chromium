@@ -97,10 +97,9 @@ public class CriteriaHelperTest {
         TimeoutException t =
                 Assert.assertThrows(
                         TimeoutException.class,
-                        () -> {
-                            CriteriaHelper.pollUiThread(
-                                    NEVER_SATISFIED_RUNNABLE, 0, DEFAULT_POLLING_INTERVAL);
-                        });
+                        () ->
+                                CriteriaHelper.pollUiThread(
+                                        NEVER_SATISFIED_RUNNABLE, 0, DEFAULT_POLLING_INTERVAL));
         Assert.assertEquals(OUTER_ERROR_MESSAGE, t.getMessage());
         Assert.assertEquals(ERROR_MESSAGE, t.getCause().getMessage());
     }
@@ -112,10 +111,9 @@ public class CriteriaHelperTest {
         TimeoutException t =
                 Assert.assertThrows(
                         TimeoutException.class,
-                        () -> {
-                            CriteriaHelper.pollUiThreadNested(
-                                    NEVER_SATISFIED_RUNNABLE, 0, DEFAULT_POLLING_INTERVAL);
-                        });
+                        () ->
+                                CriteriaHelper.pollUiThreadNested(
+                                        NEVER_SATISFIED_RUNNABLE, 0, DEFAULT_POLLING_INTERVAL));
         Assert.assertEquals(OUTER_ERROR_MESSAGE, t.getMessage());
         Assert.assertEquals(ERROR_MESSAGE, t.getCause().getMessage());
     }
@@ -126,10 +124,9 @@ public class CriteriaHelperTest {
         TimeoutException t =
                 Assert.assertThrows(
                         TimeoutException.class,
-                        () -> {
-                            CriteriaHelper.pollInstrumentationThread(
-                                    NEVER_SATISFIED_RUNNABLE, 0, DEFAULT_POLLING_INTERVAL);
-                        });
+                        () ->
+                                CriteriaHelper.pollInstrumentationThread(
+                                        NEVER_SATISFIED_RUNNABLE, 0, DEFAULT_POLLING_INTERVAL));
         Assert.assertEquals(OUTER_ERROR_MESSAGE, t.getMessage());
         Assert.assertEquals(ERROR_MESSAGE, t.getCause().getMessage());
     }
@@ -140,10 +137,9 @@ public class CriteriaHelperTest {
         TimeoutException t =
                 Assert.assertThrows(
                         TimeoutException.class,
-                        () -> {
-                            CriteriaHelper.pollUiThread(
-                                    FALSE_CALLABLE, 0, DEFAULT_POLLING_INTERVAL);
-                        });
+                        () ->
+                                CriteriaHelper.pollUiThread(
+                                        FALSE_CALLABLE, 0, DEFAULT_POLLING_INTERVAL));
         Assert.assertEquals(OUTER_ERROR_MESSAGE, t.getMessage());
     }
 
@@ -154,10 +150,9 @@ public class CriteriaHelperTest {
         TimeoutException t =
                 Assert.assertThrows(
                         TimeoutException.class,
-                        () -> {
-                            CriteriaHelper.pollUiThreadNested(
-                                    FALSE_CALLABLE, 0, DEFAULT_POLLING_INTERVAL);
-                        });
+                        () ->
+                                CriteriaHelper.pollUiThreadNested(
+                                        FALSE_CALLABLE, 0, DEFAULT_POLLING_INTERVAL));
         Assert.assertEquals(OUTER_ERROR_MESSAGE, t.getMessage());
     }
 
@@ -167,10 +162,9 @@ public class CriteriaHelperTest {
         TimeoutException t =
                 Assert.assertThrows(
                         TimeoutException.class,
-                        () -> {
-                            CriteriaHelper.pollInstrumentationThread(
-                                    FALSE_CALLABLE, 0, DEFAULT_POLLING_INTERVAL);
-                        });
+                        () ->
+                                CriteriaHelper.pollInstrumentationThread(
+                                        FALSE_CALLABLE, 0, DEFAULT_POLLING_INTERVAL));
         Assert.assertEquals(OUTER_ERROR_MESSAGE, t.getMessage());
     }
 }

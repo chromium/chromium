@@ -63,10 +63,9 @@ public class DigitalCredentialsPresentationDelegateTest {
 
         assertThrows(
                 JSONException.class,
-                () -> {
-                    DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
-                            intent);
-                });
+                () ->
+                        DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
+                                intent));
     }
 
     @Test
@@ -78,9 +77,8 @@ public class DigitalCredentialsPresentationDelegateTest {
 
         assertThrows(
                 androidx.credentials.exceptions.GetCredentialException.class,
-                () -> {
-                    DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
-                            intent);
-                });
+                () ->
+                        DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
+                                intent));
     }
 }

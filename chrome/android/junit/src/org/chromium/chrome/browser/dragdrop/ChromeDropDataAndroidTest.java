@@ -38,10 +38,7 @@ public final class ChromeDropDataAndroidTest {
 
     @Test
     public void testBuildTabClipDataTextWithNullBrowserContent() {
-        assertThrows(
-                AssertionError.class,
-                () -> {
-                    new ChromeTabDropDataAndroid.Builder().build();
-                });
+        ChromeTabDropDataAndroid.Builder builder = new ChromeTabDropDataAndroid.Builder();
+        assertThrows(AssertionError.class, () -> builder.build());
     }
 }

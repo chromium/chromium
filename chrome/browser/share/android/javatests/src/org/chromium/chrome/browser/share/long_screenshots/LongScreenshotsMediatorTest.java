@@ -234,12 +234,11 @@ public class LongScreenshotsMediatorTest {
         Exception exception =
                 Assert.assertThrows(
                         RuntimeException.class,
-                        () -> {
-                            ThreadUtils.runOnUiThreadBlocking(
-                                    () -> {
-                                        Assert.assertTrue(mMediator.getDialog().isShowing());
-                                    });
-                        });
+                        () ->
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () -> {
+                                            Assert.assertTrue(mMediator.getDialog().isShowing());
+                                        }));
         String expectedMessage = "trying to draw too large";
         String actualMessage = exception.getMessage();
         Assert.assertTrue(

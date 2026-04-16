@@ -125,25 +125,17 @@ public class ViewGroupAdapterTest {
 
     @Test
     public void testDuplicatedViewType() {
+        ViewGroupAdapter.Builder builder =
+                new ViewGroupAdapter.Builder(mLinearLayout, mModelList)
+                        .registerType(VIEW_TYPE, VIEW_BUILDER, VIEW_BINDER);
         Assert.assertThrows(
-                Throwable.class,
-                () -> {
-                    // Registering the same type twice throws an exception.
-                    new ViewGroupAdapter.Builder(mLinearLayout, mModelList)
-                            .registerType(VIEW_TYPE, VIEW_BUILDER, VIEW_BINDER)
-                            .registerType(VIEW_TYPE, VIEW_BUILDER, VIEW_BINDER)
-                            .build();
-                });
+                Throwable.class, () -> builder.registerType(VIEW_TYPE, VIEW_BUILDER, VIEW_BINDER));
     }
 
     @Test
     public void testUnknownViewType() {
-        Assert.assertThrows(
-                Throwable.class,
-                () -> {
-                    // Using an item with unknown type throws an exception.
-                    mModelList.add(new ListItem(12345, createModel("x")));
-                });
+        ListItem item = new ListItem(12345, createModel("x"));
+        Assert.assertThrows(Throwable.class, () -> mModelList.add(item));
     }
 
     @Test

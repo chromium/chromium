@@ -86,21 +86,20 @@ public class OmniboxPedalUnitTest {
         assertThrows(
                 AssertionError.class,
                 () ->
-                        OmniboxPedal.from(
-                                new OmniboxAction(
-                                        OmniboxActionId.PEDAL,
-                                        0,
-                                        "",
-                                        "",
-                                        null,
-                                        R.style.TextAppearance_ChipText,
-                                        ActionPresentationMode.CHIP,
-                                        WindowOpenDisposition.CURRENT_TAB) {
-                                    @Override
-                                    public boolean execute(OmniboxActionDelegate d) {
-                                        return true;
-                                    }
-                                }));
+                        new OmniboxAction(
+                                OmniboxActionId.PEDAL,
+                                0,
+                                "",
+                                "",
+                                null,
+                                R.style.TextAppearance_ChipText,
+                                ActionPresentationMode.CHIP,
+                                WindowOpenDisposition.CURRENT_TAB) {
+                            @Override
+                            public boolean execute(OmniboxActionDelegate d) {
+                                return true;
+                            }
+                        });
     }
 
     @Test

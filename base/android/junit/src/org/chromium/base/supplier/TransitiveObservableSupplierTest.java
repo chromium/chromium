@@ -212,6 +212,7 @@ public class TransitiveObservableSupplierTest {
     }
 
     @Test
+    @SuppressWarnings("AssertThrowsMinimizer")
     public void testNonNull_noObservers() {
         NonNullObservableSupplier<String> nonNullSupplier =
                 ObservableSuppliers.createNonNull("nonNull");
@@ -250,7 +251,7 @@ public class TransitiveObservableSupplierTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "AssertThrowsMinimizer"})
     public void testNonNull_withObservers() {
         NonNullObservableSupplier<String> nonNullSupplier =
                 ObservableSuppliers.createNonNull("nonNull");

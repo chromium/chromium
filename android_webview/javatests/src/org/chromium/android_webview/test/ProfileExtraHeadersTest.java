@@ -399,28 +399,23 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
     public void testHeaderNameAndValuesAreValidatedWhenSetting() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Set<String> rules = Set.of("https://*.example.com");
                     Assert.assertThrows(
                             IllegalArgumentException.class,
                             () ->
                                     mAwBrowserContext.setOriginMatchedHeader(
-                                            "",
-                                            "NameShouldNotBeEmpty",
-                                            Set.of("https://*.example.com")));
+                                            "", "NameShouldNotBeEmpty", rules));
                     Assert.assertThrows(
                             IllegalArgumentException.class,
                             () ->
                                     mAwBrowserContext.setOriginMatchedHeader(
-                                            "X-ShouldNotHaveNewline\n",
-                                            "Value",
-                                            Set.of("https://*.example.com")));
+                                            "X-ShouldNotHaveNewline\n", "Value", rules));
 
                     Assert.assertThrows(
                             IllegalArgumentException.class,
                             () ->
                                     mAwBrowserContext.setOriginMatchedHeader(
-                                            "X-ShouldNotHaveNewline",
-                                            "Value\n",
-                                            Set.of("https://*.example.com")));
+                                            "X-ShouldNotHaveNewline", "Value\n", rules));
                 });
     }
 
@@ -430,28 +425,23 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
     public void testHeaderNameAndValuesAreValidatedWhenAdding() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Set<String> rules = Set.of("https://*.example.com");
                     Assert.assertThrows(
                             IllegalArgumentException.class,
                             () ->
                                     mAwBrowserContext.addOriginMatchedHeader(
-                                            "",
-                                            "NameShouldNotBeEmpty",
-                                            Set.of("https://*.example.com")));
+                                            "", "NameShouldNotBeEmpty", rules));
                     Assert.assertThrows(
                             IllegalArgumentException.class,
                             () ->
                                     mAwBrowserContext.addOriginMatchedHeader(
-                                            "X-ShouldNotHaveNewline\n",
-                                            "Value",
-                                            Set.of("https://*.example.com")));
+                                            "X-ShouldNotHaveNewline\n", "Value", rules));
 
                     Assert.assertThrows(
                             IllegalArgumentException.class,
                             () ->
                                     mAwBrowserContext.addOriginMatchedHeader(
-                                            "X-ShouldNotHaveNewline",
-                                            "Value\n",
-                                            Set.of("https://*.example.com")));
+                                            "X-ShouldNotHaveNewline", "Value\n", rules));
                 });
     }
 

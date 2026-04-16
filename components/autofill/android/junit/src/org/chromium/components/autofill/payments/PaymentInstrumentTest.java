@@ -39,16 +39,13 @@ public class PaymentInstrumentTest {
 
     @Test
     public void paymentInstrument_instrumentIdNotSet() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new PaymentInstrument.Builder()
-                                        .setNickname("nickname")
-                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
-                                        .setSupportedPaymentRails(new int[] {1})
-                                        .setIsFidoEnrolled(true)
-                                        .build());
+        PaymentInstrument.Builder builder =
+                new PaymentInstrument.Builder()
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .setIsFidoEnrolled(true);
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage())
                 .isEqualTo("InstrumentId must be set for the payment instrument.");
@@ -56,16 +53,13 @@ public class PaymentInstrumentTest {
 
     @Test
     public void paymentInstrument_noSupportedRails() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new PaymentInstrument.Builder()
-                                        .setInstrumentId(100)
-                                        .setNickname("nickname")
-                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
-                                        .setIsFidoEnrolled(true)
-                                        .build());
+        PaymentInstrument.Builder builder =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setIsFidoEnrolled(true);
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage())
                 .isEqualTo("Payment instrument must support at least one payment rail.");
@@ -73,17 +67,14 @@ public class PaymentInstrumentTest {
 
     @Test
     public void paymentInstrument_emptySupportedRails() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new PaymentInstrument.Builder()
-                                        .setInstrumentId(100)
-                                        .setNickname("nickname")
-                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
-                                        .setSupportedPaymentRails(new int[] {})
-                                        .setIsFidoEnrolled(true)
-                                        .build());
+        PaymentInstrument.Builder builder =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {})
+                        .setIsFidoEnrolled(true);
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage())
                 .isEqualTo("Payment instrument must support at least one payment rail.");

@@ -109,9 +109,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                 () -> {
                     Assert.assertThrows(
                             IllegalArgumentException.class,
-                            () -> {
-                                AwBrowserContextStore.deleteNamedContext("Default");
-                            });
+                            () -> AwBrowserContextStore.deleteNamedContext("Default"));
                 });
     }
 
@@ -124,9 +122,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                 () -> {
                     Assert.assertThrows(
                             IllegalStateException.class,
-                            () -> {
-                                AwBrowserContextStore.deleteNamedContext("myProfile");
-                            });
+                            () -> AwBrowserContextStore.deleteNamedContext("myProfile"));
                 });
     }
 
@@ -213,9 +209,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                     Assert.assertThrows(
                             "Cannot set new profile on a WebView that has been destroyed",
                             IllegalStateException.class,
-                            () -> {
-                                awContents.setBrowserContextForPublicApi(otherProfile);
-                            });
+                            () -> awContents.setBrowserContextForPublicApi(otherProfile));
                 });
     }
 
@@ -235,9 +229,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                             "Cannot set new profile after the current one has been retrieved via. "
                                     + "WebViewCompat#getProfile",
                             IllegalStateException.class,
-                            () -> {
-                                awContents.setBrowserContextForPublicApi(otherProfile);
-                            });
+                            () -> awContents.setBrowserContextForPublicApi(otherProfile));
                 });
     }
 
@@ -258,9 +250,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                             "Cannot set new profile after one has already been set"
                                     + "via. WebViewCompat#setProfile",
                             IllegalStateException.class,
-                            () -> {
-                                awContents.setBrowserContextForPublicApi(myOtherCoolProfile);
-                            });
+                            () -> awContents.setBrowserContextForPublicApi(myOtherCoolProfile));
                 });
     }
 
@@ -303,9 +293,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                             "Cannot set new profile on a WebView that has been previously"
                                     + " navigated.",
                             IllegalStateException.class,
-                            () -> {
-                                awContents.setBrowserContextForPublicApi(myCoolProfile);
-                            });
+                            () -> awContents.setBrowserContextForPublicApi(myCoolProfile));
                     webServer.shutdown();
                 });
     }

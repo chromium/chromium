@@ -68,8 +68,8 @@ public class CctHandlerTest {
     public void testOpenUrlInCctFailure_untrustedPackage() {
         doReturn("untrusted_package").when(mContext).getPackageName();
 
-        assertThrows(
-                AssertionError.class, () -> mCctHandler.prepareIntent(TEST_URL).openUrlInCct());
+        CctHandler cctHandler = mCctHandler.prepareIntent(TEST_URL);
+        assertThrows(AssertionError.class, () -> cctHandler.openUrlInCct());
     }
 
     @Test

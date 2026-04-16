@@ -131,24 +131,22 @@ public class OmniboxActionInSuggestUnitTest {
 
     @Test
     public void safeCasting_assertsWithWrongClassType() {
-        assertThrows(
-                AssertionError.class,
-                () ->
-                        OmniboxActionInSuggest.from(
-                                new OmniboxAction(
-                                        OmniboxActionId.ACTION_IN_SUGGEST,
-                                        0,
-                                        "hint",
-                                        "accessibility",
-                                        null,
-                                        R.style.TextAppearance_ChipText,
-                                        ActionPresentationMode.CHIP,
-                                        WindowOpenDisposition.CURRENT_TAB) {
-                                    @Override
-                                    public boolean execute(OmniboxActionDelegate d) {
-                                        return true;
-                                    }
-                                }));
+        OmniboxAction action =
+                new OmniboxAction(
+                        OmniboxActionId.ACTION_IN_SUGGEST,
+                        0,
+                        "hint",
+                        "accessibility",
+                        null,
+                        R.style.TextAppearance_ChipText,
+                        ActionPresentationMode.CHIP,
+                        WindowOpenDisposition.CURRENT_TAB) {
+                    @Override
+                    public boolean execute(OmniboxActionDelegate d) {
+                        return true;
+                    }
+                };
+        assertThrows(AssertionError.class, () -> OmniboxActionInSuggest.from(action));
     }
 
     @Test

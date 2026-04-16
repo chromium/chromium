@@ -237,44 +237,36 @@ public class EwalletTest {
 
     @Test
     public void eWallet_noEwalletName() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new Ewallet.Builder()
-                                        .setAccountDisplayName("account display name")
-                                        .setPaymentInstrument(
-                                                new PaymentInstrument.Builder()
-                                                        .setInstrumentId(100)
-                                                        .setNickname("nickname")
-                                                        .setDisplayIconUrl(
-                                                                new GURL("http://www.example.com"))
-                                                        .setSupportedPaymentRails(new int[] {2})
-                                                        .setIsFidoEnrolled(true)
-                                                        .build())
+        Ewallet.Builder builder =
+                new Ewallet.Builder()
+                        .setAccountDisplayName("account display name")
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {2})
+                                        .setIsFidoEnrolled(true)
                                         .build());
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage()).isEqualTo("Ewallet name cannot be null or empty.");
     }
 
     @Test
     public void eWallet_noAccountDisplayName() {
-        AssertionError error =
-                assertThrows(
-                        AssertionError.class,
-                        () ->
-                                new Ewallet.Builder()
-                                        .setEwalletName("ewallet name")
-                                        .setPaymentInstrument(
-                                                new PaymentInstrument.Builder()
-                                                        .setInstrumentId(100)
-                                                        .setNickname("nickname")
-                                                        .setDisplayIconUrl(
-                                                                new GURL("http://www.example.com"))
-                                                        .setSupportedPaymentRails(new int[] {2})
-                                                        .setIsFidoEnrolled(true)
-                                                        .build())
+        Ewallet.Builder builder =
+                new Ewallet.Builder()
+                        .setEwalletName("ewallet name")
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {2})
+                                        .setIsFidoEnrolled(true)
                                         .build());
+        AssertionError error = assertThrows(AssertionError.class, () -> builder.build());
 
         assertThat(error.getMessage()).isEqualTo("Account display name cannot be null or empty.");
     }

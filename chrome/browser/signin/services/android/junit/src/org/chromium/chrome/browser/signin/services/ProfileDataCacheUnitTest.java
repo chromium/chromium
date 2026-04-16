@@ -315,9 +315,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
                 mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
+        CoreAccountId accountId = TestAccounts.ACCOUNT1.getId();
         Assert.assertThrows(
-                IllegalArgumentException.class,
-                () -> mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()));
+                IllegalArgumentException.class, () -> mProfileDataCache.getById(accountId));
         Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());

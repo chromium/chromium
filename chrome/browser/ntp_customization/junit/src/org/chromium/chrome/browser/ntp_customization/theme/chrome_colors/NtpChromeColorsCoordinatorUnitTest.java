@@ -411,11 +411,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
     public void testsGetColorFromHex_ThrowsException_ForInvalidStringExplicitly() {
         String invalidColorInput = "invalid color string with spaces";
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    Color.parseColor(invalidColorInput);
-                });
+        assertThrows(IllegalArgumentException.class, () -> Color.parseColor(invalidColorInput));
     }
 
     @Test

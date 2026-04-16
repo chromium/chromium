@@ -438,15 +438,11 @@ public class SurveyClientUnitTest {
         assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
-                () -> {
-                    client.showSurvey(mActivity, mLifecycleDispatcher);
-                });
+                () -> client.showSurvey(mActivity, mLifecycleDispatcher));
         assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
-                () -> {
-                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-                });
+                () -> client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues));
 
         // Provide bit values without strings values.
         stringValues.clear();
@@ -455,9 +451,7 @@ public class SurveyClientUnitTest {
         assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
-                () -> {
-                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-                });
+                () -> client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues));
 
         // Provide string values without bit values.
         stringValues.clear();
@@ -466,9 +460,7 @@ public class SurveyClientUnitTest {
         assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
-                () -> {
-                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-                });
+                () -> client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues));
 
         // Provide extra string values without bit values.
         stringValues.clear();
@@ -478,9 +470,7 @@ public class SurveyClientUnitTest {
         assertThrows(
                 "Extra string PSDs were provided.",
                 AssertionError.class,
-                () -> {
-                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-                });
+                () -> client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues));
 
         // Provide both value.
         stringValues.clear();
