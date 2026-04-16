@@ -195,6 +195,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Other history result clicked"/>
 </enum>
 
+<!-- LINT.IfChange(HistoryClustersInitialState) -->
+
 <enum name="HistoryClustersInitialState">
   <summary>
     The initial state that describes how an interaction with the
@@ -223,6 +225,8 @@ chromium-metrics-reviews@google.com.
     The Side Panel HistoryClusters UI was opened from side panel toolbar button.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/history_clusters/history_clusters_metrics_logger.h:HistoryClustersInitialState) -->
 
 <enum name="HistoryDatabaseVersion">
 <!-- Enum definitions must have a least one value, but we won't define beyond

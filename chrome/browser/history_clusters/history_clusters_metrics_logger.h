@@ -19,8 +19,7 @@ enum class VisitType;
 // The initial state that describes how an interaction with the HistoryClusters
 // UI was started.
 //
-// Keep in sync with HistoryClustersInitialState in
-// tools/metrics/histograms/enums.xml.
+// LINT.IfChange(HistoryClustersInitialState)
 enum class HistoryClustersInitialState {
   kUnknown = 0,
   // The HistoryClusters UI was opened via direct URL, i.e., not opened via any
@@ -42,6 +41,7 @@ enum class HistoryClustersInitialState {
   // Add new values above this line.
   kMaxValue = kSidePanelFromToolbarButton,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:HistoryClustersInitialState)
 
 // HistoryClustersMetricsLogger contains all the metrics/events associated with
 // interactions and internals of HistoryClusters in Chrome. It has the same
