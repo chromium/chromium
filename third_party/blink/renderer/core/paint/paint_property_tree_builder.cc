@@ -637,8 +637,9 @@ static bool NeedsPaintOffsetTranslation(
   // zero paint offset.
   if (box_model.HasLayer() &&
       (object.StyleRef().Filter().HasReferenceFilter() ||
-       object.HasReflection()))
+       object.HasReflection() || object.StyleRef().HasBackdropFilter())) {
     return true;
+  }
 
   if (auto* box = DynamicTo<LayoutBox>(box_model)) {
     if (box->IsFixedToView(container_for_fixed_position))

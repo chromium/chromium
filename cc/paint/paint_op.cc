@@ -49,6 +49,7 @@
 #include "third_party/skia/include/core/SkTiledImageUtils.h"
 #include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
 #include "third_party/skia/src/core/SkCanvasPriv.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -1847,16 +1848,21 @@ void SaveLayerFiltersOp::RasterWithFlags(const SaveLayerFiltersOp* op,
                                          SkCanvas* canvas,
                                          const PlaybackParams& params) {
   SkPaint paint = flags->ToSkPaint();
-  // Backdrop filter is the only thing using bounds, but Skia does not use
-  // the bound when a backdrop filter is present. Instead, clip to the bound.
+
+  // Backdrop filter is the only thing using `op->bounds`, but Skia does not use
+  // the bounds when a backdrop filter is present. Instead, clip the filter to
+  // the bounds.
   PaintFilter* backdrop_filter = op->backdrop_filter.get();
-  if (backdrop_filter && !backdrop_filter->GetCropRect() &&
+  sk_sp<SkImageFilter> sk_backdrop_filter =
+      PaintFilter::GetSkFilter(backdrop_filter);
+  if (sk_backdrop_filter && !backdrop_filter->GetCropRect() &&
       op->bounds.left() != SK_ScalarInfinity) {
-    canvas->clipRect(op->bounds);
+    sk_backdrop_filter =
+        SkImageFilters::Crop(op->bounds, std::move(sk_backdrop_filter));
   }
+
   canvas->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
-      /* bounds */ nullptr, &paint,
-      PaintFilter::GetSkFilter(backdrop_filter).get(),
+      /* bounds */ nullptr, &paint, sk_backdrop_filter.get(),
       /*backdropScale=*/1.0f, /*saveLayerFlags=*/0,
       PaintFilter::ToSkImageFilters(op->filters)));
 }
