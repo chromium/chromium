@@ -30,7 +30,6 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -70,7 +69,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.modaldialog.test.R;
@@ -1267,9 +1265,6 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "https://crbug.com/437920264")
     public void testMenuItem_Callback() throws Exception {
         final CallbackHelper callbackHelper = new CallbackHelper();
         final String text = "Menu Item with Callback";
@@ -1279,7 +1274,12 @@ public class ModalDialogViewTest {
 
         createModel(mModelBuilder.with(ModalDialogProperties.MENU_ITEMS, menuItems));
 
-        onView(withText(text)).perform(click());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout menuItemsContainer =
+                            mModalDialogView.findViewById(R.id.menu_items_container);
+                    menuItemsContainer.getChildAt(0).performClick();
+                });
         callbackHelper.waitForCallback(0);
     }
 
