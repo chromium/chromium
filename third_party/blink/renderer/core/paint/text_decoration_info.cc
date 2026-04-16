@@ -249,11 +249,12 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
   }
 
   if (flip_underline_and_overline_) [[unlikely]] {
-    flipped_underline_position_ = ResolvedUnderlinePosition::kUnder;
+    decoration.underline_position = ResolvedUnderlinePosition::kUnder;
     std::swap(decoration.has_underline, decoration.has_overline);
   } else {
-    flipped_underline_position_ = original_underline_position_;
+    decoration.underline_position = original_underline_position_;
   }
+  decoration.is_flipped_underline_and_overline = flip_underline_and_overline_;
 
   // Compute the |Font| and its properties.
   font_ = font_override_ ? font_override_ : decorating_box_style_->GetFont();
@@ -359,13 +360,13 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
   DCHECK(decoration.HasUnderline());
   // Don't apply text-underline-offset to overlines. |line_offset| is zero.
   Length line_offset;
-  if (flip_underline_and_overline_) [[unlikely]] {
+  if (decoration.is_flipped_underline_and_overline) [[unlikely]] {
     line_offset = Length();
   } else {
     line_offset = applied_text_decoration_->UnderlineOffset();
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      FlippedUnderlinePosition(), decoration.computed_font_size,
+      decoration.underline_position, decoration.computed_font_size,
       decoration.font_data, line_offset, decoration.resolved_thickness);
   if (use_decorating_box_) {
     // The offset is for the decorating box. Convert it for the target text/box.
@@ -382,7 +383,7 @@ DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
   // Don't apply text-underline-offset to overline.
   Length line_offset;
   FontVerticalPositionType position;
-  if (flip_underline_and_overline_) [[unlikely]] {
+  if (decoration.is_flipped_underline_and_overline) [[unlikely]] {
     line_offset = applied_text_decoration_->UnderlineOffset();
     position = FontVerticalPositionType::TopOfEmHeight;
   } else {
@@ -418,7 +419,7 @@ DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
   DCHECK(!decoration.HasLineThrough());
   DCHECK(applied_text_decoration_);
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      FlippedUnderlinePosition(), decoration.computed_font_size,
+      decoration.underline_position, decoration.computed_font_size,
       decoration.font_data, Length(), decoration.resolved_thickness);
   return ComputeLineData(decoration,
                          decoration.HasSpellingError()
