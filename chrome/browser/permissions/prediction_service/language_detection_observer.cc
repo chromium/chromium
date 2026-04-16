@@ -77,9 +77,10 @@ void LanguageDetectionObserver::RemoveAsObserver() {
 void LanguageDetectionObserver::OnTimeout() {
   VLOG(1) << "[PermissionsAIv4] LanguageDetectionObserver::OnTimeout";
   RecordLanguageDetectionStatus(LanguageDetectionStatus::kNoResultDueToTimeout);
-  if (on_english_detected_callback_) {
+  if (fallback_callback_) {
     std::move(fallback_callback_).Run();
   }
+  on_english_detected_callback_.Reset();
   RemoveAsObserver();
 }
 
@@ -96,6 +97,7 @@ void LanguageDetectionObserver::OnLanguageDetermined(
            "English";
     RecordLanguageDetectionStatus(
         LanguageDetectionStatus::kDelayedDetectedEnglish);
+    fallback_callback_.Reset();
     std::move(on_english_detected_callback_).Run();
   } else if (on_english_detected_callback_) {
     VLOG(1)
@@ -103,6 +105,7 @@ void LanguageDetectionObserver::OnLanguageDetermined(
            "NOT English";
     RecordLanguageDetectionStatus(
         LanguageDetectionStatus::kDelayedDetectedNotEnglish);
+    on_english_detected_callback_.Reset();
     std::move(fallback_callback_).Run();
   }
   timeout_timer_.Stop();
