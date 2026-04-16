@@ -2056,7 +2056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.RecordedUserEventType" enum="SyncUserEventType"
-    expires_after="2026-05-17">
+    expires_after="2027-05-17">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
