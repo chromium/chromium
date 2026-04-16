@@ -184,12 +184,18 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
     return;
   }
 
+  if (commitment_result->protocol_version !=
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf) {
+    std::move(done).Run(std::nullopt,
+                        mojom::TrustTokenOperationStatus::kInvalidArgument);
+    return;
+  }
   protocol_version_ = commitment_result->protocol_version;
+
   base::UmaHistogramEnumeration("Net.TrustTokens.ProtocolVersion",
                                 protocol_version_);
   if (!commitment_result->batch_size ||
-      !cryptographer_->Initialize(protocol_version_,
-                                  commitment_result->batch_size)) {
+      !cryptographer_->Initialize(commitment_result->batch_size)) {
     LogOutcome(net_log_, kBegin,
                "Internal error initializing cryptography delegate");
     std::move(done).Run(std::nullopt,

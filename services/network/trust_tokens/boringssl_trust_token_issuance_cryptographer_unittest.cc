@@ -13,23 +13,11 @@ namespace network {
 
 namespace {
 
-enum KeyType {
-  kPmb,
-  kVoprf,
-};
-std::string GenerateValidVerificationKey(KeyType key_type) {
+std::string GenerateValidVerificationKey() {
   std::string verification(TRUST_TOKEN_MAX_PUBLIC_KEY_SIZE, 'a'),
       signing(TRUST_TOKEN_MAX_PRIVATE_KEY_SIZE, 'a');
   size_t verification_len, signing_len;
-  const TRUST_TOKEN_METHOD* method;
-  switch (key_type) {
-    case kPmb:
-      method = TRUST_TOKEN_pst_v1_pmb();
-      break;
-    case kVoprf:
-      method = TRUST_TOKEN_pst_v1_voprf();
-      break;
-  }
+  const TRUST_TOKEN_METHOD* method = TRUST_TOKEN_pst_v1_voprf();
   CHECK(TRUST_TOKEN_generate_key(
       method, base::as_writable_byte_span(signing).data(), &signing_len,
       signing.size(), base::as_writable_byte_span(verification).data(),
@@ -42,40 +30,17 @@ std::string GenerateValidVerificationKey(KeyType key_type) {
 
 }  // namespace
 
-TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitPmb) {
+TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimit) {
   // Test that adding more than the number of support keys fails.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
-  ASSERT_TRUE(cryptographer.Initialize(
-      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb,
-      /*issuer_configured_batch_size=*/10));
+  ASSERT_TRUE(cryptographer.Initialize(/*issuer_configured_batch_size=*/10));
 
-  size_t max_keys = TrustTokenMaxKeysForVersion(
-      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb);
-  for (size_t i = 0; i < max_keys; ++i) {
-    ASSERT_TRUE(
-        cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kPmb)))
-        << i;
-  }
-  EXPECT_FALSE(
-      cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kPmb)));
-}
-
-TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimitVoprf) {
-  // Test that adding more than the number of support keys fails.
-  BoringsslTrustTokenIssuanceCryptographer cryptographer;
-  ASSERT_TRUE(cryptographer.Initialize(
-      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf,
-      /*issuer_configured_batch_size=*/10));
-
-  size_t max_keys = TrustTokenMaxKeysForVersion(
+  const size_t max_keys = TrustTokenMaxKeysForVersion(
       mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf);
   for (size_t i = 0; i < max_keys; ++i) {
-    ASSERT_TRUE(
-        cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kVoprf)))
-        << i;
+    ASSERT_TRUE(cryptographer.AddKey(GenerateValidVerificationKey())) << i;
   }
-  EXPECT_FALSE(
-      cryptographer.AddKey(GenerateValidVerificationKey(KeyType::kVoprf)));
+  EXPECT_FALSE(cryptographer.AddKey(GenerateValidVerificationKey()));
 }
 
 }  // namespace network

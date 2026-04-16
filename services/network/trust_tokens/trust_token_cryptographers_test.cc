@@ -55,8 +55,7 @@ void RequestManyTokensAndRetainOneArbitrarily(
     const TestTrustTokenIssuer::VerificationKey& key_with_which_to_issue,
     TrustToken* out_token) {
   BoringsslTrustTokenIssuanceCryptographer issuance_cryptographer;
-  ASSERT_TRUE(
-      issuance_cryptographer.Initialize(kProtocolVersion, kNumTokensToRequest));
+  ASSERT_TRUE(issuance_cryptographer.Initialize(kNumTokensToRequest));
 
   for (const TestTrustTokenIssuer::VerificationKey& key : issuer.Keys()) {
     ASSERT_TRUE(issuance_cryptographer.AddKey(std::string(

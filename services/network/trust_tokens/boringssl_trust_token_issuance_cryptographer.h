@@ -27,8 +27,7 @@ class BoringsslTrustTokenIssuanceCryptographer
   ~BoringsslTrustTokenIssuanceCryptographer() override;
 
   // TrustTokenRequestIssuanceHelper::Cryptographer implementation:
-  bool Initialize(mojom::TrustTokenProtocolVersion issuer_configured_version,
-                  int issuer_configured_batch_size) override;
+  bool Initialize(int issuer_configured_batch_size) override;
   bool AddKey(std::string_view key) override;
   std::optional<std::string> BeginIssuance(size_t num_tokens) override;
   std::unique_ptr<UnblindedTokens> ConfirmIssuance(

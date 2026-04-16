@@ -93,9 +93,7 @@ base::NoDestructor<FixedKeyCommitmentGetter> g_fixed_key_commitment_getter{};
 class MockCryptographer
     : public TrustTokenRequestIssuanceHelper::Cryptographer {
  public:
-  MOCK_METHOD2(Initialize,
-               bool(mojom::TrustTokenProtocolVersion issuer_configured_version,
-                    int issuer_configured_batch_size));
+  MOCK_METHOD1(Initialize, bool(int issuer_configured_batch_size));
   MOCK_METHOD1(AddKey, bool(std::string_view key));
   MOCK_METHOD1(BeginIssuance, std::optional<std::string>(size_t num_tokens));
   MOCK_METHOD1(
@@ -161,7 +159,7 @@ mojom::TrustTokenKeyCommitmentResultPtr ReasonableKeyCommitmentResult() {
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf;
   key_commitment_result->id = 1;
   return key_commitment_result;
 }
@@ -264,7 +262,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(false));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(false));
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -286,7 +284,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfAddingKeyFails) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(false));
 
   TrustTokenRequestIssuanceHelper helper(
@@ -310,7 +308,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   // Return nullopt, denoting an error, when the issuance helper requests
   // blinded, unsigned tokens.
@@ -342,7 +340,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
   // The result of providing blinded, unsigned tokens should be the exact value
   // of the Sec-Private-State-Token header attached to the request.
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -366,7 +364,41 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
 
   EXPECT_THAT(request->extra_request_headers().GetHeader(
                   kTrustTokensSecTrustTokenVersionHeader),
-              Optional(std::string("PrivateStateTokenV3PMB")));
+              Optional(std::string("PrivateStateTokenV1VOPRF")));
+}
+
+// Check that TrustTokenRequestIssuanceHelperTest::Begin fails if the protocol
+// version from the key commitment is invalid.
+TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsForInvalidCryptoVersion) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+
+  SuitableTrustTokenOrigin issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+
+  auto key_commitment_result = mojom::TrustTokenKeyCommitmentResult::New();
+  key_commitment_result->keys.push_back(mojom::TrustTokenVerificationKey::New(
+      "key", /*expiry=*/base::Time::Max()));
+  key_commitment_result->batch_size =
+      static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
+  // Set protocol version to an invalid one.
+  key_commitment_result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb;
+  key_commitment_result->id = 1;
+
+  auto key_commitment_getter = std::make_unique<FixedKeyCommitmentGetter>(
+      issuer, std::move(key_commitment_result));
+  TrustTokenRequestIssuanceHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      store.get(), key_commitment_getter.get(), std::nullopt, std::nullopt,
+      std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(issuer);
+
+  EXPECT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
+            mojom::TrustTokenOperationStatus::kInvalidArgument);
 }
 
 // Check that the issuance helper rejects responses lacking the
@@ -378,7 +410,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseOmitsHeader) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -412,7 +444,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, TreatsEmptyHeaderAsSuccess) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -453,7 +485,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseIsUnusable) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -497,7 +529,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, Success) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -540,7 +572,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, AssociatesIssuerWithToplevel) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -580,7 +612,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, StoresObtainedTokens) {
   unblinded_tokens->tokens.push_back("a signed, unblinded token");
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -639,7 +671,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, ClearDataHeaderIgnored) {
   unblinded_tokens->tokens.push_back("token3");
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(Return(std::string("this string contains some masked tokens")));
@@ -719,7 +751,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RespectsMaximumBatchsize) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
 
   // The batch size should be clamped to the configured maximum.
@@ -772,7 +804,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomKeysStoresObtainedTokens) {
   unblinded_tokens->tokens.push_back("a signed, unblinded token");
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -785,8 +817,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomKeysStoresObtainedTokens) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string basic_key = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1VOPRF": {
+            "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1,
             "batchsize": 5,
             "keys": {"1": { "Y": "akey", "expiry": "%s" }}
          }})",
@@ -858,7 +890,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomIssuerStoresObtainedTokens) {
   unblinded_tokens->tokens.push_back("a signed, unblinded token");
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -871,8 +903,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomIssuerStoresObtainedTokens) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string basic_key = base::StringPrintf(
-      R"({ "PrivateStateTokenV3PMB": {
-            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      R"({ "PrivateStateTokenV1VOPRF": {
+            "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1,
             "batchsize": 5,
             "keys": {"1": { "Y": "akey", "expiry": "%s" }}
          }})",
@@ -925,7 +957,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RecordsIssuanceTime) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -958,7 +990,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, UpdatesIssuanceTime) {
   EXPECT_THAT(store->TimeSinceLastIssuance(issuer), Optional(delta));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -979,8 +1011,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, UpdatesIssuanceTime) {
   EXPECT_THAT(store->TimeSinceLastIssuance(issuer), Optional(base::Seconds(0)));
 }
 
-TEST_P(TrustTokenRequestIssuanceHelperMetricTest,
-       CountsProtocolVersionCorrectly) {
+TEST(TrustTokenRequestIssuanceHelperMetricTest,
+     CountsProtocolVersionCorrectly) {
   base::test::TaskEnvironment env;
   base::HistogramTester histogram_tester;
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
@@ -989,7 +1021,7 @@ TEST_P(TrustTokenRequestIssuanceHelperMetricTest,
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
       .WillOnce(
@@ -997,7 +1029,8 @@ TEST_P(TrustTokenRequestIssuanceHelperMetricTest,
 
   mojom::TrustTokenKeyCommitmentResultPtr commitment_result =
       ReasonableKeyCommitmentResult();
-  commitment_result->protocol_version = GetParam();
+  commitment_result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf;
 
   FixedKeyCommitmentGetter commitment_getter(issuer,
                                              std::move(commitment_result));
@@ -1015,35 +1048,9 @@ TEST_P(TrustTokenRequestIssuanceHelperMetricTest,
       future;
   helper.Begin(request->url(), future.GetCallback());
   histogram_tester.ExpectTotalCount("Net.TrustTokens.ProtocolVersion", 1);
-  histogram_tester.ExpectUniqueSample("Net.TrustTokens.ProtocolVersion",
-                                      GetParam(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.TrustTokens.ProtocolVersion",
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ProtocolVersionTests,
-    TrustTokenRequestIssuanceHelperMetricTest,
-    ::testing::ValuesIn<mojom::TrustTokenProtocolVersion>({
-        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
-        mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
-        mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb,
-        mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf,
-    }),
-    // Lambda to generate custom test name suffixes.
-    [](const ::testing::TestParamInfo<
-        TrustTokenRequestIssuanceHelperMetricTest::ParamType>& info) {
-      switch (info.param) {
-        case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
-          return "TrustTokenV3Pmb";
-        case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
-          return "TrustTokenV3Voprf";
-        case mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb:
-          return "PrivateStateTokenV1Pmb";
-        case mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf:
-          return "PrivateStateTokenV1Voprf";
-        default:
-          return "Unknown";
-      }
-      return "Unknown";
-    });
 
 }  // namespace network
