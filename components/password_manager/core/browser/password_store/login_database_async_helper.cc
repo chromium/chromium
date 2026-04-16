@@ -167,11 +167,11 @@ StoredCredentialsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
-    const StoredCredential& cred) {
+    StoredCredential cred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   AddCredentialError error = AddCredentialError::kNone;
-  PasswordStoreChangeList changes = AddLoginImpl(cred, &error);
+  PasswordStoreChangeList changes = AddLoginImpl(std::move(cred), &error);
   if (password_sync_bridge_ && !changes.empty()) {
     password_sync_bridge_->ActOnPasswordStoreChanges(FROM_HERE, changes);
   }
@@ -481,7 +481,7 @@ void LoginDatabaseAsyncHelper::ClearWereUndecryptableLoginsDeleted() {
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLoginImpl(
-    const StoredCredential& cred,
+    StoredCredential cred,
     AddCredentialError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!login_db_) {
@@ -490,7 +490,7 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLoginImpl(
     }
     return PasswordStoreChangeList();
   }
-  return login_db_->AddLogin(cred, error);
+  return login_db_->AddLogin(std::move(cred), error);
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateLoginImpl(

@@ -78,7 +78,6 @@ class InsecureCredentialsTableTest : public testing::Test {
   }
 
   InsecureCredential& test_data() { return test_data_; }
-  StoredCredential& test_form() { return test_form_; }
   InsecureCredentialsTable* db() {
     return &login_db_->insecure_credentials_table();
   }
@@ -101,11 +100,10 @@ class InsecureCredentialsTableTest : public testing::Test {
   InsecureCredential test_data_{
       kTestDomain,           kUsername,      base::Time::FromTimeT(1),
       InsecureType::kLeaked, IsMuted(false), TriggerBackendNotification(true)};
-  StoredCredential test_form_ = TestForm();
 };
 
 TEST_F(InsecureCredentialsTableTest, Reload) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
                                     test_data().insecure_type,
                                     ToInsecurityMetadata(test_data())));
@@ -121,23 +119,24 @@ TEST_F(InsecureCredentialsTableTest, IsMutedAccountedInCompare) {
 }
 
 TEST_F(InsecureCredentialsTableTest, CascadeDelete) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
                                     test_data().insecure_type,
                                     ToInsecurityMetadata(test_data())));
   ASSERT_THAT(db()->GetRows(FormPrimaryKey(1)), ElementsAre(test_data()));
-  EXPECT_TRUE(login_db()->RemoveLogin(test_form(), nullptr));
+  EXPECT_TRUE(login_db()->RemoveLogin(TestForm(), nullptr));
   // The compromised entry is also gone silently.
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)), IsEmpty());
 }
 
 TEST_F(InsecureCredentialsTableTest,
        InsecureCredentialsAddedForDifferentforms) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   InsecureCredential compromised_credentials1 = test_data();
   InsecureCredential compromised_credentials2 = test_data();
-  test_form().username_value = compromised_credentials2.username = kUsername2;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  StoredCredential cred2 = TestForm();
+  cred2.username_value = compromised_credentials2.username = kUsername2;
+  EXPECT_THAT(login_db()->AddLogin(std::move(cred2)), SizeIs(1));
 
   EXPECT_TRUE(db()->InsertOrReplace(
       FormPrimaryKey(1), compromised_credentials1.insecure_type,
@@ -152,7 +151,7 @@ TEST_F(InsecureCredentialsTableTest,
 }
 
 TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   InsecureCredential compromised_credentials1 = test_data();
   InsecureCredential compromised_credentials2 = test_data();
   compromised_credentials2.create_time = base::Time::FromTimeT(2);
@@ -173,7 +172,7 @@ TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
 
 TEST_F(InsecureCredentialsTableTest,
        AddSameSignonRealmAndUsernameAndDifferentInsecureType) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   InsecureCredential compromised_credentials1 = test_data();
   InsecureCredential compromised_credentials2 = test_data();
   compromised_credentials2.insecure_type = InsecureType::kPhished;
@@ -196,7 +195,7 @@ TEST_F(InsecureCredentialsTableTest,
 }
 
 TEST_F(InsecureCredentialsTableTest, RemoveRowMultipleTypes) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   InsecureCredential leaked = test_data();
   leaked.insecure_type = InsecureType::kLeaked;
   InsecureCredential phished = test_data();
@@ -214,7 +213,7 @@ TEST_F(InsecureCredentialsTableTest, RemoveRowMultipleTypes) {
 }
 
 TEST_F(InsecureCredentialsTableTest, UpdateRow) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
 
   InsecureCredential insecure_credential = test_data();
   insecure_credential.is_muted = IsMuted(false);
@@ -242,7 +241,7 @@ TEST_F(InsecureCredentialsTableTest, UpdateRow) {
 }
 
 TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(TestForm()), SizeIs(1));
   InsecureCredential compromised_credentials1 = test_data();
   InsecureCredential compromised_credentials2 = test_data();
   compromised_credentials2.insecure_type = InsecureType::kReused;
@@ -258,10 +257,11 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
       db()->GetRows(FormPrimaryKey(1)),
       UnorderedElementsAre(compromised_credentials1, compromised_credentials2));
 
-  test_form().username_value = kUsername2;
-  test_data().username = test_form().username_value;
+  StoredCredential cred2 = TestForm();
+  cred2.username_value = kUsername2;
+  test_data().username = cred2.username_value;
 
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(std::move(cred2)), SizeIs(1));
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)), IsEmpty());
 
   compromised_credentials1 = test_data();

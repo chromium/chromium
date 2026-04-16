@@ -95,22 +95,23 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
 }
 
 TEST_F(LoginDatabaseIOSTest, AddLogin) {
-  PasswordForm form;
-  form.url = GURL("http://0.com");
-  form.signon_realm = "http://www.example.com/";
-  form.action = GURL("http://www.example.com/action");
-  form.password_element = u"pwd";
-  form.password_value = u"example";
+  StoredCredential cred;
+  cred.url = GURL("http://0.com");
+  cred.signon_realm = "http://www.example.com/";
+  cred.action = GURL("http://www.example.com/action");
+  cred.password_element = u"pwd";
+  cred.password_value = u"example";
 
+  std::u16string expected_password = cred.password_value;
   password_manager::PasswordStoreChangeList changes =
-      login_db_->AddLogin(FromPasswordForm(form));
+      login_db_->AddLogin(std::move(cred));
   std::string keychain_identifier = changes[0].form().keychain_identifier;
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
   EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(keychain_identifier,
                                                          &password_value));
-  EXPECT_EQ(form.password_value, password_value);
+  EXPECT_EQ(expected_password, password_value);
 
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
@@ -118,36 +119,33 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
 }
 
 TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
-  PasswordForm form;
-  form.url = GURL("http://0.com");
-  form.signon_realm = "http://www.example.com";
-  form.action = GURL("http://www.example.com/action");
-  form.password_element = u"pwd";
-  form.password_value = u"example";
+  StoredCredential cred;
+  cred.url = GURL("http://0.com");
+  cred.signon_realm = "http://www.example.com";
+  cred.action = GURL("http://www.example.com/action");
+  cred.password_element = u"pwd";
+  cred.password_value = u"example";
 
   password_manager::PasswordStoreChangeList changes =
-      login_db_->AddLogin(FromPasswordForm(form));
+      login_db_->AddLogin(FromPasswordForm(ToPasswordForm(cred)));
   std::string old_keychain_identifier = changes[0].form().keychain_identifier;
 
-  form.password_value = u"secret";
+  cred.password_value = u"secret";
 
-  ASSERT_THAT(login_db_->UpdateLogin(FromPasswordForm(form)),
-              testing::SizeIs(1));
+  ASSERT_THAT(login_db_->UpdateLogin(cred), testing::SizeIs(1));
 
-  std::vector<PasswordForm> forms;
   std::vector<StoredCredential> credentials;
-  EXPECT_TRUE(
-      login_db_->GetLogins(PasswordFormDigest(form), true, &credentials));
-  forms = ToPasswordForms(std::move(credentials));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(ToPasswordForm(cred)),
+                                   true, &credentials));
 
-  ASSERT_EQ(1U, forms.size());
-  std::string keychain_identifier = forms[0].keychain_identifier;
+  ASSERT_EQ(1U, credentials.size());
+  std::string keychain_identifier = credentials[0].keychain_identifier;
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
   EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(keychain_identifier,
                                                          &password_value));
-  EXPECT_EQ(form.password_value, password_value);
+  EXPECT_EQ(cred.password_value, password_value);
   // Check that keychain item corresponding to the old password value is
   // deleted.
   EXPECT_EQ(errSecItemNotFound, GetTextFromKeychainIdentifier(
@@ -159,17 +157,16 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
 }
 
 TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
-  PasswordForm form;
-  form.signon_realm = "http://www.example.com";
-  form.url = GURL("http://www.example.com/action");
-  form.password_element = u"pwd";
-  form.password_value = u"example";
+  StoredCredential cred;
+  cred.signon_realm = "http://www.example.com";
+  cred.url = GURL("http://www.example.com/action");
+  cred.password_element = u"pwd";
+  cred.password_value = u"example";
 
   password_manager::PasswordStoreChangeList changes =
-      login_db_->AddLogin(FromPasswordForm(form));
+      login_db_->AddLogin(FromPasswordForm(ToPasswordForm(cred)));
   std::string keychain_identifier = changes[0].form().keychain_identifier;
-  std::ignore =
-      login_db_->RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr);
+  std::ignore = login_db_->RemoveLogin(cred, /*changes=*/nullptr);
 
   // Verify that password is no longer available in the keychain.
   std::u16string password_value;
@@ -178,45 +175,46 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
 }
 
 TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
-  PasswordForm forms[3];
-  forms[0].url = GURL("http://0.com");
-  forms[0].signon_realm = "http://www.example.com";
-  forms[0].username_element = u"login0";
-  forms[0].date_created = base::Time::FromSecondsSinceUnixEpoch(100);
-  forms[0].password_value = u"pass0";
-  forms[0].in_store = PasswordForm::Store::kProfileStore;
+  StoredCredential creds[3];
+  creds[0].url = GURL("http://0.com");
+  creds[0].signon_realm = "http://www.example.com";
+  creds[0].username_element = u"login0";
+  creds[0].date_created = base::Time::FromSecondsSinceUnixEpoch(100);
+  creds[0].password_value = u"pass0";
+  creds[0].in_store = PasswordForm::Store::kProfileStore;
 
-  forms[1].url = GURL("http://1.com");
-  forms[1].signon_realm = "http://www.example.com";
-  forms[1].username_element = u"login1";
-  forms[1].date_created = base::Time::FromSecondsSinceUnixEpoch(200);
-  forms[1].password_value = u"pass1";
-  forms[1].in_store = PasswordForm::Store::kProfileStore;
+  creds[1].url = GURL("http://1.com");
+  creds[1].signon_realm = "http://www.example.com";
+  creds[1].username_element = u"login1";
+  creds[1].date_created = base::Time::FromSecondsSinceUnixEpoch(200);
+  creds[1].password_value = u"pass1";
+  creds[1].in_store = PasswordForm::Store::kProfileStore;
 
-  forms[2].url = GURL("http://2.com");
-  forms[2].signon_realm = "http://www.example.com";
-  forms[2].username_element = u"login2";
-  forms[2].date_created = base::Time::FromSecondsSinceUnixEpoch(300);
-  forms[2].password_value = u"pass2";
-  forms[2].in_store = PasswordForm::Store::kProfileStore;
+  creds[2].url = GURL("http://2.com");
+  creds[2].signon_realm = "http://www.example.com";
+  creds[2].username_element = u"login2";
+  creds[2].date_created = base::Time::FromSecondsSinceUnixEpoch(300);
+  creds[2].password_value = u"pass2";
+  creds[2].in_store = PasswordForm::Store::kProfileStore;
 
-  for (const auto& f : forms) {
-    std::ignore = login_db_->AddLogin(FromPasswordForm(f));
+  PasswordForm expected_form_0 = ToPasswordForm(creds[0]);
+  PasswordForm expected_form_2 = ToPasswordForm(creds[2]);
+
+  for (auto& c : creds) {
+    std::ignore = login_db_->AddLogin(std::move(c));
   }
 
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
                              "http://www.example.com", GURL()};
-  std::vector<PasswordForm> logins;
-  std::vector<StoredCredential> credentials;
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
-  logins = ToPasswordForms(std::move(credentials));
-  ASSERT_EQ(3U, logins.size());
+  std::vector<StoredCredential> initial_credentials;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &initial_credentials));
+  ASSERT_EQ(3U, initial_credentials.size());
   // Verify that for each password exist a keychain item with a password.
-  for (const auto& login : logins) {
+  for (const auto& cred : initial_credentials) {
     std::u16string password_value;
     EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
-                                 login.keychain_identifier, &password_value));
-    EXPECT_EQ(login.password_value, password_value);
+                                 cred.keychain_identifier, &password_value));
+    EXPECT_EQ(cred.password_value, password_value);
   }
 
   login_db_->RemoveLoginsCreatedBetween(
@@ -225,97 +223,96 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
       /*changes=*/nullptr);
 
   // Verify that one password is removed.
-  std::vector<PasswordForm> remaining_logins;
-  credentials.clear();
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
-  remaining_logins = ToPasswordForms(std::move(credentials));
-  EXPECT_THAT(remaining_logins,
+  std::vector<StoredCredential> remaining_credentials;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &remaining_credentials));
+  EXPECT_THAT(ToPasswordForms(std::move(remaining_credentials)),
               testing::UnorderedElementsAreArray(
-                  FormsIgnoringPrimaryKey({forms[0], forms[2]})));
+                  FormsIgnoringPrimaryKey({expected_form_0, expected_form_2})));
 
   // Verify that keychain entry is removed.
   std::u16string password_value;
-  EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
-                               logins[0].keychain_identifier, &password_value));
+  EXPECT_EQ(errSecSuccess,
+            GetTextFromKeychainIdentifier(
+                initial_credentials[0].keychain_identifier, &password_value));
   EXPECT_EQ(errSecItemNotFound,
-            GetTextFromKeychainIdentifier(logins[1].keychain_identifier,
-                                          &password_value));
-  EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
-                               logins[2].keychain_identifier, &password_value));
+            GetTextFromKeychainIdentifier(
+                initial_credentials[1].keychain_identifier, &password_value));
+  EXPECT_EQ(errSecSuccess,
+            GetTextFromKeychainIdentifier(
+                initial_credentials[2].keychain_identifier, &password_value));
 
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
-  DeleteEncryptedPasswordFromKeychain(logins[0].keychain_identifier);
-  DeleteEncryptedPasswordFromKeychain(logins[2].keychain_identifier);
+  DeleteEncryptedPasswordFromKeychain(
+      initial_credentials[0].keychain_identifier);
+  DeleteEncryptedPasswordFromKeychain(
+      initial_credentials[2].keychain_identifier);
 }
 
 TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
-  PasswordForm forms[3];
-  forms[0].url = GURL("http://0.com");
-  forms[0].signon_realm = "http://www.example.com";
-  forms[0].username_element = u"login0";
-  forms[0].date_created = base::Time::FromSecondsSinceUnixEpoch(100);
-  forms[0].password_value = u"pass0";
-  forms[0].in_store = PasswordForm::Store::kProfileStore;
+  StoredCredential creds[3];
+  creds[0].url = GURL("http://0.com");
+  creds[0].signon_realm = "http://www.example.com";
+  creds[0].username_element = u"login0";
+  creds[0].date_created = base::Time::FromSecondsSinceUnixEpoch(100);
+  creds[0].password_value = u"pass0";
+  creds[0].in_store = PasswordForm::Store::kProfileStore;
 
-  forms[1].url = GURL("http://1.com");
-  forms[1].signon_realm = "http://www.example.com";
-  forms[1].username_element = u"login1";
-  forms[1].date_created = base::Time::FromSecondsSinceUnixEpoch(200);
-  forms[1].password_value = u"pass1";
-  forms[1].in_store = PasswordForm::Store::kProfileStore;
+  creds[1].url = GURL("http://1.com");
+  creds[1].signon_realm = "http://www.example.com";
+  creds[1].username_element = u"login1";
+  creds[1].date_created = base::Time::FromSecondsSinceUnixEpoch(200);
+  creds[1].password_value = u"pass1";
+  creds[1].in_store = PasswordForm::Store::kProfileStore;
 
-  forms[2].url = GURL("http://2.com");
-  forms[2].signon_realm = "http://www.example.com";
-  forms[2].username_element = u"login2";
-  forms[2].date_created = base::Time::FromSecondsSinceUnixEpoch(300);
-  forms[2].password_value = u"pass2";
-  forms[2].in_store = PasswordForm::Store::kProfileStore;
+  creds[2].url = GURL("http://2.com");
+  creds[2].signon_realm = "http://www.example.com";
+  creds[2].username_element = u"login2";
+  creds[2].date_created = base::Time::FromSecondsSinceUnixEpoch(300);
+  creds[2].password_value = u"pass2";
+  creds[2].in_store = PasswordForm::Store::kProfileStore;
 
-  for (const auto& f : forms) {
-    std::ignore = login_db_->AddLogin(FromPasswordForm(f));
+  for (auto& c : creds) {
+    std::ignore = login_db_->AddLogin(std::move(c));
   }
 
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
                              "http://www.example.com", GURL()};
-  std::vector<PasswordForm> logins;
-  std::vector<StoredCredential> credentials;
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
-  logins = ToPasswordForms(std::move(credentials));
-  ASSERT_EQ(3U, logins.size());
+  std::vector<StoredCredential> initial_credentials;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &initial_credentials));
+  ASSERT_EQ(3U, initial_credentials.size());
   // Verify that for each password exist a keychain item with a password.
-  for (const auto& login : logins) {
+  for (const auto& cred : initial_credentials) {
     std::u16string password_value;
     EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
-                                 login.keychain_identifier, &password_value));
-    EXPECT_EQ(login.password_value, password_value);
+                                 cred.keychain_identifier, &password_value));
+    EXPECT_EQ(cred.password_value, password_value);
   }
 
   // Delete one keychain item to verify that nothing happens when trying to
   // delete it again.
-  DeleteEncryptedPasswordFromKeychain(logins[0].keychain_identifier);
+  DeleteEncryptedPasswordFromKeychain(
+      initial_credentials[0].keychain_identifier);
 
   base::HistogramTester histogram_tester;
   login_db_->DeleteAndRecreateDatabaseFile();
 
   // Verify that all passwords are gone.
-  std::vector<PasswordForm> remaining_logins;
-  credentials.clear();
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
-  remaining_logins = ToPasswordForms(std::move(credentials));
-  EXPECT_THAT(remaining_logins, testing::IsEmpty());
+  std::vector<StoredCredential> remaining_credentials;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &remaining_credentials));
+  EXPECT_THAT(remaining_credentials, testing::IsEmpty());
 
   // Verify that keychain entry is removed.
   std::u16string password_value;
   EXPECT_EQ(errSecItemNotFound,
-            GetTextFromKeychainIdentifier(logins[0].keychain_identifier,
-                                          &password_value));
+            GetTextFromKeychainIdentifier(
+                initial_credentials[0].keychain_identifier, &password_value));
   EXPECT_EQ(errSecItemNotFound,
-            GetTextFromKeychainIdentifier(logins[1].keychain_identifier,
-                                          &password_value));
+            GetTextFromKeychainIdentifier(
+                initial_credentials[1].keychain_identifier, &password_value));
   EXPECT_EQ(errSecItemNotFound,
-            GetTextFromKeychainIdentifier(logins[2].keychain_identifier,
-                                          &password_value));
+            GetTextFromKeychainIdentifier(
+                initial_credentials[2].keychain_identifier, &password_value));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -432,7 +429,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   AddItemToKeychain(u"password note", note_keychain_identifier);
 
   CreateDatabase("login_db_v38_with_keychain_id.sql");
-  std::vector<PasswordForm> forms;
   {
     // Assert that the database was successfully opened and updated to current
     // version.
@@ -448,14 +444,14 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
 
     std::vector<StoredCredential> credentials;
     EXPECT_EQ(db.GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
-    forms = ToPasswordForms(std::move(credentials));
+    ASSERT_EQ(credentials.size(), 1u);
     // Verify that |encrypted_password| is still corresponding to keychain
     // identifier.
-    EXPECT_EQ(forms[0].keychain_identifier, password_keychain_identifier);
-    EXPECT_EQ(forms[0].password_value, u"test1");
+    EXPECT_EQ(credentials[0].keychain_identifier, password_keychain_identifier);
+    EXPECT_EQ(credentials[0].password_value, u"test1");
     // Verify that the password note is still readable.
-    ASSERT_EQ(forms[0].notes.size(), 1u);
-    EXPECT_EQ(forms[0].notes[0].value, u"password note");
+    ASSERT_EQ(credentials[0].notes.size(), 1u);
+    EXPECT_EQ(credentials[0].notes[0].value, u"password note");
   }
   {
     // Verify that password_value in the database is now encrypted with OSCrypt
@@ -536,12 +532,10 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
       login_db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
                     /*encryptor=*/CreateEncryptor()));
 
-  std::vector<PasswordForm> forms;
   std::vector<StoredCredential> credentials;
   EXPECT_EQ(login_db.GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
-  forms = ToPasswordForms(std::move(credentials));
-  EXPECT_EQ(1u, forms.size());
-  EXPECT_EQ(u"password", forms[0].password_value);
+  ASSERT_EQ(1u, credentials.size());
+  EXPECT_EQ(u"password", credentials[0].password_value);
 
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
@@ -556,7 +550,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   AddItemToKeychain(u"password note", note_keychain_identifier);
 
   CreateDatabase("login_db_v39_with_note_keychain_id.sql");
-  std::vector<PasswordForm> forms;
   {
     // Assert that the database was successfully opened and updated to current
     // version.
@@ -573,11 +566,10 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     std::vector<StoredCredential> credentials;
     EXPECT_EQ(login_db.GetAllLogins(&credentials),
               FormRetrievalResult::kSuccess);
-    forms = ToPasswordForms(std::move(credentials));
-    ASSERT_EQ(forms.size(), 1u);
+    ASSERT_EQ(credentials.size(), 1u);
     // Verify that the password note is still readable.
-    ASSERT_EQ(forms[0].notes.size(), 1u);
-    EXPECT_EQ(forms[0].notes[0].value, u"password note");
+    ASSERT_EQ(credentials[0].notes.size(), 1u);
+    EXPECT_EQ(credentials[0].notes[0].value, u"password note");
   }
   {
     // Verify that note value in the database is now encrypted with OSCrypt and
@@ -603,7 +595,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   CreateDatabase("login_db_v39_with_note_keychain_id.sql");
   ReplaceNoteValue(note_keychain_identifier);
 
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> credentials;
   {
     // Assert that the database was successfully opened and updated to current
     // version.
@@ -617,14 +609,12 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // to access it;
     DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
 
-    std::vector<StoredCredential> credentials;
     EXPECT_EQ(login_db.GetAllLogins(&credentials),
               FormRetrievalResult::kSuccess);
-    forms = ToPasswordForms(std::move(credentials));
-    ASSERT_EQ(forms.size(), 1u);
+    ASSERT_EQ(credentials.size(), 1u);
     // Verify that the password note is still readable.
-    ASSERT_EQ(forms[0].notes.size(), 1u);
-    EXPECT_EQ(forms[0].notes[0].value, u"test_note");
+    ASSERT_EQ(credentials[0].notes.size(), 1u);
+    EXPECT_EQ(credentials[0].notes[0].value, u"test_note");
   }
   {
     // Verify that note value in the database is now encrypted with OSCrypt and
@@ -656,14 +646,12 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
 
   // Check that the first note is still readable and the second one was deleted
   // during migration.
-  std::vector<PasswordForm> forms;
   std::vector<StoredCredential> credentials;
   EXPECT_EQ(login_db.GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
-  forms = ToPasswordForms(std::move(credentials));
-  EXPECT_EQ(forms.size(), 2u);
-  EXPECT_EQ(forms[0].notes.size(), 1u);
-  EXPECT_EQ(forms[0].notes[0].value, u"example_note");
-  EXPECT_EQ(forms[1].notes.size(), 0u);
+  ASSERT_EQ(credentials.size(), 2u);
+  EXPECT_EQ(credentials[0].notes.size(), 1u);
+  EXPECT_EQ(credentials[0].notes[0].value, u"example_note");
+  EXPECT_EQ(credentials[1].notes.size(), 0u);
 
   // Clear the note from the keychain to ensure it doesn't affect other tests.
   DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);

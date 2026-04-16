@@ -83,16 +83,16 @@ class LoginDatabase : public EncryptDecryptInterface {
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
 
-  // Adds |form| to the list of remembered password forms. Returns the list of
+  // Adds |cred| to the list of remembered credentials. Returns the list of
   // changes applied ({}, {ADD}, {REMOVE, ADD}). If it returns {REMOVE, ADD}
-  // then the REMOVE is associated with the form that was added. Thus only the
-  // primary key columns contain the values associated with the removed form. In
-  // case of error, it sets |error| if |error| isn't null.
+  // then the REMOVE is associated with the credential that was added. Thus only
+  // the primary key columns contain the values associated with the removed
+  // credential. In case of error, it sets |error| if |error| isn't null.
   [[nodiscard]] PasswordStoreChangeList AddLogin(
-      const StoredCredential& cred,
+      StoredCredential cred,
       AddCredentialError* error = nullptr);
 
-  // Updates existing password form. Returns the list of applied changes ({},
+  // Updates existing credential. Returns the list of applied changes ({},
   // {UPDATE}). The password is looked up by the tuple {origin,
   // username_element, username_value, password_element, signon_realm}. These
   // columns stay intact. In case of error, it sets |error| if |error| isn't
@@ -101,31 +101,32 @@ class LoginDatabase : public EncryptDecryptInterface {
       const StoredCredential& cred,
       UpdateCredentialError* error = nullptr);
 
-  // Removes |cred| from the list of remembered password forms. Returns true if
+  // Removes |cred| from the list of remembered credentials. Returns true if
   // |cred| was successfully removed from the database. If |changes| is not be
-  // null, it will be used to populate the change list of the removed forms if
-  // any.
+  // null, it will be used to populate the change list of the removed
+  // credentials if any.
   [[nodiscard]] bool RemoveLogin(const StoredCredential& cred,
                                  PasswordStoreChangeList* changes);
 
-  // Removes the form with |primary_key| from the list of remembered password
-  // forms. Returns true if the form was successfully removed from the database.
+  // Removes the credential with |primary_key| from the list of remembered
+  // credentials. Returns true if the credential was successfully removed from
+  // the database.
   [[nodiscard]] bool RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
                                              PasswordStoreChangeList* changes);
 
   // Removes all logins created from |delete_begin| onwards (inclusive) and
   // before |delete_end|. You may use a null Time value to do an unbounded
   // delete in either direction. If |changes| is not be null, it will be used to
-  // populate the change list of the removed forms if any.
+  // populate the change list of the removed credentials if any.
   bool RemoveLoginsCreatedBetween(base::Time delete_begin,
                                   base::Time delete_end,
                                   PasswordStoreChangeList* changes);
 
-  // Sets the 'skip_zero_click' flag on all forms on |origin| to 'true'.
+  // Sets the 'skip_zero_click' flag on all credentials on |origin| to 'true'.
   bool DisableAutoSignInForOrigin(const GURL& origin);
 
-  // All Get* methods below overwrite |forms| with the returned credentials. On
-  // success, those methods return true.
+  // All Get* methods below overwrite |credentials| with the returned
+  // credentials. On success, those methods return true.
 
   // Gets a list of credentials matching |form|, including blocklisted matches
   // and federated credentials.
@@ -305,8 +306,8 @@ class LoginDatabase : public EncryptDecryptInterface {
   void ReportInaccessiblePasswordsMetrics();
   void ReportDuplicateCredentialsMetrics();
 
-  // Fills |cred| from the values in the given statement (which is assumed to be
-  // of the form used by the Get*Logins methods).
+  // Returns a `StoredCredential` filled from the values in the given statement
+  // (which is assumed to be of the form used by the Get*Logins methods).
   // WARNING: Password value itself is absent, callers have to decrypt it if
   // needed.
   [[nodiscard]] StoredCredential GetFormWithoutPasswordFromStatement(

@@ -72,7 +72,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       const std::vector<PasswordFormDigest>& forms,
       bool include_psl);
 
-  PasswordChangesOrError AddLogin(const StoredCredential& cred);
+  PasswordChangesOrError AddLogin(StoredCredential cred);
   PasswordChangesOrError UpdateLogin(const StoredCredential& cred);
   PasswordChangesOrError RemoveLogin(const base::Location& location,
                                      const StoredCredential& cred);
@@ -130,7 +130,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   std::optional<bool> WereUndecryptableLoginsDeleted() const override;
   void ClearWereUndecryptableLoginsDeleted() override;
 
-  PasswordStoreChangeList AddLoginImpl(const StoredCredential& cred,
+  PasswordStoreChangeList AddLoginImpl(StoredCredential cred,
                                        AddCredentialError* error);
   PasswordStoreChangeList UpdateLoginImpl(const StoredCredential& cred,
                                           UpdateCredentialError* error);
