@@ -182,7 +182,24 @@ void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
   SPLOG("Toggle - key: " << key.ToString() << ", open_trigger: "
                          << static_cast<int>(open_trigger));
 
-  // TODO(crbug.com/493931022): Implement this.
+  // If an entry is already showing in the sidepanel, or is currently loading,
+  // the sidepanel should be closed.
+  SidePanelEntry* entry = GetActiveContextualEntryForKey(key);
+  if (!entry) {
+    entry = SidePanelRegistry::From(browser())->GetEntryForKey(key);
+  }
+
+  if (entry && ShouldClose() && IsSidePanelShowing(entry->type()) &&
+      IsSidePanelEntryShowing(key)) {
+    Close(entry->type(), SidePanelEntryHideReason::kSidePanelClosed,
+          /*suppress_animations=*/false);
+    return;
+  }
+
+  std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(key);
+  if (unique_key.has_value()) {
+    Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
+  }
 }
 
 content::WebContents*

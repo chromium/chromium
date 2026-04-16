@@ -750,3 +750,77 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_FALSE(coordinator->IsClosing());
   EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 }
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Toggle_ClosedPanel_OpensPanel) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(CreateSidePanelEntry(entry_key, browser));
+
+  ASSERT_FALSE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+
+  // Act:
+  coordinator->Toggle(entry_key, SidePanelOpenTrigger::kToolbarButton);
+
+  // Assert:
+  EXPECT_TRUE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Toggle_SameEntry_ClosesPanel) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(CreateSidePanelEntry(entry_key, browser));
+
+  coordinator->SidePanelUIBase::Show(entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act:
+  coordinator->Toggle(entry_key, SidePanelOpenTrigger::kToolbarButton);
+
+  // Assert:
+  EXPECT_FALSE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Toggle_DifferentEntry_ReplacesContent) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(CreateSidePanelEntry(first_entry_key, browser));
+  registry->Register(CreateSidePanelEntry(second_entry_key, browser));
+
+  coordinator->SidePanelUIBase::Show(first_entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // Act:
+  coordinator->Toggle(second_entry_key, SidePanelOpenTrigger::kToolbarButton);
+
+  // Assert:
+  EXPECT_TRUE(coordinator->IsSidePanelShowing(SidePanelType::kToolbar));
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+}

@@ -71,6 +71,10 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   }
 
   bool IsClosing() const { return state_ == SidePanelState::kClosing; }
+  bool ShouldClose() const {
+    return state_ == SidePanelState::kShown ||
+           state_ == SidePanelState::kOpening;
+  }
 
  protected:
   // Implements `SidePanelUIBase`:
