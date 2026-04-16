@@ -4,11 +4,13 @@
 
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/glic/suggestions/glic_cue_target.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
@@ -27,6 +29,10 @@ GlicNudgeController::GlicNudgeController(
     : browser_window_interface_(browser_window_interface), tab_list_(tab_list) {
   CHECK(tab_list_);
   tab_list_observation_.Observe(tab_list);
+
+  if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
+    glic::GlicCueTarget::Register(*browser_window_interface);
+  }
 }
 
 GlicNudgeController::~GlicNudgeController() = default;

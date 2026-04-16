@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class BrowserWindowInterface;
 class OptimizationGuideKeyedService;
@@ -50,8 +51,7 @@ enum class ContextualCueingDecision {
   kMissingAnchoredMessageText = 7,
   // The response didn't match a known target feature.
   kUnknownFulfillmentSurface = 8,
-  // The response was for a target feature that didn't register itself with
-  // ContextualCueingService.
+  // The response was for a target feature that didn't register itself.
   kTargetFeatureNotRegistered = 9,
   // The feature reported that its cue shouldn't be shown.
   kTargetFeatureNotEligible = 10,
@@ -80,6 +80,13 @@ class ContextualCueingController
       delete;
   ~ContextualCueingController() override;
 
+  // Register a cue type. Feature code provides a CueTarget for reporting the
+  // feature's cue eligibility and handling clicks. Calling this function for a
+  // CueTargetType that was already registered will destroy the previous target.
+  // Once registered, cue types are never unregistered -- features may prevent
+  // cues by returning false from IsEligible.
+  void RegisterCueTarget(CueTargetType type, std::unique_ptr<CueTarget> target);
+
   // page_content_annotations::PageContentAnnotationsService::
   // PageContentAnnotationsServiceObserver:
   void OnPageContentAnnotated(
@@ -105,6 +112,8 @@ class ContextualCueingController
                     actions::ActionItem*,
                     actions::ActionInvocationContext);
 
+  CueTarget* GetTarget(CueTargetType type);
+
   // Not owned. Guaranteed to outlive `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<TabListInterface> tab_list_interface_;
@@ -113,6 +122,7 @@ class ContextualCueingController
       page_content_annotations_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};
 };

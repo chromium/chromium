@@ -48,8 +48,8 @@ class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
 
     auto test_cue_target = std::make_unique<TestCueTarget>();
     cue_target_ = test_cue_target.get();
-    ContextualCueingServiceFactory::GetForProfile(browser()->profile())
-        ->RegisterCueTarget(CueTargetType::kGlic, std::move(test_cue_target));
+    contextual_cueing_controller()->RegisterCueTarget(
+        CueTargetType::kGlic, std::move(test_cue_target));
   }
 
   void SetUpInProcessBrowserTestFixture() override {

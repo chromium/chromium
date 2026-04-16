@@ -320,6 +320,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           std::make_unique<tab_groups::MostRecentSharedTabUpdateStore>(browser);
     }
 
+    if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
+      contextual_cueing_controller_ =
+          std::make_unique<contextual_cueing::ContextualCueingController>(
+              browser, tab_list_bridge_.get());
+    }
+
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(
           browser, *glic::GlicKeyedService::Get(profile));
@@ -368,12 +374,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       ai_overlay_dialog_controller_ =
           GetUserDataFactory().CreateInstance<ttc::AiOverlayDialogController>(
               *browser, browser);
-    }
-
-    if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
-      contextual_cueing_controller_ =
-          std::make_unique<contextual_cueing::ContextualCueingController>(
-              browser, tab_list_bridge_.get());
     }
   }
 

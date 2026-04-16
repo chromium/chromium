@@ -24,6 +24,8 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
@@ -33,6 +35,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/actions/actions.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -114,6 +117,12 @@ ContextualCueingController::~ContextualCueingController() {
     page_content_annotations_service_->RemoveObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
   }
+}
+
+void ContextualCueingController::RegisterCueTarget(
+    CueTargetType type,
+    std::unique_ptr<CueTarget> target) {
+  cue_targets_.insert_or_assign(type, std::move(target));
 }
 
 void ContextualCueingController::OnPageContentAnnotated(
@@ -290,7 +299,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     return;
   }
 
-  CueTarget* target = contextual_cueing_service_->GetTarget(*target_type);
+  CueTarget* target = GetTarget(*target_type);
   if (!target) {
     MODEL_EXECUTION_LOG(base::StringPrintf("No CueTarget registered for '%s'",
                                            GetName(*target_type)));
@@ -330,9 +339,15 @@ void ContextualCueingController::ShowCue(
   tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
   CHECK(tab);
 
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue, browser_window_interface_->GetFeatures()
+                                        .browser_actions()
+                                        ->root_action_item());
   CHECK(action);
+
+  const auto& strings = response.anchored_message_cue();
+  // TODO(crbug.com/501162817): Set the icon for the omnibox chip
+  action->SetText(base::UTF8ToUTF16(strings.action_text()));
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
       cue_type, target.CueActionDataFromResponse(response)));
@@ -345,14 +360,16 @@ void ContextualCueingController::ShowCue(
   }
 
   page_action_controller->Show(kActionAnchoredContextualCue);
-  const auto& strings = response.anchored_message_cue();
   page_action_controller->SetAnchoredMessageText(
       kActionAnchoredContextualCue,
       base::UTF8ToUTF16(strings.anchored_message_text()));
   page_action_controller->OverrideText(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
-  page_action_controller->OverrideImage(kActionAnchoredContextualCue,
-                                        target.GetIcon());
+  // TODO(crbug.com/501162817): Set the icon for the anchored message bubble
+  // TODO(crbug.com/500407600): Show a dropdown menu instead of a close button
+  page_action_controller->SetAnchoredMessageAction(
+      kActionAnchoredContextualCue,
+      page_actions::AnchoredMessageActionIconType::kClose, /*model=*/nullptr);
   page_action_controller->ShowAnchoredMessage(
       kActionAnchoredContextualCue,
       {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
@@ -371,7 +388,15 @@ void ContextualCueingController::OnCueClicked(
     actions::ActionInvocationContext) {
   MODEL_EXECUTION_LOG(
       base::StringPrintf("Cue type '%s' was clicked", GetName(cue_type)));
-  contextual_cueing_service_->OnClick(cue_type, std::move(data));
+  if (CueTarget* target = GetTarget(cue_type)) {
+    target->OnClick(std::move(data));
+  }
+  contextual_cueing_service_->OnClick(cue_type);
+}
+
+CueTarget* ContextualCueingController::GetTarget(CueTargetType type) {
+  auto iter = cue_targets_.find(type);
+  return iter != cue_targets_.end() ? iter->second.get() : nullptr;
 }
 
 }  // namespace contextual_cueing

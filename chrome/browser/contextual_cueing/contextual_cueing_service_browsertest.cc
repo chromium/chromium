@@ -42,24 +42,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceV2BrowserTestCCFlag,
                          browser()->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualCueingServiceV2BrowserTestCCFlag, OnClick) {
-  auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
-
-  auto target = std::make_unique<TestCueTarget>();
-  TestCueTarget* target_raw = target.get();
-  service->RegisterCueTarget(CueTargetType::kGlic, std::move(target));
-
-  ASSERT_TRUE(std::holds_alternative<std::monostate>(target_raw->click_data));
-
-  GlicCueActionData data;
-  data.prompt = "asdf";
-  service->OnClick(CueTargetType::kGlic, std::move(data));
-  ASSERT_TRUE(
-      std::holds_alternative<GlicCueActionData>(target_raw->click_data));
-  EXPECT_EQ("asdf", std::get<GlicCueActionData>(target_raw->click_data).prompt);
-}
-
 class ContextualCueingServiceV2BrowserTestDisabledFeatures
     : public ContextualCueingServiceV2BrowserTest {
  public:

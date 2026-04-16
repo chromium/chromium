@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="9" label="Cue not shown: target surface not registered">
     Model response was for a known cue type, but the surface was not registered
-    with ContextualCueingService.
+    with ContextualCueingController.
   </int>
   <int value="10" label="Cue not shown: ineligible">
     Model response was for a registered cue type, but that feature reported

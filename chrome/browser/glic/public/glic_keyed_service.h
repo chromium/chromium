@@ -116,6 +116,7 @@ class GlicKeyedService : public KeyedService,
 
   // Invokes Glic with the given options and automatically submits the prompt.
   // Access is restricted to authorized callers via InvokeWithAutoSubmitPasskey.
+  // Virtual for testing.
   virtual void InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options);
