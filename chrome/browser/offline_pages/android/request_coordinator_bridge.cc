@@ -103,7 +103,7 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
     env->SetObjectArrayElement(joa, i, j_save_page_request.obj());
   }
 
-  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
+  return jni_zero::AdoptRef(env, joa);
 }
 
 static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(

@@ -311,7 +311,7 @@ void ModalDialogWrapper::BuildPropertyModel() {
     // vector<vector<u16string>> -> String[][]
     ScopedJavaLocalRef<jclass> string_array_class =
         base::android::GetClass(env, "[Ljava/lang/String;");
-    auto java_spans_array = ScopedJavaLocalRef<jobjectArray>::Adopt(
+    auto java_spans_array = jni_zero::AdoptRef(
         env, env->NewObjectArray(all_paragraph_spans.size(),
                                  string_array_class.obj(), nullptr));
     for (size_t i = 0; i < all_paragraph_spans.size(); ++i) {
@@ -327,16 +327,14 @@ void ModalDialogWrapper::BuildPropertyModel() {
     // To get the class for an array of JniRepeatingCallback, we can create a
     // dummy array and get its class. This is necessary because the standard
     // "[Lorg/chromium/base/JniRepeatingCallback;" does not work.
-    ScopedJavaLocalRef<jobjectArray> dummy_array =
-        ScopedJavaLocalRef<jobjectArray>::Adopt(
-            env, env->NewObjectArray(0, jni_callback_class.obj(), nullptr));
+    ScopedJavaLocalRef<jobjectArray> dummy_array = jni_zero::AdoptRef(
+        env, env->NewObjectArray(0, jni_callback_class.obj(), nullptr));
     CHECK(dummy_array);
     ScopedJavaLocalRef<jclass> jni_callback_array_class =
-        ScopedJavaLocalRef<jclass>::Adopt(
-            env, env->GetObjectClass(dummy_array.obj()));
+        jni_zero::AdoptRef(env, env->GetObjectClass(dummy_array.obj()));
     CHECK(jni_callback_array_class);
 
-    auto java_callbacks_array = ScopedJavaLocalRef<jobjectArray>::Adopt(
+    auto java_callbacks_array = jni_zero::AdoptRef(
         env, env->NewObjectArray(all_paragraph_closures.size(),
                                  jni_callback_array_class.obj(), nullptr));
 
@@ -370,7 +368,7 @@ void ModalDialogWrapper::BuildPropertyModel() {
   if (!menu_item_icons.empty()) {
     ScopedJavaLocalRef<jclass> bitmap_class =
         base::android::GetClass(env, "android/graphics/Bitmap");
-    auto java_icons_array = ScopedJavaLocalRef<jobjectArray>::Adopt(
+    auto java_icons_array = jni_zero::AdoptRef(
         env, env->NewObjectArray(menu_item_icons.size(), bitmap_class.obj(),
                                  nullptr));
     for (size_t i = 0; i < menu_item_icons.size(); ++i) {

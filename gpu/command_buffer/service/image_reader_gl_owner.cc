@@ -245,8 +245,8 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 
   // Get the java surface object from the Android native window.
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_surface = base::android::ScopedJavaLocalRef<jobject>::Adopt(
-      env, ANativeWindow_toSurface(env, window));
+  auto j_surface =
+      jni_zero::AdoptRef(env, ANativeWindow_toSurface(env, window));
   DCHECK(j_surface);
 
   // Get the scoped java surface that will call release() on destruction.

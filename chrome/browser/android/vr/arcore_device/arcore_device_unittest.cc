@@ -169,7 +169,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
     jmethodID getApplication = env->GetMethodID(
         activityThread, "getApplication", "()Landroid/app/Application;");
     jobject context = env->CallObjectMethod(at, getApplication);
-    return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, context);
+    return jni_zero::AdoptRef(env, context);
   }
 
   base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(

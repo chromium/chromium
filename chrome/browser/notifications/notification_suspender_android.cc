@@ -32,7 +32,7 @@ namespace {
 SkBitmap ExtractImage(JNIEnv* env,
                       const JavaRef<jobjectArray>& j_resources,
                       int index) {
-  auto j_image = ScopedJavaLocalRef<jobject>::Adopt(
+  auto j_image = jni_zero::AdoptRef(
       env, env->GetObjectArrayElement(j_resources.obj(), index));
   return j_image.is_null()
              ? SkBitmap()

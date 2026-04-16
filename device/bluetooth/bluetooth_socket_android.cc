@@ -167,8 +167,7 @@ void BluetoothSocketAndroid::DoReceive(
     return;
   }
 
-  auto j_buffer = base::android::ScopedJavaLocalRef<jbyteArray>::Adopt(
-      env, env->NewByteArray(buffer_size));
+  auto j_buffer = jni_zero::AdoptRef(env, env->NewByteArray(buffer_size));
   base::android::CheckException(env);
   CHECK(j_buffer.obj());
 

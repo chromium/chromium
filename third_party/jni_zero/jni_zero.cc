@@ -58,8 +58,7 @@ void (*g_exception_handler_callback)(JNIEnv*) = nullptr;
 
 jclass DefaultClassResolver(JNIEnv* env, const char* class_name) {
   JNI_ZERO_DCHECK(g_class_loader);
-  auto j_class_name =
-      ScopedJavaLocalRef<jstring>::Adopt(env, env->NewStringUTF(class_name));
+  auto j_class_name = jni_zero::AdoptRef(env, env->NewStringUTF(class_name));
   return g_class_loader->loadClass(env, j_class_name).Release();
 }
 
@@ -248,8 +247,7 @@ void SetClassLoader(JNIEnv* env, const JavaRef<jobject>& class_loader) {
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
-  return ScopedJavaLocalRef<jclass>::Adopt(env,
-                                           GetClassInternal(env, class_name));
+  return jni_zero::AdoptRef(env, GetClassInternal(env, class_name));
 }
 
 template <MethodID::Type type>
@@ -376,8 +374,7 @@ jclass LazyGetClass(JNIEnv* env,
                     std::atomic<jclass>* atomic_class_id) {
   jclass ret = atomic_class_id->load(std::memory_order_acquire);
   if (ret == nullptr) {
-    auto local_ref = ScopedJavaLocalRef<jclass>::Adopt(
-        env, GetClassInternal(env, class_name));
+    auto local_ref = jni_zero::AdoptRef(env, GetClassInternal(env, class_name));
     jclass global_ref = static_cast<jclass>(env->NewGlobalRef(local_ref.obj()));
     if (atomic_class_id->compare_exchange_strong(ret, global_ref,
                                                  std::memory_order_acq_rel)) {

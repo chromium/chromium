@@ -77,7 +77,7 @@ void InternalAuthenticatorAndroid::SetPaymentOptions(
 
   std::vector<uint8_t> byte_vector =
       blink::mojom::PaymentOptions::Serialize(&payment);
-  auto byte_buffer = ScopedJavaLocalRef<jobject>::Adopt(
+  auto byte_buffer = jni_zero::AdoptRef(
       env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
   base::android::CheckException(env);
 
@@ -95,7 +95,7 @@ void InternalAuthenticatorAndroid::MakeCredential(
 
   std::vector<uint8_t> byte_vector =
       blink::mojom::PublicKeyCredentialCreationOptions::Serialize(&options);
-  auto byte_buffer = ScopedJavaLocalRef<jobject>::Adopt(
+  auto byte_buffer = jni_zero::AdoptRef(
       env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
   base::android::CheckException(env);
 
@@ -113,7 +113,7 @@ void InternalAuthenticatorAndroid::GetAssertion(
 
   std::vector<uint8_t> byte_vector =
       blink::mojom::PublicKeyCredentialRequestOptions::Serialize(&options);
-  auto byte_buffer = ScopedJavaLocalRef<jobject>::Adopt(
+  auto byte_buffer = jni_zero::AdoptRef(
       env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
   base::android::CheckException(env);
 

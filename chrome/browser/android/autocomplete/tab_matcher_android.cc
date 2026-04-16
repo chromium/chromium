@@ -166,10 +166,8 @@ TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
   // at least once start here and span until the end of this method.
   JNIEnv* env = base::android::AttachCurrentThread();
   jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
-  auto j_tab_model_array =
-      base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(
-          env,
-          env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
+  auto j_tab_model_array = jni_zero::AdoptRef(
+      env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
   // Get all the hidden and non CCT tabs. Filter the tabs in CCT tabmodel first.
   for (size_t i = 0; i < tab_models.size(); ++i) {
     env->SetObjectArrayElement(j_tab_model_array.obj(), i,

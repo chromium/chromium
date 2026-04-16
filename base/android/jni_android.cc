@@ -163,7 +163,7 @@ void CheckException(JNIEnv* env) {
   // The reference returned by `ExceptionOccurred()` is a local reference.
   // `ExceptionClear()` merely removes the exception information from `env`;
   // it doesn't delete the reference, which is why this call is valid.
-  auto throwable = ScopedJavaLocalRef<jthrowable>::Adopt(env, raw_throwable);
+  auto throwable = jni_zero::AdoptRef(env, raw_throwable);
 
   if (!handle_exception_in_java) {
     base::android::SetJavaException(

@@ -56,8 +56,8 @@ class RunnableFlag {
 base::android::ScopedJavaLocalRef<jobject> CreateJavaByteBuffer(
     base::span<uint8_t> data) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return jni_zero::ScopedJavaLocalRef<>::Adopt(
-      env, env->NewDirectByteBuffer(data.data(), data.size()));
+  return jni_zero::AdoptRef(env,
+                            env->NewDirectByteBuffer(data.data(), data.size()));
 }
 
 }  // namespace
@@ -106,7 +106,7 @@ class DesktopCapturerAndroidTest : public testing::Test,
     jmethodID constructor =
         env_->GetMethodID(object_class.obj(), "<init>", "()V");
     ON_CALL(*jni_interface_, Create)
-        .WillByDefault(Return(jni_zero::ScopedJavaLocalRef<>::Adopt(
+        .WillByDefault(Return(jni_zero::AdoptRef(
             env_, env_->NewObject(object_class.obj(), constructor))));
     ON_CALL(*jni_interface_, StartCapture).WillByDefault(Return(start_success));
     EXPECT_CALL(*jni_interface_, Create).Times(1);

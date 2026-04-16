@@ -85,15 +85,13 @@ void AddTestAccountToFakeAccountManagerFacade(const std::string& email,
           "()Lorg/chromium/components/signin/AccountManagerFacade;");
 
   // 6. Get AccountManagerFacade instance
-  base::android::ScopedJavaLocalRef<jobject> facade_obj =
-      base::android::ScopedJavaLocalRef<jobject>::Adopt(
-          env, env->CallStaticObjectMethod(provider_class.obj(),
-                                           get_instance_method));
+  base::android::ScopedJavaLocalRef<jobject> facade_obj = jni_zero::AdoptRef(
+      env,
+      env->CallStaticObjectMethod(provider_class.obj(), get_instance_method));
 
   // 7. Get addAccount method (FakeAccountManagerFacade specific)
   base::android::ScopedJavaLocalRef<jclass> facade_class =
-      base::android::ScopedJavaLocalRef<jclass>::Adopt(
-          env, env->GetObjectClass(facade_obj.obj()));
+      jni_zero::AdoptRef(env, env->GetObjectClass(facade_obj.obj()));
   jmethodID add_account_method =
       base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
           env, facade_class.obj(), "addAccount",

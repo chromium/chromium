@@ -61,8 +61,8 @@ class TabAndroidTest : public testing::Test {
     if (!java_tab_.is_null()) {
       // Call the destroy() method on the Java TabImpl object.
       // This will trigger TabAndroid::Destroy() via JNI.
-      auto tab_impl_class = base::android::ScopedJavaLocalRef<jclass>::Adopt(
-          env_, env_->GetObjectClass(java_tab_.obj()));
+      auto tab_impl_class =
+          jni_zero::AdoptRef(env_, env_->GetObjectClass(java_tab_.obj()));
       ASSERT_FALSE(tab_impl_class.is_null());
 
       jmethodID destroy_method =

@@ -572,6 +572,11 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   friend class ScopedJavaLocalRef;
 };
 
+template <typename T>
+ScopedJavaLocalRef<T> AdoptRef(JNIEnv* env, T obj) {
+  return ScopedJavaLocalRef<T>::Adopt(env, obj);
+}
+
 // Holds a global reference to a Java object. The global reference is scoped
 // to the lifetime of this object. This class does not hold onto any JNIEnv*
 // passed to it, hence it is safe to use across threads (within the constraints
@@ -689,8 +694,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
     if (!j_obj) {
       return nullptr;
     }
-    return ScopedJavaLocalRef<T>::Adopt(
-        env, static_cast<T>(env->NewLocalRef(j_obj)));
+    return jni_zero::AdoptRef(env, static_cast<T>(env->NewLocalRef(j_obj)));
   }
 
   using JavaRef<T>::As;
@@ -760,8 +764,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
     if (!j_obj) {
       return nullptr;
     }
-    return ScopedJavaLocalRef<T>::Adopt(
-        env, static_cast<T>(env->NewLocalRef(j_obj)));
+    return jni_zero::AdoptRef(env, static_cast<T>(env->NewLocalRef(j_obj)));
   }
 };
 
@@ -772,7 +775,7 @@ inline ScopedJavaLocalRef<jobject> JavaRef<T>::Get(JNIEnv* env,
   requires std::is_same_v<T, jobjectArray>
 {
   jobject obj = env->GetObjectArrayElement(this->obj(), index);
-  return ScopedJavaLocalRef<jobject>::Adopt(env, obj);
+  return jni_zero::AdoptRef(env, obj);
 }
 
 template <typename T>
@@ -796,7 +799,7 @@ inline ScopedJavaLocalRef<T> JavaRef<internal::_JObjectArray<T>*>::Get(
     JNIEnv* env,
     int32_t index) const {
   jobject obj = env->GetObjectArrayElement(this->obj(), index);
-  return ScopedJavaLocalRef<T>::Adopt(env, static_cast<T>(obj));
+  return jni_zero::AdoptRef(env, static_cast<T>(obj));
 }
 
 #if JNI_ZERO_ENABLE_COMPAT_API

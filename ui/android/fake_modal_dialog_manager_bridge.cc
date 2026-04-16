@@ -102,8 +102,8 @@ std::vector<SkBitmap> FakeModalDialogManagerBridge::GetMenuItemIcons() {
     icons.reserve(len);
     for (size_t i = 0; i < len; ++i) {
       base::android::ScopedJavaLocalRef<jobject> java_bitmap =
-          base::android::ScopedJavaLocalRef<jobject>::Adopt(
-              env, env->GetObjectArrayElement(java_icons.obj(), i));
+          jni_zero::AdoptRef(env,
+                             env->GetObjectArrayElement(java_icons.obj(), i));
       if (java_bitmap) {
         icons.push_back(
             gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(java_bitmap)));

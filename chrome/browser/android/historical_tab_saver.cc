@@ -50,8 +50,8 @@ std::vector<WebContentsStateByteBuffer> AllTabsWebContentsStateByteBuffer(
 
   for (int i = 0; i < jbyte_buffers_count; ++i) {
     web_contents_states.emplace_back(
-        ScopedJavaLocalRef<jobject>::Adopt(
-            env, env->GetObjectArrayElement(jbyte_buffers.obj(), i)),
+        jni_zero::AdoptRef(env,
+                           env->GetObjectArrayElement(jbyte_buffers.obj(), i)),
         saved_state_versions[i]);
   }
   return web_contents_states;

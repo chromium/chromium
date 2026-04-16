@@ -250,7 +250,7 @@ class JArrayView<T> : public JArrayViewBase<T> {
 
   ScopedJavaLocalRef<T> Get(int32_t index) const {
     jobject obj = env_->GetObjectArrayElement(array_, index);
-    return ScopedJavaLocalRef<T>::Adopt(env_, static_cast<T>(obj));
+    return jni_zero::AdoptRef(env_, static_cast<T>(obj));
   }
 
   void CopyTo(std::vector<ScopedJavaLocalRef<T>>* buf) const {
@@ -511,7 +511,7 @@ NewArray(JNIEnv* env, std::span<const ScopedJavaLocalRef<T>> buf, jclass cls) {
   for (int32_t i = 0; i < length; i++) {
     env->SetObjectArrayElement(ret, i, buf[i].obj());
   }
-  return ScopedJavaLocalRef<JArray<T>>::Adopt(env, ret);
+  return jni_zero::AdoptRef(env, ret);
 }
 
 template <typename T, typename U>
@@ -525,7 +525,7 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
   for (int32_t i = 0; i < length; i++) {
     env->SetObjectArrayElement(ret, i, ToJniType(env, buf[i]).obj());
   }
-  return ScopedJavaLocalRef<JArray<T>>::Adopt(env, ret);
+  return jni_zero::AdoptRef(env, ret);
 }
 
 template <typename T>
@@ -537,7 +537,7 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
       internal::_JniFuncMappings<T>::NewArray(env, length));
   internal::_JniFuncMappings<T>::SetArrayRegion(env, ret, 0, length,
                                                 buf.data());
-  return ScopedJavaLocalRef<JArray<T>>::Adopt(env, ret);
+  return jni_zero::AdoptRef(env, ret);
 }
 
 extern jclass g_object_class;

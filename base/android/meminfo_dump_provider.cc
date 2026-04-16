@@ -73,8 +73,7 @@ bool MeminfoDumpProvider::OnMemoryDump(
     return false;
   }
 
-  auto clazz = ScopedJavaLocalRef<jclass>::Adopt(
-      env, env->GetObjectClass(memory_info.obj()));
+  auto clazz = jni_zero::AdoptRef(env, env->GetObjectClass(memory_info.obj()));
 
   jfieldID other_private_dirty_id =
       env->GetFieldID(clazz.obj(), "otherPrivateDirty", "I");

@@ -87,8 +87,7 @@ void SurfaceTexture::UpdateTexImage() {
 void SurfaceTexture::GetTransformMatrix(base::span<float, 16> mtx) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  auto jmatrix = base::android::ScopedJavaLocalRef<jfloatArray>::Adopt(
-      env, env->NewFloatArray(16));
+  auto jmatrix = jni_zero::AdoptRef(env, env->NewFloatArray(16));
   Java_ChromeSurfaceTexture_getTransformMatrix(env, j_surface_texture_,
                                                jmatrix);
 

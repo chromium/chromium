@@ -75,7 +75,7 @@ class SyncedTabDelegateAndroidTest : public testing::Test {
   void MockBufferFromPickle(base::Pickle& pickle) {
     JNIEnv* env = base::android::AttachCurrentThread();
 
-    auto jbuffer = base::android::ScopedJavaLocalRef<jobject>::Adopt(
+    auto jbuffer = jni_zero::AdoptRef(
         env, env->NewDirectByteBuffer(
                  reinterpret_cast<void*>(pickle.AsWritableBytes().data()),
                  pickle.size()));

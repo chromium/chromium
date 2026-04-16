@@ -30,8 +30,7 @@ static void JNI_ScreenshotTask_SnapshotCallback(
     scoped_refptr<base::RefCountedMemory> png_data) {
   if (png_data.get()) {
     size_t size = png_data->size();
-    auto jbytes =
-        ScopedJavaLocalRef<jbyteArray>::Adopt(env, env->NewByteArray(size));
+    auto jbytes = jni_zero::AdoptRef(env, env->NewByteArray(size));
     env->SetByteArrayRegion(jbytes.obj(), 0, size, (int8_t*)png_data->front());
     Java_ScreenshotTask_onBytesReceived(env, callback, jbytes);
   } else {

@@ -133,7 +133,7 @@ void AutocompleteResult::DestroyJavaObject() const {
 ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
     JNIEnv* env) const {
   jclass clazz = AutocompleteMatch::GetClazz(env);
-  auto j_matches = ScopedJavaLocalRef<jobjectArray>::Adopt(
+  auto j_matches = jni_zero::AdoptRef(
       env, env->NewObjectArray(matches_.size(), clazz, nullptr));
   base::android::CheckException(env);
 

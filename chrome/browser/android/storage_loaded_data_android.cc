@@ -37,11 +37,10 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
   if (tab_state.has_web_contents_state_bytes()) {
     std::string* web_contents_state_bytes_ptr =
         tab_state.release_web_contents_state_bytes();
-    j_web_contents_state_buffer =
-        base::android::ScopedJavaLocalRef<jobject>::Adopt(
-            env, env->NewDirectByteBuffer(
-                     static_cast<void*>(web_contents_state_bytes_ptr->data()),
-                     web_contents_state_bytes_ptr->size()));
+    j_web_contents_state_buffer = jni_zero::AdoptRef(
+        env, env->NewDirectByteBuffer(
+                 static_cast<void*>(web_contents_state_bytes_ptr->data()),
+                 web_contents_state_bytes_ptr->size()));
     j_web_contents_state_string_pointer =
         reinterpret_cast<long>(web_contents_state_bytes_ptr);
   }
