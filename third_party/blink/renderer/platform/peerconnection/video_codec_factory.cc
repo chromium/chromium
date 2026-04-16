@@ -26,6 +26,7 @@
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
 #include "third_party/webrtc/media/engine/simulcast_encoder_adapter.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
+#include "third_party/webrtc/video/null_video_decoder.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
@@ -66,12 +67,16 @@ std::unique_ptr<webrtc::VideoDecoder> Wrap(
     const webrtc::Environment& env,
     std::unique_ptr<webrtc::VideoDecoder> software_decoder,
     std::unique_ptr<webrtc::VideoDecoder> hardware_decoder) {
-  if (software_decoder && hardware_decoder) {
+  if (hardware_decoder) {
+    if (!software_decoder) {
+      // If the HW becomes unusable after creation, the NullVideoDecoder serves
+      // to ensure the decoderImplementation string in getStats() reflects this.
+      software_decoder = std::make_unique<webrtc::NullVideoDecoder>();
+    }
     return webrtc::CreateVideoDecoderSoftwareFallbackWrapper(
         env, std::move(software_decoder), std::move(hardware_decoder));
   }
-  return hardware_decoder ? std::move(hardware_decoder)
-                          : std::move(software_decoder);
+  return software_decoder;
 }
 
 // This class combines a hardware factory with the internal factory and adds
