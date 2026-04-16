@@ -52,17 +52,6 @@ BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
 
 namespace {
 
-// On macOS 26.4, Apple's CATransform3DIdentity constant in QuartzCore.framework
-// is not 16-byte aligned. Compiler-generated x86_64 code loads it via movaps,
-// which requires 16-byte alignment, causing EXC_I386_GPFLT. Use a local
-// properly-aligned constant instead. https://crbug.com/494388230
-constexpr CATransform3D kCATransform3DIdentity = {
-    1, 0, 0, 0,  // row 1
-    0, 1, 0, 0,  // row 2
-    0, 0, 1, 0,  // row 3
-    0, 0, 0, 1,  // row 4
-};
-
 class ComparatorSkColor4f {
  public:
   bool operator()(const SkColor4f& a, const SkColor4f& b) const {
@@ -1017,7 +1006,7 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
     rounded_corner_ca_layer_.masksToBounds = false;
     rounded_corner_ca_layer_.position = CGPointZero;
     rounded_corner_ca_layer_.bounds = CGRectZero;
-    rounded_corner_ca_layer_.sublayerTransform = kCATransform3DIdentity;
+    rounded_corner_ca_layer_.sublayerTransform = CATransform3DIdentity;
     rounded_corner_ca_layer_.cornerRadius = 0;
   }
 
@@ -1042,7 +1031,7 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
     } else {
       clipping_ca_layer_.position = CGPointZero;
       clipping_ca_layer_.bounds = CGRectZero;
-      clipping_ca_layer_.sublayerTransform = kCATransform3DIdentity;
+      clipping_ca_layer_.sublayerTransform = CATransform3DIdentity;
     }
   }
 
