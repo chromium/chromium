@@ -315,6 +315,7 @@ if (is_android) {
       "//chrome/browser/notifications:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group_sync:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/url_constants/android:java",
       "//components/browser_ui/notifications/android:java",

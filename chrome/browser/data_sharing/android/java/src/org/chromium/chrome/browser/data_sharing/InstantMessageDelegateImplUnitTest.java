@@ -243,6 +243,24 @@ public class InstantMessageDelegateImplUnitTest {
     }
 
     @Test
+    public void testTabRemoved_InvalidUrl() {
+        InstantMessage message = newInstantMessage(CollaborationEvent.TAB_REMOVED);
+        message.attributions.get(0).tabMetadata.lastKnownUrl = "chrome://flags";
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+
+        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
+                .thenReturn(Arrays.asList(mTab1, mTab2));
+        assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
+
+        // Should not trigger any navigation.
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+    }
+
+    @Test
     public void testTabNavigated() {
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_UPDATED), mSuccessCallback);

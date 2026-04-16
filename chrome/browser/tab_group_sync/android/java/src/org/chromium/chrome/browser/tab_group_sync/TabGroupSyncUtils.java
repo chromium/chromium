@@ -97,7 +97,7 @@ public final class TabGroupSyncUtils {
     }
 
     @VisibleForTesting
-    static boolean isNtpOrAboutBlankUrl(GURL url) {
+    public static boolean isNtpOrAboutBlankUrl(GURL url) {
         String urlString = url.getValidSpecOrEmpty();
         return UrlUtilities.isNtpUrl(url)
                 || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)

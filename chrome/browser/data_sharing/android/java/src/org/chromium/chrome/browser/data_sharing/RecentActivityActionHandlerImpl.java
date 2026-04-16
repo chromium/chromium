@@ -11,12 +11,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.url.GURL;
 
 /** Implementation for {@code RecentActivityActionHandler}. */
 @NullMarked
@@ -59,6 +61,12 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
 
     @Override
     public void reopenTab(String url) {
+        GURL gurl = new GURL(url);
+        if (!TabGroupSyncUtils.isSavableUrl(gurl)
+                && !TabGroupSyncUtils.isNtpOrAboutBlankUrl(gurl)) {
+            return;
+        }
+
         SavedTabGroup savedTabGroup = getSavedTabGroup();
         assert savedTabGroup != null;
         assert savedTabGroup.localId != null;

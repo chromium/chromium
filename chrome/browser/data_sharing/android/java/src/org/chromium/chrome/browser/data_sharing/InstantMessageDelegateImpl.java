@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -55,6 +56,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -359,6 +361,12 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         UrlConstantResolver urlConstantResolver =
                 UrlConstantResolverFactory.getForProfile(currentProfile);
         url = TextUtils.isEmpty(url) ? urlConstantResolver.getNtpUrl() : url;
+        GURL gurl = new GURL(url);
+        if (!TabGroupSyncUtils.isSavableUrl(gurl)
+                && !TabGroupSyncUtils.isNtpOrAboutBlankUrl(gurl)) {
+            return;
+        }
+
         int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
         TabGroupUtils.openUrlInGroup(
                 tabGroupModelFilter, url, tabId, TabLaunchType.FROM_TAB_GROUP_UI);

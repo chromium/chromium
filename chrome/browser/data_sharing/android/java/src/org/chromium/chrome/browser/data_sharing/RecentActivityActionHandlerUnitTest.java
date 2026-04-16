@@ -7,14 +7,17 @@ package org.chromium.chrome.browser.data_sharing;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -30,6 +33,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +104,17 @@ public class RecentActivityActionHandlerUnitTest {
     public void testReopenTab() {
         String url = "https://google.com";
         mRecentActivityActionHandler.reopenTab(url);
-        verify(mTabCreator, times(1)).createNewTab(any(), anyInt(), any());
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator, times(1)).createNewTab(captor.capture(), anyInt(), any());
+        Assert.assertEquals(url, captor.getValue().getUrl());
+    }
+
+    @Test
+    public void testReopenTab_InvalidUrl() {
+        String invalidUrl = "chrome://flags";
+        mRecentActivityActionHandler.reopenTab(invalidUrl);
+        // Should not trigger any navigation.
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
     }
 
     @Test
