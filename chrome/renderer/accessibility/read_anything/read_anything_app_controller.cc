@@ -2376,7 +2376,6 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // clears the selection, so we should tell the main page to clear too.
   if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
     if (model_.has_selection()) {
-      model_.increment_selections_from_reading_mode();
       OnCollapseSelection();
     }
     return;
@@ -2417,7 +2416,8 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
 }
 
-void ReadAnythingAppController::OnCollapseSelection() const {
+void ReadAnythingAppController::OnCollapseSelection() {
+  model_.increment_selections_from_reading_mode();
   if (model_.is_pdf()) {
     // CollapseSelection does nothing in pdfs, so just set an empty selection
     // instead.

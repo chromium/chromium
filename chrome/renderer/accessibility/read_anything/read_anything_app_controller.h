@@ -310,7 +310,7 @@ class ReadAnythingAppController
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
                          int focus_offset);
-  void OnCollapseSelection() const;
+  void OnCollapseSelection();
   void OnDistilled(int word_count);
   bool IsGoogleDocs() const;
   bool IsImmersiveEnabled() const;

@@ -2620,6 +2620,16 @@ TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       OnCollapseSelection_IncrementsModelCounter) {
+  ASSERT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
+
+  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  controller().OnCollapseSelection();
+
+  EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
   ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
