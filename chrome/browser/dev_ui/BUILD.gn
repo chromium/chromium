@@ -1,0 +1,59 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/android/features/dev_ui/dev_ui_module.gni")
+
+if (is_android && dfmify_dev_ui) {
+  source_set("dev_ui") {
+    public = [ "android/dev_ui_loader_throttle.h" ]
+
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [
+      "android/dev_ui_loader_error_page.cc",
+      "android/dev_ui_loader_error_page.h",
+      "android/dev_ui_loader_throttle.cc",
+    ]
+
+    deps = [
+      ":dev_ui",
+      "//base",
+      "//chrome/android/modules/dev_ui/provider:native",
+      "//chrome/browser:resources",
+      "//chrome/common",
+      "//components/commerce/core:commerce_constants",
+      "//components/history_clusters/history_clusters_internals/webui:constants",
+      "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+      "//components/strings:components_strings_grit",
+      "//content/public/common",
+      "//device/vr/buildflags",
+      "//net",
+      "//ui/base",
+      "//ui/strings:ui_strings_grit",
+      "//url",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "android/dev_ui_loader_throttle_unittest.cc" ]
+    deps = [
+      ":dev_ui",
+      ":impl",
+      "//chrome/android/modules/dev_ui/provider:native",
+      "//chrome/test:test_support",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gtest",
+      "//third_party/blink/public:blink",
+      "//url",
+    ]
+  }
+}

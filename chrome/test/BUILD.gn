@@ -8166,15 +8166,12 @@ test("unit_tests") {
     }
 
     if (dfmify_dev_ui) {
-      sources += [
-        "//chrome/browser/dev_ui/android/dev_ui_loader_throttle_unittest.cc",
-      ]
-
-      # If DevUI DFM is on, include Java classes and native resource split so
-      # that DevUI page tests would work.
       deps += [
+        # If DevUI DFM is on, include Java classes and native resource split so
+        # that DevUI page tests would work.
         "//chrome/android/features/dev_ui:java",
         "//chrome/android/modules/dev_ui/provider:java",
+        "//chrome/browser/dev_ui:unit_tests",
       ]
     }
 

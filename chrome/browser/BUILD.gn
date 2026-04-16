@@ -2906,14 +2906,10 @@ static_library("browser") {
     deps -= [ "//components/storage_monitor" ]
 
     if (dfmify_dev_ui) {
-      # TODO(huangs): Extracting this to a separate target.
-      sources += [
-        "dev_ui/android/dev_ui_loader_error_page.cc",
-        "dev_ui/android/dev_ui_loader_error_page.h",
-        "dev_ui/android/dev_ui_loader_throttle.cc",
-        "dev_ui/android/dev_ui_loader_throttle.h",
+      deps += [
+        "//chrome/browser/dev_ui",
+        "//chrome/browser/dev_ui:impl",
       ]
-      deps += [ "//chrome/android/modules/dev_ui/provider:native" ]
     }
   } else {
     #!is_android
