@@ -5817,7 +5817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Header2"
-    enum="FeaturePolicyFeature" expires_after="2026-03-09">
+    enum="FeaturePolicyFeature" expires_after="2026-09-27">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -5827,6 +5827,9 @@ chromium-metrics-reviews@google.com.
     mismatched histogram name with data collected.
 
     Not recorded if the page is prerendered and cancelled.
+
+    Note that this histogram was expired from 2026-03-09 to 2026-04-16, and data
+    may be missing.
   </summary>
 </histogram>
 
@@ -5844,7 +5847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Violation.Enforce"
-    enum="FeaturePolicyFeature" expires_after="2026-03-09">
+    enum="FeaturePolicyFeature" expires_after="2026-09-27">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -5854,6 +5857,9 @@ chromium-metrics-reviews@google.com.
     visit.
 
     Not recorded if the page is prerendered and cancelled.
+
+    Note that this histogram was expired from 2026-03-09 to 2026-04-16, and data
+    may be missing.
   </summary>
 </histogram>
 
