@@ -1442,6 +1442,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INCOGNITO_NTP_SMALL_ICON, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
+    public static final MutableFlagWithSafeDefault sInlinePdfV2 =
+            newMutableFlagWithSafeDefault(INLINE_PDF_V2, false);
     public static final MutableFlagWithSafeDefault sLockTopControlsOnLargeTablets =
             newMutableFlagWithSafeDefault(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS, false);
     public static final MutableFlagWithSafeDefault sMediaIndicatorsAndroid =
