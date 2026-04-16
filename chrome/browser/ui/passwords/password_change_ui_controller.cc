@@ -410,7 +410,7 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   toast_view_ = toast_view.get();
 
   auto toast_delegate = std::make_unique<views::WidgetDelegate>();
-  toast_delegate->SetModalType(ui::mojom::ModalType::kChild);
+  toast_delegate->SetModalType(ui::mojom::ModalType::kNone);
   toast_delegate->SetContentsView(std::move(toast_view));
   toast_delegate->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
   toast_delegate->SetAccessibleTitle(title);

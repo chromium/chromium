@@ -8,10 +8,15 @@
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -345,6 +350,40 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 
   EXPECT_FALSE(ui_controller()->toast_view());
   EXPECT_TRUE(ui_controller()->dialog_widget());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       PageIsInteractableWhileToastIsShowing) {
+  // Navigate to a simple page with an input field.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<input id='test_input'>")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Focus the input field.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents, "document.getElementById('test_input').focus();"));
+
+  // Show the toast.
+  UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+
+  // Verify that the input field is still the active element.
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          web_contents,
+          "document.activeElement === document.getElementById('test_input');"));
+
+  // Simulate typing 'a'.
+  content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+
+  // Verify the value.
+  EXPECT_EQ("a",
+            content::EvalJs(web_contents,
+                            "document.getElementById('test_input').value;"));
 }
 
 }  // namespace
