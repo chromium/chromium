@@ -376,8 +376,6 @@ source_set("extensions") {
     "managed_toolbar_pin_mode.h",
     "management/management_util.cc",
     "management/management_util.h",
-    "manifest_v2_experiment_manager.cc",
-    "manifest_v2_experiment_manager.h",
     "menu_icon_loader.h",
     "menu_manager.cc",
     "menu_manager.h",

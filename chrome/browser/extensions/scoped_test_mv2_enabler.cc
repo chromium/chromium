@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "extensions/browser/manifest_v2_experiment_manager.h"
 
 namespace extensions {
 

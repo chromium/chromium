@@ -57,6 +57,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/pref_mapping.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
@@ -321,6 +322,16 @@ ChromeExtensionsBrowserClient::GetContextRedirectedToOriginal(
       // TODO(crbug.com/41488885): Check if this service is needed for Ash
       // Internals.
       .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
+      .Build()
+      .ApplyProfileSelection(Profile::FromBrowserContext(context));
+}
+
+content::BrowserContext* ChromeExtensionsBrowserClient::
+    GetContextRedirectedToOriginalWithoutAshInternals(
+        content::BrowserContext* context) {
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kRedirectedToOriginal)
+      .WithGuest(ProfileSelection::kRedirectedToOriginal)
       .Build()
       .ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
@@ -1189,6 +1200,12 @@ ChromeExtensionsBrowserClient::CreateCrxInstallerFromDownloadItem(
 std::unique_ptr<image_fetcher::ImageDecoder>
 ChromeExtensionsBrowserClient::CreateImageDecoder() {
   return std::make_unique<ImageDecoderImpl>();
+}
+
+bool ChromeExtensionsBrowserClient::CanUseNonComponentExtensions(
+    content::BrowserContext* context) {
+  return profile_util::ProfileCanUseNonComponentExtensions(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace extensions

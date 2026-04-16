@@ -450,6 +450,8 @@ source_set("browser_sources") {
     "management_policy.cc",
     "management_policy.h",
     "manifest_check_level.h",
+    "manifest_v2_experiment_manager.cc",
+    "manifest_v2_experiment_manager.h",
     "media_capture_util.cc",
     "media_capture_util.h",
     "message_service_api.cc",

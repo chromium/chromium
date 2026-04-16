@@ -64,6 +64,15 @@ class ExtensionManagementClient {
       int manifest_version,
       const std::string& extension_id,
       Manifest::Type manifest_type) = 0;
+
+  // Checks if the specified manifest version is permitted for an extension,
+  // based on its ID and manifest type.
+  virtual bool IsAllowedManifestVersion(int manifest_version,
+                                        const std::string& extension_id,
+                                        Manifest::Type manifest_type) = 0;
+
+  // Checks if the manifest version of the given extension is permitted.
+  virtual bool IsAllowedManifestVersion(const Extension* extension) = 0;
 };
 
 }  // namespace extensions

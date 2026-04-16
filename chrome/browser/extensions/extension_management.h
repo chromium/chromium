@@ -99,6 +99,11 @@ class ExtensionManagement : public KeyedService,
       int manifest_version,
       const std::string& extension_id,
       Manifest::Type manifest_type) override;
+  bool IsAllowedManifestVersion(int manifest_version,
+                                const std::string& extension_id,
+                                Manifest::Type manifest_type) override;
+  bool IsAllowedManifestVersion(const Extension* extension) override;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -151,11 +156,6 @@ class ExtensionManagement : public KeyedService,
   // id `extension_id` is allowed to be installed.
   bool IsAllowedManifestType(Manifest::Type manifest_type,
                              const std::string& extension_id) const;
-
-  bool IsAllowedManifestVersion(int manifest_version,
-                                const std::string& extension_id,
-                                Manifest::Type manifest_type);
-  bool IsAllowedManifestVersion(const Extension* extension);
 
   bool IsAllowedByUnpublishedAvailabilityPolicy(const Extension* extension);
 

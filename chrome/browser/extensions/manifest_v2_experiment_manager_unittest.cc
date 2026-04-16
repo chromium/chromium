@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "extensions/browser/manifest_v2_experiment_manager.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"

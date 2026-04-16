@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "extensions/browser/manifest_v2_experiment_manager.h"
 
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"

@@ -102,6 +102,12 @@ ShellExtensionsBrowserClient::GetContextRedirectedToOriginal(
   return context;
 }
 
+content::BrowserContext*
+ShellExtensionsBrowserClient::GetContextRedirectedToOriginalWithoutAshInternals(
+    content::BrowserContext* context) {
+  return context;
+}
+
 content::BrowserContext* ShellExtensionsBrowserClient::GetContextOwnInstance(
     content::BrowserContext* context) {
   return context;

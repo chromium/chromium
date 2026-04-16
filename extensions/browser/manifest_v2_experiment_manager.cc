@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "extensions/browser/manifest_v2_experiment_manager.h"
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/profile_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/pref_names.h"
@@ -94,7 +93,8 @@ constexpr PrefMap kMV2DeprecationUserReEnabledPref = {
     "mv2_deprecation_user_re_enabled", PrefType::kBool,
     PrefScope::kExtensionSpecific};
 
-class ManifestV2ExperimentManagerFactory : public ProfileKeyedServiceFactory {
+class ManifestV2ExperimentManagerFactory
+    : public BrowserContextKeyedServiceFactory {
  public:
   ManifestV2ExperimentManagerFactory();
   ManifestV2ExperimentManagerFactory(
@@ -108,23 +108,20 @@ class ManifestV2ExperimentManagerFactory : public ProfileKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 ManifestV2ExperimentManagerFactory::ManifestV2ExperimentManagerFactory()
-    : ProfileKeyedServiceFactory(
+    : BrowserContextKeyedServiceFactory(
           "ManifestV2ExperimentManager",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {
-  DependsOn(ExtensionManagementFactory::GetInstance());
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionPrefsFactory::GetInstance());
-  DependsOn(ChromeExtensionSystemFactory::GetInstance());
   DependsOn(ExtensionRegistryFactory::GetInstance());
+  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
 ManifestV2ExperimentManager*
@@ -132,6 +129,13 @@ ManifestV2ExperimentManagerFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return static_cast<ManifestV2ExperimentManager*>(
       GetServiceForBrowserContext(browser_context, /*create=*/true));
+}
+
+content::BrowserContext*
+ManifestV2ExperimentManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* browser_context) const {
+  return ExtensionsBrowserClient::Get()
+      ->GetContextRedirectedToOriginalWithoutAshInternals(browser_context);
 }
 
 std::unique_ptr<KeyedService>
@@ -275,8 +279,7 @@ ManifestV2ExperimentManager::ManifestV2ExperimentManager(
 
   // Listen to management policy changes. `Unretained` is safe since the
   // `pref_change_registrar` is owned by this class.
-  pref_change_registrar_.Init(
-      Profile::FromBrowserContext(browser_context_)->GetPrefs());
+  pref_change_registrar_.Init(user_prefs::UserPrefs::Get(browser_context_));
   pref_change_registrar_.Add(
       pref_names::kManifestV2Availability,
       base::BindRepeating(
@@ -323,11 +326,12 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
   // Unpacked extensions are special-cased (since developers need to be able to
   // continue supporting them). Check if unpacked extensions are blocked, either
   // by the experiment phase or by enterprise policy.
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(browser_context_);
+  auto* extension_mgmt_client =
+      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(
+          browser_context_);
   if (Manifest::IsUnpackedLocation(manifest_location) &&
       !ShouldBlockUnpackedExtensions(experiment_stage_) &&
-      extension_management->IsAllowedManifestVersion(
+      extension_mgmt_client->IsAllowedManifestVersion(
           manifest_version, extension_id, manifest_type)) {
     return false;
   }
@@ -528,8 +532,8 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
     return;
   }
 
-  if (!profile_util::ProfileCanUseNonComponentExtensions(
-          Profile::FromBrowserContext(browser_context_))) {
+  if (!ExtensionsBrowserClient::Get()->CanUseNonComponentExtensions(
+          browser_context_)) {
     // Don't report metrics if the user can't install extensions in this
     // profile.
     return;
@@ -663,20 +667,24 @@ void ManifestV2ExperimentManager::OnManagementPolicyChanged() {
   DisableAffectedExtensions();
 }
 
-bool ManifestV2ExperimentManager::DidUserReEnableExtensionForTesting(
-    const ExtensionId& extension_id) {
+bool ManifestV2ExperimentManager::
+    DidUserReEnableExtensionForTesting(  // IN-TEST
+        const ExtensionId& extension_id) {
   return DidUserReEnableExtension(extension_id);
 }
 
-void ManifestV2ExperimentManager::DisableAffectedExtensionsForTesting() {
+void ManifestV2ExperimentManager::
+    DisableAffectedExtensionsForTesting() {  // IN-TEST
   DisableAffectedExtensions();
 }
 
-void ManifestV2ExperimentManager::EmitMetricsForProfileReadyForTesting() {
+void ManifestV2ExperimentManager::
+    EmitMetricsForProfileReadyForTesting() {  // IN-TEST
   EmitMetricsForProfileReady();
 }
 
-base::AutoReset<bool> ManifestV2ExperimentManager::AllowMV2ExtensionsForTesting(
+base::AutoReset<bool>
+ManifestV2ExperimentManager::AllowMV2ExtensionsForTesting(  // IN-TEST
     base::PassKey<ScopedTestMV2Enabler> pass_key) {
   return base::AutoReset<bool>(&g_allow_mv2_for_testing, true);
 }

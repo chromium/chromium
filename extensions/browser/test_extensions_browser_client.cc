@@ -70,6 +70,15 @@ class TestExtensionManagementClient : public ExtensionManagementClient {
       Manifest::Type manifest_type) override {
     return false;
   }
+
+  bool IsAllowedManifestVersion(int manifest_version,
+                                const std::string& extension_id,
+                                Manifest::Type manifest_type) override {
+    return false;
+  }
+  bool IsAllowedManifestVersion(const Extension* extension) override {
+    return false;
+  }
 };
 
 // A KioskDelegate that returns safe/null defaults.
@@ -166,6 +175,12 @@ BrowserContext* TestExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 TestExtensionsBrowserClient::GetContextRedirectedToOriginal(
+    content::BrowserContext* context) {
+  return GetOriginalContext(context);
+}
+
+content::BrowserContext*
+TestExtensionsBrowserClient::GetContextRedirectedToOriginalWithoutAshInternals(
     content::BrowserContext* context) {
   return GetOriginalContext(context);
 }

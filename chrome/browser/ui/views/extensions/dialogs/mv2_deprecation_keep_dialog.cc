@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/manifest_v2_experiment_manager.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"

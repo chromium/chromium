@@ -103,6 +103,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
   content::BrowserContext* GetContextRedirectedToOriginal(
       content::BrowserContext* context) override;
+  content::BrowserContext* GetContextRedirectedToOriginalWithoutAshInternals(
+      content::BrowserContext* context) override;
   content::BrowserContext* GetContextOwnInstance(
       content::BrowserContext* context) override;
   content::BrowserContext* GetContextForOriginalOnly(
@@ -318,6 +320,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context,
       const download::DownloadItem& download) override;
   std::unique_ptr<image_fetcher::ImageDecoder> CreateImageDecoder() override;
+  bool CanUseNonComponentExtensions(content::BrowserContext* context) override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

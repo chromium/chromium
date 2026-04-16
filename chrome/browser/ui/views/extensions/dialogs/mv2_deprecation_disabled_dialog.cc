@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

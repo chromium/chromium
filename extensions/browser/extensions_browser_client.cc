@@ -372,4 +372,9 @@ ExtensionsBrowserClient::CreateImageDecoder() {
   return nullptr;
 }
 
+bool ExtensionsBrowserClient::CanUseNonComponentExtensions(
+    content::BrowserContext* context) {
+  return true;
+}
+
 }  // namespace extensions

@@ -208,7 +208,18 @@ class ExtensionsBrowserClient {
   // - if `context` is a System Profile: returns null.
   // - if `context` is Original: returns itself.
   // - if `context` is OTR: returns the associated parent context.
+  // - if `context` is ash internals: returns the associated parent context.
   virtual content::BrowserContext* GetContextRedirectedToOriginal(
+      content::BrowserContext* context) = 0;
+
+  // Similar to GetContextRedirectedToOriginal(), but additionally filters out
+  // ash-internal profiles.
+  // - if `context` is a System Profile: returns null.
+  // - if `context` is Original: returns itself.
+  // - if `context` is OTR: returns the associated parent context.
+  // - if `context` is ash internals: returns null.
+  virtual content::BrowserContext*
+  GetContextRedirectedToOriginalWithoutAshInternals(
       content::BrowserContext* context) = 0;
 
   // - if `context` is a System Profile: returns null.
@@ -666,6 +677,10 @@ class ExtensionsBrowserClient {
 
   // Creates an implementation of image_fetcher::ImageDecoder.
   virtual std::unique_ptr<image_fetcher::ImageDecoder> CreateImageDecoder();
+
+  // Returns whether the given browser context is allowed to use non-component
+  // extensions.
+  virtual bool CanUseNonComponentExtensions(content::BrowserContext* context);
 
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;
