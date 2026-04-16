@@ -224,7 +224,7 @@ class NewTabPageMediatorTest : public PlatformTest {
 
   void SetFuseboxEligible(bool eligible) {
     EXPECT_CALL(*aim_eligibility_service_, IsFuseboxEligible())
-        .WillRepeatedly([&]() { return eligible; });
+        .WillRepeatedly([eligible]() { return eligible; });
   }
 
  protected:
