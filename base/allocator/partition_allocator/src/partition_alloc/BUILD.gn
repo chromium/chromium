@@ -410,6 +410,7 @@ if (is_clang_or_gcc) {
       "compressed_pointer.h",
       "dangling_raw_ptr_checks.cc",
       "dangling_raw_ptr_checks.h",
+      "extent_in_bounds.h",
       "flags.h",
       "gwp_asan_support.cc",
       "gwp_asan_support.h",

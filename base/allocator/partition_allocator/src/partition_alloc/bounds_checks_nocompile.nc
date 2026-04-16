@@ -5,7 +5,7 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
-#include "partition_alloc/bounds_checks.h"
+#include "partition_alloc/extent_in_bounds.h"
 
 namespace partition_alloc {
 
