@@ -29,10 +29,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {getCss} from './ntp_searchbox.css.js';
 import {getHtml} from './ntp_searchbox.html.js';
 
-// The NTP Realbox entry point is always part of the Next experience, so log
-// the source value with the "crn" component.
-const DESKTOP_CHROME_NTP_REALBOX_ENTRY_SOURCE_VALUE = 'chrome.crn.rb';
-const DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE = '42';
+
 
 interface ClickEventDetail {
   button: number;
@@ -370,30 +367,11 @@ export class NtpSearchboxElement extends SearchboxElement implements
           'ContextualSearch.UserAction.SubmitQueryV2.WithoutContext.NewTabPage';
       chrome.histograms.recordUserAction(userActionName);
 
-      // Construct navigation url.
-      const searchParams = new URLSearchParams();
-      searchParams.append('sourceid', 'chrome');
-      searchParams.append('udm', '50');
-      searchParams.append('aep', DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE);
-      searchParams.append(
-          'source', DESKTOP_CHROME_NTP_REALBOX_ENTRY_SOURCE_VALUE);
-
-      if (this.$.input.inputElement.value.trim()) {
-        searchParams.append('q', this.$.input.inputElement.value.trim());
-      }
-      const queryUrl =
-          new URL('/search', loadTimeData.getString('googleBaseUrl'));
-      queryUrl.search = searchParams.toString();
-      const href = queryUrl.href;
-
-      // Handle mouse events.
-      if (e.detail.ctrlKey || e.detail.metaKey) {
-        window.open(href, '_blank');
-      } else if (e.detail.shiftKey) {
-        window.open(href, '_blank', 'noopener');
-      } else {
-        window.open(href, '_self');
-      }
+      this.pageHandler().notifySessionStarted();
+      this.pageHandler().submitQuery(
+          this.$.input.inputElement.value.trim(), e.detail.button,
+          false, /* altKey */
+          e.detail.ctrlKey, e.detail.metaKey, e.detail.shiftKey);
     } else {
       this.openComposebox_();
     }

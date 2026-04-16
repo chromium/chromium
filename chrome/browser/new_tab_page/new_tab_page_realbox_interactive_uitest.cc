@@ -1069,6 +1069,8 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
                            "'::placeholder').visibility === 'hidden'"),
       // Type text into Realbox and click AIM Button.
       SendKeyPress(kNtpElementId, ui::VKEY_T),
+      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
+                           "(el) => el && el.value === 't'"),
       ClickElement(kNtpElementId, kComposeButton),
       // Wait for the page to navigate to Google SRP.
       WaitForGoogleSearch(kNtpElementId, {{"q", "t"}, {"udm", "50"}}));

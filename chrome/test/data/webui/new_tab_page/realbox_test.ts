@@ -399,7 +399,12 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('clicking composebox button with text records user action', () => {
-    realbox.$.input.inputElement.value = 'hello';
+    const inputEl = realbox.shadowRoot.querySelector('#input');
+    assertTrue(!!inputEl);
+    inputEl.shadowRoot!.querySelector<HTMLInputElement>('#input')!.value =
+        'hello';
+    inputEl.shadowRoot!.querySelector('#input')!.dispatchEvent(
+        new InputEvent('input'));
 
     const composeButton =
         realbox.shadowRoot.querySelector<HTMLElement>('#composeButton');
@@ -427,6 +432,11 @@ suite('NewTabPageRealboxNextTest', () => {
     const buttonMetricName = 'ContextualSearch.AiModeButtonClick.NtpRealbox';
     assertEquals(2, metrics.count(buttonMetricName));
     assertEquals(1, metrics.count(buttonMetricName, true));
+
+    assertEquals(1, testProxy.handler.getCallCount('notifySessionStarted'));
+    assertEquals(1, testProxy.handler.getCallCount('submitQuery'));
+    const args = testProxy.handler.getArgs('submitQuery')[0];
+    assertEquals('hello', args.queryText);  // query
   });
 
   test('hovering on composebox button plays the animation.', async () => {

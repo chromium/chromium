@@ -20,6 +20,7 @@ omnibox::ChromeAimEntryPoint PageClassificationToAimEntryPoint(
     case OEP::OTHER_OMNIBOX_COMPOSEBOX:
       return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
     // Realbox Entry Point.
+    case OEP::NTP_REALBOX:
     case OEP::NTP_COMPOSEBOX:
       return omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT;
     // Lens Entry Point.
