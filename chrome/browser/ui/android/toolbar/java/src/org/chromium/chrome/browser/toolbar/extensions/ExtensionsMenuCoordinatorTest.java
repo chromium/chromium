@@ -96,7 +96,8 @@ public class ExtensionsMenuCoordinatorTest {
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
-        when(mExtensionsMenuBridgeJniMock.init(Mockito.any(), Mockito.anyLong())).thenReturn(1L);
+        when(mExtensionsMenuBridgeJniMock.init(Mockito.any(), Mockito.anyLong(), Mockito.anyLong()))
+                .thenReturn(1L);
 
         AppCompatActivity activity =
                 Robolectric.buildActivity(AppCompatActivity.class).setup().get();
@@ -124,7 +125,7 @@ public class ExtensionsMenuCoordinatorTest {
                             return EXTENSIONS_MENU_BRIDGE_POINTER;
                         })
                 .when(mExtensionsMenuBridgeJniMock)
-                .init(any(), anyLong());
+                .init(any(), anyLong(), anyLong());
 
         // Default to not ready, so we can test the waiting logic.
         when(mExtensionsMenuBridgeJniMock.isReady(anyLong())).thenReturn(false);

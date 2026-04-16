@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -70,6 +71,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
+            ExtensionsToolbarBridge toolbarBridge,
             ModelList actionModels,
             PropertyModel mainPageModel,
             PropertyModel sitePermissionsPropertyModel,
@@ -83,7 +85,8 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         mTabCreator = tabCreator;
         mTask = task;
         mProfile = profile;
-        mMenuBridge = new ExtensionsMenuBridge(mTask, mProfile, /* observer= */ this);
+        mMenuBridge =
+                new ExtensionsMenuBridge(mTask, mProfile, toolbarBridge, /* observer= */ this);
 
         mMainPageModel = mainPageModel;
         mSitePermissionsPageModel = sitePermissionsPropertyModel;

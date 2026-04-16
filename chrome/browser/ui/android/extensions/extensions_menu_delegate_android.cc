@@ -65,8 +65,10 @@ using PermissionsManager = extensions::PermissionsManager;
 
 ExtensionsMenuDelegateAndroid::ExtensionsMenuDelegateAndroid(
     BrowserWindowInterface* browser,
+    ExtensionsToolbarAndroid* toolbar_android,
     const base::android::JavaRef<jobject>& java_object)
     : browser_(browser),
+      toolbar_android_(toolbar_android),
       menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser,
                                                             /*delegate=*/this)),
       java_object_(java_object) {
@@ -180,11 +182,10 @@ bool ExtensionsMenuDelegateAndroid::IsReady(JNIEnv* env) {
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsMenuDelegateAndroid::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {
-  // TODO(crbug.com/461981075): Pass a `bridge` instance instead of a nullptr.
   return ExtensionActionViewModel::Create(
       extension_id, browser_,
       std::make_unique<ExtensionActionDelegateAndroid>(browser_, extension_id,
-                                                       nullptr));
+                                                       toolbar_android_));
 }
 
 void ExtensionsMenuDelegateAndroid::OnPageNavigation() {
@@ -348,11 +349,14 @@ void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleChanged(
 static int64_t JNI_ExtensionsMenuBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,
-    int64_t j_browser_window_interface) {
+    int64_t j_browser_window_interface,
+    int64_t j_toolbar_android) {
   BrowserWindowInterface* browser =
       reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
+  ExtensionsToolbarAndroid* toolbar_android =
+      reinterpret_cast<ExtensionsToolbarAndroid*>(j_toolbar_android);
   return reinterpret_cast<int64_t>(
-      new ExtensionsMenuDelegateAndroid(browser, java_object));
+      new ExtensionsMenuDelegateAndroid(browser, toolbar_android, java_object));
 }
 
 }  // namespace extensions

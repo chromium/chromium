@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.extensions.R;
@@ -99,6 +100,7 @@ public class ExtensionsMenuMediatorTest {
     @Mock private PropertyModel mSitePermissionsPropertyModel;
     @Mock private TabCreator mTabCreator;
     @Mock private Runnable mOnDismissMenu;
+    @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private Runnable mOnReadyRunnable;
 
     @Captor private ArgumentCaptor<ExtensionsMenuBridge> mBridgeCaptor;
@@ -137,7 +139,7 @@ public class ExtensionsMenuMediatorTest {
                         "label", ExtensionsMenuTypes.ControlState.Status.HIDDEN, /* isOn= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(mSiteSettingsState);
-        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong()))
+        when(mExtensionsMenuBridgeJniMock.init(any(), anyLong(), anyLong()))
                 .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
 
         // Set the current tab.
@@ -154,6 +156,7 @@ public class ExtensionsMenuMediatorTest {
                         mProfile,
                         mCurrentTabSupplier,
                         mTabCreator,
+                        mExtensionsToolbarBridge,
                         mActionModels,
                         mMenuPropertyModel,
                         mSitePermissionsPropertyModel,
@@ -161,7 +164,7 @@ public class ExtensionsMenuMediatorTest {
                         mOnReadyRunnable);
 
         // Capture the bridge instance created inside the constructor
-        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), anyLong());
+        verify(mExtensionsMenuBridgeJniMock).init(mBridgeCaptor.capture(), anyLong(), anyLong());
     }
 
     @After
@@ -233,6 +236,7 @@ public class ExtensionsMenuMediatorTest {
                         mProfile,
                         mCurrentTabSupplier,
                         mTabCreator,
+                        mExtensionsToolbarBridge,
                         mActionModels,
                         mMenuPropertyModel,
                         mSitePermissionsPropertyModel,

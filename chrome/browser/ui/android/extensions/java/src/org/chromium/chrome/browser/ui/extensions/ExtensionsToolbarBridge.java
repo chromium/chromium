@@ -85,6 +85,10 @@ public class ExtensionsToolbarBridge implements Destroyable {
         mMenuDelegate = delegate;
     }
 
+    public long getNativePtr() {
+        return mNativeExtensionsToolbarAndroid;
+    }
+
     @Nullable
     public ExtensionAction getAction(String actionId, @Nullable WebContents webContents) {
         if (mProfile.shutdownStarted()) {

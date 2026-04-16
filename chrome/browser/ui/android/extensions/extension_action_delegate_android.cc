@@ -48,24 +48,10 @@ void ExtensionActionDelegateAndroid::UnregisterCommand() {
 }
 
 bool ExtensionActionDelegateAndroid::IsShowingPopup() const {
-  if (!toolbar_android_) {
-    // TODO(crbug.com/461981075): Remove this check once
-    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
-    // instead of `nullptr`.
-    return false;
-  }
-
   return toolbar_android_->HasActivePopup();
 }
 
 void ExtensionActionDelegateAndroid::HidePopup() {
-  if (!toolbar_android_) {
-    // TODO(crbug.com/461981075): Remove this check once
-    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
-    // instead of `nullptr`.
-    return;
-  }
-
   toolbar_android_->HideActivePopup();
 }
 
@@ -80,34 +66,13 @@ void ExtensionActionDelegateAndroid::TriggerPopup(
     PopupShowAction show_action,
     bool by_user,
     ShowPopupCallback callback) {
-  if (!toolbar_android_) {
-    // TODO(crbug.com/461981075): Remove this check once
-    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
-    // instead of `nullptr`.
-    return;
-  }
-
   toolbar_android_->TriggerPopup(action_id_, std::move(host));
 }
 
 void ExtensionActionDelegateAndroid::ShowContextMenuAsFallback() {
-  if (!toolbar_android_) {
-    // TODO(crbug.com/461981075): Remove this check once
-    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
-    // instead of `nullptr`.
-    return;
-  }
-
   toolbar_android_->ShowContextMenu(action_id_);
 }
 
 void ExtensionActionDelegateAndroid::CloseExtensionsMenuIfOpen() {
-  if (!toolbar_android_) {
-    // TODO(crbug.com/461981075): Remove this check once
-    // `ExtensionsMenuDelegateAndroid` passes a correct `toolbar_android_`
-    // instead of `nullptr`.
-    return;
-  }
-
   toolbar_android_->CloseExtensionsMenuIfOpen();
 }

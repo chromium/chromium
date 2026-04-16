@@ -29,11 +29,18 @@ public class ExtensionsMenuBridge implements Destroyable {
     private long mNativeExtensionsMenuDelegateAndroid;
     private final Observer mObserver;
 
-    public ExtensionsMenuBridge(ChromeAndroidTask task, Profile profile, Observer observer) {
+    public ExtensionsMenuBridge(
+            ChromeAndroidTask task,
+            Profile profile,
+            ExtensionsToolbarBridge toolbarBridge,
+            Observer observer) {
         mObserver = observer;
         mNativeExtensionsMenuDelegateAndroid =
                 ExtensionsMenuBridgeJni.get()
-                        .init(this, task.getOrCreateNativeBrowserWindowPtr(profile));
+                        .init(
+                                this,
+                                task.getOrCreateNativeBrowserWindowPtr(profile),
+                                toolbarBridge.getNativePtr());
     }
 
     @Override
@@ -282,7 +289,10 @@ public class ExtensionsMenuBridge implements Destroyable {
          * @param bridge The Java bridge object.
          * @param browserWindowInterfacePtr The pointer to the native BrowserWindowInterface.
          */
-        long init(ExtensionsMenuBridge bridge, long browserWindowInterfacePtr);
+        long init(
+                ExtensionsMenuBridge bridge,
+                long browserWindowInterfacePtr,
+                long nativeExtensionsToolbarAndroid);
 
         /** Destroys the native ExtensionsMenuDelegateAndroid. */
         void destroy(long nativeExtensionsMenuDelegateAndroid);

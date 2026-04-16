@@ -227,6 +227,7 @@ public class ExtensionsMenuCoordinator
                         mProfile,
                         mCurrentTabSupplier,
                         mTabCreator,
+                        mExtensionsToolbarBridge,
                         mExtensionModels,
                         mMainPageModel,
                         mSitePermissionsPageModel,
