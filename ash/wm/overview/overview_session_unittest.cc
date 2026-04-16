@@ -5400,10 +5400,12 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
 
  protected:
   aura::Window* CreateWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShell(
-        {.delegate =
-             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-         .bounds = bounds});
+    aura::Window* window =
+        CreateTestWindowInShell(
+            {.delegate =
+                 aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+             .bounds = bounds})
+            .release();
     return window;
   }
 
@@ -5412,7 +5414,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
     auto* delegate =
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
     aura::Window* window =
-        CreateTestWindowInShell({.delegate = delegate, .bounds = bounds});
+        CreateTestWindowInShell({.delegate = delegate, .bounds = bounds})
+            .release();
     delegate->set_minimum_size(size);
     return window;
   }
@@ -7553,8 +7556,9 @@ class SplitViewOverviewSessionInClamshellTest
   aura::Window* CreateWindowWithHitTestComponent(int hit_test_component,
                                                  const gfx::Rect& bounds) {
     return CreateTestWindowInShell(
-        {.delegate = new TestWindowHitTestDelegate(hit_test_component),
-         .bounds = bounds});
+               {.delegate = new TestWindowHitTestDelegate(hit_test_component),
+                .bounds = bounds})
+        .release();
   }
 
  private:

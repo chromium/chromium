@@ -2187,8 +2187,8 @@ class PreferredReservedAcceleratorsTest : public AshTestBase {
 };
 
 TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
-  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
-  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1});
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0}).release();
+  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1}).release();
   wm::ActivateWindow(w1);
 
   WMEvent fullscreen(WM_EVENT_FULLSCREEN);
@@ -2235,8 +2235,8 @@ TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
 }
 
 TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithPinned) {
-  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
-  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1});
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0}).release();
+  aura::Window* w2 = CreateTestWindowInShell({.window_id = 1}).release();
   wm::ActivateWindow(w1);
 
   {
@@ -2419,8 +2419,8 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
   // Make sure we don't alert if we do have a window.
   std::unique_ptr<aura::Window> window;
   for (const auto& iter : accelerators_needing_window) {
-    window.reset(
-        CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
+    window =
+        CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0});
     wm::ActivateWindow(window.get());
     accessibility_controller->TriggerAccessibilityAlert(
         AccessibilityAlert::NONE);
@@ -2430,8 +2430,8 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
 
   // Don't alert if we have a minimized window either.
   for (const auto& iter : accelerators_needing_window) {
-    window.reset(
-        CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
+    window =
+        CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0});
     wm::ActivateWindow(window.get());
     controller_->PerformActionIfEnabled(AcceleratorAction::kWindowMinimize, {});
     accessibility_controller->TriggerAccessibilityAlert(
@@ -2632,7 +2632,7 @@ class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
 
 TEST_F(SystemShortcutBehaviorTest, StandardSearchBasedAcceleratorProcessing) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0}).release();
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -2661,7 +2661,7 @@ TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcuts) {
 
 TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcutsFullscreenOnly) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0}).release();
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -2714,7 +2714,7 @@ TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcutsFullscreenOnly) {
 
 TEST_F(SystemShortcutBehaviorTest, AllowSearchBasedPassthrough) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0}).release();
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 
@@ -2750,7 +2750,7 @@ TEST_F(SystemShortcutBehaviorTest, AllowSearchBasedPassthrough) {
 
 TEST_F(SystemShortcutBehaviorTest, AllowSearchBasedPassthroughFullscreenOnly) {
   VoidEventHandler event_handler;
-  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0});
+  aura::Window* w1 = CreateTestWindowInShell({.window_id = 0}).release();
   w1->AddPostTargetHandler(&event_handler);
   wm::ActivateWindow(w1);
 

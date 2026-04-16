@@ -155,7 +155,7 @@ TEST_F(WindowModalityControllerTest, NestedModalsOuterClosed) {
       CreateTestWindowInShell({.delegate = &d, .window_id = -11}));
   // |w111| will be owned and deleted by |w11|.
   aura::Window* w111 =
-      CreateTestWindowInShell({.delegate = &d, .window_id = -111});
+      CreateTestWindowInShell({.delegate = &d, .window_id = -111}).release();
   std::unique_ptr<aura::Window> w2(
       CreateTestWindowInShell({.delegate = &d, .window_id = -2}));
 

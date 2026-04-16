@@ -129,7 +129,7 @@ class ScreenOrientationControllerTest : public AshTestBase {
 
  protected:
   aura::Window* CreateAppWindowInShellWithId(int id) {
-    aura::Window* window = CreateTestWindowInShell({.window_id = id});
+    aura::Window* window = CreateTestWindowInShell({.window_id = id}).release();
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     return window;
   }

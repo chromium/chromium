@@ -346,8 +346,7 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
                                       .bounds = {10, 10, 10, 10},
                                       .window_id = -1});
     // Move focus to |w2| first.
-    w2.reset(
-        CreateTestWindowInShell({.delegate = &wd, .bounds = {70, 70, 50, 50}}));
+    w2 = CreateTestWindowInShell({.delegate = &wd, .bounds = {70, 70, 50, 50}});
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w2.get());
     generator.ClickLeftButton();
     EXPECT_EQ(w2.get(), focus_client->GetFocusedWindow());

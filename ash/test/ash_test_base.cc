@@ -374,12 +374,10 @@ std::unique_ptr<aura::Window> AshTestBase::CreateTestWindow(
     aura::client::WindowType type,
     int shell_window_id) {
   if (type != aura::client::WINDOW_TYPE_NORMAL) {
-    return base::WrapUnique(
-        CreateTestWindowInShell({.bounds = bounds_in_screen,
-                                 .window_type = type,
-                                 .window_id = shell_window_id}));
+    return CreateTestWindowInShell({.bounds = bounds_in_screen,
+                                    .window_type = type,
+                                    .window_id = shell_window_id});
   }
-
   return CreateAppWindow(bounds_in_screen, chromeos::AppType::NON_APP,
                          shell_window_id);
 }
@@ -389,19 +387,17 @@ std::unique_ptr<aura::Window> AshTestBase::CreateToplevelTestWindow(
     int shell_window_id) {
   aura::test::TestWindowDelegate* delegate =
       aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
-  return base::WrapUnique<aura::Window>(
-      CreateTestWindowInShell({.delegate = delegate,
-                               .bounds = bounds_in_screen,
-                               .window_id = shell_window_id}));
+  return CreateTestWindowInShell({.delegate = delegate,
+                                  .bounds = bounds_in_screen,
+                                  .window_id = shell_window_id});
 }
 
-aura::Window* AshTestBase::CreateTestWindowInShell(
+std::unique_ptr<aura::Window> AshTestBase::CreateTestWindowInShell(
     aura::test::WindowBuilderParams params) {
   return TestWindowBuilder(params)
       .SetWindowTitle(u"Window " + base::NumberToString16(params.window_id))
       .AllowAllWindowStates()
-      .Build()
-      .release();
+      .Build();
 }
 
 void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {

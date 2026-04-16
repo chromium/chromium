@@ -196,7 +196,8 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   aura::Window* d2 =
       CreateTestWindowInShell({.delegate = &delete_on_blur_delegate,
                                .bounds = {50, 50, 100, 100},
-                               .window_id = 0});
+                               .window_id = 0})
+          .release();
   delete_on_blur_delegate.SetWindow(d2);
   aura::client::GetFocusClient(root_windows[0])->FocusWindow(d2);
   tracker.Add(d2);

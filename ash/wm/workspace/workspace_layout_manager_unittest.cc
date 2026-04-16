@@ -2348,10 +2348,12 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   auto CreateWindow = [this](const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShell(
-        {.delegate =
-             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-         .bounds = bounds});
+    aura::Window* window =
+        CreateTestWindowInShell(
+            {.delegate =
+                 aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+             .bounds = bounds})
+            .release();
     return window;
   };
 

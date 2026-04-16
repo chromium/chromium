@@ -33,7 +33,7 @@ class StickyKeysTest : public AshTestBase {
 
     // |target_| owned by root window of shell. It is still safe to delete
     // it ourselves.
-    target_ = CreateTestWindowInShell({.window_id = 0});
+    target_ = CreateTestWindowInShell({.window_id = 0}).release();
     root_window_ = target_->GetRootWindow();
   }
 

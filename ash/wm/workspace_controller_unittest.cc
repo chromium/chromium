@@ -123,7 +123,8 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   aura::Window* CreatePopupLikeWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShell({.bounds = bounds});
+    aura::Window* window =
+        CreateTestWindowInShell({.bounds = bounds}).release();
     window->Show();
     return window;
   }

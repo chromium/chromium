@@ -398,7 +398,7 @@ TEST_F(ZAuraSurfaceTest,
             aura_surface().last_sent_occlusion_state());
 
   // Create a window that occludes the surface.
-  CreateTestWindowInShell({.bounds = {0, 0, 100, 100}});
+  auto window = CreateTestWindowInShell({.bounds = {0, 0, 100, 100}});
   EXPECT_EQ(0.0f, occlusion_fraction_on_activation_loss());
   EXPECT_EQ(1.0f, aura_surface().last_sent_occlusion_fraction());
   EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,

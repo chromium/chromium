@@ -186,7 +186,8 @@ class AshTestBase : public testing::Test {
 
   // Versions of the functions in aura::test:: that go through our shell
   // StackingController instead of taking a parent.
-  aura::Window* CreateTestWindowInShell(aura::test::WindowBuilderParams params);
+  [[nodiscard]] std::unique_ptr<aura::Window> CreateTestWindowInShell(
+      aura::test::WindowBuilderParams params);
 
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);

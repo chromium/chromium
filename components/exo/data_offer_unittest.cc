@@ -434,7 +434,7 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
     writer.WriteText(u"Test data");
   }
 
-  auto* window = CreateTestWindowInShell({});
+  auto* window = CreateTestWindowInShell({}).release();
   data_offer.SetClipboardData(
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
@@ -478,7 +478,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
     writer.WriteHTML(u"Test data", "");
   }
 
-  auto* window = CreateTestWindowInShell({});
+  auto* window = CreateTestWindowInShell({}).release();
   data_offer.SetClipboardData(
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
@@ -519,7 +519,7 @@ TEST_F(DataOfferTest, SetClipboardDataRTF) {
     writer.WriteRTF("Test data");
   }
 
-  auto* window = CreateTestWindowInShell({});
+  auto* window = CreateTestWindowInShell({}).release();
   data_offer.SetClipboardData(
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
@@ -551,7 +551,7 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
     writer.WriteImage(image);
   }
 
-  auto* window = CreateTestWindowInShell({});
+  auto* window = CreateTestWindowInShell({}).release();
   data_offer.SetClipboardData(
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
@@ -597,7 +597,7 @@ TEST_F(DataOfferTest, SetClipboardDataFilenames) {
     writer.WriteFilenames("file:///test/path");
   }
 
-  auto* window = CreateTestWindowInShell({});
+  auto* window = CreateTestWindowInShell({}).release();
   data_offer.SetClipboardData(
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
@@ -635,7 +635,7 @@ TEST_F(DataOfferTest, SetClipboardDataWithTransferPolicy) {
     writer.WriteText(u"Test data");
   }
 
-  auto* window = CreateTestWindowInShell({});
+  auto* window = CreateTestWindowInShell({}).release();
   data_offer.SetClipboardData(
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));

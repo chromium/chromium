@@ -1734,10 +1734,10 @@ class DragDropControllerDlpTest : public DragDropControllerTest {
   void SetUp() override {
     DragDropControllerTest::SetUp();
 
-    window_ = base::WrapUnique(CreateTestWindowInShell(
+    window_ = CreateTestWindowInShell(
         {.delegate =
              aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-         .bounds = {100, 100}}));
+         .bounds = {100, 100}});
     delegate_ = std::make_unique<EventTargetTestDelegate>(window_.get());
     aura::client::SetDragDropDelegate(window_.get(), delegate_.get());
     drag_and_drop_observer_ = std::make_unique<NiceMock<MockDragDropObserver>>(

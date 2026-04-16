@@ -1221,7 +1221,7 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInLockScreen) {
 
   base::HistogramTester histogram_tester;
   // Create a window and go the lock screen before requesting shutdown.
-  CreateTestWindowInShell({.window_id = 0});
+  auto window = CreateTestWindowInShell({.window_id = 0});
   GetSessionControllerClient()->LockScreen();
   EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 

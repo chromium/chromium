@@ -88,7 +88,8 @@ TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
 TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsPopupNotification) {
   UpdateDisplay("1000x900");
   auto* window =
-      CreateTestWindowInShell({.window_id = kShellWindowId_ShelfContainer});
+      CreateTestWindowInShell({.window_id = kShellWindowId_ShelfContainer})
+          .release();
   window->SetName(AshMessagePopupCollection::kMessagePopupWidgetName);
   window->Show();
 

@@ -130,10 +130,10 @@ const int kDesktopBorderSize = WindowSizerChromeOS::kDesktopBorderSize;
 const int kMaximumWindowWidth = WindowSizerChromeOS::kMaximumWindowWidth;
 const int kWindowTilePixels = WindowSizer::kWindowTilePixels;
 
-std::unique_ptr<Browser> CreateTestBrowser(aura::Window* window,
+std::unique_ptr<Browser> CreateTestBrowser(std::unique_ptr<aura::Window> window,
                                            Browser::CreateParams* params) {
   std::unique_ptr<Browser> browser =
-      chrome::CreateBrowserWithAuraTestWindowForParams(base::WrapUnique(window),
+      chrome::CreateBrowserWithAuraTestWindowForParams(std::move(window),
                                                        params);
   if (browser->is_type_normal()) {
     browser->window()->GetNativeWindow()->SetProperty(

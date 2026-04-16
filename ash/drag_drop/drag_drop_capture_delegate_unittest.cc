@@ -97,8 +97,8 @@ class TestDragDelegate : public ToplevelWindowDragDelegate {
 TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow) {
   TestWindowDelegate source_window_delegate;
 
-  auto source_window = base::WrapUnique(CreateTestWindowInShell(
-      {.delegate = &source_window_delegate, .bounds = {100, 100}}));
+  auto source_window = CreateTestWindowInShell(
+      {.delegate = &source_window_delegate, .bounds = {100, 100}});
   source_window->Show();
   EXPECT_FALSE(source_window_delegate.touch_cancel_received);
 
@@ -161,8 +161,8 @@ TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow2) {
 TEST_F(DragDropCaptureDelegateTest, ReleaseCapture) {
   TestWindowDelegate source_window_delegate;
 
-  auto source_window = base::WrapUnique(CreateTestWindowInShell(
-      {.delegate = &source_window_delegate, .bounds = {100, 100}}));
+  auto source_window = CreateTestWindowInShell(
+      {.delegate = &source_window_delegate, .bounds = {100, 100}});
   source_window->Show();
   EXPECT_FALSE(source_window_delegate.touch_cancel_received);
 

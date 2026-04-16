@@ -179,8 +179,10 @@ class KeyboardControllerImplTest : public AshTestBase {
 
   void CreateFocusedTestWindowInRootWindow(aura::Window* root_window) {
     // Owned by |root_window|.
-    aura::Window* focusable_window = CreateTestWindowInShell(
-        {.bounds = root_window->GetBoundsInScreen(), .window_id = 0});
+    aura::Window* focusable_window =
+        CreateTestWindowInShell(
+            {.bounds = root_window->GetBoundsInScreen(), .window_id = 0})
+            .release();
     focusable_window->Focus();
   }
 
