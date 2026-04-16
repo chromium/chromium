@@ -75,6 +75,57 @@ class FuseboxPopup {
         mDeepSearchButton = contentView.findViewById(R.id.fusebox_deep_search_button);
         mCanvasButton = contentView.findViewById(R.id.fusebox_canvas_button);
 
+        mAddCurrentTab.setText(R.string.fusebox_add_current_tab);
+
+        mTabButton.setText(R.string.omnibox_navattach_tabs);
+        mTabButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_features_24dp, 0, 0, 0);
+        mTabButton.setContentDescription(
+                context.getString(R.string.accessibility_omnibox_add_tabs));
+
+        // TODO(crbug.com/436888404): either drop clipboard or use proper strings.
+        mClipboardButton.setText(R.string.clipboard_permission_title);
+        mClipboardButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_content_copy, 0, 0, 0);
+
+        mCameraButton.setText(R.string.photo_picker_camera);
+        mCameraButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_photo_camera, 0, 0, 0);
+        mCameraButton.setContentDescription(
+                context.getString(R.string.accessibility_omnibox_add_camera_picture));
+
+        mGalleryButton.setText(R.string.omnibox_navattach_gallery);
+        mGalleryButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_photo_library_fill_24dp, 0, 0, 0);
+        mGalleryButton.setContentDescription(
+                context.getString(R.string.accessibility_omnibox_add_images));
+
+        mFileButton.setText(R.string.omnibox_navattach_files);
+        mFileButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_attach_file_24dp, 0, 0, 0);
+        mFileButton.setContentDescription(
+                context.getString(R.string.accessibility_omnibox_add_files));
+
+        mAiModeButton.setText(R.string.ai_mode_entrypoint_label);
+        mAiModeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.search_spark_black_24dp, 0, 0, 0);
+        mAiModeButton.setContentDescription(
+                context.getString(R.string.accessibility_omnibox_enable_ai_mode));
+
+        mCreateImageButton.setText(R.string.omnibox_create_image);
+        mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.create_image_24dp, 0, 0, 0);
+        mCreateImageButton.setContentDescription(
+                context.getString(R.string.accessibility_omnibox_create_image));
+
+        mDeepSearchButton.setText(R.string.ntp_compose_deep_search);
+        mDeepSearchButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.travel_explore_24dp, 0, 0, 0);
+
+        mCanvasButton.setText(R.string.ntp_compose_canvas);
+        mCanvasButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.draft_spark_24dp, 0, 0, 0);
+
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
 

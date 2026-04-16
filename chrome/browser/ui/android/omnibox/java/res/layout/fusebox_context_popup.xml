@@ -22,50 +22,41 @@ found in the LICENSE file.
         android:paddingTop="4dp"
         android:paddingBottom="4dp">
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_add_current_tab"
-            android:visibility="gone"
-            android:text="@string/fusebox_add_current_tab"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_pick_tabs_button"
-            android:visibility="gone"
-            android:drawableStart="@drawable/ic_features_24dp"
-            android:text="@string/omnibox_navattach_tabs"
-            android:contentDescription="@string/accessibility_omnibox_add_tabs"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <!--
-        TODO(crbug.com/436888404): either drop clipboard or use proper strings.
-        -->
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_paste_from_clipboard_button"
-            android:visibility="gone"
-            android:drawableStart="@drawable/ic_content_copy"
-            android:text="@string/clipboard_permission_title"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_camera_button"
-            android:drawableStart="@drawable/ic_photo_camera"
-            android:text="@string/photo_picker_camera"
-            android:contentDescription="@string/accessibility_omnibox_add_camera_picture"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_pick_picture_button"
-            android:drawableStart="@drawable/ic_photo_library_fill_24dp"
-            android:text="@string/omnibox_navattach_gallery"
-            android:contentDescription="@string/accessibility_omnibox_add_images"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_pick_file_button"
-            android:drawableStart="@drawable/ic_attach_file_24dp"
-            android:text="@string/omnibox_navattach_files"
-            android:contentDescription="@string/accessibility_omnibox_add_files"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
@@ -76,31 +67,29 @@ found in the LICENSE file.
             android:id="@+id/fusebox_tools_header"
             android:text="@string/fusebox_tools_header"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_ai_mode_button"
-            android:drawableStart="@drawable/search_spark_black_24dp"
-            android:text="@string/ai_mode_entrypoint_label"
-            android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_create_image_button"
-            android:drawableStart="@drawable/create_image_24dp"
-            android:text="@string/omnibox_create_image"
-            android:contentDescription="@string/accessibility_omnibox_create_image"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_deep_search_button"
-            android:drawableStart="@drawable/travel_explore_24dp"
-            android:text="@string/ntp_compose_deep_search"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <org.chromium.ui.widget.ButtonCompat
-            style="@style/Fusebox.PopupMenu.Item"
+        <include
+            layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_canvas_button"
-            android:drawableStart="@drawable/draft_spark_24dp"
-            android:text="@string/ntp_compose_canvas"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
