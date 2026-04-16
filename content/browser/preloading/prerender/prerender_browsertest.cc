@@ -17602,9 +17602,26 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptOriginTrialBrowserTest, Basic) {
 }
 
 class PrerenderFormSubmissionOriginTrialBrowserTest
-    : public PrerenderBrowserTest {
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  PrerenderFormSubmissionOriginTrialBrowserTest() = default;
+  PrerenderFormSubmissionOriginTrialBrowserTest() {
+    if (IsPrerenderUntilScriptEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kPrerenderUntilScript);
+    }
+  }
+
+  bool IsPrerenderUntilScriptEnabled() const {
+    if (auto* test_info =
+            testing::UnitTest::GetInstance()->current_test_info()) {
+      if (test_info->value_param() != nullptr &&
+          std::string_view(test_info->value_param()).length() > 0) {
+        return GetParam();
+      }
+    }
+    return false;
+  }
 
   // `first_attempt_form_field` and `second_attempt_form_field` specify the
   // corresponding prerendering attempts are form navigations or not. The latter
@@ -17655,25 +17672,73 @@ class PrerenderFormSubmissionOriginTrialBrowserTest
     // Navigate to an initial page which has a link to `prerender_url`.
     ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
-    // Start prerendering `prerender_url` with `form_submission` =
-    // `first_attempt_form_field`.
-    PrerenderHostId host_id = prerender_helper()->AddPrerender(
-        prerender_url, /*eagerness=*/std::nullopt,
-        /*no_vary_search_hint=*/std::nullopt,
-        /*target_hint=*/target_hint,
-        /*ruleset_tag=*/std::nullopt,
-        /*world_id=*/ISOLATED_WORLD_ID_GLOBAL, first_attempt_form_field);
+    PrerenderHostId host_id;
+    if (IsPrerenderUntilScriptEnabled()) {
+      base::RunLoop run_loop;
+      base::CallbackListSubscription creation_subscription;
+      WebContents* observed_web_contents = nullptr;
+
+      if (target_hint == "_blank") {
+        creation_subscription = RegisterWebContentsCreationCallback(
+            base::BindLambdaForTesting([&](content::WebContents* web_contents) {
+              observed_web_contents = web_contents;
+              run_loop.QuitClosure().Run();
+            }));
+      } else {
+        observed_web_contents = web_contents_impl();
+      }
+
+      prerender_helper()->AddPrerenderUntilScriptAsync(
+          prerender_url, /*eagerness=*/std::nullopt,
+          /*no_vary_search_hint=*/std::nullopt,
+          /*target_hint=*/target_hint,
+          /*ruleset_tag=*/std::nullopt,
+          /*world_id=*/ISOLATED_WORLD_ID_GLOBAL, first_attempt_form_field);
+
+      if (target_hint == "_blank") {
+        run_loop.Run();
+      } else {
+        // The wait is handled by
+        // test::PrerenderTestHelper::WaitForPrerenderLoadCompletion.
+      }
+
+      test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+          *observed_web_contents, prerender_url);
+      host_id = test::PrerenderTestHelper::GetHostForUrl(*observed_web_contents,
+                                                         prerender_url);
+      EXPECT_TRUE(host_id);
+    } else {
+      // Start prerendering `prerender_url` with `form_submission` =
+      // `first_attempt_form_field`.
+      host_id = prerender_helper()->AddPrerender(
+          prerender_url, /*eagerness=*/std::nullopt,
+          /*no_vary_search_hint=*/std::nullopt,
+          /*target_hint=*/target_hint,
+          /*ruleset_tag=*/std::nullopt,
+          /*world_id=*/ISOLATED_WORLD_ID_GLOBAL, first_attempt_form_field);
+    }
 
     if (second_attempt_form_field.has_value()) {
       // Start prerendering `prerender_url` with `form_submission` =
       // `second_attempt_form_field`.
-      prerender_helper()->AddPrerender(prerender_url,
-                                       /*eagerness=*/std::nullopt,
-                                       /*no_vary_search_hint=*/std::nullopt,
-                                       /*target_hint=*/target_hint,
-                                       /*ruleset_tag=*/std::nullopt,
-                                       /*world_id=*/ISOLATED_WORLD_ID_GLOBAL,
-                                       second_attempt_form_field.value());
+      if (IsPrerenderUntilScriptEnabled()) {
+        prerender_helper()->AddPrerenderUntilScriptAsync(
+            prerender_url,
+            /*eagerness=*/std::nullopt,
+            /*no_vary_search_hint=*/std::nullopt,
+            /*target_hint=*/target_hint,
+            /*ruleset_tag=*/std::nullopt,
+            /*world_id=*/ISOLATED_WORLD_ID_GLOBAL,
+            second_attempt_form_field.value());
+      } else {
+        prerender_helper()->AddPrerender(prerender_url,
+                                         /*eagerness=*/std::nullopt,
+                                         /*no_vary_search_hint=*/std::nullopt,
+                                         /*target_hint=*/target_hint,
+                                         /*ruleset_tag=*/std::nullopt,
+                                         /*world_id=*/ISOLATED_WORLD_ID_GLOBAL,
+                                         second_attempt_form_field.value());
+      }
     }
 
     auto* prerender_web_contents =
@@ -17777,9 +17842,12 @@ class PrerenderFormSubmissionOriginTrialBrowserTest
     ExpectFinalStatusForSpeculationRule(
         PrerenderFinalStatus::kFormSubmitWhenPrerendering);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderFormSubmissionOriginTrialBrowserTest,
                        FormSubmissionHint_ActivationSuccessful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
                             /*second_attempt_form_field=*/std::nullopt,
@@ -17788,7 +17856,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
                             /*should_activate=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderFormSubmissionOriginTrialBrowserTest,
     FormSubmissionHint_FirstWin_TrueThenFalse_ActivationSuccesful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
@@ -17798,7 +17866,7 @@ IN_PROC_BROWSER_TEST_F(
                             /*should_activate=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderFormSubmissionOriginTrialBrowserTest,
     FormSubmissionHint_FirstWin_FalseThenTrue_ActivationSuccesful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/false,
@@ -17810,7 +17878,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verifies that the second prerender will be treated as duplicated and
 // the non-form submission navigation cannot activate form submission prerender.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderFormSubmissionOriginTrialBrowserTest,
     FormSubmissionHint_FirstWin_TrueThenFalse_FailWithMismatch) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
@@ -17822,7 +17890,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verifies that the second prerender will be treated as duplicated and
 // the form submission navigation cannot activate non-form submission prerender.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderFormSubmissionOriginTrialBrowserTest,
     FormSubmissionHint_FirstWin_FalseThenTrue_FailWithMismatch) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/false,
@@ -17832,7 +17900,7 @@ IN_PROC_BROWSER_TEST_F(
                             /*should_activate=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderFormSubmissionOriginTrialBrowserTest,
                        FormSubmissionHintBlankTargetHint_ActivationSuccessful) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
                             /*second_attempt_form_field=*/std::nullopt,
@@ -17841,7 +17909,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
                             /*should_activate=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderFormSubmissionOriginTrialBrowserTest,
                        FormSubmissionHintBlankTargetHint_FailWithMismatch) {
   RunFormSubmissionHintTest(/*first_attempt_form_field=*/true,
                             /*second_attempt_form_field=*/std::nullopt,
@@ -17850,14 +17918,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
                             /*should_activate=*/false);
 }
 
+// The test will generate a form submission within the prerender by javascript.
+// PUS will not run the javascript when prerendering, so this has prerender
+// variation only.
 IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
                        PrerenderFormInPrerender_WithFormSubmission) {
   RunPrerenderFormInPrerenderTest(/*form_submission=*/true);
 }
 
+// The test will generate a form submission within the prerender by javascript.
+// PUS will not run the javascript when prerendering, so this has prerender
+// variation only.
 IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionOriginTrialBrowserTest,
                        PrerenderFormInPrerender_WithoutFormSubmission) {
   RunPrerenderFormInPrerenderTest(/*form_submission=*/false);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderFormSubmissionOriginTrialBrowserTest,
+                         testing::Bool());
 
 }  // namespace content
