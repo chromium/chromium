@@ -24957,17 +24957,25 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="APP_MENU_SHARING_HUB"/>
 </enum>
 
+<!-- LINT.IfChange(SharingClickToCallEntryPoint) -->
+
 <enum name="SharingClickToCallEntryPoint">
   <int value="0" label="Left click on a phone link"/>
   <int value="1" label="Right click on a phone link"/>
   <int value="2" label="Right click on a phone number selection"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/sharing/click_to_call/click_to_call_metrics.h:SharingClickToCallEntryPoint) -->
+
+<!-- LINT.IfChange(SharingClickToCallSelection) -->
+
 <enum name="SharingClickToCallSelection">
   <int value="0" label="None"/>
   <int value="1" label="Device"/>
   <int value="2" label="App"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/sharing/click_to_call/click_to_call_metrics.h:SharingClickToCallSelection) -->
 
 <enum name="SharingContentTypeAndroid">
   <int value="0" label="Unknown"/>
