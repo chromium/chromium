@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 
@@ -104,7 +104,8 @@ void BatchUploadPromoHandler::GetBatchUploadPromoLocalDataCount(
 }
 
 void BatchUploadPromoHandler::OnBatchUploadPromoClicked() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }

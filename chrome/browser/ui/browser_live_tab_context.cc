@@ -433,7 +433,8 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
 // static
 sessions::LiveTabContext* BrowserLiveTabContext::FindContextForWebContents(
     const WebContents* contents) {
-  BrowserWindowInterface* const browser = chrome::FindBrowserWithTab(contents);
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
   return GetLiveTabContext(browser);
 }
 

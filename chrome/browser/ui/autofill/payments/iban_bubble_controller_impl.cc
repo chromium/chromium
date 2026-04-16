@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/common/webui_url_constants.h"
@@ -151,7 +151,9 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
                        CreateForSaveIbanFailure(hit_max_strikes);
 
   // Show upload confirmation bubble.
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->GetBrowserForMigrationOnly()
           ->window()
@@ -316,8 +318,10 @@ void IbanBubbleControllerImpl::OnLegalMessageLinkClicked(const GURL& url) {
 
 void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
   CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban);
-  chrome::ShowSettingsSubPage(chrome::FindBrowserWithTab(web_contents()),
-                              chrome::kPaymentsSubPage);
+  chrome::ShowSettingsSubPage(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents()),
+      chrome::kPaymentsSubPage);
   OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 }
 
@@ -490,7 +494,9 @@ IbanBubbleControllerImpl::GetPageActionTooltipText() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void IbanBubbleControllerImpl::DoShowBubble() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->GetBrowserForMigrationOnly()
           ->window()

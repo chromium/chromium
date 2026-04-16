@@ -35,10 +35,10 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
@@ -454,7 +454,9 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
   }
   // There nothing to do if this controller is not attached to currently active
   // tab.
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   if (!browser) {
     return;
   }
@@ -1004,7 +1006,9 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   // The icon is to be updated after the bubble (either "Save password" or "Sign
   // in to Chrome") is closed.
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   // Do not trigger the IPH if the sign in promo will be shown.
   if (browser &&
       !signin::ShouldShowPasswordSignInPromo(*browser->GetProfile())) {
@@ -1064,21 +1068,27 @@ void ManagePasswordsUIController::ChooseCredential(
 
 void ManagePasswordsUIController::NavigateToPasswordManagerSettingsPage(
     password_manager::ManagePasswordsReferrer referrer) {
-  NavigateToManagePasswordsPage(chrome::FindBrowserWithTab(web_contents()),
-                                referrer);
+  NavigateToManagePasswordsPage(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents()),
+      referrer);
 }
 
 void ManagePasswordsUIController::
     NavigateToPasswordDetailsPageInPasswordManager(
         const std::string& password_domain_name,
         password_manager::ManagePasswordsReferrer referrer) {
-  NavigateToPasswordDetailsPage(chrome::FindBrowserWithTab(web_contents()),
-                                password_domain_name, referrer);
+  NavigateToPasswordDetailsPage(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents()),
+      password_domain_name, referrer);
 }
 
 void ManagePasswordsUIController::NavigateToPasswordCheckup(
     password_manager::PasswordCheckReferrer referrer) {
-  chrome::ShowPasswordCheck(chrome::FindBrowserWithTab(web_contents()));
+  chrome::ShowPasswordCheck(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents()));
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
@@ -1161,7 +1171,9 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
 }
 
 void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   if (!browser) {
     return;
   }
@@ -1186,7 +1198,9 @@ void ManagePasswordsUIController::RelaunchChrome() {
 }
 
 void ManagePasswordsUIController::NavigateToPasswordChangeSettings() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   ShowSingletonTabOverwritingNTP(browser,
                                  GURL(chrome::kChromeUiPasswordChangeUrl),
                                  NavigateParams::IGNORE_AND_NAVIGATE);
@@ -1220,7 +1234,9 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     ClearPopUpFlagForBubble();
   }
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   if (!browser) {
     return;
   }
@@ -1312,7 +1328,8 @@ ManagePasswordsUIController::CreateCredentialLeakPrompt(
 }
 
 bool ManagePasswordsUIController::HasBrowserWindow() const {
-  return chrome::FindBrowserWithTab(web_contents()) != nullptr;
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+             web_contents()) != nullptr;
 }
 
 std::unique_ptr<MovePasswordToAccountStoreHelper>
@@ -1397,7 +1414,9 @@ base::TimeDelta ManagePasswordsUIController::GetTimeoutForSaveFallback() {
 void ManagePasswordsUIController::ShowBubbleWithoutUserInteraction() {
   CHECK(IsAutomaticallyOpeningBubble() ||
         bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS);
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   // Can be zero in the tests.
   if (!browser) {
     return;

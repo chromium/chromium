@@ -20,10 +20,10 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -230,7 +230,8 @@ DiceWebSigninInterceptorDelegate::~DiceWebSigninInterceptorDelegate() = default;
 
 bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
     const content::WebContents& web_contents) {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(&web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(&web_contents);
   // The profile creation flow has no browser.
   if (!browser) {
     return false;
@@ -261,7 +262,9 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
       bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::
               kEnterpriseAcceptManagement) {
-    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            web_contents);
     if (!browser) {
       std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
       return nullptr;
@@ -271,7 +274,8 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
         std::move(callback));
   }
 
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(callback).Run(SigninInterceptionResult::kNotDisplayed);
     return nullptr;
@@ -290,7 +294,8 @@ DiceWebSigninInterceptorDelegate::ShowOidcInterceptionDialog(
     base::RepeatingClosure retry_callback) {
   CHECK_EQ(bubble_parameters.interception_type,
            WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC);
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   return std::make_unique<OidcEnterpriseSigninInterceptionHandle>(
       browser ? browser->GetBrowserForMigrationOnly() : nullptr,
       bubble_parameters, std::move(callback), std::move(dialog_closed_closure),

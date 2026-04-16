@@ -48,8 +48,8 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #else
 #include "chrome/browser/ui/browser.h"               // nogncheck
-#include "chrome/browser/ui/browser_finder.h"        // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -66,8 +66,8 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #else
 #include "chrome/browser/ui/browser.h"               // nogncheck
-#include "chrome/browser/ui/browser_finder.h"        // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -221,7 +221,8 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
   // Avoid calling CloseContents if the tab is not in this browser's tab strip
   // model; this can happen if the protocol was initiated by something
   // internal to Chrome.
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (browser && web_contents->GetController().IsInitialNavigation() &&
       browser->GetTabStripModel()->count() > 1 &&
       browser->GetTabStripModel()->GetIndexOfWebContents(web_contents) !=
@@ -302,7 +303,9 @@ void OnDefaultSchemeClientWorkerFinished(
                  << url_formatter::FormatOriginForSecurityDisplay(
                         initiating_origin.value_or(url::Origin()))
                  << ", web_contents?" << !!web_contents << ", browser?"
-                 << (web_contents && chrome::FindBrowserWithTab(web_contents));
+                 << (web_contents &&
+                     GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                         web_contents));
       base::debug::DumpWithoutCrashing();
       return;
     }

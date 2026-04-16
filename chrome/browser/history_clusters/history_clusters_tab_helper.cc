@@ -31,8 +31,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -43,7 +43,9 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (BrowserWindowInterface* browser = chrome::FindBrowserWithTab(contents)) {
+  if (BrowserWindowInterface* browser =
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              contents)) {
     int tab_index =
         browser->GetTabStripModel()->GetIndexOfWebContents(contents);
     if (tab_index != TabStripModel::kNoTab &&

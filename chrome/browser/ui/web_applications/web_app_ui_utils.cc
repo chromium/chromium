@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -35,7 +35,8 @@ namespace {
 
 std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return std::nullopt;
   }
@@ -100,8 +101,9 @@ bool HandleAppManagementLinkClickedInPageInfo(
           .entry_point = ash::SettingsAppManager::EntryPoint::kPageInfoView});
   return true;
 #else
-  chrome::ShowWebAppSettings(chrome::FindBrowserWithTab(web_contents), *app_id,
-                             AppSettingsPageEntryPoint::kPageInfoView);
+  chrome::ShowWebAppSettings(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents),
+      *app_id, AppSettingsPageEntryPoint::kPageInfoView);
   return true;
 #endif
 }
