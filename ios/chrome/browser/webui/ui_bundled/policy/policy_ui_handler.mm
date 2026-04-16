@@ -317,6 +317,10 @@ void PolicyUIHandler::HandleRestartBrowser(const base::ListValue& args) {
 }
 
 void PolicyUIHandler::RestartBrowser(const std::string& policies) {
+  if (!PolicyUI::ShouldLoadTestPage(&*profile_)) {
+    return;
+  }
+
   // Set policies to preference
   PrefService* prefs = GetApplicationContext()->GetLocalState();
   prefs->SetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup,

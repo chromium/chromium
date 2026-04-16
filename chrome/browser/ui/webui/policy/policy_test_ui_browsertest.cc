@@ -316,6 +316,36 @@ class PolicyTestHandlerTest : public base::test::WithFeatureOverride,
 };
 
 IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTest,
+                       HandleRestartBrowserNotSupported) {
+  // Ensure chrome://policy/test not supported.
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0, "namespace": "chrome",
+       "name": "AutofillAddressEnabled","value": false},
+      {"level": 1,"scope": 1,"source": 2, "namespace": "chrome",
+       "name": "CloudReportingEnabled","value": true}
+      ])";
+
+  // Open chrome://policy
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+  RestartBrowser(jsonString);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Check policies not applied to preference
+  PrefService* prefs = g_browser_process->local_state();
+  std::string pref_value =
+      prefs->GetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup);
+  EXPECT_TRUE(pref_value.empty());
+}
+
+
+IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTest,
                        HandleSetLocalTestPoliciesNotSupported) {
   // Ensure chrome://policy/test not supported.
   policy::ScopedManagementServiceOverrideForTesting profile_management(
@@ -655,6 +685,9 @@ IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTestDisabledByPolicy,
   RestartBrowser(jsonString);
 
   handler.reset();
+
+  // Restart the browser.
+  chrome::AttemptRestart();
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyTestHandlerTestDisabledByPolicy,
