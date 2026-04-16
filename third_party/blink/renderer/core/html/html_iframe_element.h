@@ -68,6 +68,7 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   void CheckPotentialPermissionsPolicyViolation() override;
 
   void NaturalSizingInfoChanged() override;
+  void ClearLastNaturalSizingInfo() override;
 
   String srcdoc() const;
   void setSrcdoc(const V8UnionStringOrTrustedHTML*, ExceptionState&);

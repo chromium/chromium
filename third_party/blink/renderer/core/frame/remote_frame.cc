@@ -752,6 +752,12 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
     return;
   }
 
+  if (info->is_cleared && RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+    View()->ClearNaturalDimensions();
+    owner->NaturalSizingInfoChanged();
+    return;
+  }
+
   // TODO(https://crbug.com/1044304): Should either remove the native
   // C++ Blink type and use the Mojo type everywhere or typemap the
   // Mojo type to the pre-existing native C++ Blink type.

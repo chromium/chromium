@@ -18,4 +18,7 @@ struct IntrinsicSizingInfo {
   bool has_width;
   // True if it has a height.
   bool has_height;
+
+  // True if the sizing info should be cleared.
+  bool is_cleared = false;
 };

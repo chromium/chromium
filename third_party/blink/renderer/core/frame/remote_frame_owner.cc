@@ -74,10 +74,22 @@ void RemoteFrameOwner::NaturalSizingInfoChanged() {
   if (auto natural_sizing_info = local_frame.View()->GetNaturalDimensions()) {
     auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
         natural_sizing_info->size, natural_sizing_info->aspect_ratio,
-        natural_sizing_info->has_width, natural_sizing_info->has_height);
+        natural_sizing_info->has_width, natural_sizing_info->has_height,
+        /*is_cleared=*/false);
     WebLocalFrameImpl::FromFrame(local_frame)
         ->FrameWidgetImpl()
         ->IntrinsicSizingInfoChanged(std::move(sizing_info));
+  }
+}
+
+void RemoteFrameOwner::ClearLastNaturalSizingInfo() {
+  LocalFrame& local_frame = To<LocalFrame>(*frame_);
+  if (auto* web_frame = WebLocalFrameImpl::FromFrame(local_frame)) {
+    if (WebFrameWidgetImpl* widget = web_frame->FrameWidgetImpl()) {
+      auto sizing_info = mojom::blink::IntrinsicSizingInfo::New();
+      sizing_info->is_cleared = true;
+      widget->IntrinsicSizingInfoChanged(std::move(sizing_info));
+    }
   }
 }
 

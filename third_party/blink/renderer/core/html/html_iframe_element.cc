@@ -723,6 +723,17 @@ void HTMLIFrameElement::NaturalSizingInfoChanged() {
   }
 }
 
+void HTMLIFrameElement::ClearLastNaturalSizingInfo() {
+  HTMLFrameOwnerElement::ClearLastNaturalSizingInfo();
+  if (!RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+    return;
+  }
+  if (auto* object = DynamicTo<LayoutIFrame>(GetLayoutObject())) {
+    object->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+        layout_invalidation_reason::kSizeChanged);
+  }
+}
+
 String HTMLIFrameElement::srcdoc() const {
   return getAttribute(html_names::kSrcdocAttr);
 }

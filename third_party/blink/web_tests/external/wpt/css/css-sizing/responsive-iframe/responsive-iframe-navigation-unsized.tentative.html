@@ -1,0 +1,36 @@
+<!doctype HTML>
+<title>Responsive iframe should clear size during navigation to non-responsive page</title>
+<link rel="author" href="mailto:kojii@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-sizing/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+iframe {
+  frame-sizing: content-height;
+}
+</style>
+<iframe id="iframe" frameborder="0" src="resources/iframe-contents-navigation.html"></iframe>
+<script>
+async_test(t => {
+  const iframe = document.getElementById('iframe');
+  let numIframeLoadEvents = 0;
+  iframe.addEventListener('load', t.step_func(() => {
+    ++numIframeLoadEvents;
+    switch (numIframeLoadEvents) {
+      case 1:
+        assert_equals(iframe.offsetHeight, 200, "Initial height should be 200px");
+
+        // Navigate to non-responsive page.
+        iframe.contentWindow.postMessage('unsized', '*');
+        break;
+      case 2:
+        // The height should have reverted to default (150) because the new page
+        // is not responsive and cleared the sizing info.
+        // If it didn't clear, it would keep 200 or grow to 400.
+        assert_equals(iframe.offsetHeight, 150, "Height should revert to default 150px");
+        t.done();
+        break;
+    }
+  }));
+}, "Responsive iframe clears size during navigation to non-responsive page");
+</script>

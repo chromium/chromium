@@ -432,10 +432,12 @@ void HTMLFrameOwnerElement::DisposePluginSoon(WebPluginContainerImpl* plugin) {
 
 void HTMLFrameOwnerElement::NaturalSizingInfoChanged() {
   if (auto* frame_view = DynamicTo<FrameView>(OwnedEmbeddedContentView())) {
-    if (auto info = frame_view->GetNaturalDimensions()) {
-      last_natural_sizing_info_ = info;
-    }
+    last_natural_sizing_info_ = frame_view->GetNaturalDimensions();
   }
+}
+
+void HTMLFrameOwnerElement::ClearLastNaturalSizingInfo() {
+  last_natural_sizing_info_.reset();
 }
 
 void HTMLFrameOwnerElement::UpdateContainerPolicy() {

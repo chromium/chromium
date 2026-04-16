@@ -126,6 +126,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void DispatchLoad() final;
   const FramePolicy& GetFramePolicy() const final { return frame_policy_; }
   void NaturalSizingInfoChanged() override;
+  void ClearLastNaturalSizingInfo() override;
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {
     return FastGetAttribute(html_names::kNameAttr);

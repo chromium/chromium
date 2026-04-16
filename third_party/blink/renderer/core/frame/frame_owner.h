@@ -48,6 +48,9 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   // relevant for SVG documents that are embedded via <object> or <embed>.
   virtual void NaturalSizingInfoChanged() = 0;
 
+  // Clear the last natural sizing info stored in the frame owner.
+  virtual void ClearLastNaturalSizingInfo() = 0;
+
   // Indicates that a child frame requires its parent frame to track whether the
   // child frame is occluded or has visual effects applied.
   virtual void SetNeedsOcclusionTracking(bool) = 0;
