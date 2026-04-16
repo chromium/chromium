@@ -145,18 +145,26 @@ public class FuseboxSessionState implements UserData {
 
         mIsActive = true;
         mAutocompleteInput.setUrlFocusTime(System.currentTimeMillis());
-        // Use current URL if the Retention is active, the input is not already set, and the URL
-        // should be user-visible.
+
+        // Use current URL if the Retention is active as the starting input.
+        // On eligible LFF devices the Omnibox should, by default, present the
+        // current page URL (if the URL is eligible for display).
         if (OmniboxFeatures.shouldRetainOmniboxOnFocus()
-                && mAutocompleteInput.getUserText().isEmpty()
                 && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
             var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
-            mAutocompleteInput.setUserText(editUrl).setSelection(0, Integer.MAX_VALUE);
+            mAutocompleteInput.setInitialUserText(editUrl);
+        } else {
+            mAutocompleteInput.setInitialUserText("");
         }
 
-        // The session is activated for the first time. Preserve the initial value of the User Text
-        // now. If the session is re-activated later, the user text will be preserved.
-        mAutocompleteInput.setInitialUserText(mAutocompleteInput.getUserText());
+        // Apply the initial default value unless user text is already set.
+        if (mAutocompleteInput.getUserText().isEmpty()) {
+            mAutocompleteInput
+                    .setUserText(mAutocompleteInput.getInitialUserText())
+                    .setSelection(
+                            OmniboxFeatures.shouldRetainOmniboxOnFocus() ? 0 : Integer.MAX_VALUE,
+                            Integer.MAX_VALUE);
+        }
 
         // Stop here if we're already waiting for profile.
         // This makes sense in scenarios where session object goes through a full cycle

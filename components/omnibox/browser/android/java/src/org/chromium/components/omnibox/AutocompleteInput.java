@@ -313,7 +313,7 @@ public class AutocompleteInput implements UserData {
     }
 
     /**
-     * Set the Initial Input - the one the session started with.
+     * Set the Initial Input - the default value to fall back to if the input is reset.
      *
      * <p>This is the default "revert-to" value.
      */
@@ -322,6 +322,7 @@ public class AutocompleteInput implements UserData {
         return this;
     }
 
+    /** Returns the Initial Input - the default value to fall back to if the input is reset. */
     public String getInitialUserText() {
         return mInitialUserText;
     }
@@ -396,9 +397,10 @@ public class AutocompleteInput implements UserData {
         return mAllowUserTextAutocompletion;
     }
 
-    /** Returns whether current context represents zero-prefix context. */
+    /** Returns whether the current context includes user-typed text. */
     public boolean isInZeroPrefixContext() {
-        return TextUtils.isEmpty(mUserText.get());
+        return TextUtils.isEmpty(mUserText.get())
+                || TextUtils.equals(mUserText.get(), mInitialUserText);
     }
 
     /** Returns whether current context enables suggestions caching. */

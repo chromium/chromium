@@ -594,7 +594,7 @@ public class AutocompleteMediatorUnitTest {
         String title = "title";
         int pageClassification = PageClassification.BLANK_VALUE;
         var session = createSession(url, title, pageClassification);
-        session.getAutocompleteInput().setUserText("Text");
+        session.getAutocompleteInput().setUserText("Text").setInitialUserText("Text");
 
         mMediator.beginInput(session);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -614,6 +614,41 @@ public class AutocompleteMediatorUnitTest {
 
         RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
+    }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_initialTextTriggersZeroSuggest() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        var session = createSession(url, title, pageClassification);
+        session.getAutocompleteInput()
+                .setUserText("initial text")
+                .setInitialUserText("initial text");
+        mMediator.beginInput(session);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        verifyAutocompleteStartZeroSuggest("initial text", url, pageClassification, title);
+    }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_userTextDiffersFromInitialText_triggersPrefixedSuggest() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        var session = createSession(url, title, pageClassification);
+        session.getAutocompleteInput().setUserText("user text").setInitialUserText("initial text");
+
+        when(mTextStateProvider.getSelectionStart()).thenReturn(9);
+        when(mTextStateProvider.getSelectionEnd()).thenReturn(9);
+        when(mTextStateProvider.shouldAutocomplete()).thenReturn(false);
+
+        mMediator.beginInput(session);
+
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verifyAutocompleteStart(url, pageClassification, "user text", 9, true);
     }
 
     @Test
@@ -842,7 +877,7 @@ public class AutocompleteMediatorUnitTest {
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         var session = createSession(url, title, pageClassification);
-        session.getAutocompleteInput().setUserText(url.getSpec());
+        session.getAutocompleteInput().setUserText(url.getSpec()).setInitialUserText(url.getSpec());
 
         mMediator.beginInput(session);
 
@@ -1329,7 +1364,7 @@ public class AutocompleteMediatorUnitTest {
             var session = createSession(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
             mMediator.beginInput(session);
             // Force an update as "" -> "" is not an observable change.
-            mMediator.onInputChanged(/* isOnFocusContext= */ true);
+            mMediator.onInputChanged();
             verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
             clearInvocations(mMockCachedZeroSuggestionsManager);
         }
@@ -1576,7 +1611,7 @@ public class AutocompleteMediatorUnitTest {
         // When not on an Incognito NTP, cached suggestions should be shown.
         doReturn(false).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
         // Force an update as "" -> "" is not an observable change.
-        mMediator.onInputChanged(/* isOnFocusContext= */ true);
+        mMediator.onInputChanged();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
 
