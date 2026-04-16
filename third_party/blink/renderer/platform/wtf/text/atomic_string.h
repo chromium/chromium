@@ -65,7 +65,7 @@ class WTF_EXPORT AtomicString {
   using size_type = string_size_t;
   static constexpr size_type npos = kNotFound;
 
-  // The function is defined in StringStatics.cpp.
+  // The function is defined in string_statics.cc.
   static void Init();
 
   // Factories ------------------------------------------------------
@@ -120,6 +120,8 @@ class WTF_EXPORT AtomicString {
 
   // [string.access] ------------------------------------------------
 
+  // Returns a code unit at the specified index.
+  // This operator returns 0 if the specified index is out of range.
   UChar operator[](size_type i) const { return string_[i]; }
 
   // [string.operations] --------------------------------------------
@@ -132,10 +134,21 @@ class WTF_EXPORT AtomicString {
 
   unsigned Hash() const { return string_.Impl()->ExistingHash(); }
 
+  // Returns an LChar span of the underlying representation of the string.
+  // This function must only be called on 8-bit strings.
   base::span<const LChar> Span8() const { return string_.Span8(); }
+  // Returns an UChar span of the underlying representation of the string.
+  // This function must only be called on 16-bit strings.
   base::span<const UChar> Span16() const { return string_.Span16(); }
 
+  // Returns a std::string containing the characters of this string.
+  // Printable ASCII characters (0x20 to 0x7F) and the null character (0x00)
+  // are preserved. Characters outside of this range (including control
+  // characters and non-ASCII characters) are converted to '?'.
   std::string Ascii() const { return string_.Ascii(); }
+  // Returns a std::string containing the characters of this string encoded as
+  // Latin-1. Characters in the Latin-1 range (0x00 to 0xFF) are preserved.
+  // Characters outside of this range (U+0100 and above) are converted to '?'.
   std::string Latin1() const { return string_.Latin1(); }
   std::string Utf8(
       Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
