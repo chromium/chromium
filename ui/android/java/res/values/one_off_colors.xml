@@ -137,5 +137,5 @@ found in the LICENSE file.
     <color name="spark_blue_gradient_last">#4FA0FF</color>
 
     <!-- Colors used for the tab bottom sheet. -->
-    <color name="glic_dark_theme_background">#1B1C1D</color>
+    <color name="glic_dark_theme_background">#141414</color>
 </resources>
