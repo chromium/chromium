@@ -1537,4 +1537,28 @@ TEST_F(BubbleFrameViewTest, MinimizeBeforeClose) {
             BubbleFrameView::kCloseButtonElementId);
 }
 
+TEST_F(BubbleFrameViewTest, GetNonDecoratedClientAreaBoundsInScreen) {
+  const gfx::Rect widget_bounds(100, 100, 200, 200);
+  frame()->GetWidget()->SetBounds(widget_bounds);
+
+  gfx::Rect expected_bounds = frame()->GetLocalBounds();
+  views::View::ConvertRectToScreen(frame(), &expected_bounds);
+  expected_bounds.Inset(frame()->GetBorderInsets());
+
+  EXPECT_EQ(expected_bounds,
+            frame()->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
+TEST_F(BubbleFrameViewTest, GetNonDecoratedClientAreaBoundsInScreenNoBorder) {
+  frame()->SetBubbleBorder(nullptr);
+  const gfx::Rect widget_bounds(100, 100, 200, 200);
+  frame()->GetWidget()->SetBounds(widget_bounds);
+
+  gfx::Rect expected_bounds = frame()->GetLocalBounds();
+  views::View::ConvertRectToScreen(frame(), &expected_bounds);
+
+  EXPECT_EQ(expected_bounds,
+            frame()->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
 }  // namespace views

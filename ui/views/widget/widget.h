@@ -781,6 +781,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the bounds of the Widget's client area in screen coordinates.
   gfx::Rect GetClientAreaBoundsInScreen() const;
 
+  // Returns the non decorated client area bounds, as perceived by the user
+  // (including title bar and excluding shadows), in screen coordinates.
+  gfx::Rect GetNonDecoratedClientAreaBoundsInScreen() const;
+
   // Retrieves the restored bounds for the window.
   gfx::Rect GetRestoredBounds() const;
 

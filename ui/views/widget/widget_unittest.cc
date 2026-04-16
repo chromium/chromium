@@ -6464,4 +6464,68 @@ TEST_F(WidgetTest, IsDragging) {
   EXPECT_FALSE(widget->is_dragging());
 }
 
+TEST_F(WidgetTest, GetNonDecoratedClientAreaBoundsInScreenDefault) {
+  const gfx::Rect bounds(100, 100, 200, 200);
+  std::unique_ptr<Widget> widget(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  widget->SetBounds(bounds);
+
+  ASSERT_NE(nullptr, widget->non_client_view());
+  ASSERT_NE(nullptr, widget->non_client_view()->frame_view());
+
+  // By default, if a frame view exists, it should return the client view bounds
+  // in screen (as per `FrameView` base implementation).
+  gfx::Rect expected_bounds =
+      widget->non_client_view()->frame_view()->GetBoundsForClientView();
+  views::View::ConvertRectToScreen(widget->non_client_view()->frame_view(),
+                                   &expected_bounds);
+
+  EXPECT_EQ(expected_bounds, widget->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
+TEST_F(WidgetTest,
+       GetNonDecoratedClientAreaBoundsInScreenDelegatesToFrameView) {
+  const gfx::Rect bounds(100, 100, 200, 200);
+  std::unique_ptr<Widget> widget(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  widget->SetBounds(bounds);
+
+  class TestFrameView : public FrameView {
+   public:
+    TestFrameView() = default;
+    ~TestFrameView() override = default;
+    gfx::Rect GetNonDecoratedClientAreaBoundsInScreen() const override {
+      return expected_bounds_;
+    }
+    gfx::Rect expected_bounds() const { return expected_bounds_; }
+
+   private:
+    const gfx::Rect expected_bounds_ = gfx::Rect(10, 10, 50, 50);
+  };
+
+  ASSERT_NE(nullptr, widget->non_client_view());
+  auto frame_view = std::make_unique<TestFrameView>();
+  const gfx::Rect expected_bounds = frame_view->expected_bounds();
+  widget->non_client_view()->SetFrameView(std::move(frame_view));
+  ASSERT_NE(nullptr, widget->non_client_view()->frame_view());
+
+  EXPECT_EQ(expected_bounds, widget->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
+TEST_F(WidgetTest, GetNonDecoratedClientAreaBoundsInScreenNoNonClientView) {
+  const gfx::Rect bounds(100, 100, 200, 200);
+  auto widget = std::make_unique<Widget>();
+
+  // Use a widget type that does not create a non-client view.
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_CONTROL);
+  widget->Init(std::move(params));
+  widget->SetBounds(bounds);
+
+  ASSERT_EQ(nullptr, widget->non_client_view());
+
+  EXPECT_EQ(widget->GetRootView()->GetBoundsInScreen(),
+            widget->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
 }  // namespace views::test

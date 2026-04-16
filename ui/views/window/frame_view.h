@@ -111,6 +111,10 @@ class VIEWS_EXPORT FrameView : public View, public ViewTargeterDelegate {
   // view.
   virtual void InsertClientView(ClientView* client_view);
 
+  // Returns the non decorated client area bounds, as perceived by the user
+  // (including title bar and excluding shadows), in screen coordinates.
+  virtual gfx::Rect GetNonDecoratedClientAreaBoundsInScreen() const;
+
   // View:
   void OnThemeChanged() override;
   void Layout(PassKey) override;

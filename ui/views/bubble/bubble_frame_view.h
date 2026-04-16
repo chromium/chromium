@@ -96,6 +96,7 @@ class VIEWS_EXPORT BubbleFrameView : public FrameView {
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void InsertClientView(ClientView* client_view) override;
+  gfx::Rect GetNonDecoratedClientAreaBoundsInScreen() const override;
   void UpdateWindowRoundedCorners() override;
   bool HasWindowTitle() const override;
   bool IsWindowTitleVisible() const override;

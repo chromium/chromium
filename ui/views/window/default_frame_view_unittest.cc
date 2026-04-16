@@ -226,4 +226,15 @@ TEST_F(DefaultFrameViewTest, LargerEdgeButtonsWhenMaximized) {
 #endif
 }
 
+TEST_F(DefaultFrameViewTest, GetNonDecoratedClientAreaBoundsInScreen) {
+  const gfx::Rect widget_bounds(100, 100, 200, 200);
+  widget()->SetBounds(widget_bounds);
+
+  gfx::Rect expected_bounds = custom_frame_view()->GetBoundsForClientView();
+  views::View::ConvertRectToScreen(custom_frame_view(), &expected_bounds);
+
+  EXPECT_EQ(expected_bounds,
+            custom_frame_view()->GetNonDecoratedClientAreaBoundsInScreen());
+}
+
 }  // namespace views

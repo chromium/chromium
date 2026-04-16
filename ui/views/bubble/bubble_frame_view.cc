@@ -396,6 +396,17 @@ void BubbleFrameView::InsertClientView(ClientView* client_view) {
       : AddChildViewRaw(client_view);
 }
 
+gfx::Rect BubbleFrameView::GetNonDecoratedClientAreaBoundsInScreen() const {
+  gfx::Rect bounds = GetLocalBounds();
+  View::ConvertRectToScreen(this, &bounds);
+
+  if (bubble_border_) {
+    bounds.Inset(bubble_border_->GetInsets());
+  }
+
+  return bounds;
+}
+
 void BubbleFrameView::UpdateWindowRoundedCorners() {
   // BubbleFrameView makes the frame round by drawing a rounded border.
   // Additionally, it rounds `footnote_container_` if present; it makes the

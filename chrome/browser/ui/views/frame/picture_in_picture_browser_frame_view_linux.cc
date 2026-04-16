@@ -94,6 +94,21 @@ SkRRect PictureInPictureBrowserFrameViewLinux::GetRestoredClipRegion() const {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// views::FrameView implementations:
+gfx::Rect
+PictureInPictureBrowserFrameViewLinux::GetNonDecoratedClientAreaBoundsInScreen()
+    const {
+  gfx::Rect bounds = GetLocalBounds();
+  views::View::ConvertRectToScreen(this, &bounds);
+
+  if (ShouldDrawFrameShadow()) {
+    bounds.Inset(FrameBorderInsets());
+  }
+
+  return bounds;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // PictureInPictureBrowserFrameView implementations:
 
 gfx::Rect PictureInPictureBrowserFrameViewLinux::GetHitRegion() const {

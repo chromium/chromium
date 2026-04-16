@@ -1615,6 +1615,19 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       GetNonDecoratedClientAreaBoundsInScreen) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+  auto* pip_widget = pip_frame_view()->GetWidget();
+
+  gfx::Rect bounds =
+      pip_frame_view()->GetNonDecoratedClientAreaBoundsInScreen();
+  EXPECT_FALSE(bounds.IsEmpty());
+
+  // The bounds should be contained within the widget bounds in screen.
+  EXPECT_TRUE(pip_widget->GetWindowBoundsInScreen().Contains(bounds));
+}
+
 class PiPIndicatorsBrowsertest : public PictureInPictureBrowserFrameViewTest {
  public:
   PiPIndicatorsBrowsertest() = default;

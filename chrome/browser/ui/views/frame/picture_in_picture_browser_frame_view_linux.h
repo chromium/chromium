@@ -37,6 +37,9 @@ class PictureInPictureBrowserFrameViewLinux
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;
 
+  // views::FrameView:
+  gfx::Rect GetNonDecoratedClientAreaBoundsInScreen() const override;
+
   // PictureInPictureBrowserFrameView:
   gfx::Rect GetHitRegion() const override;
 

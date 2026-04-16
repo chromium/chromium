@@ -85,6 +85,9 @@ class PictureInPictureBrowserFrameView : public BrowserFrameView,
   void RemovedFromWidget() override;
   void SetFrameBounds(const gfx::Rect& bounds) override;
 
+  // views::FrameView:
+  gfx::Rect GetNonDecoratedClientAreaBoundsInScreen() const override;
+
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
   bool GetURL(GURL* url) const override;

@@ -1059,6 +1059,14 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// views::FrameView implementations:
+gfx::Rect
+PictureInPictureBrowserFrameView::GetNonDecoratedClientAreaBoundsInScreen()
+    const {
+  return GetBoundsInScreen();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // ChromeLocationBarModelDelegate implementations:
 
 content::WebContents* PictureInPictureBrowserFrameView::GetActiveWebContents()

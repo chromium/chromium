@@ -146,6 +146,12 @@ void FrameView::InsertClientView(ClientView* client_view) {
   AddChildViewRaw(client_view);
 }
 
+gfx::Rect FrameView::GetNonDecoratedClientAreaBoundsInScreen() const {
+  gfx::Rect bounds = GetBoundsForClientView();
+  View::ConvertRectToScreen(this, &bounds);
+  return bounds;
+}
+
 FrameView::FrameView() {
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
