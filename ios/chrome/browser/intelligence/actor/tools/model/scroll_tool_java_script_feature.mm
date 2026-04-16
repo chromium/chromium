@@ -41,8 +41,6 @@ void ScrollToolJavaScriptFeature::Scroll(
     base::WeakPtr<web::WebFrame> target_frame,
     const optimization_guide::proto::ScrollAction& action,
     ToolExecutionCallback callback) {
-  // TODO: crbug.com/472289079 - Add support for ScrollAction with the target
-  // field unset.
   CHECK(action.has_target());
   CHECK(action.has_direction() && action.has_distance());
   ExecuteScrollAction(target_frame, action.target(),
@@ -68,8 +66,6 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
         std::pair<optimization_guide::proto::ScrollAction_ScrollDirection, int>>
         direction_and_distance,
     ToolExecutionCallback callback) {
-  // TODO: crbug.com/472289079 - Add support for ActionTarget with the target
-  // field unset.
   CHECK(target.has_coordinate() ||
         (target.has_content_node_id() && target.has_document_identifier()));
 
