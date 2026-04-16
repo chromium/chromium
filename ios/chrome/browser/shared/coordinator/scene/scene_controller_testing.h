@@ -7,14 +7,14 @@
 
 class Browser;
 struct UrlLoadParams;
-@class TabGridCoordinator;
+@class SceneCoordinator;
 @class UserFeedbackData;
 @class WrangledBrowser;
 
 // Methods exposed for testing. This is terrible and should be rewritten.
 @interface SceneController ()
 
-@property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
+@property(nonatomic, strong) SceneCoordinator* mainCoordinator;
 
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams;
