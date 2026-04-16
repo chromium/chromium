@@ -62,14 +62,14 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     int action_type,
     const std::string& action_uri,
     int tab_id,
-    bool show_as_action_button) {
+    ActionPresentationMode presentation_mode) {
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_OmniboxActionFactory_buildActionInSuggest(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),
           base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
           action_type, base::android::ConvertUTF8ToJavaString(env, action_uri),
-          tab_id, show_as_action_button));
+          tab_id, static_cast<int>(presentation_mode)));
 }
 
 // Convert a vector of OmniboxActions to Java counterpart.

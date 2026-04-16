@@ -56,6 +56,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -492,7 +493,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                                     "https://google.com",
                                     /* tabId= */ 0,
-                                    /* showAsActionButton= */ false)));
+                                    ActionPresentationMode.CHIP)));
 
             var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
             Assert.assertEquals(null, actions);
@@ -512,7 +513,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                                     "https://google.com",
                                     /* tabId= */ 0,
-                                    /* showAsActionButton= */ false),
+                                    ActionPresentationMode.CHIP),
                             new OmniboxActionInSuggest(
                                     0,
                                     "hint2",
@@ -520,7 +521,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
                                     "https://google.com",
                                     /* tabId= */ 0,
-                                    /* showAsActionButton= */ true),
+                                    ActionPresentationMode.BUTTON),
                             new OmniboxActionInSuggest(
                                     0,
                                     "hint3",
@@ -528,7 +529,7 @@ public class BaseSuggestionProcessorUnitTest {
                                     SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
                                     "https://google.com",
                                     /* tabId= */ 0,
-                                    /* showAsActionButton= */ true)));
+                                    ActionPresentationMode.BUTTON)));
 
             var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
             Assert.assertEquals(1, actions.size());
@@ -560,7 +561,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
                                 "https://google.com",
                                 /* tabId= */ 0,
-                                /* showAsActionButton= */ true)));
+                                ActionPresentationMode.BUTTON)));
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(null, actions);
@@ -581,7 +582,7 @@ public class BaseSuggestionProcessorUnitTest {
                                         .CHROME_TAB_SWITCH_VALUE,
                                 "https://google.com",
                                 /* tabId= */ 0,
-                                /* showAsActionButton= */ true)));
+                                ActionPresentationMode.BUTTON)));
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());

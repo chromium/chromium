@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
@@ -41,7 +42,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
             String actionUri,
             int tabId,
-            boolean showAsActionButton) {
+            @ActionPresentationMode int presentationMode) {
         super(
                 OmniboxActionId.ACTION_IN_SUGGEST,
                 nativeInstance,
@@ -49,7 +50,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 accessibilityHint,
                 ICON_MAP.get(actionType, DEFAULT_ICON),
                 R.style.TextAppearance_ChipText,
-                showAsActionButton,
+                presentationMode,
                 actionType == SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE
                         ? WindowOpenDisposition.SWITCH_TO_TAB
                         : WindowOpenDisposition.CURRENT_TAB);

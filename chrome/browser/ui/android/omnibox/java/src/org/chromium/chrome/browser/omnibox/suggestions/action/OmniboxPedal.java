@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.R;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
@@ -44,7 +45,7 @@ public class OmniboxPedal extends OmniboxAction {
                         ? DINO_GAME_ICON
                         : OmniboxAction.DEFAULT_ICON,
                 R.style.TextAppearance_ChipText,
-                /* showAsActionButton= */ false,
+                ActionPresentationMode.CHIP,
                 WindowOpenDisposition.CURRENT_TAB);
         this.pedalId = pedalId;
     }

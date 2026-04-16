@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionFactory;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
@@ -74,11 +75,12 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
             /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType,
             String actionUri,
             int tabId,
-            boolean showAsActionButton) {
+            @ActionPresentationMode int presentationMode) {
         if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE
                 && !mDialerAvailable) {
             return null;
         }
+
         return new OmniboxActionInSuggest(
                 nativeInstance,
                 hint,
@@ -86,6 +88,6 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
                 actionType,
                 actionUri,
                 tabId,
-                showAsActionButton);
+                presentationMode);
     }
 }

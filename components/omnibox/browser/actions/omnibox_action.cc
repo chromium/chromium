@@ -79,10 +79,8 @@ OmniboxAction::ExecutionContext::~ExecutionContext() = default;
 
 OmniboxAction::OmniboxAction(LabelStrings strings,
                              GURL url,
-                             bool show_as_action_button)
-    : strings_(strings),
-      url_(url),
-      show_as_action_button_(show_as_action_button) {}
+                             ActionPresentationMode presentation_mode)
+    : strings_(strings), url_(url), presentation_mode_(presentation_mode) {}
 
 OmniboxAction::~OmniboxAction() {
 #if BUILDFLAG(IS_ANDROID)

@@ -35,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo.TemplateAction;
+import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class OmniboxActionsTest {
                             type.getNumber(),
                             "https://www.google.com",
                             /* tabId= */ 0,
-                            /* showAsActionButton= */ false));
+                            ActionPresentationMode.CHIP));
         }
 
         return createFakeSuggestion(actions);
