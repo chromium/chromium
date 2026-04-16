@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
@@ -43,6 +44,8 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/test_util.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -99,9 +102,11 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -118,6 +123,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -844,32 +850,74 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        ShortcutRevealTopChromeExceptForZoom) {
+  // Make sure bookmark bar is visible.
+  chrome::ToggleBookmarkBar(browser());
+
+  // Create a bookmark that will be focused.
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model->bookmark_bar_node();
+  bookmark_model->AddURL(bookmark_bar_node, 0, u"Test Bookmark",
+                         GURL("https://www.example.com"));
+
+  // Key events are sent to web contents first then processed as accelerator
+  // when they're not handled by them.  Make sure that web contents is ready to
+  // make sure that test covers production scenario.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+
   EnterImmersiveFullscreenMode(browser());
 
-  enum Shortcut { kToolbar, kOmnibox, kBookmark, kMultitaskMenu };
-  for (auto shortcut : {kToolbar, kOmnibox, kMultitaskMenu}) {
-    auto* const immersive_mode_controller =
-        ImmersiveModeController::From(browser());
-    EXPECT_TRUE(immersive_mode_controller->IsEnabled());
-    // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
-    // mechanism to disable gfx::Animation is added.
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() -> bool { return !immersive_mode_controller->IsRevealed(); }));
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
 
+  // Top chrome is initially revealed when entiring fullscreen. Mak sure
+  // the top chrome is hidden after timeout.
+  // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
+  // mechanism to disable gfx::Animation is added.
+  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !immersive_mode_controller->IsRevealed(); }));
+
+  chromeos::ImmersiveFullscreenControllerTestApi test_api(
+      static_cast<ImmersiveModeControllerChromeos*>(
+          ImmersiveModeController::From(browser()))
+          ->controller());
+  EXPECT_FALSE(test_api.IsRevealLocked());
+
+  enum ShortcutType {
+    kFocusToolbar,
+    kFocusOmnibox,
+    kFocusBookmarkBar,
+    kCreateBookmark,
+    kFocusMultitaskMenu
+  };
+
+  for (auto shortcut : {
+           kFocusToolbar,
+           kFocusOmnibox,
+           kFocusBookmarkBar,
+           kCreateBookmark,
+           kFocusMultitaskMenu,
+       }) {
+    EXPECT_TRUE(immersive_mode_controller->IsEnabled());
     ui::test::EventGenerator generator(
         browser()->window()->GetNativeWindow()->GetRootWindow());
 
+    std::string trace_name;
     switch (shortcut) {
-      case kOmnibox: {
-        SCOPED_TRACE("Omnibox");
+      case kFocusOmnibox: {
+        trace_name = "FocusOmnibox";
         // Ctrl-L focuses the omnibox.
         generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
         generator.PressKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_CONTROL, 0);
       } break;
-      case kToolbar: {
-        SCOPED_TRACE("Toolbar");
+      case kFocusToolbar: {
+        trace_name = "FocusToolbar";
         // Shift-Alt-T focuses the first item on toolbar.
         generator.PressKey(ui::KeyboardCode::VKEY_SHIFT, 0);
         generator.PressKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
@@ -880,29 +928,51 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
         generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_SHIFT, 0);
       } break;
-      case kBookmark: {
-        SCOPED_TRACE("Bookmark");
+      case kFocusBookmarkBar: {
+        trace_name = "FocusBookmarkBar";
+        // Shift-Alt-B focues bookmark bar.
+
+        // Ensure bookmark bar is enabled and visible.
+        ASSERT_EQ(BookmarkBarController::From(browser())->bookmark_bar_state(),
+                  BookmarkBar::SHOW);
+        EXPECT_EQ(bookmark_bar_node->children().size(), 1u);
+
+        generator.PressKey(ui::KeyboardCode::VKEY_SHIFT, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
+        generator.PressKey(ui::KeyboardCode::VKEY_B,
+                           ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_B,
+                             ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_SHIFT, 0);
+      } break;
+      case kCreateBookmark: {
+        // Alt-D trigger "create bookmark" flow which focues omnibox.
+        trace_name = "CreateBookmark";
         generator.PressKey(ui::KeyboardCode::VKEY_MENU, 0);
         generator.PressKey(ui::KeyboardCode::VKEY_D, ui::EF_ALT_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_D, ui::EF_ALT_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, 0);
       } break;
-      case kMultitaskMenu: {
+      case kFocusMultitaskMenu: {
         // The multask menu is not accessible via shortcut in in Tablet mode.
         if (GetParam()) {
           continue;
         }
-        SCOPED_TRACE("MultitaskMenu");
+        trace_name = "FocusMultitaskMenu";
         generator.PressKey(ui::KeyboardCode::VKEY_COMMAND, 0);
         generator.PressKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
         generator.ReleaseKey(ui::KeyboardCode::VKEY_COMMAND, 0);
       } break;
     }
-    // We need to wait here because the keysequence maybe be handled on
-    // unhandled case.
+    SCOPED_TRACE(trace_name);
+
+    // We need to wait here because the keysequence will be handled upon
+    // unhandled event from renderer.
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return immersive_mode_controller->IsRevealed(); }));
+    EXPECT_TRUE(test_api.IsRevealLocked());
 
     generator.MoveMouseToCenterOf(browser()->window()->GetNativeWindow());
     generator.ClickLeftButton();
@@ -911,6 +981,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
     // mechanism to disable gfx::Animation is added.
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return !immersive_mode_controller->IsRevealed(); }));
+    EXPECT_TRUE(!test_api.IsRevealLocked());
   }
 }
 

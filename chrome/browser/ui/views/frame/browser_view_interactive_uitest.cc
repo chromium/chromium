@@ -344,7 +344,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
       false)
       .Wait();
   EXPECT_FALSE(browser_view->GetTabStripVisible());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Bookmark bar in immersive fullscreen mode on ChromeOS is accessible and
+  // should be considered visible.
+  EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
+#else
   EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
+#endif
 
 #if BUILDFLAG(IS_MAC)
   // Test toggling toolbar state in fullscreen mode would also affect bookmark

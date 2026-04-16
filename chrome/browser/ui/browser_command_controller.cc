@@ -2167,8 +2167,9 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
                                         main_not_fullscreen);
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_WEB_CONTENTS_PANE,
                                         main_not_fullscreen);
-  command_updater_.UpdateCommandEnabled(IDC_FOCUS_BOOKMARKS,
-                                        main_not_fullscreen);
+  // Just use show_main_ui because the condition for bookmark bar shortcut is
+  // handled in `BrowserView::FocusBookmarksToolbar()`,
+  command_updater_.UpdateCommandEnabled(IDC_FOCUS_BOOKMARKS, show_main_ui);
   command_updater_.UpdateCommandEnabled(
       IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, main_not_fullscreen);
 

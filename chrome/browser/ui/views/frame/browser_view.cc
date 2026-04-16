@@ -2799,7 +2799,6 @@ bool BrowserView::AreDraggableRegionsEnabled() const {
 }
 
 void BrowserView::OnFocusBookmarksToolbar() {
-  DCHECK(!ImmersiveModeController::From(browser())->IsEnabled());
   if (bookmark_bar_view_ && bookmark_bar_view_->GetVisible() &&
       bookmark_bar_view_->GetPreferredSize().height() != 0) {
     bookmark_bar_view_->SetPaneFocusAndFocusDefault();
@@ -3081,12 +3080,14 @@ bool BrowserView::IsBookmarkBarVisible() const {
   if (bookmark_bar_view_->GetPreferredSize().height() == 0) {
     return false;
   }
+#if !BUILDFLAG(IS_CHROMEOS)
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   if (immersive_mode_controller->IsEnabled() &&
       !immersive_mode_controller->IsRevealed()) {
     return false;
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   return true;
 }
 
