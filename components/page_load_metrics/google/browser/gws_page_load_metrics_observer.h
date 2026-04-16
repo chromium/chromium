@@ -64,8 +64,12 @@ extern const char kHistogramGWSActualNavigationStartToParseStart[];
 extern const char kHistogramGWSActualNavigationStartToFirstContentfulPaint[];
 extern const char kHistogramGWSActualNavigationStartToDOMContentLoaded[];
 extern const char kHistogramGWSActualNavigationStartToLargestContentfulPaint[];
+extern const char kHistogramGWSActualNavigationStartToAFTEnd[];
+extern const char
+    kHistogramGWSActualNavigationStartToAFTEndWithPreNavigationLatency[];
 
 extern const char kHistogramGWSAFTEnd[];
+extern const char kHistogramGWSAFTEndWithPreNavigationLatency[];
 extern const char kHistogramGWSAFTStart[];
 
 extern const char kHistogramGWSFirstContentfulPaint[];

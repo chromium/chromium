@@ -85,6 +85,12 @@ const char kHistogramGWSActualNavigationStartToDOMContentLoaded[] =
     HISTOGRAM_PREFIX "ActualNavigationStartToDOMContentLoadedEventFired";
 const char kHistogramGWSActualNavigationStartToLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "ActualNavigationStartToLargestContentfulPaint";
+const char kHistogramGWSActualNavigationStartToAFTEnd[] =
+    HISTOGRAM_PREFIX "ActualNavigationStartToAFTEnd";
+const char
+    kHistogramGWSActualNavigationStartToAFTEndWithPreNavigationLatency[] =
+        HISTOGRAM_PREFIX
+    "ActualNavigationStartToAFTEndWithPreNavigationLatency";
 
 const char kHistogramGWSNavigationStartToFirstRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstRequestStart";
@@ -1062,6 +1068,19 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete(
         base_time + prenavigation_time.value_or(base::TimeDelta());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEndWithPreNavigationLatency,
                         aft_end_with_prenavigation_latency);
+    if (std::optional<base::TimeDelta> actual_navigation_offset =
+            CalculateActualNavigationOffset(GetDelegate(),
+                                            navigation_handle_timing_)) {
+      if (!is_prerendered_) {
+        PAGE_LOAD_HISTOGRAM2(
+            internal::kHistogramGWSActualNavigationStartToAFTEnd,
+            *actual_navigation_offset + base_time);
+        PAGE_LOAD_HISTOGRAM2(
+            internal::
+                kHistogramGWSActualNavigationStartToAFTEndWithPreNavigationLatency,
+            *actual_navigation_offset + aft_end_with_prenavigation_latency);
+      }
+    }
     if (is_traverse_navigation_) {
       ReportMetricForTraverseNavigation(
           is_restore_navigation_,

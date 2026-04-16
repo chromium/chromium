@@ -50,6 +50,10 @@ std::unique_ptr<net::test_server::HttpResponse> SRPHandler(
   http_response->set_content(R"(
     <html>
       <body>
+        <script>
+          performance.mark('SearchAFTStart');
+          performance.mark('trigger:SearchAFTEnd');
+        </script>
         SRP Content
         <a id="thelink" href="/search?q=duplicate">Next SRP Link</a>
       </body>
@@ -386,6 +390,17 @@ IN_PROC_BROWSER_TEST_P(GWSActualNavigationStartBasedBrowserTest, Uma) {
   check_metric(
       internal::kHistogramActualNavigationStartToLargestContentfulPaint,
       internal::kHistogramGWSActualNavigationStartToLargestContentfulPaint);
+
+  histogram_tester.ExpectTotalCount(internal::kHistogramGWSAFTEnd,
+                                    is_srp ? 1 : 0);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSAFTEndWithPreNavigationLatency, is_srp ? 1 : 0);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSActualNavigationStartToAFTEnd, is_srp ? 1 : 0);
+  histogram_tester.ExpectTotalCount(
+      internal::
+          kHistogramGWSActualNavigationStartToAFTEndWithPreNavigationLatency,
+      is_srp ? 1 : 0);
 }
 
 class GWSPageLoadMetricsObserverContextMenuNaviBrowserTest

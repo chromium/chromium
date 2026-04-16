@@ -1461,6 +1461,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToAFTEnd"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) AFT end event is sent,
+    excluding the time spent waiting for user interaction in beforeunload
+    dialogs. This includes the time spent running beforeunload JavaScript
+    handlers. This is recorded for Google Search page loads.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToAFTEndWithPreNavigationLatency"
+    units="ms" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the duration from a) the &quot;actual&quot; navigation starts which
+    can begin before beforeunload handlers run to b) AFT end event is sent,
+    including pre-navigation latency (e.g. SGL) but excluding the time spent
+    waiting for user interaction in beforeunload dialogs. This includes the time
+    spent running beforeunload JavaScript handlers. This is recorded for Google
+    Search page loads.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.ActualNavigationStartToDOMContentLoadedEventFired"
     units="ms" expires_after="2027-02-04">
