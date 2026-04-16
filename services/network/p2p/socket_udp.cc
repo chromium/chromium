@@ -26,7 +26,6 @@
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/throttling/throttling_p2p_network_interceptor.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
-#include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
@@ -457,9 +456,6 @@ bool P2PSocketUdp::DoSend(P2PPendingPacket packet) {
       static_cast<net::DiffServCodePoint>(packet.packet_options.dscp),
       packet.packet_options.ect_1 ? net::ECN_ECT1 : net::ECN_NOT_ECT);
 
-  webrtc::ApplyPacketOptions(packet.data->first(packet.size),
-                             packet.packet_options.packet_time_params,
-                             send_time_us);
   bool success = DoSendToSocket(packet, send_time_ms);
   if (success) {
     delegate_->DumpPacket(packet.data->first(packet.size), /*incoming=*/false);

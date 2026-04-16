@@ -25,7 +25,6 @@
 #include "services/network/proxy_resolving_client_socket.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
-#include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 #include "url/gurl.h"
 
@@ -472,11 +471,6 @@ bool P2PSocketTcp::DoSend(const net::IPEndPoint& to,
     CHECK_EQ(writer.remaining(), 0u);
   }
 
-  base::span<uint8_t> send_buffer_without_header =
-      send_buffer.buffer->span().subspan(kPacketHeaderSize);
-  webrtc::ApplyPacketOptions(send_buffer_without_header,
-                             options.packet_time_params, webrtc::TimeMicros());
-
   return WriteOrQueue(send_buffer);
 }
 
@@ -546,9 +540,6 @@ bool P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
       base::MakeRefCounted<net::DrainableIOBuffer>(
           base::MakeRefCounted<net::VectorIOBuffer>(std::move(buffer)),
           buffer_size));
-
-  webrtc::ApplyPacketOptions(send_buffer.buffer->first(data.size()),
-                             options.packet_time_params, webrtc::TimeMicros());
 
   // WriteOrQueue may free the memory, so dump it first.
   delegate_->DumpPacket(send_buffer.buffer->span(), false);
