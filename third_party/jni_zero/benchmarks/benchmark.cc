@@ -325,10 +325,12 @@ static void JNI_Benchmark_SendLargeIntArrayConverted(
   }
 }
 
-static void JNI_Benchmark_SendByteArrayUseView(JNIEnv* env,
-                                               ByteArrayView&& array_view) {
+static void JNI_Benchmark_SendByteArrayUseView(
+    JNIEnv* env,
+    const JavaRef<JArray<int8_t>>& array) {
+  jni_zero::JArrayView<int8_t> array_view = array.CreateView(env);
   for (size_t i = 0; i < array_view.size(); i++) {
-    DoNotOptimize(array_view.data());
+    DoNotOptimize(reinterpret_cast<const uint8_t*>(array_view.data()));
   }
 }
 

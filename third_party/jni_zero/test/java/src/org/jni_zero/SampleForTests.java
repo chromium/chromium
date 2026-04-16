@@ -308,7 +308,7 @@ class SampleForTests {
         long init(
                 SampleForTests caller,
                 String param,
-                @JniType("jni_zero::ByteArrayView") byte[] bytes,
+                byte[] bytes,
                 @JniType("jni_zero::tests::CPPClass*") SampleForTests convertedType,
                 @JniType("std::vector") SampleForTests[] nonConvertedArray);
 

@@ -360,7 +360,7 @@ public class Benchmark {
         sb.append(
                 "Sending "
                         + ARRAY_SIZE
-                        + " Bytes and read using ByteArrayView [Java -> Native] ("
+                        + " Bytes and read using JArrayView ("
                         + NUM_TRIES
                         + " times). Elapsed Time = "
                         + elapsedTimeUs
@@ -478,7 +478,7 @@ public class Benchmark {
 
         void sendLargeIntArrayConverted(@JniType("std::vector<int32_t>") int[] array);
 
-        void sendByteArrayUseView(@JniType("jni_zero::ByteArrayView") byte[] bytearray);
+        void sendByteArrayUseView(byte[] bytearray);
 
         // void sendByteArrayConverted(@JniType("std::vector<int8_t>") byte[] bytearray);
         void sendLargeObjectArray(Integer[] array);

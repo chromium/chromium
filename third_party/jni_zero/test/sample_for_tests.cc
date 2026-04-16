@@ -96,11 +96,11 @@ static jlong JNI_SampleForTests_Init(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     const JavaRef<jstring>& param,
-    jni_zero::ByteArrayView&& bytes,
+    const JavaRef<JArray<int8_t>>& bytes,
     CPPClass* converted_type,
     const std::vector<jni_zero::ScopedJavaLocalRef<jobject>>&
         non_converted_array) {
-  return static_cast<jlong>(bytes.size());
+  return static_cast<jlong>(bytes.GetLength(env));
 }
 
 static void JNI_SampleForTests_ClassUnderSamePackageTest(

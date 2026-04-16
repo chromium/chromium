@@ -304,7 +304,6 @@ within `third_party/jni_zero/default_conversions.h`.
 | `int64_t` | `Long` (boxed) |
 | `float` | `Float` (boxed) |
 | `double` | `Double` (boxed) |
-| `jni_zero::ByteArrayView` | `byte[]` |
 
 Note: `std::vector<T>` and `std::map<K, V>` conversions work by recursively
 calling `ToJniType` / `FromJniType` on their elements.

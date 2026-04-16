@@ -72,49 +72,6 @@ inline int32_t as_jint(const JniIntWrapper& wrapper) {
 
 namespace jni_zero {
 
-// Use as: @JniType("jni_zero::ByteArrayView") byte[].
-//
-// This requests a direct pointer to the array data rather than a copy of it,
-// so can be more efficient than std::vector<uint8_t> for large arrays.
-//
-// This helper needs to release the array via its destructor, and as a result
-// has more binary size overhead than using std::vector<uint8_t>. As such, you
-// should prefer std::vector for small arrays.
-//
-// Callers must ensure that the passed in array reference outlives this wrapper
-// (always the case when used with @JniType).
-class ByteArrayView {
- public:
-  ByteArrayView(JNIEnv* env, jbyteArray array)
-      : env_(env),
-        array_(array),
-        length_(env->GetArrayLength(array)),
-        bytes_(env->GetByteArrayElements(array, nullptr)) {}
-
-  ~ByteArrayView() {
-    env_->ReleaseByteArrayElements(array_, bytes_, JNI_ABORT);
-  }
-
-  ByteArrayView(const ByteArrayView&) = delete;
-  ByteArrayView(ByteArrayView&& other) = delete;
-  ByteArrayView& operator=(const ByteArrayView&) = delete;
-
-  size_t size() const { return static_cast<size_t>(length_); }
-  bool empty() const { return length_ == 0; }
-  const jbyte* bytes() const { return bytes_; }
-  const uint8_t* data() const { return reinterpret_cast<uint8_t*>(bytes_); }
-  const char* chars() const { return reinterpret_cast<char*>(bytes_); }
-  std::string_view string_view() const {
-    return std::string_view(chars(), size());
-  }
-
- private:
-  JNIEnv* env_;
-  jbyteArray array_;
-  jsize length_;
-  jbyte* bytes_;
-};
-
 // JArrayViewBase is the base class for both primitive and object JArrayView.
 //
 // JArrayView is a wrapper for a jarray (e.g. jobjectArray, jbooleanArray, etc.)
@@ -144,6 +101,8 @@ class JArrayViewBase {
 
   // Get the number of elements in this JArray.
   size_t size() const noexcept { return static_cast<size_t>(length_); }
+
+  bool empty() const noexcept { return length_ == 0; }
 
  protected:
   JNIEnv* env_;
@@ -495,6 +454,13 @@ class JArrayView<T> : public JArrayViewBase<T> {
 #pragma clang unsafe_buffer_usage begin
     return data_ + length_;
 #pragma clang unsafe_buffer_usage end
+  }
+
+  std::string_view as_string_view() const [[clang::lifetimebound]]
+    requires std::is_same_v<T, int8_t>
+  {
+    return std::string_view(reinterpret_cast<char*>(data_),
+                            static_cast<size_t>(length_));
   }
 
  private:

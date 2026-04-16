@@ -5,6 +5,7 @@
 #include "base/files/important_file_writer.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/android/jni_string.h"
 #include "base/threading/thread_restrictions.h"
@@ -21,13 +22,14 @@ class ScopedAllowBlockingForImportantFileWriter
 static bool JNI_ImportantFileWriterAndroid_WriteFileAtomically(
     JNIEnv* env,
     const std::string& native_file_name,
-    jni_zero::ByteArrayView&& data) {
+    const JavaRef<JArray<int8_t>>& data) {
   // This is called on the UI thread during shutdown to save tab data, so
   // needs to enable IO.
   ScopedAllowBlockingForImportantFileWriter allow_blocking;
   base::FilePath path(native_file_name);
-  bool result =
-      base::ImportantFileWriter::WriteFileAtomically(path, data.string_view());
+  jni_zero::JArrayView<int8_t> data_view = data.CreateView(env);
+  bool result = base::ImportantFileWriter::WriteFileAtomically(
+      path, data_view.as_string_view());
   return result;
 }
 

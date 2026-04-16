@@ -340,7 +340,7 @@ public class OptimizationGuideBridge {
                 int[] optimizationTypes,
                 int requestContext,
                 OnDemandOptimizationGuideCallback callback,
-                @JniType("jni_zero::ByteArrayView") byte[] requestContextMetadata);
+                byte[] requestContextMetadata);
 
         void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);
 

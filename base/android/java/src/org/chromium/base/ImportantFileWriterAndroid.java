@@ -36,8 +36,6 @@ public class ImportantFileWriterAndroid {
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        boolean writeFileAtomically(
-                @JniType("std::string") String fileName,
-                @JniType("jni_zero::ByteArrayView") byte[] data);
+        boolean writeFileAtomically(@JniType("std::string") String fileName, byte[] data);
     }
 }

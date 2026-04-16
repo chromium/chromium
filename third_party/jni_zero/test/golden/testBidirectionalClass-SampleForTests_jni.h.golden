@@ -57,7 +57,7 @@
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<::org::jni_zero::JSampleForTests>& caller,
 //     const jni_zero::JavaRef<jstring>& param,
-//     const jni_zero::ByteArrayView& bytes,
+//     const jni_zero::JavaRef<JArray<int8_t>>& bytes,
 //     jni_zero::tests::CPPClass* convertedType,
 //     const std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& nonConvertedArray);
 //
@@ -332,9 +332,8 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForTests() {}
         static_cast<::org::jni_zero::JSampleForTests>(caller));                                    \
     auto param_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                                  \
         static_cast<jstring>(param));                                                              \
-    jni_zero::ByteArrayView bytes_converted = jni_zero::FromJniArray<jni_zero::ByteArrayView>(     \
-        env,                                                                                       \
-        jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes)));          \
+    auto bytes_ref = jni_zero::JavaRef<JArray<int8_t>>::CreateLeaky(env,                           \
+        static_cast<JArray<int8_t>>(bytes));                                                       \
     jni_zero::tests::CPPClass* convertedType_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass*>( \
         env,                                                                                       \
         jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedType));                              \
@@ -352,30 +351,30 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleForTests() {}
           env,                                                                                     \
           caller_ref,                                                                              \
           param_ref,                                                                               \
-          std::move(bytes_converted),                                                              \
+          bytes_ref,                                                                               \
           std::move(convertedType_converted),                                                      \
           std::move(nonConvertedArray_converted)); }) {                                            \
         return func_wrapper(                                                                       \
             env,                                                                                   \
             caller_ref,                                                                            \
             param_ref,                                                                             \
-            std::move(bytes_converted),                                                            \
+            bytes_ref,                                                                             \
             std::move(convertedType_converted),                                                    \
             std::move(nonConvertedArray_converted));                                               \
       } else if constexpr (requires { func_wrapper(                                                \
           caller_ref,                                                                              \
           param_ref,                                                                               \
-          std::move(bytes_converted),                                                              \
+          bytes_ref,                                                                               \
           std::move(convertedType_converted),                                                      \
           std::move(nonConvertedArray_converted)); }) {                                            \
         return func_wrapper(                                                                       \
             caller_ref,                                                                            \
             param_ref,                                                                             \
-            std::move(bytes_converted),                                                            \
+            bytes_ref,                                                                             \
             std::move(convertedType_converted),                                                    \
             std::move(nonConvertedArray_converted));                                               \
       } else {                                                                                     \
-        static_assert(false, "JNI_SampleForTests_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JSampleForTests>&, const jni_zero::JavaRef<jstring>&, jni_zero::ByteArrayView, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)\nSee SampleForTests_jni.h for an example."); \
+        static_assert(false, "JNI_SampleForTests_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JSampleForTests>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<JArray<int8_t>>&, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)\nSee SampleForTests_jni.h for an example."); \
       }                                                                                            \
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
