@@ -284,6 +284,7 @@ declare global {
         nickname: string;
         shouldAuthenticateToView?: boolean;
         storedInWallet?: boolean;
+        isReadOnly?: boolean;
       }
 
       export interface EntityInstanceWithLabels {
@@ -292,7 +293,8 @@ declare global {
         entityInstanceLabel: string;
         entityInstanceSubLabel: string;
         storedInWallet: boolean;
-        walletEntityUrl?: string
+        walletEntityUrl?: string;
+        isReadOnly?: boolean;
       }
 
       export interface PayOverTimeIssuerEntry {

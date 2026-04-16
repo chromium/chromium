@@ -435,6 +435,8 @@ namespace autofillPrivate {
     boolean? shouldAuthenticateToView;
     // Whether the entity is (or should be) stored in Google Wallet servers.
     boolean? storedInWallet;
+    // Whether the entity is read only.
+    boolean? isReadOnly;
   };
 
   // Contains the minimum amount of information needed to display an entity
@@ -455,6 +457,8 @@ namespace autofillPrivate {
     // If the entity is `storedInWallet`, this string contains the URL to the
     // management page of the pass on the Wallet website.
     DOMString? walletEntityUrl;
+    // Whether the entity is read only.
+    boolean? isReadOnly;
   };
 
   // A Pay Over Time Issuer entry which can be displayed in the autofill

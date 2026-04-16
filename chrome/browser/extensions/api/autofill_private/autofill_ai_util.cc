@@ -108,6 +108,8 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
       entity_instance_with_labels.wallet_entity_url =
           autofill::GetWalletManagementURL(entity_instance);
     }
+    entity_instance_with_labels.is_read_only =
+        entity_instance.are_attributes_read_only().value();
   }
 }
 
@@ -211,7 +213,8 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
       /*use_date=*/base::Time::Now(),
       save_entity_to_wallet ? EntityInstance::RecordType::kServerWallet
                             : EntityInstance::RecordType::kLocal,
-      EntityInstance::AreAttributesReadOnly(false),
+      EntityInstance::AreAttributesReadOnly(
+          private_api_entity_instance.is_read_only.value_or(false)),
       /*frecency_override=*/"");
 }
 
@@ -281,6 +284,8 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
   private_api_entity_instance.stored_in_wallet =
       (entity_instance.record_type() ==
        EntityInstance::RecordType::kServerWallet);
+  private_api_entity_instance.is_read_only =
+      entity_instance.are_attributes_read_only().value();
   return private_api_entity_instance;
 }
 
