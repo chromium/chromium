@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -164,14 +165,14 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   }
 
   edit_model_->OpenAiMode(false, /*via_context_menu=*/true);
-
   const std::string prefix = was_ai_mode_open_
                                  ? kAimContextTypeHistogramPrefix
                                  : kClassicContextTypeHistogramPrefix;
   const std::string sliced_prefix = base::StrCat({prefix, ".Clicked"});
-  base::UmaHistogramEnumeration(
-      sliced_prefix,
-      is_image_ ? omnibox::ContextType::kImage : omnibox::ContextType::kFile);
+  omnibox::ContextType context_type =
+      is_image_ ? omnibox::ContextType::kImage : omnibox::ContextType::kFile;
+  OmniboxContextMenuController::RecordContextMenuItemSelection(sliced_prefix,
+                                                               context_type);
 }
 
 void OmniboxPopupFileSelector::UpdateSearchboxContextData(

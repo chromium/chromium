@@ -58,11 +58,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchSource) -->
 
+<!-- LINT.IfChange(PopupType) -->
+
 <variants name="PopupType">
   <variant name="AimPopup" summary="Context menu opened from aim popup"/>
   <variant name="ClassicPopup"
       summary="Context menu opened from classic popup"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/actions/actions.xml:PopupType) -->
 
 <histogram
     name="ContextualSearch.ActiveTabsCountOnContextMenuOpen.{ContextualSearchSource}"

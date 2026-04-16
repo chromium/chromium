@@ -1075,18 +1075,21 @@ suite('NewTabPageComposeboxTest', () => {
     }));
     assertEquals(
         1, testProxy.metrics.count(metricName, ContextType.DEEP_RESEARCH));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.DeepResearch`, 0));
 
     // Act: ImageGen
     entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
       detail: {toolMode: ToolMode.kImageGen},
     }));
     assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE_GEN));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.ImageGen`, 0));
 
     // Act: Canvas
     entrypointAndMenu.dispatchEvent(new CustomEvent('tool-click', {
       detail: {toolMode: ToolMode.kCanvas},
     }));
     assertEquals(1, testProxy.metrics.count(metricName, ContextType.CANVAS));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.Canvas`, 0));
   });
 
   test('metrics are recorded for ModelMode clicks', async () => {
@@ -1107,6 +1110,7 @@ suite('NewTabPageComposeboxTest', () => {
     }));
     assertEquals(
         1, testProxy.metrics.count(metricName, ContextType.AUTO_MODEL));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.AutoModel`, 0));
 
     // Act: Thinking
     entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
@@ -1114,6 +1118,7 @@ suite('NewTabPageComposeboxTest', () => {
     }));
     assertEquals(
         1, testProxy.metrics.count(metricName, ContextType.THINKING_MODEL));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.ThinkingModel`, 0));
 
     // Act: Regular
     entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
@@ -1121,6 +1126,7 @@ suite('NewTabPageComposeboxTest', () => {
     }));
     assertEquals(
         1, testProxy.metrics.count(metricName, ContextType.REGULAR_MODEL));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.RegularModel`, 0));
 
     // Act: ProNoGenUi
     entrypointAndMenu.dispatchEvent(new CustomEvent('model-click', {
@@ -1129,6 +1135,8 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(
         1,
         testProxy.metrics.count(metricName, ContextType.PRO_NO_GEN_UI_MODEL));
+    assertEquals(
+        1, testProxy.metrics.count(`${metricName}.ProNoGenUiModel`, 0));
   });
 
   test('metrics are recorded for file uploads', async () => {
@@ -1146,10 +1154,12 @@ suite('NewTabPageComposeboxTest', () => {
     // Act: Upload an image file from the context menu
     entrypointAndMenu.dispatchEvent(new CustomEvent('open-image-upload'));
     assertEquals(1, testProxy.metrics.count(metricName, ContextType.IMAGE));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.Image`, 0));
 
     // Act: Upload a regular file
     entrypointAndMenu.dispatchEvent(new CustomEvent('open-file-upload'));
     assertEquals(1, testProxy.metrics.count(metricName, ContextType.FILE));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.File`, 0));
   });
 
   test('metrics are recorded for tab additions', async () => {
@@ -1174,6 +1184,7 @@ suite('NewTabPageComposeboxTest', () => {
       },
     }));
     assertEquals(1, testProxy.metrics.count(metricName, ContextType.TAB));
+    assertEquals(1, testProxy.metrics.count(`${metricName}.Tab`, 0));
   });
 });
 

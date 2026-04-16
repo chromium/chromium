@@ -63,4 +63,35 @@ std::string GetModelModeString(omnibox::ModelMode mode) {
 // LINT.ThenChange(//third_party/omnibox_proto/model_mode.proto:ModelMode,
 // //tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxModelMode)
 
+// LINT.IfChange(GetContextTypeString)
+std::string GetContextTypeString(ContextType type) {
+  switch (type) {
+    case ContextType::kTab:
+      return "Tab";
+    case ContextType::kFile:
+      return "File";
+    case ContextType::kImage:
+      return "Image";
+    case ContextType::kImageGen:
+      return "ImageGen";
+    case ContextType::kDeepResearch:
+      return "DeepResearch";
+    case ContextType::kDrive:
+      return "Drive";
+    case ContextType::kCanvas:
+      return "Canvas";
+    case ContextType::kAutoModel:
+      return "AutoModel";
+    case ContextType::kThinkingModel:
+      return "ThinkingModel";
+    case ContextType::kRegularModel:
+      return "RegularModel";
+    case ContextType::kProNoGenUiModel:
+      return "ProNoGenUiModel";
+    case ContextType::kUnknown:
+      return "Unknown";
+  }
+}
+// LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:getContextTypeString)
+
 }  // namespace omnibox
