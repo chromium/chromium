@@ -37,7 +37,7 @@ public class BrowsingDataModel {
      */
     public Map<Origin, BrowsingDataInfo> getBrowsingDataInfo(
             BrowserContextHandle browserContext, boolean fetchImportant) {
-        Map<Origin, BrowsingDataInfo> map = new HashMap();
+        Map<Origin, BrowsingDataInfo> map = new HashMap<>();
         return BrowsingDataModelJni.get()
                 .getBrowsingDataInfo(mNativeBrowsingDataModel, browserContext, map, fetchImportant);
     }

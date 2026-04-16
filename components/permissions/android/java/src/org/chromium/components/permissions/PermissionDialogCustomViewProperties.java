@@ -22,24 +22,20 @@ import java.util.List;
 @NullMarked
 public class PermissionDialogCustomViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> ICON =
-            new PropertyModel.WritableObjectPropertyKey();
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableObjectPropertyKey<ColorStateList> ICON_TINT =
-            new PropertyModel.WritableObjectPropertyKey();
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.ReadableObjectPropertyKey<String> MESSAGE_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey();
+            new PropertyModel.ReadableObjectPropertyKey<>();
     public static final PropertyModel.ReadableObjectPropertyKey<List<Pair<Integer, Integer>>>
-            BOLDED_RANGES = new PropertyModel.ReadableObjectPropertyKey();
+            BOLDED_RANGES = new PropertyModel.ReadableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableObjectPropertyKey<Runnable> CLOSE_BUTTON_CALLBACK =
-            new PropertyModel.WritableObjectPropertyKey();
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ICON,
-        ICON_TINT,
-        MESSAGE_TEXT,
-        BOLDED_RANGES,
-        CLOSE_BUTTON_CALLBACK
+        ICON, ICON_TINT, MESSAGE_TEXT, BOLDED_RANGES, CLOSE_BUTTON_CALLBACK
     };
 }

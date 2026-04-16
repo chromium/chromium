@@ -31,13 +31,13 @@ public class Result<T, E> {
     /** Constructs a result with a success value. */
     public static <T, E> Result<T, E> of(T success) {
         assert success != null;
-        return new Result(success, null);
+        return new Result<>(success, null);
     }
 
     /** Constructs a result with an error. */
     public static <T, E> Result<T, E> ofError(E error) {
         assert error != null;
-        return new Result(null, error);
+        return new Result<>(null, error);
     }
 
     /** Whether or not the result contains a success value. */

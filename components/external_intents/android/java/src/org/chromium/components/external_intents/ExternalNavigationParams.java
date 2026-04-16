@@ -152,7 +152,7 @@ public class ExternalNavigationParams {
 
     public void onAsyncActionStarted() {
         if (mAsyncActionTakenCallback != null) {
-            mRequiredAsyncActionTakenCallback = new RequiredCallback(mAsyncActionTakenCallback);
+            mRequiredAsyncActionTakenCallback = new RequiredCallback<>(mAsyncActionTakenCallback);
         }
     }
 

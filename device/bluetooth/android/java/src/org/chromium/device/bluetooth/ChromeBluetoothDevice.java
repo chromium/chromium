@@ -131,10 +131,10 @@ final class ChromeBluetoothDevice {
     private Outcome<BluetoothSocketWrapper> connectToService(
             @JniType("std::string") String uuidString) {
         try {
-            return new Outcome(
+            return new Outcome<>(
                     mDevice.createRfcommSocketToServiceRecord(UUID.fromString(uuidString)));
         } catch (IOException e) {
-            return new Outcome(e);
+            return new Outcome<>(e);
         }
     }
 
@@ -144,10 +144,10 @@ final class ChromeBluetoothDevice {
     private Outcome<BluetoothSocketWrapper> connectToServiceInsecurely(
             @JniType("std::string") String uuidString) {
         try {
-            return new Outcome(
+            return new Outcome<>(
                     mDevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString(uuidString)));
         } catch (IOException e) {
-            return new Outcome(e);
+            return new Outcome<>(e);
         }
     }
 

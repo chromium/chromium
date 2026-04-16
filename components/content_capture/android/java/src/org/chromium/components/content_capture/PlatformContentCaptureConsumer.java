@@ -53,7 +53,7 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     }
 
     private PlatformContentCaptureConsumer(View view, @Nullable ViewStructure viewStructure) {
-        mView = new WeakReference(view);
+        mView = new WeakReference<>(view);
         if (viewStructure != null) {
             ContentCaptureSession session = view.getContentCaptureSession();
             AutofillId autofillId = viewStructure.getAutofillId();

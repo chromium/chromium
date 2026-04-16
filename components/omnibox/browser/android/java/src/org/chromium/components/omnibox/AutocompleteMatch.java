@@ -236,7 +236,7 @@ public class AutocompleteMatch {
                             contentClassificationOffsets[i], contentClassificationStyles[i]));
         }
 
-        Set<Integer> subtypes = new ArraySet(nativeSubtypes.length);
+        Set<Integer> subtypes = new ArraySet<>(nativeSubtypes.length);
         for (int i = 0; i < nativeSubtypes.length; i++) {
             subtypes.add(nativeSubtypes[i]);
         }
@@ -628,7 +628,7 @@ public class AutocompleteMatch {
 
         return new AutocompleteMatch(
                 input.getType(),
-                new ArraySet(input.getSubtypeList()),
+                new ArraySet<>(input.getSubtypeList()),
                 input.getIsSearchType(),
                 input.getIconType(),
                 input.getTransition(),

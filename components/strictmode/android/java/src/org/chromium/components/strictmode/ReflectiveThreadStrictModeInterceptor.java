@@ -51,10 +51,11 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
     private static final String TAG = "ThreadStrictMode";
 
     private final List<Function<Violation, Integer>> mWhitelistEntries;
-    private final @Nullable Consumer mCustomPenalty;
+    private final @Nullable Consumer<Violation> mCustomPenalty;
 
     ReflectiveThreadStrictModeInterceptor(
-            List<Function<Violation, Integer>> whitelistEntries, @Nullable Consumer customPenalty) {
+            List<Function<Violation, Integer>> whitelistEntries,
+            @Nullable Consumer<Violation> customPenalty) {
         mWhitelistEntries = whitelistEntries;
         mCustomPenalty = customPenalty;
     }

@@ -365,7 +365,7 @@ public class XrSessionCoordinator {
 
     private void handleXrHostActivityReady(Activity activity) {
         if (mNativeXrSessionCoordinator == 0) return;
-        mXrHostActivity = new WeakReference(activity);
+        mXrHostActivity = new WeakReference<>(activity);
         XrSessionCoordinatorJni.get().onXrHostActivityReady(mNativeXrSessionCoordinator, activity);
     }
 

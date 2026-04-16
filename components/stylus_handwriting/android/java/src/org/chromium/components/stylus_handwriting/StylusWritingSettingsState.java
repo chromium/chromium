@@ -119,7 +119,7 @@ public class StylusWritingSettingsState {
     @MainThread
     private ObserverList<StylusWritingController> getObserverList() {
         if (mObservers == null) {
-            mObservers = new ObserverList();
+            mObservers = new ObserverList<>();
         }
         return mObservers;
     }

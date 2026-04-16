@@ -38,7 +38,7 @@ public class PwaRestoreBottomSheetCoordinator {
             int backArrowId) {
         mController = bottomSheetController;
 
-        ArrayList<PwaRestoreProperties.AppInfo> apps = new ArrayList();
+        ArrayList<PwaRestoreProperties.AppInfo> apps = new ArrayList<>();
 
         assert appIds.length == appNames.length;
         assert appIds.length == appIcons.size();

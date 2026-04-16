@@ -11,7 +11,6 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,9 +23,9 @@ class SecurePayload {
     private final byte[] mActionToken;
     private final List<SecureData> mSecureData;
 
-    private SecurePayload(byte[] actionToken, @JniType("std::vector") Object[] secureData) {
+    private SecurePayload(byte[] actionToken, @JniType("std::vector") List<SecureData> secureData) {
         this.mActionToken = actionToken;
-        this.mSecureData = (List<SecureData>) (List<?>) Arrays.asList(secureData);
+        this.mSecureData = secureData;
     }
 
     /**
@@ -38,7 +37,7 @@ class SecurePayload {
      */
     @CalledByNative
     public static @Nullable SecurePayload create(
-            byte[] actionToken, @JniType("std::vector") Object[] secureData) {
+            byte[] actionToken, @JniType("std::vector") List<SecureData> secureData) {
         if (actionToken == null || secureData == null) {
             return null;
         }

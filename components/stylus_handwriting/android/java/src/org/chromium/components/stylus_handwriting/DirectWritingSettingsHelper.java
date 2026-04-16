@@ -102,8 +102,9 @@ public class DirectWritingSettingsHelper {
     private static boolean isDirectWritingServiceCallbackAvailable() {
         if (sDirectWritingServiceCallbackAvailable == null) {
             try {
-                Class dwCallbackClass = Class.forName(
-                        "org.chromium.components.stylus_handwriting.DirectWritingServiceCallback");
+                Class<?> dwCallbackClass =
+                        Class.forName(
+                                "org.chromium.components.stylus_handwriting.DirectWritingServiceCallback");
                 // On some devices, the DirectWritingServiceCallback constructor is not available
                 // so this throws a NoSuchMethodException.
                 dwCallbackClass.getConstructor().isAccessible();

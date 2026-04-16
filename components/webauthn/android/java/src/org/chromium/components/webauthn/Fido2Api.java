@@ -862,7 +862,7 @@ public final class Fido2Api {
             length = parcel.readInt();
         }
 
-        return new Pair(tag, length);
+        return new Pair<>(tag, length);
     }
 
     /**

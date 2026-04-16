@@ -91,7 +91,7 @@ public class RouterImpl implements Router {
      * The {@link MessageReceiverWithResponder} that will consume the messages received from the
      * pipe.
      */
-    private final Map<Integer, Stub> mStubs = new HashMap();
+    private final Map<Integer, Stub> mStubs = new HashMap<>();
 
     /** The next id to use for a request id which needs a response. It is auto-incremented. */
     private long mNextRequestId = 1;

@@ -1565,6 +1565,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         if (mCancellableUiState != CancellableUiState.NONE) {
             if (response == null || response instanceof Pair) {
                 if (response != null) {
+                    @SuppressWarnings("unchecked") // Checked by instanceof Pair above.
                     Pair<Integer, String> error = (Pair<Integer, String>) response;
                     logError(
                             TAG,
@@ -1601,6 +1602,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         if (response == null) {
             // Use the error already set.
         } else if (response instanceof Pair) {
+            @SuppressWarnings("unchecked") // Checked by instanceof Pair above.
             Pair<Integer, String> error = (Pair<Integer, String>) response;
             logError(
                     TAG,

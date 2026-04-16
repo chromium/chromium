@@ -611,7 +611,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
             @Override
             public void onIntentCompleted(int resultCode, @Nullable Intent data) {
-                mCallback.onResult(new Pair(resultCode, data));
+                mCallback.onResult(new Pair<>(resultCode, data));
             }
         }
     }

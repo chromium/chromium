@@ -35,7 +35,7 @@ class PwaRestoreBottomSheetMediator {
     private final long mNativeMediator;
 
     PwaRestoreBottomSheetMediator(
-            ArrayList apps,
+            ArrayList<PwaRestoreProperties.AppInfo> apps,
             Activity activity,
             Runnable onReviewButtonClicked,
             Runnable onRestoreButtonClicked,
@@ -55,7 +55,7 @@ class PwaRestoreBottomSheetMediator {
         setPeekingState();
     }
 
-    private void initializeState(ArrayList apps) {
+    private void initializeState(ArrayList<PwaRestoreProperties.AppInfo> apps) {
         mModel.set(
                 PwaRestoreProperties.PEEK_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_peeking));
@@ -106,7 +106,7 @@ class PwaRestoreBottomSheetMediator {
 
     private void onRestoreButtonClicked() {
         List<PwaRestoreProperties.AppInfo> appList = mModel.get(PwaRestoreProperties.APPS);
-        List<String> selectedAppLists = new ArrayList();
+        List<String> selectedAppLists = new ArrayList<>();
         for (PwaRestoreProperties.AppInfo app : appList) {
             if (app.isSelected()) {
                 selectedAppLists.add(app.getId());

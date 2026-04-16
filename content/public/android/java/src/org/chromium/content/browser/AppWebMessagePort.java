@@ -95,6 +95,7 @@ public class AppWebMessagePort implements MessagePort {
         @Override
         public void handleMessage(final Message msg) {
             if (msg.what == MESSAGE_RECEIVED) {
+                @SuppressWarnings("unchecked") // msg.obj is always Pair from onMessage().
                 final Pair<MessagePayload, MessagePort[]> obj =
                         (Pair<MessagePayload, MessagePort[]>) msg.obj;
                 mMessageCallback.onMessage(obj.first, obj.second);

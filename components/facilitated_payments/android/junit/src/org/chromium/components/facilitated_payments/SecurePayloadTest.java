@@ -13,12 +13,16 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /** Unit tests for {@link SecurePayload}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
 public class SecurePayloadTest {
-    private static final SecureData[] SECURE_DATA = new SecureData[] {new SecureData(1, "value_1")};
+    private static final List<SecureData> SECURE_DATA = Arrays.asList(new SecureData(1, "value_1"));
     private static final byte[] ACTION_TOKEN = new byte[] {1, 2, 3};
 
     @Test
@@ -46,7 +50,7 @@ public class SecurePayloadTest {
 
     @Test
     public void createSecurePayload_secureDataEmpty() {
-        SecurePayload securePayload = SecurePayload.create(ACTION_TOKEN, new SecureData[0]);
+        SecurePayload securePayload = SecurePayload.create(ACTION_TOKEN, Collections.emptyList());
 
         Assert.assertEquals(ACTION_TOKEN, securePayload.getActionToken());
         Assert.assertTrue(securePayload.getSecureData().isEmpty());
