@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">පත්‍රය තනන්න</translation>
 <translation id="1358223345833465883">Chromium හි ඔබේ සෙවීම් යන්ත්‍රය</translation>
 <translation id="1359836962251219822">කුස්සිය සහ ආහාර ගැනීම</translation>
-<translation id="136059610328993645">ඔබේ තතු <ph name="ACCOUNT" /> සඳහා Google Wallet වෙත සුරකිනු ලැබේ. පෝරම ඉතා වේගයෙන් පිරවීමට ඔබට එය Google සේවා පුරා භාවිත කළ හැක.</translation>
 <translation id="1360955481084547712">පුද්ගලිකව බ්‍රවුස් කිරීමට නව අප්‍රසිද්ධ කවුළුවක් විවෘත කරන්න</translation>
 <translation id="1361528602584216624">Pix R$ <ph name="TRANSACTION_LIMIT" /> සඳහා සීමාව</translation>
 <translation id="1363015776076529485">සම්පූර්ණ උසින් විවෘත කර ඇති ගෙවීම සමග ඉදිරියට යාමට තෝරා ගත හැකි ගෙවීම් ක්‍රම තිබේ.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">මිල හඹා යාම</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
 <translation id="3039406992698062762">පවුලේ සංචාර</translation>
+<translation id="3040435070100611531">ඔබේ Google Wallet අවසරපත්</translation>
 <translation id="3041176923638368519">කාඩ්පත් ප්‍රතිලාභ නියම බලන්න</translation>
 <translation id="3041584414879052436">දැන් මිලදී ගන්න-ගෙවන්න-පසුව නිකුත් කරන්නන්ගේ ලැයිස්තුව වසා ඇත.</translation>
 <translation id="3041612393474885105">සහතික තොරතුරු</translation>
@@ -3361,7 +3361,7 @@
 <translation id="6246316216123107851">දින <ph name="NUM_DAYS" />කට පෙර</translation>
 <translation id="6246382863801034910">වාහනය</translation>
 <translation id="6246868321321344665">ඔබේ සංවිධානයට කාර්යාල සහ පුද්ගලික පැතිකඩ දෙකෙහිම මුරපද සහ ඉතිහාසය වැනි බ්‍රවුස් කිරීමේ දත්ත දැකිය හැක</translation>
-<translation id="6248988683584659830">සැකසුම් සොයන්න</translation>
+<translation id="6248988683584659830">සෙවීමේ සැකසීම්</translation>
 <translation id="6250932670816326647">නාන සහ ශරීර නිෂ්පාදන</translation>
 <translation id="6251906504834538140">{0,plural, =1{ගොනුව ගෙන යාමෙන් අවහිර කර ඇත}one{ගොනු <ph name="FILE_COUNT" />ක් ගෙන යාමෙන් අවහිර කර ඇත}other{ගොනු <ph name="FILE_COUNT" />ක් ගෙන යාමෙන් අවහිර කර ඇත}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome තුළ ඔබ බාගෙන ඇති ගොනු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>

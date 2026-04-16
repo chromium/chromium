@@ -686,7 +686,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">de afgelopen 4 weken</translation>
 <translation id="393697183122708255">Gesproken zoekopdracht niet beschikbaar</translation>
-<translation id="3941718885865495207">Blad onderaan voor aanmelding voor Chrome Finds</translation>
+<translation id="3941718885865495207">Blad onderaan voor aanmelding voor Chrome-vondsten</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, vastgezet tabblad voor scherm-in-scherm</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="395377504920307820">Gebruiken zonder account</translation>
@@ -1637,7 +1637,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardtabblad}other{<ph name="TABS_COUNT_MANY" /> standaardtabbladen}}</translation>
 <translation id="7603168929588204083">Ongeldige datum</translation>
 <translation id="7605594153474022051">Synchronisatie werkt niet</translation>
-<translation id="7608245556672190037">Aanmelding voor Chrome Finds is op volledige hoogte geopend</translation>
+<translation id="7608245556672190037">Aanmelding voor Chrome-vondsten is op volledige hoogte geopend</translation>
 <translation id="7612619742409846846">Ingelogd bij Google als</translation>
 <translation id="7612989789287281429">Inloggen…</translation>
 <translation id="7619072057915878432">Downloaden van <ph name="FILE_NAME" /> is mislukt door netwerkfouten.</translation>
@@ -1645,7 +1645,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7628417132421583481">Naar Wachtwoordmanager</translation>
 <translation id="7630202231528827509">Provider-URL</translation>
 <translation id="7638584964844754484">Onjuiste wachtwoordzin</translation>
-<translation id="764047009170754705">Aanmelding voor Chrome Finds gesloten</translation>
+<translation id="764047009170754705">Aanmelding voor Chrome-vondsten gesloten</translation>
 <translation id="7646499124171960488">Waarschuwt je voor niet-beveiligde openbare sites</translation>
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
 <translation id="7655240423373329753">afgelopen 7 dagen</translation>
@@ -1870,7 +1870,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="847433688444405067">Browse op verschillende apparaten</translation>
 <translation id="8477178913400731244">Gegevens verwijderen</translation>
-<translation id="8481771036036087705">Aanmelding voor Chrome Finds is op halve hoogte geopend</translation>
+<translation id="8481771036036087705">Aanmelding voor Chrome-vondsten is op halve hoogte geopend</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">Geen inactieve vensters</translation>
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>

@@ -236,7 +236,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1358187717814494928">Loo arvutustabel</translation>
 <translation id="1358223345833465883">Teie otsingumootor Chromiumis</translation>
 <translation id="1359836962251219822">Kööginõud ja söögiriistad</translation>
-<translation id="136059610328993645">Teie teave salvestatakse Google Walletisse kontole <ph name="ACCOUNT" />. Saate seda kasutada Google'i teenustes, et vorme kiiremini täita.</translation>
 <translation id="1360955481084547712">Privaatselt sirvimiseks avage uus inkognito aken</translation>
 <translation id="1361528602584216624">Limiit Pixi kohta <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Saadaolevad makseviisid, mida saab maksmise jätkamiseks valida, on avatud täiskõrgusel.</translation>
@@ -1300,6 +1299,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3037177537145227281">Jälgite hinda</translation>
 <translation id="3037605927509011580">Ups, ebaõnn!</translation>
 <translation id="3039406992698062762">Perereisid</translation>
+<translation id="3040435070100611531">Teie Google Walleti pääsmed</translation>
 <translation id="3041176923638368519">Kuva kaardi hüvede tingimused</translation>
 <translation id="3041584414879052436">Järelmaksu väljaandjate loend on suletud.</translation>
 <translation id="3041612393474885105">Sertifikaadi andmed</translation>

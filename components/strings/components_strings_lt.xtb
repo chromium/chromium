@@ -236,7 +236,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1358187717814494928">Sukurti skaičiuoklę</translation>
 <translation id="1358223345833465883">Paieškos variklis sistemoje „Chromium“</translation>
 <translation id="1359836962251219822">Virtuvė ir valgomasis</translation>
-<translation id="136059610328993645">Jūsų informacija išsaugoma „Google Wallet“ paskyroje <ph name="ACCOUNT" />. Galite ją naudoti „Google“ paslaugose, kad greičiau užpildytumėte formas.</translation>
 <translation id="1360955481084547712">Naršykite privačiai, atsidarę naują inkognito langą</translation>
 <translation id="1361528602584216624">„Pix“ apribojimas – <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Mokėjimo metodai, kuriuos galima pasirinkti norint tęsti mokėjimą, atidaryti per visą ekrano aukštį.</translation>
@@ -1300,6 +1299,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3037177537145227281">Kaina stebima</translation>
 <translation id="3037605927509011580">Oi!</translation>
 <translation id="3039406992698062762">Šeimos kelionės</translation>
+<translation id="3040435070100611531">„Google Wallet“ kortelės</translation>
 <translation id="3041176923638368519">Žr. kortelės privilegijų sąlygas</translation>
 <translation id="3041584414879052436">Paslaugos „Pirkite dabar, mokėkite vėliau“ išdavėjų sąrašas uždarytas.</translation>
 <translation id="3041612393474885105">Sertifikato informacija</translation>

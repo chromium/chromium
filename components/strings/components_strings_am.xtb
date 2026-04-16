@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">ሉህን ፍጠር</translation>
 <translation id="1358223345833465883">በChromium ውስጥ የእርስዎ የፍለጋ ፕሮግራም</translation>
 <translation id="1359836962251219822">ወጥ ቤት እና መመገብ</translation>
-<translation id="136059610328993645">መረጃዎ ለ<ph name="ACCOUNT" /> Google Wallet ላይ ይቀመጣል። ቅጾችን በፍጥነት ለመሙላት በመላው የGoogle አገልግሎቶች ላይ ሊጠቀሙበት ይችላሉ።</translation>
 <translation id="1360955481084547712">በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ሁነታ መስኮት ይክፈቱ</translation>
 <translation id="1361528602584216624">ገደብ በPix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">በሙሉ ከፍታ ከፍቶ ክፍያውን ለመቀጠል የሚመረጡ የመክፈያ ዘዴዎች ይገኛሉ።</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">ዋጋዎችን በመከታተል ላይ</translation>
 <translation id="3037605927509011580">ውይ፣ ተሰናከለ!</translation>
 <translation id="3039406992698062762">የቤተሰብ ጉዞ</translation>
+<translation id="3040435070100611531">የእርስዎ Google Wallet ይለፎች</translation>
 <translation id="3041176923638368519">የካርድ ጥቅማጥቅሞች ደንቦችን ይመልከቱ</translation>
 <translation id="3041584414879052436">የአሁን ይግዙ፣ በኋላ ይክፈሉ ሰጪዎች ዝርዝር ተዘግቷል።</translation>
 <translation id="3041612393474885105">የሰርቲፊኬት መረጃ</translation>
@@ -3360,7 +3360,7 @@
 <translation id="6246316216123107851">ከ<ph name="NUM_DAYS" /> ቀናት በፊት</translation>
 <translation id="6246382863801034910">ተሽከርካሪ</translation>
 <translation id="6246868321321344665">ድርጅትዎ እንደ የይለፍ ቃላት እና ታሪክ በሥራ እና በግል መገለጫዎች ውስጥ ያሉ የአሰሳ ውሂብን ማየት ይችላል</translation>
-<translation id="6248988683584659830">የፍለጋ ቅንብሮች </translation>
+<translation id="6248988683584659830">የፍለጋ ቅንብሮች</translation>
 <translation id="6250932670816326647">የመታጠቢያ እና የሰውነት ምርቶች</translation>
 <translation id="6251906504834538140">{0,plural, =1{ፋይል ከመንቀሳቀስ ታግዷል}one{<ph name="FILE_COUNT" /> ፋይል ከመንቀሳቀስ ታግዷል}other{<ph name="FILE_COUNT" /> ፋይሎች ከመንቀሳቀስ ታግደዋል}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ በChrome ውስጥ ያወረዷቸውን ፋይሎች ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>

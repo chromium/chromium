@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Хүснэгт үүсгэх</translation>
 <translation id="1358223345833465883">Таны Chromium-н хайлтын систем</translation>
 <translation id="1359836962251219822">Гал тогоо болон хоолны өрөө</translation>
-<translation id="136059610328993645">Таны мэдээллийг <ph name="ACCOUNT" />-н Google Wallet-д хадгалдаг. Та үүнийг Google-н үйлчилгээнүүд дээр маягтыг илүү хурдан бөглөхөд ашиглах боломжтой.</translation>
 <translation id="1360955481084547712">Нууцлалтайгаар үзэхийн тулд Нууцлалтай цонх шинээр нээгээрэй</translation>
 <translation id="1361528602584216624">Pix тутмын хязгаар R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Төлбөрийг үргэлжлүүлэхээр сонгох боломжтой төлбөрийн хэрэгслүүдийг бүтэн өндрөөр нээсэн.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039406992698062762">Гэр бүлийн аялал</translation>
+<translation id="3040435070100611531">Таны Google Wallet-н карт</translation>
 <translation id="3041176923638368519">Картын үр өгөөжийн нөхцөлийг харах</translation>
 <translation id="3041584414879052436">"Одоо ав, дараа төл" төлбөрийн хэрэгсэл гаргагчдын жагсаалтыг хаасан.</translation>
 <translation id="3041612393474885105">Гэрчилгээний мэдээлэл</translation>

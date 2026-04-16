@@ -236,7 +236,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1358187717814494928">Vytvořit tabulku</translation>
 <translation id="1358223345833465883">Váš vyhledávač v prohlížeči Chromium</translation>
 <translation id="1359836962251219822">Kuchyně a jídelny</translation>
-<translation id="136059610328993645">Vaše údaje se uloží do Peněženky Google pro účet <ph name="ACCOUNT" />. Můžete je k rychlejšímu vyplňování formulářů používat ve všech službách Google.</translation>
 <translation id="1360955481084547712">Otevřete nové anonymní okno a prohlížejte v soukromí</translation>
 <translation id="1361528602584216624">Limit platby Pix je <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Dostupné platební metody k provedení platby jsou otevřené na celou výšku.</translation>
@@ -1300,6 +1299,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
 <translation id="3039406992698062762">Rodinné cestování</translation>
+<translation id="3040435070100611531">Vaše karty v Peněžence Google</translation>
 <translation id="3041176923638368519">Viz podmínky výhod karty</translation>
 <translation id="3041584414879052436">Seznam poskytovatelů financování na splátky je zavřený.</translation>
 <translation id="3041612393474885105">Informace o certifikátu</translation>
@@ -3356,7 +3356,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6246316216123107851">Před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="6246382863801034910">Vozidlo</translation>
 <translation id="6246868321321344665">Vaše organizace může vidět údaje o prohlížení, jako jsou hesla a historie v pracovních i osobních profilech</translation>
-<translation id="6248988683584659830">Prohledat nastavení</translation>
+<translation id="6248988683584659830">Nastavení vyhledávání</translation>
 <translation id="6250932670816326647">Koupelová a tělová kosmetika</translation>
 <translation id="6251906504834538140">{0,plural, =1{Přesunutí souboru je blokováno}few{Přesunutí <ph name="FILE_COUNT" /> souborů je blokováno}many{Přesunutí <ph name="FILE_COUNT" /> souboru je blokováno}other{Přesunutí <ph name="FILE_COUNT" /> souborů je blokováno}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat soubory, které jste v Chromu stáhli</translation>

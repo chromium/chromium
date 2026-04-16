@@ -3025,7 +3025,6 @@
 <translation id="3038628620670416486">تحديد مكان الأزرار على الماوس</translation>
 <translation id="3039491566278747710">تعذّر تثبيت السياسة بلا إنترنت على الجهاز.</translation>
 <translation id="303955801043931176">تم إغلاق علامة التبويب</translation>
-<translation id="3040435070100611531">‏بطاقاتك في "محفظة Google"</translation>
 <translation id="304169924727249890">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />"</translation>
 <translation id="3042097545107738107">يمكنك تغيير استراتيجية الشحن المُحسّن.</translation>
 <translation id="3043016484125065343">يجب تسجيل الدخول للاطّلاع على الإشارات المرجعية</translation>
@@ -7561,7 +7560,7 @@
 <translation id="6247620186971210352">لم يتم العثور على أي تطبيقات</translation>
 <translation id="6247708409970142803">%<ph name="PERCENTAGE" /></translation>
 <translation id="6247802389331535091">النظام: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">بحث في الإعدادات</translation>
+<translation id="6248988683584659830">البحث في الإعدادات</translation>
 <translation id="6249200942125593849">إدارة إمكانية الوصول</translation>
 <translation id="6250186368828697007">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
 <translation id="6250887692313997958">يُرجى اختيار علامة تبويب لإضافتها إلى وضع تقسيم العرض</translation>
@@ -7620,7 +7619,7 @@
 <translation id="628705218210359422">يمكنك تتبُّع كلمات المرور وإدارتها في مكان واحد.</translation>
 <translation id="628726841779494414">إدارة الطابعات في إعدادات الطابعة</translation>
 <translation id="6287288864483377583">لا يُسمح باستيراد أكثر من شهادة واحدة</translation>
-<translation id="6287713404380454515">أوقف المشرف رقم التعريف الشخصي وكلمة المرور لجهازك، وذلك لأسباب تتعلق بالأمان. وسيتم استخدام كلمة مرور <ph name="MANAGER" /> من الآن فصاعدًا.</translation>
+<translation id="6287713404380454515">أوقَف المشرف رقم التعريف الشخصي وكلمة المرور لجهازك، وذلك لأسباب تتعلق بالأمان. وسيتم استخدام كلمة مرور <ph name="MANAGER" /> من الآن فصاعدًا.</translation>
 <translation id="6287828400772161253">‏هاتف Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ما مِن أجهزة متوفِّرة بالقرب منك للمشاركة معها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">‏تعذَّرت استعادة حاوية Linux لعدم توفُّر مساحة تخزين.</translation>
@@ -9989,7 +9988,7 @@
 <translation id="794250392403348719">مثال: بسِّط هذا المفهوم لطفل عمره 8 سنوات. استخدِم لغة بسيطة وتشبيهًا يفهمه. يجب أن يكون الشرح موجزًا وأن يقل عن 150 كلمة.</translation>
 <translation id="7942846369224063421">Preloaded UI Renderer</translation>
 <translation id="7943271960579497371">التطبيقات المثبَّتة</translation>
-<translation id="7943311690198910993">تعديل طريقة تسجيل الدخول</translation>
+<translation id="7943311690198910993">تم تعديل طريقة تسجيل الدخول</translation>
 <translation id="7943368935008348579">‏تنزيل ملفات PDF</translation>
 <translation id="7943837619101191061">إضافة موقع...</translation>
 <translation id="7944173382284143968">‏يتطلّب الموقع الإلكتروني تأكيد هويتك باستخدام كلمة المرور الصالحة لمرة واحدة (OTP) قبل حفظ كلمة المرور الجديدة، لذا يُرجى إجراء ذلك يدويًا لإكمال التغيير.</translation>

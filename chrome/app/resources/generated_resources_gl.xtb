@@ -3019,7 +3019,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3038628620670416486">Localiza os botóns do rato</translation>
 <translation id="3039491566278747710">Non se puido instalar a política sen conexión no dispositivo.</translation>
 <translation id="303955801043931176">Pestana pechada</translation>
-<translation id="3040435070100611531">Os teus pases de Google Wallet</translation>
 <translation id="304169924727249890">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambiar a estratexia de carga optimizada.</translation>
 <translation id="3043016484125065343">Inicia sesión para ver os marcadores</translation>
@@ -11818,7 +11817,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9174854240439014335">Permitir acción de arrastrar e soltar na vista dividida no bordo esquerdo ou dereito da ventá</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: conectouse a un dispositivo Bluetooth</translation>
 <translation id="9177859716483578738">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> do sitio.</translation>
-<translation id="9178061802301856367">Eliminar os datos de inicio de sesión</translation>
+<translation id="9178061802301856367">Elimina os datos de inicio de sesión</translation>
 <translation id="9179243438030184085">Usa o botón Compartir que está na parte inferior da tarxeta para compartir unha copia do teu contrasinal con calquera persoa do teu grupo familiar</translation>
 <translation id="9179524979050048593">Nome de usuario da pantalla de inicio de sesión</translation>
 <translation id="9180281769944411366">Este proceso pode tardar uns minutos. Iniciando o contedor de Linux.</translation>

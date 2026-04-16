@@ -236,7 +236,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1358187717814494928">Opret regneark</translation>
 <translation id="1358223345833465883">Din søgemaskine i Chromium</translation>
 <translation id="1359836962251219822">Køkkener og køkkenudstyr</translation>
-<translation id="136059610328993645">Dine oplysninger gemmes i Google Wallet for <ph name="ACCOUNT" />. Du kan bruge oplysningerne i Googles tjenester til hurtigere at udfylde formularer.</translation>
 <translation id="1360955481084547712">Åbn et nyt inkognitovindue for at browse privat</translation>
 <translation id="1361528602584216624">Grænse pr. Pix <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Betalingsmetoder, der kan vælges for at fortsætte med betalingen, er åbnet i fuld højde.</translation>
@@ -1300,6 +1299,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
 <translation id="3039406992698062762">Familierejser</translation>
+<translation id="3040435070100611531">Dine kort i Google Wallet</translation>
 <translation id="3041176923638368519">Se vilkårene for kortfordele</translation>
 <translation id="3041584414879052436">Listen over udstedere, der tilbyder betalingsmetoden Køb nu, betal senere, er lukket.</translation>
 <translation id="3041612393474885105">Certifikatoplysninger</translation>
@@ -3361,7 +3361,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6246316216123107851">for <ph name="NUM_DAYS" /> dage siden</translation>
 <translation id="6246382863801034910">Køretøj</translation>
 <translation id="6246868321321344665">Din organisation kan se browserdata som f.eks. adgangskoder og historik på både arbejdsprofiler og personlige profiler</translation>
-<translation id="6248988683584659830">Søg i indstillinger</translation>
+<translation id="6248988683584659830">Søg efter indstillinger</translation>
 <translation id="6250932670816326647">Produkter til badeværelset og kropspleje</translation>
 <translation id="6251906504834538140">{0,plural, =1{Filen er blokeret, så den ikke kan flyttes}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan flyttes}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan flyttes}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere de filer, du har downloadet i Chrome</translation>

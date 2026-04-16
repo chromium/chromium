@@ -236,7 +236,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1358187717814494928">Crea foglio</translation>
 <translation id="1358223345833465883">Il tuo motore di ricerca in Chromium</translation>
 <translation id="1359836962251219822">Cucina e sala da pranzo</translation>
-<translation id="136059610328993645">Le tue informazioni vengono salvate in Google Wallet per <ph name="ACCOUNT" />. Puoi usarle in tutti i servizi Google per compilare i moduli più velocemente.</translation>
 <translation id="1360955481084547712">Apri una nuova finestra Incognito per navigare in privato</translation>
 <translation id="1361528602584216624">Limite per Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Metodi di pagamento disponibili da selezionare per procedere con il pagamento aperti a schermo intero.</translation>
@@ -1300,6 +1299,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
 <translation id="3037605927509011580">Uffa!</translation>
 <translation id="3039406992698062762">Viaggi per famiglie</translation>
+<translation id="3040435070100611531">Le tue tessere di Google Wallet</translation>
 <translation id="3041176923638368519">Leggi i termini dei vantaggi della carta</translation>
 <translation id="3041584414879052436">L'elenco degli emittenti di Buy now, pay later è chiuso.</translation>
 <translation id="3041612393474885105">Informazioni certificato</translation>

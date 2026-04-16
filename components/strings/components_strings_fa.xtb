@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">ایجاد کاربرگ</translation>
 <translation id="1358223345833465883">‏موتور جستجوی شما در Chromium</translation>
 <translation id="1359836962251219822">آشپزخانه و ناهارخوری</translation>
-<translation id="136059610328993645">‏اطلاعاتتان در «کیف پول Google» مربوط به <ph name="ACCOUNT" /> ذخیره می‌شود. می‌توانید از آن در سرویس‌های Google برای تکمیل سریع‌تر فرم‌ها استفاده کنید.</translation>
 <translation id="1360955481084547712">پنجره ناشناس جدیدی را برای مرور خصوصی باز کنید</translation>
 <translation id="1361528602584216624">‏محدودیت برای هر Pix:‏ R$‏ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">فهرست روش‌های پرداخت دردسترس که می‌توانند برای ادامه پرداخت انتخاب شوند به‌صورت کامل باز شده است.</translation>
@@ -1301,6 +1300,7 @@
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037605927509011580">اوه، نه!</translation>
 <translation id="3039406992698062762">سفر خانوادگی</translation>
+<translation id="3040435070100611531">‏مجوزهای شما در «کیف پول Google»</translation>
 <translation id="3041176923638368519">دیدن شرایط مزایای کارت</translation>
 <translation id="3041584414879052436">فهرست صادرکنندگان «حالا خرید کنید، بعداً بپردازید» بسته شده است.</translation>
 <translation id="3041612393474885105">اطلاعات گواهی</translation>

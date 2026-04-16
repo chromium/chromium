@@ -236,7 +236,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1358187717814494928">Skapa kalkylark</translation>
 <translation id="1358223345833465883">Din sökmotor i Chromium</translation>
 <translation id="1359836962251219822">Köksutrustning och matplats</translation>
-<translation id="136059610328993645">Din information sparas i Google Wallet för <ph name="ACCOUNT" />. Du kan använda den i Googles tjänster för att fylla i formulär snabbare.</translation>
 <translation id="1360955481084547712">Öppna ett nytt inkognitofönster om du vill surfa privat</translation>
 <translation id="1361528602584216624">Gräns per Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">De tillgängliga betalningsmetoderna som kan väljas för att fortsätta med betalningen har öppnats över hela skärmen.</translation>
@@ -1300,6 +1299,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037605927509011580">Oj, ett fel har uppstått!</translation>
 <translation id="3039406992698062762">Familjeresor</translation>
+<translation id="3040435070100611531">Dina värdekort i Google Wallet</translation>
 <translation id="3041176923638368519">Se villkoren för kortförmåner</translation>
 <translation id="3041584414879052436">Listan över Köp nu, betala senare-utfärdare har stängts.</translation>
 <translation id="3041612393474885105">Certifikatinformation</translation>

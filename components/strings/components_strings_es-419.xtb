@@ -236,7 +236,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1358187717814494928">Crear hoja de cálculo</translation>
 <translation id="1358223345833465883">Tu motor de búsqueda en Chromium</translation>
 <translation id="1359836962251219822">Cocina</translation>
-<translation id="136059610328993645">Tu información se guarda en la Billetera de Google para <ph name="ACCOUNT" />. Puedes usarlo en todos los servicios de Google para completar formularios más rápido.</translation>
 <translation id="1360955481084547712">Abre una nueva ventana de incógnito para navegar de forma privada</translation>
 <translation id="1361528602584216624">Límite de R$ <ph name="TRANSACTION_LIMIT" /> por Pix</translation>
 <translation id="1363015776076529485">Las formas de pago disponibles para seleccionar y continuar con el pago están abiertas en su totalidad.</translation>
@@ -1300,6 +1299,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
 <translation id="3039406992698062762">Viajes familiares</translation>
+<translation id="3040435070100611531">Los pases de tu Billetera de Google</translation>
 <translation id="3041176923638368519">Ver condiciones de los beneficios de la tarjeta</translation>
 <translation id="3041584414879052436">Se cerró la lista de emisores de Compra ahora y paga después.</translation>
 <translation id="3041612393474885105">Información sobre el certificado</translation>
@@ -3362,7 +3362,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6246316216123107851">Hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6246382863801034910">Vehículo</translation>
 <translation id="6246868321321344665">Tu organización puede ver los datos de navegación, como las contraseñas y el historial en los perfiles personales y de trabajo</translation>
-<translation id="6248988683584659830">Buscar en configuración</translation>
+<translation id="6248988683584659830">Configuración de la búsqueda</translation>
 <translation id="6250932670816326647">Productos para el baño y el cuerpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{No se permite mover el archivo}other{No se permite mover <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar los archivos que descargaste en Chrome</translation>

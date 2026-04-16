@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">创建工作表</translation>
 <translation id="1358223345833465883">您在 Chromium 中使用的搜索引擎</translation>
 <translation id="1359836962251219822">厨房与餐厅</translation>
-<translation id="136059610328993645">您的信息会保存到 <ph name="ACCOUNT" /> 的 Google 钱包中。您可以在各项 Google 服务中使用它更快地填写表单。</translation>
 <translation id="1360955481084547712">若要私密地浏览网页，请打开一个新的无痕式窗口</translation>
 <translation id="1361528602584216624">每笔 Pix 交易的限额为 R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">支付方式列表已按最大高度显示，选中一种支付方式即可继续付款。</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3039406992698062762">家庭旅行</translation>
+<translation id="3040435070100611531">您的 Google 钱包卡券</translation>
 <translation id="3041176923638368519">查看卡福利条款</translation>
 <translation id="3041584414879052436">“先买后付”发卡机构列表已关闭。</translation>
 <translation id="3041612393474885105">证书信息</translation>

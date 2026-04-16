@@ -238,7 +238,7 @@
 <translation id="2467741090055146971">diese Auswahl aufheben</translation>
 <translation id="2471138580042810658">Überschrift 6</translation>
 <translation id="2490721194269245365">Rosiges Braun</translation>
-<translation id="249330843868392562">Einstellungen für Sprachausgabe öffnen</translation>
+<translation id="249330843868392562">Einstellungen für Text-zu-Sprache öffnen</translation>
 <translation id="2497706219848005458">Grüngelb</translation>
 <translation id="2512979179176933762">Fenster anzeigen</translation>
 <translation id="2523609930580546572">ChromeVox-Anleitung</translation>
@@ -752,7 +752,7 @@
 <translation id="5748623122140342504">Vorherige Überschrift der Ebene 5</translation>
 <translation id="5760594853119905566">Anhang</translation>
 <translation id="5761219715606611783">Perfekt! Du kennst jetzt die Grundlagen von ChromeVox. Du kannst diese Anleitung noch einmal starten oder sie beenden, indem du unten auf den entsprechenden Button tippst.</translation>
-<translation id="5776001898637896684">Erweiterung für die Sprachausgabe bei Google Enhanced Network</translation>
+<translation id="5776001898637896684">Erweiterung für Text-zu-Sprache bei Google Enhanced Network</translation>
 <translation id="5783252477644995371">Mit der Gesichtssteuerung kannst du den Cursor mithilfe von Gesichtsbewegungen steuern und Aktionen ausführen, z. B. die linke Maustaste mit einem Lächeln betätigen</translation>
 <translation id="5805940204952508776">Mit zwei Fingern tippen</translation>
 <translation id="5807774529265708172">Bildschirmtastatur ein- oder ausblenden</translation>
@@ -774,7 +774,7 @@
 <translation id="5876817486144482042">Sprachlautstärke verringern</translation>
 <translation id="5878206664863390311">Drücke „Suchtaste + Rechtspfeil“ oder „Suchtaste + Linkspfeil“, um dir die Themen anzusehen</translation>
 <translation id="5878908838135392163">Taubenblau</translation>
-<translation id="588108970619830498">Sprachausgabe-Einstellungen auf Standardwerte zurücksetzen</translation>
+<translation id="588108970619830498">Text-zu-Sprache-Einstellungen auf Standardwerte zurücksetzen</translation>
 <translation id="5891934789323004067">Tabelle</translation>
 <translation id="5899860758576822363">Mit geringerer Lautstärke wiedergeben, wenn eine Sprachausgabe durch ChromeVox stattfindet</translation>
 <translation id="5901630391730855834">Gelb</translation>
@@ -958,7 +958,7 @@
 <translation id="7244947685630430863">Keine vorherige Grafik</translation>
 <translation id="7248671827512403053">App</translation>
 <translation id="725969808843520477">Nächstes Optionsfeld</translation>
-<translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
+<translation id="7261612856573623172">Text-zu-Sprache-Stimme des Systems</translation>
 <translation id="7269119382257320590">Keine Satzzeichen</translation>
 <translation id="7271278495464744706">Ausführliche Beschreibungen aktivieren</translation>
 <translation id="7273174640290488576">Leer</translation>
@@ -1019,7 +1019,7 @@
 <translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{Dollarzeichen}} *{{{$$COUNT} Dollarzeichen}}</translation>
 <translation id="7674576868851035240">Nächster Link</translation>
 <translation id="7674768236845044097">mark</translation>
-<translation id="7676847077928500578">Einstellungen für Sprachausgabe zurücksetzen</translation>
+<translation id="7676847077928500578">Einstellungen für Text-zu-Sprache zurücksetzen</translation>
 <translation id="7684431668231950609">Text bearbeiten, URL-Eintrag</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Vorheriges Optionsfeld</translation>

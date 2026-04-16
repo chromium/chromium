@@ -236,7 +236,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1358187717814494928">Criar página</translation>
 <translation id="1358223345833465883">O seu motor de pesquisa no Chromium</translation>
 <translation id="1359836962251219822">Cozinha e sala de jantar</translation>
-<translation id="136059610328993645">As suas informações são guardadas na Carteira do Google para <ph name="ACCOUNT" />. Pode usá-las nos serviços Google para preencher formulários mais rapidamente.</translation>
 <translation id="1360955481084547712">Abra uma nova janela de navegação anónima para navegar em privado</translation>
 <translation id="1361528602584216624">Limite por Pix <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Métodos de pagamento disponíveis para seleção para continuar com o pagamento abertos à altura total.</translation>
@@ -1300,6 +1299,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3037177537145227281">Monitorizar o preço</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
 <translation id="3039406992698062762">Viagens familiares</translation>
+<translation id="3040435070100611531">Os seus passes da Carteira do Google</translation>
 <translation id="3041176923638368519">Veja os termos das vantagens do cartão</translation>
 <translation id="3041584414879052436">A lista de emissores do método Comprar agora e pagar depois está fechada.</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
@@ -3361,7 +3361,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6246316216123107851">Há <ph name="NUM_DAYS" /> dias</translation>
 <translation id="6246382863801034910">Veículo</translation>
 <translation id="6246868321321344665">A sua organização pode ver os dados de navegação, como as palavras-passe e o histórico, tanto nos perfis pessoais como nos perfis de trabalho</translation>
-<translation id="6248988683584659830">Pesquisar definições</translation>
+<translation id="6248988683584659830">Pesquise definições</translation>
 <translation id="6250932670816326647">Produtos para o banho e o corpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{A movimentação do ficheiro foi bloqueada}other{A movimentação de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir ficheiros que transferiu no Chrome</translation>

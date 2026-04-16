@@ -236,7 +236,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1358187717814494928">Vytvoriť tabuľku</translation>
 <translation id="1358223345833465883">Váš vyhľadávač v prehliadači Chromium</translation>
 <translation id="1359836962251219822">Kuchyňa a jedáleň</translation>
-<translation id="136059610328993645">Vaše údaje sa uložia do Peňaženky Google do účtu <ph name="ACCOUNT" />. Môžete ich používať na rýchlejšie vypĺňanie formulárov v službách Googlu.</translation>
 <translation id="1360955481084547712">Otvoriť nové okno inkognito a prehliadať v súkromí</translation>
 <translation id="1361528602584216624">Limit na jednu platbu cez Pix vo výške <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Spôsoby platby, ktoré je možné vybrať na pokračovanie v platbe, sú otvorené na celú výšku.</translation>
@@ -1300,6 +1299,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3037177537145227281">Cenu sledujete</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
 <translation id="3039406992698062762">Rodinné cestovanie</translation>
+<translation id="3040435070100611531">Vaše karty v Peňaženke Google</translation>
 <translation id="3041176923638368519">Zobraziť zmluvné podmienky výhod karty</translation>
 <translation id="3041584414879052436">Zoznam vydavateľov spôsobov platby Kúpte hneď, plaťte neskôr je zavretý.</translation>
 <translation id="3041612393474885105">Informácie o certifikáte</translation>
@@ -3356,7 +3356,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6246316216123107851">Pred <ph name="NUM_DAYS" /> dňami</translation>
 <translation id="6246382863801034910">Vozidlo</translation>
 <translation id="6246868321321344665">Vaša organizácia si môže zobraziť dáta prehliadania, napríklad heslá a históriu v pracovných aj osobných profiloch</translation>
-<translation id="6248988683584659830">Vyhľadajte nastavenia</translation>
+<translation id="6248988683584659830">Vyhľadať nastavenia</translation>
 <translation id="6250932670816326647">Výrobky do kúpeľa a na telo</translation>
 <translation id="6251906504834538140">{0,plural, =1{Presun súboru bol zablokovaný}few{Presun <ph name="FILE_COUNT" /> súborov bol zablokovaný}many{<ph name="FILE_COUNT" /> files blocked from moving}other{Presun <ph name="FILE_COUNT" /> súborov bol zablokovaný}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, po stlačení klávesov Tab a Enter môžete spravovať súbory stiahnuté v Chrome</translation>

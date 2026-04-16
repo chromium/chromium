@@ -236,7 +236,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1358187717814494928">Luo taulukko</translation>
 <translation id="1358223345833465883">Hakukone Chromiumissa</translation>
 <translation id="1359836962251219822">Keittiö ja ruokailutilat</translation>
-<translation id="136059610328993645">Tietosi tallennetaan Google Walletiin (<ph name="ACCOUNT" />). Voit käyttää sitä Googlen palveluissa lomakkeiden nopeampaan täyttämiseen.</translation>
 <translation id="1360955481084547712">Avaa uusi incognito-ikkuna selataksesi yksityisesti</translation>
 <translation id="1361528602584216624">Pix-kohtainen rajoitus R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Maksun suorittamiseen käytettävissä olevat maksutavat on avattu koko näytön kokoisena.</translation>
@@ -1300,6 +1299,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3037177537145227281">Hintaa seurataan</translation>
 <translation id="3037605927509011580">Harmin paikka!</translation>
 <translation id="3039406992698062762">Perhematkat</translation>
+<translation id="3040435070100611531">Google Wallet ‑kortit</translation>
 <translation id="3041176923638368519">Katso kortin etujen ehdot</translation>
 <translation id="3041584414879052436">"Osta nyt, maksa myöhemmin" ‐myöntäjien lista on suljettu.</translation>
 <translation id="3041612393474885105">Varmenteen tiedot</translation>

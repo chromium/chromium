@@ -236,7 +236,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1358187717814494928">Opprett regneark</translation>
 <translation id="1358223345833465883">Søkemotoren din i Chromium</translation>
 <translation id="1359836962251219822">Kjøkken og spiserom</translation>
-<translation id="136059610328993645">Informasjonen din lagres i Google Wallet for <ph name="ACCOUNT" />. Du kan bruke den i alle Google-tjenester for å fylle ut skjemaer raskere.</translation>
 <translation id="1360955481084547712">Åpne et nytt inkognitovindu for å surfe privat</translation>
 <translation id="1361528602584216624">Grense på BRL <ph name="TRANSACTION_LIMIT" /> per Pix-betaling</translation>
 <translation id="1363015776076529485">Tilgjengelige betalingsmåter for å gå videre med betalingen er åpnet i full høyde.</translation>
@@ -1300,6 +1299,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037605927509011580">Æsj!</translation>
 <translation id="3039406992698062762">Familiereise</translation>
+<translation id="3040435070100611531">Kortene og billettene dine i Google Wallet</translation>
 <translation id="3041176923638368519">Se vilkårene for kortfordeler</translation>
 <translation id="3041584414879052436">Listen over utstedere av «Kjøp nå, betal senere» er lukket.</translation>
 <translation id="3041612393474885105">Sertifikatinformasjon</translation>

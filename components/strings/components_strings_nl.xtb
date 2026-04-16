@@ -236,7 +236,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1358187717814494928">Spreadsheet maken</translation>
 <translation id="1358223345833465883">Je zoekmachine in Chromium</translation>
 <translation id="1359836962251219822">Keuken en eetkamer</translation>
-<translation id="136059610328993645">Je informatie wordt opgeslagen in Google Wallet voor <ph name="ACCOUNT" />. Je kunt deze gebruiken in Google-services om formulieren sneller in te vullen.</translation>
 <translation id="1360955481084547712">Een nieuw incognitovenster openen om privé te browsen</translation>
 <translation id="1361528602584216624">Limiet per Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Lijst met betaalmethoden die kunnen worden geselecteerd om door te gaan met de betaling, geopend op volledige hoogte.</translation>
@@ -1300,6 +1299,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037605927509011580">Asjemenou!</translation>
 <translation id="3039406992698062762">Gezinsreizen</translation>
+<translation id="3040435070100611531">Je Google Wallet-kaarten</translation>
 <translation id="3041176923638368519">Voorwaarden voor kaartvoordelen bekijken</translation>
 <translation id="3041584414879052436">Lijst met aanbieders van Koop nu, betaal later is gesloten.</translation>
 <translation id="3041612393474885105">Certificaatgegevens</translation>
@@ -4766,7 +4766,7 @@ Aanvullende informatie:
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfoon deze keer toegestaan</translation>
-<translation id="8421746712901926961">Sla je informatie op in <ph name="GOOGLE_WALLET_TITLE_1" /> en doe sneller dingen, zoals formulieren invullen in Google-producten. Je kunt <ph name="MANAGE_INFO_LINK" /> in <ph name="GOOGLE_WALLET_TITLE_2" /> voor <ph name="ACCOUNT" />.</translation>
+<translation id="8421746712901926961">Sla je informatie op in <ph name="GOOGLE_WALLET_TITLE_1" /> om dingen sneller gedaan te krijgen, zoals formulieren invullen in Google-producten. Je kunt <ph name="MANAGE_INFO_LINK" /> in <ph name="GOOGLE_WALLET_TITLE_2" /> voor <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8426945547715537628">Toetsenbordoverschrijving toestaan?</translation>

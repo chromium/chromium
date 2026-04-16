@@ -236,7 +236,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1358187717814494928">Napravite tabelu</translation>
 <translation id="1358223345833465883">Vaš pretraživač u Chromium-u</translation>
 <translation id="1359836962251219822">Kuhinje i trpezarije</translation>
-<translation id="136059610328993645">Informacije se čuvaju u Google novčaniku za nalog <ph name="ACCOUNT" />. Možete da ih koristite u svim Google uslugama da biste brže popunjavali obrasce.</translation>
 <translation id="1360955481084547712">Otvorite novi prozor bez arhiviranja da biste pregledali privatno</translation>
 <translation id="1361528602584216624">Ograničenje za Pix u iznosu od <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Načini plaćanja dostupni za izbor za nastavak plaćanja otvoreni su u punoj visini.</translation>
@@ -1300,6 +1299,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3037177537145227281">Prati se cena</translation>
 <translation id="3037605927509011580">O, ne!</translation>
 <translation id="3039406992698062762">Porodična putovanja</translation>
+<translation id="3040435070100611531">Karte u Google novčaniku</translation>
 <translation id="3041176923638368519">Prikaži uslove za prednosti kartica</translation>
 <translation id="3041584414879052436">Lista izdavalaca opcije Kupite odmah, platite kasnije je zatvorena.</translation>
 <translation id="3041612393474885105">Informacije o sertifikatu</translation>
@@ -3360,7 +3360,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6246316216123107851">Pre <ph name="NUM_DAYS" /> dana</translation>
 <translation id="6246382863801034910">Vozilo</translation>
 <translation id="6246868321321344665">Organizacija može da vidi podatke pregledanja, poput lozinki i istorije, i na poslovnom i na ličnom profilu</translation>
-<translation id="6248988683584659830">Pretražite podešavanja</translation>
+<translation id="6248988683584659830">Podešavanja pretrage</translation>
 <translation id="6250932670816326647">Proizvodi za kupanje i negu tela</translation>
 <translation id="6251906504834538140">{0,plural, =1{Premeštanje fajla je blokirano}one{Premeštanje <ph name="FILE_COUNT" /> fajla je blokirano}few{Premeštanje <ph name="FILE_COUNT" /> fajla je blokirano}other{Premeštanje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali fajlovima koje ste preuzeli u Chrome-u</translation>

@@ -236,7 +236,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1358187717814494928">Create sheet</translation>
 <translation id="1358223345833465883">Your search engine in Chromium</translation>
 <translation id="1359836962251219822">Kitchen and Dining</translation>
-<translation id="136059610328993645">Your info gets saved to Google Wallet for <ph name="ACCOUNT" />. You can use it across Google services to fill forms faster.</translation>
 <translation id="1360955481084547712">Open a new incognito window to browse privately</translation>
 <translation id="1361528602584216624">Limit per Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Payment methods available to be selected for proceeding with the payment opened at full height.</translation>
@@ -1300,6 +1299,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039406992698062762">Family travel</translation>
+<translation id="3040435070100611531">Your Google Wallet passes</translation>
 <translation id="3041176923638368519">See card benefit terms</translation>
 <translation id="3041584414879052436">List of buy-now, pay-later issuers is closed.</translation>
 <translation id="3041612393474885105">Certificate Information</translation>

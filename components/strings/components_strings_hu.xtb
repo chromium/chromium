@@ -236,7 +236,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1358187717814494928">Táblázat létrehozása</translation>
 <translation id="1358223345833465883">Az Ön keresőmotorja a Chromiumban</translation>
 <translation id="1359836962251219822">Konyha és ebédlő</translation>
-<translation id="136059610328993645">Adatait a(z) <ph name="ACCOUNT" /> fiókhoz tartozó Google Walletbe menti a rendszer. A Google-szolgáltatásokban használhatja őket az űrlapok gyorsabb kitöltéséhez.</translation>
 <translation id="1360955481084547712">Privát böngészéshez nyisson új inkognitó ablakot</translation>
 <translation id="1361528602584216624">Pix-korlát <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">A fizetés folytatásához kiválasztható fizetési módok teljes magasságban megnyitva</translation>
@@ -1300,6 +1299,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037605927509011580">A manóba!</translation>
 <translation id="3039406992698062762">Családi utazás</translation>
+<translation id="3040435070100611531">Az Ön Google Wallet-kártyái</translation>
 <translation id="3041176923638368519">A kártya előnyeire vonatkozó feltételek megtekintése</translation>
 <translation id="3041584414879052436">A Késleltetett fizetés fizetési módot biztosító szolgáltatók listája be van zárva</translation>
 <translation id="3041612393474885105">Tanúsítvány adatai</translation>

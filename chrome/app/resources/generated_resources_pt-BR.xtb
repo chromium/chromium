@@ -3033,7 +3033,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3038628620670416486">Localizar botões do mouse</translation>
 <translation id="3039491566278747710">Falha ao instalar a política off-line no dispositivo.</translation>
 <translation id="303955801043931176">Guia fechada</translation>
-<translation id="3040435070100611531">Seus cartões da Carteira do Google</translation>
 <translation id="304169924727249890">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Mude a estratégia do carregamento otimizado.</translation>
 <translation id="3043016484125065343">Faça login para conferir seus favoritos</translation>
@@ -7779,7 +7778,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6400360390396538896">Sempre no site <ph name="ORIGIN" /></translation>
 <translation id="6401118106417399952">O EID do seu dispositivo é <ph name="EID_NUMBER" />, e o número de série é <ph name="SERIAL_NUMBER" />. Esses números podem ser usados para ativar o serviço.</translation>
 <translation id="6401458660421980302">Para enviar esta guia a outro dispositivo, faça login no Chrome no outro aparelho</translation>
-<translation id="6402042774506839496">Para saber o motivo, entre em contato com o desenvolvedor de apps.</translation>
+<translation id="6402042774506839496">Para saber o motivo, entre em contato com o desenvolvedor do app.</translation>
 <translation id="6402921224457714577">Sites podem pedir para controlar e reprogramar seus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="640457954117263537">Use a localização para apps e serviços do ChromeOS e do Android.</translation>

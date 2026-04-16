@@ -3027,7 +3027,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3038628620670416486">Finn knapper på musen</translation>
 <translation id="3039491566278747710">Kunne ikke installere regelen for bruk uten nett på enheten.</translation>
 <translation id="303955801043931176">Fanen er lukket</translation>
-<translation id="3040435070100611531">Kortene og billettene dine i Google Wallet</translation>
 <translation id="304169924727249890">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Endre strategien for optimalisert lading.</translation>
 <translation id="3043016484125065343">Logg på for å se bokmerkene dine</translation>
@@ -5991,7 +5990,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profilen kunne ikke lastes ned. Prøv på nytt senere, eller kontakt operatøren for å få hjelp.</translation>
 <translation id="5131591206283983824">Trykk og dra med styreflaten</translation>
-<translation id="5132606575454082197">Google Disk-innholdet ditt brukes bare for å levere denne søkefunksjoner etter filer. Den brukes ikke til å forbedre Google Søk. Google får ikke tilgang til Google Disk-innholdet ditt med mindre du laster opp en fil eksplisitt.</translation>
+<translation id="5132606575454082197">Google Disk-innholdet ditt brukes bare for å levere denne søkefunksjoner etter filer. Den brukes ikke til å forbedre Google Søk. Google får ikke tilgang til Google Disk-innholdet ditt med mindre du laster opp en fil manuelt.</translation>
 <translation id="5133035646508467110">Hvis du deler denne enheten med andre, kan du bruke fingeravtrykk for å bekrefte at det er deg, når du bruker lagrede passord</translation>
 <translation id="5135533361271311778">Kan ikke opprette bokmerkeelement.</translation>
 <translation id="513555878193063507">Legg til nytt APN</translation>
@@ -9287,7 +9286,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7465778193084373987">Nettadresse for tilbakekalling av Netscape-sertifikat</translation>
 <translation id="7466431077154602932">Kompakt visning</translation>
 <translation id="7466861475611330213">Tegnsettingsstil</translation>
-<translation id="7467547999067230412">Gjør søket mer omfattende med faner, filer eller et AI-verktøy</translation>
+<translation id="7467547999067230412">Forbedre søket med faner, filer eller et AI-verktøy</translation>
 <translation id="746861123368584540">Utvidelsen er lastet inn</translation>
 <translation id="7470131554696493512">Blokker Thunderbolt- eller USB4-tilbehør fra å bruke og dele minne (RAM)</translation>
 <translation id="7470274830728993952">Bli med i fanegruppen</translation>

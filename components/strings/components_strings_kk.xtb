@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Парақ жасау</translation>
 <translation id="1358223345833465883">Chromium-дегі іздеу жүйеңіз</translation>
 <translation id="1359836962251219822">Асүй және тамақ әзірлеу</translation>
-<translation id="136059610328993645">Ақпаратыңыз <ph name="ACCOUNT" /> аккаунтындағы Google Wallet-ке сақталады. Оны Google қызметтерінде пайдаланып, үлгілерді жылдамырақ толтыруға болады.</translation>
 <translation id="1360955481084547712">Жеке шолу үшін жаңа инкогнито терезесінде ашыңыз.</translation>
 <translation id="1361528602584216624">Pix бекіткен шектік сома R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Төлемді жалғастыру үшін таңдауға болатын төлеу әдістері толықтай ашылды.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Баға бақылануда</translation>
 <translation id="3037605927509011580">Қап!</translation>
 <translation id="3039406992698062762">Отбасылық саяхат</translation>
+<translation id="3040435070100611531">Google Wallet билеттеріңіз</translation>
 <translation id="3041176923638368519">Карта бонусының шарттарын көру</translation>
 <translation id="3041584414879052436">Бөліп төлеу қызметтері бар экран жабылған.</translation>
 <translation id="3041612393474885105">Сертификат ақпараты</translation>

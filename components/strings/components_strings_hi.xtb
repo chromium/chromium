@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">शीट बनाएं</translation>
 <translation id="1358223345833465883">Chromium में आपका सर्च इंजन</translation>
 <translation id="1359836962251219822">किचन और डाइनिंग</translation>
-<translation id="136059610328993645"><ph name="ACCOUNT" /> के लिए, आपकी जानकारी Google Wallet में सेव हो जाती है. इसका इस्तेमाल, Google की सभी सेवाओं में फ़ॉर्म तेज़ी से भरने के लिए किया जा सकता है.</translation>
 <translation id="1360955481084547712">निजी रूप से ब्राउज़ करने के लिए एक नई गुप्त विंडो खोलें</translation>
 <translation id="1361528602584216624">हर Pix पेमेंट पर <ph name="TRANSACTION_LIMIT" /> ब्राज़ीलियन रियाल की सीमा है</translation>
 <translation id="1363015776076529485">पेमेंट के तरीकों की सूची पूरी स्क्रीन पर खुली है. इनमें से कोई एक तरीका चुनकर, पेमेंट किया जा सकता है.</translation>
@@ -1301,6 +1300,7 @@
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
 <translation id="3039406992698062762">फ़ैमिली ट्रैवल</translation>
+<translation id="3040435070100611531">आपके Google Wallet में मौजूद पास</translation>
 <translation id="3041176923638368519">कार्ड पर मिलने वाले फ़ायदों से जुड़ी शर्तें देखें</translation>
 <translation id="3041584414879052436">'अभी खरीदें, बाद में पेमेंट करें' सुविधा देने वाली कंपनियों की सूची बंद है.</translation>
 <translation id="3041612393474885105">सर्टिफ़िकेट की जानकारी</translation>

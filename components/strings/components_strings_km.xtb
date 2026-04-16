@@ -237,7 +237,6 @@
 <translation id="1358187717814494928">បង្កើត​បញ្ជី</translation>
 <translation id="1358223345833465883">ម៉ាស៊ីន​ស្វែងរករបស់អ្នកក្នុង Chromium</translation>
 <translation id="1359836962251219822">គ្រឿងផ្ទះបាយ និង​បន្ទប់ទទួលទាន​អាហារ</translation>
-<translation id="136059610328993645">ព័ត៌មានរបស់អ្នកត្រូវបានរក្សាទុកទៅ Google Wallet សម្រាប់ <ph name="ACCOUNT" />។ អ្នកអាចប្រើវាលើសេវាកម្ម Google ដើម្បីបំពេញទម្រង់បែបបទបានកាន់តែលឿន។</translation>
 <translation id="1360955481084547712">បើក​ផ្ទាំងឯកជនថ្មី ដើម្បីរុករក​ជាលក្ខណៈឯកជន</translation>
 <translation id="1361528602584216624">កំណត់ត្រឹម R$ <ph name="TRANSACTION_LIMIT" /> ក្នុងមួយប្រតិបត្តិការ Pix</translation>
 <translation id="1363015776076529485">វិធីបង់ប្រាក់ដែលអាចរើសបានសម្រាប់ការបន្តជាមួយការបង់ប្រាក់ ត្រូវបានបើកពេញអេក្រង់។</translation>
@@ -1303,6 +1302,7 @@
 <translation id="3037177537145227281">កំពុងតាមដាន​តម្លៃ</translation>
 <translation id="3037605927509011580">អូយ ទក់!</translation>
 <translation id="3039406992698062762">ការធ្វើដំណើរ​លក្ខណៈគ្រួសារ</translation>
+<translation id="3040435070100611531">កាត Google Wallet របស់អ្នក</translation>
 <translation id="3041176923638368519">មើលលក្ខខណ្ឌអត្ថប្រយោជន៍កាត</translation>
 <translation id="3041584414879052436">បញ្ជី​ស្ថាប័ន​ចេញ​កាត 'ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ' ត្រូវបានបិទ។</translation>
 <translation id="3041612393474885105">ព័ត៌មានវិញ្ញាបនប័ត្រ</translation>

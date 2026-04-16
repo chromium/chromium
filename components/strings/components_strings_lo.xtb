@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">ສ້າງຊີດ</translation>
 <translation id="1358223345833465883">ໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chromium</translation>
 <translation id="1359836962251219822">ເຮືອນຄົວ ແລະ ຫ້ອງອາຫານ</translation>
-<translation id="136059610328993645">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໃສ່ໃນ Google Wallet ສຳລັບ <ph name="ACCOUNT" />. ທ່ານສາມາດໃຊ້ຂໍ້ມູນນີ້ໃນທົ່ວບໍລິການ Google ເພື່ອຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="1360955481084547712">ເປີດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອທ່ອງເວັບແບບເປັນສ່ວນຕົວ</translation>
 <translation id="1361528602584216624">ວົງເງິນຂອງ Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">ວິທີການຈ່າຍເງິນທີ່ພ້ອມໃຫ້ເລືອກເພື່ອດຳເນີນການຈ່າຍເງິນເປີດຢູ່ລະດັບຄວາມສູງເຕັມຈໍ.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3037605927509011580">ອ່າ, ຖ່າຍຮູບ!</translation>
 <translation id="3039406992698062762">ການທ່ອງທ່ຽວແບບຄອບຄົວ</translation>
+<translation id="3040435070100611531">ບັດຮວມໃນ Google Wallet ຂອງທ່ານ</translation>
 <translation id="3041176923638368519">ເບິ່ງຂໍ້ກຳນົດສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3041584414879052436">ລາຍຊື່ຂອງຜູ້ອອກບໍລິການຊື້ກ່ອນຈ່າຍນຳຫຼັງປິດແລ້ວ.</translation>
 <translation id="3041612393474885105">ຂໍ້ມູນໃບຢັ້ງຢືນ</translation>

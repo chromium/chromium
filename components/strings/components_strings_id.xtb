@@ -236,7 +236,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1358187717814494928">Buat sheet</translation>
 <translation id="1358223345833465883">Mesin telusur Anda di Chromium</translation>
 <translation id="1359836962251219822">Dapur &amp; Ruang Makan</translation>
-<translation id="136059610328993645">Info Anda disimpan ke Google Wallet untuk <ph name="ACCOUNT" />. Anda dapat menggunakannya di berbagai layanan Google untuk mengisi formulir lebih cepat.</translation>
 <translation id="1360955481084547712">Buka jendela Samaran baru untuk menjelajah secara pribadi</translation>
 <translation id="1361528602584216624">Batas per Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Metode pembayaran yang tersedia untuk dipilih guna melanjutkan pembayaran terbuka sepenuhnya.</translation>
@@ -1301,11 +1300,12 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3037177537145227281">Memantau harga</translation>
 <translation id="3037605927509011580">Yah!</translation>
 <translation id="3039406992698062762">Wisata Keluarga</translation>
+<translation id="3040435070100611531">Kartu Google Wallet Anda</translation>
 <translation id="3041176923638368519">Lihat persyaratan manfaat kartu</translation>
 <translation id="3041584414879052436">Daftar penerbit Beli Sekarang Bayar Nanti ditutup.</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
 <translation id="3045769629416806687">Olahraga Ekstrem</translation>
-<translation id="3047054686095898948">Simpan info Anda di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat <ph name="BEGIN_LINK" />mengelola info Anda<ph name="END_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" /></translation>
+<translation id="3047054686095898948">Simpan info Anda di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> dan selesaikan berbagai aktivitas lebih cepat, seperti mengisi formulir di berbagai produk Google. Anda dapat <ph name="BEGIN_LINK" />mengelola info Anda<ph name="END_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3052868890529250114">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>

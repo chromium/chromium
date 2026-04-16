@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">시트 만들기</translation>
 <translation id="1358223345833465883">Chromium의 검색엔진</translation>
 <translation id="1359836962251219822">주방 및 식당</translation>
-<translation id="136059610328993645">정보가 <ph name="ACCOUNT" />의 Google 월렛에 저장됩니다. Google 서비스 전반에서 이 기능을 사용하여 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="1360955481084547712">비공개로 탐색하려면 새로운 시크릿 창을 여세요.</translation>
 <translation id="1361528602584216624">Pix당 한도 R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">결제를 진행하기 위해 선택할 수 있는 결제 수단이 전체 높이로 열렸습니다.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
 <translation id="3039406992698062762">가족 여행</translation>
+<translation id="3040435070100611531">내 Google 월렛 패스</translation>
 <translation id="3041176923638368519">카드 혜택 약관 보기</translation>
 <translation id="3041584414879052436">선구매 후지불 발급기관 목록이 닫혔습니다.</translation>
 <translation id="3041612393474885105">인증서 정보</translation>

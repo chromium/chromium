@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Таблица түзүү</translation>
 <translation id="1358223345833465883">Chromium'дагы издөө куралыңыз</translation>
 <translation id="1359836962251219822">Ашкана жана тамактануу</translation>
-<translation id="136059610328993645">Маалыматыңыз <ph name="ACCOUNT" /> үчүн Google Капчыкка сакталат. Аны Google кызматтарында формаларды тезирээк толтуруу үчүн колдоно аласыз.</translation>
 <translation id="1360955481084547712">Жаңы Жашыруун терезени ачып, купуя серептеңиз</translation>
 <translation id="1361528602584216624">Pix'тин лимити: <ph name="TRANSACTION_LIMIT" />R$</translation>
 <translation id="1363015776076529485">Төлөө үчүн тандай турган төлөм ыкмалары толук ачылды.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Баасына көз салуу</translation>
 <translation id="3037605927509011580">Атаңдын көрү!</translation>
 <translation id="3039406992698062762">Үй-бүлөлүк саякат</translation>
+<translation id="3040435070100611531">Google Капчыктагы билеттериңиз</translation>
 <translation id="3041176923638368519">Картанын артыкчылык шарттарын караңыз</translation>
 <translation id="3041584414879052436">Бөлүп төлөөнү сунуштаган "Азыр сатып ал, кийин төлө" камсыздоочулардын тизмеси жабык.</translation>
 <translation id="3041612393474885105">Тастыктама маалыматы</translation>
@@ -3360,7 +3360,7 @@
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> күн мурун</translation>
 <translation id="6246382863801034910">Унаа</translation>
 <translation id="6246868321321344665">Уюмуңуз сырсөздөр жана таржымал сыяктуу серептөө дайындарын жумуш жана жеке профилдеринин экөөндө тең көрө алат</translation>
-<translation id="6248988683584659830">Издөө параметрлери</translation>
+<translation id="6248988683584659830">Издөө жөндөөлөрү</translation>
 <translation id="6250932670816326647">Ванна жана дене үчүн товарлар</translation>
 <translation id="6251906504834538140">{0,plural, =1{Файлды жылдыруу бөгөттөлдү}other{<ph name="FILE_COUNT" /> файлды жылдыруу бөгөттөлдү}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>

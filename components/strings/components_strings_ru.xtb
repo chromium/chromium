@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Создать таблицу</translation>
 <translation id="1358223345833465883">Поисковая система в Chromium</translation>
 <translation id="1359836962251219822">Кухня и столовая</translation>
-<translation id="136059610328993645">Ваши данные сохраняются в Google Кошельке для аккаунта <ph name="ACCOUNT" />. Вы можете использовать их во всех сервисах Google, чтобы быстрее заполнять формы.</translation>
 <translation id="1360955481084547712">Открыть новое окно в режиме инкогнито</translation>
 <translation id="1361528602584216624">Лимит Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Список способов оплаты, из которых нужно выбрать вариант для совершения платежа, раскрыт на весь экран.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
 <translation id="3039406992698062762">Семейные поездки</translation>
+<translation id="3040435070100611531">Ваши карты и билеты в Google Кошельке</translation>
 <translation id="3041176923638368519">Посмотреть условия использования преимуществ карты</translation>
 <translation id="3041584414879052436">Экран со списком сервисов рассрочки закрыт.</translation>
 <translation id="3041612393474885105">Данные сертификата</translation>

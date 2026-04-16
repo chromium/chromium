@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">יצירת גיליון</translation>
 <translation id="1358223345833465883">‏מנוע החיפוש שלך ב-Chromium</translation>
 <translation id="1359836962251219822">מטבחים ופינות אוכל</translation>
-<translation id="136059610328993645">‏הפרטים נשמרים ב-Google Wallet בחשבון <ph name="ACCOUNT" />. כדי למלא טפסים מהר יותר, אפשר להשתמש בפרטים האלה בכל שירותי Google.</translation>
 <translation id="1360955481084547712">כדי לגלוש באופן פרטי, יש לפתוח חלון אנונימי חדש</translation>
 <translation id="1361528602584216624">‏המגבלה לכל Pix R$‎: ‏<ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">רשימת אמצעי התשלום הזמינים לבחירה כדי להמשיך בתהליך התשלום נפתחה בגובה המלא של המסך.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
 <translation id="3039406992698062762">נסיעות משפחתיות</translation>
+<translation id="3040435070100611531">‏הכרטיסים שלך ב-Google Wallet</translation>
 <translation id="3041176923638368519">לעיון בתנאי ההטבה של הכרטיס</translation>
 <translation id="3041584414879052436">‏רשימת המנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" סגורה.</translation>
 <translation id="3041612393474885105">פרטי אישור</translation>

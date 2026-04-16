@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">إنشاء جدول بيانات</translation>
 <translation id="1358223345833465883">‏محرك البحث الخاص بك في Chromium</translation>
 <translation id="1359836962251219822">مطابخ وغرف طعام</translation>
-<translation id="136059610328993645">‏يتم حفظ معلوماتك في "محفظة Google" ضمن حساب <ph name="ACCOUNT" />. ويمكنك استخدامها في جميع خدمات Google لملء النماذج بشكل أسرع.</translation>
 <translation id="1360955481084547712">فتح نافذة تصفُّح متخفٍ جديدة للتصفُّح بخصوصية تامة</translation>
 <translation id="1361528602584216624">‏الحدّ الأقصى للدفعة الواحدة عبر Pix: <ph name="TRANSACTION_LIMIT" /> ريال برازيلي</translation>
 <translation id="1363015776076529485">تمّ فتح قائمة طرق الدفع التي يمكن اختيارها للمتابعة بطول الشاشة.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
 <translation id="3039406992698062762">سياحة عائلية</translation>
+<translation id="3040435070100611531">‏بطاقاتك في "محفظة Google"</translation>
 <translation id="3041176923638368519">الاطّلاع على أحكام مزايا البطاقة</translation>
 <translation id="3041584414879052436">‏تم إغلاق قائمة مقدّمي خدمة "الدفع الآجل" (BNPL).</translation>
 <translation id="3041612393474885105">معلومات الشهادة</translation>
@@ -3361,7 +3361,7 @@
 <translation id="6246316216123107851">قبل <ph name="NUM_DAYS" /> يوم</translation>
 <translation id="6246382863801034910">مركَبة</translation>
 <translation id="6246868321321344665">يمكن لمؤسستك الاطّلاع على بيانات التصفُّح، مثل كلمات المرور والسجلّ، في كل من ملف العمل والملف الشخصي</translation>
-<translation id="6248988683584659830">بحث في الإعدادات</translation>
+<translation id="6248988683584659830">البحث في الإعدادات</translation>
 <translation id="6250932670816326647">منتجات استحمام وعناية بالجسم</translation>
 <translation id="6251906504834538140">{0,plural, =1{تم حظر نقل الملف}zero{تم حظر نقل <ph name="FILE_COUNT" /> ملف}two{تم حظر نقل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر نقل <ph name="FILE_COUNT" /> ملفات}many{تم حظر نقل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر نقل <ph name="FILE_COUNT" /> ملف}}</translation>
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة الملفات التي تم تنزيلها في Chrome.</translation>

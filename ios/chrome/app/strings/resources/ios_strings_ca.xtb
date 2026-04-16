@@ -963,7 +963,7 @@
 <translation id="4469324811108161144">Les notes poden desar fins a <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="4471472356135655769">No es poden exportar les contrasenyes</translation>
 <translation id="4472575034687746823">Comença</translation>
-<translation id="4473565697543262065">Se suprimirà la informació seleccionada que s'ha desat en aquest dispositiu i al teu Compte de Google, <ph name="USER_EMAIL" /></translation>
+<translation id="4473565697543262065">Se suprimirà la informació seleccionada que s'ha desat en aquest dispositiu i al teu Compte de Google <ph name="USER_EMAIL" /></translation>
 <translation id="4473608001744970767">Amaga l'opció Fes un seguiment del preu</translation>
 <translation id="4474142134969976028">No hi ha cap resultat coincident</translation>
 <translation id="4474494258097106883">Creat per a l'iPhone</translation>
@@ -1583,7 +1583,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6532106788206463496">Desa els canvis</translation>
 <translation id="6536759809440150308">Obre <ph name="GROUP_TITLE" />, grup de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">exemple.cat</translation>
-<translation id="6538776393003671043">Chrome t'oferirà desar-la a Google Wallet la propera vegada que l'utilitzis</translation>
+<translation id="6538776393003671043">Chrome t'oferirà desar aquest element a Google Wallet la propera vegada que l'utilitzis</translation>
 <translation id="6543899060872618437">Tramita compres més ràpidament amb l'emplenament automàtic en tots els teus dispositius</translation>
 <translation id="6550675742724504774">Opcions</translation>
 <translation id="6550891580932862748">No et protegeix contra baixades, extensions ni llocs web perillosos. La configuració de Navegació segura en altres productes de Google no es veurà afectada.</translation>
@@ -2001,7 +2001,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8005666035647241369">Ves al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="8010488806779226127">Explora les funcions que et poden ajudar a fer més coses mentre navegues</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
-<translation id="8014007212279733632">Verifica la teva identitat per emplenar automàticament informació sensible</translation>
+<translation id="8014007212279733632">Verifica la teva identitat per emplenar automàticament la informació sensible</translation>
 <translation id="8015826420689927262">Suprimeix el fitxer adjunt</translation>
 <translation id="8017015647846870183">Del gestor de contrasenyes de Google, incloses les contrasenyes i les claus d'accés</translation>
 <translation id="802154636333426148">Error de baixada</translation>

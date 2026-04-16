@@ -236,7 +236,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1358187717814494928">Créer une feuille</translation>
 <translation id="1358223345833465883">Votre moteur de recherche dans Chromium</translation>
 <translation id="1359836962251219822">Cuisine et salle à manger</translation>
-<translation id="136059610328993645">Vos informations seront enregistrées dans Google Wallet pour <ph name="ACCOUNT" />. Vous pouvez les utiliser dans tous les services Google pour remplir des formulaires plus rapidement.</translation>
 <translation id="1360955481084547712">Ouvrez une nouvelle fenêtre de navigation privée pour naviguer de manière anonyme</translation>
 <translation id="1361528602584216624">Limite de <ph name="TRANSACTION_LIMIT" /> R$ avec Pix</translation>
 <translation id="1363015776076529485">Liste des modes de paiement disponibles pour effectuer le paiement, ouverte à pleine hauteur.</translation>
@@ -1300,6 +1299,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3037605927509011580">Aïe aïe aïe</translation>
 <translation id="3039406992698062762">Voyages en famille</translation>
+<translation id="3040435070100611531">Vos pass Google Wallet</translation>
 <translation id="3041176923638368519">Voir les conditions d'utilisation des avantages de la carte</translation>
 <translation id="3041584414879052436">La liste des émetteurs Acheter maintenant, payer plus tard est fermée.</translation>
 <translation id="3041612393474885105">Informations relatives au certificat</translation>
@@ -3361,7 +3361,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6246316216123107851">Il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6246382863801034910">Véhicule</translation>
 <translation id="6246868321321344665">Votre organisation peut voir des données de navigation comme les mots de passe et l'historique dans les profils professionnels et personnels</translation>
-<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
+<translation id="6248988683584659830">Paramètres de recherche</translation>
 <translation id="6250932670816326647">Produits pour le bain et le corps</translation>
 <translation id="6251906504834538140">{0,plural, =1{Déplacement bloqué pour le fichier}one{Déplacement bloqué pour <ph name="FILE_COUNT" /> fichier}other{Déplacement bloqué pour <ph name="FILE_COUNT" /> fichiers}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>

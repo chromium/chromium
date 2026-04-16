@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Создај табела</translation>
 <translation id="1358223345833465883">Вашиот пребарувач во Chromium</translation>
 <translation id="1359836962251219822">Кујна и трпезарија</translation>
-<translation id="136059610328993645">Вашите податоци се зачувуваат во Google Wallet за <ph name="ACCOUNT" />. Може да ги користите на услугите на Google за да ги пополнувате формуларите побрзо.</translation>
 <translation id="1360955481084547712">Отворете нов прозорец во режим „Инкогнито“ за приватно прелистување</translation>
 <translation id="1361528602584216624">Ограничување по Pix: <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Начините на плаќање достапни за избирање за да се продолжи со плаќањето се отворени на цел екран.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037605927509011580">По ѓаволите!</translation>
 <translation id="3039406992698062762">Семејно патување</translation>
+<translation id="3040435070100611531">Вашите пропусници во Google Wallet</translation>
 <translation id="3041176923638368519">Погледнете ги условите за поволностите од картичката</translation>
 <translation id="3041584414879052436">Списокот со издавачи на „Купете сега, платете подоцна“ е затворен.</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>

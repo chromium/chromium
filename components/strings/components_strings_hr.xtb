@@ -236,7 +236,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1358187717814494928">Izradite tablicu</translation>
 <translation id="1358223345833465883">Vaša tražilica u Chromiumu</translation>
 <translation id="1359836962251219822">Kuhinje i blagovaonice</translation>
-<translation id="136059610328993645">Vaši se podaci spremaju u Google Wallet za račun <ph name="ACCOUNT" />. Možete ih upotrebljavati na Googleovim uslugama za brže popunjavanje obrazaca.</translation>
 <translation id="1360955481084547712">Otvorite novi anonimni prozor da biste pregledavali privatno</translation>
 <translation id="1361528602584216624">Ograničenje po Pixu iznosi <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Načini plaćanja dostupni za odabir radi nastavljanja s plaćanjem otvoreni su u punoj visini.</translation>
@@ -1300,6 +1299,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3037605927509011580">O, ne!</translation>
 <translation id="3039406992698062762">Obiteljska putovanja</translation>
+<translation id="3040435070100611531">Vaše propusnice u Google Walletu</translation>
 <translation id="3041176923638368519">Pogledajte uvjete za ostvarivanje pogodnosti kartice</translation>
 <translation id="3041584414879052436">Popis Izdavatelja koji podržavaju metodu kupite sada, platite kasnije je zatvoren.</translation>
 <translation id="3041612393474885105">Podaci o certifikatu</translation>

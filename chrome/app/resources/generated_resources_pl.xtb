@@ -3005,7 +3005,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3038628620670416486">Zlokalizuj przyciski na myszy</translation>
 <translation id="3039491566278747710">Nie udało się zainstalować zasad offline na urządzeniu.</translation>
 <translation id="303955801043931176">Karta została zamknięta</translation>
-<translation id="3040435070100611531">Twoje karty i bilety w Portfelu Google</translation>
 <translation id="304169924727249890">Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Zmień strategię ładowania zoptymalizowanego.</translation>
 <translation id="3043016484125065343">Zaloguj się, aby wyświetlić swoje zakładki</translation>
@@ -7534,7 +7533,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6247620186971210352">Nie znaleziono aplikacji</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Przeszukaj ustawienia</translation>
+<translation id="6248988683584659830">Ustawienia wyszukiwania</translation>
 <translation id="6249200942125593849">Zarządzaj funkcjami ułatwień dostępu</translation>
 <translation id="6250186368828697007">Gdy udostępniasz ekran, szczegóły są ukryte</translation>
 <translation id="6250887692313997958">Wybierz kartę, którą chcesz dodać do widoku dzielonego</translation>

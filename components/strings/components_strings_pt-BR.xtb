@@ -236,7 +236,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1358187717814494928">Criar planilha</translation>
 <translation id="1358223345833465883">Seu mecanismo de pesquisa no Chromium</translation>
 <translation id="1359836962251219822">Cozinha e jantar</translation>
-<translation id="136059610328993645">Suas informações são salvas na Carteira do Google para <ph name="ACCOUNT" />. Você pode usar esse recurso nos serviços do Google para preencher formulários mais rapidamente.</translation>
 <translation id="1360955481084547712">Abra uma nova janela anônima para navegar com privacidade</translation>
 <translation id="1361528602584216624">Limite por Pix R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">As formas de pagamento disponíveis para seleção e conclusão do pagamento estão abertas no tamanho máximo.</translation>
@@ -1300,6 +1299,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
 <translation id="3039406992698062762">Viagens em família</translation>
+<translation id="3040435070100611531">Seus cartões da Carteira do Google</translation>
 <translation id="3041176923638368519">Consulte os termos dos benefícios do cartão</translation>
 <translation id="3041584414879052436">A lista de emissores da opção "Compre agora, pague depois" está fechada.</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
@@ -2722,7 +2722,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda copiar o arquivo para: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar os arquivos para: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">O grupo de guias "<ph name="GROUP_NAME" />" não está mais disponível</translation>
-<translation id="5262342527470539728">Suas informações são salvas em <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" />.</translation>
+<translation id="5262342527470539728">Suas informações serão salvas na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="5263867360296733198">Revise antes de fazer upload dos arquivos</translation>
 <translation id="5266128565379329178">Encadernação na parte superior</translation>
 <translation id="5269225904387178860">Perfuração quádrupla na parte inferior</translation>

@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">建立試算表</translation>
 <translation id="1358223345833465883">你在 Chromium 中的搜尋引擎</translation>
 <translation id="1359836962251219822">餐廚用具</translation>
-<translation id="136059610328993645">你的資訊會儲存到 <ph name="ACCOUNT" /> 的 Google 錢包。你可以在各項 Google 服務中使用這項資訊，更快填寫表單。</translation>
 <translation id="1360955481084547712">開啟新的無痕視窗以進行私密瀏覽</translation>
 <translation id="1361528602584216624">每筆 Pix 交易的上限為 R$ <ph name="TRANSACTION_LIMIT" /> 巴西雷亞爾</translation>
 <translation id="1363015776076529485">已完整開啟可供選取的付款方式，以便繼續付款。</translation>
@@ -1299,11 +1298,12 @@
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039406992698062762">家庭旅遊</translation>
+<translation id="3040435070100611531">你的 Google 錢包票證</translation>
 <translation id="3041176923638368519">查看卡片優惠措施條款</translation>
 <translation id="3041584414879052436">「先買後付」發卡機構清單已關閉。</translation>
 <translation id="3041612393474885105">憑證資訊</translation>
 <translation id="3045769629416806687">極限運動</translation>
-<translation id="3047054686095898948">將資訊儲存在 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />，處理事務更有效率，例如在 Google 產品中輕鬆填寫表單。你可以前往 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /><ph name="BEGIN_LINK" />管理 <ph name="ACCOUNT" /> 的資訊<ph name="END_LINK" /></translation>
+<translation id="3047054686095898948">將資訊儲存在 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />，處理事務更有效率，例如在 Google 產品中輕鬆填寫表單。你可以前往 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> <ph name="BEGIN_LINK" />管理 <ph name="ACCOUNT" /> 的資訊<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">Chrome 遠端桌面歷史記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
 <translation id="3052868890529250114">你通常可以經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>

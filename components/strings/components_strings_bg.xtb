@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Създаване на таблица</translation>
 <translation id="1358223345833465883">Вашата търсеща машина в Chromium</translation>
 <translation id="1359836962251219822">Кухня и трапезария</translation>
-<translation id="136059610328993645">Информацията ви се запазва в Google Wallet за <ph name="ACCOUNT" />. Можете да използвате продукта в услугите на Google с цел по-бързо попълване на формуляри.</translation>
 <translation id="1360955481084547712">Отворете нов прозорец в режим „инкогнито“, за да сърфирате частно</translation>
 <translation id="1361528602584216624"><ph name="TRANSACTION_LIMIT" /> R$ лимит за Pix</translation>
 <translation id="1363015776076529485">Списъкът с начини на плащане, които могат да бъдат избрани за продължаване на плащането, е отворен на пълната височина.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Цената се проследява</translation>
 <translation id="3037605927509011580">Ужас!</translation>
 <translation id="3039406992698062762">Семейни пътувания</translation>
+<translation id="3040435070100611531">Картите ви в Google Wallet</translation>
 <translation id="3041176923638368519">Вижте условията за предимствата на картата</translation>
 <translation id="3041584414879052436">Списъкът с доставчици на услуги от типа „Купете сега, платете по-късно“ е затворен.</translation>
 <translation id="3041612393474885105">Информация за сертификата</translation>

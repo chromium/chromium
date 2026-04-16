@@ -236,7 +236,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1358187717814494928">Crear hoja de cálculo</translation>
 <translation id="1358223345833465883">Tu buscador en Chromium</translation>
 <translation id="1359836962251219822">Cocinas y comedores</translation>
-<translation id="136059610328993645">Tu información se guarda en Google Wallet para <ph name="ACCOUNT" />. Puedes usarla en diferentes servicios de Google para rellenar formularios más rápido.</translation>
 <translation id="1360955481084547712">Abre una nueva ventana de Incógnito para navegar en privado</translation>
 <translation id="1361528602584216624">Límite para Pix <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Los métodos de pago que puedes seleccionar para completar el pago están abiertos a altura completa.</translation>
@@ -1300,6 +1299,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3037177537145227281">Siguiendo precio</translation>
 <translation id="3037605927509011580">¡Vaya!</translation>
 <translation id="3039406992698062762">Viajes familiares</translation>
+<translation id="3040435070100611531">Tus pases de Google Wallet</translation>
 <translation id="3041176923638368519">Ver términos sobre las ventajas de la tarjeta</translation>
 <translation id="3041584414879052436">La lista de emisores de pago aplazado está cerrada.</translation>
 <translation id="3041612393474885105">Datos del certificado</translation>

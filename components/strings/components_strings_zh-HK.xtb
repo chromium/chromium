@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">建立試算表</translation>
 <translation id="1358223345833465883">你在 Chromium 中的搜尋引擎</translation>
 <translation id="1359836962251219822">廚房及用餐</translation>
-<translation id="136059610328993645">資料會儲存至 <ph name="ACCOUNT" /> 的「Google 錢包」。你可以在各項 Google 服務中使用有關資料，加快填表速度。</translation>
 <translation id="1360955481084547712">開啟新的無痕式視窗以私下瀏覽內容</translation>
 <translation id="1361528602584216624">每筆 Pix 交易上限為 R$<ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">可選的付款方式顯示於整個畫面，讓使用者選擇並繼續付款。</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039406992698062762">家庭旅遊</translation>
+<translation id="3040435070100611531">「Google 錢包」票卡</translation>
 <translation id="3041176923638368519">查看信用卡禮遇條款</translation>
 <translation id="3041584414879052436">「先買後付」發卡機構名單閂埋咗。</translation>
 <translation id="3041612393474885105">憑證資料</translation>

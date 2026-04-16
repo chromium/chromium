@@ -236,7 +236,6 @@
 <translation id="1358187717814494928">Направите табелу</translation>
 <translation id="1358223345833465883">Ваш претраживач у Chromium-у</translation>
 <translation id="1359836962251219822">Кухиње и трпезарије</translation>
-<translation id="136059610328993645">Информације се чувају у Google новчанику за налог <ph name="ACCOUNT" />. Можете да их користите у свим Google услугама да бисте брже попуњавали обрасце.</translation>
 <translation id="1360955481084547712">Отворите нови прозор без архивирања да бисте прегледали приватно</translation>
 <translation id="1361528602584216624">Ограничење за Pix у износу од <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Начини плаћања доступни за избор за наставак плаћања отворени су у пуној висини.</translation>
@@ -1300,6 +1299,7 @@
 <translation id="3037177537145227281">Прати се цена</translation>
 <translation id="3037605927509011580">О, не!</translation>
 <translation id="3039406992698062762">Породична путовања</translation>
+<translation id="3040435070100611531">Карте у Google новчанику</translation>
 <translation id="3041176923638368519">Прикажи услове за предности картица</translation>
 <translation id="3041584414879052436">Листа издавалаца опције Купите одмах, платите касније је затворена.</translation>
 <translation id="3041612393474885105">Информације о сертификату</translation>
@@ -3360,7 +3360,7 @@
 <translation id="6246316216123107851">Пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6246382863801034910">Возило</translation>
 <translation id="6246868321321344665">Организација може да види податке прегледања, попут лозинки и историје, и на пословном и на личном профилу</translation>
-<translation id="6248988683584659830">Претражите подешавања</translation>
+<translation id="6248988683584659830">Подешавања претраге</translation>
 <translation id="6250932670816326647">Производи за купање и негу тела</translation>
 <translation id="6251906504834538140">{0,plural, =1{Премештање фајла је блокирано}one{Премештање <ph name="FILE_COUNT" /> фајла је блокирано}few{Премештање <ph name="FILE_COUNT" /> фајла је блокирано}other{Премештање <ph name="FILE_COUNT" /> фајлова је блокирано}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали фајловима које сте преузели у Chrome-у</translation>

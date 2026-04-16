@@ -3017,7 +3017,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3038628620670416486">Encuentra los botones del mouse</translation>
 <translation id="3039491566278747710">No se pudo instalar la política sin conexión en el dispositivo.</translation>
 <translation id="303955801043931176">Pestaña cerrada</translation>
-<translation id="3040435070100611531">Los pases de tu Billetera de Google</translation>
 <translation id="304169924727249890">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambiar la estrategia de carga optimizada.</translation>
 <translation id="3043016484125065343">Accede para ver tus favoritos</translation>
@@ -7555,7 +7554,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6247620186971210352">No se encontraron apps</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Buscar en configuración</translation>
+<translation id="6248988683584659830">Configuración de la búsqueda</translation>
 <translation id="6249200942125593849">Administrar la accesibilidad</translation>
 <translation id="6250186368828697007">Cuando compartes la pantalla, se ocultan los detalles.</translation>
 <translation id="6250887692313997958">Elige una pestaña para agregarla a la vista dividida</translation>

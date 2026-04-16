@@ -3022,7 +3022,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3038628620670416486">Najděte tlačítka na myši</translation>
 <translation id="3039491566278747710">Instalace offline zásady na zařízení se nezdařila.</translation>
 <translation id="303955801043931176">Karta zavřena</translation>
-<translation id="3040435070100611531">Vaše karty v Peněžence Google</translation>
 <translation id="304169924727249890">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Změnit strategii optimalizovaného nabíjení</translation>
 <translation id="3043016484125065343">Pokud chcete zobrazit své záložky, přihlaste se</translation>
@@ -7552,7 +7551,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6247620186971210352">Nebyly nalezeny žádné aplikace</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Systém: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Prohledat nastavení</translation>
+<translation id="6248988683584659830">Nastavení vyhledávání</translation>
 <translation id="6249200942125593849">Správa přístupnosti</translation>
 <translation id="6250186368828697007">Podrobnosti jsou při sdílení obrazovky skryty</translation>
 <translation id="6250887692313997958">Vyberte kartu, kterou chcete přidat do rozděleného zobrazení</translation>

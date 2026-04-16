@@ -293,7 +293,7 @@
 <translation id="2251809247798634662">புதிய மறைநிலைச் சாளரம்</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> உடன் பகிர வேண்டியவற்றைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="2261570557291037252">ஆப்ஸ் குறித்த கூடுதல் தகவல்</translation>
-<translation id="2270544918551255912">பின்செல்ல முனையில் இருந்து ஸ்வைப் செய்யுங்கள்</translation>
+<translation id="2270544918551255912">பின்செல்ல ஓரத்திலிருந்து ஸ்வைப் செய்யுங்கள்</translation>
 <translation id="2276696007612801991">கடவுச்சொற்களைச் சரிபார்க்க, உங்கள் Google கணக்கில் உள்நுழையவும்</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, தேர்ந்தெடுத்த மறைநிலைப் பக்கம்</translation>
 <translation id="2286841657746966508">பில்லிங் முகவரி</translation>
@@ -686,7 +686,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">கடந்த 4 வாரங்கள்</translation>
 <translation id="393697183122708255">குரல் தேடல் இயக்கப்படவில்லை</translation>
-<translation id="3941718885865495207">Chrome Finds ஒப்புதலுக்கான கீழ்ப்புறச் சீட்டு</translation>
+<translation id="3941718885865495207">Chrome பரிந்துரைக்கான ஒப்புதல் கீழ்ப்புறச் சீட்டு</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பிக்ச்சர்-இன்-பிக்ச்சர் பக்கம்</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
 <translation id="395377504920307820">கணக்கு இல்லாமல் பயன்படுத்து</translation>
@@ -1192,7 +1192,7 @@
 <translation id="6011308810877101166">தேடல் பரிந்துரைகளை மேம்படுத்து</translation>
 <translation id="6013305291643746595">பழையவற்றின்படி வரிசைப்படுத்துகிறது</translation>
 <translation id="6022659036123304283">Chromeமை உங்களுடையதாக்குங்கள்</translation>
-<translation id="6023820583797130428">பின்செல்ல மெனுவைத் திற</translation>
+<translation id="6023820583797130428">பின்செல்ல மெனுவைத் திறக்கவும்</translation>
 <translation id="6026538407078977628">முழுத்திரைக்கு மாறும்</translation>
 <translation id="6030719887161080597">விளம்பரச் செயல்திறனை அளவிட தளங்களால் பயன்படுத்தப்பட்ட தகவலை நிர்வகிக்கலாம்</translation>
 <translation id="6039379616847168523">அடுத்த தாவலுக்குச் செல்லும்</translation>
@@ -1637,7 +1637,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> வழக்கமான பக்கம்}other{<ph name="TABS_COUNT_MANY" /> வழக்கமான பக்கங்கள்}}</translation>
 <translation id="7603168929588204083">தவறான தேதி</translation>
 <translation id="7605594153474022051">ஒத்திசைவு வேலை செய்யவில்லை</translation>
-<translation id="7608245556672190037">Chrome Finds ஒப்புதலுக்கான திரை முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
+<translation id="7608245556672190037">Chrome பரிந்துரைக்கான ஒப்புதல் திரை முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="7612619742409846846">Google இல் உள்நுழைந்திருக்கும் கணக்கு</translation>
 <translation id="7612989789287281429">உள்நுழைகிறீர்கள்…</translation>
 <translation id="7619072057915878432">நெட்வொர்க் தோல்விகளால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
@@ -1645,7 +1645,7 @@
 <translation id="7628417132421583481">Password Managerருக்குச் செல்</translation>
 <translation id="7630202231528827509">URLலை உள்ளிடுக</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
-<translation id="764047009170754705">Chrome Finds ஒப்புதல் அளித்தல் மூடப்பட்டது</translation>
+<translation id="764047009170754705">Chrome பரிந்துரைக்கான ஒப்புதல் திரை மூடப்பட்டது</translation>
 <translation id="7646499124171960488">பாதுகாப்பற்ற பொதுத் தளங்களுக்கு எச்சரிக்கை செய்</translation>
 <translation id="7646772052135772216">கடவுச்சொல் ஒத்திசைவு இயங்கவில்லை</translation>
 <translation id="7655240423373329753">கடந்த 7 நாட்களில்</translation>
@@ -1870,7 +1870,7 @@
 <translation id="8473863474539038330">முகவரிகள் மற்றும் பல</translation>
 <translation id="847433688444405067">சாதனங்களிடையே உலாவுங்கள்</translation>
 <translation id="8477178913400731244">தரவை நீக்கு</translation>
-<translation id="8481771036036087705">Chrome Finds ஒப்புதலுக்கான திரை பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
+<translation id="8481771036036087705">Chrome பரிந்துரைக்கான ஒப்புதல் திரை பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">செயலில் இல்லாத சாளரங்கள் எதுவுமில்லை</translation>
 <translation id="8493948351860045254">இடத்தைக் காலியாக்கு</translation>

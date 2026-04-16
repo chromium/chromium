@@ -766,7 +766,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1521933835545997395">Mit Android-Smartphone verbunden</translation>
 <translation id="1523279371236772909">Im letzten Monat angesehen</translation>
 <translation id="1523486680453956384">Aufgabe ansehen</translation>
-<translation id="1523978563989812243">Sprachausgabe-Engines</translation>
+<translation id="1523978563989812243">Text-zu-Sprache-Engines</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
 <translation id="1525740877599838384">Zur Standortbestimmung nur WLAN nutzen</translation>
 <translation id="152629053603783244">Linux neu starten</translation>
@@ -1007,7 +1007,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1679068421605151609">Entwicklertools</translation>
 <translation id="1679810534535368772">Möchtest du den Bildschirm wirklich schließen?</translation>
 <translation id="167983332380191032">Der Verwaltungsdienst hat einen HTTP-Fehler gemeldet.</translation>
-<translation id="167997285881077031">Einstellungen für Sprachausgabe</translation>
+<translation id="167997285881077031">Einstellungen für Text-zu-Sprache</translation>
 <translation id="1682195225331129001">Jetzt ausprobieren</translation>
 <translation id="1682548588986054654">Neues &amp;Inkognitofenster</translation>
 <translation id="1682696837763999627">Großer Cursor</translation>
@@ -2201,7 +2201,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="249113932447298600">Das Gerät <ph name="DEVICE_LABEL" /> wird derzeit nicht unterstützt.</translation>
 <translation id="2491587035099903063">Vorschau der Stimme für <ph name="LANGUAGE" /> anhören</translation>
 <translation id="2492461744635776704">Zertifikatssignaturanfrage wird vorbereitet</translation>
-<translation id="249330843868392562">Einstellungen für Sprachausgabe öffnen</translation>
+<translation id="249330843868392562">Einstellungen für Text-zu-Sprache öffnen</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2496616243169085015">Fotografie</translation>
 <translation id="2497229222757901769">Mausgeschwindigkeit</translation>
@@ -3017,7 +3017,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3038628620670416486">Tasten an deiner Maus erkennen</translation>
 <translation id="3039491566278747710">Fehler beim Installieren der Offlinerichtlinie auf dem Gerät.</translation>
 <translation id="303955801043931176">Tab geschlossen</translation>
-<translation id="3040435070100611531">Karten und Tickets in Google Wallet öffnen</translation>
 <translation id="304169924727249890">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> beitreten</translation>
 <translation id="3042097545107738107">Strategie für das optimierte Laden ändern.</translation>
 <translation id="3043016484125065343">Melde dich an, um deine Lesezeichen zu sehen</translation>
@@ -3893,7 +3892,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3678156199662914018">Erweiterung: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">In diesem Fenster aufgerufene Seiten erscheinen nicht im Browserverlauf und hinterlassen auch keine anderweitigen Spuren wie Cookies auf dem Computer, nachdem du dich abgemeldet hast. Deine Lesezeichen und deine heruntergeladenen Dateien bleiben nicht erhalten.</translation>
 <translation id="3679126865530709868">Eingebautes Touchpad</translation>
-<translation id="3680683624079082902">Stimme der Sprachausgabe</translation>
+<translation id="3680683624079082902">Stimme für Text-zu-Sprache</translation>
 <translation id="3681017028939109078">Beim Starten von Splitscreen Vorschläge für Fenster anzeigen</translation>
 <translation id="3681191721636073359">Chrome geht davon aus, dass du auf dieser Website deinen Standort nicht verwenden möchtest. Entsprechende Anfragen werden daher nicht angezeigt, um Unterbrechungen zu reduzieren.</translation>
 <translation id="3681311097828166361">Vielen Dank für dein Feedback. Du bist jetzt offline und dein Bericht wird später versendet.</translation>
@@ -4103,7 +4102,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
-<translation id="3801449494961771207">Standardstimme für die Sprachausgabe</translation>
+<translation id="3801449494961771207">Standardstimme für Text-zu-Sprache</translation>
 <translation id="3802486193901166966">Diese Erweiterung erfordert keine speziellen Berechtigungen und ermöglicht keinen zusätzlichen Websitezugriff</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Videoqualität</translation>
@@ -5691,7 +5690,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4918762404810341788">Kopieren und öffnen</translation>
 <translation id="4918844574251943176">Bild kopiert</translation>
-<translation id="4921348630401250116">Sprachausgabe</translation>
+<translation id="4921348630401250116">Text-zu-Sprache</translation>
 <translation id="4922104989726031751">Wenn du den Passwortmanager mit deinem Betriebssystem verwenden möchtest, starte Chromium neu und erlaube den Zugriff auf den Passwortmanager deines Computers. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="4923561999941435531">{0,plural, =1{1 Element im Konto speichern}other{# Elemente im Konto speichern}}</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> wird deinstalliert…</translation>
@@ -7548,7 +7547,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6247620186971210352">Keine Apps gefunden</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">In Einstellungen suchen</translation>
+<translation id="6248988683584659830">In den Einstellungen suchen</translation>
 <translation id="6249200942125593849">Bedienungshilfen verwalten</translation>
 <translation id="6250186368828697007">Details sind während des Bildschirmteilens verborgen</translation>
 <translation id="6250887692313997958">Tab auswählen, der in der geteilten Ansicht angezeigt werden soll</translation>
@@ -8971,7 +8970,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7260206782629605806">Wenn du den Grenzwert verringerst, reicht eine sanfte Bewegung. Wenn du den Grenzwert erhöhst, musst du möglicherweise eine größere Bewegung ausführen.</translation>
 <translation id="7260802376010589729">Verwende „c“, um eine Maustaste loszulassen</translation>
 <translation id="7261217796641151584">Gruppe freigeben</translation>
-<translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
+<translation id="7261612856573623172">Text-zu-Sprache-Stimme des Systems</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
 <translation id="7262564444061174264">Weitere Informationen zur Tastenkombination</translation>
 <translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet. Daher können andere Personen als du bestimmte Informationen in deinem Profil einsehen, wie z. B.:</translation>
@@ -8993,7 +8992,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="727595954130325265">Jetzt kaufen</translation>
 <translation id="7277275452721470458">Aktivitäten im KI-Modus</translation>
 <translation id="727952162645687754">Fehler beim Herunterladen</translation>
-<translation id="7280649757394340890">Einstellungen für Sprachausgabe</translation>
+<translation id="7280649757394340890">Einstellungen für Text-zu-Sprache</translation>
 <translation id="7280683802406059877">Tastenkombination anpassen</translation>
 <translation id="7280877790564589615">Berechtigung angefordert</translation>
 <translation id="7281166215790160128">Modus</translation>
@@ -11644,7 +11643,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <ph name="BREAK" />
 <ph name="BREAK" />
 Informationen dazu, welche Daten von Google erhoben werden und warum, findest du unter <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
-<translation id="9066782832737749352">Sprachausgabe</translation>
+<translation id="9066782832737749352">Text-zu-Sprache</translation>
 <translation id="9068298336633421551">Android-Apps und -Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbasierter Dienste verwenden.</translation>
 <translation id="9068598199622656904">Tasten für Tastenkombinationen können nacheinander gedrückt werden, anstatt sie gleichzeitig gedrückt zu halten</translation>
 <translation id="9068878141610261315">Nicht unterstützter Dateityp</translation>

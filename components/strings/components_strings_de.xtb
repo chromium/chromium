@@ -236,7 +236,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1358187717814494928">Tabelle erstellen</translation>
 <translation id="1358223345833465883">Deine Suchmaschine in Chromium</translation>
 <translation id="1359836962251219822">Küche und Speisezimmer</translation>
-<translation id="136059610328993645">Deine Informationen werden im Google Wallet-Konto von <ph name="ACCOUNT" /> gespeichert. Du kannst sie in allen Google-Diensten verwenden, um Formulare schneller auszufüllen.</translation>
 <translation id="1360955481084547712">Ein neues Inkognitofenster öffnen, um privat zu surfen</translation>
 <translation id="1361528602584216624">Limit pro Pix‑Zahlung: <ph name="TRANSACTION_LIMIT" /> BRL</translation>
 <translation id="1363015776076529485">Die Liste mit den Zahlungsmethoden, die ausgewählt werden können, um mit der Zahlung fortzufahren, ist vollständig geöffnet.</translation>
@@ -1300,6 +1299,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
 <translation id="3037605927509011580">Oh nein!</translation>
 <translation id="3039406992698062762">Familienreisen</translation>
+<translation id="3040435070100611531">Karten und Tickets in Google Wallet öffnen</translation>
 <translation id="3041176923638368519">Nutzungsbedingungen für Kartenvorteile ansehen</translation>
 <translation id="3041584414879052436">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>
 <translation id="3041612393474885105">Zertifikatinformationen</translation>
@@ -3359,7 +3359,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6246316216123107851">Vor <ph name="NUM_DAYS" /> Tagen</translation>
 <translation id="6246382863801034910">Fahrzeug</translation>
 <translation id="6246868321321344665">Deine Organisation kann Browserdaten wie Passwörter und den Verlauf sowohl in deinem Arbeitsprofil als auch in deinem privaten Profil sehen</translation>
-<translation id="6248988683584659830">In Einstellungen suchen</translation>
+<translation id="6248988683584659830">In den Einstellungen suchen</translation>
 <translation id="6250932670816326647">Bade- und Körperpflegeprodukte</translation>
 <translation id="6251906504834538140">{0,plural, =1{Datei kann nicht verschoben werden}other{<ph name="FILE_COUNT" /> Dateien können nicht verschoben werden}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in Chrome heruntergeladene Dateien zu verwalten</translation>

@@ -236,7 +236,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1358187717814494928">E-Tablo oluştur</translation>
 <translation id="1358223345833465883">Chromium'daki arama motorunuz</translation>
 <translation id="1359836962251219822">Mutfak ve Yemek Odası</translation>
-<translation id="136059610328993645"><ph name="ACCOUNT" /> hesabıyla ilgili bilgileriniz Google Cüzdan'a kaydedilir. Formları daha hızlı doldurmak için bu özelliği Google hizmetlerinde kullanabilirsiniz.</translation>
 <translation id="1360955481084547712">Gizli olarak göz atmak için yeni bir gizli pencere açın</translation>
 <translation id="1361528602584216624">Pix başına limit R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Ödemede kullanılmak üzere seçilebilecek ödeme yöntemleri tam ekranda açıldı.</translation>
@@ -1055,7 +1054,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2627847595568876492">PDF'deki metin çıkarılıyor...</translation>
 <translation id="2628025184666666186">Bu sunucu, web trafiği şifreleme için Chrome veya sistem yapılandırmanız tarafından güvenilmeyen bir güvenlik sertifikası kullandığından <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive'da oturum açın</translation>
-<translation id="2631059741268498165">Yöneticiniz bu cihazı devre dışıyken buldu. Yeniden etkinleştirildi ve kullanıma hazır.</translation>
+<translation id="2631059741268498165">Yöneticiniz bu cihazı devre dışıyken buldu. Cihaz yeniden etkinleştirildi ve şu anda kullanıma hazır.</translation>
 <translation id="2631387782019878060">Doğrulama Kodu: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ana makinesinin sunucu IP adresi bulunamadı.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> üzerinde arama yapmak için @ yazın</translation>
@@ -1300,6 +1299,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3037177537145227281">Fiyat takip ediliyor</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
 <translation id="3039406992698062762">Aile Gezisi</translation>
+<translation id="3040435070100611531">Google Cüzdan kartlarınız</translation>
 <translation id="3041176923638368519">Kart avantajı şartlarını inceleyin</translation>
 <translation id="3041584414879052436">"Şimdi al sonra öde" sağlayıcıları listesi kapatıldı.</translation>
 <translation id="3041612393474885105">Sertifika Bilgileri</translation>
@@ -3361,7 +3361,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> gün önce</translation>
 <translation id="6246382863801034910">Araç</translation>
 <translation id="6246868321321344665">Kuruluşunuz hem iş profilindeki hem de kişisel profildeki şifreler ve geçmiş gibi tarama verilerini görebilir</translation>
-<translation id="6248988683584659830">Ayarlarda arayın</translation>
+<translation id="6248988683584659830">Ayarlarda ara</translation>
 <translation id="6250932670816326647">Banyo ve Vücut Ürünleri</translation>
 <translation id="6251906504834538140">{0,plural, =1{Dosyanın taşınması engellendi}other{<ph name="FILE_COUNT" /> dosyanın taşınması engellendi}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'da indirdiğiniz dosyaları yönetmek için Sekme'ye, ardından Enter'a basın</translation>

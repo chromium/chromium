@@ -3030,7 +3030,6 @@
 <translation id="3038628620670416486">مکان‌یابی دکمه‌های موشواره</translation>
 <translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
 <translation id="303955801043931176">برگه بسته شد</translation>
-<translation id="3040435070100611531">‏مجوزهای شما در «کیف پول Google»</translation>
 <translation id="304169924727249890">به «گروه زبانه» با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="3042097545107738107">راهبرد شارژ بهینه‌سازی‌شده را تغییر می‌دهد.</translation>
 <translation id="3043016484125065343">برای دیدن نشانک‌ها، به سیستم وارد شوید</translation>
@@ -5928,7 +5927,7 @@
 <translation id="5083035541015925118">مهار + دگرساز + بالابر</translation>
 <translation id="5084622689760736648">سایت‌ها به‌احتمال زیاد عملکردی مطابق انتظار شما خواهند داشت</translation>
 <translation id="5084686326967545037">مراحل نمایش‌داده‌شده در دستگاهتان را دنبال کنید</translation>
-<translation id="5085162214018721575">در حال بررسی به‌روزرسانی‌ها</translation>
+<translation id="5085162214018721575">درحال بررسی وجود به‌روزرسانی</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">یادداشت بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="5087249366037322692">توسط یک شخص ثالث اضافه شده است</translation>
@@ -9297,7 +9296,7 @@
 <translation id="7465778193084373987">‏نشانی وب ابطال گواهی Netscape</translation>
 <translation id="7466431077154602932">نمای فشرده</translation>
 <translation id="7466861475611330213">شیوه سجاوندی</translation>
-<translation id="7467547999067230412">با زبانه، فایل، یا ابزار هوشواره‌ای، جستجویتان را بهبود دهید</translation>
+<translation id="7467547999067230412">با زبانه، فایل، یا ابزار هوشواره‌ای، جستجوهایتان را بهبود دهید</translation>
 <translation id="746861123368584540">افزونه بار شد</translation>
 <translation id="7470131554696493512">‏مسدود کردن لوازم جانبی Thunderbolt یا USB4 از دسترسی داشتن و هم‌رسانی حافظه (حافظه دسترسی تصادفی)</translation>
 <translation id="7470274830728993952">پیوستن به گروه زبانه</translation>
@@ -9399,7 +9398,7 @@
 <translation id="75362970626182391">گروه زبانه جدید</translation>
 <translation id="7536815228183532290">واردشده به سیستم با <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">این نوع فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
-<translation id="7540972813190816353">در هنگام بررسی برای وجود به‌روزرسانی خطایی رخ داد: <ph name="ERROR" /></translation>
+<translation id="7540972813190816353">هنگام بررسی وجود به‌روزرسانی، خطایی رخ داد: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> این دستگاه را به نسخه قبلی برگردانده است. لطفاً فایل‌های مهم را ذخیره کنید، سپس دستگاه را بازراه‌اندازی کنید. همه داده‌های ذخیره‌شده در دستگاه حذف خواهد شد.</translation>
 <translation id="754207240458482646">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">اطلاعات اصالت‌سنجی شبکه «پروتکل اصالت‌سنجی توسعه‌پذیر»</translation>

@@ -236,7 +236,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1358187717814494928">Unda jedwali</translation>
 <translation id="1358223345833465883">Mtambo wako wa kutafuta kwenye Chromium</translation>
 <translation id="1359836962251219822">Jikoni na Chumba cha Kulia Chakula</translation>
-<translation id="136059610328993645">Taarifa zako zitahifadhiwa kwenye Pochi ya Google katika <ph name="ACCOUNT" />. Unaweza kuzitumia kwenye huduma mbalimbali za Google ili ujaze fomu kwa haraka.</translation>
 <translation id="1360955481084547712">Fungua Dirisha Fiche jipya ili uvinjari kwa faragha</translation>
 <translation id="1361528602584216624">Kiwango cha juu zaidi cha malipo kupitia Pix ni R$ <ph name="TRANSACTION_LIMIT" /></translation>
 <translation id="1363015776076529485">Njia za kulipa zinazopatikana ili kuchaguliwa katika mchakato wa kulipa zimefunguliwa kwenye hali ya skrini nzima.</translation>
@@ -1300,6 +1299,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3037177537145227281">Unafuatilia bei</translation>
 <translation id="3037605927509011580">Lo!</translation>
 <translation id="3039406992698062762">Safari za Kifamilia</translation>
+<translation id="3040435070100611531">Pasi za Pochi yako ya Google</translation>
 <translation id="3041176923638368519">Angalia sheria na masharti ya manufaa ya kadi</translation>
 <translation id="3041584414879052436">Orodha ya watoaji wa huduma ya Nunua sasa, lipa baadaye imefungwa.</translation>
 <translation id="3041612393474885105">Maelezo ya Cheti</translation>
@@ -3361,7 +3361,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6246316216123107851">Siku <ph name="NUM_DAYS" /> zilizopita</translation>
 <translation id="6246382863801034910">Gari</translation>
 <translation id="6246868321321344665">Shirika lako linaweza kuona data ya kuvinjari, kama vile manenosiri na historia katika wasifu wa binafsi na wa kazini</translation>
-<translation id="6248988683584659830">Mipangilio ya Utafutaji</translation>
+<translation id="6248988683584659830">Mipangilio ya utafutaji</translation>
 <translation id="6250932670816326647">Bidhaa za Kuogea na Kutunza Mwili</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faili imezuiwa ili isihamishwe}other{Faili <ph name="FILE_COUNT" /> zimezuiwa ili zisihamishwe}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'Tab' kisha 'Enter' ili udhibiti faili ulizozipakua katika Chrome</translation>

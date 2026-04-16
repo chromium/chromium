@@ -236,7 +236,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1358187717814494928">Crea un full de càlcul</translation>
 <translation id="1358223345833465883">El teu motor de cerca a Chromium</translation>
 <translation id="1359836962251219822">Cuina i menjador</translation>
-<translation id="136059610328993645">La teva informació es desarà a Google Wallet per a <ph name="ACCOUNT" />. Pots utilitzar-la en tots els serveis de Google per emplenar formularis més ràpidament.</translation>
 <translation id="1360955481084547712">Obre una finestra d'incògnit nova per navegar en privat</translation>
 <translation id="1361528602584216624">Límit de <ph name="TRANSACTION_LIMIT" /> R$ per Pix</translation>
 <translation id="1363015776076529485">Formes de pagament disponibles per seleccionar i continuar el pagament obertes a alçada completa.</translation>
@@ -1298,6 +1297,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037605927509011580">Vaja!</translation>
 <translation id="3039406992698062762">Viatges en família</translation>
+<translation id="3040435070100611531">Els teus passis de Google Wallet</translation>
 <translation id="3041176923638368519">Consulta les condicions de l'avantatge de la targeta</translation>
 <translation id="3041584414879052436">La llista d'emissors de Compra ara, paga després està tancada.</translation>
 <translation id="3041612393474885105">Informació del certificat</translation>
@@ -5191,6 +5191,7 @@ Detalls addicionals:
 <translation id="9140198744651252040">El navegador Chrome vol utilitzar l'empremta digital per emplenar automàticament les contrasenyes</translation>
 <translation id="9141013498910525015">Gestiona les adreces</translation>
 <translation id="9141435142213469335">Desa l'adreça amb més informació</translation>
+<translation id="9141510259469546089">Compra mínima: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">S'ha permès la RA aquesta vegada</translation>
 <translation id="9143898823728499852">Pots emplenar automàticament les dades d'aquesta targeta perquè el teu compte de <ph name="CARD_ISSUER_NAME" /> està enllaçat a Google Pay</translation>
 <translation id="9144951720726881238">Data de caducitat:</translation>
@@ -5263,6 +5264,7 @@ Detalls addicionals:
 <translation id="937885410143139026">S'han enviat dades a la consola d'administració</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="940524522703752213">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a <ph name="MINUTES" /> minuts</translation>
+<translation id="943185096918807504">Compra màxima: <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">Mostra quines recompenses i quins avantatges tens disponibles per a les targetes en el moment de tramitar la compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Informació sobre els avantatges de les targetes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945673208656386843">Emplena automàticament aquesta targeta per a les compres fetes a Chromium quan s'hagi desat en aquest dispositiu</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un lloc web a Google Sites ràpidament</translation>

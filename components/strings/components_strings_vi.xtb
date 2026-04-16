@@ -236,7 +236,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1358187717814494928">Tạo trang tính</translation>
 <translation id="1358223345833465883">Công cụ tìm kiếm của bạn trong Chromium</translation>
 <translation id="1359836962251219822">Nhà bếp và phòng ăn</translation>
-<translation id="136059610328993645">Thông tin của bạn sẽ được lưu vào Google Wallet cho <ph name="ACCOUNT" />. Bạn có thể dùng thông tin này để điền vào biểu mẫu nhanh hơn trên các dịch vụ của Google.</translation>
 <translation id="1360955481084547712">Mở một cửa sổ Ẩn danh mới để duyệt web ở chế độ riêng tư</translation>
 <translation id="1361528602584216624">Giới hạn cho mỗi giao dịch với Pix là <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Các phương thức thanh toán mà bạn có thể chọn để tiến hành thanh toán đã mở toàn bộ.</translation>
@@ -1300,6 +1299,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037605927509011580">Ôi, hỏng! </translation>
 <translation id="3039406992698062762">Du lịch gia đình</translation>
+<translation id="3040435070100611531">Thẻ và vé của bạn trong Google Wallet</translation>
 <translation id="3041176923638368519">Xem các điều khoản về lợi ích của thẻ</translation>
 <translation id="3041584414879052436">Danh sách các tổ chức phát hành dịch vụ Mua trước trả sau đang đóng.</translation>
 <translation id="3041612393474885105">Thông tin Chứng chỉ</translation>
@@ -3361,7 +3361,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> ngày trước</translation>
 <translation id="6246382863801034910">Xe</translation>
 <translation id="6246868321321344665">Tổ chức bạn có thể xem dữ liệu duyệt web, chẳng hạn như mật khẩu và nhật ký trong cả hồ sơ công việc và hồ sơ cá nhân</translation>
-<translation id="6248988683584659830">Tìm chế độ cài đặt</translation>
+<translation id="6248988683584659830">Tìm kiếm cài đặt</translation>
 <translation id="6250932670816326647">Sản phẩm tắm gội và chăm sóc cơ thể</translation>
 <translation id="6251906504834538140">{0,plural, =1{Tệp đã bị chặn không cho di chuyển}other{<ph name="FILE_COUNT" /> tệp đã bị chặn không cho di chuyển}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý các tệp bạn đã tải xuống trong Chrome</translation>
