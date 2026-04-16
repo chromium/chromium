@@ -246,6 +246,13 @@ std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
 
   Profile* profile = Profile::FromBrowserContext(context_);
   if (dm_token->scope == policy::POLICY_SCOPE_MACHINE) {
+#if BUILDFLAG(IS_CHROMEOS)
+    auto* device_settings_service = ash::DeviceSettingsService::Get();
+    const auto* policy_data = device_settings_service->policy_data();
+    if (policy_data && policy_data->has_device_id()) {
+      return policy_data->device_id();
+    }
+#endif
     return GetClientId(profile);
   }
 
