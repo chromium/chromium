@@ -30,6 +30,9 @@ class SearchAIModeSignInPromoView : public LocationBarBubbleDelegateView {
   void FireTimerForTesting();
 
  private:
+  // views::WidgetDelegate:
+  void WindowClosing() override;
+
   // LocationBarBubbleDelegateView:
   void AddedToWidget() override;
 

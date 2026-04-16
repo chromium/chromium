@@ -8,6 +8,7 @@
 #include "base/check_deref.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -341,6 +342,52 @@ IN_PROC_BROWSER_TEST_F(
                [](SearchAIModeSignInPromoView* view) {
                  view->FireTimerForTesting();
                }),
-      WaitForHide(kSearchAIModeSignInPromoFrameViewId)));
+      WaitForHide(kSearchAIModeSignInPromoFrameViewId),
+      PollUntil(
+          [this]() {
+            return SearchAiModePromoTabHelper::FromWebContents(
+                       browser()->tab_strip_model()->GetActiveWebContents()) ==
+                   nullptr;
+          },
+          "Wait for tab helper to be destroyed")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SearchAiModePromoTabHelperInteractiveBubbleDismissalUiTest,
+    TabHelperDestroyedOnPromoDismissal) {
+  const GURL ai_url =
+      embedded_test_server()->GetURL(kGoogleHost, kSearchAimPath);
+  const GURL result_url =
+      embedded_test_server()->GetURL(kGoogleHost, kSearchResultRelativeUrl);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSourceTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
+
+  RunTestSequence(InAnyContext(
+      InstrumentTab(kSourceTabId), NavigateWebContents(kSourceTabId, ai_url),
+      WaitForElementVisible(kSourceTabId, DeepQuery{"#link"}),
+      InstrumentNextTab(kNewTabId),
+      ClickElement(kSourceTabId, DeepQuery{"#link"}),
+      WaitForWebContentsNavigation(kNewTabId, result_url),
+      // Promo should be visible for a non-signed-in user initially.
+      WaitForShow(kSearchAIModeSignInPromoFrameViewId),
+      CheckResult(
+          [this]() {
+            return SearchAiModePromoTabHelper::FromWebContents(
+                       browser()->tab_strip_model()->GetActiveWebContents()) !=
+                   nullptr;
+          },
+          true),
+      // Dismiss the promo using the close button.
+      PressButton(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForHide(kSearchAIModeSignInPromoFrameViewId),
+      // Verify the tab helper is destroyed.
+      PollUntil(
+          [this]() {
+            return SearchAiModePromoTabHelper::FromWebContents(
+                       browser()->tab_strip_model()->GetActiveWebContents()) ==
+                   nullptr;
+          },
+          "Wait for tab helper destruction")));
 }
 }  // namespace contextual_tasks

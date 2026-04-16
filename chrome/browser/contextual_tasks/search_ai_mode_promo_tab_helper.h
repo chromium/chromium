@@ -9,7 +9,9 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/search_ai_mode_signin_promo_controller_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,7 +41,8 @@ BASE_DECLARE_FEATURE(kEnableLoadOriginalAIMSearchAfterSigninPromo);
 class SearchAiModePromoTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<SearchAiModePromoTabHelper>,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public SearchAIModeSignInPromoControllerObserver {
  public:
   SearchAiModePromoTabHelper(const SearchAiModePromoTabHelper&) = delete;
   SearchAiModePromoTabHelper& operator=(const SearchAiModePromoTabHelper&) =
@@ -51,6 +54,7 @@ class SearchAiModePromoTabHelper
       base::RepeatingCallback<
           std::unique_ptr<SearchAIModeSignInPromoController>(
               content::WebContents*)> factory_callback);
+  SearchAIModeSignInPromoController* GetSigninPromoControllerForTesting();
 
  private:
   friend class content::WebContentsUserData<SearchAiModePromoTabHelper>;
@@ -73,6 +77,9 @@ class SearchAiModePromoTabHelper
       override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
+
+  // SearchAIModeSignInPromoControllerObserver implementation:
+  void OnFlowAborted() override;
 
   void TriggerCoBrowsePostSignIn();
   void MaybeTriggerCobrowse(const CoreAccountInfo& account_info);
@@ -101,6 +108,9 @@ class SearchAiModePromoTabHelper
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_scoped_observation_{this};
+  base::ScopedObservation<SearchAIModeSignInPromoController,
+                          SearchAIModeSignInPromoControllerObserver>
+      signin_promo_controller_observation_{this};
   base::WeakPtrFactory<SearchAiModePromoTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

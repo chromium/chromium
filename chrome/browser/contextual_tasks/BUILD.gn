@@ -178,7 +178,10 @@ source_set("ui") {
   }
 
   if (enable_dice_support) {
-    sources += [ "search_ai_mode_promo_tab_helper.h" ]
+    sources += [
+      "search_ai_mode_promo_tab_helper.h",
+      "search_ai_mode_signin_promo_controller_observer.h",
+    ]
   }
 
   public_deps = [

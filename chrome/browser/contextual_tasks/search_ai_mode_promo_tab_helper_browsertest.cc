@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -33,6 +34,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+class BrowserView;
+
 namespace contextual_tasks {
 
 namespace {
@@ -43,7 +46,7 @@ class MockSearchAIModeSignInPromoController
   explicit MockSearchAIModeSignInPromoController(
       content::WebContents* web_contents)
       : SearchAIModeSignInPromoController(web_contents) {}
-  MOCK_METHOD(void, MaybeShowPromo, (BrowserView*), (override));
+  MOCK_METHOD(bool, MaybeShowPromo, (BrowserView*), (override));
 };
 
 }  // namespace
@@ -141,7 +144,10 @@ class SearchAiModePromoTabHelperBrowserTest : public InProcessBrowserTest {
     CHECK(web_contents);
     auto controller =
         std::make_unique<MockSearchAIModeSignInPromoController>(web_contents);
-    EXPECT_CALL(*controller, MaybeShowPromo(testing::_)).Times(expected_calls_count);
+    EXPECT_CALL(*controller, MaybeShowPromo(testing::_))
+        .Times(expected_calls_count)
+        .WillRepeatedly(testing::Return(true));
+
     return controller;
   }
 

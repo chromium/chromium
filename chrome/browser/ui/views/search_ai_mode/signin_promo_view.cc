@@ -61,13 +61,19 @@ SearchAIModeSignInPromoView::SearchAIModeSignInPromoView(
 
 SearchAIModeSignInPromoView::~SearchAIModeSignInPromoView() {
   if (controller_) {
-    controller_->OnBubbleClosed();
+    controller_->OnViewIsDeleting();
   }
 }
 
 void SearchAIModeSignInPromoView::FireTimerForTesting() {
   CHECK_IS_TEST();
   self_dismissal_timer_.FireNow();
+}
+
+void SearchAIModeSignInPromoView::WindowClosing() {
+  if (controller_) {
+    controller_->HandlePromoClosing(GetWidget()->closed_reason());
+  }
 }
 
 void SearchAIModeSignInPromoView::AddedToWidget() {
