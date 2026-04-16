@@ -242,6 +242,11 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
             mProgressBarAnimationBc25.setInterpolator(
                     PathInterpolatorCompat.create(0.57f, 0f, 0.12f, 1.0f));
             mProgressBarAnimationBc25.setDuration(FINISH_ANIMATION_DURATION_MS);
+        } else {
+            // When path9 flag is enabled, these time listeners are set in onAttachToWindow()
+            mSmoothProgressAnimator.setTimeListener(mSmoothProgressAnimatorListener);
+            mCompositedProgressBarAnimation.setTimeListener(
+                    mCompositedProgressBarAnimationListener);
         }
     }
 
