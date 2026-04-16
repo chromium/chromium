@@ -83,7 +83,12 @@ public class FakeMostVisitedSites implements MostVisitedSites {
 
     // MostVisitedSites implementation.
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mBlocklistedUrls.clear();
+        mCustomLinks.clear();
+        mObserver = null;
+        mSites.clear();
+    }
 
     @Override
     public void setObserver(Observer observer, int numResults) {

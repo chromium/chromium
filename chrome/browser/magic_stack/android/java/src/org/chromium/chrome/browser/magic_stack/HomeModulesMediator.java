@@ -653,6 +653,9 @@ public class HomeModulesMediator {
 
         assumeNonNull(mOnHomeModulesChangedCallback);
         mOnHomeModulesChangedCallback.run();
+        mOnHomeModulesChangedCallback = null;
+
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     /** Returns the instance of a module {@link ModuleProvider} of the given type. */

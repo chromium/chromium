@@ -471,6 +471,12 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             mCallbackController.destroy();
             mCallbackController = null;
         }
+        if (mSnapHelper != null) {
+            mSnapHelper = null;
+        }
+        if (mOnScrollListener != null) {
+            mOnScrollListener = null;
+        }
     }
 
     public boolean getIsSnapHelperAttachedForTesting() {

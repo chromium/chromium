@@ -40,6 +40,22 @@ public class GarbageCollectionTestUtils {
             }
         }
 
+        // clang-format off
+        // If this function returns false, uncomment the following code, use command "adb pull" to
+        // pull the generated .hprof file, and import it in the Android Studio's Profiler to
+        // analyze.
+        //
+        // if (reference.get() != null) {
+        //    // Determine a file path for the dump.
+        //    String filePath = PathUtils.getDataDirectory() + "/leak_investigation.hprof";
+        //
+        //    // Generate the heap dump.
+        //    if (JavaHeapDumpGenerator.generateHprof(filePath)) {
+        //       Log.e("MemoryDump", "Heap dump captured at: " + filePath);
+        //    }
+        // }
+        // clang-format on
+
         return reference.get() == null;
     }
 }
