@@ -498,6 +498,20 @@
       <message name="IDS_WEBSTORE_DOWNLOAD_ACCESS_DENIED" desc="Text displayed in the error prompt when a CRX cannot be downloaded due to an authentication error.">
         Access denied.
       </message>
+
+       <!-- Error messages for Web Store API -->
+     <message name="IDS_EXTENSIONS_SUPERVISED_USER_PARENTAL_PERMISSION_FAILURE" desc="The error information displayed in extra details if the parent permission request flow fails unexpectedly when a supervised user attempts to install or enable an extension. Note that this does not include the case where a parent fails to enter their password.">
+        Parent permission request failed.
+      </message>
+      <message name="IDS_EXTENSIONS_SUPERVISED_USER_BLOCKED_BY_PARENT" desc="The information displayed in extra details if the parent blocks or cancels the installation flow for an extension.">
+        Your parent didn't approve this extension
+      </message>
+
+      <!-- Extension/App install dialog strings -->
+      <message name="IDS_EXTENSION_PROMPT_MESSAGE_FROM_ADMIN" desc="Second line in the content area of the extension of app blocked prompt. It gives user the additional message which comes from their administrator.">
+        From your administrator: <ph name="ADMIN_MESSAGE">$1<ex>Please visit www.example.com/extension for more information.</ex></ph>
+      </message>
+
     </messages>
   </release>
 </grit>
