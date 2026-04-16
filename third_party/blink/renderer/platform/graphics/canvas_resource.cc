@@ -120,9 +120,13 @@ void CanvasResource::OnPlaceholderReleasedResource(
     return;
   }
 
-  auto& owning_thread_task_runner = resource->owning_thread_task_runner_;
-  owning_thread_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&DropRefOnOwningThread, std::move(resource)));
+  if (resource->is_cross_thread()) {
+    auto& owning_thread_task_runner = resource->owning_thread_task_runner_;
+    owning_thread_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&DropRefOnOwningThread, std::move(resource)));
+  } else {
+    DropRefOnOwningThread(std::move(resource));
+  }
 }
 
 // static
