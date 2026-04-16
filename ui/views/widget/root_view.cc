@@ -33,6 +33,7 @@
 #include "ui/views/drag_controller.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/root_view_targeter.h"
 #include "ui/views/widget/widget.h"
@@ -860,27 +861,34 @@ void RootView::SetMouseLocationAndFlags(const ui::MouseEvent& event) {
 }
 
 void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
-  View* v = GetEventHandlerForPoint(event.location());
+  View* raw_view = GetEventHandlerForPoint(event.location());
   // Check for a disabled move handler. If the move handler became
   // disabled while handling moves, it's wrong to suddenly send
   // EventType::kMouseExited and EventType::kMouseEntered events, because the
   // mouse hasn't actually exited yet.
   if (mouse_move_handler_ && !mouse_move_handler_->GetEnabledInViewsSubtree() &&
-      v->Contains(mouse_move_handler_)) {
-    v = mouse_move_handler_;
+      raw_view->Contains(mouse_move_handler_)) {
+    raw_view = mouse_move_handler_;
   }
 
-  if (v && v != this) {
-    if (v != mouse_move_handler_) {
+  ViewTracker view_tracker(raw_view);
+
+  if (view_tracker.view() && view_tracker.view() != this) {
+    if (view_tracker.view() != mouse_move_handler_) {
       if (mouse_move_handler_ != nullptr &&
           (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
-           !mouse_move_handler_->Contains(v))) {
+           !mouse_move_handler_->Contains(view_tracker.view()))) {
         MouseEnterExitEvent exit(event, ui::EventType::kMouseExited);
         exit.ConvertLocationToTarget(static_cast<View*>(this),
                                      mouse_move_handler_.get());
         ui::EventDispatchDetails dispatch_details =
             DispatchEvent(mouse_move_handler_, &exit);
         if (dispatch_details.dispatcher_destroyed) {
+          return;
+        }
+        // If the entered view was destroyed by the exited view's handler,
+        // return early to avoid UAF.
+        if (!view_tracker.view()) {
           return;
         }
         // The mouse_move_handler_ could have been destroyed in the context of
@@ -893,14 +901,19 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
             return;
           }
           dispatch_details = NotifyEnterExitOfDescendant(
-              event, ui::EventType::kMouseExited, mouse_move_handler_, v);
+              event, ui::EventType::kMouseExited, mouse_move_handler_,
+              view_tracker.view());
           if (dispatch_details.dispatcher_destroyed) {
+            return;
+          }
+          // Check again if v was destroyed during NotifyEnterExitOfDescendant
+          if (!view_tracker.view()) {
             return;
           }
         }
       }
       View* old_handler = mouse_move_handler_;
-      mouse_move_handler_ = v;
+      mouse_move_handler_ = view_tracker.view();
       // TODO(crbug.com/40821061): This is for debug purpose only.
       // Remove it after resolving the issue.
       if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
@@ -957,8 +970,9 @@ void RootView::HandleMouseEnteredOrMoved(const ui::MouseEvent& event) {
       if (!mouse_move_handler_) {
         return;
       }
-      dispatch_details = NotifyEnterExitOfDescendant(
-          event, ui::EventType::kMouseExited, mouse_move_handler_, v);
+      dispatch_details =
+          NotifyEnterExitOfDescendant(event, ui::EventType::kMouseExited,
+                                      mouse_move_handler_, view_tracker.view());
       if (dispatch_details.dispatcher_destroyed) {
         return;
       }

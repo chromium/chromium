@@ -704,6 +704,98 @@ TEST_F(RootViewTest, DeleteViewOnMouseEnterDispatch) {
   EXPECT_TRUE(root_view->GetContentsView()->children().empty());
 }
 
+namespace {
+
+// View that, on receiving kMouseExited, deletes a sibling view.
+class DeleteSiblingOnMouseExited : public View {
+  METADATA_HEADER(DeleteSiblingOnMouseExited, View)
+
+ public:
+  DeleteSiblingOnMouseExited() = default;
+  DeleteSiblingOnMouseExited(const DeleteSiblingOnMouseExited&) = delete;
+  DeleteSiblingOnMouseExited& operator=(const DeleteSiblingOnMouseExited&) =
+      delete;
+
+  void set_sibling_to_delete(View* sibling) { sibling_to_delete_ = sibling; }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    if (sibling_to_delete_) {
+      View* victim = sibling_to_delete_.get();
+      sibling_to_delete_ = nullptr;
+      parent()->RemoveChildViewT(victim);
+    }
+  }
+
+ private:
+  raw_ptr<View> sibling_to_delete_ = nullptr;
+};
+
+BEGIN_METADATA(DeleteSiblingOnMouseExited)
+END_METADATA
+
+}  // namespace
+
+// Verifies that deleting an entered view from the exited view's OnMouseExited
+// handler does not cause a use-after-free.
+TEST_F(RootViewTest, DeleteEnteredSiblingDuringMouseExitDispatch) {
+  RootViewTestState state(this, {.bounds = {10, 10, 500, 500},
+                                 .type = Widget::InitParams::TYPE_POPUP});
+  internal::RootView* root_view = state.GetRootView();
+  View* content = root_view->GetContentsView();
+
+  content->SetNotifyEnterExitOnChild(true);
+
+  DeleteSiblingOnMouseExited* view_a =
+      content->AddChildView(std::make_unique<DeleteSiblingOnMouseExited>());
+  view_a->SetBounds(10, 10, 100, 100);
+
+  View* view_b = content->AddChildView(std::make_unique<View>());
+  view_b->SetBounds(200, 10, 100, 100);
+
+  view_a->set_sibling_to_delete(view_b);
+
+  // Move mouse over A.
+  ui::MouseEvent move1(ui::EventType::kMouseMoved, gfx::Point(50, 50),
+                       gfx::Point(50, 50), ui::EventTimeForNow(), 0, 0);
+  root_view->OnMouseMoved(move1);
+
+  // Move mouse over B, which should delete B during A's exit dispatch.
+  ui::MouseEvent move2(ui::EventType::kMouseMoved, gfx::Point(250, 50),
+                       gfx::Point(250, 50), ui::EventTimeForNow(), 0, 0);
+  root_view->OnMouseMoved(move2);
+
+  EXPECT_EQ(1u, content->children().size());
+}
+
+// Same as above but without NotifyEnterExitOnChild on the parent.
+TEST_F(RootViewTest, DeleteEnteredSibling_NoNotifyAncestor) {
+  RootViewTestState state(this, {.bounds = {10, 10, 500, 500},
+                                 .type = Widget::InitParams::TYPE_POPUP});
+  internal::RootView* root_view = state.GetRootView();
+  View* content = root_view->GetContentsView();
+
+  DeleteSiblingOnMouseExited* view_a =
+      content->AddChildView(std::make_unique<DeleteSiblingOnMouseExited>());
+  view_a->SetBounds(10, 10, 100, 100);
+
+  View* view_b = content->AddChildView(std::make_unique<View>());
+  view_b->SetBounds(200, 10, 100, 100);
+
+  view_a->set_sibling_to_delete(view_b);
+
+  // Move mouse over A.
+  ui::MouseEvent move1(ui::EventType::kMouseMoved, gfx::Point(50, 50),
+                       gfx::Point(50, 50), ui::EventTimeForNow(), 0, 0);
+  root_view->OnMouseMoved(move1);
+
+  // Move mouse over B, which should delete B during A's exit dispatch.
+  ui::MouseEvent move2(ui::EventType::kMouseMoved, gfx::Point(250, 50),
+                       gfx::Point(250, 50), ui::EventTimeForNow(), 0, 0);
+  root_view->OnMouseMoved(move2);
+
+  EXPECT_EQ(1u, content->children().size());
+}
+
 // Verifies removing a View in OnMouseEntered() doesn't crash.
 TEST_F(RootViewTest, RemoveViewOnMouseEnterDispatch) {
   RootViewTestState state(this, {.bounds = {10, 10, 500, 500},
