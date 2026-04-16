@@ -33,8 +33,6 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownValue;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
@@ -59,8 +57,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -73,7 +69,6 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldView;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.DropdownKeyValue;
@@ -87,7 +82,6 @@ import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -102,7 +96,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
-@EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
 public class EntityEditorModuleTest {
     private static final String USER_EMAIL = "example@gmail.com";
     private static final AttributeType PASSPORT_NAME_ATTRIBUTE_TYPE =
@@ -309,37 +302,6 @@ public class EntityEditorModuleTest {
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
-    }
-
-    @Test
-    @SmallTest
-    public void testBackgroundColor() {
-        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        showEditorDialog(NEW_LOCAL_PASSPORT);
-        verifyHasExpectedBackgroundColor(
-                mContainerView, SemanticColorUtils.getSettingsBackgroundColor(mActivity));
-        verifyHasExpectedBackgroundColor(
-                mContainerView.findViewById(R.id.action_bar),
-                SemanticColorUtils.getSettingsBackgroundColor(mActivity));
-        verifyHasExpectedBackgroundColor(
-                mContainerView.findViewById(R.id.button_bar),
-                SemanticColorUtils.getSettingsBackgroundColor(mActivity));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
-    public void testBackgroundColorWhenAutofillAiDisabled() {
-        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        showEditorDialog(NEW_LOCAL_PASSPORT);
-        verifyHasExpectedBackgroundColor(
-                mContainerView, SemanticColorUtils.getDefaultBgColor(mActivity));
-        verifyHasExpectedBackgroundColor(
-                mContainerView.findViewById(R.id.action_bar),
-                SemanticColorUtils.getDefaultBgColor(mActivity));
-        verifyHasExpectedBackgroundColor(
-                mContainerView.findViewById(R.id.button_bar),
-                SemanticColorUtils.getDefaultBgColor(mActivity));
     }
 
     @Test
@@ -873,14 +835,6 @@ public class EntityEditorModuleTest {
             }
         }
         fail("Source notice not found");
-    }
-
-    private void verifyHasExpectedBackgroundColor(View view, int expectedColor) {
-        Drawable background = view.getBackground();
-        assertTrue(background instanceof ColorDrawable);
-        ColorDrawable colorDrawable = (ColorDrawable) background;
-
-        assertEquals(expectedColor, colorDrawable.getColor());
     }
 
     private void clickClickableSpan(CharSequence text) {
