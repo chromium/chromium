@@ -21,30 +21,19 @@ source_set("origin_trials") {
   ]
 }
 
-# TODO(crbug.com/483660290): ui/tabs/tab_strip_model.h and ui/browser.h are
-# refactored out or made Android compatible.
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "origin_trials_browsertest.cc" ]
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "origin_trials_browsertest.cc" ]
 
-    deps = [
-      ":origin_trials",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support",
-      "//components/browsing_data/content",
-      "//components/origin_trials:browser",
-      "//components/user_prefs",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//url",
-    ]
-  }
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/origin_trials:browser",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
 }

@@ -2037,6 +2037,7 @@ if (is_android) {
       "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/optimization_guide",
+      "//chrome/browser/origin_trials:browser_tests",
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager/android:test_support",
