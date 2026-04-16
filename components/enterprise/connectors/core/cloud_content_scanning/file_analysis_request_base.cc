@@ -187,7 +187,7 @@ GetFileDataBlocking(
   }
 
   // Create a histogram to track the size of files being scanned up to 500MB.
-  base::UmaHistogramCustomCounts("Enterprise.FileAnalysisRequestBase.FileSize",
+  base::UmaHistogramCustomCounts("Enterprise.FileAnalysisRequest.FileSize",
                                  file_data.size / 1024, 1,
                                  kMaxUploadSizeMetricsKB, 50);
 
