@@ -137,7 +137,7 @@ void FilesRequestHandlerBase::OnGotFileInfo(
     size_t index,
     ScanRequestUploadResult result,
     BinaryUploadRequest::Data data) {
-  delegate_->UpdateFileInfo(index, data);
+  delegate_->UpdateFileInfo(index, data, request.get());
 
   const auto& analysis_settings = content_analysis_info_->settings();
   bool is_cloud = analysis_settings.cloud_or_local_settings.is_cloud_analysis();

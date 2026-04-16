@@ -45,8 +45,11 @@ class MockFilesRequestHandlerBaseDelegate
   MOCK_METHOD(size_t, GetFileCount, (), (const, override));
   MOCK_METHOD(void,
               UpdateFileInfo,
-              (size_t index, BinaryUploadRequest::Data data),
+              (size_t index,
+               BinaryUploadRequest::Data data,
+               BinaryUploadRequest* request),
               (override));
+  MOCK_METHOD(void, OnGotHash, (size_t index, std::string hash), (override));
   MOCK_METHOD(void,
               UpdateRequestHandlerResult,
               (size_t index,
@@ -203,7 +206,7 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Success) {
                                   DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
 
-  EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_)).Times(1);
+  EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_, testing::_)).Times(1);
   EXPECT_CALL(content_analysis_info_, settings())
       .WillRepeatedly(testing::ReturnRef(settings_));
   EXPECT_CALL(upload_service_, MaybeUploadForDeepScanning(testing::_)).Times(1);
@@ -227,7 +230,7 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_EmptyFile) {
                                   DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
 
-  EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_)).Times(1);
+  EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_, testing::_)).Times(1);
   EXPECT_CALL(content_analysis_info_, settings())
       .WillRepeatedly(testing::ReturnRef(settings_));
   EXPECT_CALL(upload_service_, MaybeUploadForDeepScanning(testing::_)).Times(0);
@@ -264,7 +267,7 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure) {
                                   DeepScanAccessPoint::UPLOAD,
                                   ::std::move(delegate_ptr));
 
-  EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_)).Times(1);
+  EXPECT_CALL(*delegate, UpdateFileInfo(0, testing::_, testing::_)).Times(1);
   EXPECT_CALL(content_analysis_info_, settings())
       .WillRepeatedly(testing::ReturnRef(settings_));
   EXPECT_CALL(upload_service_, MaybeUploadForDeepScanning(testing::_)).Times(0);

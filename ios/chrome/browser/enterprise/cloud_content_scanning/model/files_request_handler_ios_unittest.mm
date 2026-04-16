@@ -211,7 +211,7 @@ TEST_F(FilesRequestHandlerIOSTest, GettersAndSetters) {
   data.size = 1234;
   data.mime_type = "text/plain";
 
-  delegate->UpdateFileInfo(0, data);
+  delegate->UpdateFileInfo(0, data, nullptr);
   const FilesRequestHandlerBase::FileInfo& file_info = delegate->GetFileInfo(0);
   EXPECT_EQ(std::get<std::string>(file_info.sha256_or_cb), "test_hash");
   EXPECT_EQ(file_info.size, 1234u);

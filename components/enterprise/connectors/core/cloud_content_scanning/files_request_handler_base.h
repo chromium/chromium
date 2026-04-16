@@ -70,7 +70,11 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
 
     // Updates the file_info for a given `index`.
     virtual void UpdateFileInfo(size_t index,
-                                BinaryUploadRequest::Data data) = 0;
+                                BinaryUploadRequest::Data data,
+                                BinaryUploadRequest* request) = 0;
+
+    // Called when the hash for the file at `index` is obtained.
+    virtual void OnGotHash(size_t index, std::string hash) = 0;
 
     // Updates the `RequestHandlerResult` in `result_` for a scanning request
     // corresponding to the given `index`, and update the file_warnings_
