@@ -333,7 +333,7 @@ class FuseboxViewBinder {
         int headerIndex = group.indexOfChild(view.popup.mModelsHeader);
         if (headerIndex == -1) {
             assert false;
-            // TODO(https://crbung.com/493288340): Remove this return if this assert is never hit.
+            // TODO(https://crbug.com/493288340): Remove this return if this assert is never hit.
             return;
         }
 
