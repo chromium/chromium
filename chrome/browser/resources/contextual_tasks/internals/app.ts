@@ -114,8 +114,8 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   protected accessor relevantTabs_: Tab[] = [];
   protected accessor query_: string = '';
   protected accessor isQueryPending_: boolean = false;
-  protected accessor tabSelectionMode_: string = 'kEmbeddingsMatch';
-  protected accessor minModelScore_: number = 0.8;
+  protected accessor tabSelectionMode_: string = 'kStaticSignalsMlModel';
+  protected accessor minModelScore_: number = 0.4;
   protected accessor eventLogMessages_: EventLogMessage[] = [];
   protected accessor forcedHost_: string = '';
   protected accessor currentHost_: string = '';
@@ -171,6 +171,8 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
 
   protected onTabSelectionModeChange_() {
     this.tabSelectionMode_ = this.$.tabSelectionModeSelect.value;
+    this.minModelScore_ =
+        this.tabSelectionMode_ === 'kStaticSignalsMlModel' ? 0.4 : 0.8;
   }
 
   protected onMinModelScoreCrSliderValueChanged_() {
