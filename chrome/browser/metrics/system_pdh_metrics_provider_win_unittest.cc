@@ -10,6 +10,7 @@
 
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -42,46 +43,101 @@ TEST_F(PdhMetricsProviderTest, RecordsChildProcessHistograms) {
   environment_.FastForwardBy(base::Seconds(35));
   base::PlatformThread::Sleep(base::Seconds(1));
   environment_.FastForwardBy(base::Seconds(30));
+  base::PlatformThread::Sleep(base::Seconds(1));
+  environment_.FastForwardBy(base::Seconds(30));
 
   if (histogram_tester_.GetBucketCount(
           base::win::ScopedPdhQuery::kQueryErrorHistogram, -1073738824) == 0) {
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.UserTime.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.PrivilegedTime.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.HandleCount.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IODataBytesPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IODataOperationsPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IOOtherBytesPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IOReadBytesPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IOReadOperationsPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IOWriteBytesPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.IOWriteOperationsPerSec.Browser",
-        1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.PageFaultsPerSec.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.PageFileBytes.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.PageFileBytesPeak.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.PrivateBytes.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.ThreadCount.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.WorkingSet.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.WorkingSetPrivate.Browser", 1);
-    histogram_tester_.ExpectTotalCount(
-        "Windows.Experimental.Pdh.ProcessV2.WorkingSetPeak.Browser", 1);
+    for (const char* suffix : {"", ".FirstSample"}) {
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.UserTime.Browser", suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.PrivilegedTime.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.HandleCount.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.IODataBytesPerSec.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat({"Windows.Experimental.Pdh.ProcessV2."
+                        "IODataOperationsPerSec.Browser",
+                        suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.IOOtherBytesPerSec.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.IOReadBytesPerSec.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat({"Windows.Experimental.Pdh.ProcessV2."
+                        "IOReadOperationsPerSec.Browser",
+                        suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.IOWriteBytesPerSec.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat({"Windows.Experimental.Pdh.ProcessV2."
+                        "IOWriteOperationsPerSec.Browser",
+                        suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.PageFaultsPerSec.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.PageFileBytes.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.PageFileBytesPeak.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.PrivateBytes.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.ThreadCount.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat({"Windows.Experimental.Pdh.ProcessV2.WorkingSet.Browser",
+                        suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.WorkingSetPrivate.Browser",
+               suffix}),
+          1);
+      histogram_tester_.ExpectTotalCount(
+          base::StrCat(
+              {"Windows.Experimental.Pdh.ProcessV2.WorkingSetPeak.Browser",
+               suffix}),
+          1);
+    }
 
     histogram_tester_.ExpectTotalCount(
         base::win::ScopedPdhQuery::kQueryErrorHistogram, 0);

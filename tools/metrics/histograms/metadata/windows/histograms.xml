@@ -137,14 +137,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Windows.Experimental.Pdh.ProcessV2.{Counter}.{ProcessType}"
+<histogram
+    name="Windows.Experimental.Pdh.ProcessV2.{Counter}.{ProcessType}{StartupState}"
     units="counter value" expires_after="2026-06-28">
   <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Records the value of the &quot;\\Process V2(chrome:PID)\\{Counter}&quot; PDH
-    counter in the {ProcessType} process. For more information on this PDH
-    counter, see PerfMon.exe's documentation.
+    Records the {StartupState} of the &quot;\\Process
+    V2(chrome:PID)\\{Counter}&quot; PDH counter in the {ProcessType} process.
+    For more information on this PDH counter, see PerfMon.exe's documentation.
 
     Recorded once every five seconds for the browser, GPU, and network
     processes, and once every five seconds for every 1/20th process on
@@ -179,6 +180,10 @@ chromium-metrics-reviews@google.com.
     <variant name="Other" summary="Other"/>
     <variant name="Renderer" summary="Renderer"/>
     <variant name="Utility" summary="Non-network utility"/>
+  </token>
+  <token key="StartupState">
+    <variant name="" summary="value"/>
+    <variant name=".FirstSample" summary="first recorded value by process"/>
   </token>
 </histogram>
 

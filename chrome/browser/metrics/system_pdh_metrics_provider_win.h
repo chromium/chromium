@@ -128,6 +128,11 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
       // whether more than one instance of the given counters have been
       // recorded.
       bool first_sample_ = true;
+
+      // The first sample after the baseline (first_sample_ = false) will be
+      // recorded with a ".FirstSample" suffix.
+      bool first_emission_ = true;
+
       const std::string uma_name_;
       const std::string process_type_suffix_;
       const DWORD format_;

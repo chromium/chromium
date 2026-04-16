@@ -18,6 +18,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -345,6 +346,10 @@ void SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::Record() {
         "Windows.Experimental.Pdh.ProcessV2.");
     auto histogram_name =
         base::StrCat({kPrefix, uma_name_, ".", process_type_suffix_});
+    if (first_emission_) {
+      first_emission_ = false;
+      base::StrAppend(&histogram_name, {".FirstSample"});
+    }
     switch (format_) {
       case PDH_FMT_DOUBLE:
         base::UmaHistogramPercentage(
