@@ -177,6 +177,14 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   private searchboxListenerIds_: number[] = [];
   // Tracks the resize of the composebox to provide height updates.
   private resizeObserver_: ResizeObserver|null = null;
+  // Glif animation should trigger when:
+  // - One time when the panel loads/opens zero state
+  // - A query is submitted through the nextbox
+  // Animation should NOT trigger when:
+  // - User submits a query into zero state/the window switches to
+  //   non-zero state
+  // - User clicks on a suggestion
+  private forceSkipSubmitGlifAnimation_: boolean = false;
   protected accessor caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
 
@@ -210,7 +218,23 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         composebox.animationState = GlowAnimationState.NONE;
       });
       this.eventTracker_.add(composebox, 'composebox-submit', () => {
+        // Don't play the submit animation when transitioning away from zero
+        // state or on match click.
+        if (this.isZeroState || this.forceSkipSubmitGlifAnimation_) {
+          this.forceSkipSubmitGlifAnimation_ = false;
+          composebox.animationState = GlowAnimationState.NONE;
+          this.clearInputAndFocus(/* querySubmitted= */ true);
+          return;
+        }
+        // Force animation to replay visibly on subsequent submissions.
+        composebox.animationState = GlowAnimationState.NONE;
+        requestAnimationFrame(() => {
+          composebox.animationState = GlowAnimationState.SUBMITTING;
+        });
         this.clearInputAndFocus(/* querySubmitted= */ true);
+      });
+      this.eventTracker_.add(composebox, 'match-click', () => {
+        this.forceSkipSubmitGlifAnimation_ = true;
       });
       this.eventTracker_.add(
           composebox, 'carousel-resize', (e: CustomEvent<{height: number}>) => {
@@ -292,6 +316,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     if (changedProperties.has('isZeroState')) {
       if (this.isZeroState) {
         this.isCanvasQuerySubmitted = false;
+        // Opening zero state triggers animation.
+        this.$.composebox.animationState = GlowAnimationState.SUBMITTING;
       }
       if (this.isZeroState && !this.isSidePanel) {
         // Get zero state autocomplete matches. In the side panel, we wait for
