@@ -262,7 +262,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   const HashedExtensionId& hashed_id() const;
   const ExtensionGuid& guid() const;
   const base::Version& version() const { return version_; }
-  const std::string& version_name() const { return version_name_; }
+  const std::string& version_name() const;
   std::string VersionString() const;
   std::string DifferentialFingerprint() const;
   std::string GetVersionForDisplay() const;
@@ -427,9 +427,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // The extension's version.
   base::Version version_;
-
-  // The extension's user visible version name.
-  std::string version_name_;
 
   // True if the extension was generated from a user script. (We show slightly
   // different UI if so).

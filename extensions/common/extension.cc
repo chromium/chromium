@@ -40,8 +40,9 @@
 #include "extensions/common/manifest_handler.h"
 // TODO(crbug.com/324534603): Remove this.
 #include "extensions/common/manifest_handlers/description_info.h"
-#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+// TODO(crbug.com/324534603): Remove this.
+#include "extensions/common/manifest_handlers/version_name_info.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
@@ -539,9 +540,15 @@ std::string Extension::DifferentialFingerprint() const {
   return "2." + VersionString();
 }
 
+// TODO(crbug.com/324534603): Remove this.
+const std::string& Extension::version_name() const {
+  return VersionNameInfo::GetVersionName(*this);
+}
+
 std::string Extension::GetVersionForDisplay() const {
-  if (version_name_.size() > 0) {
-    return version_name_;
+  const std::string& version_name = VersionNameInfo::GetVersionName(*this);
+  if (version_name.size() > 0) {
+    return version_name;
   }
   return VersionString();
 }
@@ -710,13 +717,6 @@ bool Extension::LoadVersion(std::vector<InstallWarning>* install_warnings,
         base::StringPrintf(errors::kVersionFormatting,
                            version_.GetString().c_str()),
         keys::kVersion);
-  }
-  if (const base::Value* temp = manifest_->FindKey(keys::kVersionName)) {
-    if (!temp->is_string()) {
-      *error = errors::kInvalidVersionName;
-      return false;
-    }
-    version_name_ = temp->GetString();
   }
   return true;
 }
