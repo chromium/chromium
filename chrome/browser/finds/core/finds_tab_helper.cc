@@ -73,6 +73,7 @@ FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
                                PrefService* pref_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<FindsTabHelper>(*web_contents) {
+  // FindsTabHelper should only be created when the FindsService is non-null.
   CHECK(finds_service);
   finds_service_ = finds_service;
   pref_service_ = pref_service;
