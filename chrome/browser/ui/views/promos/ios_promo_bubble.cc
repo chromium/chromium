@@ -266,10 +266,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpTabGroupsBubble(
           IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       config.promo_image =
           ui::ImageModel::FromResourceId(IDR_TAB_GROUPS_ON_IOS_ICON);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
     case BubbleType::kReminderConfirmation: {
       SetUpBaseReminderConfirmationConfig(config);
@@ -306,10 +304,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpPriceTrackingBubble(
           IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_DESCRIPTION_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       config.promo_image =
           ui::ImageModel::FromResourceId(IDR_PRICE_TRACKING_ON_IOS_ICON);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
     case BubbleType::kReminderConfirmation: {
       SetUpBaseReminderConfirmationConfig(config);
