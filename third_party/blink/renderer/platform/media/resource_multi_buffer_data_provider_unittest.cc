@@ -14,6 +14,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
@@ -100,10 +102,20 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     first_position_ = first_position;
 
     auto loader = std::make_unique<ResourceMultiBufferDataProvider>(
-        url_data_.get(), first_position_, false /* is_client_audio_element */,
+        url_data_.get(), first_position_, /*is_client_audio_element=*/false,
         task_environment_.GetMainThreadTaskRunner());
     loader_ = loader.get();
     url_data_->multibuffer()->AddProvider(std::move(loader));
+  }
+
+  std::unique_ptr<MultiBufferReader> CreateReader(int size) {
+    auto reader = std::make_unique<MultiBufferReader>(
+        url_data_->multibuffer(), 0, 1024 * 1024,
+        /*is_client_audio_element=*/false, base::DoNothing(),
+        task_environment_.GetMainThreadTaskRunner());
+    reader->SetPinRange(0, 1024 * 1024);
+    reader->Wait(size, base::BindOnce([]() {}));
+    return reader;
   }
 
   void Start() { loader_->Start(); }
@@ -197,9 +209,8 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
       const WebAssociatedURLLoaderOptions& options) {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-    EXPECT_CALL(
-        *url_loader.get(),
-        LoadAsynchronously(Truly(CorrectAcceptEncoding), loader_.get()));
+    EXPECT_CALL(*url_loader, LoadAsynchronously(Truly(CorrectAcceptEncoding),
+                                                loader_.get()));
     return url_loader;
   }
 
@@ -355,6 +366,75 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirectedPartialResponse) {
   PartialResponse(0, 2048, 32000);
   Redirect(kHttpRedirect);
   PartialResponse(2048, 4096, 32000);
+  StopWhenLoad();
+}
+
+// This test verifies that a cross-origin redirect sequence (A -> B -> A)
+// does not bypass the multibuffer security checks.
+TEST_F(ResourceMultiBufferDataProviderTest, NoCrossOriginMediaLeaks) {
+  // Switch to a `url_index_` with a real block size.
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+
+  constexpr char kOriginA1[] = "http://localhost:18080/v1";
+  constexpr char kOriginB[] = "http://127.0.0.1:18081/secret";
+  constexpr char kOriginA2[] = "http://localhost:18080/v2";
+  constexpr int kBlockSize = 1 << 15;
+
+  // 1. Setup
+  Initialize(kOriginA1, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+
+  loader_->Start();
+
+  // 2. Mark B as cross-origin (opaque response).
+  WebURL url_b{KURL(kOriginB)};
+  WebURLResponse response_b{url_b};
+  response_b.SetHttpStatusCode(206);
+  response_b.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                WebString::FromUtf8("bytes 0-1000000/1000001"));
+  response_b.SetExpectedContentLength(1000001);
+  response_b.SetType(network::mojom::FetchResponseType::kOpaque);
+
+  ASSERT_TRUE(loader_->WillFollowRedirect(url_b, response_b));
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  auto SetUrlDataAndCreateReader =
+      [&](const scoped_refptr<UrlData>& new_url_data) {
+        reader.reset();
+        url_data_ = new_url_data;
+        reader = CreateReader(kBlockSize);
+      };
+
+  EXPECT_CALL(*this, RedirectCallback(_))
+      .WillRepeatedly(SetUrlDataAndCreateReader);
+  loader_->DidReceiveResponse(response_b);
+  ASSERT_TRUE(loader_);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(url_data_->is_cors_cross_origin());
+
+  // 3. Receive some data for B. This data is now in the MultiBuffer for B.
+  std::string data_str(kBlockSize, 'b');
+  loader_->DidReceiveData(data_str);
+
+  // 4. Simulate a failure that invokes a retry.
+  loader_->DidFail(WebURLError(net::ERR_ABORTED, url_b));
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+
+  WebURL url_a2{KURL(kOriginA2)};
+  WebURLResponse response_a2{url_a2};
+  response_a2.SetHttpStatusCode(206);
+  response_a2.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 32768-1000000/1000001"));
+  response_a2.SetExpectedContentLength(1000001 - kBlockSize);
+  response_a2.SetType(network::mojom::FetchResponseType::kBasic);
+
+  // Redirecting back to A should fail cross origin checks.
+  EXPECT_FALSE(loader_->WillFollowRedirect(url_a2, response_a2));
   StopWhenLoad();
 }
 

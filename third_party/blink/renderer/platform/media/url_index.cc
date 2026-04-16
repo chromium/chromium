@@ -148,6 +148,7 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Copy any cached data over to the new location.
   url_data->multibuffer()->MergeFrom(multibuffer());
+  url_data->set_is_cors_cross_origin(is_cors_cross_origin());
 
   Vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);

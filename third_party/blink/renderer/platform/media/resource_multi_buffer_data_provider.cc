@@ -188,7 +188,8 @@ bool ResourceMultiBufferDataProvider::WillFollowRedirect(
   // This test is vital for security!
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
     // We allow the redirect if the origin is the same.
-    if (!SecurityOrigin::AreSameOrigin(original_url_, redirects_to_)) {
+    if (!SecurityOrigin::AreSameOrigin(original_url_, redirects_to_) ||
+        !SecurityOrigin::AreSameOrigin(url_data_->url(), redirects_to_)) {
       // We also allow the redirect if we don't have any data in the
       // cache, as that means that no dangerous data mixing can occur.
       if (url_data_->multibuffer()->map().empty() && fifo_.empty())
