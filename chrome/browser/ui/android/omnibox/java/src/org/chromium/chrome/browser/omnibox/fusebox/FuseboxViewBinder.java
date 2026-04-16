@@ -119,10 +119,17 @@ class FuseboxViewBinder {
             view.popup.mAddCurrentTab.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED) {
-            setIsEnabledAndReapplyColorFilter(
-                    model,
-                    FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED,
-                    view.popup.mAddCurrentTab);
+            boolean hasFavicon =
+                    model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON) != null;
+            if (hasFavicon) {
+                setIsEnabledAndReapplyColorFilter(
+                        model,
+                        FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED,
+                        view.popup.mAddCurrentTab);
+            } else {
+                view.popup.mAddCurrentTab.setEnabled(
+                        model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+            }
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON) {
             updateForCurrentTabFavicon(
                     model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON), view);
