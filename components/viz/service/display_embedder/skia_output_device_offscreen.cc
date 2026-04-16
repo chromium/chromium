@@ -237,7 +237,7 @@ void SkiaOutputDeviceOffscreen::ReadbackForTesting(
   ReadPixelsContext context;
   if (auto* graphite_shared_context =
           context_state_->graphite_shared_context()) {
-    context_state_->FlushAndSubmit(true);
+    context_state_->FlushGraphiteRecorder();
     // asyncRescaleAndReadPixels is a context operation that inserts its own
     // recording internally.
     graphite_shared_context->asyncRescaleAndReadPixelsAndSubmit(
