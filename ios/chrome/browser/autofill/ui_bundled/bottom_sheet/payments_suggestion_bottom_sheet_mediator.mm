@@ -240,11 +240,6 @@ bool IsV3() {
     return;
   }
 
-  if (_viewDidAppearTimestamp) {
-    base::UmaHistogramTimes("IOS.PaymentsBottomSheet.TimeToSelection",
-                            base::TimeTicks::Now() - *_viewDidAppearTimestamp);
-  }
-
   FormSuggestionTabHelper* formSuggestionTabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
   CHECK(formSuggestionTabHelper);

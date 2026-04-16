@@ -212,30 +212,6 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, FillingDelay) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that the time to selection is correctly recorded.
-// TODO(crbug.com/422437404): re-enable.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest, DISABLED_TimeToSelection) {
-  base::ScopedMockClockOverride mock_clock;
-  base::HistogramTester histogram_tester;
-
-  CreateMediator();
-
-  OCMExpect([consumer_ activatePrimaryButton]);
-
-  // Use a time to selection that is enough to go past the minimal safety
-  // delay.
-  const auto time_to_selection = base::Milliseconds(500);
-
-  // Select the credit card by following the usual flow.
-  [mediator_ paymentsBottomSheetViewDidAppear];
-  mock_clock.Advance(time_to_selection);
-  [mediator_ didTapOnPrimaryButton];
-  [mediator_ didSelectCreditCard:nil atIndex:0];
-
-  histogram_tester.ExpectTimeBucketCount(
-      "IOS.PaymentsBottomSheet.TimeToSelection", time_to_selection, 1);
-}
-
 // Tests that the payment sheet is aborted when there are no suggestions that
 // could be retrieved, when in stateless mode.
 TEST_F(PaymentsSuggestionBottomSheetMediatorTest,

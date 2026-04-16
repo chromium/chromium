@@ -312,14 +312,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // recorded.
   CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 
-  // Verify that the time to selection was recorded after accepting a
-  // suggestion.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:1
-              forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
-      @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
-
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
@@ -379,14 +371,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // recorded.
   CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 
-  // Verify that the time to selection was recorded after accepting a
-  // suggestion.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:1
-              forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
-      @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
-
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
@@ -412,14 +396,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   id<GREYMatcher> continueButton = ContinueButton();
   [[EarlGrey selectElementWithMatcher:continueButton]
       assertWithMatcher:grey_nil()];
-
-  // Verify that the time to selection was not recorded because the sheet wasn't
-  // shown.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
-      @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
 }
 
 // Tests that the expected metric is logged when accepting a suggestion from

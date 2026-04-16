@@ -5060,18 +5060,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.PaymentsBottomSheet.TimeToSelection" units="ms"
-    expires_after="2026-02-22">
-  <owner>vincb@google.com</owner>
-  <owner>noemies@google.com</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Records the elasped time between displaying the sheet and selecting a credit
-    card. Recorded when the credit is selected by the user (when they did tap on
-    it).
-  </summary>
-</histogram>
-
 <histogram name="IOS.PaymentsBottomSheet.TimeToTrigger.{Outcome}" units="ms"
     expires_after="2026-08-30">
   <owner>vincb@google.com</owner>
