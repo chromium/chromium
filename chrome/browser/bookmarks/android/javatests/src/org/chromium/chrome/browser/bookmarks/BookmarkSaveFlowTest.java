@@ -152,7 +152,6 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/391655333")
     public void testBookmarkSaveFlow() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -355,7 +354,6 @@ public class BookmarkSaveFlowTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testBookmarkSaveFlowEdit() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

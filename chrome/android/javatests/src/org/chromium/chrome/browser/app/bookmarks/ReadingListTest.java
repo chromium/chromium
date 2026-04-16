@@ -240,7 +240,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListItemMenuItems() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
@@ -267,7 +266,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListItemMenuItems_ReadItem() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         BookmarkId id = addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
@@ -341,7 +339,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListEmptyStateView() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         openBookmarkManager();
@@ -465,7 +462,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         // Add two reading list items and set one as read.
@@ -487,7 +483,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListFolderShownMultipleUnreadPages() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         // Add three reading list items and set one as read.
@@ -510,7 +505,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListFolderShown_SetReadingListStatus() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         // Add three reading list items and set one as read.
@@ -536,7 +530,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListItemsInSelectionMode() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
@@ -585,7 +578,6 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/391655333")
     public void testReadingListItemsInSelectionMode_SearchMode() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
