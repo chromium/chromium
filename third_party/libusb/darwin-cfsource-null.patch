@@ -1,0 +1,26 @@
+From edd1a4bfe4b037e67b65e4538fd880123fb004f7 Mon Sep 17 00:00:00 2001
+From: Sean McBride <sean@rogue-research.com>
+Date: Fri, 20 Aug 2021 15:57:52 -0400
+Subject: [PATCH] darwin: After last CFRelease of struct field, set it to NULL
+
+Other code checks this field for being NULL or not, so NULLing it upon
+last release seems the right thing to do.  I noticed this during code
+review, I never actually reproduced any problem.
+
+Closes #981
+---
+ libusb/os/darwin_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index 485eb436f..a2da0cfc4 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -1570,6 +1570,7 @@ static int darwin_release_interface(struct libusb_device_handle *dev_handle, uin
+   if (cInterface->cfSource) {
+     CFRunLoopRemoveSource (libusb_darwin_acfl, cInterface->cfSource, kCFRunLoopDefaultMode);
+     CFRelease (cInterface->cfSource);
++    cInterface->cfSource = NULL;
+   }
+ 
+   kresult = (*(cInterface->interface))->USBInterfaceClose(cInterface->interface);
