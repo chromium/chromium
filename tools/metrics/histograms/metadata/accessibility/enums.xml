@@ -1781,7 +1781,7 @@ Unknown properties are collapsed to zero. -->
   <int value="55" label="Show avatar menu (not implemented)"/>
   <int value="56" label="Show feedback form"/>
   <int value="57" label="Find in page"/>
-  <int value="58" label="Go to home page (not implemented)"/>
+  <int value="58" label="Open home page"/>
   <int value="59" label="Open help"/>
   <int value="60" label="Open menu"/>
   <int value="61"

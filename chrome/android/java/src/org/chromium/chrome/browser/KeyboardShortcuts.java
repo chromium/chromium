@@ -28,6 +28,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,9 +43,11 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -126,7 +129,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU,
         KeyboardShortcutsSemanticMeaning.FEEDBACK_FORM,
         KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME,
+        KeyboardShortcutsSemanticMeaning.OPEN_HOME_PAGE,
         KeyboardShortcutsSemanticMeaning.OPEN_HELP,
         KeyboardShortcutsSemanticMeaning.OPEN_MENU,
         KeyboardShortcutsSemanticMeaning.CUSTOM_EXTENSION_SHORTCUT,
@@ -225,7 +228,7 @@ public class KeyboardShortcuts {
         int NOT_IMPLEMENTED_AVATAR_MENU = 55;
         int FEEDBACK_FORM = 56;
         int FIND_IN_PAGE = 57;
-        int NOT_IMPLEMENTED_HOME = 58;
+        int OPEN_HOME_PAGE = 58;
         int OPEN_HELP = 59;
         int OPEN_MENU = 60;
 
@@ -788,7 +791,7 @@ public class KeyboardShortcuts {
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU,
                 new KeyCombo(KeyEvent.KEYCODE_M, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME,
+                KeyboardShortcutsSemanticMeaning.OPEN_HOME_PAGE,
                 new KeyCombo(KeyEvent.KEYCODE_HOME, KeyEvent.META_ALT_ON));
     }
 
@@ -1105,6 +1108,16 @@ public class KeyboardShortcuts {
 
         if (isCurrentTabVisible) {
             switch (semanticMeaning) {
+                case KeyboardShortcutsSemanticMeaning.OPEN_HOME_PAGE:
+                    if (currentTab != null) {
+                        String homePageUrl =
+                                HomepageManager.getInstance()
+                                        .getHomepageGurl(currentTab.isIncognito())
+                                        .getSpec();
+                        currentTab.loadUrl(
+                                new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
+                    }
+                    return true;
                 case KeyboardShortcutsSemanticMeaning.TAB_SEARCH:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.tab_search, false);
                     return true;

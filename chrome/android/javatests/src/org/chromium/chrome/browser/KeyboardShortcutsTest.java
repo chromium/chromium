@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -56,7 +57,10 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 import java.util.Set;
@@ -91,6 +95,8 @@ public class KeyboardShortcutsTest {
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
 
+    @Mock private HomepageManager mHomepageManager;
+
     @Before
     public void setUp() {
         setUpTabModelSelector(List.of(mTab));
@@ -99,6 +105,24 @@ public class KeyboardShortcutsTest {
         when(mTab.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         mPinnedTabCloseManager = spy(PinnedTabClosureManagerFactory.getInstance());
         PinnedTabClosureManagerFactory.setInstanceForTesting(mPinnedTabCloseManager);
+
+        HomepageManager.setInstanceForTesting(mHomepageManager);
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenHomePage() {
+        GURL mockGurl = JUnitTestGURLs.EXAMPLE_URL;
+        when(mHomepageManager.getHomepageGurl(anyBoolean())).thenReturn(mockGurl);
+
+        boolean isKeyEventHandled =
+                keyDown(
+                        KeyEvent.KEYCODE_HOME,
+                        KeyEvent.META_ALT_ON,
+                        /* isCurrentTabVisible= */ true);
+
+        assertTrue("Expected key event to be handled for Alt+Home", isKeyEventHandled);
+        verify(mTab).loadUrl(any(LoadUrlParams.class));
     }
 
     /**
