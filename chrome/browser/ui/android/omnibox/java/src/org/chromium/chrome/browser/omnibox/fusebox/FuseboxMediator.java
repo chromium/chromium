@@ -363,6 +363,9 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     /** Activate AI Mode as the Next Request fulfillment type. */
     @VisibleForTesting
     void activateAiMode(@AiModeActivationSource int activationReason) {
+        if (activationReason == AiModeActivationSource.TOOL_MENU) {
+            FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+        }
         if (trySetRequestType(AutocompleteRequestType.AI_MODE)) {
             FuseboxMetrics.notifyAiModeActivated(activationReason);
         }
@@ -371,16 +374,19 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     /** Activate image generation as the Next Request fulfillment type. */
     @VisibleForTesting
     void activateImageGeneration() {
+        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         trySetRequestType(AutocompleteRequestType.IMAGE_GENERATION);
     }
 
     private void onToolDeepSearchClicked() {
         assert OmniboxFeatures.sShowModelPicker.getValue();
+        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
         trySetRequestType(AutocompleteRequestType.DEEP_SEARCH);
     }
 
     private void onToolCanvasClicked() {
         assert OmniboxFeatures.sShowModelPicker.getValue();
+        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_CANVAS_VALUE);
         trySetRequestType(AutocompleteRequestType.CANVAS);
     }
 
@@ -977,7 +983,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     private void onDynamicButtonClicked(PopupButtonData data) {
         if (data.type == PopupButtonType.MODEL) {
-            FuseboxMetrics.notifyModelButtonUsed(data.protoId);
+            FuseboxMetrics.notifyModelButtonSelected(data.protoId);
             setModelMode(data.protoId);
         }
     }

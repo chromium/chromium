@@ -2651,23 +2651,24 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.ModelButtonSelected"
+    enum="OmniboxModelMode" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the model that is selected when the user interacts with a model
+    button on the popup. This may or may not be the model used to fulfill a
+    subsequent query. The model id comes from the server driven config.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.ModelButtonShown"
     enum="OmniboxModelMode" expires_after="2027-03-20">
   <owner>skym@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records all of the ai mode models that are shown as options when the popup
-    appearse. The model id comes from the server driven config.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.MobileFusebox.ModelButtonUsed" enum="OmniboxModelMode"
-    expires_after="2027-03-20">
-  <owner>skym@chromium.org</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Records the model that is selected when the user interacts with a model
-    button on the popup. The model id comes from the server driven config.
+    appears. The model id comes from the server driven config.
   </summary>
 </histogram>
 
@@ -2689,6 +2690,27 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Records whether the user edited the text in the Fusebox input plate before
     entering AI Mode. Recorded when AI Mode is activated.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ToolButtonSelected"
+    enum="OmniboxToolMode" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the tool mode whenever it is selected by the user in the AI Mode
+    popup. This may or may not be the tool used to fulfill a subsequent query.
+    The tool id comes from the server driven config.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ToolButtonShown" enum="OmniboxToolMode"
+    expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records all of the AI tool modes that are shown as options when the popup
+    appears. The tool id comes from the server driven config.
   </summary>
 </histogram>
 
