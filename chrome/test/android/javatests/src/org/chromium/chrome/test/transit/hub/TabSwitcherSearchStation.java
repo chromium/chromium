@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.InputMethodManagerIsActive
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,12 +206,16 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
         public ViewElement<View> headerElement;
 
         public SectionHeaderFacility(int index, String text) {
-            headerElement =
-                    declareView(
-                            viewSpec(
-                                    withText(text),
-                                    withParentIndex(index),
-                                    isDescendantOfA(withId(R.id.omnibox_results_container))));
+            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+                headerElement = declareView(viewSpec(withId(R.id.omnibox_results_container)));
+            } else {
+                headerElement =
+                        declareView(
+                                viewSpec(
+                                        withText(text),
+                                        withParentIndex(index),
+                                        isDescendantOfA(withId(R.id.omnibox_results_container))));
+            }
         }
     }
 }

@@ -248,11 +248,17 @@ class DropdownItemViewInfoListBuilder {
         // TODO(http://crbug/1518967): move this to the calling function and instantiate the
         // HeaderView undonditionally when passing from one suggestion group to another.
         // TODO(http://crbug/1518967): collapse Header and DivierLine to a single component.
+        String headerText = null;
         boolean showGroupSeparatorDecoration = false;
+
         if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
-            final PropertyModel model = mHeaderProcessor.createModel();
-            mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
-            result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
+            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+                headerText = groupDetails.getHeaderText();
+            } else {
+                final PropertyModel model = mHeaderProcessor.createModel();
+                mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
+                result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
+            }
         } else if (previousDetails != null
                 && previousDetails.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
             if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
@@ -281,12 +287,14 @@ class DropdownItemViewInfoListBuilder {
             var processor = getProcessorForSuggestion(match, indexOnList);
             var model = processor.createModel();
 
-            model.set(roundingStartEdge, indexInList == 0);
+            boolean isFirstItem = indexInList == 0;
+            model.set(roundingStartEdge, isFirstItem);
             model.set(roundingEndEdge, indexInList == numGroupMatches - 1);
             model.set(SuggestionCommonProperties.SHOW_DIVIDER, indexInList < numGroupMatches - 1);
             model.set(
                     SuggestionCommonProperties.SHOW_GROUP_SEPARATOR,
-                    showGroupSeparatorDecoration && indexInList == 0);
+                    showGroupSeparatorDecoration && isFirstItem);
+            model.set(SuggestionCommonProperties.HEADER_TITLE, isFirstItem ? headerText : null);
 
             processor.populateModel(input, match, model, indexOnList);
             result.add(new DropdownItemViewInfo(processor, model, groupDetails));
@@ -326,15 +334,22 @@ class DropdownItemViewInfoListBuilder {
         // Note that despite GroupsDetails map not holding <null> values,
         // a group definition for specific ID may be unavailable, or the group
         // header text may be empty.
+        String headerText = null;
         if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
-            final PropertyModel model = mHeaderProcessor.createModel();
-            mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
-            result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
+            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+                headerText = groupDetails.getHeaderText();
+            } else {
+                final PropertyModel model = mHeaderProcessor.createModel();
+                mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
+                result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
+            }
         }
 
         int numGroupMatches = groupMatches.size();
         var processor = getProcessorForSuggestion(groupMatches.get(0), position);
         var model = processor.createModel();
+
+        model.set(SuggestionCommonProperties.HEADER_TITLE, headerText);
 
         for (int index = 0; index < numGroupMatches; index++) {
             AutocompleteMatch match = groupMatches.get(index);
