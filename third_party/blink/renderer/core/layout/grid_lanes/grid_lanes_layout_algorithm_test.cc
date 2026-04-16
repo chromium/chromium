@@ -309,6 +309,62 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroups) {
   }
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroupsWithBaseline) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes">
+      <div style="justify-self: first baseline"></div>
+      <div style="justify-self: baseline"></div>
+      <div style="justify-self: last baseline"></div>
+      <div style="grid-column: span 2"></div>
+      <div style="grid-column: span 2; justify-self: first baseline"></div>
+      <div style="grid-column: span 2; justify-self: first baseline"></div>
+      <div style="grid-column: span 2; justify-self: last baseline"></div>
+      <div style="grid-column: span 2; justify-self: last baseline"></div>
+      <div style="grid-column: span 2; justify-self: last baseline"></div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  wtf_size_t max_end_line, start_offset;
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  const auto* grid_lanes_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr);
+  wtf_size_t unplaced_item_span_count = 0;
+  const auto item_groups =
+      node.CollectItemGroups(line_resolver, *grid_lanes_items, max_end_line,
+                             start_offset, unplaced_item_span_count);
+
+  EXPECT_EQ(item_groups.size(), 5u);
+  const auto grid_axis_direction = node.Style().GridLanesTrackSizingDirection();
+
+  for (const auto& [items, properties] : item_groups) {
+    const auto& span = properties.Span();
+    if (span == GridSpan::IndefiniteGridSpan(1)) {
+      BaselineGroup baseline_group =
+          items.size() == 2u ? BaselineGroup::kMajor : BaselineGroup::kMinor;
+      for (const auto& item : items) {
+        EXPECT_TRUE(item->IsBaselineAligned(grid_axis_direction));
+        EXPECT_EQ(item->BaselineGroup(grid_axis_direction), baseline_group);
+      }
+    } else if (span == GridSpan::IndefiniteGridSpan(2)) {
+      bool is_baseline_aligned =
+          items[0]->IsBaselineAligned(grid_axis_direction);
+      if (is_baseline_aligned) {
+        BaselineGroup baseline_group =
+            items.size() == 2u ? BaselineGroup::kMajor : BaselineGroup::kMinor;
+        for (const auto& item : items) {
+          EXPECT_TRUE(item->IsBaselineAligned(grid_axis_direction));
+          EXPECT_EQ(item->BaselineGroup(grid_axis_direction), baseline_group);
+        }
+      } else {
+        EXPECT_EQ(items.size(), 1u);
+      }
+    }
+  }
+}
+
 TEST_F(GridLanesLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(

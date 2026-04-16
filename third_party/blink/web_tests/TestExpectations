@@ -1036,6 +1036,10 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-subgridded-t
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid-lanes/track-sizing/grid-lanes-subgrid-flex.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid-lanes/track-sizing/grid-lanes-subgrid.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid-lanes/track-sizing/grid-lanes-subgrid-intrinsic-sizing.html [ Failure ]
+# Baseline failures
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-baseline-alignment-affects-intrinsic-size-004.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-baseline-alignment-affects-intrinsic-size-005.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-baseline-alignment-affects-intrinsic-size-006.html [ Failure ]
 
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
