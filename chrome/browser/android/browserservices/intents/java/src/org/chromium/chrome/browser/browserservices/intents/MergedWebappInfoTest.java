@@ -67,7 +67,7 @@ public class MergedWebappInfoTest {
         Assert.assertEquals(APP_SHORTNAME_OLD, oldInfo.shortName());
         Assert.assertEquals(APP_SHORTNAME_NEW, newInfo.shortName());
         Assert.assertTrue(newInfo.icon() != oldInfo.icon());
-        Assert.assertTrue(newInfo.iconUrlToMurmur2HashMap() != oldInfo.iconUrlToMurmur2HashMap());
+        Assert.assertNotSame(newInfo.iconUrlToMurmur2HashMap(), oldInfo.iconUrlToMurmur2HashMap());
         Assert.assertFalse(oldInfo.isIconAdaptive());
         Assert.assertTrue(newInfo.isIconAdaptive());
         Assert.assertFalse(oldInfo.isIconGenerated());
@@ -79,7 +79,7 @@ public class MergedWebappInfoTest {
         Assert.assertEquals(APP_SHORTNAME_OLD, newInfo.shortName());
         // But the icon stuff should be unchanged.
         Assert.assertTrue(newInfo.icon() != oldInfo.icon());
-        Assert.assertTrue(newInfo.iconUrlToMurmur2HashMap() != oldInfo.iconUrlToMurmur2HashMap());
+        Assert.assertNotSame(newInfo.iconUrlToMurmur2HashMap(), oldInfo.iconUrlToMurmur2HashMap());
         Assert.assertTrue(newInfo.isIconAdaptive());
         Assert.assertTrue(newInfo.isIconGenerated());
 
@@ -109,7 +109,7 @@ public class MergedWebappInfoTest {
         Assert.assertEquals(APP_SHORTNAME_OLD, oldInfo.shortName());
         Assert.assertEquals(APP_SHORTNAME_NEW, newInfo.shortName());
         Assert.assertTrue(newInfo.icon() != oldInfo.icon());
-        Assert.assertTrue(newInfo.iconUrlToMurmur2HashMap() != oldInfo.iconUrlToMurmur2HashMap());
+        Assert.assertNotSame(newInfo.iconUrlToMurmur2HashMap(), oldInfo.iconUrlToMurmur2HashMap());
         Assert.assertFalse(oldInfo.isIconAdaptive());
         Assert.assertTrue(newInfo.isIconAdaptive());
         Assert.assertFalse(oldInfo.isIconGenerated());

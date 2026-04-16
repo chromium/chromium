@@ -217,9 +217,7 @@ public class IncognitoNewTabPage extends BasicNativePage
                     @Override
                     public void onPageLoadStarted(Tab tab, GURL url) {
                         if (!UrlUtilities.isNtpUrl(url)) {
-                            if (mIncognitoNtpMetrics != null) {
-                                mIncognitoNtpMetrics.recordNavigatedAway();
-                            }
+                            mIncognitoNtpMetrics.recordNavigatedAway();
 
                             if (mTabObserver != null) {
                                 tab.removeObserver(mTabObserver);

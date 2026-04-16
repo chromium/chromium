@@ -155,10 +155,7 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
                     }
                     showPermissionIcon(ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK);
                     mIsQuietClapperUi = true;
-
-                    if (tab != null) {
-                        mWebContents = tab.getWebContents();
-                    }
+                    mWebContents = tab.getWebContents();
                 };
         mHandler.post(mShowClapperQuietIconRunnable);
     }

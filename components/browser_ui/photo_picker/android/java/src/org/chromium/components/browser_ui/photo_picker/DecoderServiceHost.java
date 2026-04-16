@@ -476,7 +476,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
         assert mProcessingRequest.mUri.getPath().equals(filePath);
         long endRpcCall = SystemClock.elapsedRealtime();
         if (isVideo && bitmaps != null) {
-            if (bitmaps != null && bitmaps.size() > 1) {
+            if (bitmaps.size() > 1) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.PhotoPicker.RequestProcessTimeAnimation",
                         endRpcCall - mProcessingRequest.mTimestamp);

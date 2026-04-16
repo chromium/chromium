@@ -391,7 +391,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (allowedGroup == null) return;
 
         if (numAllowed == 0) {
-            if (allowedGroup != null) getPreferenceScreen().removePreference(allowedGroup);
+            getPreferenceScreen().removePreference(allowedGroup);
             return;
         }
 

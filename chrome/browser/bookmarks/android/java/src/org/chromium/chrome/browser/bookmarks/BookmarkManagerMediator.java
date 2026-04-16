@@ -1500,13 +1500,11 @@ class BookmarkManagerMediator
         boolean canMove = BookmarkUtils.isMovable(mBookmarkModel, bookmarkItem);
 
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
-            if (bookmarkItem != null) {
-                listItems.add(
-                        buildSimpleMenuItem(
-                                bookmarkItem.isRead()
-                                        ? R.string.reading_list_mark_as_unread
-                                        : R.string.reading_list_mark_as_read));
-            }
+            listItems.add(
+                    buildSimpleMenuItem(
+                            bookmarkItem.isRead()
+                                    ? R.string.reading_list_mark_as_unread
+                                    : R.string.reading_list_mark_as_read));
         }
 
         listItems.add(buildSimpleMenuItem(R.string.bookmark_item_select));

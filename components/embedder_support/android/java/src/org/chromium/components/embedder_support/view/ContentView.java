@@ -461,8 +461,7 @@ public class ContentView extends FrameLayout
                 && Build.VERSION.SDK_INT <= 38
                 && DeviceInfo.isDesktop()) {
             if (MotionEventUtils.isTrackpadEvent(event)
-                    && event.getClassification() == MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE
-                    && forwarder != null) {
+                    && event.getClassification() == MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE) {
                 if (mPendingTwoFingerSwipeDownEvent != null) {
                     MotionEvent lastEvent = mPendingTwoFingerSwipeDownEvent;
                     mPendingTwoFingerSwipeDownEvent = null;
