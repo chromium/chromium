@@ -32,13 +32,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kVerticalTabsExpandOnHoverDelay,
                    &kVerticalTabsExpandOnHover,
                    "expand_on_hover_delay",
-                   base::Milliseconds(500));
+                   base::Milliseconds(350));
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kVerticalTabsExpandOnHoverClickDelay,
                    &kVerticalTabsExpandOnHover,
                    "expand_on_hover_click_delay",
-                   base::Milliseconds(500));
+                   base::Milliseconds(350));
 
 BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 
