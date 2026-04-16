@@ -17,9 +17,6 @@ namespace enterprise_connectors {
 
 // IOS implementation of `ContentAnalysisInfoBase`. It provides analysis
 // settings and content analysis context for a given content analysis action.
-//
-// TODO(crbug.com/485126116): Update this class to include more functionalities
-// needed for the content analysis action.
 class ContentAnalysisInfo : public ContentAnalysisInfoBase {
  public:
   explicit ContentAnalysisInfo(

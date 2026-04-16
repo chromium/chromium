@@ -9,8 +9,6 @@
 
 #import <string_view>
 
-// TODO(crbug.com/481679210): handle new download cases when UX design is
-// finalized.
 namespace enterprise {
 
 // Represents the type of warning dialog, based on the action or policy that
