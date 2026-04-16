@@ -793,6 +793,25 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void onSuggestionClicked_suggestionBypassesAimUrlQuery() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        FuseboxSessionState session =
+                createSession(PAGE_URL, PAGE_TITLE, PageClassification.OTHER_VALUE);
+        mMediator.beginInput(session);
+        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+
+        AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+        mMediator.onSuggestionClicked(match, 0, PAGE_URL);
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(PAGE_URL.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+        verify(mComposeboxQueryControllerBridge, never()).getAimUrlFromInputState(any(), any());
+    }
+
+    @Test
+    @SmallTest
     public void setLayoutDirection_beforeInitialization() {
         mMediator.beginInput(createEmptySession());
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
