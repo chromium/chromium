@@ -135,35 +135,6 @@ each histogram.
   <token key="CoreType" variants="CoreType"/>
 </histogram>
 
-<histogram name="CPU.Experimental.Windows.UserKernelRatio" units="%"
-    expires_after="2026-10-11">
-  <owner>spvm@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The percentage of total CPU time (user + kernel) consumed by user mode. For
-    example 50% means that kernel and user time are equal for this time slice.
-    Value recorded is between 0 and 100. Only recorded on Windows. Emitted every
-    5 seconds after the start of metrics recording and includes only the 5s
-    slice between the last emission and the next one.
-  </summary>
-</histogram>
-
-<histogram name="CPU.Experimental.Windows.{Mode}Time" units="%"
-    expires_after="2026-10-11">
-  <owner>spvm@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The percentage of elapsed time the processor spends in {Mode} mode, system
-    wide. Value recorded is between 0 and 100. Only recorded on Windows. Emitted
-    every 5 seconds after the start of metrics recording and includes only the
-    5s slice between the last emission and the next one.
-  </summary>
-  <token key="Mode">
-    <variant name="Kernel"/>
-    <variant name="User"/>
-  </token>
-</histogram>
-
 <histogram name="PerformanceManager.Discarding.DecisionResult{Trigger}"
     enum="CanDiscardResult" expires_after="2027-01-21">
   <owner>aattar@google.com</owner>

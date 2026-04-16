@@ -2093,43 +2093,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond2"
-    units="faults/sec" expires_after="2026-08-16">
-  <owner>spvm@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Demand Zero Faults/sec is the rate at which a zeroed page is required to
-    satisfy a memory fault, system wide. This counter shows the number of
-    faults, without regard to the number of pages retrieved to satisfy the
-    fault. Recorded once every five seconds, only on Windows.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.Windows.HardFaultsFulfilledPerSecond"
-    units="pages/sec" expires_after="2026-09-27">
-  <owner>spvm@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Pages Input/sec is number of pages per second that are read from disk to
-    resolve hard page faults, system wide. Hard page faults occur when a process
-    refers to a page in virtual memory that is not in its working set or
-    elsewhere in physical memory, and must be retrieved from disk. Recorded once
-    every five seconds, only on Windows.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.Windows.PagefileUtilization" units="%"
-    expires_after="2026-09-27">
-  <owner>spvm@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The percentage of pagefile utilization, system-wide. Between 0..100.
-    Recorded every five seconds while metric recording is enabled. Only recorded
-    on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Extension.PrivateMemoryFootprint" units="MB"
     expires_after="2026-09-06">
   <owner>erikchen@chromium.org</owner>

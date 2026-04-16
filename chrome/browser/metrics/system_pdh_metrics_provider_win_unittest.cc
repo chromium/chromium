@@ -28,33 +28,7 @@ class PdhMetricsProviderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-// Verifies that we're emitting histograms from the PdhQueryHandler after
-// OnRecordingEnabled() is called.
-TEST_F(PdhMetricsProviderTest, RecordsHistograms) {
-  SystemPdhMetricsProvider provider;
-  provider.OnRecordingEnabled();
-
-  // Windows requires at least one second to have passed between recordings of
-  // the performance counters.
-  base::PlatformThread::Sleep(base::Seconds(1));
-  environment_.FastForwardBy(base::Seconds(35));
-
-  histogram_tester_.ExpectTotalCount(provider.kHardFaultCountHistogram, 1);
-  histogram_tester_.ExpectTotalCount(provider.kDemandZeroFaultCountHistogram,
-                                     1);
-  histogram_tester_.ExpectTotalCount(provider.kUserKernelRatioHistogram, 1);
-  histogram_tester_.ExpectTotalCount(provider.kUserTimeHistogram, 1);
-  histogram_tester_.ExpectTotalCount(provider.kKernelTimeHistogram, 1);
-  histogram_tester_.ExpectTotalCount(provider.kPagefileUtilizationHistogram, 1);
-
-  histogram_tester_.ExpectTotalCount(
-      base::win::ScopedPdhQuery::kQueryErrorHistogram, 0);
-  histogram_tester_.ExpectTotalCount(
-      base::win::ScopedPdhQuery::kResultErrorHistogram, 0);
-}
-
-// Verifies that we're emitting histograms from the PdhQueryHandler after
-// a process is created.
+// Verifies that we're emitting per-process histograms from the PdhQueryHandler.
 TEST_F(PdhMetricsProviderTest, RecordsChildProcessHistograms) {
   if (base::win::GetVersion() < base::win::Version::WIN11) {
     GTEST_SKIP() << "Not supported prior to Win11";

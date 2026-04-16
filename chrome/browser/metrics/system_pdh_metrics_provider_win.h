@@ -36,9 +36,8 @@ extern const base::FeatureParam<base::TimeDelta>
 
 }  // namespace features
 
-// Queries various PDH performance counters. Specifically, records the number of
-// pages read from disk per second to satisfy hard faults, the % user vs kernel
-// CPU time, and the % utilization of `C:\pagefile.sys`.
+// Queries various PDH performance counters. Specifically, records various
+// per-process metrics such as CPU usage and IO operations.
 class SystemPdhMetricsProvider : public metrics::MetricsProvider {
  public:
   SystemPdhMetricsProvider();
@@ -51,19 +50,6 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
   // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
-
-  static constexpr std::string_view kHardFaultCountHistogram =
-      "Memory.Experimental.Windows.HardFaultsFulfilledPerSecond";
-  static constexpr std::string_view kDemandZeroFaultCountHistogram =
-      "Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond2";
-  static constexpr std::string_view kPagefileUtilizationHistogram =
-      "Memory.Experimental.Windows.PagefileUtilization";
-  static constexpr std::string_view kUserTimeHistogram =
-      "CPU.Experimental.Windows.UserTime";
-  static constexpr std::string_view kKernelTimeHistogram =
-      "CPU.Experimental.Windows.KernelTime";
-  static constexpr std::string_view kUserKernelRatioHistogram =
-      "CPU.Experimental.Windows.UserKernelRatio";
 
   class PdhQueryHandler {
    public:
@@ -154,15 +140,6 @@ class SystemPdhMetricsProvider : public metrics::MetricsProvider {
 
     // Initialized during metric recording, and cleared when stopped.
     base::win::ScopedPdhQuery pdh_query_;
-
-    // These 'handles' do not need to be freed. Their lifetime is associated
-    // with pdh_query_. They are reinitialized every time recording is
-    // enabled/disabled.
-    PDH_HCOUNTER pages_input_per_second_ = {};
-    PDH_HCOUNTER demand_zero_faults_per_second_ = {};
-    PDH_HCOUNTER pagefile_utilization_ = {};
-    PDH_HCOUNTER user_cpu_time_ = {};
-    PDH_HCOUNTER kernel_cpu_time_ = {};
 
     // This is the name without extension of the current exe binary name. For
     // example, assuming that the current process is chrome.exe, this returns
