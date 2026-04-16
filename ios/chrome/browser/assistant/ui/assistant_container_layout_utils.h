@@ -31,15 +31,6 @@ extern const CGFloat kAssistantContainerMargin;
 // Corner radius for all 4 corners.
 extern const CGFloat kAssistantSidePanelCornerRadius;
 
-// Shadow styling constants applied for the sheet and side panel.
-
-// Shadow opacity.
-extern const float kAssistantShadowOpacity;
-// Shadow blur radius.
-extern const CGFloat kAssistantShadowRadius;
-// Shadow offset.
-extern const CGSize kAssistantShadowOffset;
-
 // Animation constants for sheet and side panel.
 
 // Spring duration for sheet.

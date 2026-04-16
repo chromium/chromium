@@ -17,6 +17,15 @@ namespace {
 // Constants used for the container resizing animation.
 constexpr CGFloat kRubberBandCoefficient = 0.10;
 
+// Constants used for the side panel aesthetics.
+constexpr CGFloat kAssistantSidePanelBorderWidth = 1.0;
+constexpr CGFloat kAssistantSidePanelBorderAlpha = 0.46;
+
+// Constants used for the floating card shadow.
+const CGSize kAssistantSidePanelShadowOffset = {0, 13};
+constexpr CGFloat kAssistantSidePanelShadowRadius = 125.0;
+constexpr CGFloat kAssistantSidePanelShadowOpacity = 0.16;
+
 }  // namespace
 
 const CGFloat kMorphingBaseMargin = 10.0;
@@ -29,10 +38,6 @@ const CGFloat kAssistantSidePanelMaxWidth = 400.0;
 const CGFloat kAssistantSidePanelWidthMultiplier = 1.0 / 3.0;
 const CGFloat kAssistantContainerMargin = 8.0;
 const CGFloat kAssistantSidePanelCornerRadius = 22.0;
-
-const float kAssistantShadowOpacity = 0.29f;
-const CGFloat kAssistantShadowRadius = 21.0;
-const CGSize kAssistantShadowOffset = {0, 11};
 
 const NSTimeInterval kAssistantSheetSpringDuration = 0.3;
 const NSTimeInterval kAssistantSidePanelAnimationDuration = 0.5;
@@ -56,6 +61,8 @@ void ApplyAssistantSidePanelAesthetics(UIView* content_view,
                                        bool active) {
   if (!active) {
     content_view.layer.cornerRadius = 0.0;
+    content_view.layer.borderWidth = 0.0;
+    content_view.layer.borderColor = nil;
     shadow_view.layer.shadowOpacity = 0.0;
     shadow_view.backgroundColor = [UIColor clearColor];
     return;
@@ -63,6 +70,11 @@ void ApplyAssistantSidePanelAesthetics(UIView* content_view,
 
   content_view.layer.cornerRadius = kAssistantSidePanelCornerRadius;
   content_view.layer.cornerCurve = kCACornerCurveContinuous;
+  content_view.layer.borderWidth = kAssistantSidePanelBorderWidth;
+  content_view.layer.borderColor =
+      [[UIColor whiteColor]
+          colorWithAlphaComponent:kAssistantSidePanelBorderAlpha]
+          .CGColor;
 
   // The view must be opaque to cast a shadow.
   shadow_view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -71,9 +83,9 @@ void ApplyAssistantSidePanelAesthetics(UIView* content_view,
   // TODO(crbug.com/494503434): Update the shadow color to a dynamic color or
   // handle dark mode properly later.
   shadow_view.layer.shadowColor = [UIColor blackColor].CGColor;
-  shadow_view.layer.shadowOffset = kAssistantShadowOffset;
-  shadow_view.layer.shadowRadius = kAssistantShadowRadius;
-  shadow_view.layer.shadowOpacity = kAssistantShadowOpacity;
+  shadow_view.layer.shadowOffset = kAssistantSidePanelShadowOffset;
+  shadow_view.layer.shadowRadius = kAssistantSidePanelShadowRadius;
+  shadow_view.layer.shadowOpacity = kAssistantSidePanelShadowOpacity;
 }
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {

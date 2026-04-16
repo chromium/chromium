@@ -17,6 +17,11 @@ constexpr CGFloat kGrabberWidth = 32.0;
 constexpr CGFloat kGrabberHeight = 4.0;
 constexpr CGFloat kGrabberTopMargin = 8.0;
 
+// Shadow styling.
+const float kAssistantShadowOpacity = 0.29f;
+const CGFloat kAssistantShadowRadius = 21.0;
+const CGSize kAssistantShadowOffset = {0, 11};
+
 }  // namespace
 
 @implementation AssistantContainerView {
