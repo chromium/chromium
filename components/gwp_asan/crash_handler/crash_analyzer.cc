@@ -387,7 +387,8 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
       metadata.dealloc.trace_len) {
     ReadAllocationInfo(metadata.deallocation_stack_trace,
                        /* stack_trace_offset = */ 0, metadata.dealloc,
-                       proto->mutable_deallocation());
+                       proto->mutable_deallocation(),
+                       LightweightDetectorState::kMaxPackedTraceLength);
   }
 
   ReportHistogram(Crash_Allocator_PARTITIONALLOC,
@@ -533,12 +534,14 @@ bool CrashAnalyzer::AnalyzeCrashedAllocator(
     if (metadata.alloc.tid != base::kInvalidThreadId ||
         metadata.alloc.trace_len) {
       ReadAllocationInfo(metadata.stack_trace_pool, 0, metadata.alloc,
-                         proto->mutable_allocation());
+                         proto->mutable_allocation(),
+                         AllocatorState::kMaxPackedTraceLength);
     }
     if (metadata.dealloc.tid != base::kInvalidThreadId ||
         metadata.dealloc.trace_len) {
       ReadAllocationInfo(metadata.stack_trace_pool, metadata.alloc.trace_len,
-                         metadata.dealloc, proto->mutable_deallocation());
+                         metadata.dealloc, proto->mutable_deallocation(),
+                         AllocatorState::kMaxPackedTraceLength);
     }
   }
 
@@ -550,7 +553,8 @@ void CrashAnalyzer::ReadAllocationInfo(
     const uint8_t* stack_trace,
     size_t stack_trace_offset,
     const AllocationInfo& slot_info,
-    gwp_asan::Crash_AllocationInfo* proto_info) {
+    gwp_asan::Crash_AllocationInfo* proto_info,
+    size_t max_trace_length) {
   if (slot_info.tid != base::kInvalidThreadId) {
     // The PlatformThreadId will match the Crashpad tid in terms of the bit
     // values, however it can differ in bitwidth and sign. To make this uniform,
@@ -564,9 +568,8 @@ void CrashAnalyzer::ReadAllocationInfo(
   if (!slot_info.trace_len || !slot_info.trace_collected)
     return;
 
-  if (slot_info.trace_len > AllocatorState::kMaxPackedTraceLength ||
-      stack_trace_offset + slot_info.trace_len >
-          AllocatorState::kMaxPackedTraceLength) {
+  if (slot_info.trace_len > max_trace_length ||
+      stack_trace_offset + slot_info.trace_len > max_trace_length) {
     DLOG(ERROR) << "Stack trace length is corrupted: " << slot_info.trace_len;
     return;
   }

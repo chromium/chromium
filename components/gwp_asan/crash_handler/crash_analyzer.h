@@ -116,7 +116,8 @@ class CrashAnalyzer {
   static void ReadAllocationInfo(const uint8_t* stack_trace,
                                  size_t stack_trace_offset,
                                  const AllocationInfo& slot_info,
-                                 gwp_asan::Crash_AllocationInfo* proto_info);
+                                 gwp_asan::Crash_AllocationInfo* proto_info,
+                                 size_t max_trace_length);
 
   // This method analyzes the AllocatorState of the crashing process. If the
   // exception is related to the Lightweight UAF Detector it fills out the

@@ -339,6 +339,22 @@ TEST_P(LightweightDetectorAnalyzerTest, InternalError) {
             CrashAnalyzer::LightweightDetectorModeToGwpAsanMode(GetParam()));
 }
 
+TEST_P(LightweightDetectorAnalyzerTest, InvalidTraceLength) {
+  uint64_t alloc;
+  ASSERT_TRUE(lud::PoisonMetadataRecorder::Get());
+  lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
+  InitializeSnapshot(alloc);
+
+  // Corrupt the trace_len to be larger than 90 but less than 400.
+  lud::PoisonMetadataRecorder::Get()->metadata_[0].dealloc.trace_len = 400;
+
+  base::HistogramTester histogram_tester;
+  gwp_asan::Crash proto;
+  bool proto_present =
+      CrashAnalyzer::GetExceptionInfo(process_snapshot_, &proto);
+  ASSERT_TRUE(proto_present);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     VaryLightweightDetectorMode,
     LightweightDetectorAnalyzerTest,

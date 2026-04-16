@@ -17,6 +17,7 @@
 
 namespace gwp_asan::internal {
 FORWARD_DECLARE_TEST(LightweightDetectorAnalyzerTest, InternalError);
+FORWARD_DECLARE_TEST(LightweightDetectorAnalyzerTest, InvalidTraceLength);
 }  // namespace gwp_asan::internal
 
 namespace gwp_asan::internal::lud {
@@ -64,6 +65,9 @@ class GWP_ASAN_EXPORT PoisonMetadataRecorder
   FRIEND_TEST_ALL_PREFIXES(
       ::gwp_asan::internal::LightweightDetectorAnalyzerTest,
       InternalError);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::gwp_asan::internal::LightweightDetectorAnalyzerTest,
+      InvalidTraceLength);
 };
 
 extern template class EXPORT_TEMPLATE_DECLARE(GWP_ASAN_EXPORT)
