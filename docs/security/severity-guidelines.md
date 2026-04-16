@@ -8,13 +8,15 @@ for how to rate these issues. Check out our
 [security release management page](https://www.chromium.org/Home/chromium-security/security-release-management)
 for guidance on how to release fixes based on severity.
 
-Any significant mitigating factors will generally reduce an issue's severity by one or
-more levels:
+Any significant mitigating factors will generally reduce an issue's severity by
+one or more levels:
+
 * Not web accessible, reliant solely on direct UI interaction to trigger.
 * Unusual or unlikely user interaction will normally reduce severity by one
   level. This means interaction which may sometimes occur, but would not be
   typical of an average user engaging with Chrome or a particular feature in
-  Chrome, nor could a user be easily convinced to perform by a persuasive web page.
+  Chrome, nor could a user be easily convinced to perform by a persuasive web
+  page.
 * Requiring profile destruction or browser shutdown will normally reduce
   severity by one level.
 * [MiraclePtr protection](#TOC-MiraclePtr)
@@ -28,10 +30,9 @@ only to a particular group of users. For instance, a Critical vulnerability is
 still considered Critical even if it applies only to Linux or to those users
 running with accessibility features enabled.
 
-Also note that most crashes do not indicate vulnerabilities. Chromium is designed
-to crash in a controlled manner (e.g., with a ```__debugBreak```) when memory is
-exhausted or in other exceptional circumstances.
-
+Also note that most crashes do not indicate vulnerabilities. Chromium is
+designed to crash in a controlled manner (e.g., with a ```__debugBreak```) when
+memory is exhausted or in other exceptional circumstances.
 
 ## Critical severity (S0) {#TOC-Critical-severity}
 
@@ -39,26 +40,13 @@ Critical severity (S0) issues allow an attacker to read or write arbitrary
 resources (including but not limited to the file system, registry, network,
 etc.) on the underlying platform, with the user's full privileges.
 
-They are normally assigned Priority **P0** and assigned to the current stable
-milestone (or earliest milestone affected). For critical severity bugs,
-[SheriffBot](https://www.chromium.org/issue-tracking/autotriage) will
-automatically assign the milestone.
-
-**For critical severity (S0) vulnerabilities, we aim to deploy the patch to all
-Chrome users in under 30 days.**
-
-Critical vulnerability details may be made public in 60 days,
-in accordance with Google's general [vulnerability disclosure recommendations](https://security.googleblog.com/2010/07/rebooting-responsible-disclosure-focus.html),
-or [faster (7 days)](https://security.googleblog.com/2013/05/disclosure-timeline-for-vulnerabilities.html)
-if there is evidence of active exploitation.
-
 Example bugs:
 
 * Memory corruption in the browser process
   ([319125](https://crbug.com/319125#c10)) which is directly or indirectly
   reachable from web content.
-* Memory corruption in an unsandboxed GPU process when it is reachable directly from web
-  content without compromising the renderer.
+* Memory corruption in an unsandboxed GPU process when it is reachable directly
+  from web content without compromising the renderer.
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
   ([on some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md)).
 * Exploit chains made up of multiple bugs that can lead to code execution
@@ -71,28 +59,19 @@ ratings.
 
 ## High severity (S1) {#TOC-High-severity}
 
-High severity (S1) vulnerabilities allow an attacker to execute code in the context
-of, or otherwise impersonate other origins or read cross-origin data.
-Bugs which would normally be
-critical severity with unusual mitigating factors may be rated as high severity.
-For example, renderer sandbox escapes fall into this category as their impact is
-that of a critical severity bug, but they require the precondition of a
-compromised renderer. (Bugs which involve using [MojoJS](../../mojo/public/js/README.md)
-to trigger an exploitable browser process crash usually fall into this category).
-Another example are bugs that result in memory corruption in the browser
-process, which would normally be critical severity, but require browser shutdown
-or profile destruction, which would lower these issues to high severity. A
-bug with the precondition of browser shutdown or profile destruction should be
-considered to have a maximum severity of high and could potentially be
-reduced by other mitigating factors.
-
-They are normally assigned Priority **P1** and assigned to the current stable
-milestone (or earliest milestone affected). For high severity bugs,
-[SheriffBot](https://www.chromium.org/issue-tracking/autotriage) will
-automatically assign the milestone.
-
-**For high severity (S1) vulnerabilities, we aim to deploy the patch to all
-Chrome users in under 60 days.**
+High severity (S1) vulnerabilities allow an attacker to execute code in the
+context of, or otherwise impersonate other origins or read cross-origin data.
+Bugs which would normally be critical severity with unusual mitigating factors
+may be rated as high severity. For example, renderer sandbox escapes fall into
+this category as their impact is that of a critical severity bug, but they
+require the precondition of a compromised renderer. (Bugs which involve using
+[MojoJS](../../mojo/public/js/README.md) to trigger an exploitable browser
+process crash usually fall into this category). Another example are bugs that
+result in memory corruption in the browser process, which would normally be
+critical severity, but require browser shutdown or profile destruction, which
+would lower these issues to high severity. A bug with the precondition of
+browser shutdown or profile destruction should be considered to have a maximum
+severity of high and could potentially be reduced by other mitigating factors.
 
 Example bugs:
 
@@ -115,11 +94,10 @@ compromised renderer ([377392](https://crbug.com/377392)).
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md))
   that requires specific user interaction, such as granting a permission ([455735](https://crbug.com/455735)).
 * Site Isolation bypasses:
-    - Cross-site execution contexts unexpectedly sharing a renderer process
+  * Cross-site execution contexts unexpectedly sharing a renderer process
       ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
-    - Cross-site data disclosure
+  * Cross-site data disclosure
       ([917668](https://crbug.com/917668), [927849](https://crbug.com/927849)).
-
 
 ## Medium severity (S2) {#TOC-Medium-severity}
 
@@ -133,11 +111,6 @@ medium severity.
 
 Certain vulnerabilities in [sandboxed GPU shader compilers](#TOC-Sandboxed-shader-compilers)
 should be marked as medium severity.
-
-They are normally assigned Priority **P1** and assigned to the current stable
-milestone (or earliest milestone affected). If the fix seems too complicated to
-merge to the current stable milestone, they may be assigned to the next stable
-milestone.
 
 Example bugs:
 
@@ -178,21 +151,6 @@ Low severity (S3) vulnerabilities are usually bugs that would normally be a
 higher severity, but which have extreme mitigating factors or highly limited
 scope.
 
-They are normally initially assigned Priority **P3**. Milestones can be assigned
-to low severity bugs on a case-by-case basis, but they are not normally merged
-to Stable or Beta branches.
-
-After a bug has been at low severity (S3) for 30 days:
-
-* It becomes exempt from the usual rule requiring security bugs to be assigned
-  to a developer.
-* It will be made visible to everyone in edit-bug-access@chromium.org (i.e.,
-  all chromium committers), rather than just the security team.
-
-This policy is intended to strike a balance between ensuring bugs are triaged
-and fixed in a timely manner and ensuring that low severity bugs are visible for
-opportunistic fixes by engineers who happen to be working in the affected area.
-
 Example bugs:
 
 * Bypass requirement for a user gesture ([256057](https://crbug.com/256057)).
@@ -205,13 +163,6 @@ Example bugs:
 * Clickjacking bugs that require unusual user behavior (rapid clicks, holding
   down a key, etc) ([400923](https://issues.chromium.org/issues/40092362))
 
-## Priority for in the wild vulnerabilities {#TOC-itw-pri}
-
-If there is evidence of a weaponized exploit or active exploitation in the wild,
-the vulnerability is considered a P0 priority - regardless of the severity
-rating -with a SLO of 7 days or faster. Our goal is to release a fix in a
-Stable channel update of Chrome as soon as possible.
-
 ## Can't impact Chrome users by default {#TOC-No-impact}
 
 If the bug can't impact Chrome users by default, this is denoted instead by
@@ -220,19 +171,11 @@ the **Security-Impact_None** hotlist (hotlistID: 5433277). See
 for more information. The bug should still have a severity set according
 to these guidelines.
 
-Bugs which have **Security-Impact_None** are exempt from the usual fix timelines
-given in this document. These bugs are often in experimental, prototype, or
-unfinished features, some of which have very long development timelines, and
-setting fix deadlines for them doesn't improve security outcomes for users.
-Instead, teams are expected to fix these bugs before default-enabling these
-features.
-
 ## Not a security bug {#TOC-Not-a-security-bug}
 
 The [security FAQ](faq.md) covers many of the cases that we do not consider to
 be security bugs, such as [denial of service](faq.md#TOC-Are-denial-of-service-issues-considered-security-bugs-)
 and, in particular, null pointer dereferences with consistent fixed offsets.
-
 
 ## "MiraclePtr" protection against use-after-free {#TOC-MiraclePtr}
 
@@ -254,10 +197,10 @@ The crash occurred while a raw_ptr<T> object containing a dangling pointer was b
 MiraclePtr should make this crash non-exploitable in regular builds.
 ```
 
-MiraclePtr is now active on all Chrome platforms in non-renderer processes as
-of 118 and on Fuchsia as of 128. Severity assessments are made with
-consideration of all active release channels (Dev, Beta, Stable, and Extended Stable);
-BRP is now enabled in all active release channels.
+MiraclePtr is now active on all Chrome platforms in non-renderer processes as of
+118 and on Fuchsia as of 128. Severity assessments are made with consideration
+of all active release channels (Dev, Beta, Stable, and Extended Stable); BRP is
+now enabled in all active release channels.
 
 As of 128, if a bug is marked `MiraclePtr Status:PROTECTED`, it is not
 considered a security issue. It should be converted to type:Bug and assigned to
@@ -265,17 +208,89 @@ the appropriate engineering team as functional issue.
 
 ## Sandboxed GPU Shader Compilers {#TOC-Sandboxed-shader-compilers}
 
-If a GPU shader compiler is in a separate process outside the GPU process and sandboxed, the
-overall attack surface of a vulnerability in that specific compiler may be much lower than an
-in-GPU-process shader compiler. Unlike the renderer process, which can make hundreds of different
-IPCs to the browser process, a well sandboxed shader compiler process can make a very limited number
-of IPCs back to the GPU process. Furthermore, code execution in a sandboxed GPU shader compiler
-is now limited to writing arbitrary shaders, which is a much lower threat surface than code execution
-in the GPU process as a whole.
+If a GPU shader compiler is in a separate process outside the GPU process and
+sandboxed, the overall attack surface of a vulnerability in that specific
+compiler may be much lower than an in-GPU-process shader compiler. Unlike the
+renderer process, which can make hundreds of different IPCs to the browser
+process, a well sandboxed shader compiler process can make a very limited number
+of IPCs back to the GPU process. Furthermore, code execution in a sandboxed GPU
+shader compiler is now limited to writing arbitrary shaders, which is a much
+lower threat surface than code execution in the GPU process as a whole.
 
-Currently, only the Metal shader compiler is in its own sandboxed process, so vulnerabilities that would
-otherwise be high severity should be considered medium severity if they are specific to that compiler.
+Currently, only the Metal shader compiler is in its own sandboxed process, so
+vulnerabilities that would otherwise be high severity should be considered
+medium severity if they are specific to that compiler.
 
-Vulnerabilities specific to the Metal shader compiler will typically call into the `MTLCompiler` in
-the stack trace, and a PoC will only be reproducible on MacOS devices. An example of a stack trace
-specific to the metal shader compiler can be found at ([40074630](https://crbug.com/40074630)).
+Vulnerabilities specific to the Metal shader compiler will typically call into
+the `MTLCompiler` in the stack trace, and a PoC will only be reproducible on
+MacOS devices. An example of a stack trace specific to the metal shader compiler
+can be found at ([40074630](https://crbug.com/40074630)).
+
+## Prioritization {#TOC-SLOs}
+
+### Critical (S0)
+
+Critical Severity (S0) issues are normally assigned Priority **P0** and assigned
+to the current stable milestone (or earliest milestone affected). For critical
+severity bugs, [SheriffBot](https://www.chromium.org/issue-tracking/autotriage)
+will automatically assign the milestone.
+
+**For critical severity (S0) vulnerabilities, we aim to deploy the patch to all
+Chrome users in under 30 days.**
+
+Critical vulnerability details may be made public in 60 days, in accordance with
+Google's general [vulnerability disclosure
+recommendations](https://security.googleblog.com/2010/07/rebooting-responsible-disclosure-focus.html),
+or [faster (7
+days)](https://security.googleblog.com/2013/05/disclosure-timeline-for-vulnerabilities.html)
+if there is evidence of active exploitation.
+
+### High (S1)
+
+High Severity (S1) issues are normally assigned Priority **P1** and assigned to
+the current stable milestone (or earliest milestone affected). For high severity
+bugs, [SheriffBot](https://www.chromium.org/issue-tracking/autotriage) will
+automatically assign the milestone.
+
+**For high severity (S1) vulnerabilities, we aim to deploy the patch to all
+Chrome users in under 60 days.**
+
+### Medium (S2)
+
+Medium Severity (S2) issues are normally assigned Priority **P1** and assigned
+to the current stable milestone (or earliest milestone affected). If the fix
+seems too complicated to merge to the current stable milestone, they may be
+assigned to the next stable milestone.
+
+### Low (S3)
+
+Low Severity (S3) issues are normally initially assigned Priority **P3**.
+Milestones can be assigned to low severity bugs on a case-by-case basis, but
+they are not normally merged to Stable or Beta branches.
+
+After a bug has been at low severity (S3) for 30 days:
+
+* It becomes exempt from the usual rule requiring security bugs to be assigned
+  to a developer.
+* It will be made visible to everyone in <edit-bug-access@chromium.org> (i.e.,
+  all chromium committers), rather than just the security team.
+
+This policy is intended to strike a balance between ensuring bugs are triaged
+and fixed in a timely manner and ensuring that low severity bugs are visible for
+opportunistic fixes by engineers who happen to be working in the affected area.
+
+### Priority for in the wild vulnerabilities {#TOC-itw-pri}
+
+If there is evidence of a weaponized exploit or active exploitation in the wild,
+the vulnerability is considered a P0 priority - regardless of the severity
+rating -with a SLO of 7 days or faster. Our goal is to release a fix in a
+Stable channel update of Chrome as soon as possible.
+
+### Security-Impact_None
+
+Bugs which have **Security-Impact_None** are exempt from the usual fix timelines
+given in this document. These bugs are often in experimental, prototype, or
+unfinished features, some of which have very long development timelines, and
+setting fix deadlines for them doesn't improve security outcomes for users.
+Instead, teams are expected to fix these bugs before default-enabling these
+features.
