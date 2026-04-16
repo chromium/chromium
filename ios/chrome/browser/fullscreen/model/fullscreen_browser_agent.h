@@ -79,6 +79,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // observers.
   void InvalidateInsetRange();
 
+  // True while InvalidateInsetRange() is running.
+  bool invalidating_inset_range() const { return invalidating_inset_range_; }
+
  private:
   friend class BrowserUserData<FullscreenBrowserAgent>;
 
@@ -101,6 +104,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   UIEdgeInsets insets_ = UIEdgeInsetsZero;
   UIEdgeInsets min_insets_ = UIEdgeInsetsZero;
   UIEdgeInsets max_insets_ = UIEdgeInsetsZero;
+
+  // True while InvalidateInsetRange() is running.
+  bool invalidating_inset_range_ = false;
 
   // The progress in entering or exiting fullscreen. 1.0 indicates browser UI is
   // fully visible, 0.0 indicates browser UI is fully hidden (in fullscreen

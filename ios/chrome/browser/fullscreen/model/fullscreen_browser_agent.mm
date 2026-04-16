@@ -140,6 +140,7 @@ void FullscreenBrowserAgent::DecrementDisabledCounter(PassKey) {
 }
 
 void FullscreenBrowserAgent::InvalidateInsetRange() {
+  invalidating_inset_range_ = true;
   min_insets_ = UIEdgeInsetsZero;
   max_insets_ = UIEdgeInsetsZero;
 
@@ -154,6 +155,7 @@ void FullscreenBrowserAgent::InvalidateInsetRange() {
   }
 
   NotifyObserversOfUpdatedState();
+  invalidating_inset_range_ = false;
 }
 
 void FullscreenBrowserAgent::AddObscuredInsetRange(UIRectEdge edge,

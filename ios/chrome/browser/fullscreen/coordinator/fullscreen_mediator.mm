@@ -397,7 +397,17 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   }
 
   _updatingInsets = YES;
-  webView.obscuredInsets = insets;
+  if (_browserAgent->invalidating_inset_range()) {
+    // Do not allow the perceived scroll position to change when the obscured
+    // inset is updated due to a device rotation or omnibox position change.
+    CGPoint offset = _scrollViewProxy.contentOffset;
+    offset.y += _scrollViewProxy.contentInset.top;
+    webView.obscuredInsets = insets;
+    offset.y -= _scrollViewProxy.contentInset.top;
+    _scrollViewProxy.contentOffset = offset;
+  } else {
+    webView.obscuredInsets = insets;
+  }
   _updatingInsets = NO;
 }
 
