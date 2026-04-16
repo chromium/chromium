@@ -36,6 +36,7 @@ aom_unit_test_decoder_sources = [
   "//third_party/libaom/source/libaom/test/decode_frame_size_limit_test.cc",
   "//third_party/libaom/source/libaom/test/decode_scalability_test.cc",
   "//third_party/libaom/source/libaom/test/external_frame_buffer_test.cc",
+  "//third_party/libaom/source/libaom/test/grain_synthesis_race_test.cc",
   "//third_party/libaom/source/libaom/test/invalid_file_test.cc",
   "//third_party/libaom/source/libaom/test/ivf_video_source.h",
   "//third_party/libaom/source/libaom/test/test_vector_test.cc",
