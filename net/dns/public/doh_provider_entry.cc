@@ -54,10 +54,14 @@ DnsOverHttpsServerConfig ParseValidDohTemplate(
 
 }  // namespace
 
-#define MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(feature_name, feature_state) \
-  ([]() {                                                                  \
-    static BASE_FEATURE(k##feature_name, #feature_name, feature_state);    \
-    return &k##feature_name;                                               \
+// Note: use BASE_FEATURE as a suffix for this macro name because some tooling
+// identifies feature definitions by searching for that string, so if our macro
+// matches the standard one we have a better chance of our feature flags being
+// detected by those tools.
+#define MAKE_STATIC_STORAGE_BASE_FEATURE(feature_name, feature_state) \
+  ([]() {                                                             \
+    static BASE_FEATURE(feature_name, feature_state);                 \
+    return &feature_name;                                             \
   })()
 
 // static
@@ -73,8 +77,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   static const auto entries(base::NoDestructor(std::to_array<DohProviderEntry>(
       {{
            "CleanBrowsingAdult",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCleanBrowsingAdult, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCleanBrowsingAdult,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"185.228.168.10", "185.228.169.11", "2a0d:2a00:1::1",
             "2a0d:2a00:2::1"},
            /*dns_over_tls_hostnames=*/{"adult-filter-dns.cleanbrowsing.org"},
@@ -86,9 +90,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "CleanBrowsingFamily",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCleanBrowsingFamily,
-               base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCleanBrowsingFamily,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"185.228.168.168", "185.228.169.168",
             "2a0d:2a00:1::", "2a0d:2a00:2::"},
            /*dns_over_tls_hostnames=*/{"family-filter-dns.cleanbrowsing.org"},
@@ -100,9 +103,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "CleanBrowsingSecure",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCleanBrowsingSecure,
-               base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCleanBrowsingSecure,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"185.228.168.9", "185.228.169.9", "2a0d:2a00:1::2",
             "2a0d:2a00:2::2"},
            /*dns_over_tls_hostnames=*/{"security-filter-dns.cleanbrowsing.org"},
@@ -114,8 +116,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Cloudflare",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCloudflare, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCloudflare,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"1.1.1.1", "1.0.0.1", "2606:4700:4700::1111",
             "2606:4700:4700::1001"},
            /*dns_over_tls_hostnames=*/
@@ -129,8 +131,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "CloudflareFamily",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCloudflareFamily, base::FEATURE_DISABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCloudflareFamily,
+                                            base::FEATURE_DISABLED_BY_DEFAULT),
            {"1.1.1.3", "1.0.0.3", "2606:4700:4700::1113",
             "2606:4700:4700::1003"},
            {"family.cloudflare-dns.com"},
@@ -142,9 +144,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "CloudflareSecurity",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCloudflareSecurity,
-               base::FEATURE_DISABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCloudflareSecurity,
+                                            base::FEATURE_DISABLED_BY_DEFAULT),
            {"1.1.1.2", "1.0.0.2", "2606:4700:4700::1112",
             "2606:4700:4700::1002"},
            {"security.cloudflare-dns.com"},
@@ -156,8 +157,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Comcast",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderComcast, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderComcast,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"75.75.75.75", "75.75.76.76", "2001:558:feed::1",
             "2001:558:feed::2"},
            /*dns_over_tls_hostnames=*/{"dot.xfinity.com"},
@@ -169,8 +170,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Cox",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCox, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCox,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"68.105.28.11", "68.105.28.12", "2001:578:3f::30"},
            /*dns_over_tls_hostnames=*/{"dot.cox.net"},
            "https://doh.cox.net/dns-query",
@@ -181,8 +182,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Cznic",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderCznic, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderCznic,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"185.43.135.1", "193.17.47.1", "2001:148f:fffe::1",
             "2001:148f:ffff::1"},
            /*dns_over_tls_hostnames=*/{"odvr.nic.cz"},
@@ -193,8 +194,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
            /*display_countries=*/{"CZ"},
        },
        {"DNS4EU",
-        MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(DohProviderDns4eu,
-                                              base::FEATURE_ENABLED_BY_DEFAULT),
+        MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderDns4eu,
+                                         base::FEATURE_ENABLED_BY_DEFAULT),
         /*dns_over_53_server_ip_strs=*/{},
         /*dns_over_tls_hostnames=*/{},
         "https://protective.joindns4.eu/dns-query{?dns}",
@@ -212,8 +213,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
          "2a13:1001::86:54:11:201"}},
        {
            "Dnssb",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderDnssb, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderDnssb,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"185.222.222.222", "45.11.45.11", "2a09::", "2a11::"},
            /*dns_over_tls_hostnames=*/{"dns.sb"},
            "https://doh.dns.sb/dns-query{?dns}",
@@ -224,8 +225,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Google",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderGoogle, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderGoogle,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"8.8.8.8", "8.8.4.4", "2001:4860:4860::8888",
             "2001:4860:4860::8844"},
            /*dns_over_tls_hostnames=*/
@@ -239,8 +240,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "GoogleDns64",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderGoogleDns64, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderGoogleDns64,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"2001:4860:4860::64", "2001:4860:4860::6464"},
            /*dns_over_tls_hostnames=*/{"dns64.dns.google"},
            "https://dns64.dns.google/dns-query{?dns}",
@@ -251,8 +252,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Iij",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderIij, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderIij,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            /*dns_over_53_server_ip_strs=*/{},
            /*dns_over_tls_hostnames=*/{},
            "https://public.dns.iij.jp/dns-query",
@@ -262,8 +263,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
            /*display_countries=*/{"JP"},
        },
        {"Levonet",
-        MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(DohProviderLevonet,
-                                              base::FEATURE_ENABLED_BY_DEFAULT),
+        MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderLevonet,
+                                         base::FEATURE_ENABLED_BY_DEFAULT),
         {"109.236.119.2", "109.236.120.2", "2a02:6ca3:0:1::2",
          "2a02:6ca3:0:2::2"},
         /*dns_over_tls_hostnames=*/{},
@@ -276,8 +277,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
          "2a02:6ca3:0:2::2"}},
        {
            "NextDns",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderNextDns, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderNextDns,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            /*dns_over_53_server_ip_strs=*/{},
            /*dns_over_tls_hostnames=*/{},
            "https://chromium.dns.nextdns.io",
@@ -288,8 +289,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "OpenDNS",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderOpenDNS, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderOpenDNS,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"208.67.222.222", "208.67.220.220", "2620:119:35::35",
             "2620:119:53::53"},
            /*dns_over_tls_hostnames=*/{},
@@ -302,8 +303,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "OpenDNSFamily",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderOpenDNSFamily, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderOpenDNSFamily,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"208.67.222.123", "208.67.220.123", "2620:119:35::123",
             "2620:119:53::123"},
            /*dns_over_tls_hostnames=*/{},
@@ -315,8 +316,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Quad9Cdn",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderQuad9Cdn, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderQuad9Cdn,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"9.9.9.11", "149.112.112.11", "2620:fe::11", "2620:fe::fe:11"},
            /*dns_over_tls_hostnames=*/{"dns11.quad9.net"},
            "https://dns11.quad9.net/dns-query",
@@ -327,8 +328,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Quad9Insecure",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderQuad9Insecure, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderQuad9Insecure,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"9.9.9.10", "149.112.112.10", "2620:fe::10", "2620:fe::fe:10"},
            /*dns_over_tls_hostnames=*/{"dns10.quad9.net"},
            "https://dns10.quad9.net/dns-query",
@@ -339,8 +340,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Quad9Secure",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderQuad9Secure, base::FEATURE_DISABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderQuad9Secure,
+                                            base::FEATURE_DISABLED_BY_DEFAULT),
            {"9.9.9.9", "149.112.112.112", "2620:fe::fe", "2620:fe::9"},
            /*dns_over_tls_hostnames=*/{"dns.quad9.net", "dns9.quad9.net"},
            "https://dns.quad9.net/dns-query",
@@ -351,8 +352,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Quickline",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderQuickline, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderQuickline,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"212.60.61.246", "212.60.63.246", "2001:1a88:10:ffff::1",
             "2001:1a88:10:ffff::2"},
            /*dns_over_tls_hostnames=*/{"dot.quickline.ch"},
@@ -364,8 +365,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Spectrum1",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderSpectrum1, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderSpectrum1,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
             "2001:1998:0f00:0002::1"},
            /*dns_over_tls_hostnames=*/{},
@@ -377,8 +378,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
        },
        {
            "Spectrum2",
-           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-               DohProviderSpectrum2, base::FEATURE_ENABLED_BY_DEFAULT),
+           MAKE_STATIC_STORAGE_BASE_FEATURE(kDohProviderSpectrum2,
+                                            base::FEATURE_ENABLED_BY_DEFAULT),
            {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
             "2001:1998:0f00:0002::1"},
            /*dns_over_tls_hostnames=*/{},
@@ -397,7 +398,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   return *providers;
 }
 
-#undef MAKE_BASE_FEATURE_WITH_STATIC_STORAGE
+#undef MAKE_STATIC_STORAGE_BASE_FEATURE
 
 // static
 DohProviderEntry DohProviderEntry::ConstructForTesting(
