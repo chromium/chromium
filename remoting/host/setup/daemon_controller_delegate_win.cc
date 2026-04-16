@@ -21,6 +21,7 @@
 #include "remoting/base/branding.h"
 #include "remoting/base/is_google_email.h"
 #include "remoting/base/scoped_sc_handle_win.h"
+#include "remoting/host/config_file_watcher.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/win/security_descriptor.h"
@@ -34,14 +35,6 @@ namespace {
 // probability of out of memory situation fairly low. OOM is still possible and
 // we will crash if it occurs.
 const size_t kMaxConfigFileSize = 1024 * 1024;
-
-// The host configuration file name.
-const base::FilePath::CharType kConfigFileName[] =
-    FILE_PATH_LITERAL("host.json");
-
-// The unprivileged configuration file name.
-const base::FilePath::CharType kUnprivilegedConfigFileName[] =
-    FILE_PATH_LITERAL("host_unprivileged.json");
 
 // The extension for the temporary file.
 const base::FilePath::CharType kTempFileExtension[] =
@@ -185,7 +178,7 @@ bool WriteConfig(const base::DictValue& config) {
 
   // Write the full configuration file to a temporary location.
   base::FilePath full_config_file_path =
-      remoting::GetConfigDir().Append(kConfigFileName);
+      remoting::GetConfigDir().Append(kDefaultHostConfigFile);
   if (!WriteConfigFileToTemp(full_config_file_path,
                              kConfigFileSecurityDescriptor, config_json)) {
     return false;
@@ -201,7 +194,7 @@ bool WriteConfig(const base::DictValue& config) {
 
   // Write the unprivileged configuration file to a temporary location.
   base::FilePath unprivileged_config_file_path =
-      remoting::GetConfigDir().Append(kUnprivilegedConfigFileName);
+      remoting::GetConfigDir().Append(kDefaultUnprivilegedConfigFileName);
   if (!WriteConfigFileToTemp(unprivileged_config_file_path,
                              kUnprivilegedConfigFileSecurityDescriptor,
                              HostConfigToJson(unprivileged_config))) {
@@ -356,7 +349,8 @@ std::optional<base::DictValue> DaemonControllerDelegateWin::GetConfig() {
 
   // Read the unprivileged part of host configuration.
   base::DictValue config;
-  if (!ReadConfig(config_dir.Append(kUnprivilegedConfigFileName), config)) {
+  if (!ReadConfig(config_dir.Append(kDefaultUnprivilegedConfigFileName),
+                  config)) {
     return std::nullopt;
   }
 
@@ -377,7 +371,7 @@ void DaemonControllerDelegateWin::UpdateConfig(
   // Get the old config.
   base::FilePath config_dir = remoting::GetConfigDir();
   base::DictValue config;
-  if (!ReadConfig(config_dir.Append(kConfigFileName), config)) {
+  if (!ReadConfig(config_dir.Append(kDefaultHostConfigFile), config)) {
     InvokeCompletionCallback(std::move(done), false);
     return;
   }

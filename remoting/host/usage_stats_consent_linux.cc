@@ -28,7 +28,7 @@ namespace {
 
 inline base::FilePath GetMultiProcessHostUsageStatsConsentFile() {
   return GetMultiProcessHostGlobalConfigDir().Append(
-      "usage_stats_consent.json");
+      kDefaultUnprivilegedConfigFileName);
 }
 
 bool GetUsageStatsConsentFromFile(const base::FilePath& path,

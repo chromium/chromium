@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "remoting/host/config_watcher.h"
 
 namespace base {
@@ -18,6 +19,10 @@ namespace remoting {
 
 extern const char kHostConfigSwitchName[];
 extern const base::FilePath::CharType kDefaultHostConfigFile[];
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+extern const base::FilePath::CharType kDefaultUnprivilegedConfigFileName[];
+#endif
 
 class ConfigFileWatcherImpl;
 

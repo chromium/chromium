@@ -27,6 +27,11 @@ const char kHostConfigSwitchName[] = "host-config";
 const base::FilePath::CharType kDefaultHostConfigFile[] =
     FILE_PATH_LITERAL("host.json");
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+const base::FilePath::CharType kDefaultUnprivilegedConfigFileName[] =
+    FILE_PATH_LITERAL("host_unprivileged.json");
+#endif
+
 #if BUILDFLAG(IS_WIN)
 // Maximum number of times to try reading the configuration file before
 // reporting an error.
