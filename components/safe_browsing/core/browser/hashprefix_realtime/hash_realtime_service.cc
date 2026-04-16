@@ -79,7 +79,6 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
       base::OnceCallback<void(const std::optional<std::string>&,
                               int,
                               int,
-                              scoped_refptr<net::HttpResponseHeaders>,
                               bool)>;
 
   explicit ObliviousHttpClient(OnCompletedCallback callback)
@@ -88,7 +87,7 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
   ~ObliviousHttpClient() override {
     if (!called_) {
       std::move(callback_).Run(std::nullopt, net::ERR_FAILED,
-                               /*response_code=*/0, /*headers=*/nullptr,
+                               /*response_code=*/0,
                                /*ohttp_client_destructed_early=*/true);
     }
   }
@@ -104,7 +103,6 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
     std::optional<std::string> response_body;
     int net_error;
     int response_code;
-    scoped_refptr<net::HttpResponseHeaders> response_headers;
     std::string histogram_suffix;
     if (status->is_net_error()) {
       net_error = status->get_net_error();
@@ -116,7 +114,6 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
       histogram_suffix = "OuterResponseResult";
     } else {
       DCHECK(status->is_inner_response());
-      response_headers = std::move(status->get_inner_response()->headers);
       histogram_suffix = "InnerResponseResult";
       if (status->get_inner_response()->response_code != net::HTTP_OK) {
         net_error = net::ERR_HTTP_RESPONSE_CODE_FAILURE;
@@ -131,7 +128,6 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
         ("SafeBrowsing.HPRT.Network." + histogram_suffix).c_str(), net_error,
         response_code);
     std::move(callback_).Run(response_body, net_error, response_code,
-                             response_headers,
                              /*ohttp_client_destructed_early=*/false);
   }
 
@@ -401,9 +397,8 @@ void HashRealTimeService::OnOhttpComplete(
     const std::optional<std::string>& response_body,
     int net_error,
     int response_code,
-    scoped_refptr<net::HttpResponseHeaders> headers,
     bool ohttp_client_destructed_early) {
-  ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
+  ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code);
 
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));

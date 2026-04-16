@@ -29,7 +29,6 @@
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
-class HttpResponseHeaders;
 }
 
 namespace safe_browsing {
@@ -223,7 +222,7 @@ class HashRealTimeService : public KeyedService {
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
-  // details. |response_body|, |net_error|, |response_code|, |headers|, and
+  // details. |response_body|, |net_error|, |response_code|, and
   // |ohttp_client_destructed_early| are returned from the OHTTP client.
   // |ohttp_key| is sent to the key service.
   void OnOhttpComplete(const GURL& url,
@@ -237,7 +236,6 @@ class HashRealTimeService : public KeyedService {
                        const std::optional<std::string>& response_body,
                        int net_error,
                        int response_code,
-                       scoped_refptr<net::HttpResponseHeaders> headers,
                        bool ohttp_client_destructed_early);
 
   // Called when the response from the Safe Browsing V5 remote endpoint is

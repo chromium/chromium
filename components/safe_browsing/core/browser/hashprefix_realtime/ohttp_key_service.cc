@@ -62,10 +62,6 @@ constexpr base::TimeDelta kAsyncFetchCheckMinInterval = base::Minutes(1);
 constexpr net::HttpStatusCode kKeyRelatedHttpErrorCode =
     net::HTTP_UNPROCESSABLE_CONTENT;
 
-// The header that the server sets if the server is able to decrypt the request,
-// but the key is outdated.
-constexpr char kKeyRotatedHeader[] = "X-OhttpPublickey-Rotated";
-
 // The maximum delayed time to fetch a new key if the key fetch is triggered
 // by the server.
 constexpr int kServerTriggeredFetchMaxDelayTimeSec = 60;
@@ -255,10 +251,8 @@ void OhttpKeyService::GetOhttpKey(Callback callback) {
              FetchTriggerReason::kDuringHashRealTimeLookup);
 }
 
-void OhttpKeyService::NotifyLookupResponse(
-    const std::string& key,
-    int response_code,
-    scoped_refptr<net::HttpResponseHeaders> headers) {
+void OhttpKeyService::NotifyLookupResponse(const std::string& key,
+                                           int response_code) {
   // Skip server triggered fetch if:
   //   * The service is disabled. OR
   //   * The fetch is already scheduled. OR
@@ -291,21 +285,6 @@ void OhttpKeyService::NotifyLookupResponse(
         base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
                        weak_factory_.GetWeakPtr(), key,
                        FetchTriggerReason::kKeyRelatedHttpErrorCode),
-        base::Seconds(
-            base::RandIntInclusive(0, kServerTriggeredFetchMaxDelayTimeSec)));
-    return;
-  }
-
-  if (response_code == net::HTTP_OK && headers &&
-      headers->HasHeader(kKeyRotatedHeader)) {
-    server_triggered_fetch_scheduled_ = true;
-    // The key is still valid, but it is close to expiration. It is a soft
-    // failure, so do not clear the key immediately.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
-                       weak_factory_.GetWeakPtr(), key,
-                       FetchTriggerReason::kKeyRotatedHeader),
         base::Seconds(
             base::RandIntInclusive(0, kServerTriggeredFetchMaxDelayTimeSec)));
     return;

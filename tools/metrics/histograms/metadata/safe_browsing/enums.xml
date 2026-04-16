@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="DuringHashRealTimeLookup"/>
   <int value="1" label="AsyncFetch"/>
   <int value="2" label="KeyRelatedHttpErrorCode"/>
-  <int value="3" label="KeyRotatedHeader"/>
+  <int value="3" label="(Obsolete) KeyRotatedHeader"/>
 </enum>
 
 <enum name="SafeBrowsingPageLoadTokenClearReason">

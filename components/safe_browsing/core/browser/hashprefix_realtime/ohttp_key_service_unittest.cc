@@ -64,16 +64,6 @@ std::string TestInvalidOhttpKey() {
 constexpr char kExpectedKeyFetchServerUrl[] =
     "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig";
 
-scoped_refptr<net::HttpResponseHeaders> CreateSuccessHeaders() {
-  return net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
-}
-
-scoped_refptr<net::HttpResponseHeaders> CreateKeyRotatedHeaders() {
-  return net::HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\r\n"
-      "X-OhttpPublickey-Rotated: yes\r\n");
-}
-
 }  // namespace
 
 class OhttpKeyServiceTest : public ::testing::Test {
@@ -848,42 +838,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_RescheduledBasedOnBackoffRemainingTime) {
 
 TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_SuccessFetch) {
   SetupOldKeyAndPendingNewKey();
-  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(), net::HTTP_OK,
-                                           CreateSuccessHeaders());
-  FastForwardAndVerifyKeyValue(TestOldOhttpKey());
-}
-
-TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHint) {
-  SetupOldKeyAndPendingNewKey();
-  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(), net::HTTP_OK,
-                                           CreateKeyRotatedHeaders());
-  // Header hint is soft failure, the key is not immediately cleared.
-  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->key,
-            TestOldOhttpKey());
-
-  FastForwardAndVerifyKeyValue(TestNewOhttpKey());
-
-  histogram_tester_.ExpectBucketCount(
-      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
-      /*sample=*/OhttpKeyService::FetchTriggerReason::kKeyRotatedHeader,
-      /*expected_count=*/1);
-}
-
-TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintOnDifferentKey) {
-  SetupOldKeyAndPendingNewKey();
-  ohttp_key_service_->NotifyLookupResponse(TestOhttpKey(), net::HTTP_OK,
-                                           CreateKeyRotatedHeaders());
-
-  // The key is not updated because the server hint is on a different key.
-  FastForwardAndVerifyKeyValue(TestOldOhttpKey());
-}
-
-TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintWithError) {
-  SetupOldKeyAndPendingNewKey();
-
-  ohttp_key_service_->NotifyLookupResponse(
-      TestOldOhttpKey(), net::HTTP_FORBIDDEN, CreateKeyRotatedHeaders());
-  // Header hint should only take effect when the response code is 200.
+  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(), net::HTTP_OK);
   FastForwardAndVerifyKeyValue(TestOldOhttpKey());
 }
 
@@ -891,8 +846,8 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_KeyRelatedHttpFailure) {
   SetupOldKeyAndPendingNewKey();
   task_environment_.RunUntilIdle();
 
-  ohttp_key_service_->NotifyLookupResponse(
-      TestOldOhttpKey(), net::HTTP_UNPROCESSABLE_CONTENT, /*headers=*/nullptr);
+  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(),
+                                           net::HTTP_UNPROCESSABLE_CONTENT);
   // HTTP status error is a hard failure, the key should be cleared immediately.
   EXPECT_FALSE(ohttp_key_service_->get_ohttp_key_for_testing().has_value());
 
@@ -913,11 +868,18 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_Backoff) {
   task_environment_.RunUntilIdle();
   SetupSuccessResponse();
   SetupOldKeyAndPendingNewKey();
-  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(), net::HTTP_OK,
-                                           CreateKeyRotatedHeaders());
+  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(),
+                                           net::HTTP_UNPROCESSABLE_CONTENT);
 
-  // Still returns old key because the service is in backoff mode.
-  FastForwardAndVerifyKeyValue(TestOldOhttpKey());
+  // HTTP_UNPROCESSABLE_CONTENT is a hard failure, so the key is cleared
+  // immediately.
+  EXPECT_FALSE(ohttp_key_service_->get_ohttp_key_for_testing().has_value());
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  task_environment_.RunUntilIdle();
+
+  // Still empty because the service is in backoff mode and fetch fails.
+  EXPECT_FALSE(ohttp_key_service_->get_ohttp_key_for_testing().has_value());
 }
 
 TEST_F(OhttpKeyServiceTest,
@@ -927,22 +889,20 @@ TEST_F(OhttpKeyServiceTest,
   SetupOldKeyAndPendingNewKey();
   task_environment_.RunUntilIdle();
 
-  ohttp_key_service_->NotifyLookupResponse(
-      TestOldOhttpKey(), net::HTTP_UNPROCESSABLE_CONTENT, /*headers=*/nullptr);
+  ohttp_key_service_->NotifyLookupResponse(TestOldOhttpKey(),
+                                           net::HTTP_UNPROCESSABLE_CONTENT);
   // Histogram is not logged because it is not a new key.
   histogram_tester_.ExpectTotalCount(kFirstLookupHistogramName,
                                      /*expected_count=*/0);
 
   FastForwardAndVerifyKeyValue(TestNewOhttpKey());
 
-  ohttp_key_service_->NotifyLookupResponse(TestNewOhttpKey(), net::HTTP_OK,
-                                           CreateSuccessHeaders());
+  ohttp_key_service_->NotifyLookupResponse(TestNewOhttpKey(), net::HTTP_OK);
   histogram_tester_.ExpectUniqueSample(kFirstLookupHistogramName,
                                        /*sample=*/net::HTTP_OK,
                                        /*expected_bucket_count=*/1);
 
-  ohttp_key_service_->NotifyLookupResponse(TestNewOhttpKey(), net::HTTP_OK,
-                                           CreateSuccessHeaders());
+  ohttp_key_service_->NotifyLookupResponse(TestNewOhttpKey(), net::HTTP_OK);
   // Histogram is not logged again because it is not the first lookup response
   // with this key.
   histogram_tester_.ExpectTotalCount(kFirstLookupHistogramName,

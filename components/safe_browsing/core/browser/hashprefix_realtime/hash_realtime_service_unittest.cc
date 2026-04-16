@@ -147,10 +147,8 @@ class TestOhttpKeyService : public OhttpKeyService {
     ohttp_key_ = ohttp_key;
   }
 
-  void NotifyLookupResponse(
-      const std::string& key,
-      int response_code,
-      scoped_refptr<net::HttpResponseHeaders> headers) override {
+  void NotifyLookupResponse(const std::string& key,
+                            int response_code) override {
     lookup_response_notified_ = true;
   }
 
