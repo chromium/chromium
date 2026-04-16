@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/browser_window",
+    "//chrome/common",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
     "//components/history_clusters/core",
@@ -64,6 +65,7 @@ source_set("impl") {
       ":jni_headers",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/ui/android/tab_model",
+      "//components/ntp_tiles",
     ]
   } else {
     deps += [

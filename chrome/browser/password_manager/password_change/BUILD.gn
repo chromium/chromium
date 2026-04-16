@@ -40,6 +40,9 @@ source_set("password_change") {
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles",
     "//chrome/browser/translate",
+    "//chrome/common",
+    "//chrome/common:mojo_bindings",
+    "//components/autofill/content/browser",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -55,6 +58,8 @@ source_set("password_change") {
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/accessibility:ax_base",
+    "//ui/views",
+    "//ui/views/controls/webview",
   ]
 }
 
