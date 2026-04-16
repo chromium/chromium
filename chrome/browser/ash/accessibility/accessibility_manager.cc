@@ -94,6 +94,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_switches.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/common/constants.h"
@@ -203,11 +204,16 @@ void RestartBrltty(const std::string& address) {
   UpstartClient* client = UpstartClient::Get();
   client->StopJob(kBrlttyUpstartJobName, {}, base::DoNothing());
 
-  std::vector<std::string> args;
   if (address.empty())
     return;
 
-  args.push_back(base::StringPrintf("ADDRESS=%s", address.c_str()));
+  // The address is used as an environment variable in the brltty Upstart job,
+  // so a malformed value could allow injection.
+  std::string canonical = device::CanonicalizeBluetoothAddress(address);
+  CHECK(!canonical.empty());
+
+  std::vector<std::string> args;
+  args.push_back(base::StringPrintf("ADDRESS=%s", canonical.c_str()));
   client->StartJob(kBrlttyUpstartJobName, args, base::DoNothing());
 }
 

@@ -56,6 +56,7 @@ static_library("accessibility") {
     "//chromeos/strings",
     "//components/application_locale_storage",
     "//components/input",
+    "//device/bluetooth/public/cpp",
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/live_caption:constants",

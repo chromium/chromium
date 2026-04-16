@@ -9857,6 +9857,7 @@ test("unit_tests") {
     if (is_chromeos) {
       sources += [
         "../browser/chromeos/extensions/wm/wm_desks_private_events_unittest.cc",
+        "../browser/extensions/api/braille_display_private/braille_display_private_api_unittest.cc",
         "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash_unittest.cc",
         "../browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_unittest.cc",
         "../browser/extensions/api/enterprise_login/enterprise_login_api_unittest.cc",
@@ -9876,6 +9877,7 @@ test("unit_tests") {
 
       deps += [
         "//chrome/browser/chromeos/extensions/wm",
+        "//chrome/browser/extensions/api/braille_display_private",
         "//chrome/browser/prefs:util",
         "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/common/chromeos/extensions",

@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
@@ -190,8 +191,14 @@ BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
   const std::string& address = args()[0].GetString();
+  // Validate that the address is a well-formed Bluetooth MAC address.
+  // CanonicalizeBluetoothAddress returns empty on invalid input.
+  std::string canonical = device::CanonicalizeBluetoothAddress(address);
+  if (canonical.empty()) {
+    return RespondNow(Error("Invalid Bluetooth address"));
+  }
   ash::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
-      address);
+      canonical);
   return RespondNow(NoArguments());
 #else
   NOTREACHED();
