@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -2307,7 +2308,8 @@ public class RootUiCoordinator
                         mExpandedBottomSheetHelper,
                         mOmniboxFocusStateSupplier,
                         panelManagerSupplier,
-                        mLayoutStateProviderOneShotSupplier);
+                        mLayoutStateProviderOneShotSupplier,
+                        mBottomControlsStacker);
 
         // TODO(crbug.com/40208738): Consider moving handler registration to feature code.
         assert mBackPressManager != null
@@ -2421,6 +2423,13 @@ public class RootUiCoordinator
     /** Returns the {@link BottomSheetController} Supplier for this activity. */
     public MonotonicObservableSupplier<BottomSheetController> getBottomSheetControllerSupplier() {
         return SupplierUtils.upcast(mBottomSheetControllerSupplier, BottomSheetController.class);
+    }
+
+    /** Returns the {@link BottomControlsLayer} for the bottom sheet, or null if not available. */
+    public @Nullable BottomControlsLayer getBottomSheetControlsLayer() {
+        return mBottomSheetManager != null
+                ? mBottomSheetManager.getBottomSheetControlsLayer()
+                : null;
     }
 
     /**

@@ -17,6 +17,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
@@ -26,6 +27,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+
+import java.util.function.Supplier;
 
 /**
  * A helper class to help manage some behaviors of {@code SnackbarManager} for a {@code
@@ -42,6 +45,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
             this::onEdgeToEdgeControllerChanged;
     private final Activity mActivity;
     private final BottomSheetController mBottomSheetController;
+    private final Supplier<BottomControlsLayer> mBottomControlsLayerSupplier;
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
@@ -119,14 +123,17 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
      * @param activity The activity.
      * @param edgeToEdgeControllerSupplier The supplier for the EdgeToEdgeController.
      * @param bottomSheetController The {@link BottomSheetController} to observe.
+     * @param bottomControlsLayerSupplier The supplier for the {@link BottomControlsLayer}.
      */
     public ChromeActivitySnackbarHelper(
             Activity activity,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            Supplier<BottomControlsLayer> bottomControlsLayerSupplier) {
         mActivity = activity;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mBottomSheetController = bottomSheetController;
+        mBottomControlsLayerSupplier = bottomControlsLayerSupplier;
 
         edgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(mEdgeToEdgeControllerObserver);
         bottomSheetController.addObserver(mBottomSheetObserver);
@@ -181,6 +188,18 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
                 mCurrentEdgeToEdgeController != null
                         ? mCurrentEdgeToEdgeController.getBottomInsetPx()
                         : 0;
-        mSupplier.set(bottomInset + mBottomSheetController.getCurrentOffset());
+
+        int sheetOffset = mBottomSheetController.getCurrentOffset();
+        BottomControlsLayer layer = mBottomControlsLayerSupplier.get();
+        int contributedHeight = layer != null ? layer.getHeight() : 0;
+
+        // The snackbar's parent view (e.g. BottomContainer) is typically adjusted by browser
+        // controls. When the sheet acts as browser controls, its contributed height already
+        // pushes the content view (and thus the snackbar) up.
+        // We only need to apply additional margin if the required position to clear the
+        // navbar or the sheet exceeds what the browser controls are already providing.
+        int targetPosition = Math.max(bottomInset, sheetOffset);
+        int margin = Math.max(0, targetPosition - contributedHeight);
+        mSupplier.set(margin);
     }
 }
