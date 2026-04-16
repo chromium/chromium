@@ -451,7 +451,7 @@ BASE_FEATURE(kFencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 // details.
 #if BUILDFLAG(IS_ANDROID)
 // Enable AL device fluid resize.
-BASE_FEATURE(kFluidResize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFluidResize, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif

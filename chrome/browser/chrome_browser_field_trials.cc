@@ -266,9 +266,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/450281745): Remove once feature is enabled by default.
   feature_overrides.EnableFeature(::features::kAndroidDesktopZoomScaling);
 
-  // Enable Android desktop fluid resize to improve UX.
-  // TODO(crbug.com/464967916): Remove when the feature is stable.
-  feature_overrides.EnableFeature(features::kFluidResize);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
