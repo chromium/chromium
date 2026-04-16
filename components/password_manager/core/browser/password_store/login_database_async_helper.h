@@ -10,9 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/password_store/password_store.h"
-#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
@@ -32,6 +31,7 @@ namespace password_manager {
 
 class LoginDatabase;
 class PasswordSyncBridge;
+struct PasswordFormDigest;
 
 struct InteractionsStats;
 
@@ -60,16 +60,16 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       os_crypt_async::Encryptor encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.
-  LoginsResultOrError GetAllLogins();
-  LoginsResultOrError GetAutofillableLogins();
-  LoginsResultOrError FillMatchingLogins(
+  StoredCredentialsResultOrError GetAllLogins();
+  StoredCredentialsResultOrError GetAutofillableLogins();
+  StoredCredentialsResultOrError FillMatchingLogins(
       const std::vector<PasswordFormDigest>& forms,
       bool include_psl);
 
-  PasswordChangesOrError AddLogin(const PasswordForm& form);
-  PasswordChangesOrError UpdateLogin(const PasswordForm& form);
+  PasswordChangesOrError AddLogin(const StoredCredential& cred);
+  PasswordChangesOrError UpdateLogin(const StoredCredential& cred);
   PasswordChangesOrError RemoveLogin(const base::Location& location,
-                                     const PasswordForm& form);
+                                     const StoredCredential& cred);
   PasswordChangesOrError RemoveLoginsCreatedBetween(
       const base::Location& location,
       base::Time delete_begin,
@@ -124,9 +124,9 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   std::optional<bool> WereUndecryptableLoginsDeleted() const override;
   void ClearWereUndecryptableLoginsDeleted() override;
 
-  PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
+  PasswordStoreChangeList AddLoginImpl(const StoredCredential& cred,
                                        AddCredentialError* error);
-  PasswordStoreChangeList UpdateLoginImpl(const PasswordForm& form,
+  PasswordStoreChangeList UpdateLoginImpl(const StoredCredential& cred,
                                           UpdateCredentialError* error);
 
   // Reports password store metrics that aren't reported by the

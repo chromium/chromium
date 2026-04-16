@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -101,7 +102,8 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      login_db_->AddLogin(FromPasswordForm(form));
   std::string keychain_identifier = changes[0].form().keychain_identifier;
   ASSERT_FALSE(keychain_identifier.empty());
 
@@ -123,15 +125,20 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      login_db_->AddLogin(FromPasswordForm(form));
   std::string old_keychain_identifier = changes[0].form().keychain_identifier;
 
   form.password_value = u"secret";
 
-  ASSERT_THAT(login_db_->UpdateLogin(form), testing::SizeIs(1));
+  ASSERT_THAT(login_db_->UpdateLogin(FromPasswordForm(form)),
+              testing::SizeIs(1));
 
   std::vector<PasswordForm> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_TRUE(
+      login_db_->GetLogins(PasswordFormDigest(form), true, &credentials));
+  forms = ToPasswordForms(std::move(credentials));
 
   ASSERT_EQ(1U, forms.size());
   std::string keychain_identifier = forms[0].keychain_identifier;
@@ -158,9 +165,11 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      login_db_->AddLogin(FromPasswordForm(form));
   std::string keychain_identifier = changes[0].form().keychain_identifier;
-  std::ignore = login_db_->RemoveLogin(form, /*changes=*/nullptr);
+  std::ignore =
+      login_db_->RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr);
 
   // Verify that password is no longer available in the keychain.
   std::u16string password_value;
@@ -191,14 +200,16 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   forms[2].password_value = u"pass2";
   forms[2].in_store = PasswordForm::Store::kProfileStore;
 
-  for (size_t i = 0; i < std::size(forms); i++) {
-    std::ignore = UNSAFE_TODO(login_db_->AddLogin(forms[i]));
+  for (const auto& f : forms) {
+    std::ignore = login_db_->AddLogin(FromPasswordForm(f));
   }
 
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
                              "http://www.example.com", GURL()};
   std::vector<PasswordForm> logins;
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &logins));
+  std::vector<StoredCredential> credentials;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
+  logins = ToPasswordForms(std::move(credentials));
   ASSERT_EQ(3U, logins.size());
   // Verify that for each password exist a keychain item with a password.
   for (const auto& login : logins) {
@@ -215,7 +226,9 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
 
   // Verify that one password is removed.
   std::vector<PasswordForm> remaining_logins;
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &remaining_logins));
+  credentials.clear();
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
+  remaining_logins = ToPasswordForms(std::move(credentials));
   EXPECT_THAT(remaining_logins,
               testing::UnorderedElementsAreArray(
                   FormsIgnoringPrimaryKey({forms[0], forms[2]})));
@@ -259,14 +272,16 @@ TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
   forms[2].password_value = u"pass2";
   forms[2].in_store = PasswordForm::Store::kProfileStore;
 
-  for (size_t i = 0; i < std::size(forms); i++) {
-    std::ignore = UNSAFE_TODO(login_db_->AddLogin(forms[i]));
+  for (const auto& f : forms) {
+    std::ignore = login_db_->AddLogin(FromPasswordForm(f));
   }
 
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
                              "http://www.example.com", GURL()};
   std::vector<PasswordForm> logins;
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &logins));
+  std::vector<StoredCredential> credentials;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
+  logins = ToPasswordForms(std::move(credentials));
   ASSERT_EQ(3U, logins.size());
   // Verify that for each password exist a keychain item with a password.
   for (const auto& login : logins) {
@@ -285,7 +300,9 @@ TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
 
   // Verify that all passwords are gone.
   std::vector<PasswordForm> remaining_logins;
-  EXPECT_TRUE(login_db_->GetLogins(form, true, &remaining_logins));
+  credentials.clear();
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &credentials));
+  remaining_logins = ToPasswordForms(std::move(credentials));
   EXPECT_THAT(remaining_logins, testing::IsEmpty());
 
   // Verify that keychain entry is removed.
@@ -429,7 +446,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // needs to access it.
     DeleteEncryptedPasswordFromKeychain(password_keychain_identifier);
 
-    EXPECT_EQ(db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
+    std::vector<StoredCredential> credentials;
+    EXPECT_EQ(db.GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
+    forms = ToPasswordForms(std::move(credentials));
     // Verify that |encrypted_password| is still corresponding to keychain
     // identifier.
     EXPECT_EQ(forms[0].keychain_identifier, password_keychain_identifier);
@@ -518,7 +537,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
                     /*encryptor=*/CreateEncryptor()));
 
   std::vector<PasswordForm> forms;
-  EXPECT_EQ(login_db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
+  std::vector<StoredCredential> credentials;
+  EXPECT_EQ(login_db.GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
+  forms = ToPasswordForms(std::move(credentials));
   EXPECT_EQ(1u, forms.size());
   EXPECT_EQ(u"password", forms[0].password_value);
 
@@ -549,7 +570,10 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // to access it;
     DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
 
-    EXPECT_EQ(login_db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
+    std::vector<StoredCredential> credentials;
+    EXPECT_EQ(login_db.GetAllLogins(&credentials),
+              FormRetrievalResult::kSuccess);
+    forms = ToPasswordForms(std::move(credentials));
     ASSERT_EQ(forms.size(), 1u);
     // Verify that the password note is still readable.
     ASSERT_EQ(forms[0].notes.size(), 1u);
@@ -593,7 +617,10 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // to access it;
     DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
 
-    EXPECT_EQ(login_db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
+    std::vector<StoredCredential> credentials;
+    EXPECT_EQ(login_db.GetAllLogins(&credentials),
+              FormRetrievalResult::kSuccess);
+    forms = ToPasswordForms(std::move(credentials));
     ASSERT_EQ(forms.size(), 1u);
     // Verify that the password note is still readable.
     ASSERT_EQ(forms[0].notes.size(), 1u);
@@ -630,7 +657,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   // Check that the first note is still readable and the second one was deleted
   // during migration.
   std::vector<PasswordForm> forms;
-  EXPECT_EQ(login_db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
+  std::vector<StoredCredential> credentials;
+  EXPECT_EQ(login_db.GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
+  forms = ToPasswordForms(std::move(credentials));
   EXPECT_EQ(forms.size(), 2u);
   EXPECT_EQ(forms[0].notes.size(), 1u);
   EXPECT_EQ(forms[0].notes[0].value, u"example_note");

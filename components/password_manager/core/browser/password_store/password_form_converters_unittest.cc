@@ -91,7 +91,7 @@ StoredCredential CreateFullStoredCredential() {
   cred.skip_zero_click = true;
   cred.generation_upload_status =
       PasswordForm::GenerationUploadStatus::kPositiveSignalSent;
-  cred.in_store = PasswordForm::Store::kAccountStore;
+  cred.in_store = StoredCredential::Store::kAccountStore;
   cred.moving_blocked_for_list = {
       signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id"))};
   cred.password_issues[InsecureType::kLeaked] = InsecurityMetadata();
@@ -136,7 +136,7 @@ void ExpectEqual(const PasswordForm& form, const StoredCredential& cred) {
   EXPECT_EQ(form.icon_url, cred.icon_url);
   EXPECT_EQ(form.skip_zero_click, cred.skip_zero_click);
   EXPECT_EQ(form.generation_upload_status, cred.generation_upload_status);
-  EXPECT_EQ(form.in_store, cred.in_store);
+  EXPECT_EQ(form.in_store, ToPasswordFormStore(cred.in_store));
   EXPECT_EQ(form.moving_blocked_for_list, cred.moving_blocked_for_list);
   EXPECT_EQ(form.password_issues, cred.password_issues);
   EXPECT_EQ(form.notes, cred.notes);
@@ -175,6 +175,22 @@ TEST(PasswordFormConvertersTest, FromPasswordForm_Defaults) {
   PasswordForm form;
   StoredCredential cred = FromPasswordForm(form);
   ExpectEqual(form, cred);
+}
+
+TEST(PasswordFormConvertersTest, StoreConverters) {
+  EXPECT_EQ(PasswordForm::Store::kNotSet,
+            ToPasswordFormStore(StoredCredential::Store::kNotSet));
+  EXPECT_EQ(PasswordForm::Store::kProfileStore,
+            ToPasswordFormStore(StoredCredential::Store::kProfileStore));
+  EXPECT_EQ(PasswordForm::Store::kAccountStore,
+            ToPasswordFormStore(StoredCredential::Store::kAccountStore));
+
+  EXPECT_EQ(StoredCredential::Store::kNotSet,
+            FromPasswordFormStore(PasswordForm::Store::kNotSet));
+  EXPECT_EQ(StoredCredential::Store::kProfileStore,
+            FromPasswordFormStore(PasswordForm::Store::kProfileStore));
+  EXPECT_EQ(StoredCredential::Store::kAccountStore,
+            FromPasswordFormStore(PasswordForm::Store::kAccountStore));
 }
 
 }  // namespace password_manager

@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
@@ -221,7 +222,7 @@ bool AddZeroClickableLogin(LoginDatabase* db,
 
   form.skip_zero_click = false;
 
-  return db->AddLogin(form) == AddChangeForForm(form);
+  return db->AddLogin(FromPasswordForm(form)) == AddChangeForForm(form);
 }
 
 MATCHER(IsGoogle1Account, "") {
@@ -299,57 +300,61 @@ class LoginDatabaseTest : public LoginDatabaseTestBase {};
 TEST_F(LoginDatabaseTest, GetAllLogins) {
   // Example password form.
   PasswordForm form = GenerateExamplePasswordForm();
-  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
   PasswordForm blocklisted;
   blocklisted.signon_realm = "http://example3.com/";
   blocklisted.url = GURL("http://example3.com/path");
   blocklisted.blocked_by_user = true;
   blocklisted.in_store = PasswordForm::Store::kProfileStore;
-  ASSERT_EQ(AddChangeForForm(blocklisted), db().AddLogin(blocklisted));
+  ASSERT_EQ(AddChangeForForm(blocklisted),
+            db().AddLogin(FromPasswordForm(blocklisted)));
 
-  std::vector<PasswordForm> forms;
-  EXPECT_EQ(db().GetAllLogins(&forms), FormRetrievalResult::kSuccess);
-  EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form),
-                                          HasPrimaryKeyAndEquals(blocklisted)));
+  std::vector<StoredCredential> credentials;
+  EXPECT_EQ(db().GetAllLogins(&credentials), FormRetrievalResult::kSuccess);
+  EXPECT_THAT(ToPasswordForms(std::move(credentials)),
+              UnorderedElementsAre(HasPrimaryKeyAndEquals(form),
+                                   HasPrimaryKeyAndEquals(blocklisted)));
 }
 
 TEST_F(LoginDatabaseTest, GetLogins_Self) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // Match against an exact copy.
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/false, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 TEST_F(LoginDatabaseTest, GetLogins_InexactCopy) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   PasswordFormDigest digest(
       PasswordForm::Scheme::kHtml, "http://www.google.com/",
       GURL("http://www.google.com/new/accounts/LoginAuth"));
 
   // Match against an inexact copy
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(
       db().GetLogins(digest, /*should_PSL_matching_apply=*/true, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 TEST_F(LoginDatabaseTest, GetLogins_ProtocolMismatch_HTTP) {
   PasswordForm form = GenerateExamplePasswordForm();
   ASSERT_TRUE(base::StartsWith(form.signon_realm, "http://"));
-  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   PasswordFormDigest digest(
       PasswordForm::Scheme::kHtml, "https://www.google.com/",
       GURL("https://www.google.com/new/accounts/LoginAuth"));
 
   // We have only an http record, so no match for this.
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(
       db().GetLogins(digest, /*should_PSL_matching_apply=*/true, &result));
   EXPECT_THAT(result, IsEmpty());
@@ -359,21 +364,21 @@ TEST_F(LoginDatabaseTest, GetLogins_ProtocolMismatch_HTTPS) {
   PasswordForm form = GenerateExamplePasswordForm();
   form.url = GURL("https://accounts.google.com/LoginAuth");
   form.signon_realm = "https://accounts.google.com/";
-  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   PasswordFormDigest digest(
       PasswordForm::Scheme::kHtml, "http://accounts.google.com/",
       GURL("http://accounts.google.com/new/accounts/LoginAuth"));
 
   // We have only an https record, so no match for this.
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(
       db().GetLogins(digest, /*should_PSL_matching_apply=*/true, &result));
   EXPECT_THAT(result, IsEmpty());
 }
 
 TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Verify the database is empty.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -384,14 +389,14 @@ TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
 
   // Add it and make sure the primary key is returned in the
   // PasswordStoreChange.
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1U, change_list.size());
   EXPECT_EQ(AddChangeForForm(form), change_list);
   EXPECT_EQ(1, change_list[0].form().primary_key.value().value());
 }
 
 TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Verify the database is empty.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -402,12 +407,13 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
 
   // Add it and make sure it is there and that all the fields were retrieved
   // correctly.
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1U, change_list.size());
   FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
   EXPECT_EQ(AddChangeForForm(form), change_list);
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 
   // RemoveLoginByPrimaryKey() doesn't decrypt or fill the password value.
   form.password_value = u"";
@@ -423,7 +429,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   PasswordForm form = GenerateExamplePasswordForm();
 
   // Add the form.
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1U, change_list.size());
   FormPrimaryKey primary_key1 = change_list[0].form().primary_key.value();
   change_list.clear();
@@ -431,7 +437,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   EXPECT_TRUE(db().RemoveLoginByPrimaryKey(primary_key1, &change_list));
   ASSERT_EQ(1U, change_list.size());
   // Add it again.
-  change_list = db().AddLogin(form);
+  change_list = db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1U, change_list.size());
   EXPECT_NE(primary_key1, change_list[0].form().primary_key.value());
 }
@@ -449,7 +455,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // We go to the mobile site.
   PasswordFormDigest form2(PasswordForm::Scheme::kHtml,
@@ -457,7 +463,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
                            GURL("https://mobile.foo.com/login"));
 
   // Match against the mobile site.
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
                              /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
@@ -471,7 +477,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
 }
 
 TEST_F(LoginDatabaseTest, TestFederatedMatching) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Example password form.
   PasswordForm form;
@@ -494,8 +500,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
 
   // Add it and make sure it is there.
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
+  EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(FromPasswordForm(form2)));
 
   // When we retrieve the forms from the store, |in_store| should be set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -507,16 +513,18 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
                                      GURL("https://foo.com/")};
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
                              &result));
-  EXPECT_THAT(result, UnorderedElementsAre(HasPrimaryKeyAndEquals(form),
-                                           HasPrimaryKeyAndEquals(form2)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              UnorderedElementsAre(HasPrimaryKeyAndEquals(form),
+                                   HasPrimaryKeyAndEquals(form2)));
 
   // Match against the mobile site.
   form_request.url = GURL("https://mobile.foo.com/");
   form_request.signon_realm = "https://mobile.foo.com/";
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
                              &result));
-  EXPECT_THAT(result, UnorderedElementsAre(HasPrimaryKeyAndEquals(form),
-                                           HasPrimaryKeyAndEquals(form2)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              UnorderedElementsAre(HasPrimaryKeyAndEquals(form),
+                                   HasPrimaryKeyAndEquals(form2)));
 }
 
 TEST_F(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
@@ -533,8 +541,9 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
   form_with_port.url = GURL("http://localhost:8080/");
   form_with_port.signon_realm = "federation://localhost/accounts.google.com";
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_EQ(AddChangeForForm(form_with_port), db().AddLogin(form_with_port));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
+  EXPECT_EQ(AddChangeForForm(form_with_port),
+            db().AddLogin(FromPasswordForm(form_with_port)));
 
   // When we retrieve the forms from the store, |in_store| should be set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -544,16 +553,18 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
   PasswordFormDigest form_request(PasswordForm::Scheme::kHtml,
                                   "http://localhost/",
                                   GURL("http://localhost/"));
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
                              &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 
   form_request.url = GURL("http://localhost:8080/");
   form_request.signon_realm = "http://localhost:8080/";
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
                              &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form_with_port)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form_with_port)));
 }
 
 class LoginDatabaseSchemesTest
@@ -583,15 +594,17 @@ TEST_P(LoginDatabaseSchemesTest, TestPublicSuffixDisabled) {
   html_form.signon_realm = "http://example.com/";
   html_form.scheme = PasswordForm::Scheme::kHtml;
 
-  EXPECT_EQ(AddChangeForForm(non_html_auth), db().AddLogin(non_html_auth));
-  EXPECT_EQ(AddChangeForForm(html_form), db().AddLogin(html_form));
+  EXPECT_EQ(AddChangeForForm(non_html_auth),
+            db().AddLogin(FromPasswordForm(non_html_auth)));
+  EXPECT_EQ(AddChangeForForm(html_form),
+            db().AddLogin(FromPasswordForm(html_form)));
 
   PasswordFormDigest second_non_html_auth = {GetParam(),
                                              "http://second.example.com/Realm",
                                              GURL("http://second.example.com")};
 
   // This shouldn't match anything.
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(second_non_html_auth,
                              /*should_PSL_matching_apply=*/false, &result));
   EXPECT_EQ(0U, result.size());
@@ -599,7 +612,8 @@ TEST_P(LoginDatabaseSchemesTest, TestPublicSuffixDisabled) {
   // non-html auth still matches against itself.
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(non_html_auth),
                              /*should_PSL_matching_apply=*/false, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(non_html_auth)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(non_html_auth)));
 }
 
 TEST_P(LoginDatabaseSchemesTest, TestIPAddressMatches) {
@@ -613,11 +627,13 @@ TEST_P(LoginDatabaseSchemesTest, TestIPAddressMatches) {
   ip_form.signon_realm = origin;
   ip_form.scheme = GetParam();
 
-  EXPECT_EQ(AddChangeForForm(ip_form), db().AddLogin(ip_form));
-  std::vector<PasswordForm> result;
+  EXPECT_EQ(AddChangeForForm(ip_form),
+            db().AddLogin(FromPasswordForm(ip_form)));
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(ip_form),
                              /*should_PSL_matching_apply=*/false, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(ip_form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(ip_form)));
 }
 
 INSTANTIATE_TEST_SUITE_P(Schemes,
@@ -628,7 +644,7 @@ INSTANTIATE_TEST_SUITE_P(Schemes,
                                          PasswordForm::Scheme::kOther));
 
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainGoogle) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Saved password form on Google sign-in page.
   PasswordForm form;
@@ -638,7 +654,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainGoogle) {
   form.signon_realm = "https://accounts.google.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // Google change password should match to the saved sign-in form.
   PasswordFormDigest form2 = {PasswordForm::Scheme::kHtml,
@@ -661,7 +677,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainGoogle) {
 }
 
 TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Example password form.
   PasswordForm form;
@@ -682,8 +698,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   form2.federation_origin =
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
+  EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(FromPasswordForm(form2)));
 
   // When we retrieve the forms from the store, |in_store| should be set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -694,14 +710,16 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
                                      form.signon_realm, form.url};
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
                              &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 
   // Match against the second one.
   form_request.url = form2.url;
   form_request.signon_realm = form2.signon_realm;
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
                              &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form2)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form2)));
 }
 
 TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
@@ -715,7 +733,7 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
   form.federation_origin =
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -724,17 +742,18 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
   PasswordFormDigest form_request = {PasswordForm::Scheme::kHtml,
                                      "https://example.com/",
                                      GURL("https://example.com/login")};
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
                              &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 // This test fails if the implementation of GetLogins uses GetCachedStatement
 // instead of GetUniqueStatement, since REGEXP is in use. See
 // http://crbug.com/248608.
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Example password form.
   PasswordForm form;
@@ -748,7 +767,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // We go to the mobile site.
   PasswordFormDigest form2(form);
@@ -773,7 +792,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   form.signon_realm = "https://baz.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // We go to the mobile site of baz.com.
   PasswordFormDigest form3(form);
@@ -797,7 +816,7 @@ PasswordForm GetFormWithNewSignonRealm(PasswordForm form,
 }
 
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingRegexp) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Example password form.
   PasswordForm form;
@@ -811,13 +830,14 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingRegexp) {
   form.signon_realm = "http://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // Example password form that has - in the domain name.
   PasswordForm form_dash =
       GetFormWithNewSignonRealm(form, "http://www.foo-bar.com/");
 
-  EXPECT_EQ(AddChangeForForm(form_dash), db().AddLogin(form_dash));
+  EXPECT_EQ(AddChangeForForm(form_dash),
+            db().AddLogin(FromPasswordForm(form_dash)));
 
   // www.foo.com should match.
   PasswordForm form2 = GetFormWithNewSignonRealm(form, "http://www.foo.com/");
@@ -921,11 +941,11 @@ static bool AddTimestampedLogin(LoginDatabase* db,
   if (date_is_creation) {
     form.date_created = time;
   }
-  return db->AddLogin(form) == AddChangeForForm(form);
+  return db->AddLogin(FromPasswordForm(form)) == AddChangeForForm(form);
 }
 
 TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Verify the database is empty.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -955,7 +975,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   result.clear();
 
   // Get everything from today's date and on.
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> forms;
   EXPECT_TRUE(db().GetLoginsCreatedBetween(now, base::Time::Max(), &forms));
   EXPECT_EQ(2U, forms.size());
   forms.clear();
@@ -1006,7 +1026,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedMaxCreatedTimePasswords) {
   EXPECT_TRUE(AddTimestampedLogin(&db(), "http://1.com", "foo1",
                                   base::Time::Max(), true));
 
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> forms;
 
   // Get all time logins.
   EXPECT_TRUE(
@@ -1018,7 +1038,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedMaxCreatedTimePasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), base::Time::Max(), &changes);
   ASSERT_EQ(1U, changes.size());
 
-  EXPECT_EQ(forms[0], changes[0].form());
+  EXPECT_EQ(ToPasswordForm(forms[0]), changes[0].form());
   forms.clear();
 
   // Verify nothing is left.
@@ -1027,7 +1047,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedMaxCreatedTimePasswords) {
 }
 
 TEST_F(LoginDatabaseTest, GetAutoSignInLogins) {
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> forms;
 
   GURL origin("https://example.com");
   EXPECT_TRUE(AddZeroClickableLogin(&db(), "foo1", origin));
@@ -1047,7 +1067,7 @@ TEST_F(LoginDatabaseTest, GetAutoSignInLogins) {
 }
 
 TEST_F(LoginDatabaseTest, DisableAutoSignInForOrigin) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   GURL origin1("https://google.com");
   GURL origin2("https://chrome.com");
@@ -1076,7 +1096,7 @@ TEST_F(LoginDatabaseTest, DisableAutoSignInForOrigin) {
 }
 
 TEST_F(LoginDatabaseTest, BlocklistedLogins) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
 
   // Verify the database is empty.
   EXPECT_TRUE(db().GetBlocklistLogins(&result));
@@ -1098,7 +1118,7 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // Get all non-blocklisted logins (should be none).
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1110,11 +1130,13 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
   // GetLogins should give the blocklisted result.
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/true, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 
   // So should GetBlocklistedLogins.
   EXPECT_TRUE(db().GetBlocklistLogins(&result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 TEST_F(LoginDatabaseTest, VectorSerialization) {
@@ -1173,7 +1195,7 @@ TEST_F(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
 }
 
 TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   // Verify the database is empty.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(0U, result.size());
@@ -1189,7 +1211,8 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   incomplete_form.password_value = u"my_password";
   incomplete_form.blocked_by_user = false;
   incomplete_form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(incomplete_form), db().AddLogin(incomplete_form));
+  EXPECT_EQ(AddChangeForForm(incomplete_form),
+            db().AddLogin(FromPasswordForm(incomplete_form)));
 
   // A form on some website. It should trigger a match with the stored one.
   PasswordForm encountered_form;
@@ -1228,8 +1251,10 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   completed_form.password_element = encountered_form.password_element;
   completed_form.submit_element = encountered_form.submit_element;
   completed_form.date_last_used = base::Time::Now();
-  EXPECT_EQ(AddChangeForForm(completed_form), db().AddLogin(completed_form));
-  EXPECT_TRUE(db().RemoveLogin(incomplete_form, /*changes=*/nullptr));
+  EXPECT_EQ(AddChangeForForm(completed_form),
+            db().AddLogin(FromPasswordForm(completed_form)));
+  EXPECT_TRUE(
+      db().RemoveLogin(FromPasswordForm(incomplete_form), /*changes=*/nullptr));
 
   // Get matches for encountered_form again.
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(encountered_form),
@@ -1246,7 +1271,8 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   // map should be part of the default constructor.
   expected_form.password_issues =
       base::flat_map<InsecureType, InsecurityMetadata>();
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(expected_form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(expected_form)));
 }
 
 TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
@@ -1261,7 +1287,8 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   incomplete_form.password_value = u"my_password";
   incomplete_form.blocked_by_user = false;
   incomplete_form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(incomplete_form), db().AddLogin(incomplete_form));
+  EXPECT_EQ(AddChangeForForm(incomplete_form),
+            db().AddLogin(FromPasswordForm(incomplete_form)));
 
   // Save a complete version of the previous form. Both forms could exist if
   // the user created the complete version before importing the incomplete
@@ -1273,11 +1300,13 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   complete_form.submit_element = u"submit";
 
   // An update fails because the primary key for |complete_form| is different.
-  EXPECT_EQ(PasswordStoreChangeList(), db().UpdateLogin(complete_form));
-  EXPECT_EQ(AddChangeForForm(complete_form), db().AddLogin(complete_form));
+  EXPECT_EQ(PasswordStoreChangeList(),
+            db().UpdateLogin(FromPasswordForm(complete_form)));
+  EXPECT_EQ(AddChangeForForm(complete_form),
+            db().AddLogin(FromPasswordForm(complete_form)));
 
   // Make sure both passwords exist.
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(2U, result.size());
   result.clear();
@@ -1295,7 +1324,7 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   complete_form.date_last_used = base::Time::Now();
   complete_form.date_password_modified = base::Time::Now();
   EXPECT_EQ(UpdateChangeForForm(complete_form, /*password_changed=*/true),
-            db().UpdateLogin(complete_form));
+            db().UpdateLogin(FromPasswordForm(complete_form)));
 
   // When we retrieve the forms from the store, |in_store| should be set.
   complete_form.in_store = PasswordForm::Store::kProfileStore;
@@ -1305,7 +1334,7 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(2U, result.size());
 
-  EXPECT_THAT(result,
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
               UnorderedElementsAre(HasPrimaryKeyAndEquals(complete_form),
                                    HasPrimaryKeyAndEquals(incomplete_form)));
 }
@@ -1318,14 +1347,14 @@ TEST_F(LoginDatabaseTest, DoubleAdd) {
   form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   // Add almost the same form again.
   form.times_used_in_html_form++;
   PasswordStoreChangeList list;
   list.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
   list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
-  EXPECT_EQ(list, db().AddLogin(form));
+  EXPECT_EQ(list, db().AddLogin(FromPasswordForm(form)));
 }
 
 TEST_F(LoginDatabaseTest, AddWrongForm) {
@@ -1337,12 +1366,12 @@ TEST_F(LoginDatabaseTest, AddWrongForm) {
   form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(PasswordStoreChangeList(), db().AddLogin(form));
+  EXPECT_EQ(PasswordStoreChangeList(), db().AddLogin(FromPasswordForm(form)));
 
   // |signon_realm| shouldn't be empty.
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm.clear();
-  EXPECT_EQ(PasswordStoreChangeList(), db().AddLogin(form));
+  EXPECT_EQ(PasswordStoreChangeList(), db().AddLogin(FromPasswordForm(form)));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -1364,11 +1393,14 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
   // |AddLogin| will decrypt the encrypted password, so compare with that.
   PasswordForm form_with_password = form;
   form_with_password.password_value = u"my_encrypted_password";
-  EXPECT_EQ(AddChangeForForm(form_with_password), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form_with_password),
+            db().AddLogin(FromPasswordForm(form)));
 
   std::vector<PasswordForm> result;
+  std::vector<StoredCredential> credentials;
   ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
-                             /*should_PSL_matching_apply=*/true, &result));
+                             /*should_PSL_matching_apply=*/true, &credentials));
+  result = ToPasswordForms(std::move(credentials));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form.keychain_identifier, result[0].keychain_identifier);
   EXPECT_EQ(u"my_encrypted_password", result[0].password_value);
@@ -1393,11 +1425,13 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPasswordAndValue) {
   form.keychain_identifier = keychain_identifier;
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   std::vector<PasswordForm> result;
+  std::vector<StoredCredential> credentials;
   ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
-                             /*should_PSL_matching_apply=*/true, &result));
+                             /*should_PSL_matching_apply=*/true, &credentials));
+  result = ToPasswordForms(std::move(credentials));
   ASSERT_EQ(1U, result.size());
   EXPECT_NE(form.keychain_identifier, result[0].keychain_identifier);
 
@@ -1416,7 +1450,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   form.action = GURL("http://accounts.google.com/login");
   form.password_value = u"my_new_password";
@@ -1441,7 +1475,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
       GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
   form.actor_login_approved = true;
 
-  PasswordStoreChangeList changes = db().UpdateLogin(form);
+  PasswordStoreChangeList changes = db().UpdateLogin(FromPasswordForm(form));
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(1, changes[0].form().primary_key.value().value());
@@ -1449,10 +1483,11 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
 
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/true, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
@@ -1463,7 +1498,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
 
   form.action = GURL("http://accounts.google.com/login");
   form.all_alternative_usernames.emplace_back(
@@ -1480,7 +1515,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.moving_blocked_for_list.push_back(
       GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
-  PasswordStoreChangeList changes = db().UpdateLogin(form);
+  PasswordStoreChangeList changes = db().UpdateLogin(FromPasswordForm(form));
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(1, changes[0].form().primary_key.value().value());
@@ -1488,10 +1523,11 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
 
-  std::vector<PasswordForm> result;
+  std::vector<StoredCredential> result;
   ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/true, &result));
-  EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
+  EXPECT_THAT(ToPasswordForms(std::move(result)),
+              ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 TEST_F(LoginDatabaseTest, RemoveWrongForm) {
@@ -1504,11 +1540,11 @@ TEST_F(LoginDatabaseTest, RemoveWrongForm) {
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
   // The form isn't in the database.
-  EXPECT_FALSE(db().RemoveLogin(form, /*changes=*/nullptr));
+  EXPECT_FALSE(db().RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr));
 
-  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_TRUE(db().RemoveLogin(form, /*changes=*/nullptr));
-  EXPECT_FALSE(db().RemoveLogin(form, /*changes=*/nullptr));
+  EXPECT_EQ(AddChangeForForm(form), db().AddLogin(FromPasswordForm(form)));
+  EXPECT_TRUE(db().RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr));
+  EXPECT_FALSE(db().RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr));
 }
 
 TEST_F(LoginDatabaseTest, RemoveInvalidForm) {
@@ -1528,7 +1564,7 @@ TEST_F(LoginDatabaseTest, RemoveInvalidForm) {
         db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
                 /*encryptor=*/GetInstanceSync(test_oscrypt_async.get())));
     // Add the valid form first because `AddLogin` checks it.
-    EXPECT_EQ(db.AddLogin(form), AddChangeForForm(form));
+    EXPECT_EQ(db.AddLogin(FromPasswordForm(form)), AddChangeForForm(form));
   }
   {
     sql::Database db(sql::test::kTestTag);
@@ -1548,10 +1584,12 @@ TEST_F(LoginDatabaseTest, RemoveInvalidForm) {
     form.url = GURL("http://google.com:foo/");
     ASSERT_FALSE(form.url.is_valid());
     std::vector<PasswordForm> forms;
-    EXPECT_EQ(FormRetrievalResult::kSuccess, db.GetAllLogins(&forms));
+    std::vector<StoredCredential> credentials;
+    EXPECT_EQ(FormRetrievalResult::kSuccess, db.GetAllLogins(&credentials));
+    forms = ToPasswordForms(std::move(credentials));
     EXPECT_THAT(forms, ElementsAre(HasPrimaryKeyAndEquals(form)));
     // Test that deletion works.
-    EXPECT_TRUE(db.RemoveLogin(form, /*changes=*/nullptr));
+    EXPECT_TRUE(db.RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr));
   }
 }
 
@@ -1564,27 +1602,32 @@ void AddMetricsTestData(LoginDatabase* db) {
   password_form.password_value = u"test";
   password_form.signon_realm = "http://example.com/";
   password_form.times_used_in_html_form = 0;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.username_value = u"test2@gmail.com";
   password_form.times_used_in_html_form = 1;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("http://second.example.com");
   password_form.signon_realm = "http://second.example.com";
   password_form.times_used_in_html_form = 3;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.username_value = u"test3@gmail.com";
   password_form.type = PasswordForm::Type::kGenerated;
   password_form.times_used_in_html_form = 2;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("ftp://third.example.com/");
   password_form.signon_realm = "ftp://third.example.com/";
   password_form.times_used_in_html_form = 4;
   password_form.scheme = PasswordForm::Scheme::kOther;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("http://fourth.example.com/");
   password_form.signon_realm = "http://fourth.example.com/";
@@ -1592,50 +1635,59 @@ void AddMetricsTestData(LoginDatabase* db) {
   password_form.username_value = u"";
   password_form.times_used_in_html_form = 10;
   password_form.scheme = PasswordForm::Scheme::kHtml;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("https://fifth.example.com/");
   password_form.signon_realm = "https://fifth.example.com/";
   password_form.password_value = u"";
   password_form.blocked_by_user = true;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("https://sixth.example.com/");
   password_form.signon_realm = "https://sixth.example.com/";
   password_form.username_value = u"my_username";
   password_form.password_value = u"my_password";
   password_form.blocked_by_user = false;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL();
   password_form.signon_realm = "android://hash@com.example.android/";
   password_form.username_value = u"JohnDoe";
   password_form.password_value = u"my_password";
   password_form.blocked_by_user = false;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.username_value = u"JaneDoe";
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("http://rsolomakhin.github.io/autofill/");
   password_form.signon_realm = "http://rsolomakhin.github.io/";
   password_form.blocked_by_user = true;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("https://rsolomakhin.github.io/autofill/");
   password_form.signon_realm = "https://rsolomakhin.github.io/";
   password_form.blocked_by_user = true;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("http://rsolomakhin.github.io/autofill/123");
   password_form.signon_realm = "http://rsolomakhin.github.io/";
   password_form.blocked_by_user = true;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   password_form.url = GURL("https://rsolomakhin.github.io/autofill/1234");
   password_form.signon_realm = "https://rsolomakhin.github.io/";
   password_form.blocked_by_user = true;
-  EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
+  EXPECT_EQ(AddChangeForForm(password_form),
+            db->AddLogin(FromPasswordForm(password_form)));
 
   StatisticsTable& stats_table = db->stats_table();
   InteractionsStats stats;
@@ -1939,7 +1991,8 @@ TEST_F(LoginDatabaseTest, EncryptionEnabled) {
     ASSERT_TRUE(
         db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
                 /*encryptor=*/CreateEncryptor()));
-    EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
+    EXPECT_EQ(AddChangeForForm(password_form),
+              db.AddLogin(FromPasswordForm(password_form)));
   }
   std::u16string decrypted_pw;
   ASSERT_TRUE(CreateEncryptor().DecryptString16(
@@ -1972,12 +2025,15 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
     // Add obfuscated (new) entries.
     PasswordForm password_form = GenerateExamplePasswordForm();
     password_form.password_value = k_obfuscated_pw16;
-    EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
+    EXPECT_EQ(AddChangeForForm(password_form),
+              db.AddLogin(FromPasswordForm(password_form)));
     // Add plain-text (old) entries and rewrite the password on the disk.
     password_form.username_value = u"other_username";
-    EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
+    EXPECT_EQ(AddChangeForForm(password_form),
+              db.AddLogin(FromPasswordForm(password_form)));
     password_form.username_value = u"other_username2";
-    EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
+    EXPECT_EQ(AddChangeForForm(password_form),
+              db.AddLogin(FromPasswordForm(password_form)));
   }
   UpdatePasswordValueForUsername(file, u"other_username", k_plain_text_pw116);
   UpdatePasswordValueForUsername(file, u"other_username2", k_plain_text_pw216);
@@ -1988,7 +2044,9 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
     ASSERT_TRUE(
         db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
                 /*encryptor=*/CreateEncryptor()));
-    ASSERT_TRUE(db.GetAutofillableLogins(&forms));
+    std::vector<StoredCredential> credentials;
+    ASSERT_TRUE(db.GetAutofillableLogins(&credentials));
+    forms = ToPasswordForms(std::move(credentials));
   }
 
   // On disk, unobfuscated passwords are as-is, while obfuscated passwords have
@@ -2145,7 +2203,9 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
 
     // Check that the contents was preserved.
     std::vector<PasswordForm> result;
-    EXPECT_TRUE(db.GetAutofillableLogins(&result));
+    std::vector<StoredCredential> credentials;
+    EXPECT_TRUE(db.GetAutofillableLogins(&credentials));
+    result = ToPasswordForms(std::move(credentials));
     EXPECT_THAT(result,
                 UnorderedElementsAre(IsGoogle1Account(), IsGoogle2Account(),
                                      IsBasicAuthAccount()));
@@ -2153,17 +2213,19 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     // Verifies that the final version can save all the appropriate fields.
     PasswordForm form = GenerateExamplePasswordForm();
     // Add the same form twice to test the constraints in the database.
-    EXPECT_EQ(AddChangeForForm(form), db.AddLogin(form));
+    EXPECT_EQ(AddChangeForForm(form), db.AddLogin(FromPasswordForm(form)));
     PasswordStoreChangeList list;
     list.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
     list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
-    EXPECT_EQ(list, db.AddLogin(form));
+    EXPECT_EQ(list, db.AddLogin(FromPasswordForm(form)));
 
-    result.clear();
+    std::vector<StoredCredential> matched_credentials;
     EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
-                             /*should_PSL_matching_apply=*/true, &result));
-    EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
-    EXPECT_TRUE(db.RemoveLogin(form, /*changes=*/nullptr));
+                             /*should_PSL_matching_apply=*/true,
+                             &matched_credentials));
+    EXPECT_THAT(ToPasswordForms(std::move(matched_credentials)),
+                ElementsAre(HasPrimaryKeyAndEquals(form)));
+    EXPECT_TRUE(db.RemoveLogin(FromPasswordForm(form), /*changes=*/nullptr));
 
     if (version() == 31) {
       // Check that unset values of 'insecure_credentials.create_time' are set
@@ -2308,7 +2370,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
     EXPECT_TRUE(
         db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
                 /*encryptor=*/CreateEncryptor()));
-    EXPECT_EQ(db.AddLogin(form), AddChangeForForm(form));
+    EXPECT_EQ(db.AddLogin(FromPasswordForm(form)), AddChangeForForm(form));
   }
 
   if (should_be_corrupted) {
@@ -2361,17 +2423,26 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
             db.DeleteUndecryptableLogins());
 #else
   std::vector<PasswordForm> result;
-  EXPECT_FALSE(db.GetAutofillableLogins(&result));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutofillableLogins(&credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_TRUE(result.empty());
-  EXPECT_FALSE(db.GetBlocklistLogins(&result));
+
+  credentials.clear();
+  EXPECT_FALSE(db.GetBlocklistLogins(&credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_TRUE(result.empty());
 
   // Delete undecryptable logins and make sure we can get valid logins.
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
-  EXPECT_TRUE(db.GetAutofillableLogins(&result));
+  credentials.clear();
+  EXPECT_TRUE(db.GetAutofillableLogins(&credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
 
-  EXPECT_TRUE(db.GetBlocklistLogins(&result));
+  credentials.clear();
+  EXPECT_TRUE(db.GetBlocklistLogins(&credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_THAT(result, IsEmpty());
 
   histogram_tester.ExpectUniqueSample(
@@ -2413,7 +2484,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
       db.Init(on_undecryptable_passwords_removed.Get(), CreateEncryptor()));
 
   EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+  forms = ToPasswordForms(std::move(credentials));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2452,7 +2525,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
       db.Init(on_undecryptable_passwords_removed.Get(), CreateEncryptor()));
 
   EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+  forms = ToPasswordForms(std::move(credentials));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2489,7 +2564,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
       db.Init(on_undecryptable_passwords_removed.Get(), CreateEncryptor()));
 
   EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+  forms = ToPasswordForms(std::move(credentials));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2529,7 +2606,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
       db.Init(on_undecryptable_passwords_removed.Get(), CreateEncryptor()));
 
   EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+  forms = ToPasswordForms(std::move(credentials));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2567,7 +2646,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   db.encryptor_ = nullptr;
 
   EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+  forms = ToPasswordForms(std::move(credentials));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2600,7 +2681,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
       db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
               /*encryptor=*/CreateEncryptor()));
 
-  EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+  forms = ToPasswordForms(std::move(credentials));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
   histogram_tester.ExpectUniqueSample(
@@ -2622,7 +2705,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
               /*encryptor=*/CreateEncryptor()));
 
   std::vector<PasswordForm> result;
-  EXPECT_FALSE(db.GetAutofillableLogins(&result));
+  std::vector<StoredCredential> credentials;
+  EXPECT_FALSE(db.GetAutofillableLogins(&credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_TRUE(result.empty());
 
   RunUntilIdle();
@@ -2691,7 +2776,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
     EXPECT_CALL(on_undecryptable_passwords_removed, Run(IsAccountStore(false)));
-    EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
+    std::vector<StoredCredential> credentials;
+    EXPECT_TRUE(db.GetAutoSignInLogins(&credentials));
+    forms = ToPasswordForms(std::move(credentials));
     EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                             HasPrimaryKeyAndEquals(form3)));
     histogram_tester.ExpectUniqueSample(
@@ -2705,7 +2792,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
       EXPECT_CALL(on_undecryptable_passwords_removed,
                   Run(IsAccountStore(false)));
-      EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
+      std::vector<StoredCredential> credentials;
+      EXPECT_TRUE(db.GetAutoSignInLogins(&credentials));
+      forms = ToPasswordForms(std::move(credentials));
       EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                               HasPrimaryKeyAndEquals(form3)));
       histogram_tester.ExpectTotalCount(
@@ -2713,7 +2802,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
     } else {
       EXPECT_CALL(on_undecryptable_passwords_removed,
                   Run(IsAccountStore(false)));
-      EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
+      std::vector<StoredCredential> credentials;
+      EXPECT_FALSE(db.GetAutoSignInLogins(&credentials));
+      forms = ToPasswordForms(std::move(credentials));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     }
@@ -2740,8 +2831,11 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
     EXPECT_CALL(on_undecryptable_passwords_removed, Run);
+    std::vector<StoredCredential> matched_credentials;
     EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
-                             /*should_PSL_matching_apply=*/false, &result));
+                             /*should_PSL_matching_apply=*/false,
+                             &matched_credentials));
+    result = ToPasswordForms(std::move(matched_credentials));
     EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
     histogram_tester.ExpectUniqueSample(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
@@ -2753,15 +2847,20 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
       EXPECT_CALL(on_undecryptable_passwords_removed, Run);
+      std::vector<StoredCredential> matched_credentials;
       EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
-                               /*should_PSL_matching_apply=*/false, &result));
-      EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
+                               /*should_PSL_matching_apply=*/false,
+                               &matched_credentials));
+      EXPECT_THAT(ToPasswordForms(std::move(matched_credentials)),
+                  ElementsAre(HasPrimaryKeyAndEquals(form1)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
       EXPECT_CALL(on_undecryptable_passwords_removed, Run);
+      std::vector<StoredCredential> matched_credentials;
       EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
-                                /*should_PSL_matching_apply=*/false, &result));
+                                /*should_PSL_matching_apply=*/false,
+                                &matched_credentials));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     }
@@ -2791,7 +2890,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
     EXPECT_CALL(on_undecryptable_passwords_removed, Run);
-    EXPECT_TRUE(db.GetAutofillableLogins(&result));
+    std::vector<StoredCredential> credentials;
+    EXPECT_TRUE(db.GetAutofillableLogins(&credentials));
+    result = ToPasswordForms(std::move(credentials));
     EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
     histogram_tester.ExpectUniqueSample(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
@@ -2803,13 +2904,17 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
       EXPECT_CALL(on_undecryptable_passwords_removed, Run);
-      EXPECT_TRUE(db.GetAutofillableLogins(&result));
+      std::vector<StoredCredential> credentials;
+      EXPECT_TRUE(db.GetAutofillableLogins(&credentials));
+      result = ToPasswordForms(std::move(credentials));
       EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
       EXPECT_CALL(on_undecryptable_passwords_removed, Run);
-      EXPECT_FALSE(db.GetAutofillableLogins(&result));
+      std::vector<StoredCredential> credentials;
+      EXPECT_FALSE(db.GetAutofillableLogins(&credentials));
+      result = ToPasswordForms(std::move(credentials));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     }
@@ -2842,16 +2947,21 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest,
       password_manager::kUserDataDir);
 
   if (!base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
+    std::vector<StoredCredential> credentials;
     EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
-                              /*should_PSL_matching_apply=*/false, &result));
+                              /*should_PSL_matching_apply=*/false,
+                              &credentials));
+    result = ToPasswordForms(std::move(credentials));
 
     histogram_tester.ExpectTotalCount(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     return;
   }
 
+  std::vector<StoredCredential> credentials;
   EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
-                           /*should_PSL_matching_apply=*/false, &result));
+                           /*should_PSL_matching_apply=*/false, &credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
 
   histogram_tester.ExpectTotalCount(
@@ -2884,14 +2994,18 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest,
       password_manager::kUserDataDir);
 
   if (!base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
-    EXPECT_FALSE(db.GetAutofillableLogins(&result));
+    std::vector<StoredCredential> credentials;
+    EXPECT_FALSE(db.GetAutofillableLogins(&credentials));
+    result = ToPasswordForms(std::move(credentials));
 
     histogram_tester.ExpectTotalCount(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     return;
   }
 
-  EXPECT_TRUE(db.GetAutofillableLogins(&result));
+  std::vector<StoredCredential> credentials;
+  EXPECT_TRUE(db.GetAutofillableLogins(&credentials));
+  result = ToPasswordForms(std::move(credentials));
   EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
 
   histogram_tester.ExpectTotalCount(
@@ -2914,7 +3028,8 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAdd) {
   form.action = GURL("http://www.example.com/action");
   form.password_element = u"pwd";
   form.password_value = u"example";
-  password_manager::PasswordStoreChangeList changes = db().AddLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1u, changes.size());
 #if BUILDFLAG(IS_IOS)
   ASSERT_FALSE(changes[0].form().keychain_identifier.empty());
@@ -2933,11 +3048,12 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAddWithReplaceSemantics) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
 
   form.password_value = u"secret";
 
-  password_manager::PasswordStoreChangeList changes = db().AddLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(2u, changes.size());
   ASSERT_EQ(password_manager::PasswordStoreChange::Type::ADD,
             changes[1].type());
@@ -2957,11 +3073,12 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordUpdate) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
 
   form.password_value = u"secret";
 
-  password_manager::PasswordStoreChangeList changes = db().UpdateLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      db().UpdateLogin(FromPasswordForm(form));
   ASSERT_EQ(1u, changes.size());
 #if BUILDFLAG(IS_IOS)
   ASSERT_FALSE(changes[0].form().keychain_identifier.empty());
@@ -2978,7 +3095,8 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   form.action = GURL("http://www.example.com/action");
   form.password_element = u"pwd";
   form.password_value = u"example";
-  password_manager::PasswordStoreChangeList changes = db().AddLogin(form);
+  password_manager::PasswordStoreChangeList changes =
+      db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1u, changes.size());
 #if BUILDFLAG(IS_IOS)
   ASSERT_FALSE(changes[0].form().keychain_identifier.empty());
@@ -2987,8 +3105,11 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
 #endif
 
   std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> matched_credentials;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
-                             /*should_PSL_matching_apply=*/false, &forms));
+                             /*should_PSL_matching_apply=*/false,
+                             &matched_credentials));
+  forms = ToPasswordForms(std::move(matched_credentials));
 
   ASSERT_EQ(1U, forms.size());
 #if BUILDFLAG(IS_IOS)
@@ -3000,7 +3121,7 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
 
 TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
   PasswordForm form = GenerateExamplePasswordForm();
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
 
   base::flat_map<InsecureType, InsecurityMetadata> issues;
   // Assume that the leaked credential has been found by the proactive
@@ -3019,20 +3140,26 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
       form.password_issues[InsecureType::kPhished]);
 
   std::vector<PasswordForm> result;
+  std::vector<StoredCredential> matched_credentials;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
-                             /*should_PSL_matching_apply=*/true, &result));
+                             /*should_PSL_matching_apply=*/true,
+                             &matched_credentials));
+  result = ToPasswordForms(std::move(matched_credentials));
   EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form)));
 }
 
 TEST_F(LoginDatabaseTest, RetrievesNoteWithLogin) {
   PasswordForm form = GenerateExamplePasswordForm();
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
   PasswordNote note(u"example note", base::Time::Now());
   db().password_notes_table().InsertOrReplace(FormPrimaryKey(1), note);
 
   std::vector<PasswordForm> results;
+  std::vector<StoredCredential> matched_credentials;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
-                             /* should_PSL_matching_apply */ true, &results));
+                             /* should_PSL_matching_apply */ true,
+                             &matched_credentials));
+  results = ToPasswordForms(std::move(matched_credentials));
 
   PasswordForm expected_form = form;
   expected_form.notes = {note};
@@ -3044,7 +3171,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithNotePersistsThem) {
   PasswordNote note(u"example note", base::Time::Now());
   form.notes = {note};
 
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
 
   EXPECT_EQ(db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1))[0],
             note);
@@ -3054,27 +3181,27 @@ TEST_F(LoginDatabaseTest, RemoveLoginRemovesNoteAttachedToTheLogin) {
   PasswordForm form = GenerateExamplePasswordForm();
   PasswordNote note = PasswordNote(u"example note", base::Time::Now());
   form.notes = {note};
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
 
   EXPECT_EQ(db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1))[0],
             note);
 
   PasswordStoreChangeList list;
-  EXPECT_TRUE(db().RemoveLogin(form, &list));
+  EXPECT_TRUE(db().RemoveLogin(FromPasswordForm(form), &list));
   EXPECT_TRUE(
       db().password_notes_table().GetPasswordNotes(FormPrimaryKey(1)).empty());
 }
 
 TEST_F(LoginDatabaseTest, ChangesOnlyWithNotes) {
   PasswordForm form = GenerateExamplePasswordForm();
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
   PasswordNote note(u"example note", base::Time::Now());
   form.notes = {note};
 
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
 
   EXPECT_EQ(db().password_notes_table().GetPasswordNotes(
                 FormPrimaryKey(primary_key))[0],
@@ -3085,12 +3212,12 @@ TEST_F(LoginDatabaseTest, UpdateLoginNoteRemoved) {
   PasswordForm form = GenerateExamplePasswordForm();
   PasswordNote note(u"example note", base::Time::Now());
   form.notes = {note};
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
   form.notes = {};
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
 
   EXPECT_TRUE(db().password_notes_table()
                   .GetPasswordNotes(FormPrimaryKey(primary_key))
@@ -3099,7 +3226,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginNoteRemoved) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginInsecureCredentialsChanged) {
   PasswordForm form = GenerateExamplePasswordForm();
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
   InsecureCredential credential1{
       form.signon_realm, form.username_value,
@@ -3112,7 +3239,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginInsecureCredentialsChanged) {
                          credential1.trigger_notification_from_backend));
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   ASSERT_THAT(
       db().insecure_credentials_table().GetRows(FormPrimaryKey(primary_key)),
       ElementsAre(credential1));
@@ -3120,12 +3247,12 @@ TEST_F(LoginDatabaseTest, UpdateLoginInsecureCredentialsChanged) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginNoChanges) {
   PasswordForm form = GenerateExamplePasswordForm();
-  PasswordStoreChangeList change_list = db().AddLogin(form);
+  PasswordStoreChangeList change_list = db().AddLogin(FromPasswordForm(form));
   FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
 
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   EXPECT_TRUE(db().password_notes_table()
                   .GetPasswordNotes(FormPrimaryKey(primary_key))
                   .empty());
@@ -3137,7 +3264,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginNoChanges) {
 TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   PasswordForm form = GenerateExamplePasswordForm();
 
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
   InsecureCredential credential1{
       form.signon_realm, form.username_value,
       base::Time(),      InsecureType::kLeaked,
@@ -3157,7 +3284,7 @@ TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(credential1, credential2));
 
-  EXPECT_TRUE(db().RemoveLogin(form, nullptr));
+  EXPECT_TRUE(db().RemoveLogin(FromPasswordForm(form), nullptr));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::IsEmpty());
 }
@@ -3172,18 +3299,20 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
   PasswordForm form1 = GenerateExamplePasswordForm();
   form1.signon_realm = signon_realm;
   form1.username_value = username1;
-  ASSERT_EQ(AddChangeForForm(form1), db().AddLogin(form1));
+  ASSERT_EQ(AddChangeForForm(form1), db().AddLogin(FromPasswordForm(form1)));
 
   PasswordForm form2 = GenerateExamplePasswordForm();
   form2.signon_realm = signon_realm;
   form2.username_value = username2;
-  ASSERT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
+  ASSERT_EQ(AddChangeForForm(form2), db().AddLogin(FromPasswordForm(form2)));
 
   std::vector<PasswordForm> forms;
   // Check if there is exactly one form with this signon_realm & username1.
-  EXPECT_EQ(
-      FormRetrievalResult::kSuccess,
-      db().GetLoginsBySignonRealmAndUsername(signon_realm, username1, &forms));
+  std::vector<StoredCredential> matched_credentials;
+  EXPECT_EQ(FormRetrievalResult::kSuccess,
+            db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
+                                                   &matched_credentials));
+  forms = ToPasswordForms(std::move(matched_credentials));
   EXPECT_THAT(forms, ElementsAre(HasPrimaryKeyAndEquals(form1)));
 
   // Insert another form with the same username as form1.
@@ -3191,19 +3320,20 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
   form3.signon_realm = signon_realm;
   form3.username_value = username1;
   form3.username_element = u"another_element";
-  ASSERT_EQ(AddChangeForForm(form3), db().AddLogin(form3));
+  ASSERT_EQ(AddChangeForForm(form3), db().AddLogin(FromPasswordForm(form3)));
 
   // Check if there are exactly two forms with given username and signon_realm.
-  EXPECT_EQ(
-      FormRetrievalResult::kSuccess,
-      db().GetLoginsBySignonRealmAndUsername(signon_realm, username1, &forms));
+  EXPECT_EQ(FormRetrievalResult::kSuccess,
+            db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
+                                                   &matched_credentials));
+  forms = ToPasswordForms(std::move(matched_credentials));
   EXPECT_THAT(forms, ElementsAre(HasPrimaryKeyAndEquals(form1),
                                  HasPrimaryKeyAndEquals(form3)));
 }
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
   PasswordForm form = GenerateExamplePasswordForm();
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
   // Assume the leaked credential was found outside of Chrome and a notification
   // trigger was set on it.
   InsecureCredential insecure_credential{
@@ -3218,14 +3348,14 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
 
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(insecure_credential));
 }
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
   PasswordForm form = GenerateExamplePasswordForm();
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
   InsecureCredential insecure_credential{
       form.signon_realm, form.username_value,
       base::Time(),      InsecureType::kLeaked,
@@ -3237,14 +3367,14 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
 
   ASSERT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(insecure_credential));
 
   form.password_issues[InsecureType::kLeaked].is_muted = IsMuted(true);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   insecure_credential.is_muted = IsMuted(true);
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               ElementsAre(insecure_credential));
@@ -3252,7 +3382,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
   PasswordForm form = GenerateExamplePasswordForm();
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
   InsecureCredential leaked{
       form.signon_realm, form.username_value,
       base::Time(),      InsecureType::kLeaked,
@@ -3271,7 +3401,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
 
   ASSERT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   ASSERT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               UnorderedElementsAre(leaked, phished));
 
@@ -3281,7 +3411,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
   form.password_issues.clear();
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true,
                                 /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+            db().UpdateLogin(FromPasswordForm(form), nullptr));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               IsEmpty());
 }
@@ -3290,7 +3420,7 @@ TEST_F(LoginDatabaseTest,
        AddLoginWithDifferentPasswordRemovesInsecureCredentials) {
   PasswordForm form = GenerateExamplePasswordForm();
 
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
   InsecureCredential credential1{
       form.signon_realm, form.username_value,
       base::Time(),      InsecureType::kLeaked,
@@ -3314,7 +3444,7 @@ TEST_F(LoginDatabaseTest,
   PasswordStoreChangeList list;
   list.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
   list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
-  EXPECT_EQ(list, db().AddLogin(form));
+  EXPECT_EQ(list, db().AddLogin(FromPasswordForm(form)));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               IsEmpty());
 }
@@ -3341,7 +3471,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
 
   PasswordStoreChangeList list;
   list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
-  EXPECT_EQ(list, db().AddLogin(form));
+  EXPECT_EQ(list, db().AddLogin(FromPasswordForm(form)));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::UnorderedElementsAre(leaked, phished));
 }
@@ -3352,7 +3482,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginRemovesInsecureCredentials) {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
                           TriggerBackendNotification(false))}};
-  std::ignore = db().AddLogin(form);
+  std::ignore = db().AddLogin(FromPasswordForm(form));
 
   InsecureCredential leaked{
       form.signon_realm,        form.username_value,
@@ -3362,7 +3492,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginRemovesInsecureCredentials) {
               ElementsAre(leaked));
 
   PasswordStoreChangeList list;
-  EXPECT_TRUE(db().RemoveLogin(form, &list));
+  EXPECT_TRUE(db().RemoveLogin(FromPasswordForm(form), &list));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               IsEmpty());
 }
@@ -3374,7 +3504,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithNonEmptyInvalidURL) {
   form.username_value = u"username";
   form.password_value = u"password";
   auto error = AddCredentialError::kNone;
-  EXPECT_THAT(db().AddLogin(form, &error), IsEmpty());
+  EXPECT_THAT(db().AddLogin(FromPasswordForm(form), &error), IsEmpty());
   EXPECT_EQ(error, AddCredentialError::kConstraintViolation);
 }
 
@@ -3410,7 +3540,7 @@ class LoginDatabaseForAccountStoreTest : public testing::Test {
 TEST_F(LoginDatabaseForAccountStoreTest, AddLogins) {
   PasswordForm form = GenerateExamplePasswordForm();
 
-  PasswordStoreChangeList changes = db().AddLogin(form);
+  PasswordStoreChangeList changes = db().AddLogin(FromPasswordForm(form));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(PasswordForm::Store::kAccountStore, changes[0].form().in_store);
 }

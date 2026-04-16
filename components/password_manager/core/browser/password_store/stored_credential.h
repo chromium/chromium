@@ -7,12 +7,14 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -26,6 +28,13 @@ struct StoredCredential {
   StoredCredential(StoredCredential&&);
   StoredCredential& operator=(StoredCredential&&);
   ~StoredCredential();
+
+  enum class Store {
+    kNotSet = 0,
+    kProfileStore = 1 << 0,
+    kAccountStore = 1 << 1,
+    kMaxValue = kAccountStore
+  };
 
   // Identification & URLs
   std::optional<FormPrimaryKey> primary_key;
@@ -63,7 +72,7 @@ struct StoredCredential {
       PasswordForm::GenerationUploadStatus::kNoSignalSent;
 
   // Storage Specifics
-  PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
+  Store in_store = Store::kNotSet;
   std::vector<signin::GaiaIdHash> moving_blocked_for_list;
   base::flat_map<InsecureType, InsecurityMetadata> password_issues;
   std::vector<PasswordNote> notes;
@@ -83,6 +92,9 @@ struct StoredCredential {
   // Actor Login
   bool actor_login_approved = false;
 };
+
+using StoredCredentialsResultOrError =
+    std::variant<std::vector<StoredCredential>, PasswordStoreBackendError>;
 
 }  // namespace password_manager
 

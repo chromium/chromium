@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
@@ -162,6 +163,15 @@ ActionableError SyncErrorToActionableError(
   }
 }
 
+LoginsResultOrError ToLoginsResultOrError(
+    StoredCredentialsResultOrError result) {
+  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
+    return std::get<PasswordStoreBackendError>(result);
+  }
+  return ToPasswordForms(
+      std::get<std::vector<StoredCredential>>(std::move(result)));
+}
+
 }  // namespace
 
 // TODO(410526044): Make sure `os_crypt_async` is not null.
@@ -281,8 +291,9 @@ void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
       base::BindOnce(
           &LoginDatabaseAsyncHelper::GetAllLogins,
           base::Unretained(helper_.get())),  // Safe until `Shutdown()`.
-      ReportMetricsForResultCallback<LoginsResultOrError>(
+      ReportMetricsForResultCallback<StoredCredentialsResultOrError>(
           MethodName("GetAllLoginsAsync"))
+          .Then(base::BindOnce(&ToLoginsResultOrError))
           .Then(std::move(callback)));
 }
 
@@ -305,8 +316,9 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
       base::BindOnce(
           &LoginDatabaseAsyncHelper::GetAutofillableLogins,
           base::Unretained(helper_.get())),  // Safe until `Shutdown()`.
-      ReportMetricsForResultCallback<LoginsResultOrError>(
+      ReportMetricsForResultCallback<StoredCredentialsResultOrError>(
           MethodName("GetAutofillableLoginsAsync"))
+          .Then(base::BindOnce(&ToLoginsResultOrError))
           .Then(std::move(callback)));
 }
 
@@ -327,8 +339,9 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
           &LoginDatabaseAsyncHelper::FillMatchingLogins,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           forms, include_psl),
-      ReportMetricsForResultCallback<LoginsResultOrError>(
+      ReportMetricsForResultCallback<StoredCredentialsResultOrError>(
           MethodName("FillMatchingLoginsAsync"))
+          .Then(base::BindOnce(&ToLoginsResultOrError))
           .Then(std::move(callback)));
 }
 
@@ -350,7 +363,7 @@ void PasswordStoreBuiltInBackend::AddLoginAsync(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::AddLogin,
-                     base::Unretained(helper_.get()), form),
+                     base::Unretained(helper_.get()), FromPasswordForm(form)),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
           MethodName("AddLoginAsync"))
           .Then(std::move(callback)));
@@ -364,7 +377,7 @@ void PasswordStoreBuiltInBackend::UpdateLoginAsync(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::UpdateLogin,
-                     base::Unretained(helper_.get()), form),
+                     base::Unretained(helper_.get()), FromPasswordForm(form)),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
           MethodName("UpdateLoginAsync"))
           .Then(std::move(callback)));
@@ -381,7 +394,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginAsync(
       base::BindOnce(
           &LoginDatabaseAsyncHelper::RemoveLogin,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          location, form),
+          location, FromPasswordForm(form)),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
           MethodName("RemoveLoginAsync"))
           .Then(std::move(callback)));

@@ -8,6 +8,14 @@
 
 namespace password_manager {
 
+PasswordForm::Store ToPasswordFormStore(StoredCredential::Store store) {
+  return static_cast<PasswordForm::Store>(store);
+}
+
+StoredCredential::Store FromPasswordFormStore(PasswordForm::Store store) {
+  return static_cast<StoredCredential::Store>(store);
+}
+
 PasswordForm ToPasswordForm(const StoredCredential& cred) {
   PasswordForm form;
   form.primary_key = cred.primary_key;
@@ -35,7 +43,7 @@ PasswordForm ToPasswordForm(const StoredCredential& cred) {
   form.icon_url = cred.icon_url;
   form.skip_zero_click = cred.skip_zero_click;
   form.generation_upload_status = cred.generation_upload_status;
-  form.in_store = cred.in_store;
+  form.in_store = ToPasswordFormStore(cred.in_store);
   form.moving_blocked_for_list = cred.moving_blocked_for_list;
   form.password_issues = cred.password_issues;
   form.notes = cred.notes;
@@ -77,7 +85,7 @@ PasswordForm ToPasswordForm(StoredCredential&& cred) {
   form.icon_url = std::move(cred.icon_url);
   form.skip_zero_click = cred.skip_zero_click;
   form.generation_upload_status = cred.generation_upload_status;
-  form.in_store = cred.in_store;
+  form.in_store = ToPasswordFormStore(cred.in_store);
   form.moving_blocked_for_list = std::move(cred.moving_blocked_for_list);
   form.password_issues = std::move(cred.password_issues);
   form.notes = std::move(cred.notes);
@@ -119,7 +127,7 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.icon_url = std::move(form.icon_url);
   cred.skip_zero_click = form.skip_zero_click;
   cred.generation_upload_status = form.generation_upload_status;
-  cred.in_store = form.in_store;
+  cred.in_store = FromPasswordFormStore(form.in_store);
   cred.moving_blocked_for_list = std::move(form.moving_blocked_for_list);
   cred.password_issues = std::move(form.password_issues);
   cred.notes = std::move(form.notes);
@@ -132,6 +140,26 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.actor_login_approved = form.actor_login_approved;
 
   return cred;
+}
+
+std::vector<PasswordForm> ToPasswordForms(
+    std::vector<StoredCredential> credentials) {
+  std::vector<PasswordForm> forms;
+  forms.reserve(credentials.size());
+  for (auto& cred : credentials) {
+    forms.push_back(ToPasswordForm(std::move(cred)));
+  }
+  return forms;
+}
+
+std::vector<StoredCredential> FromPasswordForms(
+    std::vector<PasswordForm> forms) {
+  std::vector<StoredCredential> credentials;
+  credentials.reserve(forms.size());
+  for (auto& form : forms) {
+    credentials.push_back(FromPasswordForm(std::move(form)));
+  }
+  return credentials;
 }
 
 }  // namespace password_manager

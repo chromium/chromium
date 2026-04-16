@@ -11,8 +11,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "sql/database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,13 +21,13 @@
 namespace password_manager {
 namespace {
 
-PasswordForm CreatePasswordForm(std::u16string username = u"username") {
-  PasswordForm form;
-  form.signon_realm = "http://www.google.com";
-  form.url = GURL(form.signon_realm);
-  form.username_value = username;
-  form.password_value = u"superstrongpassword";
-  return form;
+StoredCredential CreateStoredCredential(std::u16string username = u"username") {
+  StoredCredential cred;
+  cred.signon_realm = "http://www.google.com";
+  cred.url = GURL(cred.signon_realm);
+  cred.username_value = username;
+  cred.password_value = u"superstrongpassword";
+  return cred;
 }
 
 using testing::ElementsAre;
@@ -75,7 +76,7 @@ class PasswordNotesTableTest : public testing::Test {
 
 TEST_F(PasswordNotesTableTest,
        WithSameParentIdThereCanBeOnlyOneAndItsReplaced) {
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm()), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential()), SizeIs(1));
 
   const PasswordNote first_note(u"note 1", base::Time::Now()),
       second_note(u"note 2", base::Time::Now() + base::Hours(1)),
@@ -99,8 +100,10 @@ TEST_F(PasswordNotesTableTest, ReloadingDatabasePersistsEntries) {
   const PasswordNote first_note(u"note 1", base::Time::Now()),
       second_note(u"note 2", base::Time::Now() + base::Hours(1));
 
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user1")),
+              SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user2")),
+              SizeIs(1));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), second_note));
 
@@ -118,8 +121,10 @@ TEST_F(PasswordNotesTableTest, GetPasswordNotes) {
   const PasswordNote first_note(u"note 1", base::Time::Now()),
       second_note(u"note 2", base::Time::Now() + base::Hours(1));
 
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user1")),
+              SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user2")),
+              SizeIs(1));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), second_note));
 
@@ -139,9 +144,12 @@ TEST_F(PasswordNotesTableTest, RemovePasswordNotes) {
       second_note(u"note 2", base::Time::Now() + base::Hours(1)),
       third_note(u"note 3", base::Time::Now() + base::Hours(1));
 
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user2")), SizeIs(1));
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user3")), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user1")),
+              SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user2")),
+              SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user3")),
+              SizeIs(1));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(2), second_note));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(3), third_note));
@@ -159,7 +167,8 @@ TEST_F(PasswordNotesTableTest, RemovePasswordNotes) {
 TEST_F(PasswordNotesTableTest, RemovePasswordNotesWithNonExistingKey) {
   const PasswordNote first_note(u"note 1", base::Time::Now());
 
-  EXPECT_THAT(login_db()->AddLogin(CreatePasswordForm(u"user1")), SizeIs(1));
+  EXPECT_THAT(login_db()->AddLogin(CreateStoredCredential(u"user1")),
+              SizeIs(1));
   EXPECT_TRUE(table()->InsertOrReplace(FormPrimaryKey(1), first_note));
 
   EXPECT_FALSE(table()->RemovePasswordNotes(FormPrimaryKey(1000)));

@@ -16,8 +16,9 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "sql/database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,13 +36,13 @@ using testing::IsEmpty;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
-PasswordForm TestForm() {
-  PasswordForm form;
-  form.signon_realm = kTestDomain;
-  form.url = GURL(form.signon_realm);
-  form.username_value = kUsername;
-  form.password_value = u"1234";
-  return form;
+StoredCredential TestForm() {
+  StoredCredential cred;
+  cred.signon_realm = kTestDomain;
+  cred.url = GURL(cred.signon_realm);
+  cred.username_value = kUsername;
+  cred.password_value = u"1234";
+  return cred;
 }
 
 InsecurityMetadata ToInsecurityMetadata(const InsecureCredential& insecure) {
@@ -77,7 +78,7 @@ class InsecureCredentialsTableTest : public testing::Test {
   }
 
   InsecureCredential& test_data() { return test_data_; }
-  PasswordForm& test_form() { return test_form_; }
+  StoredCredential& test_form() { return test_form_; }
   InsecureCredentialsTable* db() {
     return &login_db_->insecure_credentials_table();
   }
@@ -100,7 +101,7 @@ class InsecureCredentialsTableTest : public testing::Test {
   InsecureCredential test_data_{
       kTestDomain,           kUsername,      base::Time::FromTimeT(1),
       InsecureType::kLeaked, IsMuted(false), TriggerBackendNotification(true)};
-  PasswordForm test_form_ = TestForm();
+  StoredCredential test_form_ = TestForm();
 };
 
 TEST_F(InsecureCredentialsTableTest, Reload) {
