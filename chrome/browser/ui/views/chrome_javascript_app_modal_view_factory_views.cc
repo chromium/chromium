@@ -44,9 +44,11 @@ class ChromeJavaScriptAppModalDialogViews
     : public javascript_dialogs::AppModalDialogViewViews {
  public:
   explicit ChromeJavaScriptAppModalDialogViews(
-      javascript_dialogs::AppModalDialogController* parent)
-      : javascript_dialogs::AppModalDialogViewViews(parent),
-        popunder_preventer_(parent->web_contents()) {}
+      std::unique_ptr<javascript_dialogs::AppModalDialogController> controller)
+      : javascript_dialogs::AppModalDialogViewViews(std::move(controller)) {
+    popunder_preventer_ =
+        std::make_unique<PopunderPreventer>(this->controller()->web_contents());
+  }
   ChromeJavaScriptAppModalDialogViews(
       const ChromeJavaScriptAppModalDialogViews&) = delete;
   ChromeJavaScriptAppModalDialogViews& operator=(
@@ -74,7 +76,7 @@ class ChromeJavaScriptAppModalDialogViews
   // Blocks events to other browser windows while the dialog is open.
   std::unique_ptr<JavascriptAppModalEventBlocker> event_blocker_;
 
-  PopunderPreventer popunder_preventer_;
+  std::unique_ptr<PopunderPreventer> popunder_preventer_;
 };
 
 void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
@@ -91,13 +93,12 @@ void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
 }
 
 javascript_dialogs::AppModalDialogView* CreateViewsJavaScriptDialog(
-    javascript_dialogs::AppModalDialogController* controller) {
+    std::unique_ptr<javascript_dialogs::AppModalDialogController> controller) {
+  content::WebContents* web_contents = controller->web_contents();
   javascript_dialogs::AppModalDialogViewViews* dialog =
-      new ChromeJavaScriptAppModalDialogViews(controller);
-  controller->web_contents()->GetDelegate()->ActivateContents(
-      controller->web_contents());
-  gfx::NativeWindow parent_window =
-      controller->web_contents()->GetTopLevelNativeWindow();
+      new ChromeJavaScriptAppModalDialogViews(std::move(controller));
+  web_contents->GetDelegate()->ActivateContents(web_contents);
+  gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 #if defined(USE_AURA)
   if (!parent_window->GetRootWindow()) {
     // When we are part of a WebContents that isn't actually being displayed

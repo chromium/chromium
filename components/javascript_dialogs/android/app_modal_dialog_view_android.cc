@@ -29,12 +29,12 @@ namespace javascript_dialogs {
 
 AppModalDialogViewAndroid::AppModalDialogViewAndroid(
     JNIEnv* env,
-    AppModalDialogController* controller,
+    std::unique_ptr<javascript_dialogs::AppModalDialogController> controller,
     gfx::NativeWindow parent)
-    : controller_(controller),
+    : controller_(std::move(controller)),
       parent_jobject_weak_ref_(env, parent->GetJavaObject()) {
-  controller->web_contents()->GetDelegate()->ActivateContents(
-      controller->web_contents());
+  controller_->web_contents()->GetDelegate()->ActivateContents(
+      controller_->web_contents());
 }
 
 void AppModalDialogViewAndroid::ShowAppModalDialog() {

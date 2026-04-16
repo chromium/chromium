@@ -17,48 +17,50 @@ AppModalDialogQueue* AppModalDialogQueue::GetInstance() {
 
 void AppModalDialogQueue::CancelAllDialogs() {
   shutting_down_ = true;
-  InvalidateAndDeleteQueuedDialogs();
+  InvalidateAndClearQueuedDialogs();
 }
 
 void AppModalDialogQueue::ResetForTesting() {
   active_dialog_ = nullptr;
   shutting_down_ = false;
-  InvalidateAndDeleteQueuedDialogs();
+  InvalidateAndClearQueuedDialogs();
 }
 
-void AppModalDialogQueue::InvalidateAndDeleteQueuedDialogs() {
+void AppModalDialogQueue::InvalidateAndClearQueuedDialogs() {
   while (!app_modal_dialog_queue_.empty()) {
-    AppModalDialogController* dialog = app_modal_dialog_queue_.front();
+    app_modal_dialog_queue_.front()->Invalidate();
     app_modal_dialog_queue_.pop_front();
-    dialog->Invalidate();
-    delete dialog;
   }
 }
 
-void AppModalDialogQueue::AddDialog(AppModalDialogController* dialog) {
+void AppModalDialogQueue::AddDialog(
+    std::unique_ptr<AppModalDialogController> dialog) {
   if (shutting_down_) {
     dialog->Invalidate();
-    delete dialog;
     return;
   }
+
   if (!active_dialog_) {
-    ShowModalDialog(dialog);
+    ShowModalDialog(std::move(dialog));
     return;
   }
-  app_modal_dialog_queue_.push_back(dialog);
+
+  app_modal_dialog_queue_.push_back(std::move(dialog));
 }
 
 void AppModalDialogQueue::ShowNextDialog() {
   if (shutting_down_) {
     active_dialog_ = nullptr;
-    InvalidateAndDeleteQueuedDialogs();
+    InvalidateAndClearQueuedDialogs();
     return;
   }
-  AppModalDialogController* dialog = GetNextDialog();
-  if (dialog)
-    ShowModalDialog(dialog);
-  else
+
+  std::unique_ptr<AppModalDialogController> dialog = GetNextDialog();
+  if (dialog) {
+    ShowModalDialog(std::move(dialog));
+  } else {
     active_dialog_ = nullptr;
+  }
 }
 
 void AppModalDialogQueue::ActivateModalDialog() {
@@ -69,38 +71,41 @@ void AppModalDialogQueue::ActivateModalDialog() {
     // activate the tab contents the dialog is shown.
     return;
   }
-  if (active_dialog_)
+
+  if (active_dialog_) {
     active_dialog_->ActivateModalDialog();
+  }
 }
 
 bool AppModalDialogQueue::HasActiveDialog() const {
-  return active_dialog_ != nullptr;
+  return !!active_dialog_;
 }
 
-AppModalDialogQueue::AppModalDialogQueue()
-    : active_dialog_(nullptr), showing_modal_dialog_(false) {}
+AppModalDialogQueue::AppModalDialogQueue() = default;
 
 AppModalDialogQueue::~AppModalDialogQueue() = default;
 
-void AppModalDialogQueue::ShowModalDialog(AppModalDialogController* dialog) {
+void AppModalDialogQueue::ShowModalDialog(
+    std::unique_ptr<AppModalDialogController> dialog) {
   // Be sure and set the active_dialog_ field first, otherwise if
   // ShowModalDialog triggers a call back to the queue they'll get the old
-  // dialog. Also, if the dialog calls |ShowNextDialog()| before returning, that
-  // would write nullptr into |active_dialog_| and this function would then undo
+  // dialog. Also, if the dialog calls `ShowNextDialog()` before returning, that
+  // would write nullptr into `active_dialog_` and this function would then undo
   // that.
-  active_dialog_ = dialog;
+  active_dialog_ = dialog.get();
   showing_modal_dialog_ = true;
-  dialog->ShowModalDialog();
+  active_dialog_->ShowModalDialog(std::move(dialog));
   showing_modal_dialog_ = false;
 }
 
-AppModalDialogController* AppModalDialogQueue::GetNextDialog() {
+std::unique_ptr<AppModalDialogController> AppModalDialogQueue::GetNextDialog() {
   while (!app_modal_dialog_queue_.empty()) {
-    AppModalDialogController* dialog = app_modal_dialog_queue_.front();
+    std::unique_ptr<AppModalDialogController> dialog =
+        std::move(app_modal_dialog_queue_.front());
     app_modal_dialog_queue_.pop_front();
-    if (dialog->IsValid())
+    if (dialog->IsValid()) {
       return dialog;
-    delete dialog;
+    }
   }
   return nullptr;
 }

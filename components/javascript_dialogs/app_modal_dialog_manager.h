@@ -30,8 +30,8 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
  public:
   // A factory method to create and returns a platform-specific dialog class.
   // The returned object should own itself.
-  using AppModalViewFactory =
-      base::RepeatingCallback<AppModalDialogView*(AppModalDialogController*)>;
+  using AppModalViewFactory = base::RepeatingCallback<AppModalDialogView*(
+      std::unique_ptr<AppModalDialogController>)>;
 
   static AppModalDialogManager* GetInstance();
 

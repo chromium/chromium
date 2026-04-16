@@ -6,6 +6,7 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_APP_MODAL_DIALOG_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -23,17 +24,17 @@ class ChromeJavaScriptDialogExtraData {
   ChromeJavaScriptDialogExtraData();
 
   // True if the user has already seen a JavaScript dialog from the WebContents.
-  bool has_already_shown_a_dialog_;
+  bool has_already_shown_a_dialog_ = false;
 
   // True if the user has decided to block future JavaScript dialogs.
-  bool suppress_javascript_messages_;
+  bool suppress_javascript_messages_ = false;
 };
 
 // A controller + model class for JavaScript alert, confirm, prompt, and
 // onbeforeunload dialog boxes.
 class AppModalDialogController : public content::WebContentsObserver {
  public:
-  typedef std::map<void*, ChromeJavaScriptDialogExtraData> ExtraDataMap;
+  using ExtraDataMap = std::map<void*, ChromeJavaScriptDialogExtraData>;
 
   AppModalDialogController(
       content::WebContents* web_contents,
@@ -52,8 +53,10 @@ class AppModalDialogController : public content::WebContentsObserver {
 
   ~AppModalDialogController() override;
 
-  // Called by the AppModalDialogQueue to show this dialog.
-  virtual void ShowModalDialog();
+  // Called by the AppModalDialogQueue to show this dialog. Transfers ownership
+  // of the object to the function.
+  virtual void ShowModalDialog(
+      std::unique_ptr<AppModalDialogController> controller);
 
   // Called by the AppModalDialogQueue to activate the dialog.
   void ActivateModalDialog();

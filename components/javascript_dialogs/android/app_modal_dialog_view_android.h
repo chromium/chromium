@@ -19,9 +19,10 @@ class AppModalDialogController;
 
 class AppModalDialogViewAndroid : public AppModalDialogView {
  public:
-  AppModalDialogViewAndroid(JNIEnv* env,
-                            AppModalDialogController* controller,
-                            gfx::NativeWindow parent);
+  AppModalDialogViewAndroid(
+      JNIEnv* env,
+      std::unique_ptr<javascript_dialogs::AppModalDialogController> controller,
+      gfx::NativeWindow parent);
 
   AppModalDialogViewAndroid(const AppModalDialogViewAndroid&) = delete;
   AppModalDialogViewAndroid& operator=(const AppModalDialogViewAndroid&) =

@@ -21,20 +21,20 @@ namespace javascript_dialogs {
 // AppModalDialogViewViews, public:
 
 AppModalDialogViewViews::AppModalDialogViewViews(
-    AppModalDialogController* controller)
-    : controller_(controller) {
+    std::unique_ptr<AppModalDialogController> controller)
+    : controller_(std::move(controller)) {
   SetOwnedByWidget(OwnedByWidgetPassKey());
   message_box_view_ = new views::MessageBoxView(
-      controller->message_text(), /* detect_directionality = */ true);
+      controller_->message_text(), /*detect_directionality=*/true);
 
-  if (controller->javascript_dialog_type() ==
+  if (controller_->javascript_dialog_type() ==
       content::JAVASCRIPT_DIALOG_TYPE_PROMPT) {
-    message_box_view_->SetPromptField(controller->default_prompt_text());
+    message_box_view_->SetPromptField(controller_->default_prompt_text());
   }
 
   message_box_view_->AddAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN));
-  if (controller->display_suppress_checkbox()) {
+  if (controller_->display_suppress_checkbox()) {
     message_box_view_->SetCheckBoxLabel(
         l10n_util::GetStringUTF16(IDS_JAVASCRIPT_MESSAGEBOX_SUPPRESS_OPTION));
   }

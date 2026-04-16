@@ -23,7 +23,8 @@ class AppModalDialogController;
 class AppModalDialogViewViews : public AppModalDialogView,
                                 public views::DialogDelegate {
  public:
-  explicit AppModalDialogViewViews(AppModalDialogController* controller);
+  explicit AppModalDialogViewViews(
+      std::unique_ptr<AppModalDialogController> controller);
 
   AppModalDialogViewViews(const AppModalDialogViewViews&) = delete;
   AppModalDialogViewViews& operator=(const AppModalDialogViewViews&) = delete;
@@ -47,6 +48,9 @@ class AppModalDialogViewViews : public AppModalDialogView,
   const views::Widget* GetWidget() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
+
+ protected:
+  AppModalDialogController* controller() { return controller_.get(); }
 
  private:
   std::unique_ptr<AppModalDialogController> controller_;

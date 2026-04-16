@@ -29,7 +29,11 @@ class JavaScriptAppModalDialogCocoa
     : public javascript_dialogs::AppModalDialogView {
  public:
   static javascript_dialogs::AppModalDialogView* CreateNativeJavaScriptDialog(
-      javascript_dialogs::AppModalDialogController* controller);
+      std::unique_ptr<javascript_dialogs::AppModalDialogController> controller);
+
+  JavaScriptAppModalDialogCocoa(const JavaScriptAppModalDialogCocoa&) = delete;
+  JavaScriptAppModalDialogCocoa& operator=(
+      const JavaScriptAppModalDialogCocoa&) = delete;
 
   // Overridden from NativeAppModalDialog:
   void ShowAppModalDialog() override;
@@ -41,10 +45,7 @@ class JavaScriptAppModalDialogCocoa
 
  private:
   explicit JavaScriptAppModalDialogCocoa(
-      javascript_dialogs::AppModalDialogController* controller);
-  JavaScriptAppModalDialogCocoa(const JavaScriptAppModalDialogCocoa&) = delete;
-  JavaScriptAppModalDialogCocoa& operator=(
-      const JavaScriptAppModalDialogCocoa&) = delete;
+      std::unique_ptr<javascript_dialogs::AppModalDialogController> controller);
   ~JavaScriptAppModalDialogCocoa() override;
 
   // Return the parameters to use for the alert.
