@@ -5259,6 +5259,10 @@ inline constexpr char kAndroidZoomIndicatorName[] = "Android Zoom Indicator";
 inline constexpr char kAndroidZoomIndicatorDescription[] =
     "Enable zoom indicator on Android.";
 
+inline constexpr char kAndroidZoomImmersiveName[] = "Android Zoom Immersive";
+inline constexpr char kAndroidZoomImmersiveDescription[] =
+    "Enable immersive mode on Android via app menu page zoom option.";
+
 inline constexpr char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 inline constexpr char kAnimatedImageDragShadowDescription[] =

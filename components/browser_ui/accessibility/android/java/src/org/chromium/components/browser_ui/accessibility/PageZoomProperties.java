@@ -30,6 +30,8 @@ public class PageZoomProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> ZOOM_PERCENT_TEXT =
             new WritableObjectPropertyKey<>();
+    public static final ReadableBooleanPropertyKey IMMERIVE_MODE_ENABLED =
+            new ReadableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Runnable> IMMERIVE_MODE_CALLBACK =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<Integer>> BAR_VALUE_CHANGE_CALLBACK =
@@ -52,7 +54,9 @@ public class PageZoomProperties {
         CURRENT_BAR_VALUE,
         USE_SLIDER,
         DEFAULT_ZOOM_FACTOR,
-        ZOOM_PERCENT_TEXT
+        ZOOM_PERCENT_TEXT,
+        IMMERIVE_MODE_ENABLED,
+        IMMERIVE_MODE_CALLBACK
     };
 
     public static final PropertyKey[] ALL_KEYS_FOR_MENU_ITEM = {
@@ -62,6 +66,7 @@ public class PageZoomProperties {
         INCREASE_ZOOM_ENABLED,
         DEFAULT_ZOOM_FACTOR,
         ZOOM_PERCENT_TEXT,
+        IMMERIVE_MODE_ENABLED,
         IMMERIVE_MODE_CALLBACK
     };
 

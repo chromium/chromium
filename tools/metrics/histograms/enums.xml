@@ -8116,6 +8116,7 @@ from previous Chrome versions.
   <int value="-1985145145" label="TpcdHeuristicsGrants:enabled"/>
   <int value="-1985025593" label="file-manager-enable-new-gallery"/>
   <int value="-1983891525" label="DecodeJpeg420ImagesToYUV:disabled"/>
+  <int value="-1983686491" label="AndroidZoomImmersive:disabled"/>
   <int value="-1983569861" label="WebXROrientationSensorDevice:disabled"/>
   <int value="-1982700103" label="EnableAppsGridGapFeature:enabled"/>
   <int value="-1982633436"
@@ -16860,6 +16861,7 @@ from previous Chrome versions.
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>
   <int value="947323794" label="BruschettaAlphaMigrate:disabled"/>
   <int value="947405827" label="LaunchOnStartup:enabled"/>
+  <int value="947608420" label="AndroidZoomImmersive:enabled"/>
   <int value="947684823" label="BookmarkTriggerForPrefetch:disabled"/>
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>

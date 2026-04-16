@@ -9873,6 +9873,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(browser_ui::kAndroidZoomIndicator)},
 
+    {"android-zoom-immersive", flag_descriptions::kAndroidZoomImmersiveName,
+     flag_descriptions::kAndroidZoomImmersiveDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidZoomImmersive)},
+
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,

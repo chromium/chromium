@@ -66,6 +66,7 @@ BASE_DECLARE_FEATURE(kAndroidWindowPopupPredictFinalBounds);
 BASE_DECLARE_FEATURE(kAndroidWindowPopupResizeAfterSpawn);
 BASE_DECLARE_FEATURE(kAndroidXRUsesSurfaceControl);
 BASE_DECLARE_FEATURE(kAndroidXrImmersivePlayer);
+BASE_DECLARE_FEATURE(kAndroidZoomImmersive);
 BASE_DECLARE_FEATURE(kAnimatedGifRefactor);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentsVirtualStructure);

@@ -868,6 +868,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 mContext.getString(R.string.page_zoom_menu_title))
                         .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.page_zoom_id)
                         .with(AppMenuItemProperties.ICON, icon)
+                        .with(
+                                PageZoomProperties.IMMERIVE_MODE_ENABLED,
+                                ChromeFeatureList.sAndroidZoomImmersive.isEnabled())
                         .build();
         return model;
     }
