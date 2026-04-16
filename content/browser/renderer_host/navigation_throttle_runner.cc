@@ -167,9 +167,10 @@ void NavigationThrottleRunner::ProcessInternal() {
     CHECK_EQ(throttles.size(), 0u);
   }
   for (size_t i = next_index_; i < throttles.size(); ++i) {
-    TRACE_EVENT0("navigation",
-                 "NavigationThrottleRunner::ProcessInternal.loop");
-    TRACE_EVENT_BEGIN("navigation", GetEventName(current_event_), "throttle",
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("navigation"),
+                "NavigationThrottleRunner::ProcessInternal.loop");
+    TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("navigation"),
+                      GetEventName(current_event_), "throttle",
                       throttles[i]->GetNameForLogging());
 
     base::Time start = base::Time::Now();
@@ -179,12 +180,14 @@ void NavigationThrottleRunner::ProcessInternal() {
       // The NavigationThrottle execution has destroyed this
       // NavigationThrottleRunner. Return immediately.
       // GetEventName(current_event_)
-      TRACE_EVENT_END("navigation", "result", "deleted");
+      TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("navigation"), "result",
+                      "deleted");
       return;
     }
     RecordExecutionTimeHistogram(current_event_, start);
     // GetEventName(current_event_)
-    TRACE_EVENT_END("navigation", "result", result.action());
+    TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("navigation"), "result",
+                    result.action());
 
     switch (result.action()) {
       case NavigationThrottle::PROCEED:

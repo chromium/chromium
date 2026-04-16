@@ -278,8 +278,9 @@ NavigationHandle& NavigationThrottleRegistryImpl::GetNavigationHandle() {
 void NavigationThrottleRegistryImpl::AddThrottle(
     std::unique_ptr<NavigationThrottle> navigation_throttle) {
   CHECK(navigation_throttle);
-  TRACE_EVENT1("navigation", "NavigationThrottleRegistryImpl::AddThrottle",
-               "navigation_throttle", navigation_throttle->GetNameForLogging());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("navigation"),
+              "NavigationThrottleRegistryImpl::AddThrottle",
+              "navigation_throttle", navigation_throttle->GetNameForLogging());
   CHECK(!navigation_request_->IsInitialWebUISyncNavigation());
   throttles_.push_back(std::move(navigation_throttle));
 }
