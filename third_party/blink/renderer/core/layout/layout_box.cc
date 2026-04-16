@@ -2065,6 +2065,14 @@ bool LayoutBox::ComputeBackgroundIsKnownToBeObscured() const {
   NOT_DESTROYED();
   if (ScrollsOverflow())
     return false;
+  // If the element has overflow clipping, children are clipped to the padding
+  // box. If the background extends beyond the padding box (e.g., visible
+  // through transparent or non-solid borders), children cannot fully obscure
+  // the background in the border area.
+  if (HasNonVisibleOverflow() &&
+      !BackgroundClipBorderBoxIsEquivalentToPaddingBox()) {
+    return false;
+  }
   // Test to see if the children trivially obscure the background.
   if (!StyleRef().HasBackground())
     return false;
