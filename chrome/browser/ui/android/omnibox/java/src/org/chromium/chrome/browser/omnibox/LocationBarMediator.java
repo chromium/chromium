@@ -422,6 +422,7 @@ class LocationBarMediator
         // Intercept back press if it has focus.
         mBackPressStateSupplier.set(mUrlHasFocus);
         updateButtonVisibility();
+        onSearchBoxHintTextChanged();
         updateShouldAnimateIconChanges();
         onPrimaryColorChanged();
 
