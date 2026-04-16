@@ -540,7 +540,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   auto size = gfx::Size(video_frame_init_data.ready_buffer->info->coded_size);
   auto color_space = video_frame_init_data.ready_buffer->info->color_space;
   if (!color_space.IsValid()) {
-    color_space = gfx::ColorSpace::CreateREC709();
+    color_space = gfx::ColorSpace::CreateREC601();
   }
 
   auto& shared_image =
