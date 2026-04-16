@@ -95,9 +95,6 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
                             }
                             mNextDelegate = null;
                         });
-
-        // This fragment has no UI so we can retain it.
-        setRetainInstance(true);
     }
 
     public void startAndroidCapturePrompt(Delegate delegate, @Nullable Intent intent) {
