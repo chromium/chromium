@@ -646,7 +646,7 @@ inline constexpr char kInvalidWebviewPartitionName[] =
 inline constexpr char16_t kInvalidWebviewPartitionsList[] =
     u"Invalid value for 'webview.partitions'.";
 inline constexpr char kInvalidWebURL[] = "Invalid value for 'app.urls[*]': *";
-inline constexpr char kInvalidWebURLs[] = "Invalid value for 'app.urls'.";
+inline constexpr char16_t kInvalidWebURLs[] = u"Invalid value for 'app.urls'.";
 inline constexpr char16_t kLaunchPathAndExtentAreExclusive[] =
     u"The 'app.launch.local_path' and 'app.urls' keys cannot both be set.";
 inline constexpr char16_t kLaunchPathAndURLAreExclusive[] =

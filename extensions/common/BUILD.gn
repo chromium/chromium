@@ -406,6 +406,8 @@ static_library("common") {
     "manifest_handler_registry.h",
     "manifest_handlers/app_display_info.cc",
     "manifest_handlers/app_display_info.h",
+    "manifest_handlers/app_urls_info.cc",
+    "manifest_handlers/app_urls_info.h",
     "manifest_handlers/automation.cc",
     "manifest_handlers/automation.h",
     "manifest_handlers/background_info.cc",

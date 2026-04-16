@@ -366,13 +366,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   bool LoadVersion(std::vector<InstallWarning>* install_warnings,
                    std::u16string* error);
 
-  bool LoadAppFeatures(std::u16string* error);
-  bool LoadExtent(const char* key,
-                  URLPatternSet* extent,
-                  const char* list_error,
-                  const char* value_error,
-                  std::u16string* error);
-
   bool LoadSharedFeatures(std::u16string* error);
   bool LoadManifestVersion(std::u16string* error);
   bool LoadShortName(std::u16string* error);
