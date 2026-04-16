@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
+#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/sharing_message/proto/one_time_token_backend_notification.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -46,7 +47,7 @@ OneTimeTokenSharingHandler::HandleOneTimeTokenNotification(
     return OneTimeTokenValidationResult::kEmptyEncryptedMessageReference;
   }
   gmail_otp_backend_->OnIncomingOneTimeTokenBackendTickle(
-      one_time_tokens::GmailOtpBackend::EncryptedMessageReference(
+      one_time_tokens::EncryptedMessageReference(
           notification.gmail_one_time_password()
               .encrypted_message_reference()));
   return OneTimeTokenValidationResult::kSuccess;

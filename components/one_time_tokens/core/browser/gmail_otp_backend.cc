@@ -26,7 +26,10 @@ GmailOtpBackendImpl::GmailOtpBackendImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager& identity_manager)
     : url_loader_factory_(std::move(url_loader_factory)),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      coordinator_(std::make_unique<EmailOneTimeTokenFetchCoordinator>(*this)) {
+}
+
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
@@ -39,14 +42,17 @@ ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
 }
 
 void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendTickle(
-    const GmailOtpBackendImpl::EncryptedMessageReference&
-        encrypted_message_reference) {
-  RetrieveGmailOtp(encrypted_message_reference);
+    const EncryptedMessageReference& encrypted_message_reference) {
+  coordinator_->SignalNetworkRequestNeeded(encrypted_message_reference);
+}
+
+void GmailOtpBackendImpl::OnCanSendNetworkRequest(
+    const EncryptedMessageReference& reference) {
+  RetrieveGmailOtp(reference);
 }
 
 void GmailOtpBackendImpl::RetrieveGmailOtp(
-    const GmailOtpBackendImpl::EncryptedMessageReference&
-        encrypted_message_reference) {
+    const EncryptedMessageReference& encrypted_message_reference) {
   // TODO(crbug.com/478840436) Fix the race condition where a second tickle
   // arrives while a pending request is in flight. The solution is probably
   // just to remove the has_pending_request_ from this class. Unlike SMS OTPs
@@ -70,6 +76,9 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
     std::unique_ptr<EmailOneTimeTokenFetcher> request,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
   has_pending_request_ = false;
+
+  // TODO(crbug.com/478840436): Inform coordinator about finished request.
+
   if (!reply.has_value()) {
     subscription_manager_.Notify(base::unexpected(reply.error()));
     return;

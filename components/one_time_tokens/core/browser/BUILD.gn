@@ -5,8 +5,11 @@ import("//third_party/protobuf/proto_library.gni")
 
 static_library("browser") {
   sources = [
+    "email_one_time_token_fetch_coordinator.cc",
+    "email_one_time_token_fetch_coordinator.h",
     "email_one_time_token_fetcher.cc",
     "email_one_time_token_fetcher.h",
+    "encrypted_message_reference.h",
     "gmail_otp_backend.cc",
     "gmail_otp_backend.h",
     "one_time_token.cc",
@@ -55,6 +58,7 @@ proto_library("fetch_email_one_time_token_error_details_proto") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "email_one_time_token_fetch_coordinator_unittest.cc",
     "email_one_time_token_fetcher_unittest.cc",
     "gmail_otp_backend_unittest.cc",
     "one_time_token_cache_unittest.cc",

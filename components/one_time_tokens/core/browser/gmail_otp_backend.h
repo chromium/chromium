@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_GMAIL_OTP_BACKEND_H_
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_GMAIL_OTP_BACKEND_H_
 
-#include <string>
+#include <memory>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "base/types/strong_alias.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/one_time_tokens/core/browser/email_one_time_token_fetch_coordinator.h"
+#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
@@ -36,9 +37,6 @@ class GmailOtpBackend : public KeyedService {
       void(base::expected<OneTimeToken, OneTimeTokenRetrievalError>);
   using Callback = base::RepeatingCallback<CallbackSignature>;
 
-  using EncryptedMessageReference =
-      base::StrongAlias<class EncryptedMessageReferenceTag, std::string>;
-
   ~GmailOtpBackend() override;
 
   // Creates a new instance of the backend.
@@ -58,7 +56,8 @@ class GmailOtpBackend : public KeyedService {
 // Concrete implementation of GmailOtpBackend that provides a fake OTP
 // response. This is intended for use in testing and development environments
 // where a real backend is not available.
-class GmailOtpBackendImpl : public GmailOtpBackend {
+class GmailOtpBackendImpl : public GmailOtpBackend,
+                            public EmailOneTimeTokenFetchCoordinator::Delegate {
  public:
   GmailOtpBackendImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -69,12 +68,14 @@ class GmailOtpBackendImpl : public GmailOtpBackend {
                                  Callback callback) override;
 
   void OnIncomingOneTimeTokenBackendTickle(
-      const GmailOtpBackend::EncryptedMessageReference&
-          encrypted_message_reference) override;
+      const EncryptedMessageReference& encrypted_message_reference) override;
+
+  void OnCanSendNetworkRequest(
+      const EncryptedMessageReference& reference) override;
 
  private:
-  void RetrieveGmailOtp(const GmailOtpBackendImpl::EncryptedMessageReference&
-                            encrypted_message_reference);
+  void RetrieveGmailOtp(
+      const EncryptedMessageReference& encrypted_message_reference);
 
   void OnResponseFromGmailOtpBackend(
       std::unique_ptr<EmailOneTimeTokenFetcher> request,
@@ -86,6 +87,9 @@ class GmailOtpBackendImpl : public GmailOtpBackend {
 
   // Handles subscriptions to the `GmailOtpBackend`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
+
+  // Policy for coordinating network requests.
+  std::unique_ptr<EmailOneTimeTokenFetchCoordinator> coordinator_;
 
   // Indicates whether there is currently a request in flight to retrieve a
   // Gmail OTP. This prevents multiple concurrent requests. Timeouts for the OTP

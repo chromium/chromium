@@ -48,7 +48,7 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
       base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
 
   backend_.OnIncomingOneTimeTokenBackendTickle(
-      GmailOtpBackend::EncryptedMessageReference("encrypted_reference"));
+      EncryptedMessageReference("encrypted_reference"));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
 
@@ -81,7 +81,7 @@ TEST_F(GmailOtpBackendImplTest, NoSubscriberNoBackendCall) {
   // No subscription created.
 
   backend_.OnIncomingOneTimeTokenBackendTickle(
-      GmailOtpBackend::EncryptedMessageReference("encrypted_reference"));
+      EncryptedMessageReference("encrypted_reference"));
 
   // Verify that no network request was made.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -101,14 +101,14 @@ TEST_F(GmailOtpBackendImplTest, PendingRequestNoNewBackendCall) {
 
   // First tickle starts a request.
   backend_.OnIncomingOneTimeTokenBackendTickle(
-      GmailOtpBackend::EncryptedMessageReference("ref1"));
+      EncryptedMessageReference("ref1"));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // Second tickle should be ignored while a request is pending.
   backend_.OnIncomingOneTimeTokenBackendTickle(
-      GmailOtpBackend::EncryptedMessageReference("ref2"));
+      EncryptedMessageReference("ref2"));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   // Complete the pending request to avoid dangling pointers at test end.

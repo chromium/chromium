@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_message_handler.h"
@@ -23,12 +24,11 @@ class MockGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
               (base::Time expiration, Callback callback),
               (override));
 
-  MOCK_METHOD(
-      void,
-      OnIncomingOneTimeTokenBackendTickle,
-      (const one_time_tokens::GmailOtpBackend::EncryptedMessageReference&
-           encrypted_message_reference),
-      (override));
+  MOCK_METHOD(void,
+              OnIncomingOneTimeTokenBackendTickle,
+              (const one_time_tokens::EncryptedMessageReference&
+                   encrypted_message_reference),
+              (override));
 };
 
 MATCHER_P(OneTimeTokenTickleHasMessageReference,
