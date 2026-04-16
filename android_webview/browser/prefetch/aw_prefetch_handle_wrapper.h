@@ -37,14 +37,27 @@ namespace android_webview {
 class AwPrefetchHandleWrapper final
     : public content::PrefetchDeduplicationEntry {
  public:
+  // Creates an empty reserved wrapper with no handles, which sets the state to
+  // `kReserved`.
+  AwPrefetchHandleWrapper(
+      const GURL& url,
+      std::optional<net::HttpNoVarySearchData> expected_no_vary_search);
+
+  // Commits a `PrefetchHandle` or `PrePrefetchHandle`, which transitions the
+  // state from `kReserved` to `kPrefetchHandleCommitted` or
+  // `kPrePrefetchHandleCommitted` respectively.
+  void CommitInitialPrePrefetchHandle(
+      std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle);
+  void CommitInitialPrefetchHandle(
+      std::unique_ptr<content::PrefetchHandle> prefetch_handle);
+
+  // A legacy ctor directly committing a PrefetchHandle. Only used when
+  // `kWebViewPrefetchOffTheMainThread` is disabled.
   AwPrefetchHandleWrapper(
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
       std::unique_ptr<content::PrefetchHandle> prefetch_handle);
-  AwPrefetchHandleWrapper(
-      const GURL& url,
-      std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
-      std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle);
+
   ~AwPrefetchHandleWrapper() override;
 
   AwPrefetchHandleWrapper(const AwPrefetchHandleWrapper&) = delete;
@@ -56,7 +69,13 @@ class AwPrefetchHandleWrapper final
   // Please see `SetState()` and `CheckState()` for the actual transitions and
   // `prefetch_handle_` / `pre_prefetch_handle_` states.
   enum class State {
-    // Initial state for a wrapper created from a PrePrefetch request.
+    // Initial state for an empty wrapper with no handles.
+    // The wrapper should hold:
+    // - `prefetch_handle_` is null.
+    // - `pre_prefetch_handle_` is null.
+    kReserved,
+
+    // State after PrePrefetchHandle is committed.
     // The wrapper should hold:
     // - `prefetch_handle_` is null.
     // - `pre_prefetch_handle_` is non-null.

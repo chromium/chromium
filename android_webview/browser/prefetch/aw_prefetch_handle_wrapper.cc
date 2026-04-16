@@ -14,6 +14,40 @@ namespace android_webview {
 
 AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
     const GURL& url,
+    std::optional<net::HttpNoVarySearchData> expected_no_vary_search)
+    : url_(url),
+      expected_no_vary_search_(std::move(expected_no_vary_search)),
+      state_(State::kReserved) {
+  // TODO(crbug.com/452406598): The transition to
+  // either `kPrePrefetchHandleCommitted` or `kPrefetchHandleCommitted` will be
+  // strictly bound to the writer interface granting write permission to
+  // `this`, which ensures the handle is eventually committed.
+  CheckState();
+}
+
+void AwPrefetchHandleWrapper::CommitInitialPrePrefetchHandle(
+    std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle) {
+  CHECK_EQ(state_, State::kReserved);
+  // A valid handle should be provided to commit.
+  CHECK(pre_prefetch_handle);
+
+  pre_prefetch_handle_ = std::move(pre_prefetch_handle);
+  SetState(State::kPrePrefetchHandleCommitted);
+}
+
+void AwPrefetchHandleWrapper::CommitInitialPrefetchHandle(
+    std::unique_ptr<content::PrefetchHandle> prefetch_handle) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_EQ(state_, State::kReserved);
+  // A valid handle should be provided to commit.
+  CHECK(prefetch_handle);
+
+  prefetch_handle_ = std::move(prefetch_handle);
+  SetState(State::kPrefetchHandleCommitted);
+}
+
+AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
+    const GURL& url,
     std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
     std::unique_ptr<content::PrefetchHandle> prefetch_handle)
     : url_(url),
@@ -21,17 +55,8 @@ AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
       prefetch_handle_(std::move(prefetch_handle)),
       state_(State::kPrefetchHandleCommitted) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CheckState();
-}
-
-AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
-    const GURL& url,
-    std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
-    std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle)
-    : url_(url),
-      expected_no_vary_search_(std::move(expected_no_vary_search)),
-      pre_prefetch_handle_(std::move(pre_prefetch_handle)),
-      state_(State::kPrePrefetchHandleCommitted) {
+  CHECK(!base::FeatureList::IsEnabled(
+      features::kWebViewPrefetchOffTheMainThread));
   CheckState();
 }
 
@@ -50,6 +75,10 @@ AwPrefetchHandleWrapper::~AwPrefetchHandleWrapper() {
 
 void AwPrefetchHandleWrapper::CheckState() const {
   switch (state_) {
+    case State::kReserved:
+      CHECK(!pre_prefetch_handle_);
+      CHECK(!prefetch_handle_);
+      break;
     case State::kPrePrefetchHandleCommitted:
       CHECK(pre_prefetch_handle_);
       CHECK(!prefetch_handle_);
@@ -68,6 +97,8 @@ void AwPrefetchHandleWrapper::CheckState() const {
 std::ostream& operator<<(std::ostream& os,
                          AwPrefetchHandleWrapper::State state) {
   switch (state) {
+    case AwPrefetchHandleWrapper::State::kReserved:
+      return os << "kReserved";
     case AwPrefetchHandleWrapper::State::kPrePrefetchHandleCommitted:
       return os << "kPrePrefetchHandleCommitted";
     case AwPrefetchHandleWrapper::State::kPrePrefetchConsumeStarted:
@@ -82,6 +113,8 @@ void AwPrefetchHandleWrapper::SetState(State new_state) {
     using T = State;
     static const base::NoDestructor<base::StateTransitions<T>> transitions(
         base::StateTransitions<T>({
+            {T::kReserved,
+             {T::kPrePrefetchHandleCommitted, T::kPrefetchHandleCommitted}},
             {T::kPrePrefetchHandleCommitted, {T::kPrePrefetchConsumeStarted}},
             {T::kPrePrefetchConsumeStarted, {T::kPrefetchHandleCommitted}},
             {T::kPrefetchHandleCommitted, {}},

@@ -283,43 +283,47 @@ int AwPrefetchManager::StartRequest(
         java_obj_, callback, callback_executor);
   }
 
+  AwPrefetchKey key = NO_PREFETCH_KEY;
+
   // For WebView we will check if there is already a duplicate prefetch
   // request based on the URL and the No-Vary-Search hint. This is for the
   // purpose of deduping prefetch requests on the application's behalf.
   // TODO(crbug.com/393344309): Apply deduping to all prefetch requests (not
   // just WebView).
-  bool is_prefetch_duplicate = [&]() {
-    if (!base::FeatureList::IsEnabled(
-            features::kWebViewPrefetchOffTheMainThread)) {
-      DCHECK_CURRENTLY_ON(BrowserThread::UI);
-      return browser_context_->IsPrefetchDuplicate(pf_url,
-                                                   expected_no_vary_search);
-    } else {
-      return aw_prefetch_manager_data_.IsPrefetchDuplicate(
-          pf_url, expected_no_vary_search);
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchOffTheMainThread)) {
+    key = aw_prefetch_manager_data_.ReservePrefetchHandleWrapper(
+        pf_url, expected_no_vary_search);
+    if (key == NO_PREFETCH_KEY) {
+      if (request_status_listener) {
+        request_status_listener->OnPrefetchStartFailedDuplicate();
+      }
+      return NO_PREFETCH_KEY;
     }
-  }();
+  } else {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (browser_context_->IsPrefetchDuplicate(pf_url,
+                                              expected_no_vary_search)) {
+      if (request_status_listener) {
+        request_status_listener->OnPrefetchStartFailedDuplicate();
+      }
+      return NO_PREFETCH_KEY;
+    }
 
-  if (is_prefetch_duplicate) {
-    if (request_status_listener) {
-      request_status_listener->OnPrefetchStartFailedDuplicate();
-    }
-    return NO_PREFETCH_KEY;
+    // Make room for the new prefetch request by evicting the older ones to
+    // respect the `max_prefetches_` limit.
+    //
+    // We intentionally do this **before** starting prefetch instead of after.
+    // Due to current //content `PrefetchScheduler` restrictions of its
+    // sequential async scheduling, if an evicted prefetch is still running,
+    // canceling it before starting a next one reduces one PostTask, which is
+    // good from a performance perspective. Please see
+    // https://docs.google.com/document/d/1OylSDdS_RTOkG_E_PXJ0aPI1QrygMjGkgSs5JcTrFlE/edit?tab=t.0#bookmark=id.rcr0rfweiz90
+    // for more information.
+    // TODO(crbug.com/426404355): After parallel prefetching being enabled for
+    // WV.prefetch, perhaps we no longer need this. Revisit and verify.
+    aw_prefetch_manager_data_.MayEvictOldestPrefetchHandleForANewRequest();
   }
-
-  // Make room for the new prefetch request by evicting the older ones to
-  // respect the `max_prefetches_` limit.
-  //
-  // We intentionally do this **before** starting prefetch instead of after.
-  // Due to current //content `PrefetchScheduler` restrictions of its
-  // sequential async scheduling, if an evicted prefetch is still running,
-  // canceling it before starting a next one reduces one PostTask, which is
-  // good from performance perspective. Please see
-  // https://docs.google.com/document/d/1OylSDdS_RTOkG_E_PXJ0aPI1QrygMjGkgSs5JcTrFlE/edit?tab=t.0#bookmark=id.rcr0rfweiz90
-  // for more information.
-  // TODO(crbug.com/426404355): After parallel prefetching being enabled for
-  // WV.prefetch, perhaps we no longer need this. Revisit and verify.
-  aw_prefetch_manager_data_.MayEvictOldestPrefetchHandleForANewRequest();
 
   std::unique_ptr<content::PrefetchHandle> prefetch_handle;
   std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle;
@@ -362,20 +366,30 @@ int AwPrefetchManager::StartRequest(
         should_bypass_http_cache);
   }
 
-  // TODO(crbug.com/452406598): Here we actually insert the handle to
-  // `aw_prefetch_manager_data_`, after checking the limit and deduping
-  // independently, but it can potentially cause a race condition if
-  // `kWebViewPrefetchOffTheMainThread` is enabled. See
-  // `AwPrefetchManagerData::AddPrefetchHandle` for more details.
-  if (pre_prefetch_handle) {
-    return aw_prefetch_manager_data_.AddNewPrefetchHandleWrapper(
-        std::make_unique<AwPrefetchHandleWrapper>(
-            pf_url, expected_no_vary_search, std::move(pre_prefetch_handle)));
-  } else if (prefetch_handle) {
-    return aw_prefetch_manager_data_.AddNewPrefetchHandleWrapper(
-        std::make_unique<AwPrefetchHandleWrapper>(
-            pf_url, expected_no_vary_search, std::move(prefetch_handle)));
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchOffTheMainThread)) {
+    if (pre_prefetch_handle) {
+      aw_prefetch_manager_data_.CommitInitialPrePrefetchHandle(
+          key, std::move(pre_prefetch_handle));
+      return key;
+    } else if (prefetch_handle) {
+      aw_prefetch_manager_data_.CommitInitialPrefetchHandle(
+          key, std::move(prefetch_handle));
+      return key;
+    } else {
+      // TODO(crbug.com/452406598): This manual cancellation should ideally be
+      // removed by introducing a writer interface that grants write
+      // permission and automatically handles rollback on failure.
+      aw_prefetch_manager_data_.CancelPrefetch(key);
+      return NO_PREFETCH_KEY;
+    }
   } else {
+    CHECK(!pre_prefetch_handle);
+    if (prefetch_handle) {
+      return aw_prefetch_manager_data_.AddNewPrefetchHandleWrapper(
+          std::make_unique<AwPrefetchHandleWrapper>(
+              pf_url, expected_no_vary_search, std::move(prefetch_handle)));
+    }
     return NO_PREFETCH_KEY;
   }
 }

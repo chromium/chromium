@@ -55,14 +55,6 @@ class AwPrefetchManagerData {
   AwPrefetchManagerData();
   ~AwPrefetchManagerData();
 
-  // Returns true if the prefetch with URL and NVS hint is considered a
-  // duplicate of existing `all_prefetches_map_`.
-  // Used only when `kWebViewPrefetchOffTheMainThread` is enabled.
-  bool IsPrefetchDuplicate(const GURL& url,
-                           const std::optional<net::HttpNoVarySearchData>&
-                               expected_no_vary_search) const
-      LOCKS_EXCLUDED(lock_);
-
   // Evicts the oldest prefetch from `all_prefetches_map_` to guarantee
   // there is space for one new request when `max_prefetches_` is reached.
   void MayEvictOldestPrefetchHandleForANewRequest() LOCKS_EXCLUDED(lock_);
@@ -74,12 +66,40 @@ class AwPrefetchManagerData {
   // `MayEvictOldestPrefetchHandleForANewRequest()` and `IsPrefetchDuplicate()`.
   // For the latter, see `MayEvictOldestPrefetchHandleForANewRequest()`'s inner
   // comment for more context.
-  // TODO(crbug.com/452406598): This procedure causes a potential race condition
-  // if enabled, since the look up and update for `all_prefetches_map_` is not
-  // an atomic operation. See crrev.com/c/7666497/comment/074daee9_6ca0a982/ for
-  // more details.
+  // Used only when `kWebViewPrefetchOffTheMainThread` is disabled.
   AwPrefetchKey AddNewPrefetchHandleWrapper(
       std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper)
+      LOCKS_EXCLUDED(lock_);
+
+  // The pair of functions to start and store a (Pre)Prefetch, used when
+  // `kWebViewPrefetchOffTheMainThread` is enabled.
+  //
+  // `ReservePrefetchHandleWrapper()` atomically checks for deduplication,
+  // evicts the oldest prefetch if necessary, and inserts an empty
+  // `AwPrefetchHandleWrapper` to `AwPrefetchManagerData` as a reservation.
+  // This prevents a TOCTOU race condition while (pre-)prefetch actually
+  // starts. Returns NO_PREFETCH_KEY if it is a duplicate.
+  // `CommitInitial(Pre)PrefetchHandle()` actually commits the
+  // `(Pre)PrefetchHandle` to the wrapper.
+  //
+  // Currently it is the caller's responsibility to clean up the wrapper from
+  // `all_prefetches_map_` when `ReservePrefetchHandleWrapper()` is called but
+  // `CommitInitial(Pre)PrefetchHandle()` can't eventually be called (e.g. if
+  // starting the (pre-)prefetch fails).
+  // TODO(crbug.com/452406598): This should ideally be mitigated by introducing
+  // a writer interface that grants write permission to the wrapper and
+  // automatically handles rollback on failure.
+  AwPrefetchKey ReservePrefetchHandleWrapper(
+      const GURL& url,
+      const std::optional<net::HttpNoVarySearchData>& expected_no_vary_search)
+      LOCKS_EXCLUDED(lock_);
+  void CommitInitialPrePrefetchHandle(
+      AwPrefetchKey prefetch_key,
+      std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle)
+      LOCKS_EXCLUDED(lock_);
+  void CommitInitialPrefetchHandle(
+      AwPrefetchKey prefetch_key,
+      std::unique_ptr<content::PrefetchHandle> prefetch_handle)
       LOCKS_EXCLUDED(lock_);
 
   // The pair of functions to take `PrePrefetchHandle` from
@@ -116,6 +136,19 @@ class AwPrefetchManagerData {
 
  private:
   // Utility functions that assume the lock is already held.
+
+  // Returns true if the prefetch with URL and NVS hint is considered a
+  // duplicate of existing `all_prefetches_map_`.
+  // Used only when `kWebViewPrefetchOffTheMainThread` is enabled.
+  bool IsPrefetchDuplicateLocked(const GURL& url,
+                                 const std::optional<net::HttpNoVarySearchData>&
+                                     expected_no_vary_search) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
+  MayEvictOldestPrefetchHandleForANewRequestLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   AwPrefetchKey GetNextPrefetchKeyLocked() const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UpdateLastPrefetchKeyLocked(AwPrefetchKey new_key)
