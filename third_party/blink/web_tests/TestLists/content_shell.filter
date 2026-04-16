@@ -37,7 +37,6 @@ external/wpt/background-fetch/fetch-uploads.https.window.html
 external/wpt/background-fetch/match.https.window.html
 external/wpt/background-fetch/update-ui.https.window.html
 external/wpt/client-hints/viewport-size/viewport-size-window-different-dimensions.https.html
-external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html
 external/wpt/compat/webkit-box-clamp-bottom-border.html
 external/wpt/compat/webkit-box-horizontal-rtl-variants.html
 external/wpt/compat/webkit-box-rtl-flex.html
