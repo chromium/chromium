@@ -54,7 +54,7 @@ class UrlFilterUiTest
         /*enabled_features=*/
         {supervised_user::kLocalWebApprovals},
         /*disabled_features=*/{});
-#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   }
 
  protected:
@@ -553,8 +553,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       EnsureNotPresent(kChildSignInElementId), Log("The sign-in tab is closed"),
       Log("Test sequence finished"));
 }
-#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(
     ,

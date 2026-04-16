@@ -98,7 +98,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "advanced_content_restrictions_interactive_uitest.cc",
+      "advanced_content_restrictions_browsertest.cc",
       "classify_url_navigation_throttle_browsertest.cc",
       "family_link_url_filter_browsertest.cc",
       "supervised_user_incognito_browsertest.cc",
@@ -106,7 +106,7 @@ if (!is_android) {
       "supervised_user_regional_url_filter_browsertest.cc",
       "supervised_user_service_browsertest.cc",
       "supervised_user_url_filtering_service_common_browsertest.cc",
-      "url_filter_interactive_uitest.cc",
+      "url_filter_browsertest.cc",
     ]
 
     deps = [
