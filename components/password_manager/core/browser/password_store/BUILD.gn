@@ -27,13 +27,25 @@ source_set("password_store_interface") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("password_form_converters") {
+  sources = [
+    "password_form_converters.cc",
+    "password_form_converters.h",
+  ]
+  public_deps = [
+    ":password_store_interface",
+  ]
+  deps = [
+    "//base",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 source_set("password_store_impl") {
   sources = [
     "encrypt_decrypt_interface.h",
     "get_logins_with_affiliations_request_handler.cc",
     "get_logins_with_affiliations_request_handler.h",
-    "password_form_converters.cc",
-    "password_form_converters.h",
     "password_store.cc",
     "password_store.h",
     "password_store_backend.h",
@@ -45,6 +57,7 @@ source_set("password_store_impl") {
   ]
   public_deps = [ ":password_store_interface" ]
   deps = [
+    ":password_form_converters",
     "//base",
     "//build:blink_buildflags",
     "//components/affiliations/core/browser:affiliations",
@@ -169,6 +182,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":password_form_converters",
     ":password_store_impl",
     ":test_support",
     "//base",

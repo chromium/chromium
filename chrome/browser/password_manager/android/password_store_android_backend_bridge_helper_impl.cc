@@ -191,7 +191,7 @@ JobId PasswordStoreAndroidBackendBridgeHelperImpl::
 }
 
 JobId PasswordStoreAndroidBackendBridgeHelperImpl::AddLogin(
-    const password_manager::PasswordForm& form,
+    password_manager::StoredCredential credential,
     std::string account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(dispatcher_bridge_);
@@ -199,13 +199,13 @@ JobId PasswordStoreAndroidBackendBridgeHelperImpl::AddLogin(
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendDispatcherBridge::AddLogin,
-                     base::Unretained(dispatcher_bridge_.get()), job_id, form,
-                     std::move(account)));
+                     base::Unretained(dispatcher_bridge_.get()), job_id,
+                     std::move(credential), std::move(account)));
   return job_id;
 }
 
 JobId PasswordStoreAndroidBackendBridgeHelperImpl::UpdateLogin(
-    const password_manager::PasswordForm& form,
+    password_manager::StoredCredential credential,
     std::string account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(dispatcher_bridge_);
@@ -213,13 +213,13 @@ JobId PasswordStoreAndroidBackendBridgeHelperImpl::UpdateLogin(
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendDispatcherBridge::UpdateLogin,
-                     base::Unretained(dispatcher_bridge_.get()), job_id, form,
-                     std::move(account)));
+                     base::Unretained(dispatcher_bridge_.get()), job_id,
+                     std::move(credential), std::move(account)));
   return job_id;
 }
 
 JobId PasswordStoreAndroidBackendBridgeHelperImpl::RemoveLogin(
-    const password_manager::PasswordForm& form,
+    password_manager::StoredCredential credential,
     std::string account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(dispatcher_bridge_);
@@ -227,8 +227,8 @@ JobId PasswordStoreAndroidBackendBridgeHelperImpl::RemoveLogin(
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendDispatcherBridge::RemoveLogin,
-                     base::Unretained(dispatcher_bridge_.get()), job_id, form,
-                     std::move(account)));
+                     base::Unretained(dispatcher_bridge_.get()), job_id,
+                     std::move(credential), std::move(account)));
   return job_id;
 }
 

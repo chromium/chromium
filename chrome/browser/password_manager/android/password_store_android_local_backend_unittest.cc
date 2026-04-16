@@ -22,6 +22,7 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -138,7 +139,8 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForGetAllLogins) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+  consumer().OnCompleteWithLogins(kJobId,
+                                  FromPasswordForms(CreateTestLogins()));
   RunUntilIdle();
 }
 
@@ -157,7 +159,8 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+  consumer().OnCompleteWithLogins(kJobId,
+                                  FromPasswordForms(CreateTestLogins()));
   RunUntilIdle();
 }
 
@@ -176,7 +179,8 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+  consumer().OnCompleteWithLogins(kJobId,
+                                  FromPasswordForms(CreateTestLogins()));
   RunUntilIdle();
 }
 
@@ -226,7 +230,8 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<LoginsResult>(ElementsAreArray(expected_logins))));
-  consumer().OnCompleteWithLogins(kJobId, std::move(returned_logins));
+  consumer().OnCompleteWithLogins(
+      kJobId, FromPasswordForms(std::move(returned_logins)));
   RunUntilIdle();
 }
 
@@ -239,7 +244,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForAddLogin) {
   const JobId kAddLoginJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form = CreateEntry("tod", "qwerty", GURL(kTestUrl));
-  EXPECT_CALL(*bridge_helper(), AddLogin(form, std::string()))
+  EXPECT_CALL(*bridge_helper(), AddLogin(_, std::string()))
       .WillOnce(Return(kAddLoginJobId));
   backend().AddLoginAsync(form, mock_reply.Get());
 
@@ -260,7 +265,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForUpdateLogin) {
   const JobId kUpdateLoginJobId{13388};
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form = CreateEntry("tod", "qwerty", GURL(kTestUrl));
-  EXPECT_CALL(*bridge_helper(), UpdateLogin(form, std::string()))
+  EXPECT_CALL(*bridge_helper(), UpdateLogin(_, std::string()))
       .WillOnce(Return(kUpdateLoginJobId));
   backend().UpdateLoginAsync(form, mock_reply.Get());
 
@@ -339,7 +344,8 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+  consumer().OnCompleteWithLogins(kJobId,
+                                  FromPasswordForms(CreateTestLogins()));
 
   RunUntilIdle();
 }
@@ -372,7 +378,8 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  consumer().OnCompleteWithLogins(kJobId, CreateTestLogins());
+  consumer().OnCompleteWithLogins(kJobId,
+                                  FromPasswordForms(CreateTestLogins()));
 
   RunUntilIdle();
 }

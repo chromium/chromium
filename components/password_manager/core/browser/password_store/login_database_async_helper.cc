@@ -421,8 +421,8 @@ FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllCredentials(
     key_to_specifics_map->emplace(
         cred.primary_key->value(),
         std::make_unique<sync_pb::PasswordSpecificsData>(
-            SpecificsDataFromPassword(ToPasswordForm(cred),
-                                      /*base_password_data=*/{})));
+            SpecificsDataFromStoredCredential(cred,
+                                              /*base_password_data=*/{})));
   }
 
   return result;

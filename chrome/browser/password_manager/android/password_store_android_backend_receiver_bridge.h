@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -39,8 +40,9 @@ class PasswordStoreAndroidBackendReceiverBridge {
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`, and
     // with the requested `passwords`. Used in response to `GetAllLogins`.
-    virtual void OnCompleteWithLogins(JobId job_id,
-                                      std::vector<PasswordForm> passwords) = 0;
+    virtual void OnCompleteWithLogins(
+        JobId job_id,
+        std::vector<StoredCredential> passwords) = 0;
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`, and

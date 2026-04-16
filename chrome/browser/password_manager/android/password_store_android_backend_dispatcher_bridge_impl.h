@@ -50,13 +50,13 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl
                                          const std::string& signon_realm,
                                          std::string account) override;
   void AddLogin(JobId job_id,
-                const password_manager::PasswordForm& form,
+                const StoredCredential& credential,
                 std::string account) override;
   void UpdateLogin(JobId job_id,
-                   const password_manager::PasswordForm& form,
+                   const StoredCredential& credential,
                    std::string account) override;
   void RemoveLogin(JobId job_id,
-                   const password_manager::PasswordForm& form,
+                   const StoredCredential& credential,
                    std::string account) override;
 
   // This member stores the unique ID last used for an API request.

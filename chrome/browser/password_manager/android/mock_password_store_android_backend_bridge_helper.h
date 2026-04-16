@@ -28,15 +28,15 @@ class MockPasswordStoreAndroidBackendBridgeHelper
               (override));
   MOCK_METHOD(JobId,
               AddLogin,
-              (const password_manager::PasswordForm&, std::string),
+              (password_manager::StoredCredential, std::string),
               (override));
   MOCK_METHOD(JobId,
               UpdateLogin,
-              (const password_manager::PasswordForm&, std::string),
+              (password_manager::StoredCredential, std::string),
               (override));
   MOCK_METHOD(JobId,
               RemoveLogin,
-              (const password_manager::PasswordForm&, std::string),
+              (password_manager::StoredCredential, std::string),
               (override));
   MOCK_METHOD(JobId,
               GetAffiliatedLoginsForSignonRealm,

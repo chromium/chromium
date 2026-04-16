@@ -29,13 +29,6 @@ struct StoredCredential {
   StoredCredential& operator=(StoredCredential&&);
   ~StoredCredential();
 
-  enum class Store {
-    kNotSet = 0,
-    kProfileStore = 1 << 0,
-    kAccountStore = 1 << 1,
-    kMaxValue = kAccountStore
-  };
-
   // Identification & URLs
   std::optional<FormPrimaryKey> primary_key;
   PasswordForm::Scheme scheme = PasswordForm::Scheme::kHtml;
@@ -67,12 +60,17 @@ struct StoredCredential {
   int times_used_in_html_form = 0;
   std::u16string display_name;
   GURL icon_url;
+  std::string app_display_name;
+  GURL app_icon_url;
+  std::string previously_associated_sync_account_email;
+  std::optional<PasswordForm::MatchType> match_type;
   bool skip_zero_click = false;
+
   PasswordForm::GenerationUploadStatus generation_upload_status =
       PasswordForm::GenerationUploadStatus::kNoSignalSent;
 
   // Storage Specifics
-  Store in_store = Store::kNotSet;
+  PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
   std::vector<signin::GaiaIdHash> moving_blocked_for_list;
   base::flat_map<InsecureType, InsecurityMetadata> password_issues;
   std::vector<PasswordNote> notes;
@@ -91,10 +89,12 @@ struct StoredCredential {
 
   // Actor Login
   bool actor_login_approved = false;
-};
 
-using StoredCredentialsResultOrError =
-    std::variant<std::vector<StoredCredential>, PasswordStoreBackendError>;
+#if defined(UNIT_TEST)
+  friend bool operator==(const StoredCredential&,
+                         const StoredCredential&) = default;
+#endif
+};
 
 }  // namespace password_manager
 

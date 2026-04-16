@@ -55,12 +55,12 @@ base::DictValue SerializeSignatureRelevantMembersInFormData(
   return serialized_data;
 }
 
-std::string SerializeOpaqueLocalData(const PasswordForm& password_form) {
+std::string SerializeOpaqueLocalData(const StoredCredential& credential) {
   base::DictValue local_data_json;
-  local_data_json.Set(kSkipZeroClickKey, password_form.skip_zero_click);
+  local_data_json.Set(kSkipZeroClickKey, credential.skip_zero_click);
 
   base::DictValue serialized_form_data =
-      SerializeSignatureRelevantMembersInFormData(password_form.form_data);
+      SerializeSignatureRelevantMembersInFormData(credential.form_data);
   local_data_json.Set(kFormDataKey, std::move(serialized_form_data));
 
   std::optional<std::string> serialized_local_data =
@@ -92,9 +92,8 @@ std::optional<FormData> DeserializeFormData(base::DictValue& serialized_data) {
       return std::nullopt;
     }
     field.set_name(base::UTF8ToUTF16(*field_name));
-    // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
-    // (de)serialize form control types? Remove it or migrate it to the enum
-    // values.
+    // TODO(crbug.com/1353392): Why does the Password Manager
+    // (de)serialize form control types?
     field.set_form_control_type(
         autofill::StringToFormControlTypeDiscouraged(*field_type)
             .value_or(autofill::FormControlType::kInputText));
@@ -110,7 +109,7 @@ std::optional<FormData> DeserializeFormData(base::DictValue& serialized_data) {
 }
 
 void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
-                                PasswordForm& password_form) {
+                                StoredCredential& credential) {
   std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       opaque_metadata, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
@@ -127,88 +126,90 @@ void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
   if (!form_data.has_value()) {
     return;
   }
-  password_form.skip_zero_click = *skip_zero_click;
-  password_form.form_data = std::move(form_data.value());
+  credential.skip_zero_click = *skip_zero_click;
+  credential.form_data = std::move(form_data.value());
 }
 
-void SetStoreForForm(PasswordForm& form, IsAccountStore is_account_store) {
-  form.in_store = is_account_store ? PasswordForm::Store::kAccountStore
-                                   : PasswordForm::Store::kProfileStore;
+void SetStoreForCredential(StoredCredential& credential,
+                           IsAccountStore is_account_store) {
+  credential.in_store = is_account_store ? PasswordForm::Store::kAccountStore
+                                         : PasswordForm::Store::kProfileStore;
 }
 
 }  // namespace
 
-PasswordWithLocalData PasswordWithLocalDataFromPassword(
-    const PasswordForm& password_form) {
+PasswordWithLocalData PasswordWithLocalDataFromStoredCredential(
+    const StoredCredential& credential) {
   PasswordWithLocalData password_with_local_data;
 
   *password_with_local_data.mutable_password_specifics_data() =
-      SpecificsDataFromPassword(password_form, /*base_password_data=*/{});
+      SpecificsDataFromStoredCredential(credential, /*base_password_data=*/{});
 
   auto* local_data = password_with_local_data.mutable_local_data();
-  local_data->set_opaque_metadata(SerializeOpaqueLocalData(password_form));
-  if (!password_form.previously_associated_sync_account_email.empty()) {
+  local_data->set_opaque_metadata(SerializeOpaqueLocalData(credential));
+  if (!credential.previously_associated_sync_account_email.empty()) {
     local_data->set_previously_associated_sync_account_email(
-        password_form.previously_associated_sync_account_email);
+        credential.previously_associated_sync_account_email);
   }
 
   return password_with_local_data;
 }
 
-PasswordForm PasswordFromProtoWithLocalData(
+StoredCredential StoredCredentialFromProtoWithLocalData(
     const PasswordWithLocalData& password) {
-  PasswordForm form = PasswordFromSpecifics(password.password_specifics_data());
-  form.previously_associated_sync_account_email =
+  StoredCredential cred =
+      StoredCredentialFromSpecifics(password.password_specifics_data());
+  cred.previously_associated_sync_account_email =
       password.local_data().previously_associated_sync_account_email();
-  DeserializeOpaqueLocalData(password.local_data().opaque_metadata(), form);
-  return form;
+  DeserializeOpaqueLocalData(password.local_data().opaque_metadata(), cred);
+  return cred;
 }
 
-std::vector<PasswordForm> PasswordVectorFromListResult(
+std::vector<StoredCredential> StoredCredentialVectorFromListResult(
     const ListPasswordsResult& list_result,
     IsAccountStore is_account_store) {
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> credentials;
   for (const PasswordWithLocalData& password : list_result.password_data()) {
-    forms.push_back(PasswordFromProtoWithLocalData(password));
-    SetStoreForForm(forms.back(), is_account_store);
+    credentials.push_back(StoredCredentialFromProtoWithLocalData(password));
+    SetStoreForCredential(credentials.back(), is_account_store);
   }
-  return forms;
+  return credentials;
 }
 
-std::vector<PasswordForm> PasswordVectorFromListResult(
+std::vector<StoredCredential> StoredCredentialVectorFromListResult(
     const ListAffiliatedPasswordsResult& list_result,
     IsAccountStore is_account_store) {
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> credentials;
   for (const auto& password : list_result.affiliated_passwords()) {
-    PasswordForm form =
-        PasswordFromProtoWithLocalData(password.password_data());
-    form.app_display_name = password.password_branding_info().display_name();
-    form.app_icon_url = GURL(password.password_branding_info().icon_url());
+    StoredCredential cred =
+        StoredCredentialFromProtoWithLocalData(password.password_data());
+    cred.app_display_name = password.password_branding_info().display_name();
+    cred.app_icon_url = GURL(password.password_branding_info().icon_url());
     if (password.is_credential_sharing_affiliation_match()) {
-      form.match_type |= PasswordForm::MatchType::kAffiliated;
+      cred.match_type |= PasswordForm::MatchType::kAffiliated;
     }
     if (password.is_grouping_affiliation_match()) {
-      form.match_type |= PasswordForm::MatchType::kGrouped;
+      cred.match_type |= PasswordForm::MatchType::kGrouped;
     }
-    SetStoreForForm(form, is_account_store);
-    forms.push_back(std::move(form));
+    SetStoreForCredential(cred, is_account_store);
+    credentials.push_back(std::move(cred));
   }
-  return forms;
+  return credentials;
 }
 
-std::vector<PasswordForm> PasswordVectorFromListResult(
+std::vector<StoredCredential> StoredCredentialVectorFromListResult(
     const ListPasswordsWithUiInfoResult& list_result,
     IsAccountStore is_account_store) {
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> credentials;
   for (const auto& password : list_result.passwords_with_ui_info()) {
-    PasswordForm form =
-        PasswordFromProtoWithLocalData(password.password_data());
-    form.app_display_name = password.ui_info().display_name();
-    form.app_icon_url = GURL(password.ui_info().icon_url());
-    SetStoreForForm(form, is_account_store);
-    forms.push_back(std::move(form));
+    StoredCredential cred =
+        StoredCredentialFromProtoWithLocalData(password.password_data());
+    cred.app_display_name = password.ui_info().display_name();
+    cred.app_icon_url = GURL(password.ui_info().icon_url());
+    SetStoreForCredential(cred, is_account_store);
+    credentials.push_back(std::move(cred));
   }
-  return forms;
+  return credentials;
 }
 
 }  // namespace password_manager

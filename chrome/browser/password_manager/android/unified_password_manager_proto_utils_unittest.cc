@@ -12,6 +12,7 @@
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,7 +117,8 @@ TEST_P(UnifiedPasswordManagerProtoUtilsTest,
       "\"},\"skip_zero_click\":false}";
   (*password_data.mutable_local_data()).set_opaque_metadata(opaque_metadata);
 
-  PasswordForm form = PasswordFromProtoWithLocalData(password_data);
+  PasswordForm form =
+      ToPasswordForm(StoredCredentialFromProtoWithLocalData(password_data));
   EXPECT_THAT(form.url, Eq(GURL(kTestOrigin)));
   EXPECT_THAT(form.username_element, Eq(kTestUsernameElementName16));
   EXPECT_THAT(form.username_value, Eq(u"username_value"));
@@ -135,7 +137,7 @@ TEST_P(UnifiedPasswordManagerProtoUtilsTest,
             kTestPasswordElementType);
 
   PasswordWithLocalData password_data_converted_back =
-      PasswordWithLocalDataFromPassword(form);
+      PasswordWithLocalDataFromStoredCredential(FromPasswordForm(form));
   EXPECT_EQ(password_data.SerializeAsString(),
             password_data_converted_back.SerializeAsString());
 }
@@ -153,12 +155,12 @@ TEST_P(UnifiedPasswordManagerProtoUtilsTest, ConvertListResultToFormVector) {
   *list_result.add_password_data() = password1;
   *list_result.add_password_data() = password2;
 
-  std::vector<PasswordForm> forms =
-      PasswordVectorFromListResult(list_result, GetParam().first);
+  std::vector<PasswordForm> forms = ToPasswordForms(
+      StoredCredentialVectorFromListResult(list_result, GetParam().first));
 
   std::vector<PasswordForm> expected_forms = {
-      PasswordFromProtoWithLocalData(password1),
-      PasswordFromProtoWithLocalData(password2)};
+      ToPasswordForm(StoredCredentialFromProtoWithLocalData(password1)),
+      ToPasswordForm(StoredCredentialFromProtoWithLocalData(password2))};
   expected_forms[0].in_store = GetParam().second;
   expected_forms[1].in_store = GetParam().second;
 
@@ -183,11 +185,13 @@ TEST_P(UnifiedPasswordManagerProtoUtilsTest,
   *list_result.add_passwords_with_ui_info() = password1;
   *list_result.add_passwords_with_ui_info() = password2;
 
-  std::vector<PasswordForm> forms =
-      PasswordVectorFromListResult(list_result, GetParam().first);
+  std::vector<PasswordForm> forms = ToPasswordForms(
+      StoredCredentialVectorFromListResult(list_result, GetParam().first));
   std::vector<PasswordForm> expected_forms = {
-      PasswordFromProtoWithLocalData(password1.password_data()),
-      PasswordFromProtoWithLocalData(password2.password_data())};
+      ToPasswordForm(
+          StoredCredentialFromProtoWithLocalData(password1.password_data())),
+      ToPasswordForm(
+          StoredCredentialFromProtoWithLocalData(password2.password_data()))};
   expected_forms[0].app_display_name = ui_info.display_name();
   expected_forms[0].app_icon_url = GURL(ui_info.icon_url());
   expected_forms[0].in_store = GetParam().second;

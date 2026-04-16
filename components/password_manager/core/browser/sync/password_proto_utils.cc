@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 
 using autofill::FormData;
@@ -244,62 +245,96 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
 sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
     const PasswordForm& password_form,
     const sync_pb::PasswordSpecificsData& base_password_data) {
-  // Repeated fields in base_password_data might need to be cleared
-  // before adding entries from password_form to avoid duplicates.
+  return SpecificsDataFromStoredCredential(FromPasswordForm(password_form),
+                                           base_password_data);
+}
+
+sync_pb::PasswordSpecificsData SpecificsDataFromStoredCredential(
+    const StoredCredential& credential) {
+  return SpecificsDataFromStoredCredential(credential, {});
+}
+
+sync_pb::PasswordSpecificsData SpecificsDataFromStoredCredential(
+    const StoredCredential& credential,
+    const sync_pb::PasswordSpecificsData& base_password_data) {
   sync_pb::PasswordSpecificsData password_data = base_password_data;
-  password_data.set_scheme(static_cast<int>(password_form.scheme));
-  password_data.set_signon_realm(password_form.signon_realm);
-  password_data.set_origin(
-      password_form.url.is_valid() ? password_form.url.spec() : "");
+  password_data.set_scheme(static_cast<int>(credential.scheme));
+  password_data.set_signon_realm(credential.signon_realm);
+  password_data.set_origin(credential.url.is_valid() ? credential.url.spec()
+                                                     : "");
   password_data.set_action(
-      password_form.action.is_valid() ? password_form.action.spec() : "");
+      credential.action.is_valid() ? credential.action.spec() : "");
   password_data.set_username_element(
-      base::UTF16ToUTF8(password_form.username_element));
+      base::UTF16ToUTF8(credential.username_element));
   password_data.set_password_element(
-      base::UTF16ToUTF8(password_form.password_element));
+      base::UTF16ToUTF8(credential.password_element));
   password_data.set_username_value(
-      base::UTF16ToUTF8(password_form.username_value));
+      base::UTF16ToUTF8(credential.username_value));
   password_data.set_password_value(
-      base::UTF16ToUTF8(password_form.password_value));
+      base::UTF16ToUTF8(credential.password_value));
   password_data.set_date_last_used(
-      password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      credential.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_date_last_filled_windows_epoch_micros(
-      password_form.date_last_filled.ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
+      credential.date_last_filled.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_date_password_modified_windows_epoch_micros(
-      password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
+      credential.date_password_modified.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
   password_data.set_date_created(
-      password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data.set_blacklisted(password_form.blocked_by_user);
-  password_data.set_type(static_cast<int>(password_form.type));
-  password_data.set_times_used(password_form.times_used_in_html_form);
-  password_data.set_display_name(base::UTF16ToUTF8(password_form.display_name));
+      credential.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  password_data.set_blacklisted(credential.blocked_by_user);
+  password_data.set_type(static_cast<int>(credential.type));
+  password_data.set_times_used(credential.times_used_in_html_form);
+  password_data.set_display_name(base::UTF16ToUTF8(credential.display_name));
   password_data.set_avatar_url(
-      password_form.icon_url.is_valid() ? password_form.icon_url.spec() : "");
+      credential.icon_url.is_valid() ? credential.icon_url.spec() : "");
   password_data.set_federation_url(
-      password_form.federation_origin.IsValid()
-          ? password_form.federation_origin.Serialize()
+      credential.federation_origin.IsValid()
+          ? credential.federation_origin.Serialize()
           : std::string());
   *password_data.mutable_password_issues() =
-      PasswordIssuesMapToProto(password_form.password_issues);
+      PasswordIssuesMapToProto(credential.password_issues);
   *password_data.mutable_notes() =
-      PasswordNotesToProto(password_form.notes, base_password_data.notes());
-  password_data.set_sender_email(base::UTF16ToUTF8(password_form.sender_email));
-  password_data.set_sender_name(base::UTF16ToUTF8(password_form.sender_name));
+      PasswordNotesToProto(credential.notes, base_password_data.notes());
+  password_data.set_sender_email(base::UTF16ToUTF8(credential.sender_email));
+  password_data.set_sender_name(base::UTF16ToUTF8(credential.sender_name));
   password_data.set_date_received_windows_epoch_micros(
-      password_form.date_received.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      credential.date_received.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_sharing_notification_displayed(
-      password_form.sharing_notification_displayed);
+      credential.sharing_notification_displayed);
   password_data.set_sender_profile_image_url(
-      password_form.sender_profile_image_url.is_valid()
-          ? password_form.sender_profile_image_url.spec()
+      credential.sender_profile_image_url.is_valid()
+          ? credential.sender_profile_image_url.spec()
           : "");
   if (base::FeatureList::IsEnabled(
           features::kActorLoginSyncsPasswordPermissions)) {
-    password_data.set_actor_login_approved(password_form.actor_login_approved);
+    password_data.set_actor_login_approved(credential.actor_login_approved);
   }
   return password_data;
+}
+
+sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
+    const StoredCredential& credential) {
+  return SpecificsFromStoredCredential(credential, {});
+}
+
+sync_pb::PasswordSpecifics SpecificsFromStoredCredential(
+    const StoredCredential& credential,
+    const sync_pb::PasswordSpecificsData& base_password_data) {
+  sync_pb::PasswordSpecifics specifics;
+  *specifics.mutable_client_only_encrypted_data() =
+      SpecificsDataFromStoredCredential(credential, base_password_data);
+
+  sync_pb::PasswordSpecificsMetadata* password_metadata =
+      specifics.mutable_unencrypted_metadata();
+  password_metadata->set_url(credential.signon_realm);
+  password_metadata->set_blacklisted(credential.blocked_by_user);
+  password_metadata->set_date_last_used_windows_epoch_micros(
+      credential.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  *password_metadata->mutable_password_issues() =
+      PasswordIssuesMapToProto(credential.password_issues);
+  password_metadata->set_type(static_cast<int>(credential.type));
+
+  return specifics;
 }
 
 sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
@@ -366,6 +401,56 @@ PasswordForm PasswordFromSpecifics(
     password.actor_login_approved = password_data.actor_login_approved();
   }
   return password;
+}
+
+StoredCredential StoredCredentialFromSpecifics(
+    const sync_pb::PasswordSpecificsData& password_data) {
+  StoredCredential cred;
+  cred.scheme = static_cast<PasswordForm::Scheme>(password_data.scheme());
+  cred.signon_realm = password_data.signon_realm();
+  cred.url = GURL(password_data.origin());
+  cred.action = GURL(password_data.action());
+  cred.username_element = base::UTF8ToUTF16(password_data.username_element());
+  cred.password_element = base::UTF8ToUTF16(password_data.password_element());
+  cred.username_value = base::UTF8ToUTF16(password_data.username_value());
+  cred.password_value = base::UTF8ToUTF16(password_data.password_value());
+  if (password_data.has_date_last_used()) {
+    cred.date_last_used = ConvertToBaseTime(password_data.date_last_used());
+  } else if (password_data.preferred()) {
+    // For legacy passwords that don't have the |date_last_used| field set, we
+    // should set it similar to the logic in login database migration.
+    cred.date_last_used = base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
+  }
+
+  cred.date_last_filled =
+      ConvertToBaseTime(password_data.date_last_filled_windows_epoch_micros());
+  cred.date_password_modified = ConvertToBaseTime(
+      password_data.has_date_password_modified_windows_epoch_micros()
+          ? password_data.date_password_modified_windows_epoch_micros()
+          : password_data.date_created());
+  cred.date_created = ConvertToBaseTime(password_data.date_created());
+  cred.blocked_by_user = password_data.blacklisted();
+  cred.type = static_cast<PasswordForm::Type>(password_data.type());
+  cred.times_used_in_html_form = password_data.times_used();
+  cred.display_name = base::UTF8ToUTF16(password_data.display_name());
+  cred.icon_url = GURL(password_data.avatar_url());
+  cred.federation_origin =
+      url::SchemeHostPort(GURL(password_data.federation_url()));
+  cred.password_issues = PasswordIssuesMapFromProto(password_data);
+  cred.notes = PasswordNotesFromProto(password_data.notes());
+  cred.sender_email = base::UTF8ToUTF16(password_data.sender_email());
+  cred.sender_name = base::UTF8ToUTF16(password_data.sender_name());
+  cred.date_received =
+      ConvertToBaseTime(password_data.date_received_windows_epoch_micros());
+  cred.sharing_notification_displayed =
+      password_data.sharing_notification_displayed();
+  cred.sender_profile_image_url =
+      GURL(password_data.sender_profile_image_url());
+  if (base::FeatureList::IsEnabled(
+          features::kActorLoginSyncsPasswordPermissions)) {
+    cred.actor_login_approved = password_data.actor_login_approved();
+  }
+  return cred;
 }
 
 }  // namespace password_manager

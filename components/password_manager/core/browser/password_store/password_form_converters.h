@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_FORM_CONVERTERS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_FORM_CONVERTERS_H_
 
+#include <vector>
+
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 
@@ -19,11 +21,6 @@ PasswordForm ToPasswordForm(StoredCredential&& cred);
 // Passes by value to support efficient moves.
 StoredCredential FromPasswordForm(PasswordForm form);
 
-// Converts a StoredCredential::Store to a PasswordForm::Store.
-PasswordForm::Store ToPasswordFormStore(StoredCredential::Store store);
-
-// Converts a PasswordForm::Store to a StoredCredential::Store.
-StoredCredential::Store FromPasswordFormStore(PasswordForm::Store store);
 
 // Converts a vector of StoredCredentials to a vector of PasswordForms.
 std::vector<PasswordForm> ToPasswordForms(

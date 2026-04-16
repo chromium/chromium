@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 namespace password_manager {
 
@@ -80,20 +82,22 @@ void PasswordStoreAndroidLocalBackend::GetGroupedMatchingLoginsAsync(
 void PasswordStoreAndroidLocalBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  AddLoginInternal(std::string(), form, std::move(callback));
+  AddLoginInternal(std::string(), FromPasswordForm(form), std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  UpdateLoginInternal(std::string(), form, std::move(callback));
+  UpdateLoginInternal(std::string(), FromPasswordForm(form),
+                      std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginAsync(
     const base::Location& location,
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
-  RemoveLoginInternal(std::string(), form, std::move(callback));
+  RemoveLoginInternal(std::string(), FromPasswordForm(form),
+                      std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginsCreatedBetweenAsync(

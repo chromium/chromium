@@ -130,11 +130,6 @@ namespace {
 
 using affiliations::SQLTableBuilder;
 
-StoredCredential::Store GetStore(IsAccountStore is_account_store) {
-  return is_account_store.value() ? StoredCredential::Store::kAccountStore
-                                  : StoredCredential::Store::kProfileStore;
-}
-
 PasswordForm::Store GetPasswordFormStore(IsAccountStore is_account_store) {
   return is_account_store.value() ? PasswordForm::Store::kAccountStore
                                   : PasswordForm::Store::kProfileStore;
@@ -2357,7 +2352,7 @@ FormRetrievalResult LoginDatabase::StatementToStoredCredentials(
 
     StoredCredential cred = GetFormWithoutPasswordFromStatement(*statement);
     cred.password_value = std::move(plaintext_password);
-    cred.in_store = GetStore(is_account_store_);
+    cred.in_store = GetPasswordFormStore(is_account_store_);
 
     if (matched_form && GetMatchResult(ToPasswordForm(cred), *matched_form) ==
                             MatchResult::NO_MATCH) {

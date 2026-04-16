@@ -108,13 +108,13 @@ class PasswordStoreAndroidBackend
                          bool include_psl,
                          LoginsOrErrorReply callback);
   void AddLoginInternal(std::string account,
-                        const PasswordForm& form,
+                        StoredCredential credential,
                         PasswordChangesOrErrorReply callback);
   void UpdateLoginInternal(std::string account,
-                           const PasswordForm& form,
+                           StoredCredential credential,
                            PasswordChangesOrErrorReply callback);
   void RemoveLoginInternal(std::string account,
-                           const PasswordForm& form,
+                           StoredCredential credential,
                            PasswordChangesOrErrorReply callback);
   void FillMatchingLoginsInternal(std::string account,
                                   LoginsOrErrorReply callback,
@@ -264,7 +264,7 @@ class PasswordStoreAndroidBackend
   // Implements PasswordStoreAndroidBackendDispatcherBridge::Consumer interface.
   void OnCompleteWithLogins(
       PasswordStoreAndroidBackendDispatcherBridge::JobId job_id,
-      std::vector<PasswordForm> passwords) override;
+      std::vector<StoredCredential> passwords) override;
   void OnLoginsChanged(
       PasswordStoreAndroidBackendDispatcherBridge::JobId task_id,
       PasswordChanges changes) override;

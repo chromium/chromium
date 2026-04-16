@@ -60,6 +60,10 @@ PasswordForm CreateFullPasswordForm() {
   form.sharing_notification_displayed = true;
   form.sender_profile_image_url = GURL("https://example.com/sender.png");
   form.actor_login_approved = true;
+  form.app_display_name = "App Display Name";
+  form.app_icon_url = GURL("https://example.com/app_icon.png");
+  form.previously_associated_sync_account_email = "test@gmail.com";
+  form.match_type = PasswordForm::MatchType::kAffiliated;
   return form;
 }
 
@@ -91,7 +95,7 @@ StoredCredential CreateFullStoredCredential() {
   cred.skip_zero_click = true;
   cred.generation_upload_status =
       PasswordForm::GenerationUploadStatus::kPositiveSignalSent;
-  cred.in_store = StoredCredential::Store::kAccountStore;
+  cred.in_store = PasswordForm::Store::kAccountStore;
   cred.moving_blocked_for_list = {
       signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id"))};
   cred.password_issues[InsecureType::kLeaked] = InsecurityMetadata();
@@ -108,6 +112,10 @@ StoredCredential CreateFullStoredCredential() {
   cred.sharing_notification_displayed = true;
   cred.sender_profile_image_url = GURL("https://example.com/sender.png");
   cred.actor_login_approved = true;
+  cred.app_display_name = "App Display Name";
+  cred.app_icon_url = GURL("https://example.com/app_icon.png");
+  cred.previously_associated_sync_account_email = "test@gmail.com";
+  cred.match_type = PasswordForm::MatchType::kAffiliated;
   return cred;
 }
 
@@ -136,7 +144,7 @@ void ExpectEqual(const PasswordForm& form, const StoredCredential& cred) {
   EXPECT_EQ(form.icon_url, cred.icon_url);
   EXPECT_EQ(form.skip_zero_click, cred.skip_zero_click);
   EXPECT_EQ(form.generation_upload_status, cred.generation_upload_status);
-  EXPECT_EQ(form.in_store, ToPasswordFormStore(cred.in_store));
+  EXPECT_EQ(form.in_store, cred.in_store);
   EXPECT_EQ(form.moving_blocked_for_list, cred.moving_blocked_for_list);
   EXPECT_EQ(form.password_issues, cred.password_issues);
   EXPECT_EQ(form.notes, cred.notes);
@@ -149,6 +157,11 @@ void ExpectEqual(const PasswordForm& form, const StoredCredential& cred) {
             cred.sharing_notification_displayed);
   EXPECT_EQ(form.sender_profile_image_url, cred.sender_profile_image_url);
   EXPECT_EQ(form.actor_login_approved, cred.actor_login_approved);
+  EXPECT_EQ(form.app_display_name, cred.app_display_name);
+  EXPECT_EQ(form.app_icon_url, cred.app_icon_url);
+  EXPECT_EQ(form.previously_associated_sync_account_email,
+            cred.previously_associated_sync_account_email);
+  EXPECT_EQ(form.match_type, cred.match_type);
 }
 
 }  // namespace
@@ -175,22 +188,6 @@ TEST(PasswordFormConvertersTest, FromPasswordForm_Defaults) {
   PasswordForm form;
   StoredCredential cred = FromPasswordForm(form);
   ExpectEqual(form, cred);
-}
-
-TEST(PasswordFormConvertersTest, StoreConverters) {
-  EXPECT_EQ(PasswordForm::Store::kNotSet,
-            ToPasswordFormStore(StoredCredential::Store::kNotSet));
-  EXPECT_EQ(PasswordForm::Store::kProfileStore,
-            ToPasswordFormStore(StoredCredential::Store::kProfileStore));
-  EXPECT_EQ(PasswordForm::Store::kAccountStore,
-            ToPasswordFormStore(StoredCredential::Store::kAccountStore));
-
-  EXPECT_EQ(StoredCredential::Store::kNotSet,
-            FromPasswordFormStore(PasswordForm::Store::kNotSet));
-  EXPECT_EQ(StoredCredential::Store::kProfileStore,
-            FromPasswordFormStore(PasswordForm::Store::kProfileStore));
-  EXPECT_EQ(StoredCredential::Store::kAccountStore,
-            FromPasswordFormStore(PasswordForm::Store::kAccountStore));
 }
 
 }  // namespace password_manager

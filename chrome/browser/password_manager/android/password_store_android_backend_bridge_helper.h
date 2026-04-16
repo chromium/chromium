@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -53,13 +54,13 @@ class PasswordStoreAndroidBackendBridgeHelper {
       const std::string& signon_realm,
       std::string account) = 0;
   [[nodiscard]] virtual JobId AddLogin(
-      const password_manager::PasswordForm& form,
+      password_manager::StoredCredential credential,
       std::string account) = 0;
   [[nodiscard]] virtual JobId UpdateLogin(
-      const password_manager::PasswordForm& form,
+      password_manager::StoredCredential credential,
       std::string account) = 0;
   [[nodiscard]] virtual JobId RemoveLogin(
-      const password_manager::PasswordForm& form,
+      password_manager::StoredCredential credential,
       std::string account) = 0;
 };
 

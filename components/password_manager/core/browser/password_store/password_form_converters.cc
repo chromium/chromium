@@ -8,14 +8,6 @@
 
 namespace password_manager {
 
-PasswordForm::Store ToPasswordFormStore(StoredCredential::Store store) {
-  return static_cast<PasswordForm::Store>(store);
-}
-
-StoredCredential::Store FromPasswordFormStore(PasswordForm::Store store) {
-  return static_cast<StoredCredential::Store>(store);
-}
-
 PasswordForm ToPasswordForm(const StoredCredential& cred) {
   PasswordForm form;
   form.primary_key = cred.primary_key;
@@ -43,7 +35,7 @@ PasswordForm ToPasswordForm(const StoredCredential& cred) {
   form.icon_url = cred.icon_url;
   form.skip_zero_click = cred.skip_zero_click;
   form.generation_upload_status = cred.generation_upload_status;
-  form.in_store = ToPasswordFormStore(cred.in_store);
+  form.in_store = cred.in_store;
   form.moving_blocked_for_list = cred.moving_blocked_for_list;
   form.password_issues = cred.password_issues;
   form.notes = cred.notes;
@@ -54,6 +46,11 @@ PasswordForm ToPasswordForm(const StoredCredential& cred) {
   form.sharing_notification_displayed = cred.sharing_notification_displayed;
   form.sender_profile_image_url = cred.sender_profile_image_url;
   form.actor_login_approved = cred.actor_login_approved;
+  form.app_display_name = cred.app_display_name;
+  form.app_icon_url = cred.app_icon_url;
+  form.previously_associated_sync_account_email =
+      cred.previously_associated_sync_account_email;
+  form.match_type = cred.match_type;
 
   return form;
 }
@@ -85,7 +82,7 @@ PasswordForm ToPasswordForm(StoredCredential&& cred) {
   form.icon_url = std::move(cred.icon_url);
   form.skip_zero_click = cred.skip_zero_click;
   form.generation_upload_status = cred.generation_upload_status;
-  form.in_store = ToPasswordFormStore(cred.in_store);
+  form.in_store = cred.in_store;
   form.moving_blocked_for_list = std::move(cred.moving_blocked_for_list);
   form.password_issues = std::move(cred.password_issues);
   form.notes = std::move(cred.notes);
@@ -96,6 +93,11 @@ PasswordForm ToPasswordForm(StoredCredential&& cred) {
   form.sharing_notification_displayed = cred.sharing_notification_displayed;
   form.sender_profile_image_url = std::move(cred.sender_profile_image_url);
   form.actor_login_approved = cred.actor_login_approved;
+  form.app_display_name = std::move(cred.app_display_name);
+  form.app_icon_url = std::move(cred.app_icon_url);
+  form.previously_associated_sync_account_email =
+      std::move(cred.previously_associated_sync_account_email);
+  form.match_type = cred.match_type;
 
   return form;
 }
@@ -127,7 +129,7 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.icon_url = std::move(form.icon_url);
   cred.skip_zero_click = form.skip_zero_click;
   cred.generation_upload_status = form.generation_upload_status;
-  cred.in_store = FromPasswordFormStore(form.in_store);
+  cred.in_store = form.in_store;
   cred.moving_blocked_for_list = std::move(form.moving_blocked_for_list);
   cred.password_issues = std::move(form.password_issues);
   cred.notes = std::move(form.notes);
@@ -138,6 +140,11 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.sharing_notification_displayed = form.sharing_notification_displayed;
   cred.sender_profile_image_url = std::move(form.sender_profile_image_url);
   cred.actor_login_approved = form.actor_login_approved;
+  cred.app_display_name = std::move(form.app_display_name);
+  cred.app_icon_url = std::move(form.app_icon_url);
+  cred.previously_associated_sync_account_email =
+      std::move(form.previously_associated_sync_account_email);
+  cred.match_type = form.match_type;
 
   return cred;
 }

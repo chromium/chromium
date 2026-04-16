@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 
+#include <variant>
+
 #include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
@@ -28,6 +31,9 @@ class Encryptor;
 }  // namespace os_crypt_async
 
 namespace password_manager {
+
+using StoredCredentialsResultOrError =
+    std::variant<std::vector<StoredCredential>, PasswordStoreBackendError>;
 
 class LoginDatabase;
 class PasswordSyncBridge;

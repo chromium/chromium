@@ -52,11 +52,11 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   [[nodiscard]] JobId GetAffiliatedLoginsForSignonRealm(
       const std::string& signon_realm,
       std::string account) override;
-  [[nodiscard]] JobId AddLogin(const password_manager::PasswordForm& form,
+  [[nodiscard]] JobId AddLogin(password_manager::StoredCredential credential,
                                std::string account) override;
-  [[nodiscard]] JobId UpdateLogin(const password_manager::PasswordForm& form,
+  [[nodiscard]] JobId UpdateLogin(password_manager::StoredCredential credential,
                                   std::string account) override;
-  [[nodiscard]] JobId RemoveLogin(const password_manager::PasswordForm& form,
+  [[nodiscard]] JobId RemoveLogin(password_manager::StoredCredential credential,
                                   std::string account) override;
 
  private:

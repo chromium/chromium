@@ -15,10 +15,12 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -175,14 +177,15 @@ void PasswordStoreAndroidAccountBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   CHECK(password_manager::sync_util::HasChosenToSyncPasswords(sync_service_));
-  AddLoginInternal(GetSyncingAccount(sync_service_), form, std::move(callback));
+  AddLoginInternal(GetSyncingAccount(sync_service_), FromPasswordForm(form),
+                   std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   CHECK(password_manager::sync_util::HasChosenToSyncPasswords(sync_service_));
-  UpdateLoginInternal(GetSyncingAccount(sync_service_), form,
+  UpdateLoginInternal(GetSyncingAccount(sync_service_), FromPasswordForm(form),
                       std::move(callback));
 }
 
@@ -194,7 +197,7 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginAsync(
     ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
     return;
   }
-  RemoveLoginInternal(GetSyncingAccount(sync_service_), form,
+  RemoveLoginInternal(GetSyncingAccount(sync_service_), FromPasswordForm(form),
                       std::move(callback));
 }
 

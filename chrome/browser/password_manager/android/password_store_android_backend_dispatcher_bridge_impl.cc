@@ -114,11 +114,11 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
     JobId job_id,
-    const password_manager::PasswordForm& form,
+    const password_manager::StoredCredential& credential,
     std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   password_manager::PasswordWithLocalData data =
-      PasswordWithLocalDataFromPassword(form);
+      PasswordWithLocalDataFromStoredCredential(credential);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_addLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
@@ -128,11 +128,11 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
     JobId job_id,
-    const password_manager::PasswordForm& form,
+    const password_manager::StoredCredential& credential,
     std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   password_manager::PasswordWithLocalData data =
-      PasswordWithLocalDataFromPassword(form);
+      PasswordWithLocalDataFromStoredCredential(credential);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_updateLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
@@ -142,11 +142,11 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
     JobId job_id,
-    const password_manager::PasswordForm& form,
+    const password_manager::StoredCredential& credential,
     std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sync_pb::PasswordSpecificsData data =
-      SpecificsDataFromPassword(form, /*base_password_data=*/{});
+      SpecificsDataFromStoredCredential(credential, /*base_password_data=*/{});
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_removeLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
