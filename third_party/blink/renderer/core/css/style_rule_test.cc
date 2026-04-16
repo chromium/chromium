@@ -5,14 +5,18 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 #include "base/functional/function_ref.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/navigation_query.h"
+#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -579,6 +583,106 @@ TEST_F(StyleRuleTest, NavigationRule) {
 
   navigation_test = GetNavigationTest("@navigation (at: ) {}");
   EXPECT_FALSE(navigation_test);
+}
+
+struct CloneTestParam {
+  const char* name;
+  const char* css;
+};
+
+class StyleRuleCloneTest : public StyleRuleTest,
+                           public testing::WithParamInterface<CloneTestParam> {
+ protected:
+  void VerifyDifferent(const StyleRuleBase* rule1, const StyleRuleBase* rule2) {
+    ASSERT_TRUE(rule1);
+    ASSERT_TRUE(rule2);
+    EXPECT_NE(rule1, rule2);
+    ASSERT_EQ(rule1->GetType(), rule2->GetType());
+
+    if (auto* group1 = DynamicTo<StyleRuleGroup>(rule1)) {
+      auto* group2 = To<StyleRuleGroup>(rule2);
+      const HeapVector<Member<StyleRuleBase>>& c1 = group1->ChildRules();
+      const HeapVector<Member<StyleRuleBase>>& c2 = group2->ChildRules();
+      ASSERT_EQ(c1.size(), c2.size());
+      for (wtf_size_t i = 0; i < c1.size(); ++i) {
+        VerifyDifferent(c1[i].Get(), c2[i].Get());
+      }
+    } else if (auto* style1 = DynamicTo<StyleRule>(rule1)) {
+      auto* style2 = To<StyleRule>(rule2);
+      const GCedHeapVector<Member<StyleRuleBase>>* c1 = style1->ChildRules();
+      const GCedHeapVector<Member<StyleRuleBase>>* c2 = style2->ChildRules();
+      if (c1 && c2) {
+        ASSERT_EQ(c1->size(), c2->size());
+        for (wtf_size_t i = 0; i < c1->size(); ++i) {
+          VerifyDifferent((*c1)[i].Get(), (*c2)[i].Get());
+        }
+      } else {
+        EXPECT_FALSE(c1);
+        EXPECT_FALSE(c2);
+      }
+    }
+  }
+};
+
+TEST_P(StyleRuleCloneTest, CloneRulesAreDifferent) {
+  auto param = GetParam();
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
+  sheet->SetText(param.css, CSSImportRules::kIgnoreWithWarning);
+  StyleSheetContents* contents1 = sheet->Contents();
+  StyleSheetContents* contents2 = contents1->Copy();
+
+  ASSERT_EQ(contents1->ChildRules().size(), contents2->ChildRules().size());
+  EXPECT_GT(contents1->ChildRules().size(), 0);
+
+  for (wtf_size_t i = 0; i < contents1->ChildRules().size(); ++i) {
+    VerifyDifferent(contents1->ChildRules()[i].Get(),
+                    contents2->ChildRules()[i].Get());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    StyleRuleTest,
+    StyleRuleCloneTest,
+    testing::Values(
+        CloneTestParam{"NestedScopeDeclarations",
+                       "@scope (div) { color: green; } "},
+        CloneTestParam{"NestedDeclarations",
+                       "div { @media (width > 100px) { color: green; } }"},
+        CloneTestParam{"MixinContentsStatement",
+                       "@mixin --m() { @result { @contents; } }"},
+        CloneTestParam{"MixinContentsEmptyBlock",
+                       "@mixin --m() { @result { @contents {} } }"},
+        CloneTestParam{"MixinContentsNonEmptyBlock",
+                       "@mixin --m() { @result { @contents { div {} } } }"},
+        CloneTestParam{"ApplyStatement", "div { @apply --m(); }"},
+        CloneTestParam{"ApplyEmptyBlock", "div { @apply --m() { } }"},
+        CloneTestParam{"ApplyNonEmptyBlock",
+                       "div { @apply --m() { div {} } }"}),
+    [](const testing::TestParamInfo<StyleRuleCloneTest::ParamType>& info) {
+      return info.param.name;
+    });
+
+TEST_F(StyleRuleTest, CloneNestedDeclarationsNoParent) {
+  HeapVector<CSSSelector> selectors;
+  selectors.emplace_back(/*parent_rule=*/nullptr, /*is_implicit=*/true);
+  selectors.back().SetLastInSelectorList(true);
+  selectors.back().SetLastInComplexSelector(true);
+
+  auto* declarations =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+
+  auto* inner_rule = StyleRule::Create(selectors, declarations,
+                                       /*mixin_parameter_bindings=*/nullptr);
+
+  StyleRuleBase* nested_declarations1 =
+      MakeGarbageCollected<StyleRuleNestedDeclarations>(
+          CSSNestingType::kNesting, inner_rule);
+
+  StyleRuleBase* nested_declarations2 = nested_declarations1->Clone(
+      /*new_parent=*/nullptr,
+      /*mixin_parameter_bindings=*/nullptr);  // Don't crash.
+
+  EXPECT_NE(nested_declarations1, nested_declarations2);
 }
 
 }  // namespace blink

@@ -864,7 +864,7 @@ struct DowncastTraits<StyleRuleGroup> {
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
            rule.IsScopeRule() || rule.IsStartingStyleRule() ||
            rule.IsFunctionRule() || rule.IsPageRule() ||
-           rule.IsNavigationRule();
+           rule.IsNavigationRule() || rule.IsMixinRule() || rule.IsResultRule();
   }
 };
 
