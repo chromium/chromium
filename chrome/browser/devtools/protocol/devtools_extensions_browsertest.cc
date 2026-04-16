@@ -105,55 +105,8 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
   extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
-class DevToolsExtensionsProtocolWithUnsafeDebuggingTest
-    : public DevToolsExtensionsProtocolTest {
- public:
-  DevToolsExtensionsProtocolWithUnsafeDebuggingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionDisableUnsupportedDeveloper);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsExtensionsProtocolTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kEnableUnsafeExtensionDebugging);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CannotInstallExtension) {
-  ASSERT_FALSE(SendLoadUnpackedCommand("simple_background_page"));
-}
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
-                       CannotUninstallExtension) {
-  auto extension =
-      extensions::ExtensionBuilder("unpacked")
-          .SetLocation(extensions::mojom::ManifestLocation::kUnpacked)
-          .Build();
-  extensions::ExtensionRegistrar::Get(browser()->profile())
-      ->AddExtension(extension.get());
-
-  std::string id = extension.get()->id();
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
-  const extensions::Extension* extension_before =
-      registry->GetInstalledExtension(id);
-  ASSERT_TRUE(extension_before);
-
-  base::DictValue params;
-  params.Set("id", id);
-  const base::DictValue* uninstall_result =
-      SendCommandSync("Extensions.uninstall", std::move(params));
-  ASSERT_FALSE(uninstall_result);
-
-  const extensions::Extension* extension_after =
-      registry->GetInstalledExtension(id);
-  ASSERT_TRUE(extension_after);
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanInstallExtension) {
   const base::DictValue* result =
       SendLoadUnpackedCommand("simple_background_page");
@@ -172,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                                                     browser()->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CanInstallExtensionAndEnableItForIncognito) {
   const base::DictValue* result =
       SendLoadUnpackedCommand("simple_background_page", true);
@@ -191,13 +144,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                                                    browser()->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
-                       ThrowsOnWrongPath) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, ThrowsOnWrongPath) {
   const base::DictValue* result = SendLoadUnpackedCommand("non-existent");
   ASSERT_FALSE(result);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        InstalledExtensionIsNotEnabledInIncognito) {
   const base::DictValue* result = SendLoadUnpackedCommand(
       "simple_background_page", /*enable_in_incognito=*/false);
@@ -218,8 +170,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                                                     browser()->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
-                       CanUninstallExtension) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanUninstallExtension) {
   const base::DictValue* install_result =
       SendLoadUnpackedCommand("simple_background_page");
 
@@ -241,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   ASSERT_FALSE(extension_after);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        PRE_ExtensionMarkedAsInstalledViaCdp) {
   const base::DictValue* install_result =
       SendLoadUnpackedCommand("simple_background_page");
@@ -255,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
               extensions::Extension::INSTALLED_VIA_CDP);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        ExtensionMarkedAsInstalledViaCdp) {
   base::RunLoop run_loop;
   extensions::ExtensionSystem::Get(browser()->profile())
@@ -279,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   EXPECT_FALSE(found);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CannotUninstallNonUnpackedExtension) {
   auto extension =
       extensions::ExtensionBuilder("unpacked")
@@ -306,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   ASSERT_TRUE(extension_after);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        FailsToUninstallNonexistentExtension) {
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
@@ -365,8 +316,7 @@ scoped_refptr<content::DevToolsAgentHost> FindPageHost(
   return nullptr;
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
-                       CanGetStorageValues) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetStorageValues) {
   ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
 
   const base::DictValue* load_result =
@@ -431,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CanGetStorageValuesBackgroundPage) {
   const base::DictValue* load_result =
       SendLoadUnpackedCommand("background_page_storage_access");
@@ -455,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                                  base::DictValue()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CanGetStorageValuesContentScript) {
   const base::DictValue* load_result =
       SendLoadUnpackedCommand("simple_content_script");
@@ -481,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                                  base::DictValue()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CannotGetStorageValuesWithoutContentScript) {
   // Load an extension with no associated content scripts.
   const base::DictValue* load_result =
@@ -514,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
 
 // Test to ensure that the target associated with an extension service worker
 // cannot access data from the storage associated with another extension.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        CannotGetStorageValuesUnrelatedTarget) {
   ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
 
@@ -552,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   ASSERT_EQ(*error()->FindString("message"), "Extension not found.");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
-                       CanGetExtensions) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest, CanGetExtensions) {
   base::FilePath extensions_dir =
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII("devtools")
@@ -602,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
             unpacked_path.AsUTF8Unsafe());
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionShowsSidePanel) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   ExtensionTestMessageListener activated_listener("running");
@@ -630,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionShowsPopup) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
@@ -662,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   EXPECT_TRUE(action_view->IsShowingPopup());
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
                        TriggerActionDispatchesEvent) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 

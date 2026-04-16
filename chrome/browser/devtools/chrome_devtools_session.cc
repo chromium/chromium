@@ -99,10 +99,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       channel->GetClient()->IsTrusted()) {
     extensions_handler_ = std::make_unique<ExtensionsHandler>(
         &dispatcher_, agent_host->GetId(),
-        channel->GetClient()->AllowUnsafeOperations() &&
-            base::CommandLine::ForCurrentProcess()->HasSwitch(
-                ::switches::kEnableUnsafeExtensionDebugging) &&
-            agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
+        agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
   }
   if (IsDomainAvailableToUntrustedClient<EmulationHandler>() ||
       channel->GetClient()->IsTrusted()) {
