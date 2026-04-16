@@ -1527,6 +1527,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)
     public void test_scopedContentChanged_disabled() {
         performTest(
                 "scoped-content-changed.html",
