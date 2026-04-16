@@ -52,25 +52,19 @@ struct CanvasResourceDispatcher::ExportedResource {
 
   void ReleaseResource(gpu::SharedImageExportResult shared_image_export_result,
                        bool is_lost) {
+    CHECK(resource_);
     auto sync_token = resource_->GetSharedImage()->EndExport(
         std::move(shared_image_export_result));
 
-    auto resource = std::move(resource_);
-    if (resource) {
-      resource->WaitSyncToken(sync_token);
-      if (is_lost) {
-        resource->NotifyResourceLost();
-      }
-
-      CanvasResource::DropRefOnOwningThread(std::move(resource));
+    resource_->WaitSyncToken(sync_token);
+    if (is_lost) {
+      resource_->NotifyResourceLost();
     }
   }
 
   ~ExportedResource() {
-    auto resource = std::move(resource_);
-    if (resource) {
-      CanvasResource::DropRefOnOwningThread(std::move(resource));
-    }
+    CHECK(resource_);
+    CanvasResource::DropRefOnOwningThread(std::move(resource_));
   }
 
   scoped_refptr<CanvasResource> resource_;
