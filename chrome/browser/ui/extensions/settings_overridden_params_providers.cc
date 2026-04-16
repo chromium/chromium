@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -372,6 +373,22 @@ void FetchIconsThenRun(std::vector<IconFetchParams>& lookups,
         fetch_params);
   }
 }
+
+// The explicit choice dialog requires names for the options. One prior bug
+// yielded a case where no name was returned for an option. Instrument this
+// to detect whether we ever show users a dialog with missing information.
+void LogMissingParams(const ExtensionSettingsOverriddenDialog::Params& params) {
+  MissingParams param = MissingParams::kNone;
+  if (!params.content.new_setting || params.content.new_setting->text.empty()) {
+    param = MissingParams::kMissingNewSearchName;
+  } else if (!params.content.previous_setting ||
+             params.content.previous_setting->text.empty()) {
+    param = MissingParams::kMissingPreviousSearchName;
+  }
+  base::UmaHistogramEnumeration("Extensions.SettingsOverridden.MissingParams",
+                                param);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace
@@ -594,6 +611,8 @@ void GetSearchOverriddenParamsThenRun(
       new_setting.image =
           CreateFallbackSearchIcon(/*extension_name=*/std::string());
     }
+
+    LogMissingParams(*params);
 
     // Asynchronously look up icons (if needed) then continue.
     FetchIconsThenRun(

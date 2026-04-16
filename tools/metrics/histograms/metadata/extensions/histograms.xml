@@ -4597,6 +4597,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.SettingsOverridden.MissingParams"
+    enum="MissingParams" expires_after="2026-11-15">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records whether any search parameters are missing when populating the values
+    for the Explicit Choice dialog.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.StartupPagesOverrides2" units="units"
     expires_after="2026-05-24">
   <owner>rdevlin.cronin@chromium.org</owner>
