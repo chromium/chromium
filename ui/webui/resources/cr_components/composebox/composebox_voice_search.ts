@@ -63,14 +63,6 @@ enum State {
   RESULT_FINAL = 5,
 }
 
-// The set of controller errors
-enum Error {
-  // Error given when voice search permission enabled.
-  NOT_ALLOWED = 0,
-  // All other errors, like network.
-  OTHER = 1,
-}
-
 export enum VoiceSearchError {
   ABORTED = 0,
   AUDIO_CAPTURE = 1,
@@ -173,7 +165,7 @@ export class ComposeboxVoiceSearchElement extends
       loadTimeData.getString('voiceListening');
   protected accessor finalResult_: string = '';
   protected accessor interimResult_: string = '';
-  protected accessor error_: Error|null = null;
+  protected accessor error_: VoiceSearchError|null = null;
   protected accessor errorMessage_: string = '';
   accessor detailedError_: VoiceSearchError|null = null;
   protected accessor detailsUrl_: string =
@@ -199,16 +191,10 @@ export class ComposeboxVoiceSearchElement extends
     this.voiceRecognition_.onaudiostart = this.onAudioStart_.bind(this);
     this.voiceRecognition_.onspeechstart = this.onSpeechStart_.bind(this);
     this.voiceRecognition_.onerror = (e) => {
-      const detailedError = toError(e.error);
-      this.recordMetric_(
-          VoiceSearchMetricType.ERROR, detailedError,
-          VoiceSearchError.MAX_VALUE + 1);
-      this.onError_(e.error);
+      this.onError_(toError(e.error));
     };
     this.voiceRecognition_.onnomatch = () => {
-      this.recordMetric_(
-          VoiceSearchMetricType.ERROR, VoiceSearchError.NO_MATCH,
-          VoiceSearchError.MAX_VALUE + 1);
+      this.onError_(VoiceSearchError.NO_MATCH);
     };
   }
 
@@ -248,10 +234,7 @@ export class ComposeboxVoiceSearchElement extends
       this.onFinalResult_(this.transcript_);
       return;
     }
-    this.recordMetric_(
-        VoiceSearchMetricType.ERROR, VoiceSearchError.NO_MATCH,
-        VoiceSearchError.MAX_VALUE + 1);
-
+    this.onError_(VoiceSearchError.NO_SPEECH);
     this.voiceRecognition_.abort();
   }
 
@@ -327,60 +310,30 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   private onEnd_() {
-    // TODO(crbug.com/455878144): Log specific errors for each state.
     switch (this.state_) {
-      // If voiceRecognition calls `onEnd_` with the state being anything other
-      // than RESULT_FINAL, close out voice search since there was an error.
+    // If voiceRecognition calls `onEnd_` with the state being anything other
+    // than RESULT_FINAL, close out voice search since there was an error.
+    // The Web Speech API normally fires `onerror` before `onend` for explicit
+    // errors. However, for transient or silent errors (e.g., mic disconnection
+    // or manual aborts), `onerror` is bypassed and `onend` is called directly.
+    // Thus, if the state is anything other than RESULT_FINAL or ERROR_RECEIVED,
+    // we use this switch as a fallback router to manually catch these silent
+    // failures and pipe them to `onError_`.
       case State.STARTED:
-        this.recordMetric_(
-            VoiceSearchMetricType.ERROR, VoiceSearchError.AUDIO_CAPTURE,
-            VoiceSearchError.MAX_VALUE + 1);
-        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        this.onError_(VoiceSearchError.AUDIO_CAPTURE);
         return;
       case State.AUDIO_RECEIVED:
-        this.recordMetric_(
-            VoiceSearchMetricType.ERROR, VoiceSearchError.NO_SPEECH,
-            VoiceSearchError.MAX_VALUE + 1);
-        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        this.onError_(VoiceSearchError.NO_SPEECH);
         return;
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-        this.recordMetric_(
-            VoiceSearchMetricType.ERROR, VoiceSearchError.NO_MATCH,
-            VoiceSearchError.MAX_VALUE + 1);
-        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        this.onError_(VoiceSearchError.NO_MATCH);
         return;
       case State.ERROR_RECEIVED:
-        // All other errors should close voice search.
-        if (this.error_ !== Error.NOT_ALLOWED) {
-          /* Cannot abort voice recognition here; will call `onEnd()_`
-           * again if do that again, leading to infinite recursion.
-           */
-          this.resetState_();
-          /* No metric recorded through this event firing.
-           * This event is fired just to hide voice overlay:
-           */
-          this.recordMetric_(
-              VoiceSearchMetricType.STATE,
-              VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED,
-              VoiceSearchState.MAX_VALUE + 1);
-          this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
-          // Metric recorded through this event firing:
-          this.fire('voice-search-error', /*canceled-by-error=*/ true);
-        } else {
-          this.recordMetric_(
-              VoiceSearchMetricType.STATE, VoiceSearchState.VOICE_SEARCH_ERROR,
-              VoiceSearchState.MAX_VALUE + 1);
-          // Metric recorded through this event firing:
-          this.fire('voice-search-error', /*canceled-by-error=*/ false);
-        }
-        return;
-      case State.RESULT_FINAL:  // Query already submitted if is this state
+      case State.RESULT_FINAL:
         return;
       default:
-        this.recordMetric_(
-            VoiceSearchMetricType.ERROR, VoiceSearchError.OTHER,
-            VoiceSearchError.MAX_VALUE + 1);
+        this.onError_(VoiceSearchError.OTHER);
         return;
     }
   }
@@ -402,16 +355,48 @@ export class ComposeboxVoiceSearchElement extends
 
 
 
-  private onError_(webkitError: string) {
+  private onError_(error: VoiceSearchError) {
+    if (this.state_ === State.ERROR_RECEIVED && this.error_ === error) {
+      return;
+    }
+    if (error === VoiceSearchError.ABORTED) {
+      return;
+    }
+    WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.state_ = State.ERROR_RECEIVED;
-    switch (webkitError) {
-      case 'not-allowed':
-        this.errorMessage_ = loadTimeData.getString('voicePermissionError');
-        this.error_ = Error.NOT_ALLOWED;
-        return;
+    this.error_ = error;
+    this.detailedError_ = error;
+
+    this.errorMessage_ = this.getErrorText_(error);
+
+    this.recordMetric_(
+        VoiceSearchMetricType.ERROR, error, VoiceSearchError.MAX_VALUE + 1);
+    this.recordMetric_(
+        VoiceSearchMetricType.STATE, VoiceSearchState.VOICE_SEARCH_ERROR,
+        VoiceSearchState.MAX_VALUE + 1);
+    this.fire('voice-search-error', /*canceled-by-error=*/ false);
+  }
+
+  private getErrorText_(error: VoiceSearchError): string {
+    switch (error) {
+      case VoiceSearchError.NO_SPEECH:
+        return loadTimeData.getString('noVoice');
+      case VoiceSearchError.AUDIO_CAPTURE:
+        return loadTimeData.getString('audioError');
+      case VoiceSearchError.NETWORK:
+        return loadTimeData.getString('networkError');
+      case VoiceSearchError.NOT_ALLOWED:
+      case VoiceSearchError.SERVICE_NOT_ALLOWED:
+        return loadTimeData.getString('voicePermissionError');
+      case VoiceSearchError.LANGUAGE_NOT_SUPPORTED:
+        return loadTimeData.getString('languageError');
+      case VoiceSearchError.NO_MATCH:
+        return loadTimeData.getString('noTranslation');
+      case VoiceSearchError.BAD_GRAMMAR:
+      case VoiceSearchError.ABORTED:
+      case VoiceSearchError.OTHER:
       default:
-        this.error_ = Error.OTHER;
-        return;
+        return loadTimeData.getString('otherError');
     }
   }
 
@@ -457,6 +442,7 @@ export class ComposeboxVoiceSearchElement extends
     this.interimResult_ = '';
     this.error_ = null;
     this.errorMessage_ = '';
+    this.detailedError_ = null;
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = null;
   }

@@ -494,24 +494,30 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   });
 
   test(
-      'on voice search error does not show non-NOT-ALLOWED errors, \
-      and then hides overlay',
+      'on voice search error shows non-NOT-ALLOWED errors, \
+      and keeps overlay open',
       async () => {
         const composeboxDiv =
             contextualTasksApp.$.composebox.$.composebox.$.composebox;
         const composebox = contextualTasksApp.$.composebox.$.composebox;
-        const voiceSearch = $$<ComposeboxVoiceSearchElement>(
-            composebox, 'cr-composebox-voice-search');
-        assertTrue(!!voiceSearch);
-        voiceSearch.start();
+
+        // Act: Click the mic button to properly open the UI and trigger state
+        // changes.
+        const voiceSearchButton = getVoiceSearchButton(composebox);
+        assertTrue(!!voiceSearchButton);
+        voiceSearchButton.click();
         await microtasksFinished();
+
+        // Assert: The button click metric should now be 1 since we actually
+        // clicked it.
         assertEquals(
-            0,
+            1,
             metrics.count(
                 'ContextualTasks.VoiceSearch.State',
                 /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
             'Voice search button clicked metric count is incorrect');
 
+        // Simulate a generic non-permission error (e.g., network).
         mockSpeechRecognition.onerror!
             ({error: 'network'} as SpeechRecognitionErrorEvent);
         await composebox.updateComplete;
@@ -521,23 +527,29 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         assertTrue(!!voiceSearchElement);
         const errorContainer = $$(voiceSearchElement, '#error-container');
         assertTrue(!!errorContainer);
-        assertTrue(errorContainer.hidden);
 
-        // Flush the macrotask queue / event loop
+        // Assert: The error container should be visible for all errors now.
+        assertFalse(errorContainer.hidden);
+
+        // Flush the macrotask queue / event loop to ensure rendering is
+        // complete.
         await new Promise(resolve => setTimeout(resolve, 0));
-
         await microtasksFinished();
 
-        assertStyle(voiceSearchElement, 'display', 'none');
-        assertStyle(composeboxDiv, 'display', 'flex');
+        // Assert: The voice search UI remains open instead of auto-closing.
+        assertStyle(voiceSearchElement, 'display', 'inline');
+        assertStyle(composeboxDiv, 'opacity', '0');
 
         mockSpeechRecognition.onend!();
+
+        // Assert: The recorded metric should be VOICE_SEARCH_ERROR (2),
+        // indicating the UI was kept open, rather than CANCELED (3).
         assertEquals(
             1,
             metrics.count(
                 'ContextualTasks.VoiceSearch.State',
-                /* VOICE_SEARCH_ERROR_AND_CANCELED */ 3),
-            'Voice search error-canceled metric count is incorrect');
+                /* VOICE_SEARCH_ERROR */ 2),
+            'Voice search error metric count is incorrect');
       });
 
   test('clicking cancel button cancels voice search', async () => {
