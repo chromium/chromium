@@ -1679,6 +1679,20 @@ TEST_F(SendTabToSelfBridgeTest, InvokesCallbackWithSuccessForThrottledEntry) {
                      NavigationHistory(), mock_callback.Get());
 }
 
+TEST_F(SendTabToSelfBridgeTest, DeleteAllEntriesPersists) {
+  InitializeBridge();
+  AddSampleEntries();
+  ASSERT_EQ(4ul, bridge()->GetAllGuids().size());
+  ASSERT_TRUE(bridge()->IsReady());
+
+  bridge()->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
+  ASSERT_EQ(0ul, bridge()->GetAllGuids().size());
+
+  ShutdownBridge();
+  InitializeBridge();
+  EXPECT_EQ(0ul, bridge()->GetAllGuids().size());
+}
+
 }  // namespace
 
 }  // namespace send_tab_to_self

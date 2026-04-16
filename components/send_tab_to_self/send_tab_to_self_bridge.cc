@@ -825,7 +825,10 @@ void SendTabToSelfBridge::DeleteAllEntries() {
     batch->DeleteData(guid);
   }
   entries_.clear();
+  unknown_opened_entries_.clear();
   mru_entry_ = nullptr;
+
+  Commit(std::move(batch));
 
   NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
 }
