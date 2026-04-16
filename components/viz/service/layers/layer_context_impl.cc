@@ -532,10 +532,12 @@ DeserializeStickyPositionData(
   std::vector<cc::StickyPositionNodeData> sticky_position_node_data;
   sticky_position_node_data.reserve(wire_data.size());
   for (auto& wire : wire_data) {
-    if (!IsPropertyTreeIndexValid(trees.scroll_tree(),
-                                  wire->x_scroll_ancestor) &&
-        !IsPropertyTreeIndexValid(trees.scroll_tree(),
-                                  wire->y_scroll_ancestor)) {
+    if (!IsOptionalPropertyTreeIndexValid(trees.scroll_tree(),
+                                          wire->x_scroll_ancestor) ||
+        !IsOptionalPropertyTreeIndexValid(trees.scroll_tree(),
+                                          wire->y_scroll_ancestor) ||
+        (wire->x_scroll_ancestor == cc::kInvalidPropertyNodeId &&
+         wire->y_scroll_ancestor == cc::kInvalidPropertyNodeId)) {
       return base::unexpected("Invalid scroll ancestor ID");
     }
 
