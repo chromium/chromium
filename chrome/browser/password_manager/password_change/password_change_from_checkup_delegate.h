@@ -67,6 +67,8 @@ class PasswordChangeFromCheckupDelegate {
   void OnVerificationTaskStateChanged(actor::ActorTask& task);
   void OnVerificationTimeout();
   void HandleMaybeSuccessfulPasswordChange();
+  void RegisterAutoSelectCredential(actor::ActorTask& task);
+  void InvokeVerificationFlow(std::string post_submission_prompt);
 
   base::WeakPtr<content::WebContents> originator_;
   base::WeakPtr<content::WebContents> actuation_web_contents_;

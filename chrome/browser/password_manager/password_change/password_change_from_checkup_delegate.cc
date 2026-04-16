@@ -216,8 +216,6 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   }
 
   // Invoking it in a new tab ensures that the settings page is not shared.
-  // It also expects that the actor uses the current tab instead of attempting
-  // to open a new one for completing the flow.
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options));
@@ -283,10 +281,7 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
   if (!find_form_task_id_) {
     if (task.GetTabs().contains(actuation_tab->GetHandle())) {
       find_form_task_id_ = task.id();
-      task.GetExecutionEngine().PreHandleCredentialSelectionDialog(
-          base::BindOnce(
-              &PasswordChangeFromCheckupDelegate::AutoSelectCredential,
-              weak_ptr_factory_.GetWeakPtr()));
+      RegisterAutoSelectCredential(task);
     } else {
       return;
     }
@@ -352,7 +347,6 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
 void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
     ChangePasswordFormFillingSubmissionHelper::SubmissionResult result) {
   submission_helper_.reset();
-
   // If the form submission failed, do not trigger a verification task.
   if (!result.has_value()) {
     return;
@@ -383,49 +377,33 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
     return;
   }
 
-  glic::GlicInvokeOptions options(glic::Target(tab_interface),
-                                  glic::mojom::InvocationSource::kSharedTab);
-  options.prompts.push_back(std::move(post_submission_prompt));
-  options.additional_context = glic::mojom::AdditionalContext::New();
-  sessions::SessionTabHelper* session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(
-          actuation_web_contents_.get());
-  if (session_tab_helper) {
-    options.additional_context->tab_id = session_tab_helper->session_id().id();
-  }
-
-  glic_service->InvokeWithAutoSubmit(
-      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-      std::move(options));
-
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(Profile::FromBrowserContext(
-          actuation_web_contents_->GetBrowserContext()));
-  if (actor_service) {
-    actor_task_state_subscription_ =
-        actor_service->AddTaskStateChangedCallback(base::BindRepeating(
-            &PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged,
-            base::Unretained(this)));
-  }
-
-  // If no task is created after 5 seconds, we assume that it was a successful
-  // change since and no extra steps are needed.
-  verification_timer_.Start(
-      FROM_HERE, base::Seconds(5),
-      base::BindOnce(&PasswordChangeFromCheckupDelegate::OnVerificationTimeout,
-                     weak_ptr_factory_.GetWeakPtr()));
+  glic_service->CloseAndShutdown(
+      actuation_web_contents_->GetPrimaryMainFrame());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordChangeFromCheckupDelegate::InvokeVerificationFlow,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(post_submission_prompt)),
+      base::Seconds(1));
 }
 
 void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
     actor::ActorTask& task) {
   const actor::ActorTask::State new_state = task.GetState();
-  if (!verification_task_id_) {
-    verification_task_id_ = task.id();
-    verification_task_created_ = true;
-    // A task was created, so stopping the timer to not trigger
-    // the password being saved.
-    verification_timer_.Stop();
+  tabs::TabInterface* actuation_tab =
+      tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
+  if (!actuation_tab) {
     return;
+  }
+
+  if (!verification_task_id_) {
+    if (task.GetTabs().contains(actuation_tab->GetHandle())) {
+      verification_task_id_ = task.id();
+      verification_task_created_ = true;
+      verification_timer_.Stop();
+    } else {
+      return;
+    }
   }
 
   // Ignore unrelated tasks.
@@ -452,4 +430,60 @@ void PasswordChangeFromCheckupDelegate::HandleMaybeSuccessfulPasswordChange() {
     saved_form_manager_->Save();
     saved_form_manager_.reset();
   }
+}
+void PasswordChangeFromCheckupDelegate::RegisterAutoSelectCredential(
+    actor::ActorTask& task) {
+  task.GetExecutionEngine().PreHandleCredentialSelectionDialog(
+      base::BindOnce(&PasswordChangeFromCheckupDelegate::AutoSelectCredential,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
+    std::string post_submission_prompt) {
+  glic::GlicKeyedService* glic_service = GetGlicService();
+  if (!glic_service || !actuation_web_contents_) {
+    return;
+  }
+
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
+  if (!tab_interface) {
+    return;
+  }
+
+  glic::GlicInvokeOptions options(
+      glic::Target(tab_interface, glic::NewConversation()),
+      glic::mojom::InvocationSource::kSharedTab);
+  options.prompts.push_back(std::move(post_submission_prompt));
+  options.additional_context = glic::mojom::AdditionalContext::New();
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(
+          actuation_web_contents_.get());
+  if (session_tab_helper) {
+    options.additional_context->tab_id = session_tab_helper->session_id().id();
+  }
+
+  glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+      std::move(options));
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(Profile::FromBrowserContext(
+          actuation_web_contents_->GetBrowserContext()));
+  if (actor_service) {
+    actor_task_state_subscription_ =
+        actor_service->AddTaskStateChangedCallback(base::BindRepeating(
+            &PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged,
+            base::Unretained(this)));
+  }
+
+  // TODO(crbug.com/485620841): Replace this timeout signal with
+  // InvokeWithUpdates once fully functional. Currently this assumes that if no
+  // task is created within 90 seconds, Bluedog was not triggered which means no
+  // extra steps are required for completion of the password change flow and
+  // assumes success.
+  verification_timer_.Start(
+      FROM_HERE, base::Seconds(90),
+      base::BindOnce(&PasswordChangeFromCheckupDelegate::OnVerificationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
