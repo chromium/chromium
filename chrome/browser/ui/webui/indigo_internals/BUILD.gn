@@ -19,7 +19,10 @@ source_set("indigo_internals") {
     "indigo_internals_page_handler.h",
     "indigo_internals_ui.cc",
   ]
-  public_deps = [ ":mojo_bindings" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//components/unified_consent",
+  ]
   deps = [
     "//base",
     "//chrome/app:generated_resources",
@@ -27,6 +30,7 @@ source_set("indigo_internals") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/indigo_internals:resources",
     "//chrome/common",
+    "//components/optimization_guide/core",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",

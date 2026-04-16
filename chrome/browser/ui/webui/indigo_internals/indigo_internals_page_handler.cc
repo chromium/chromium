@@ -8,6 +8,8 @@
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 
 namespace {
 
@@ -25,6 +27,18 @@ indigo_internals::mojom::LocalEligibility MapLocalEligibility(
   }
 }
 
+indigo_internals::mojom::OptimizationGuideStatus
+GetCurrentOptimizationGuideStatus(Profile* profile) {
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    return indigo_internals::mojom::OptimizationGuideStatus::kDisabled;
+  }
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs())) {
+    return indigo_internals::mojom::OptimizationGuideStatus::kNotPermitted;
+  }
+  return indigo_internals::mojom::OptimizationGuideStatus::kEnabled;
+}
+
 }  // namespace
 
 IndigoInternalsPageHandler::IndigoInternalsPageHandler(
@@ -33,7 +47,10 @@ IndigoInternalsPageHandler::IndigoInternalsPageHandler(
     Profile* profile)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile) {
+      profile_(profile),
+      consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs())) {
   indigo::IndigoService* service =
       indigo::IndigoServiceFactory::GetForProfile(profile_);
   CHECK(service);
@@ -41,6 +58,7 @@ IndigoInternalsPageHandler::IndigoInternalsPageHandler(
       service->RegisterLocalEligibilityChangedCallback(base::BindRepeating(
           &IndigoInternalsPageHandler::OnLocalEligibilityChanged,
           base::Unretained(this)));
+  consent_observation_.Observe(consent_helper_.get());
 }
 
 IndigoInternalsPageHandler::~IndigoInternalsPageHandler() = default;
@@ -94,4 +112,15 @@ void IndigoInternalsPageHandler::InvalidateRemoteEligibility() {
       indigo::IndigoServiceFactory::GetForProfile(profile_);
   CHECK(service);
   service->InvalidateRemoteEligibility();
+}
+
+void IndigoInternalsPageHandler::GetOptimizationGuideStatus(
+    GetOptimizationGuideStatusCallback callback) {
+  std::move(callback).Run(GetCurrentOptimizationGuideStatus(profile_));
+}
+
+void IndigoInternalsPageHandler::OnUrlKeyedDataCollectionConsentStateChanged(
+    unified_consent::UrlKeyedDataCollectionConsentHelper* consent_helper) {
+  page_->OnOptimizationGuideStatusChanged(
+      GetCurrentOptimizationGuideStatus(profile_));
 }

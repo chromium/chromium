@@ -12,6 +12,14 @@ enum LocalEligibility {
   kDisabledByPolicy,
 };
 
+// Whether Optimization Guide can make queries to determine whether to offer
+// Indigo on a page.
+enum OptimizationGuideStatus {
+  kDisabled,
+  kNotPermitted,
+  kEnabled,
+};
+
 // Represents the remote eligibility status fetched from the server.
 struct RemoteEligibility {
   bool is_service_supported_for_account;
@@ -53,6 +61,9 @@ interface PageHandler {
   // Triggers invalidation of the remote eligibility cache. This is used
   // to force a refresh of the status when testing.
   InvalidateRemoteEligibility();
+
+  // Fetches the optimization guide status (see above).
+  GetOptimizationGuideStatus() => (OptimizationGuideStatus status);
 };
 
 // Interface for the browser process to push updates to the WebUI.
@@ -62,4 +73,7 @@ interface Page {
   // when the user signs in or out). The UI should update its display
   // immediately upon receiving this notification.
   OnLocalEligibilityChanged(LocalEligibility status);
+
+  // Notifies the WebUI when the status of Optimization Guide changed.
+  OnOptimizationGuideStatusChanged(OptimizationGuideStatus status);
 };

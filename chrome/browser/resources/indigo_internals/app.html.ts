@@ -23,6 +23,12 @@ export function getHtml(this: IndigoInternalsAppElement) {
         </span>
       </div>
       <div class="status-item">
+        <span class="status-label">Optimization Guide Status</span>
+        <span class="status-value ${this.getOptimizationGuideStatusClass_()}">
+          ${this.getOptimizationGuideStatusText_()}
+        </span>
+      </div>
+      <div class="status-item">
         <span class="status-label">Combined Eligibility</span>
         <div class="status-value-group">
           <cr-button @click="${this.onFetchCombinedClick_}">Fetch</cr-button>

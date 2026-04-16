@@ -11,7 +11,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {CombinedEligibility} from './indigo_internals.mojom-webui.js';
-import {LocalEligibility} from './indigo_internals.mojom-webui.js';
+import {LocalEligibility, OptimizationGuideStatus} from './indigo_internals.mojom-webui.js';
 
 export class IndigoInternalsAppElement extends CrLitElement {
   static get is() {
@@ -29,12 +29,15 @@ export class IndigoInternalsAppElement extends CrLitElement {
   static override get properties() {
     return {
       localEligibility_: {type: Number},
+      optimizationGuideStatus_: {type: Number},
       combinedEligibility_: {type: Object},
       lastUpdated_: {type: String},
     };
   }
 
   protected accessor localEligibility_: LocalEligibility|null = null;
+  protected accessor optimizationGuideStatus_: OptimizationGuideStatus|null =
+      null;
   protected accessor combinedEligibility_: CombinedEligibility|null = null;
   protected accessor lastUpdated_: string = '';
   private listenerIds_: number[] = [];
@@ -42,17 +45,26 @@ export class IndigoInternalsAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    BrowserProxy.getInstance().handler.getLocalEligibility().then(
+    const proxy = BrowserProxy.getInstance();
+
+    proxy.handler.getLocalEligibility().then(
         ({status}: {status: LocalEligibility}) => {
           this.localEligibility_ = status;
         });
+    proxy.handler.getOptimizationGuideStatus().then(
+        ({status}: {status: OptimizationGuideStatus}) => {
+          this.optimizationGuideStatus_ = status;
+        });
 
     this.listenerIds_ = [
-      BrowserProxy.getInstance()
-          .callbackRouter.onLocalEligibilityChanged.addListener(
-              (status: LocalEligibility) => {
-                this.localEligibility_ = status;
-              }),
+      proxy.callbackRouter.onLocalEligibilityChanged.addListener(
+          (status: LocalEligibility) => {
+            this.localEligibility_ = status;
+          }),
+      proxy.callbackRouter.onOptimizationGuideStatusChanged.addListener(
+          (status: OptimizationGuideStatus) => {
+            this.optimizationGuideStatus_ = status;
+          }),
     ];
   }
 
@@ -106,6 +118,35 @@ export class IndigoInternalsAppElement extends CrLitElement {
         return 'status-ineligible';
       default:
         assertNotReachedCase(this.localEligibility_);
+    }
+  }
+
+  protected getOptimizationGuideStatusText_(): string {
+    switch (this.optimizationGuideStatus_) {
+      case null:
+        return 'Loading...';
+      case OptimizationGuideStatus.kDisabled:
+        return 'Disabled';
+      case OptimizationGuideStatus.kNotPermitted:
+        return 'Not Permitted';
+      case OptimizationGuideStatus.kEnabled:
+        return 'Enabled';
+      default:
+        assertNotReachedCase(this.optimizationGuideStatus_);
+    }
+  }
+
+  protected getOptimizationGuideStatusClass_(): string {
+    switch (this.optimizationGuideStatus_) {
+      case null:
+        return 'status-loading';
+      case OptimizationGuideStatus.kDisabled:
+      case OptimizationGuideStatus.kNotPermitted:
+        return 'status-ineligible';
+      case OptimizationGuideStatus.kEnabled:
+        return 'status-eligible';
+      default:
+        assertNotReachedCase(this.optimizationGuideStatus_);
     }
   }
 
