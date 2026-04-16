@@ -4,14 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 
-#include <memory>
-#include <span>
-#include <string>
-#include <vector>
-
-#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
@@ -19,64 +12,10 @@
 
 namespace optimization_guide {
 
-BASE_FEATURE(kUseCppPageContextEligibilityInterface,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A temporary wrapper to bridge the legacy C ABI interface to the new C++
-// interface.
-// TODO(crbug.com/421932889): Remove this once all callers migrate to the C++
-// interface.
-class PageContextEligibilityApiWrapper : public PageContextEligibilityApi {
- public:
-  explicit PageContextEligibilityApiWrapper(
-      const PageContextEligibilityAPI& api)
-      : api_(api) {}
-  ~PageContextEligibilityApiWrapper() override = default;
-
-  bool IsPageContextEligible(
-      const std::string& host,
-      const std::string& path,
-      const std::vector<FrameMetadata>& frame_metadata) const override {
-    return api_->IsPageContextEligible(host, path, frame_metadata);
-  }
-
-  bool IsPageContextEligibleWithAccount(
-      const std::string& host,
-      const std::string& path,
-      const std::string& account,
-      const std::vector<FrameMetadata>& frame_metadata) const override {
-    return api_->IsPageContextEligibleWithAccount(host, path, account,
-                                                  frame_metadata);
-  }
-
-  bool ShouldReextractPageContext(
-      const std::string& host,
-      const std::string& path,
-      const std::vector<std::string>& updated_meta_tags) const override {
-    return api_->ShouldReextractPageContext(host, path, updated_meta_tags);
-  }
-
-  std::span<const std::string_view> GetMetaTagNamesAffectingEligibility(
-      const std::string& host,
-      const std::string& path,
-      const std::vector<FrameMetadata>& frame_metadata) const override {
-    StringViewSpan span =
-        api_->GetMetaTagNamesAffectingEligibility(host, path, frame_metadata);
-    return std::span<const std::string_view>(span.data, span.size);
-  }
-
-  raw_ref<const PageContextEligibilityAPI> api_;
-};
-
-PageContextEligibility::PageContextEligibility(
-    const PageContextEligibilityApi* api)
-    : api_(*api) {}
 
 PageContextEligibility::PageContextEligibility(
     const PageContextEligibilityAPI* api)
-    : owned_api_(std::make_unique<PageContextEligibilityApiWrapper>(*api)),
-      api_(*owned_api_) {}
-
+    : api_(api) {}
 PageContextEligibility::~PageContextEligibility() = default;
 
 // static
@@ -101,29 +40,17 @@ std::unique_ptr<PageContextEligibility> PageContextEligibility::Create() {
     return {};
   }
 
-  // Try the new C++ interface first.
-  if (base::FeatureList::IsEnabled(kUseCppPageContextEligibilityInterface)) {
-    auto get_api_new = reinterpret_cast<PageContextEligibilityApiGetter>(
-        holder_ptr->GetFunctionPointer("GetPageContextEligibilityApi"));
-    if (get_api_new) {
-      const PageContextEligibilityApi* api = get_api_new();
-      if (api) {
-        return base::WrapUnique(new PageContextEligibility(api));
-      }
-    }
-  }
-
-  // Fallback to the old C interface.
-  auto get_api_old = reinterpret_cast<PageContextEligibilityAPIGetter>(
+  auto get_api = reinterpret_cast<PageContextEligibilityAPIGetter>(
       holder_ptr->GetFunctionPointer("GetPageContextEligibilityAPI"));
-  if (get_api_old) {
-    const PageContextEligibilityAPI* api_old = get_api_old();
-    if (api_old) {
-      return base::WrapUnique(new PageContextEligibility(api_old));
-    }
+  if (!get_api) {
+    return {};
   }
 
-  return {};
+  const PageContextEligibilityAPI* api = get_api();
+  if (!api) {
+    return {};
+  }
+  return base::WrapUnique(new PageContextEligibility(api));
 }
 
 std::vector<FrameMetadata> GetFrameMetadataFromPageContent(
