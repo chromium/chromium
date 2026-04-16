@@ -158,7 +158,7 @@ TEST_F(ContextualTasksContextModelHandlerTest, ExtractModelFeatures) {
   EXPECT_EQ(features[4], 0.0f);
 }
 
-TEST_F(ContextualTasksContextModelHandlerTest, ExecuteModelWithSignals) {
+TEST_F(ContextualTasksContextModelHandlerTest, BatchExecuteModelWithSignals) {
   ContextualTasksContextModelHandler* handler = model_handler();
 
   optimization_guide::proto::TabRelevanceModelMetadata metadata;
@@ -175,26 +175,32 @@ TEST_F(ContextualTasksContextModelHandlerTest, ExecuteModelWithSignals) {
 
   QueryStateSignals query_signals;
   query_signals.query_word_count = 5.0f;
-  TabSignals tab_signals;
+  std::vector<TabSignals> batch_tab_signals(2);
 
-  base::test::TestFuture<const std::optional<float>&> future;
-  handler->ExecuteModelWithSignals(query_signals, tab_signals,
-                                   future.GetCallback());
+  base::test::TestFuture<const std::vector<std::optional<float>>&> future;
+  handler->BatchExecuteModelWithSignals(query_signals, batch_tab_signals,
+                                        future.GetCallback());
 
-  EXPECT_NEAR(*future.Get(), 0.5, 1e-1);
+  const auto& results = future.Get();
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_NEAR(*results[0], 0.5, 1e-1);
+  EXPECT_NEAR(*results[1], 0.5, 1e-1);
 }
 
-TEST_F(ContextualTasksContextModelHandlerTest, ExecuteModelWithNoMetadata) {
+TEST_F(ContextualTasksContextModelHandlerTest,
+       BatchExecuteModelWithNoMetadata) {
   ContextualTasksContextModelHandler* handler = model_handler();
 
   QueryStateSignals query_signals;
-  TabSignals tab_signals;
+  std::vector<TabSignals> batch_tab_signals(1);
 
-  base::test::TestFuture<const std::optional<float>&> future;
-  handler->ExecuteModelWithSignals(query_signals, tab_signals,
-                                   future.GetCallback());
+  base::test::TestFuture<const std::vector<std::optional<float>>&> future;
+  handler->BatchExecuteModelWithSignals(query_signals, batch_tab_signals,
+                                        future.GetCallback());
 
-  EXPECT_FALSE(future.Get().has_value());
+  const auto& results = future.Get();
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_FALSE(results[0].has_value());
 }
 
 }  // namespace contextual_tasks

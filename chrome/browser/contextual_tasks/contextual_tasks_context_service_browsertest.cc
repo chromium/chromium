@@ -1437,6 +1437,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
               *model_info);
 
   NavigateToValidURL();
+
+  // Open a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), valid_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
   NotifyEmbedderMetadata();
 
   std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
@@ -1457,7 +1463,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
 
-  EXPECT_EQ(1u, future.Get().size());
+  EXPECT_EQ(2u, future.Get().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,

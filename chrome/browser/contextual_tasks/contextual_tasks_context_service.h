@@ -207,8 +207,8 @@ class ContextualTasksContextService
       const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-          callback,
-      scoped_refptr<ScoringState> state,
+          on_selection_complete,
+      scoped_refptr<ScoringState> scoring_state,
       optimization_guide::proto::ContextualTasksContextQuality* quality_log);
 
   // Returns all tabs for the profile that are eligible for selection.
@@ -236,7 +236,7 @@ class ContextualTasksContextService
       const std::vector<base::WeakPtr<content::WebContents>>& all_tabs,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-          callback,
+          on_selection_complete,
       optimization_guide::proto::ContextualTasksContextQuality* quality_log);
 
   // Helper method to populate query state context. These are common for all

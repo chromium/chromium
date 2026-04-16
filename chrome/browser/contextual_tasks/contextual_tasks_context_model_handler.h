@@ -31,11 +31,12 @@ class ContextualTasksContextModelHandler
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~ContextualTasksContextModelHandler() override;
 
-  // Executes the model asynchronously with high-level signals.
-  void ExecuteModelWithSignals(
+  // Executes the model asynchronously for a batch of tabs.
+  void BatchExecuteModelWithSignals(
       const QueryStateSignals& query_signals,
-      const TabSignals& tab_signals,
-      base::OnceCallback<void(const std::optional<float>&)> callback);
+      const std::vector<TabSignals>& batch_tab_signals,
+      base::OnceCallback<void(const std::vector<std::optional<float>>&)>
+          callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContextualTasksContextModelHandlerTest,
