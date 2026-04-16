@@ -337,7 +337,7 @@ class ChromiumDocs:
 
     def _categorize_document(self, doc_path: Path, content: str) -> str:
         """Categorize document based on path and content."""
-        path_str = str(doc_path).lower()
+        path_str = doc_path.as_posix().lower()
         content_lower = content.lower()
 
         # Path-based categorization (most specific first)

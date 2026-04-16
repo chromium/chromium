@@ -125,7 +125,7 @@ def _shorten_path(path_str: str | Path | None) -> str:
         # RuntimeError if home directory cannot be determined.
         pass
 
-    return str(path)
+    return path.as_posix()
 
 
 def _print_skills_table(data: dict[str, SkillInfo]) -> None:
