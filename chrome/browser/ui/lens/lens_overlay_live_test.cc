@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/account_capabilities_observer.h"
@@ -39,7 +40,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -139,9 +143,12 @@ const char kNpsTranslateUrl[] =
 // Live tests for Lens Overlay.
 // These tests can be run with:
 // browser_tests --gtest_filter=LensOverlayLiveTest.* --run-live-tests
-class LensOverlayLiveTest : public signin::test::LiveTest {
+class LensOverlayLiveTest : public base::test::WithFeatureOverride,
+                            public signin::test::LiveTest {
  public:
-  LensOverlayLiveTest() = default;
+  LensOverlayLiveTest()
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos) {}
   ~LensOverlayLiveTest() override = default;
 
   void SetUp() override {
@@ -296,7 +303,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest,
                        ClickObject_SignedInAndSyncingHistory) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
@@ -346,13 +353,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
+IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
   CHECK(test_account.has_value());
   sign_in_functions.SignInFromWeb(*test_account, 0);
-  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
 
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsObjectUrl);
@@ -393,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
+IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest, ClickObject_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
@@ -432,6 +440,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
   // loaded a result.
   VerifySidePanelLoaded();
 }
+
+// TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayLiveTest);
 
 // Live tests for LensOverlayTranslateButton.
 class LensOverlayTranslateLiveTest : public LensOverlayLiveTest {
@@ -465,7 +478,7 @@ class LensOverlayTranslateLiveTest : public LensOverlayLiveTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayTranslateLiveTest,
                        TranslateScreen_SignedInAndSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
@@ -511,14 +524,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayTranslateLiveTest,
                        TranslateScreen_SignedInOnWebOnly) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
   CHECK(test_account.has_value());
   sign_in_functions.SignInFromWeb(*test_account, 0);
-  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
 
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsTranslateUrl);
@@ -555,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
+IN_PROC_BROWSER_TEST_P(LensOverlayTranslateLiveTest,
                        TranslateScreen_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsTranslateUrl);
@@ -591,5 +605,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
   // loaded a result.
   VerifySidePanelLoaded();
 }
+
+// TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayTranslateLiveTest);
 
 }  // namespace lens
