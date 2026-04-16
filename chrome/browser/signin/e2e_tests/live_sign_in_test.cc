@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -65,11 +67,12 @@ namespace {
 
 // Live tests for SignIn.
 // These tests can be run with:
-// browser_tests --gtest_filter=LiveSignInTest.* --run-live-tests --run-manual
-class LiveSignInTest : public signin::test::LiveTest {
+// browser_tests --gtest_filter=LiveSignInTest*.* --run-live-tests --run-manual
+
+class LiveSignInTestBase : public signin::test::LiveTest {
  public:
-  LiveSignInTest() = default;
-  ~LiveSignInTest() override = default;
+  LiveSignInTestBase() = default;
+  ~LiveSignInTestBase() override = default;
 
   void SetUp() override {
     LiveTest::SetUp();
@@ -98,12 +101,34 @@ class LiveSignInTest : public signin::test::LiveTest {
       }));
 };
 
+class LiveSignInTest : public base::test::WithFeatureOverride,
+                       public LiveSignInTestBase {
+ public:
+  LiveSignInTest()
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos) {}
+};
+
+// TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
+class LiveSignInTestFullSync : public LiveSignInTestBase {
+ public:
+  LiveSignInTestFullSync() {
+    feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
 // See crbug.com/1025335.
 // Sings in an account through the settings page and checks that the account is
 // added to Chrome. Sync should be disabled because the test doesn't pass
 // through the Sync confirmation dialog.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_SimpleSignInFlow) {
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_SimpleSignInFlow) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -129,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_SimpleSignInFlow) {
 // Sync is enabled.
 // Then, signs out on the web and checks that the account is removed from
 // cookies and Sync paused error is displayed.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_WebSignOut) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -166,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
 // Sings in two accounts on the web and checks that cookies and refresh tokens
 // are added to Chrome. Sync should be disabled.
 // Then, signs out on the web and checks that accounts are removed from Chrome.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -226,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
 // Sync is enabled. Signs in a second account on the web.
 // Then, turns Sync off from the settings page and checks that both accounts are
 // removed from Chrome and from cookies.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSync) {
   std::optional<TestAccountSigninCredentials> test_account_1 =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account_1.has_value());
@@ -258,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
 // In "Sync paused" state, when the primary account is invalid, turns off sync
 // from settings. Checks that the account is removed from Chrome.
 // Regression test for https://crbug.com/1114646
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSyncWhenPaused) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -291,7 +316,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
 // Signs in an account on the web. Goes to the Chrome settings to enable Sync
 // but cancels the sync confirmation dialog. Checks that the account is still
 // signed in on the web but Sync is disabled.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
+                       MANUAL_CancelSyncWithWebAccount) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -332,14 +358,19 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
 // Starts the sign in flow from the settings page, enters credentials on the
 // login page but cancels the Sync confirmation dialog. Checks that Sync is
 // disabled but the account is still signed in to Chrome.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CancelSync) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
   sign_in_functions.SignInFromSettings(*test_account, 0);
 
-  EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
-      browser(), kDialogTimeout));
+  if (IsParamFeatureEnabled()) {
+    EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
+        browser(), kDialogTimeout));
+  } else {
+    EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
+        browser(), kDialogTimeout));
+  }
   // The account is still signed in, but not syncing.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -366,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
 // on "This wasn't me" in the email confirmation dialog. Checks that the new
 // profile is created. Checks that Sync to account 2 is enabled in the new
 // profile. Checks that account 2 was removed from the original profile.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
                        MANUAL_SyncSecondAccount_CreateNewProfile) {
   // Enable and disable sync for the first account.
   std::optional<TestAccountSigninCredentials> test_account_1 =
@@ -449,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 // Enables and disables sync to account 1. Enables sync to account 2 and clicks
 // on "This was me" in the email confirmation dialog. Checks that Sync to
 // account 2 is enabled in the current profile.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
                        MANUAL_SyncSecondAccount_InExistingProfile) {
   // Enable and disable sync for the first account.
   std::optional<TestAccountSigninCredentials> test_account_1 =
@@ -508,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 // Enables and disables sync to account 1. Enables sync to account 2 and clicks
 // on "Cancel" in the email confirmation dialog. Checks that the account is left
 // signed in without syncing.
-IN_PROC_BROWSER_TEST_F(LiveSignInTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
                        MANUAL_SyncSecondAccount_CancelOnEmailConfirmation) {
   // Enable and disable sync for the first account.
   std::optional<TestAccountSigninCredentials> test_account_1 =
@@ -559,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(LiveSignInTest,
+IN_PROC_BROWSER_TEST_P(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
   // Test primary adult account.
   {
@@ -613,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
+IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
   base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -681,7 +712,7 @@ class LiveSignInGaiaIntegrationTest : public LiveSignInTest {};
 // Tests that a doing a web signin from a tab that was previously opened for
 // a browser signin, does not sign in the user in the browser.
 // TODO(crbug.com/467170772): Remove the logging once flakiness reason is identified.
-IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
+IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
   base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
@@ -737,6 +768,12 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInTest);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInGaiaIntegrationTest);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
