@@ -5532,7 +5532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Bytes" units="KB"
-    expires_after="2026-05-27">
+    expires_after="2027-04-13">
   <owner>jkarlin@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -5548,7 +5548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Cpu" units="units"
-    expires_after="2026-05-27">
+    expires_after="2027-04-13">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5590,7 +5590,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.UserActivation"
-    enum="AdUserActivationStatus" expires_after="2026-05-27">
+    enum="AdUserActivationStatus" expires_after="2027-04-13">
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
