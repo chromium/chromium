@@ -205,7 +205,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   int num_range_words_ = 0;
 
-  int iteration_ = 0;
   base::TimeTicks generation_start_time_;
 
   Member<TextFragmentFinder> finder_;

@@ -85,16 +85,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
-    units="iterations" expires_after="2024-03-01">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Indicates number of iterations it took for the unsuccessful text fragment
-    selector generation run.
-  </summary>
-</histogram>
-
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
     enum="LinkGenerationError" expires_after="2026-08-23">
   <owner>jeffreycohen@chromium.org</owner>

@@ -119,7 +119,6 @@ constexpr int kExactTextMaxChars = 300;
 constexpr int kNoContextMinChars = 20;
 constexpr int kMaxContextWords = 10;
 constexpr int kMaxRangeWords = 10;
-constexpr int kMaxIterationCountToRecord = 10;
 constexpr int kMinWordCount = 3;
 
 std::optional<int> g_exactTextMaxCharsOverride;
@@ -155,7 +154,6 @@ void TextFragmentSelectorGenerator::Reset() {
   range_end_iterator_ = nullptr;
   num_context_words_ = 0;
   num_range_words_ = 0;
-  iteration_ = 0;
   selector_ = nullptr;
   range_ = nullptr;
   pending_generate_selector_callback_.Reset();
@@ -379,7 +377,6 @@ void TextFragmentSelectorGenerator::ResolveSelectorState() {
 
 void TextFragmentSelectorGenerator::RunTextFinder() {
   DCHECK(selector_);
-  iteration_++;
   // |FindMatch| will call |DidFindMatch| indicating if the match was unique.
   finder_ = MakeGarbageCollected<TextFragmentFinder>(
       *this, *selector_, frame_->GetDocument(),
@@ -651,9 +648,6 @@ void TextFragmentSelectorGenerator::RecordAllMetrics(
 
     shared_highlighting::LogLinkGeneratedSuccessUkmEvent(recorder, source_id);
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "SharedHighlights.LinkGenerated.Error.Iterations", iteration_,
-        kMaxIterationCountToRecord);
     UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
                         base::DefaultTickClock::GetInstance()->NowTicks() -
                             generation_start_time_);
