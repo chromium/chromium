@@ -250,6 +250,8 @@ public class MainActivity extends AppCompatActivity
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
     private static final String EXTRA_OMNIBOX_ENABLED =
             "org.chromium.chrome.browser.customtabs.OMNIBOX_ENABLED";
+    private static final String EXTRA_TRANSLUCENT_BACKGROUND =
+            "androidx.browser.customtabs.extra.TRANSLUCENT_BACKGROUND";
 
     private final ActivityResultLauncher<Intent> mLauncher =
             AuthTabIntent.registerActivityResultLauncher(this, this::handleAuthResult);
@@ -1309,7 +1311,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
-
+        CheckBox bgAlpha = findViewById(R.id.bgalpha_checkbox);
+        if (bgAlpha.isChecked()) {
+            EditText bgAlphaText = findViewById(R.id.bgalpha_text);
+            int bgColor = Color.parseColor(bgAlphaText.getText().toString());
+            customTabsIntent.intent.putExtra(EXTRA_TRANSLUCENT_BACKGROUND, bgColor);
+        }
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
             launchAuthTab(url);
             editor.putString(SHARED_PREF_CUSTOM_SCHEME, mCustomScheme);

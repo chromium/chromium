@@ -794,5 +794,29 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/allow_initial_navigation_to_leave" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <CheckBox
+                android:id="@+id/bgalpha_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/bgalpha_label" />
+            <EditText
+                android:id="@+id/bgalpha_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:minWidth="40sp"
+                android:inputType="text"
+                android:text="@string/bgalpha_defvalue"
+                android:contentDescription="@string/bgalpha_label"
+                style="?attr/textAppearanceLabelLarge" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
