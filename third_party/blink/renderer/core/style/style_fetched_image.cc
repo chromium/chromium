@@ -120,7 +120,7 @@ bool StyleFetchedImage::ErrorOccurred() const {
   return image_->ErrorOccurred();
 }
 
-bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
+bool StyleFetchedImage::IsCorsSameOrigin(String& failing_url) const {
   if (!image_->IsLoaded() && image_->GetImage() &&
       image_->GetImage()->IsSVGImage()) {
     return false;

@@ -54,7 +54,7 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
                              bool allow_visited_style,
                              CSSValuePhase value_phase) const override;
 
-  bool IsAccessAllowed(String&) const override { return true; }
+  bool IsCorsSameOrigin(String&) const override { return true; }
 
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,

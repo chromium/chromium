@@ -59,7 +59,7 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
                              bool allow_visited_style,
                              CSSValuePhase value_phase) const override;
 
-  bool IsAccessAllowed(String&) const override { return true; }
+  bool IsCorsSameOrigin(String&) const override { return true; }
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override {

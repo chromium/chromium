@@ -182,8 +182,9 @@ void ShapeOutsideInfo::SetPercentageResolutionInlineSize(
 static bool CheckShapeImageOrigin(Document& document,
                                   const StyleImage& style_image) {
   String failing_url;
-  if (style_image.IsAccessAllowed(failing_url))
+  if (style_image.IsCorsSameOrigin(failing_url)) {
     return true;
+  }
   String url_string = failing_url.IsNull() ? "''" : failing_url;
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,

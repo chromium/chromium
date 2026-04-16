@@ -37,7 +37,7 @@ class StyleCrossfadeImage final : public StyleImage {
   bool IsLoading() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(String&) const override;
+  bool IsCorsSameOrigin(String&) const override;
 
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,

@@ -678,10 +678,9 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
 
   is_printing = doc.Printing();
 
-  String failing_url;
   should_paint_image = image && image->CanRender() &&
                        (!(paint_flags & PaintFlag::kPrivacyPreserving) ||
-                        image->IsAccessAllowed(failing_url));
+                        image->IsCorsSameOrigin());
   if (should_paint_image) {
     respect_image_orientation =
         image->ForceOrientationIfNecessary(respect_image_orientation);
@@ -1750,9 +1749,8 @@ void BoxPainterBase::PaintBorder(
   }
 
   // border-image is not affected by border-radius.
-  String failing_url;
   if (!(info.IsPrivacyPreserving() && style.BorderImage().GetImage() &&
-        !style.BorderImage().GetImage()->IsAccessAllowed(failing_url))) {
+        !style.BorderImage().GetImage()->IsCorsSameOrigin())) {
     if (NinePieceImagePainter::Paint(info.context, obj, document, node, rect,
                                      style, style.BorderImage())) {
       return;
@@ -1775,9 +1773,8 @@ void BoxPainterBase::PaintMaskImages(
 
   PaintFillLayers(paint_info, Color::kTransparent, style_.MaskLayers(),
                   paint_rect, bg_paint_context);
-  String failing_url;
   if (!(paint_info.IsPrivacyPreserving() && style_.MaskBoxImage().GetImage() &&
-        !style_.MaskBoxImage().GetImage()->IsAccessAllowed(failing_url))) {
+        !style_.MaskBoxImage().GetImage()->IsCorsSameOrigin())) {
     NinePieceImagePainter::Paint(paint_info.context, obj, document_, node_,
                                  paint_rect, style_, style_.MaskBoxImage(),
                                  sides_to_include);

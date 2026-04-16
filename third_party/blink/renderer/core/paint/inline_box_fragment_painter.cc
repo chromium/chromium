@@ -129,10 +129,9 @@ void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
   SlicePaintingType border_painting_type =
       GetSlicePaintType(style_.MaskBoxImage(), adjusted_frame_rect,
                         adjusted_clip_rect, object_may_have_multiple_boxes);
-  String failing_url;
   if (border_painting_type == kDontPaint ||
       (paint_info.IsPrivacyPreserving() && style_.MaskBoxImage().GetImage() &&
-       !style_.MaskBoxImage().GetImage()->IsAccessAllowed(failing_url))) {
+       !style_.MaskBoxImage().GetImage()->IsCorsSameOrigin())) {
     return;
   }
   GraphicsContextStateSaver state_saver(paint_info.context, false);

@@ -4,9 +4,15 @@
 
 #include "third_party/blink/renderer/core/style/style_image.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
+
+bool StyleImage::IsCorsSameOrigin() const {
+  String unused_url;
+  return IsCorsSameOrigin(unused_url);
+}
 
 gfx::SizeF StyleImage::ApplyZoom(const gfx::SizeF& size, float multiplier) {
   if (multiplier == 1.0f) {

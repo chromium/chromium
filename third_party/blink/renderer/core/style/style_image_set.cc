@@ -84,8 +84,8 @@ bool StyleImageSet::ErrorOccurred() const {
   return best_fit_image_ && best_fit_image_->ErrorOccurred();
 }
 
-bool StyleImageSet::IsAccessAllowed(String& failing_url) const {
-  return !best_fit_image_ || best_fit_image_->IsAccessAllowed(failing_url);
+bool StyleImageSet::IsCorsSameOrigin(String& failing_url) const {
+  return !best_fit_image_ || best_fit_image_->IsCorsSameOrigin(failing_url);
 }
 
 NaturalSizingInfo StyleImageSet::GetNaturalSizingInfo(

@@ -55,8 +55,8 @@ bool StyleMaskSourceImage::ErrorOccurred() const {
   return image_ && image_->ErrorOccurred();
 }
 
-bool StyleMaskSourceImage::IsAccessAllowed(String& failing_url) const {
-  return !image_ || image_->IsAccessAllowed(failing_url);
+bool StyleMaskSourceImage::IsCorsSameOrigin(String& failing_url) const {
+  return !image_ || image_->IsCorsSameOrigin(failing_url);
 }
 
 NaturalSizingInfo StyleMaskSourceImage::GetNaturalSizingInfo(
