@@ -324,6 +324,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mViewHolder == null || mViewHolder.addButton == null) return;
         mViewHolder.addButton.requestFocus();
         mViewHolder.addButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        if (mMediator != null) {
+            mMediator.hidePopup();
+        }
     }
 
     @Initializer

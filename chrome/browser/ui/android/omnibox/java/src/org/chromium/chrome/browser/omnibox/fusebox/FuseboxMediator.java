@@ -442,7 +442,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
                         : PopupState.FLOATING);
     }
 
-    private void hidePopup() {
+    void hidePopup() {
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
     }
 

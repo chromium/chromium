@@ -308,5 +308,8 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.getViewHolderForTesting().addButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
         Assert.assertTrue(mCoordinator.getViewHolderForTesting().addButton.isFocused());
+        assertEquals(
+                (int) FuseboxProperties.PopupState.HIDDEN,
+                (int) mCoordinator.getModelForTesting().get(FuseboxProperties.POPUP_STATE));
     }
 }
