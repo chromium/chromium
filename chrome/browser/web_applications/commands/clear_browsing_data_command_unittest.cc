@@ -54,7 +54,6 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
   Init();
 
   auto web_app1 = test::CreateWebApp(GURL("https://example.com/path"));
-  auto launch_time1 = base::Time();
   auto app_id1 = web_app1->app_id();
 
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/path2"));
@@ -76,8 +75,10 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
   }
 
   EXPECT_EQ(3UL, fake_provider().registrar_unsafe().GetAppIds().size());
-  EXPECT_EQ(launch_time1,
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id1));
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id1)
+                   .has_value());
   EXPECT_EQ(launch_time2,
             fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(launch_time3,
@@ -87,19 +88,24 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
   fake_provider().scheduler().ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(base::Time(),
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id1));
-  EXPECT_EQ(base::Time(),
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id2));
-  EXPECT_EQ(base::Time(),
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id3));
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id1)
+                   .has_value());
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id2)
+                   .has_value());
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id3)
+                   .has_value());
 }
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
   Init();
 
   auto web_app1 = test::CreateWebApp(GURL("https://example.com/path"));
-  auto launch_time1 = base::Time();
   auto app_id1 = web_app1->app_id();
 
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/path2"));
@@ -121,8 +127,10 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
   }
 
   EXPECT_EQ(3UL, fake_provider().registrar_unsafe().GetAppIds().size());
-  EXPECT_EQ(launch_time1,
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id1));
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id1)
+                   .has_value());
   EXPECT_EQ(launch_time2,
             fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(launch_time3,
@@ -133,10 +141,14 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
       base::Time() + base::Seconds(5), base::Time() + base::Seconds(15),
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(launch_time1,
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id1));
-  EXPECT_EQ(base::Time(),
-            fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id2));
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id1)
+                   .has_value());
+  EXPECT_FALSE(fake_provider()
+                   .registrar_unsafe()
+                   .GetAppLastLaunchTime(app_id2)
+                   .has_value());
   EXPECT_EQ(launch_time3,
             fake_provider().registrar_unsafe().GetAppLastLaunchTime(app_id3));
 }

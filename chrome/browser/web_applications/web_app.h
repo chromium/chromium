@@ -197,8 +197,12 @@ class WebApp {
 
   // Represents the last time the Badging API was used.
   const base::Time& last_badging_time() const { return last_badging_time_; }
-  // Represents the last time this app is launched.
-  const base::Time& last_launch_time() const { return last_launch_time_; }
+  // Represents the last time this app is launched. This can be unset if the app
+  // has not been launched at all, like after installation when
+  // `kWebAppInstallDialog` is enabled.
+  const std::optional<base::Time>& last_launch_time() const {
+    return last_launch_time_;
+  }
   // Represents the time when this app is installed.
   const base::Time& first_install_time() const { return first_install_time_; }
   // Represents the time when this app is updated.
@@ -519,7 +523,7 @@ class WebApp {
   void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
-  void SetLastLaunchTime(const base::Time& time);
+  void SetLastLaunchTime(const std::optional<base::Time>& last_launch_time);
   void SetFirstInstallTime(const base::Time& time);
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
@@ -690,7 +694,11 @@ class WebApp {
   GURL lock_screen_start_url_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
-  base::Time last_launch_time_;
+  // Denotes the last time an app was launched. If a `base::Time` instance is
+  // populated, it has to be valid, and cannot satisfy `base::Time::is_null()`,
+  // otherwise this code will crash. Consider setting the last launch time to
+  // `std::nullopt` instead if that is the case.
+  std::optional<base::Time> last_launch_time_;
   base::Time first_install_time_;
   base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;

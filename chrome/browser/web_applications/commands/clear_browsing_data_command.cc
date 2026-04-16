@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 
+#include <optional>
 #include <vector>
 
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -31,12 +32,12 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
     ScopedRegistryUpdate update = sync_bridge->BeginUpdate();
     for (const WebApp& web_app : registrar->GetApps()) {
       // Only update and notify web apps that have the last launch time set.
-      if (!web_app.last_launch_time().is_null() &&
+      if (web_app.last_launch_time().has_value() &&
           web_app.last_launch_time() >= begin_time &&
           web_app.last_launch_time() <= end_time) {
         WebApp* mutable_web_app = update->UpdateApp(web_app.app_id());
         if (mutable_web_app) {
-          mutable_web_app->SetLastLaunchTime(base::Time());
+          mutable_web_app->SetLastLaunchTime(std::nullopt);
           ids_to_notify_last_launch_time.push_back(web_app.app_id());
         }
       }
@@ -55,7 +56,7 @@ void ClearWebAppBrowsingData(const base::Time& begin_time,
       debug_value.EnsureList("last_launch_time_removed");
   for (const webapps::AppId& app_id : ids_to_notify_last_launch_time) {
     launch_time_removed_debug_list->Append(app_id);
-    registrar->NotifyWebAppLastLaunchTimeChanged(app_id, base::Time());
+    registrar->NotifyWebAppLastLaunchTimeChanged(app_id, std::nullopt);
   }
   base::ListValue* last_badging_time_removed_debug_list =
       debug_value.EnsureList("last_badging_time_removed");

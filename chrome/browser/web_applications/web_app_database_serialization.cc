@@ -696,8 +696,11 @@ std::unique_ptr<WebApp> ParseWebAppProto(
         syncer::ProtoTimeToTime(proto.last_badging_time()));
   }
   if (proto.has_last_launch_time()) {
-    web_app->SetLastLaunchTime(
-        syncer::ProtoTimeToTime(proto.last_launch_time()));
+    base::Time last_launch_time =
+        syncer::ProtoTimeToTime(proto.last_launch_time());
+    if (!last_launch_time.is_null()) {
+      web_app->SetLastLaunchTime(std::move(last_launch_time));
+    }
   }
   if (proto.has_latest_install_source()) {
     int install_source = proto.latest_install_source();
@@ -1621,9 +1624,9 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     local_data->set_last_badging_time(
         syncer::TimeToProtoTime(web_app.last_badging_time()));
   }
-  if (!web_app.last_launch_time().is_null()) {
+  if (web_app.last_launch_time().has_value()) {
     local_data->set_last_launch_time(
-        syncer::TimeToProtoTime(web_app.last_launch_time()));
+        syncer::TimeToProtoTime(*web_app.last_launch_time()));
   }
   if (!web_app.first_install_time().is_null()) {
     local_data->set_first_install_time(

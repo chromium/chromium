@@ -1522,7 +1522,7 @@ void WebAppPublisherHelper::OnAppRegistrarDestroyed() {
 
 void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
     const std::string& app_id,
-    const base::Time& last_launch_time) {
+    const std::optional<base::Time>& last_launch_time) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;

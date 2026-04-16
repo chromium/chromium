@@ -366,7 +366,12 @@ class WebAppRegistrar {
   GURL GetAppManifestUrl(const webapps::AppId& app_id) const;
 
   base::Time GetAppLastBadgingTime(const webapps::AppId& app_id) const;
-  base::Time GetAppLastLaunchTime(const webapps::AppId& app_id) const;
+
+  // This returning `std::nullopt` signifies that the app was never launched,
+  // which is useful information in determining when the first launch of an app
+  // needs to happen.
+  std::optional<base::Time> GetAppLastLaunchTime(
+      const webapps::AppId& app_id) const;
   base::Time GetAppFirstInstallTime(const webapps::AppId& app_id) const;
   base::Time GetAppLatestInstallTime(const webapps::AppId& app_id) const;
 
@@ -586,7 +591,7 @@ class WebAppRegistrar {
   void NotifyWebAppLastBadgingTimeChanged(const webapps::AppId& app_id,
                                           const base::Time& time);
   void NotifyWebAppLastLaunchTimeChanged(const webapps::AppId& app_id,
-                                         const base::Time& time);
+                                         const std::optional<base::Time>& time);
   void NotifyWebAppFirstInstallTimeChanged(const webapps::AppId& app_id,
                                            const base::Time& time);
   void NotifyWebAppUserDisplayModeChanged(

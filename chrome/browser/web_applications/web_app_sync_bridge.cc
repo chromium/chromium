@@ -279,16 +279,19 @@ void WebAppSyncBridge::SetAppLastBadgingTime(const webapps::AppId& app_id,
   registrar_->NotifyWebAppLastBadgingTimeChanged(app_id, time);
 }
 
-void WebAppSyncBridge::SetAppLastLaunchTime(const webapps::AppId& app_id,
-                                            const base::Time& time) {
+void WebAppSyncBridge::SetAppLastLaunchTime(
+    const webapps::AppId& app_id,
+    const std::optional<base::Time>& time) {
+  std::optional<base::Time> actual_time =
+      time.has_value() && time->is_null() ? std::nullopt : time;
   {
     ScopedRegistryUpdate update = BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     if (web_app) {
-      web_app->SetLastLaunchTime(time);
+      web_app->SetLastLaunchTime(actual_time);
     }
   }
-  registrar_->NotifyWebAppLastLaunchTimeChanged(app_id, time);
+  registrar_->NotifyWebAppLastLaunchTimeChanged(app_id, actual_time);
 }
 
 void WebAppSyncBridge::SetAppFirstInstallTime(const webapps::AppId& app_id,

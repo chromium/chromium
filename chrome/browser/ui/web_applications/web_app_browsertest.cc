@@ -801,15 +801,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
   const webapps::AppId app_id = InstallPWA(app_url);
   auto* provider = WebAppProvider::GetForTest(profile());
 
-  // last_launch_time is not set before launch
-  EXPECT_TRUE(
-      provider->registrar_unsafe().GetAppLastLaunchTime(app_id).is_null());
+  // `last_launch_time` is not set before launch.
+  EXPECT_FALSE(
+      provider->registrar_unsafe().GetAppLastLaunchTime(app_id).has_value());
 
   auto before_launch = base::Time::Now();
   LaunchWebAppBrowser(app_id);
 
-  EXPECT_TRUE(provider->registrar_unsafe().GetAppLastLaunchTime(app_id) >=
-              before_launch);
+  EXPECT_GE(provider->registrar_unsafe().GetAppLastLaunchTime(app_id),
+            before_launch);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
@@ -2132,8 +2132,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
             mojom::UserDisplayMode::kStandalone);
   EXPECT_EQ(provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
-  EXPECT_FALSE(
-      provider->registrar_unsafe().GetAppLastLaunchTime(app_id).is_null());
+  EXPECT_TRUE(
+      provider->registrar_unsafe().GetAppLastLaunchTime(app_id).has_value());
   tester.ExpectUniqueSample("WebApp.LaunchContainer",
                             apps::LaunchContainer::kLaunchContainerWindow, 1);
   tester.ExpectUniqueSample("WebApp.LaunchSource",

@@ -173,7 +173,7 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   // TODO(crbug.com/41490924): Remove this and use a command instead.
   void SetAppLastLaunchTime(const webapps::AppId& app_id,
-                            const base::Time& time);
+                            const std::optional<base::Time>& time);
 
   // TODO(crbug.com/41490924): Remove this and use a command instead.
   void SetAppFirstInstallTime(const webapps::AppId& app_id,

@@ -1568,9 +1568,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
                                 constants::DATA_TYPE_HISTORY, false);
 
   // Verify that web app's last launch time is cleared.
-  EXPECT_EQ(
-      provider->registrar_unsafe().GetAppById(web_app_id)->last_launch_time(),
-      base::Time());
+  EXPECT_FALSE(provider->registrar_unsafe()
+                   .GetAppLastLaunchTime(web_app_id)
+                   .has_value());
   // Verify that web app's last badging time is cleared.
   EXPECT_EQ(
       provider->registrar_unsafe().GetAppById(web_app_id)->last_badging_time(),

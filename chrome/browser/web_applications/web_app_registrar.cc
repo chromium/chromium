@@ -381,8 +381,9 @@ void WebAppRegistrar::NotifyWebAppLastBadgingTimeChanged(
 
 void WebAppRegistrar::NotifyWebAppLastLaunchTimeChanged(
     const webapps::AppId& app_id,
-    const base::Time& time) {
-  DVLOG(1) << "NotifyWebAppLastLaunchTimeChanged " << app_id << ", " << time;
+    const std::optional<base::Time>& time) {
+  DVLOG(1) << "NotifyWebAppLastLaunchTimeChanged " << app_id << ", "
+           << time.value_or(base::Time());
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppLastLaunchTimeChanged(app_id, time);
   }
@@ -1746,10 +1747,10 @@ base::Time WebAppRegistrar::GetAppLastBadgingTime(
   return web_app ? web_app->last_badging_time() : base::Time();
 }
 
-base::Time WebAppRegistrar::GetAppLastLaunchTime(
+std::optional<base::Time> WebAppRegistrar::GetAppLastLaunchTime(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->last_launch_time() : base::Time();
+  return web_app ? web_app->last_launch_time() : std::nullopt;
 }
 
 base::Time WebAppRegistrar::GetAppFirstInstallTime(

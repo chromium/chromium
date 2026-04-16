@@ -674,8 +674,13 @@ void WebApp::SetLastBadgingTime(const base::Time& time) {
   last_badging_time_ = time;
 }
 
-void WebApp::SetLastLaunchTime(const base::Time& time) {
-  last_launch_time_ = time;
+void WebApp::SetLastLaunchTime(
+    const std::optional<base::Time>& last_launch_time) {
+  if (last_launch_time.has_value()) {
+    CHECK(!last_launch_time->is_null())
+        << "Set last_launch_time to std::nullopt instead of a null time";
+  }
+  last_launch_time_ = last_launch_time;
 }
 
 void WebApp::SetFirstInstallTime(const base::Time& time) {
@@ -1293,7 +1298,11 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("last_badging_time", base::ToString(last_badging_time_));
 
-  root.Set("last_launch_time", base::ToString(last_launch_time_));
+  if (last_launch_time_.has_value()) {
+    root.Set("last_launch_time", base::ToString(*last_launch_time_));
+  } else {
+    root.Set("last_launch_time", base::Value());
+  }
 
   if (launch_handler_) {
     base::DictValue launch_handler_json;

@@ -33,7 +33,7 @@
    "is_uninstalling": false,
    "isolation_data": null,
    "last_badging_time": "1601-01-01 00:00:00.000000 UTC",
-   "last_launch_time": "1601-01-01 00:00:00.000000 UTC",
+   "last_launch_time": null,
    "latest_install_source": null,
    "latest_install_time": "1601-01-01 00:00:00.000000 UTC",
    "launch_handler": null,

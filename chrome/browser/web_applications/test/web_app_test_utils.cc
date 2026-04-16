@@ -918,7 +918,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   }
 
   app->SetLastBadgingTime(random.next_time());
-  app->SetLastLaunchTime(random.next_time());
+  if (random.next_bool()) {
+    app->SetLastLaunchTime(random.next_time());
+  }
   app->SetFirstInstallTime(random.next_time());
 
   const std::array<DisplayMode, 4> display_modes = {

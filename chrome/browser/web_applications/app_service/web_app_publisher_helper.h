@@ -320,7 +320,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       const webapps::AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
-      const base::Time& last_launch_time) override;
+      const std::optional<base::Time>& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(
       const webapps::AppId& app_id,
       mojom::UserDisplayMode user_display_mode) override;
