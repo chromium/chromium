@@ -56,8 +56,11 @@ if (is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
 
+    allow_circular_includes_from = [ "//chrome/browser/password_manager" ]
+
     deps = [
       "//base",
+      "//chrome/browser/password_manager",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/password_manager/android/grouped_affiliations:public",
       "//chrome/browser/profiles:profile",
@@ -92,6 +95,7 @@ if (is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
+      "//chrome/browser/password_manager",
       "//chrome/browser/password_manager/android/grouped_affiliations:public",
       "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
