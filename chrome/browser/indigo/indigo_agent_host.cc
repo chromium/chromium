@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_script_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,23 +52,40 @@ bool IndigoAgentHost::Invoke() {
     return true;
   }
 
-  std::string script_path =
+  std::string override_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
           kIndigoScriptSwitch);
-  if (script_path.empty()) {
+  std::optional<base::FilePath> component_path =
+      component_updater::GetIndigoContentScriptPath();
+
+  if (override_path.empty() && !component_path.has_value()) {
     return false;
   }
 
   injection_state_ = InjectionState::kInjecting;
   pending_invoke_count_++;
-  script_loader_->Load(script_path,
-                       base::BindOnce(&IndigoAgentHost::OnScriptLoaded,
-                                      weak_factory_.GetWeakPtr(), script_path));
+
+  if (!override_path.empty()) {
+    GURL script_url(override_path);
+    if (!script_url.is_valid() || !script_url.SchemeIsHTTPOrHTTPS()) {
+      script_url =
+          net::FilePathToFileURL(base::FilePath::FromUTF8Unsafe(override_path));
+    }
+    script_loader_->Load(
+        override_path, base::BindOnce(&IndigoAgentHost::OnScriptLoaded,
+                                      weak_factory_.GetWeakPtr(), script_url));
+  } else {
+    GURL script_url = net::FilePathToFileURL(*component_path);
+    script_loader_->LoadFromFile(
+        *component_path,
+        base::BindOnce(&IndigoAgentHost::OnScriptLoaded,
+                       weak_factory_.GetWeakPtr(), script_url));
+  }
   return true;
 }
 
 void IndigoAgentHost::OnScriptLoaded(
-    const std::string& script_path,
+    const GURL& script_url,
     std::optional<std::string> script_content) {
   if (!script_content.has_value()) {
     LOG(ERROR) << "Failed to load Indigo script.";
@@ -76,16 +94,9 @@ void IndigoAgentHost::OnScriptLoaded(
     return;
   }
 
-  GURL script_url(script_path);
-  if (!script_url.is_valid() || !script_url.SchemeIsHTTPOrHTTPS()) {
-    script_url =
-        net::FilePathToFileURL(base::FilePath::FromUTF8Unsafe(script_path));
-  }
-
-  GetAgent().InjectScript(
-      script_content.value(), script_url,
-      url::Origin::Create(GURL("chrome-untrusted://indigo")),
-      receiver_.BindNewEndpointAndPassRemote(), base::DoNothing());
+  GetAgent().InjectScript(script_content.value(), script_url, url::Origin(),
+                          receiver_.BindNewEndpointAndPassRemote(),
+                          base::DoNothing());
 
   injection_state_ = InjectionState::kInjected;
   while (pending_invoke_count_ > 0) {

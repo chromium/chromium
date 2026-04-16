@@ -43,8 +43,9 @@ class IndigoScriptLoader {
   // filename.
   void Load(std::string_view path, LoadCallback callback);
 
- private:
   void LoadFromFile(const base::FilePath& path, LoadCallback callback);
+
+ private:
   void LoadFromNetwork(const GURL& url, LoadCallback callback);
 
   void OnNetworkLoadComplete(

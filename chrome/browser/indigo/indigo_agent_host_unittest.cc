@@ -10,7 +10,9 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/page.h"
@@ -65,9 +67,11 @@ class IndigoAgentHostTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     script_path_ = temp_dir_.GetPath().AppendASCII(kScriptFilename);
     ASSERT_TRUE(base::WriteFile(script_path_, kScriptContent));
+  }
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        "indigo-script", script_path_.AsUTF8Unsafe());
+  void TearDown() override {
+    component_updater::ResetIndigoInstallDirForTesting();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void OverrideAgentBinder() {
@@ -77,23 +81,28 @@ class IndigoAgentHostTest : public ChromeRenderViewHostTestHarness {
                             base::Unretained(&mock_agent_)));
   }
 
+  void SetIndigoScriptSwitch(const base::FilePath& path) {
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchPath(
+        "indigo-script", path);
+  }
+
+  base::test::ScopedCommandLine scoped_command_line_;
   base::ScopedTempDir temp_dir_;
   base::FilePath script_path_;
   MockIndigoAgent mock_agent_;
 };
 
 TEST_F(IndigoAgentHostTest, AutomaticInjectionOnFirstInvoke) {
+  SetIndigoScriptSwitch(script_path_);
   NavigateAndCommit(GURL("https://example.com"));
   OverrideAgentBinder();
   content::Page& page = main_rfh()->GetPage();
   IndigoAgentHost* host = IndigoAgentHost::GetOrCreateForPage(page);
 
   const GURL expected_script_url = net::FilePathToFileURL(script_path_);
-  const url::Origin expected_origin =
-      url::Origin::Create(GURL("chrome-untrusted://indigo"));
   EXPECT_CALL(mock_agent_,
               InjectScript(std::string(kScriptContent), expected_script_url,
-                           expected_origin, _, _))
+                           testing::Property(&url::Origin::opaque, true), _, _))
       .WillOnce(RunOnceCallback<4>());
 
   base::test::TestFuture<void> invoke_future;
@@ -108,6 +117,7 @@ TEST_F(IndigoAgentHostTest, AutomaticInjectionOnFirstInvoke) {
 }
 
 TEST_F(IndigoAgentHostTest, MultipleInvokesDuringInjectionAreQueued) {
+  SetIndigoScriptSwitch(script_path_);
   NavigateAndCommit(GURL("https://example.com"));
   OverrideAgentBinder();
   content::Page& page = main_rfh()->GetPage();
@@ -149,6 +159,7 @@ TEST_F(IndigoAgentHostTest, MultipleInvokesDuringInjectionAreQueued) {
 }
 
 TEST_F(IndigoAgentHostTest, StateIsClearedOnCrossDocumentNavigation) {
+  SetIndigoScriptSwitch(script_path_);
   NavigateAndCommit(GURL("https://example.com/1"));
   OverrideAgentBinder();
   content::Page& page1 = main_rfh()->GetPage();
@@ -188,6 +199,37 @@ TEST_F(IndigoAgentHostTest, StateIsClearedOnCrossDocumentNavigation) {
 
   host2->Invoke();
   EXPECT_TRUE(invoke2_future.Wait());
+}
+
+TEST_F(IndigoAgentHostTest, LoadFromInstalledComponent) {
+  NavigateAndCommit(GURL("https://example.com"));
+  OverrideAgentBinder();
+  content::Page& page = main_rfh()->GetPage();
+  IndigoAgentHost* host = IndigoAgentHost::GetOrCreateForPage(page);
+
+  base::FilePath component_dir = temp_dir_.GetPath().AppendASCII("component");
+  ASSERT_TRUE(base::CreateDirectory(component_dir));
+  base::FilePath script_path = component_dir.AppendASCII("content_script.js");
+  ASSERT_TRUE(base::WriteFile(script_path, kScriptContent));
+
+  component_updater::IndigoComponentInstallerPolicy policy;
+  policy.ComponentReady(base::Version("1.0"), component_dir, base::DictValue());
+
+  const GURL expected_script_url = net::FilePathToFileURL(script_path);
+  EXPECT_CALL(mock_agent_,
+              InjectScript(std::string(kScriptContent), expected_script_url,
+                           testing::Property(&url::Origin::opaque, true), _, _))
+      .WillOnce(RunOnceCallback<4>());
+
+  base::test::TestFuture<void> invoke_future;
+  EXPECT_CALL(mock_agent_, Invoke(_))
+      .WillOnce([&](chrome::mojom::IndigoAgent::InvokeCallback callback) {
+        std::move(callback).Run();
+        invoke_future.SetValue();
+      });
+
+  EXPECT_TRUE(host->Invoke());
+  EXPECT_TRUE(invoke_future.Wait());
 }
 
 }  // namespace

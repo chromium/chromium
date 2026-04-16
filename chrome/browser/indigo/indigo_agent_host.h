@@ -16,6 +16,8 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
+class GURL;
+
 namespace indigo {
 
 class IndigoScriptLoader;
@@ -50,7 +52,7 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
   explicit IndigoAgentHost(content::Page& page);
   friend class content::PageUserData<IndigoAgentHost>;
 
-  void OnScriptLoaded(const std::string& script_path,
+  void OnScriptLoaded(const GURL& script_url,
                       std::optional<std::string> script_content);
 
   chrome::mojom::IndigoAgent& GetAgent();
