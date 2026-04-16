@@ -955,6 +955,10 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 - (void)testFillAddressFieldsOnForm {
   [self loadAddressPage];
 
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"document.getElementById('form_zip')."
+                                      @"scrollIntoView();"];
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
 
@@ -1156,11 +1160,11 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // Tests that an Autofill AI passport suggestion successfully fills a passport
 // form.
 - (void)testFillPassportForm {
-  // Enhanced Autofill only works for signed in users.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
   [self savePassportEntity];
   [self loadPassportPage];
+
+  // Enhanced Autofill only works for signed in users.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   NSString* expectedLabel = PassportSuggestionAccessibilityLabel();
 
