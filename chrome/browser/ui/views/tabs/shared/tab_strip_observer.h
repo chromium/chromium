@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_OBSERVER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_OBSERVER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_OBSERVER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_OBSERVER_H_
 
 #include "chrome/browser/ui/views/chrome_views_export.h"
 
@@ -35,4 +35,4 @@ class CHROME_VIEWS_EXPORT TabStripObserver {
   virtual ~TabStripObserver() = default;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_OBSERVER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_OBSERVER_H_

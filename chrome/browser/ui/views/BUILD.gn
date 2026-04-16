@@ -16,9 +16,9 @@ component("views") {
     "event_utils.h",
     "tab_icon_view_model.h",
     "tab_search_bubble_host_observer.h",
-    "tabs/tab_strip_observer.cc",
-    "tabs/tab_strip_observer.h",
-    "tabs/tab_strip_types.h",
+    "tabs/shared/tab_strip_observer.cc",
+    "tabs/shared/tab_strip_observer.h",
+    "tabs/shared/tab_strip_types.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_TYPES_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_TYPES_H_
 // Enum passed to EndDrag().
 enum class EndDragReason {
   // Complete the drag.
@@ -48,4 +48,4 @@ enum class ToggleTabGroupCollapsedStateOrigin {
   kTabsSelected,
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_TYPES_H_
