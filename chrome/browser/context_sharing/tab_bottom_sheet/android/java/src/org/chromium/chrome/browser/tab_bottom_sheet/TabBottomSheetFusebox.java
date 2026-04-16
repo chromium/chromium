@@ -103,7 +103,6 @@ public class TabBottomSheetFusebox {
                         /* omniboxUma= */ (url, transition, isNtp) -> {},
                         /* bookmarkState= */ (url) -> false,
                         /* isToolbarMicEnabledSupplier= */ () -> true,
-                        /* merchantTrustSignalsCoordinatorSupplier= */ null,
                         config.omniboxActionDelegate,
                         /* browserControlsVisibilityDelegate= */ null,
                         /* backPressManager= */ null,

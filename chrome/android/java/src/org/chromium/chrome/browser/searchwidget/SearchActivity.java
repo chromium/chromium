@@ -339,7 +339,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         /*omniboxUma*/ (url, transition, isNtp) -> {},
                         /* bookmarkState= */ (url) -> false,
                         VoiceToolbarButtonController::isToolbarMicEnabled,
-                        /* merchantTrustSignalsCoordinatorSupplier= */ null,
                         new OmniboxActionDelegateImpl(
                                 this,
                                 () -> mSearchBoxDataProvider.getTab(),
