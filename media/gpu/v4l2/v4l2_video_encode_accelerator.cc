@@ -965,6 +965,19 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
                                        frame->storage_type())})});
       return;
     }
+    constexpr VideoPixelFormat kExpectedFormats[] = {
+        PIXEL_FORMAT_I420,
+        PIXEL_FORMAT_NV12,
+    };
+    const bool is_expected_format =
+        std::ranges::contains(kExpectedFormats, frame->format());
+    if (!is_expected_format) {
+      SetErrorState(
+          {EncoderStatus::Codes::kInvalidInputFrame,
+           base::StrCat({"Unexpected format: ",
+                         VideoPixelFormatToString(frame->format())})});
+      return;
+    }
 
     if (!ReconfigureFormatIfNeeded(*frame)) {
       SetErrorState({EncoderStatus::Codes::kUnsupportedFrameFormat,
