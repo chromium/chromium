@@ -40,6 +40,8 @@
 // ```
 //  // outside all namespaces:
 //  DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(FOO_EXPORT, MyType)
+//  // or
+//  DEFINE_UI_CLASS_PROPERTY_TYPE(MyType) if not exported.
 // ```
 // If a property type is not exported, use
 // `DEFINE_UI_CLASS_PROPERTY_TYPE(MyType)`, which is shorthand for
@@ -317,6 +319,9 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
     subtle::PropertyHelper::Clear<T>(this, property);                        \
   }                                                                          \
   }  // namespace ui
+
+#define DECLARE_UI_CLASS_PROPERTY_TYPE(T) \
+  DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, T)
 
 #define DEFINE_UI_CLASS_PROPERTY_TYPE(T) \
   DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, T)
