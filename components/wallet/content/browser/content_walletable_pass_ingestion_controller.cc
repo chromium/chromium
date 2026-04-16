@@ -26,7 +26,7 @@ void ContentWalletablePassIngestionController::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (render_frame_host->IsInPrimaryMainFrame()) {
-    StartWalletablePassDetectionFlow(validated_url);
+    StartWalletablePassDetectionFlow(render_frame_host->GetLastCommittedURL());
   }
 }
 
