@@ -1218,10 +1218,13 @@ const char kChromeAppStoreUrl[] =
 
   // TODO(crbug.com/40256480): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:_viewController];
-  [_viewController shutdown];
-  _viewController = nil;
+
+  // Stop layout coordinator first to follow the reverse order of start calls.
   [_browserLayoutCoordinator stop];
   _browserLayoutCoordinator = nil;
+
+  [_viewController shutdown];
+  _viewController = nil;
 }
 
 // Ensure BrowserViewController's view is created
