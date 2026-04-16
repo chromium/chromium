@@ -36,6 +36,7 @@ public class FuseboxPopupUnitTest {
 
     private @Mock AnchoredPopupWindow mPopupWindow;
     private @Mock View.AccessibilityDelegate mAccessibilityDelegate;
+    private @Mock DynamicRectProvider mDynamicRectProvider;
 
     private Activity mActivity;
     private FuseboxPopup mFuseboxPopup;
@@ -47,7 +48,8 @@ public class FuseboxPopupUnitTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mViewGroup = mContentView.findViewById(R.id.fusebox_view_group);
-        mFuseboxPopup = new FuseboxPopup(mActivity, mPopupWindow, mContentView);
+        mFuseboxPopup =
+                new FuseboxPopup(mActivity, mPopupWindow, mContentView, mDynamicRectProvider);
     }
 
     @Test
@@ -100,5 +102,25 @@ public class FuseboxPopupUnitTest {
 
         verify(mAccessibilityDelegate, atLeastOnce())
                 .sendAccessibilityEvent(v2, AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    @Test
+    public void testSetPopupState_Hidden() {
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.HIDDEN);
+        verify(mPopupWindow).dismiss();
+    }
+
+    @Test
+    public void testSetPopupState_Floating() {
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.FLOATING);
+        verify(mPopupWindow).show();
+    }
+
+    @Test
+    public void testSetPopupState_Bottom() {
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        verify(mPopupWindow).show();
     }
 }
