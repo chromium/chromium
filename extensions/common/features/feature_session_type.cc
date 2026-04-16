@@ -26,7 +26,8 @@ void SetCurrentFeatureSessionType(mojom::FeatureSessionType session_type) {
   // Note that this requirement can be bypassed in tests by using
   // |ScopedCurrentFeatureSessionType|.
   CHECK(g_current_session_type == kDefaultSessionType ||
-        session_type == g_current_session_type);
+        session_type == g_current_session_type)
+      << g_current_session_type << " to " << session_type;
   // In certain unit tests, SetCurrentFeatureSessionType() can be called
   // within the same process (where e.g. utility processes run as a separate
   // thread). Don't write if the value is the same to avoid TSAN failures.

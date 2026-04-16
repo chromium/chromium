@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 
@@ -18,7 +19,7 @@ namespace {
 
 constexpr char kTestAppId[] = "jabiebdnficieldhmegebckfhpfidfla";
 
-class CecPrivateKioskApiTest : public ShellApiTest {
+class CecPrivateKioskApiTest : public ExtensionApiTest {
  public:
   CecPrivateKioskApiTest()
       : session_type_(ScopedCurrentFeatureSessionType(
@@ -30,22 +31,22 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   ~CecPrivateKioskApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    // Unlike chrome's browser_tests, extensions_browsertests does not
-    // automatically create D-Bus fakes for us.
-    ash::CecServiceClient::InitializeFake();
+    ExtensionApiTest::SetUpOnMainThread();
+    // In browser tests, D-Bus clients are fakes.
     cec_ =
         static_cast<ash::FakeCecServiceClient*>(ash::CecServiceClient::Get());
   }
 
   void TearDownOnMainThread() override {
     cec_ = nullptr;
-    ash::CecServiceClient::Shutdown();
+    // Tear down will delete the fake CecService client.
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kTestAppId);
-    ShellApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
   }
 
  protected:
@@ -55,7 +56,7 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> session_type_;
 };
 
-using CecPrivateNonKioskApiTest = ShellApiTest;
+using CecPrivateNonKioskApiTest = ExtensionApiTest;
 
 }  // namespace
 
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(CecPrivateKioskApiTest, TestAllApiFunctions) {
   ExtensionTestMessageListener wakeup_call_count("wakeup_call_count",
                                                  ReplyBehavior::kWillReply);
 
-  ASSERT_TRUE(LoadApp("api_test/cec_private/api"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("cec_private/api")));
 
   ASSERT_TRUE(standby_call_count.WaitUntilSatisfied())
       << standby_call_count.message();
@@ -82,7 +83,13 @@ IN_PROC_BROWSER_TEST_F(CecPrivateKioskApiTest, TestAllApiFunctions) {
 }
 
 IN_PROC_BROWSER_TEST_F(CecPrivateNonKioskApiTest, TestCecPrivateNotAvailable) {
-  ASSERT_TRUE(RunAppTest("api_test/cec_private/non_kiosk_api_not_available"))
+  // ChromeTestExtensionLoader emits a warning that the manifest wants
+  // cecPrivate permission but this is not a kiosk session. Ignore the warning
+  // so we can verify the API is not available to JavaScript.
+  LoadOptions load_options;
+  load_options.ignore_manifest_warnings = true;
+  ASSERT_TRUE(RunExtensionTest("cec_private/non_kiosk_api_not_available",
+                               RunOptions(), load_options))
       << message_;
 }
 

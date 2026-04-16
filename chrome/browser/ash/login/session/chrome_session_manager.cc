@@ -363,6 +363,16 @@ bool MaybeStartArcVmDataMigration(user_manager::UserManager* user_manager,
 // NOTE: This has to be called before profile is initialized - so it is set up
 // when extension are loaded during profile initialization.
 void InitFeaturesSessionType(const user_manager::User* user) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+
+  // Tests are allowed to set a session type early in startup. Don't override
+  // the session type if it's already set by a test.
+  if (extensions::GetCurrentFeatureSessionType() !=
+          extensions::mojom::FeatureSessionType::kInitial &&
+      command_line->HasSwitch(::switches::kTestType)) {
+    return;
+  }
+
   // Kiosk session should be set as part of kiosk user session initialization
   // in normal circumstances (to be able to properly determine whether kiosk
   // was auto-launched); in case of user session restore, feature session
@@ -370,14 +380,12 @@ void InitFeaturesSessionType(const user_manager::User* user) {
   // kiosk app profile would already be initialized - feature session type
   // should be set before that.
   if (user->IsKioskType()) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kLoginUser)) {
+    if (command_line->HasSwitch(switches::kLoginUser)) {
       // For kiosk session crash recovery, feature session type has be set
       // before kiosk app controller takes over, as at that point iosk app
       // profile would already be initialized - feature session type
       // should be set before that.
-      bool auto_launched = base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAppAutoLaunched);
+      bool auto_launched = command_line->HasSwitch(switches::kAppAutoLaunched);
       extensions::SetCurrentFeatureSessionType(
           auto_launched
               ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk

@@ -1336,7 +1336,6 @@ if (enable_extensions) {
         # crbug.com/650835.
         "api/bluetooth/bluetooth_appshell_test.cc",
         "api/bluetooth_socket/bluetooth_socket_apitest.cc",
-        "api/cec_private/cec_private_ash_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
         "api/virtual_keyboard/virtual_keyboard_apitest.cc",
       ]
@@ -1345,7 +1344,6 @@ if (enable_extensions) {
         "//chromeos/ash/components/audio",
         "//chromeos/ash/components/dbus:test_support",
         "//chromeos/ash/components/dbus/audio",
-        "//chromeos/ash/components/dbus/cec_service",
         "//chromeos/ash/components/dbus/media_analytics",
         "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
         "//chromeos/ash/components/dbus/upstart",
