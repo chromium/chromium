@@ -139,6 +139,7 @@ public class StatusMediator
             PageInfoAction pageInfoAction) {
         initBackgroundDrawables(context);
         mModel = model;
+        mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, false);
         mLocationBarDataProvider = locationBarDataProvider;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mShowStatusIconForSecureOrigins = !isPageInfoMovedToAppMenu();
@@ -180,6 +181,7 @@ public class StatusMediator
         updateColorTheme();
         setStatusIconShown(/* show= */ true);
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        updateStatusViewMinWidth();
     }
 
     public void destroy() {
@@ -302,10 +304,23 @@ public class StatusMediator
         updateStatusVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
         updateStatusViewVisibility();
+        updateStatusViewMinWidth();
 
         // Set the default match to be a search on an unfocus event to avoid the globe sticking
         // around for subsequent focus events.
         if (!mUrlHasFocus) updateLocationBarIconForDefaultMatchCategory(true);
+    }
+
+    private void updateStatusViewMinWidth() {
+        // Don't use isNtpVisible() here -- it reports NTP visibility when navigation is already
+        // underway, making the onUrlChanged fail to detect the user is navigating out of the NTP.
+        var url = mLocationBarDataProvider.getCurrentGurl();
+        boolean isRegularNtpUrl =
+                url != null
+                        && UrlUtilities.isNtpUrl(url)
+                        && !mLocationBarDataProvider.isIncognitoBranded();
+
+        mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, mUrlHasFocus || isRegularNtpUrl);
     }
 
     void setStatusIconShown(boolean show) {
@@ -428,11 +443,23 @@ public class StatusMediator
         return mPageIsOffline || mPageIsPaintPreview;
     }
 
+    /**
+     * Returns whether the NewTabPage is currently shown to the user.
+     *
+     * <p>Caution: returns true even if the user is currently navigating out of the NTP (Current URL
+     * no longer pointing to NTP, but the navigation not yet completed).
+     */
     private boolean isNtpVisible() {
         return mLocationBarDataProvider.getNewTabPageDelegate() != null
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
     }
 
+    /**
+     * Returns whether the Incognito NewTabPage is currently shown to the user.
+     *
+     * <p>Caution: returns true even if the user is currently navigating out of the NTP (Current URL
+     * no longer pointing to NTP, but the navigation not yet completed).
+     */
     private boolean isIncognitoNtpVisible() {
         return mLocationBarDataProvider.getNewTabPageDelegate() != null
                 && mLocationBarDataProvider
@@ -759,6 +786,7 @@ public class StatusMediator
     }
 
     public void onUrlChanged() {
+        updateStatusViewMinWidth();
         Tab currentTab = mLocationBarDataProvider.getTab();
         Profile profile = mProfileSupplier.get();
         if (profile != null && currentTab != null) {

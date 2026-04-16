@@ -67,6 +67,13 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                     res.getDrawable(view.getContext(), view.getResources()),
                     res.getTransitionType(),
                     res.getAnimationFinishedCallback());
+        } else if (StatusProperties.USE_WIDE_STATUS_ICON.equals(propertyKey)) {
+            view.setMinimumWidth(
+                    view.getResources()
+                            .getDimensionPixelSize(
+                                    model.get(StatusProperties.USE_WIDE_STATUS_ICON)
+                                            ? R.dimen.status_view_width_wide
+                                            : R.dimen.status_view_width_narrow));
         } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
             view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {

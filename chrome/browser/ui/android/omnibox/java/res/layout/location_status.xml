@@ -18,7 +18,8 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_ids="omnibox_back_button" />
+        app:constraint_referenced_ids="omnibox_back_button"/>
+
     <!--
     StatusView acts as a single focusable group. This improves accessibility
     screen reading behavior.
@@ -27,6 +28,7 @@ found in the LICENSE file.
         android:id="@+id/location_bar_status"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/location_bar_height"
+        android:gravity="center"
         android:focusable="true"
         android:screenReaderFocusable="true"
         app:layout_constraintStart_toEndOf="@id/back_button_barrier"
@@ -49,8 +51,8 @@ found in the LICENSE file.
             android:id="@+id/location_bar_verbose_status"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:visibility="gone"
             android:layout_marginStart="@dimen/omnibox_verbose_text_negative_start_margin"
+            android:visibility="gone"
             android:paddingStart="@dimen/location_bar_verbose_start_padding_verbose_text"
             android:paddingEnd="8dp"
             android:gravity="center_vertical"

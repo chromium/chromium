@@ -73,7 +73,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_INCOGNITO)
-                    .setRevision(3)
+                    .setRevision(4)
                     .setDescription("Updated Incognito splash to GM3")
                     .build();
 

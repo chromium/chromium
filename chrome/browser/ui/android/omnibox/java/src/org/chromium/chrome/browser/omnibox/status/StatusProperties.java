@@ -269,6 +269,9 @@ public class StatusProperties {
     /** Whether the icon is shown. */
     static final WritableBooleanPropertyKey SHOW_STATUS_ICON = new WritableBooleanPropertyKey();
 
+    /** Whether the status view should be wide. */
+    static final WritableBooleanPropertyKey USE_WIDE_STATUS_ICON = new WritableBooleanPropertyKey();
+
     /** The handler of status click events. */
     static final WritableObjectPropertyKey<View.OnClickListener> STATUS_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -334,6 +337,7 @@ public class StatusProperties {
                 SEPARATOR_COLOR,
                 SHOW_STATUS_ICON,
                 SHOW_STATUS_VIEW,
+                USE_WIDE_STATUS_ICON,
                 STATUS_CLICK_LISTENER,
                 STATUS_ACCESSIBILITY_TOAST_RES,
                 STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
