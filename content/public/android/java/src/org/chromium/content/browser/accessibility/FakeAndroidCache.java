@@ -70,7 +70,8 @@ public class FakeAndroidCache {
     }
 
     // Validate accessibility node info throughout the fake android cache.
-    public void validateAccessibility() {
+    @CalledByNative
+    public void validateAccessibilityForExperiment() {
         if (mHistogramRecorder != null) {
             // We must first calculate the total number of nodes.
             mHistogramRecorder.setTotalNodesCount(
