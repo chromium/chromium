@@ -13,8 +13,6 @@ source_set("internal") {
     "actor_login_metrics_helper.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
-    "siwg_button_finder.cc",
-    "siwg_button_finder.h",
   ]
 
   visibility = [
@@ -33,7 +31,6 @@ source_set("internal") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/webid",
     "//chrome/common:buildflags",
-    "//components/autofill/content/common/mojom",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/actor_login:common",
@@ -75,7 +72,6 @@ if (!skip_android_unmigrated_actor_files) {
       "actor_login_duplicate_permission_cleaner_unittest.cc",
       "actor_login_federated_credentials_fetcher_unittest.cc",
       "actor_login_siwg_controller_unittest.cc",
-      "siwg_button_finder_unittest.cc",
     ]
 
     deps = [

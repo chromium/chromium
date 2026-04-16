@@ -162,7 +162,6 @@ class ActorLoginDelegateImpl
   // and click the SiwG button. After the prototype, the click will be done
   // through `ExecutionEngine`.
   // Scoped to one `AttemptLogin` request.
-  // TODO(crbug.com/479505793): Implement the click without heuristics.
   std::unique_ptr<ActorLoginSiwgController> siwg_controller_;
 
   // Track the currently acting task to know when we can remove the

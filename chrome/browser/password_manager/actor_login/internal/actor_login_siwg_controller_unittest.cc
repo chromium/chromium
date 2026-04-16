@@ -20,17 +20,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/content/browser/test_autofill_driver_injector.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
@@ -145,236 +138,7 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
 
 }  // namespace
 
-class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
 
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::kActorLoginFederatedClickFromActor);
-
-    // Navigate to a URL so we have a valid last committed URL.
-    NavigateAndCommit(GURL("https://example.com/login"));
-
-    mock_autofill_agent_.BindForTesting(web_contents()->GetPrimaryMainFrame());
-
-    blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
-    remote_interfaces->OverrideBinderForTesting(
-        chrome::mojom::ChromeRenderFrame::Name_,
-        base::BindRepeating(&MockChromeRenderFrame::BindPendingReceiver,
-                            base::Unretained(&mock_chrome_render_frame_)));
-  }
-
-  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-  base::HistogramTester histogram_tester_;
-  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
-      autofill_client_injector_;
-  autofill::TestAutofillDriverInjector<autofill::ContentAutofillDriver>
-      autofill_driver_injector_;
-  StrictMock<autofill::MockAutofillAgent> mock_autofill_agent_;
-  StrictMock<MockChromeRenderFrame> mock_chrome_render_frame_;
-  StrictMock<MockActorLoginPermissionService> mock_permission_service_;
-
-  static void SaveCallback(
-      optimization_guide::OnAIPageContentDone* last_callback,
-      content::WebContents* web_contents,
-      blink::mojom::AIPageContentOptionsPtr options,
-      optimization_guide::OnAIPageContentDone callback) {
-    *last_callback = std::move(callback);
-  }
-};
-
-TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
-  base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-  base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  optimization_guide::OnAIPageContentDone page_content_callback;
-
-  auto metrics_helper_owned =
-      std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
-
-  Credential credential;
-  credential.federation_detail = FederationDetail();
-
-  ActorLoginSiwgController controller(
-      web_contents(), credential,
-      base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
-                          &page_content_callback),
-      /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), /*action_sequence_delegate=*/nullptr,
-      /*mqls_logger=*/nullptr,
-      /*attempt_login_tool_start_time=*/base::TimeTicks::Now());
-
-  controller.StartFederatedLogin(std::move(metrics_helper_owned));
-
-  // 1. Simulate Page Content Received with a SiwG button.
-  optimization_guide::proto::AnnotatedPageContent page_content;
-  auto* root = page_content.mutable_root_node();
-  root->mutable_content_attributes()->set_common_ancestor_dom_node_id(1);
-  root->mutable_content_attributes()
-      ->mutable_interaction_info()
-      ->add_clickability_reasons(
-          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL);
-  auto* child = root->add_children_nodes();
-  child->mutable_content_attributes()->set_common_ancestor_dom_node_id(2);
-
-  // 2. Expect FindPotentialSiwgButtons on the agent.
-  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons)
-      .WillOnce(WithArg<0>(
-          [&](autofill::mojom::AutofillAgent::FindPotentialSiwgButtonsCallback
-                  callback) {
-            std::vector<autofill::mojom::SiwgButtonDataPtr> buttons;
-            auto button = autofill::mojom::SiwgButtonData::New();
-            button->dom_node_id = 2;  // Matches child node
-            button->text = u"Sign in with Google";
-            buttons.push_back(std::move(button));
-            std::move(callback).Run(std::move(buttons));
-          }));
-
-  // 3. Expect InvokeTool (Click) on the frame.
-  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool)
-      .WillOnce(WithArg<1>(
-          [&](chrome::mojom::ChromeRenderFrame::InvokeToolCallback callback) {
-            auto result = actor::mojom::ActionResult::New();
-            result->code = actor::mojom::ActionResultCode::kOk;
-            std::move(callback).Run(std::move(result));
-
-            // Manually trigger the federated login completion callback.
-            auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
-                web_contents());
-            ASSERT_TRUE(request);
-            request->OnFederatedResultReceived(
-                content::webid::FederatedLoginResult::kSuccess);
-          }));
-
-  // 4. Verify Success callback.
-  EXPECT_CALL(finished_callback,
-              Run(base::test::ValueIs(LoginStatusResult::kSuccessFederated)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  // Trigger the flow manually from OnPageContentReceived since capturing relies
-  // on services we didn't mock.
-  optimization_guide::AIPageContentResult result;
-  result.proto = std::move(page_content);
-  std::move(page_content_callback).Run(std::move(result));
-
-  run_loop.Run();
-
-  histogram_tester.ExpectUniqueSample("Actor.Login.Federated.LoginResult",
-                                      ActorLoginFederatedLoginResult::kSuccess,
-                                      1);
-}
-
-TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
-  base::RunLoop run_loop;
-  base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  optimization_guide::OnAIPageContentDone page_content_callback;
-  Credential credential;
-  credential.federation_detail = FederationDetail();
-
-  ActorLoginSiwgController controller(
-      web_contents(), credential,
-      base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
-                          &page_content_callback),
-      /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), /*action_sequence_delegate=*/nullptr,
-      /*mqls_logger=*/nullptr,
-      /*attempt_login_tool_start_time=*/base::TimeTicks::Now());
-
-  controller.StartFederatedLogin(/*metrics_helper=*/nullptr);
-
-  // 1. Simulate Page Content Received with a SiwG button.
-  optimization_guide::proto::AnnotatedPageContent page_content;
-  auto* root = page_content.mutable_root_node();
-  root->mutable_content_attributes()->set_common_ancestor_dom_node_id(1);
-  root->mutable_content_attributes()
-      ->mutable_interaction_info()
-      ->add_clickability_reasons(
-          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL);
-  auto* child = root->add_children_nodes();
-  child->mutable_content_attributes()->set_common_ancestor_dom_node_id(2);
-
-  // 2. Expect FindPotentialSiwgButtons.
-  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons)
-      .WillOnce(WithArg<0>(
-          [&](autofill::mojom::AutofillAgent::FindPotentialSiwgButtonsCallback
-                  callback) {
-            std::vector<autofill::mojom::SiwgButtonDataPtr> buttons;
-            auto button = autofill::mojom::SiwgButtonData::New();
-            button->dom_node_id = 2;
-            button->text = u"Sign in with Google";
-            buttons.push_back(std::move(button));
-            std::move(callback).Run(std::move(buttons));
-          }));
-
-  // 3. Expect InvokeTool and simulate failure.
-  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool)
-      .WillOnce(WithArg<1>(
-          [&](chrome::mojom::ChromeRenderFrame::InvokeToolCallback callback) {
-            auto result = actor::mojom::ActionResult::New();
-            result->code = actor::mojom::ActionResultCode::kElementDisabled;
-            std::move(callback).Run(std::move(result));
-          }));
-
-  // 4. Verify Failure callback.
-  EXPECT_CALL(finished_callback,
-              Run(base::test::ErrorIs(ActorLoginError::kFillingNotAllowed)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  optimization_guide::AIPageContentResult result;
-  result.proto = std::move(page_content);
-  std::move(page_content_callback).Run(std::move(result));
-
-  run_loop.Run();
-}
-
-TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
-  base::RunLoop run_loop;
-  base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
-  optimization_guide::OnAIPageContentDone page_content_callback;
-  Credential credential;
-  credential.federation_detail = FederationDetail();
-
-  ActorLoginSiwgController controller(
-      web_contents(), credential,
-      base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
-                          &page_content_callback),
-      /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), /*action_sequence_delegate=*/nullptr,
-      /*mqls_logger=*/nullptr,
-      /*attempt_login_tool_start_time=*/base::TimeTicks::Now());
-
-  controller.StartFederatedLogin(/*metrics_helper=*/nullptr);
-
-  // No buttons in the page content.
-  optimization_guide::proto::AnnotatedPageContent page_content;
-
-  // Expect FindPotentialSiwgButtons but return empty.
-  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons)
-      .WillOnce(WithArg<0>(
-          [&](autofill::mojom::AutofillAgent::FindPotentialSiwgButtonsCallback
-                  callback) {
-            std::vector<autofill::mojom::SiwgButtonDataPtr> buttons;
-            std::move(callback).Run(std::move(buttons));
-          }));
-
-  // Do NOT expect InvokeTool.
-  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool).Times(0);
-
-  EXPECT_CALL(finished_callback,
-              Run(base::test::ErrorIs(ActorLoginError::kFillingNotAllowed)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  optimization_guide::AIPageContentResult result;
-  result.proto = std::move(page_content);
-  std::move(page_content_callback).Run(std::move(result));
-
-  run_loop.Run();
-}
 
 using AttemptLoginDetails =
     optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails;
@@ -395,10 +159,9 @@ testing::Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
                         expected.button_click_succeeded()));
 }
 
-class ActorLoginSiwgControllerDelegateClickTest
-    : public ChromeRenderViewHostTestHarness {
+class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  ActorLoginSiwgControllerDelegateClickTest()
+  ActorLoginSiwgControllerTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -422,7 +185,7 @@ class ActorLoginSiwgControllerDelegateClickTest
   MockActorLoginQualityLogger mock_mqls_logger_;
 };
 
-TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
+TEST_F(ActorLoginSiwgControllerTest, DelegatesClick) {
   base::HistogramTester histogram_tester;
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
   StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
@@ -487,7 +250,7 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
                                       1);
 }
 
-TEST_F(ActorLoginSiwgControllerDelegateClickTest, StoresPermissionOnSuccess) {
+TEST_F(ActorLoginSiwgControllerTest, StoresPermissionOnSuccess) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
   StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
@@ -557,8 +320,7 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, StoresPermissionOnSuccess) {
   outcome_run_loop.Run();
 }
 
-TEST_F(ActorLoginSiwgControllerDelegateClickTest,
-       DoesNotStorePermissionOnFailure) {
+TEST_F(ActorLoginSiwgControllerTest, DoesNotStorePermissionOnFailure) {
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
   StrictMock<MockActionSequenceDelegate> action_sequence_delegate;
   auto metrics_helper_owned =
