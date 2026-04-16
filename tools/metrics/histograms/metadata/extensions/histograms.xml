@@ -3023,7 +3023,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="HostPermissionsAccess" expires_after="never">
 <!-- expires-never: Monitors core extension usage. -->
 
-  <owner>emiliapaz@chromium.org</owner>
+  <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the host permissions access for a enabled extension as a result of
@@ -3038,7 +3038,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="HostPermissionsAccess" expires_after="never">
 <!-- expires-never: Monitors core extension usage. -->
 
-  <owner>emiliapaz@chromium.org</owner>
+  <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the host permissions access for each enabled extension that
@@ -3053,7 +3053,7 @@ This is emitted for two scenarios when a worker may be unregistered:
     enum="HostPermissionsAccess" expires_after="never">
 <!-- expires-never: Monitors core extension usage. -->
 
-  <owner>emiliapaz@chromium.org</owner>
+  <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the host permissions access for each enabled extension that
@@ -4604,7 +4604,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
     units="Extension Count" expires_after="2026-05-03">
-  <owner>emiliapaz@chromium.org</owner>
+  <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of extensions in the request access button that were granted site
