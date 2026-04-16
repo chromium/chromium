@@ -394,7 +394,7 @@ PageActionControllerImpl::CreateActionItemSubscription(
   base::CallbackListSubscription subscription =
       action_item->AddActionChangedCallback(
           base::BindRepeating(&PageActionControllerImpl::ActionItemChanged,
-                              base::Unretained(this), action_item));
+                              weak_factory_.GetWeakPtr(), action_item));
   ActionItemChanged(action_item);
   return subscription;
 }
