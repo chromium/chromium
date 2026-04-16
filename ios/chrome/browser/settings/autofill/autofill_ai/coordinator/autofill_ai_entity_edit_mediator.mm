@@ -223,7 +223,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   // TODO(crbug.com/496450943): Guard against the user signing out while the
   // settings view is still open.
   if (isSaveAsynchronous && _walletPassManager) {
-    [self.consumer showLoadingState];
+    [self.consumer setLoadingState:YES];
 
     autofill::EntityInstance originalEntity = *_entityInstance;
 
@@ -394,7 +394,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
             (std::optional<autofill::EntityInstance>)savedEntity
                            originalEntity:
                                (autofill::EntityInstance)originalEntity {
-  [self.consumer hideLoadingState];
+  [self.consumer setLoadingState:NO];
 
   if (savedEntity.has_value()) {
     _entityDataManager->AddOrUpdateEntityInstance(std::move(*savedEntity));

@@ -41,11 +41,9 @@ enum class AutofillAIEntityEditMode {
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;
 
-// Displays a loading state while the entity is being saved to the server.
-- (void)showLoadingState;
-
-// Hides the loading state.
-- (void)hideLoadingState;
+// If `loadingState` is YES, displays a loading state while the entity is being
+// saved to the server. Otherwise, hides the loading state.
+- (void)setLoadingState:(BOOL)loadingState;
 
 // Instructs the consumer that saving is complete and it can now dismiss.
 // `isLocalFallback` is YES if a server save failed and the item was saved
