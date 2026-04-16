@@ -5,5 +5,5 @@
 [RuntimeEnabled=UserMediaElement, ImplementedAs=HTMLUserMediaElementMediaStream]
 partial interface HTMLUserMediaElement {
     readonly attribute MediaStream? stream;
-    readonly attribute (DOMException or OverconstrainedError)? error;
+    [CallWith=ScriptState] readonly attribute any error;
 };

@@ -33,9 +33,15 @@ MediaStream* HTMLUserMediaElementMediaStream::stream(
 }
 
 // static
-const V8UnionDOMExceptionOrOverconstrainedError*
-HTMLUserMediaElementMediaStream::error(HTMLUserMediaElement& element) {
-  return From(element).error_.Get();
+ScriptValue HTMLUserMediaElementMediaStream::error(
+    ScriptState* script_state,
+    HTMLUserMediaElement& element) {
+  const auto& error_ref = From(element).error_;
+  if (error_ref.IsEmpty()) {
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
+  return ScriptValue(script_state->GetIsolate(),
+                     error_ref.GetAcrossWorld(script_state));
 }
 
 HTMLUserMediaElementMediaStream::HTMLUserMediaElementMediaStream(

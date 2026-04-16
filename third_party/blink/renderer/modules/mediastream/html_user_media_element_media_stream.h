@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -22,23 +24,20 @@ class MODULES_EXPORT HTMLUserMediaElementMediaStream final
 
   static HTMLUserMediaElementMediaStream& From(HTMLUserMediaElement&);
   static MediaStream* stream(HTMLUserMediaElement&);
-  static const V8UnionDOMExceptionOrOverconstrainedError* error(
-      HTMLUserMediaElement& element);
+  static ScriptValue error(ScriptState*, HTMLUserMediaElement& element);
 
   explicit HTMLUserMediaElementMediaStream(HTMLUserMediaElement&);
 
   MediaStream* GetMediaStream() const { return media_stream_.Get(); }
   void SetMediaStream(MediaStream* stream) { media_stream_ = stream; }
 
-  void SetError(const V8UnionDOMExceptionOrOverconstrainedError* error) {
-    error_ = error;
-  }
+  void SetError(WorldSafeV8Reference<v8::Value> error) { error_ = std::move(error); }
 
   void Trace(Visitor*) const override;
 
  private:
   Member<MediaStream> media_stream_;
-  Member<const V8UnionDOMExceptionOrOverconstrainedError> error_;
+  WorldSafeV8Reference<v8::Value> error_;
 };
 
 }  // namespace blink
