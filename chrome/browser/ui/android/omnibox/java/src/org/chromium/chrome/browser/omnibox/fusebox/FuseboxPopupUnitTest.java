@@ -107,6 +107,7 @@ public class FuseboxPopupUnitTest {
     @Test
     public void testSetPopupState_Hidden() {
         mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.HIDDEN);
+        verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.HIDDEN);
         verify(mPopupWindow).dismiss();
     }
 

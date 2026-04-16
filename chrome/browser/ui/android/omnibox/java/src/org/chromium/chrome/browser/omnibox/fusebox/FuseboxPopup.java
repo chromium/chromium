@@ -113,12 +113,15 @@ class FuseboxPopup {
      * @param state The target state of the popup.
      */
     void setPopupState(@PopupState int state) {
+        // ALWAYS update the DynamicRectProvider state first.
+        // This ensures it correctly unregisters layout observers when transitioning to HIDDEN.
+        mDynamicRectProvider.setPopupState(state);
+
         if (state == PopupState.HIDDEN) {
             dismiss();
             return;
         }
 
-        mDynamicRectProvider.setPopupState(state);
         int width =
                 mDynamicRectProvider.getPopupWidth(state, mViewGroup.getContext().getResources());
 
