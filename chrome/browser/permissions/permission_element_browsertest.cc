@@ -388,10 +388,6 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest, TabSwitchingClosesPrompt) {
 
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
                        DoubleClickDoesNotTriggerTwoRequests) {
-  permissions::PermissionRequestManager::FromWebContents(web_contents())
-      ->set_auto_response_for_test(
-          permissions::PermissionRequestManager::AutoResponseType::DISMISS);
-
   permissions::PermissionRequestObserver observer1(web_contents());
 
   // Click the element twice.
@@ -404,8 +400,16 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   // request.
   observer1.Wait();
   EXPECT_TRUE(observer1.request_shown());
+
+  // Dismiss the prompt.
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
+  permission_request_manager->FinalizeCurrentRequests();
   WaitForDismissEvent("microphone");
 
+  permission_request_manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::AutoResponseType::DISMISS);
   // Verify that no duplicate "microphone" requests or dismiss events are
   // created.
   permissions::PermissionRequestObserver observer2(web_contents());
