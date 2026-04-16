@@ -6,6 +6,7 @@ include_rules = [
   "+components/custom_handlers",
   "+components/download",
   "+components/guest_view",
+  "+components/image_fetcher",
   "+components/input",
   "+components/javascript_dialogs",
   "+components/keyed_service",

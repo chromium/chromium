@@ -63,6 +63,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/prefetch/pref_names.h"
@@ -1183,6 +1184,11 @@ ChromeExtensionsBrowserClient::CreateCrxInstallerFromDownloadItem(
     const download::DownloadItem& download) {
   return download_crx_util::CreateCrxInstaller(
       Profile::FromBrowserContext(context), download);
+}
+
+std::unique_ptr<image_fetcher::ImageDecoder>
+ChromeExtensionsBrowserClient::CreateImageDecoder() {
+  return std::make_unique<ImageDecoderImpl>();
 }
 
 }  // namespace extensions

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_WEBSTORE_INSTALL_HELPER_H_
-#define CHROME_BROWSER_EXTENSIONS_WEBSTORE_INSTALL_HELPER_H_
+#ifndef EXTENSIONS_BROWSER_WEBSTORE_INSTALL_HELPER_H_
+#define EXTENSIONS_BROWSER_WEBSTORE_INSTALL_HELPER_H_
 
 #include <memory>
 #include <optional>
@@ -41,10 +41,9 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper> {
 
     // Called to indicate a parse failure. The `result_code` parameter should
     // indicate whether the problem was with the manifest or icon.
-    virtual void OnWebstoreParseFailure(
-        const std::string& id,
-        InstallHelperResultCode result_code,
-        const std::string& error_message) = 0;
+    virtual void OnWebstoreParseFailure(const std::string& id,
+                                        InstallHelperResultCode result_code,
+                                        const std::string& error_message) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -106,4 +105,4 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper> {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_WEBSTORE_INSTALL_HELPER_H_
+#endif  // EXTENSIONS_BROWSER_WEBSTORE_INSTALL_HELPER_H_

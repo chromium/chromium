@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/webstore_install_helper.h"
+#include "extensions/browser/webstore_install_helper.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/referrer_policy.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/gfx/image/image.h"
 
@@ -71,6 +70,15 @@ void WebstoreInstallHelper::Start(
               "The url of the icon for the extension, which includes the "
               "extension id."
             destination: GOOGLE_OWNED_SERVICE
+            internal {
+              contacts {
+                owners: "//extensions/OWNERS"
+              }
+            }
+            user_data {
+              type: NONE
+            }
+            last_reviewed: "2026-04-03"
           }
           policy {
             cookies_allowed: NO
@@ -81,9 +89,8 @@ void WebstoreInstallHelper::Start(
             policy_exception_justification:
               "Not implemented, considered not useful."
           })");
-
     icon_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-        std::make_unique<ImageDecoderImpl>(), loader_factory);
+        ExtensionsBrowserClient::Get()->CreateImageDecoder(), loader_factory);
     image_fetcher::ImageFetcherParams params(traffic_annotation,
                                              "WebstoreInstallHelper");
     icon_fetcher_->FetchImage(
@@ -145,13 +152,15 @@ void WebstoreInstallHelper::OnJSONParsed(
 void WebstoreInstallHelper::ReportResultsIfComplete() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  if (!icon_decode_complete_ || !manifest_parse_complete_)
+  if (!icon_decode_complete_ || !manifest_parse_complete_) {
     return;
+  }
 
-  if (error_.empty() && parsed_manifest_)
+  if (error_.empty() && parsed_manifest_) {
     delegate_->OnWebstoreParseSuccess(id_, icon_, std::move(*parsed_manifest_));
-  else
+  } else {
     delegate_->OnWebstoreParseFailure(id_, parse_error_, error_);
+  }
 }
 
 }  // namespace extensions

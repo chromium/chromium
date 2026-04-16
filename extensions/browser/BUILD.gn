@@ -891,6 +891,8 @@ source_set("webstore_installer") {
     "webstore_data_fetcher.h",
     "webstore_data_fetcher_delegate.cc",
     "webstore_data_fetcher_delegate.h",
+    "webstore_install_helper.cc",
+    "webstore_install_helper.h",
     "webstore_installer.cc",
     "webstore_installer.h",
   ]
@@ -900,6 +902,7 @@ source_set("webstore_installer") {
     ":cws_item_service_proto",
     "//base",
     "//components/download/public/common:public",
+    "//components/image_fetcher/core",
     "//components/update_client",
     "//content/public/browser",
     "//extensions/buildflags",
@@ -907,6 +910,7 @@ source_set("webstore_installer") {
     "//extensions/strings",
     "//google_apis/common:request_util",
     "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
     "//ui/base",
     "//url",
   ]

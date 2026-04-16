@@ -317,6 +317,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   scoped_refptr<CrxInstaller> CreateCrxInstallerFromDownloadItem(
       content::BrowserContext* context,
       const download::DownloadItem& download) override;
+  std::unique_ptr<image_fetcher::ImageDecoder> CreateImageDecoder() override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

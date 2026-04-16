@@ -39,7 +39,6 @@ include_rules = [
   "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/updater/extension_updater.h",
   "+chrome/browser/extensions/updater/extension_updater_factory.h",
-  "+chrome/browser/extensions/webstore_install_helper.h",
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",

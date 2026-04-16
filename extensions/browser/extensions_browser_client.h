@@ -52,6 +52,10 @@ namespace download {
 class DownloadItem;
 }  // namespace download
 
+namespace image_fetcher {
+class ImageDecoder;
+}  // namespace image_fetcher
+
 namespace mojo {
 template <typename>
 class BinderMapWithContext;
@@ -659,6 +663,9 @@ class ExtensionsBrowserClient {
   virtual scoped_refptr<CrxInstaller> CreateCrxInstallerFromDownloadItem(
       content::BrowserContext* context,
       const download::DownloadItem& download);
+
+  // Creates an implementation of image_fetcher::ImageDecoder.
+  virtual std::unique_ptr<image_fetcher::ImageDecoder> CreateImageDecoder();
 
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;

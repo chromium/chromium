@@ -232,7 +232,7 @@ Refer to README.md for content description and update process.
  <item id="webrtc_peer_connection" added_in_milestone="66" content_hash_code="039bf82b" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.cc" />
  <item id="websocket_basic_stream" added_in_milestone="66" content_hash_code="040f7353" os_list="linux,windows,chromeos,android" file_path="net/websockets/websocket_basic_stream.cc" />
  <item id="websocket_stream" added_in_milestone="62" content_hash_code="0064beee" os_list="linux,windows,chromeos,android" file_path="content/browser/websockets/websocket_connector_impl.cc" />
- <item id="webstore_install_helper" added_in_milestone="62" content_hash_code="009bbc99" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/webstore_install_helper.cc" />
+ <item id="webstore_install_helper" added_in_milestone="62" content_hash_code="05401ec3" os_list="linux,windows,chromeos" file_path="extensions/browser/webstore_install_helper.cc" />
  <item id="webstore_installer" added_in_milestone="62" content_hash_code="05cbc758" os_list="linux,windows,chromeos" file_path="extensions/browser/webstore_installer.cc" />
  <item id="webui_content_scripts_download" added_in_milestone="62" content_hash_code="07257fcb" os_list="linux,windows,chromeos" file_path="extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.cc" />
  <item id="well_known_path_that_should_not_exist" added_in_milestone="86" content_hash_code="052bc423" os_list="windows,chromeos,android,linux" file_path="components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.cc" />
