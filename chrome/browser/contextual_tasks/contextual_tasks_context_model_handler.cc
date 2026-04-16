@@ -48,29 +48,27 @@ ContextualTasksContextModelHandler::ContextualTasksContextModelHandler(
 ContextualTasksContextModelHandler::~ContextualTasksContextModelHandler() =
     default;
 
-double ContextualTasksContextModelHandler::ExecuteModelWithSignalsSync(
+void ContextualTasksContextModelHandler::ExecuteModelWithSignals(
     const QueryStateSignals& query_signals,
-    const TabSignals& tab_signals) {
+    const TabSignals& tab_signals,
+    base::OnceCallback<void(const std::optional<float>&)> callback) {
   std::optional<optimization_guide::proto::TabRelevanceModelMetadata> metadata =
       ParsedSupportedFeaturesForLoadedModel<
           optimization_guide::proto::TabRelevanceModelMetadata>();
   if (!metadata) {
-    return 0.0;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   std::vector<float> ml_features =
       ExtractModelFeatures(*metadata, query_signals, tab_signals);
   if (ml_features.empty()) {
-    return 0.0;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   // TODO(b/462793437): Batch all tabs and execute model once in a follow-up CL.
-  std::vector<std::optional<float>> batch_outputs =
-      BatchExecuteModelWithInputSync({ml_features});
-
-  return batch_outputs.empty() || !batch_outputs[0].has_value()
-             ? 0.0
-             : *batch_outputs[0];
+  ExecuteModelWithInput(std::move(callback), ml_features);
 }
 
 // static

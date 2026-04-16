@@ -177,10 +177,11 @@ TEST_F(ContextualTasksContextModelHandlerTest, ExecuteModelWithSignals) {
   query_signals.query_word_count = 5.0f;
   TabSignals tab_signals;
 
-  double score =
-      handler->ExecuteModelWithSignalsSync(query_signals, tab_signals);
+  base::test::TestFuture<const std::optional<float>&> future;
+  handler->ExecuteModelWithSignals(query_signals, tab_signals,
+                                   future.GetCallback());
 
-  EXPECT_NEAR(score, 0.5, 1e-1);
+  EXPECT_NEAR(*future.Get(), 0.5, 1e-1);
 }
 
 TEST_F(ContextualTasksContextModelHandlerTest, ExecuteModelWithNoMetadata) {
@@ -189,10 +190,11 @@ TEST_F(ContextualTasksContextModelHandlerTest, ExecuteModelWithNoMetadata) {
   QueryStateSignals query_signals;
   TabSignals tab_signals;
 
-  double score =
-      handler->ExecuteModelWithSignalsSync(query_signals, tab_signals);
+  base::test::TestFuture<const std::optional<float>&> future;
+  handler->ExecuteModelWithSignals(query_signals, tab_signals,
+                                   future.GetCallback());
 
-  EXPECT_EQ(score, 0.0);
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 }  // namespace contextual_tasks

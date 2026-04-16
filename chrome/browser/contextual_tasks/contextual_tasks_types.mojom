@@ -11,4 +11,6 @@ enum TabSelectionMode {
   kMultiSignalScoring = 1,
   // Only Static signals are used to score the tabs.
   kStaticSignalsOnly = 2,
+  // Score using TfLite ML model, using static signals only.
+  kStaticSignalsMlModel = 3,
 };

@@ -408,7 +408,7 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//components/contextual_tasks/public:feature_list",
       "//components/contextual_tasks/public:test_support",
-      "//components/optimization_guide/core:model_execution_test_support",
+      "//components/optimization_guide/core:test_support",
       "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:test_support",
       "//components/passage_embeddings/core",

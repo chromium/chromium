@@ -24,6 +24,7 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
             <option value="kEmbeddingsMatch">Embeddings Match</option>
             <option value="kMultiSignalScoring">Multi Signal Scoring</option>
             <option value="kStaticSignalsOnly">Static Signals Scoring</option>
+            <option value="kStaticSignalsMlModel">Static Signals ML Model</option>
           </select>
         </div>
         <div class="container">
