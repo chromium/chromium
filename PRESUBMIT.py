@@ -981,9 +981,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # std::span rewrite for non chromium projects.
             r'^tools/clang/.*',
 
-            # Needed to interface with library that can't use base or absl.
-            r'components/optimization_guide/content/browser/page_context_eligibility(\.cc|_api\.h|_api\.cc)',
-
             # Not an error in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK,
         ],
