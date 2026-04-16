@@ -187,6 +187,8 @@ std::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
     return std::nullopt;
   }
 
+  // TODO(crbug.com/503264715): Resolve() should returns std::nullopt if `query`
+  // does not refer to a child frame of `web_frame()`.
   if (std::holds_alternative<LocalFrameToken>(query)) {
     return std::get<LocalFrameToken>(query);
   }

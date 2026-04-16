@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
@@ -418,20 +419,24 @@ AutofillManager& ContentAutofillDriver::GetAutofillManager() {
 
 std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
     FrameToken query) {
-  if (std::holds_alternative<LocalFrameToken>(query)) {
-    return std::get<LocalFrameToken>(query);
-  }
-  DCHECK(std::holds_alternative<RemoteFrameToken>(query));
   content::RenderProcessHost* rph = render_frame_host_->GetProcess();
-  blink::RemoteFrameToken blink_remote_token(
-      std::get<RemoteFrameToken>(query).value());
-  content::RenderFrameHost* remote_rfh =
-      content::RenderFrameHost::FromPlaceholderToken(rph->GetDeprecatedID(),
-                                                     blink_remote_token);
-  if (!remote_rfh) {
+  content::RenderFrameHost* rfh = std::visit(
+      absl::Overload{[&](const LocalFrameToken& token) {
+                       return content::RenderFrameHost::FromFrameToken(
+                           content::GlobalRenderFrameHostToken(
+                               rph->GetDeprecatedID(),
+                               blink::LocalFrameToken(token.value())));
+                     },
+                     [&](const RemoteFrameToken& token) {
+                       return content::RenderFrameHost::FromPlaceholderToken(
+                           rph->GetDeprecatedID(),
+                           blink::RemoteFrameToken(token.value()));
+                     }},
+      query);
+  if (!rfh || rfh->GetParent() != &*render_frame_host_) {
     return std::nullopt;
   }
-  return LocalFrameToken(remote_rfh->GetFrameToken().value());
+  return LocalFrameToken(rfh->GetFrameToken().value());
 }
 
 ukm::SourceId ContentAutofillDriver::GetPageUkmSourceId() const {
