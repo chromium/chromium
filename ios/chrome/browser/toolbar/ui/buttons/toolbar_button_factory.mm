@@ -14,7 +14,7 @@
 
 namespace {
 // Default point size for toolbar buttons.
-constexpr CGFloat kDefaultSymbolPointSize = 22;
+constexpr CGFloat kDefaultSymbolPointSize = 19;
 }  // namespace
 
 @implementation ToolbarButtonFactory

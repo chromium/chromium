@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
+#import <optional>
+
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
@@ -84,9 +86,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Returns the font size for the assistant button.
 UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
-  return PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleCaption2, traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryExtraExtraExtraLarge);
+  return PreferredFontForTextStyle(UIFontTextStyleCaption2, UIFontWeightMedium,
+                                   std::nullopt);
 }
 
 }  // namespace
