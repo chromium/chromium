@@ -5913,21 +5913,6 @@
             ]
         }
     ],
-    "ClientSideDetectionOnDeviceModelLazyDownloadAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionOnDeviceModelLazyDownloadAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionOnlyESBClassification": [
         {
             "platforms": [
