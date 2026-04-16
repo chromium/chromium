@@ -592,6 +592,36 @@ std::string_view SavePasswordProgressLogger::GetStringFromID(
         STRING_AUTOMATED_PASSWORD_CHANGE_FILLING_ACTION_RESULT:
       return "Automated password change: filling action result";
     case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_START_FLOW:
+      return "Password change from checkup: flow started";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_CANCEL_FLOW:
+      return "Password change from checkup: flow cancelled";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FOUND:
+      return "Password change from checkup: form found";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_SUBMISSION:
+      return "Password change from checkup: form submission";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT:
+      return "Password change from checkup: timeout";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_NO_CREDENTIAL_FOUND:
+      return "Password change from checkup: no credential found";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_CREDENTIAL_OVERRIDDEN:
+      return "Password change from checkup: credential overridden";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_FIND_FORM_TASK_FOUND:
+      return "Password change from checkup: actor task for finding form found";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_CREATED:
+      return "Password change from checkup: verification task created";
+    case SavePasswordProgressLogger::
+        STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_FINISHED:
+      return "Password change from checkup: verification task finished";
+    case SavePasswordProgressLogger::
         STRING_PASSWORD_CHANGE_OVERRIDDEN_BY_SWITCH:
       return "Automated password change: Overridden by switch";
     case SavePasswordProgressLogger::

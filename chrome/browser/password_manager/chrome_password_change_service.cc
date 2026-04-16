@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -206,7 +207,8 @@ void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
 
   if (!password_change_from_checkup_delegate_) {
     password_change_from_checkup_delegate_ =
-        std::make_unique<PasswordChangeFromCheckupDelegate>();
+        std::make_unique<PasswordChangeFromCheckupDelegate>(
+            ChromePasswordManagerClient::FromWebContents(web_contents));
   }
 
   password_change_from_checkup_delegate_->StartPasswordChangeFlow(

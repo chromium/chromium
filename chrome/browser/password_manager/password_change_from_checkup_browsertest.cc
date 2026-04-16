@@ -119,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(web_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
                                     web_contents->GetWeakPtr());
@@ -164,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   content::WebContents* original_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(original_web_contents));
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/password/update_form_empty_fields.html");
 
@@ -234,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(originator_contents);
 
-  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(originator_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
                                     originator_contents->GetWeakPtr());
@@ -274,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Start the flow with a specific credential.
-  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(originator_contents));
   const std::string username = "testuser";
   const GURL origin_url = embedded_test_server()->GetURL("example.com", "/");
 
@@ -335,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   content::WebContents* originator_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
+      ChromePasswordManagerClient::FromWebContents(originator_contents));
   const GURL origin_url = embedded_test_server()->GetURL("example.com", "/");
 
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(origin_url),

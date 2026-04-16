@@ -20,16 +20,18 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
-#include "ui/base/resource/resource_bundle.h"
-// TODO(crbug.com/485620841): Make delegate not dependent on client and move
-// this back to /password_change.
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -37,10 +39,24 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
+
+using Logger = password_manager::BrowserSavePasswordProgressLogger;
+
+std::unique_ptr<Logger> GetLoggerIfAvailable(
+    password_manager::PasswordManagerClient* client) {
+  if (!client) {
+    return nullptr;
+  }
+  if (password_manager_util::IsLoggingActive(client)) {
+    return std::make_unique<Logger>(client->GetCurrentLogManager());
+  }
+  return nullptr;
+}
 
 bool IsValidUrl(const GURL& url) {
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
@@ -172,8 +188,9 @@ bool IsTaskInterrupted(actor::ActorTask::State new_state) {
 
 }  // namespace
 
-PasswordChangeFromCheckupDelegate::PasswordChangeFromCheckupDelegate() =
-    default;
+PasswordChangeFromCheckupDelegate::PasswordChangeFromCheckupDelegate(
+    password_manager::PasswordManagerClient* client)
+    : client_(client) {}
 
 PasswordChangeFromCheckupDelegate::~PasswordChangeFromCheckupDelegate() =
     default;
@@ -246,6 +263,10 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   if (actor_service) {
     actuation_web_contents_ = new_contents->GetWeakPtr();
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(
+          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_START_FLOW);
+    }
     CreateDummyTaskAndTiedTab(glic_service, new_contents);
     actor_task_state_subscription_ =
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
@@ -271,6 +292,10 @@ void PasswordChangeFromCheckupDelegate::AutoSelectCredential(
     }
 
     if (IsSameOrigin(cred.source_site_or_app, credential_url_)) {
+      if (auto logger = GetLoggerIfAvailable(client_)) {
+        logger->LogMessage(
+            Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_CREDENTIAL_OVERRIDDEN);
+      }
       auto response =
           actor::webui::mojom::SelectCredentialDialogResponse::New();
       response->selected_credential_id = cred.id.value();
@@ -279,6 +304,11 @@ void PasswordChangeFromCheckupDelegate::AutoSelectCredential(
       std::move(callback).Run(std::move(response));
       return;
     }
+  }
+
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(
+        Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_NO_CREDENTIAL_FOUND);
   }
 
   std::move(callback).Run(
@@ -308,6 +338,11 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     } else {
       return;
     }
+
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(
+          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FIND_FORM_TASK_FOUND);
+    }
   }
 
   if (task.id() != *find_form_task_id_) {
@@ -317,6 +352,10 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
 
   const actor::ActorTask::State new_state = task.GetState();
   if (IsTaskInterrupted(new_state)) {
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(
+          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_CANCEL_FLOW);
+    }
     task.Stop(actor::ActorTask::StoppedReason::kShutdown);
     actor_task_state_subscription_ = {};
     return;
@@ -324,16 +363,14 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
 
   if (new_state == actor::ActorTask::State::kFinished) {
     actor_task_state_subscription_ = {};
-    CreateDummyTaskAndTiedTab(GetGlicService(), actuation_web_contents_.get());
-
-    auto* client = ChromePasswordManagerClient::FromWebContents(
-        actuation_web_contents_.get());
-    if (!client) {
+    if (!client_) {
       return;
     }
-
+    CreateDummyTaskAndTiedTab(GetGlicService(), actuation_web_contents_.get());
     form_waiter_ = ChangePasswordFormWaiter::Builder(
-                       actuation_web_contents_.get(), client,
+                       actuation_web_contents_.get(),
+                       ChromePasswordManagerClient::FromWebContents(
+                           actuation_web_contents_.get()),
                        base::BindOnce(&PasswordChangeFromCheckupDelegate::
                                           OnChangePasswordFormManagerFound,
                                       weak_ptr_factory_.GetWeakPtr()))
@@ -355,12 +392,13 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
       *form_manager->GetParsedObservedForm(),
       form_manager->GetDriver()->GetPasswordGenerationHelper());
 
-  auto* client = ChromePasswordManagerClient::FromWebContents(
-      actuation_web_contents_.get());
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_FOUND);
+  }
 
   submission_helper_ =
       std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-          actuation_web_contents_.get(), client,
+          actuation_web_contents_.get(), client_,
           base::BindOnce(
               &PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted,
               weak_ptr_factory_.GetWeakPtr()));
@@ -380,6 +418,11 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
   saved_form_manager_ = std::move(result).value();
   if (!actuation_web_contents_) {
     return;
+  }
+
+  if (auto logger = GetLoggerIfAvailable(client_)) {
+    logger->LogMessage(
+        Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FORM_SUBMISSION);
   }
 
   glic::GlicKeyedService* glic_service = GetGlicService();
@@ -425,6 +468,12 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
     if (task.GetTabs().contains(actuation_tab->GetHandle())) {
       verification_task_id_ = task.id();
       verification_task_created_ = true;
+      if (auto logger = GetLoggerIfAvailable(client_)) {
+        logger->LogMessage(
+            Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_CREATED);
+      }
+      // A task was created, so stopping the timer to not trigger
+      // the password being saved.
       verification_timer_.Stop();
     } else {
       return;
@@ -439,12 +488,19 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
   // If the task for verifification finishes, we assume success.
   if (new_state == actor::ActorTask::State::kFinished) {
     actor_task_state_subscription_ = {};
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(
+          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_FINISHED);
+    }
     HandleMaybeSuccessfulPasswordChange();
   }
 }
 
 void PasswordChangeFromCheckupDelegate::OnVerificationTimeout() {
   if (!verification_task_created_) {
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT);
+    }
     actor_task_state_subscription_ = {};
     HandleMaybeSuccessfulPasswordChange();
   }

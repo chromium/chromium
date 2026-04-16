@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -25,6 +26,7 @@ class WebContents;
 namespace password_manager {
 struct CredentialUIEntry;
 class PasswordFormManager;
+class PasswordManagerClient;
 }  // namespace password_manager
 
 namespace glic {
@@ -36,7 +38,8 @@ class GlicKeyedService;
 // page.
 class PasswordChangeFromCheckupDelegate {
  public:
-  PasswordChangeFromCheckupDelegate();
+  explicit PasswordChangeFromCheckupDelegate(
+      password_manager::PasswordManagerClient* client);
   ~PasswordChangeFromCheckupDelegate();
 
   void StartPasswordChangeFlow(
@@ -71,6 +74,7 @@ class PasswordChangeFromCheckupDelegate {
   void InvokeVerificationFlow(std::string post_submission_prompt);
 
   base::WeakPtr<content::WebContents> originator_;
+  raw_ptr<password_manager::PasswordManagerClient> client_;
   base::WeakPtr<content::WebContents> actuation_web_contents_;
 
   std::u16string username_;
