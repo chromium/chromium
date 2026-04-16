@@ -446,4 +446,63 @@ TEST_F(CommonDecoderTest, GetBucketData) {
   EXPECT_NE(error::kNoError, ExecuteCmd(cmd));
 }
 
+TEST_F(CommonDecoderTest, GetAsStrings_Success) {
+  CommonDecoder::Bucket bucket;
+
+  const size_t kBucketSize = 19;
+  bucket.SetSize(kBucketSize);
+  size_t write_offset = 0;
+
+  const GLint count = 2;
+  bucket.SetData(&count, write_offset, sizeof(count));
+  write_offset += sizeof(count);
+
+  const std::array<GLint, 2> sizes = {2, 3};
+  bucket.SetData(&sizes, write_offset, sizeof(sizes));
+  write_offset += sizeof(sizes);
+
+  const std::array<char, 3> str0 = {'a', 'b', 0};
+  bucket.SetData(&str0, write_offset, sizeof(str0));
+  write_offset += sizeof(str0);
+
+  const std::array<char, 4> str1 = {'x', 'y', 'z', 0};
+  bucket.SetData(&str1, write_offset, sizeof(str1));
+  write_offset += sizeof(str1);
+
+  EXPECT_EQ(write_offset, kBucketSize);
+
+  GLsizei count_out;
+  std::vector<char*> strings_out;
+  std::vector<GLint> lengths_out;
+  EXPECT_TRUE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
+
+  EXPECT_EQ(count_out, count);
+  EXPECT_EQ(lengths_out.size(), size_t(count_out));
+  EXPECT_EQ(lengths_out[0], sizes[0]);
+  EXPECT_EQ(lengths_out[1], sizes[1]);
+  EXPECT_EQ(std::string(str0.data()), std::string(strings_out[0]));
+  EXPECT_EQ(std::string(str1.data()), std::string(strings_out[1]));
+}
+
+// Regression test for https://issues.chromium.org/487755344 where negative
+// GLint sizes aren't validated out.
+TEST_F(CommonDecoderTest, GetAsStrings_StringsSizeNegative) {
+  CommonDecoder::Bucket bucket;
+  bucket.SetSize(14);
+
+  GLint count = 2;
+  bucket.SetData(&count, 0, sizeof(count));
+  GLint length0 = 1;
+  bucket.SetData(&length0, 4, sizeof(length0));
+  GLint length1 = -1;
+  bucket.SetData(&length1, 8, sizeof(length1));
+  std::array<uint8_t, 2> str = {'A', 0};
+  bucket.SetData(&str, 12, sizeof(str));
+
+  GLsizei count_out;
+  std::vector<char*> strings_out;
+  std::vector<GLint> lengths_out;
+  EXPECT_FALSE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
+}
+
 }  // namespace gpu

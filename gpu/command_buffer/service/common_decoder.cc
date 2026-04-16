@@ -125,6 +125,9 @@ bool CommonDecoder::Bucket::GetAsStrings(
   if (!total_size.IsValid())
     return false;
   for (GLsizei ii = 0; ii < count; ++ii) {
+    if (UNSAFE_TODO(length[ii]) < 0) {
+      return false;
+    }
     strs[ii] = bucket_data + total_size.ValueOrDefault(0);
     total_size += UNSAFE_TODO(length[ii]);
     total_size += 1;  // NUL char at the end of each char array.
