@@ -362,6 +362,12 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
 }
 
 Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiNoFillingIconsExperiment)) {
+    return Suggestion::Icon::kNoIcon;
+  }
+#endif
   switch (trigger_entity_type.name()) {
     case EntityTypeName::kDriversLicense:
       return Suggestion::Icon::kIdCard;

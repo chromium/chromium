@@ -465,6 +465,23 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kFlight));
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Tests that no icon is set when `kAutofillAiNoFillingIconsExperiment` is
+// enabled.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_FlightReservationEntity_NoIconIfFeatureIsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiNoFillingIconsExperiment);
+  SetEntities({GetFlightReservationEntityInstanceWithRandomGuid()});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER, FLIGHT_RESERVATION_TICKET_NUMBER,
+           FLIGHT_RESERVATION_CONFIRMATION_CODE});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kNoIcon));
+}
+#endif
+
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {
   EntityInstance passport_prefix_matches =
       GetPassportEntityInstanceWithRandomGuid({.name = u"Jon Doe"});

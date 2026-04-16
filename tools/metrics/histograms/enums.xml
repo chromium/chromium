@@ -11572,6 +11572,7 @@ from previous Chrome versions.
   <int value="-832970990" label="mantis-feature-key:disabled"/>
   <int value="-832806243" label="QuickActionSearchWidgetAndroid:disabled"/>
   <int value="-832780530" label="SecurePaymentConfirmationDebug:enabled"/>
+  <int value="-832695519" label="AutofillAiNoFillingIconsExperiment:disabled"/>
   <int value="-832561975" label="enable-picture-in-picture"/>
   <int value="-832154680"
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
@@ -20231,6 +20232,7 @@ from previous Chrome versions.
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043184476"
       label="SecurePaymentConfirmationAvailabilityAPI:enabled"/>
+  <int value="2043217488" label="AutofillAiNoFillingIconsExperiment:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043419490" label="DevToolsStartingStyleDebugging:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>

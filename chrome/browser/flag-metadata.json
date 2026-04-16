@@ -759,6 +759,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "autofill-ai-no-filling-icons-experiment",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-ai-reauth-required",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 160

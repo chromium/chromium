@@ -811,6 +811,11 @@ inline constexpr char kAutofillAiDedupeEntitiesName[] =
 inline constexpr char kAutofillAiDedupeEntitiesDescription[] =
     "Enables periodic deduplication of Autofill AI entities.";
 
+inline constexpr char kAutofillAiNoFillingIconsExperimentName[] =
+    "Autofill AI no filling icons experiment";
+inline constexpr char kAutofillAiNoFillingIconsExperimentDescription[] =
+    "If enabled, Autofill AI filling suggestions do not have an icon.";
+
 inline constexpr char kAutofillAiReauthRequiredName[] =
     "Autofill AI re-authentication required";
 inline constexpr char kAutofillAiReauthRequiredDescription[] =

@@ -12461,6 +12461,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAiDedupeEntitiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiDedupeEntities)},
 
+    {"autofill-ai-no-filling-icons-experiment",
+     flag_descriptions::kAutofillAiNoFillingIconsExperimentName,
+     flag_descriptions::kAutofillAiNoFillingIconsExperimentDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiNoFillingIconsExperiment)},
+
     {"autofill-ai-reauth-required",
      flag_descriptions::kAutofillAiReauthRequiredName,
      flag_descriptions::kAutofillAiReauthRequiredDescription, kOsAll,
