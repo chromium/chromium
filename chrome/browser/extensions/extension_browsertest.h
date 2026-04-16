@@ -405,7 +405,8 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
         const_cast<const ExtensionBrowserTest&>(*this).embedded_test_server());
   }
 
-  // Set to "chrome/test/data/extensions". Derived classes may override.
+  // Set to "chrome/test/data/extensions". Derived classes may override. For
+  // example, ExtensionApiTest uses "chrome/test/data/extensions/api_test".
   base::FilePath test_data_dir_;
 
   const ContextType context_type_;

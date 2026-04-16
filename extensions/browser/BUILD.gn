@@ -1332,7 +1332,6 @@ if (enable_extensions) {
         "api/bluetooth_socket/bluetooth_socket_apitest.cc",
         "api/cec_private/cec_private_ash_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
-        "api/usb/usb_apitest.cc",
         "api/virtual_keyboard/virtual_keyboard_apitest.cc",
       ]
 

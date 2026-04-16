@@ -10,17 +10,22 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/api/usb_device_permissions_prompt.h"
-#include "extensions/shell/browser/shell_extensions_api_client.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/cpp/test/mock_usb_mojo_device.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+
+// The USB API is specific to Chrome OS.
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace extensions {
 
@@ -102,7 +107,7 @@ class TestUsbDevicePermissionsPrompt
                        const std::u16string& device_name) override {}
 };
 
-class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
+class TestExtensionsAPIClient : public ChromeExtensionsAPIClient {
  public:
   TestExtensionsAPIClient() = default;
 
@@ -111,23 +116,21 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
     return std::make_unique<TestUsbDevicePermissionsPrompt>(web_contents);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAllowDetachingUsb(int vid, int pid) const override {
     return vid == 1 && pid == 2;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-class UsbApiTest : public ShellApiTest {
+class UsbApiTest : public ExtensionApiTest {
  public:
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     // Set fake USB device manager for extensions::UsbDeviceManager.
     mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager;
     fake_usb_manager_.AddReceiver(usb_manager.InitWithNewPipeAndPassReceiver());
-    UsbDeviceManager::Get(browser_context())
-        ->SetDeviceManagerForTesting(std::move(usb_manager));
+    UsbDeviceManager::Get(profile())->SetDeviceManagerForTesting(
+        std::move(usb_manager));
     base::RunLoop().RunUntilIdle();
 
     std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
@@ -146,8 +149,8 @@ class UsbApiTest : public ShellApiTest {
  protected:
   void SetActiveConfigForFakeDevice(uint8_t config_value) {
     fake_device_->SetActiveConfig(config_value);
-    UsbDeviceManager::Get(browser_context())
-        ->UpdateActiveConfig(fake_device_->guid(), config_value);
+    UsbDeviceManager::Get(profile())->UpdateActiveConfig(fake_device_->guid(),
+                                                         config_value);
   }
 
   // `mock_device_`, `fake_device_`, and `fake_usb_manager_` must be declared in
@@ -167,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, DeviceHandling) {
   EXPECT_CALL(mock_device_, Close)
       .WillOnce(RunOnceClosure<0>())
       .WillOnce(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/device_handling"));
+  ASSERT_TRUE(RunExtensionTest("usb/device_handling"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, ResetDevice) {
@@ -179,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, ResetDevice) {
       .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(mock_device_, GenericTransferOut(2, BufferSizeIs(1u), _, _))
       .WillOnce(RunOnceCallback<3>(UsbTransferStatus::COMPLETED));
-  ASSERT_TRUE(RunAppTest("api_test/usb/reset_device"));
+  ASSERT_TRUE(RunExtensionTest("usb/reset_device"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, SetConfiguration) {
@@ -192,14 +195,14 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, SetConfiguration) {
         std::move(callback).Run(true);
       });
 
-  ASSERT_TRUE(RunAppTest("api_test/usb/set_configuration"));
+  ASSERT_TRUE(RunExtensionTest("usb/set_configuration"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, ListInterfaces) {
   SetActiveConfigForFakeDevice(1);
   EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close).WillOnce(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/list_interfaces"));
+  ASSERT_TRUE(RunExtensionTest("usb/list_interfaces"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferEvent) {
@@ -226,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferEvent) {
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/transfer_event"));
+  ASSERT_TRUE(RunExtensionTest("usb/transfer_event"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, ZeroLengthTransfer) {
@@ -238,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, ZeroLengthTransfer) {
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/zero_length_transfer"));
+  ASSERT_TRUE(RunExtensionTest("usb/zero_length_transfer"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailure) {
@@ -255,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailure) {
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/transfer_failure"));
+  ASSERT_TRUE(RunExtensionTest("usb/transfer_failure"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidLengthTransfer) {
@@ -265,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidLengthTransfer) {
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/invalid_length_transfer"));
+  ASSERT_TRUE(RunExtensionTest("usb/invalid_length_transfer"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidTimeout) {
@@ -275,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidTimeout) {
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
-  ASSERT_TRUE(RunAppTest("api_test/usb/invalid_timeout"));
+  ASSERT_TRUE(RunExtensionTest("usb/invalid_timeout"));
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, CallsAfterDisconnect) {
@@ -285,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, CallsAfterDisconnect) {
 
   EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
 
-  ASSERT_TRUE(LoadApp("api_test/usb/calls_after_disconnect"));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("usb/calls_after_disconnect")));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   fake_usb_manager_.RemoveDevice(fake_device_);
@@ -303,7 +307,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailureOnDisconnect) {
   EXPECT_CALL(mock_device_, GenericTransferIn)
       .WillOnce(MoveArg<3>(&saved_callback));
 
-  ASSERT_TRUE(LoadApp("api_test/usb/transfer_failure_on_disconnect"));
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("usb/transfer_failure_on_disconnect")));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   fake_usb_manager_.RemoveDevice(fake_device_);
@@ -315,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, OnDeviceAdded) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  ASSERT_TRUE(LoadApp("api_test/usb/add_event"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("usb/add_event")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   fake_usb_manager_.CreateAndAddDevice(0x18D1, 0x58F0);
@@ -329,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, OnDeviceRemoved) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  ASSERT_TRUE(LoadApp("api_test/usb/remove_event"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("usb/remove_event")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   fake_usb_manager_.RemoveDevice(fake_device_);
@@ -345,14 +350,14 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, GetUserSelectedDevices) {
   EXPECT_CALL(mock_device_, Close).WillOnce(RunOnceClosure<0>());
 
   TestExtensionsAPIClient test_api_client;
-  ASSERT_TRUE(LoadApp("api_test/usb/get_user_selected_devices"));
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("usb/get_user_selected_devices")));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   fake_usb_manager_.RemoveDevice(fake_device_);
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
   ExtensionTestMessageListener ready_listener("ready");
   ready_listener.set_failure_message("failure");
@@ -376,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
       fake_usb_manager_.CreateAndAddDevice(0x5, 0x6, 0x00,
                                            std::move(storage_configs));
 
-  ASSERT_TRUE(LoadApp("api_test/usb/mass_storage"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("usb/mass_storage")));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   fake_usb_manager_.RemoveDevice(device_2->guid);
@@ -384,6 +389,5 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
 
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
