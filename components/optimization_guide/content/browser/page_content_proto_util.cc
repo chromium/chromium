@@ -1415,15 +1415,13 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
         page_content_result.proto.mutable_page_interaction_info());
   }
 
-  auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
   auto mode = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT;
   if (converter.actionable_mode()) {
-    version = optimization_guide::proto::
-        ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0;
     mode = optimization_guide::proto::
         ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
   }
-  page_content_result.proto.set_version(version);
+  page_content_result.proto.set_version(
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   page_content_result.proto.set_mode(mode);
 
   // If the page had a popup open, provide that popup to APC as well.

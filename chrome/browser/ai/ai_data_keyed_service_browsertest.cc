@@ -339,8 +339,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
   {
     const auto& page_content = ai_data->action_annotated_page_content();
     EXPECT_EQ(page_content.version(),
-              optimization_guide::proto::
-                  ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+              optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
     const auto& content_attributes =
         page_content.root_node().content_attributes();
     EXPECT_EQ(content_attributes.attribute_type(),

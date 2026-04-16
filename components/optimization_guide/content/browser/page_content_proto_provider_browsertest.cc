@@ -448,8 +448,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicActionable) {
            GetActionableAIPageContentOptions());
 
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   EXPECT_EQ(page_content().mode(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
@@ -634,8 +633,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
                        AIPageContent) {
   LoadPage(https_server()->GetURL("/actionable_elements.html"));
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   const auto& child = page_content().root_node().children_nodes().at(0);
   EXPECT_TRUE(child.content_attributes().has_interaction_info());
@@ -646,8 +644,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
   LoadPage(https_server()->GetURL("/for_label.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 2);
 
@@ -673,8 +670,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   LoadPage(https_server()->GetURL("/clickability_reason.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   const auto& button_node = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button_node.content_attributes().has_interaction_info());
@@ -770,8 +766,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   LoadPage(https_server()->GetURL("/label_not_actionable.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 2);
 
@@ -792,8 +787,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AriaRole) {
   LoadPage(https_server()->GetURL("/aria_role.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];
@@ -2280,8 +2274,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   // <body>
 
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& section = ActionableContentRootNode().children_nodes()[0];
@@ -2441,8 +2434,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, DisabledButton) {
   LoadPage(https_server()->GetURL("/disabled_button.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];
@@ -2461,8 +2453,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   LoadPage(https_server()->GetURL("/aria_disabled_button.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];
@@ -2481,8 +2472,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   LoadPage(https_server()->GetURL("/cursor_not_allowed_button.html"),
            GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
 
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];

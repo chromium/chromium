@@ -879,8 +879,7 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_ActionableElements) {
                   .has_value());
 
   EXPECT_EQ(page_content.proto.version(),
-            optimization_guide::proto::
-                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
   EXPECT_EQ(page_content.proto.root_node()
                 .children_nodes(0)
