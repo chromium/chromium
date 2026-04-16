@@ -112,7 +112,15 @@ enum class ResponseSegmentation {
   kWebContentsContextMenuAttachedAudio = 94,
   kWebContentsContextMenuDetachedText = 95,
   kWebContentsContextMenuDetachedAudio = 96,
-  kMaxValue = kWebContentsContextMenuDetachedAudio,
+  kTextSelectionNudgeAttachedText = 97,
+  kTextSelectionNudgeAttachedAudio = 98,
+  kTextSelectionNudgeDetachedText = 99,
+  kTextSelectionNudgeDetachedAudio = 100,
+  kTextSelectionWidgetAttachedText = 101,
+  kTextSelectionWidgetAttachedAudio = 102,
+  kTextSelectionWidgetDetachedText = 103,
+  kTextSelectionWidgetDetachedAudio = 104,
+  kMaxValue = kTextSelectionWidgetDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
@@ -165,7 +173,9 @@ enum class GlicEntrypoint {
   kIph = 13,
   kOther = 14,
   kWebContentsContextMenu = 15,
-  kMaxValue = kWebContentsContextMenu,
+  kTextSelectionNudge = 16,
+  kTextSelectionWidget = 17,
+  kMaxValue = kTextSelectionWidget,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntrypoint)
 

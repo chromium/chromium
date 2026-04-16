@@ -195,6 +195,8 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="IPH"/>
   <int value="14" label="Other"/>
   <int value="15" label="Context menu"/>
+  <int value="16" label="Text selection nudge"/>
+  <int value="17" label="Text selection widget"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
@@ -515,6 +517,8 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="In-product help"/>
   <int value="22" label="User clicked an anchored contextual cue chip"/>
   <int value="23" label="Context menu"/>
+  <int value="24" label="Text selection nudge"/>
+  <int value="25" label="Text selection widget"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -738,6 +742,14 @@ chromium-metrics-reviews@google.com.
   <int value="94" label="Context menu, attached, audio mode."/>
   <int value="95" label="Context menu, detached, text mode."/>
   <int value="96" label="Context menu, detached, audio mode."/>
+  <int value="97" label="Text selection nudge, attached, text mode."/>
+  <int value="98" label="Text selection nudge, attached, audio mode."/>
+  <int value="99" label="Text selection nudge, detached, text mode."/>
+  <int value="100" label="Text selection nudge, detached, audio mode."/>
+  <int value="101" label="Text selection widget, attached, text mode."/>
+  <int value="102" label="Text selection widget, attached, audio mode."/>
+  <int value="103" label="Text selection widget, detached, text mode."/>
+  <int value="104" label="Text selection widget, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

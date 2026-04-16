@@ -2869,6 +2869,10 @@ export enum InvocationSource {
   ANCHORED_CONTEXTUAL_CUE = 22,
   // From the context menu.
   WEB_CONTENTS_CONTEXT_MENU = 23,
+  // User clicked on text selection nudge.
+  TEXT_SELECTION_NUDGE = 24,
+  // User clicked on text selection widget.
+  TEXT_SELECTION_WIDGET = 25,
 }
 
 ///////////////////////////////////////////////

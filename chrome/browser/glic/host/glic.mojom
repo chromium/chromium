@@ -1602,6 +1602,10 @@ enum InvocationSource {
   [MinVersion=14] kAnchoredContextualCue = 22,
   // From the context menu.
   [MinVersion=15] kWebContentsContextMenu = 23,
+  // User clicked on text selection nudge.
+  [MinVersion=16] kTextSelectionNudge = 24,
+  // User clicked on text selection widget.
+  [MinVersion=16] kTextSelectionWidget = 25,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation, //chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint)
