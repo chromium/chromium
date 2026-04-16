@@ -285,10 +285,9 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerSecondaryUser) {
                         SharingMessageHandler::DoneCallback done_callback) {
         std::move(done_callback).Run(/*response=*/nullptr);
       });
-  EXPECT_CALL(
-      mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
-                             ProtoEquals(sharing_ack_message), _));
+  EXPECT_CALL(mock_sharing_fcm_sender_,
+              SendMessageToFcmTarget(FCMChannelMatcher(), kSharingAckMessageTTL,
+                                     ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);

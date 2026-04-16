@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
 #include "components/sync/model/syncable_service.h"
@@ -134,8 +135,8 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
   void SendMessageViaSync(sync_pb::SharingMessageSpecifics::ChannelConfiguration
                               channel_configuration,
                           SharingChannelType channel_type,
-                          const std::string& message_id,
-                          std::string message,
+                          std::string message_id,
+                          std::string payload,
                           SendMessageCallback callback);
 
   void OnMessageSentViaSync(SendMessageCallback callback,
@@ -158,20 +159,23 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
 
   // Pending messages that are waiting for the sync service to initialize.
   struct PendingMessage {
-    PendingMessage(
-        components_sharing_message::FCMChannelConfiguration fcm_configuration,
-        base::TimeDelta time_to_live,
-        SharingMessage message,
-        SendMessageCallback callback);
+    PendingMessage(sync_pb::SharingMessageSpecifics::ChannelConfiguration
+                       channel_configuration,
+                   SharingChannelType channel_type,
+                   std::string message_id,
+                   std::string payload,
+                   SendMessageCallback callback);
     PendingMessage(const PendingMessage& other) = delete;
     PendingMessage& operator=(const PendingMessage& other) = delete;
     PendingMessage(PendingMessage&& other);
     PendingMessage& operator=(PendingMessage&& other);
     ~PendingMessage();
 
-    components_sharing_message::FCMChannelConfiguration fcm_configuration;
-    base::TimeDelta time_to_live;
-    SharingMessage message;
+    sync_pb::SharingMessageSpecifics::ChannelConfiguration
+        channel_configuration;
+    SharingChannelType channel_type;
+    std::string message_id;
+    std::string payload;
     SendMessageCallback callback;
   };
   std::vector<PendingMessage> pending_messages_;
