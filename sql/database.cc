@@ -35,6 +35,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -280,6 +281,14 @@ void RecordRazeDatabaseFailureReason(const std::string& histogram_tag,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sql.Database.Raze.FailureReason.", histogram_tag}),
       reason);
+}
+
+// Creates a collapsible global track to hold all Database tracing tracks.
+perfetto::NamedTrack GetSqlGroupTrack() {
+  static const base::NoDestructor<
+      base::trace_event::TrackRegistration<perfetto::NamedTrack>>
+      sql_group_track_(perfetto::NamedTrack("Sql Databases"));
+  return sql_group_track_->track();
 }
 
 }  // namespace
@@ -546,7 +555,10 @@ Database::Database(DatabaseOptions options, Database::Tag tag)
     : options_(options),
       mmap_disabled_(!options.mmap_enabled_),
       histogram_tag_(tag.value),
-      tracing_track_name_(base::StrCat({"Database: ", histogram_tag_})) {
+      tracing_track_(
+          perfetto::NamedTrack::FromPointer(perfetto::StaticString(tag.value),
+                                            this,
+                                            GetSqlGroupTrack())) {
   DCHECK_GE(options.page_size_, 512);
   DCHECK_LE(options.page_size_, 65536);
   DCHECK(!(options.page_size_ & (options.page_size_ - 1)))
@@ -1065,10 +1077,8 @@ void Database::RecordTimingHistogram(std::string_view name_prefix,
       base::Microseconds(0), base::Minutes(1), 100);
 }
 
-perfetto::NamedTrack Database::GetTracingNamedTrack() const {
-  return perfetto::NamedTrack(perfetto::DynamicString(tracing_track_name_),
-                              reinterpret_cast<uint64_t>(this),
-                              perfetto::ThreadTrack::Current());
+const perfetto::NamedTrack& Database::GetTracingNamedTrack() const {
+  return tracing_track_;
 }
 
 void Database::TrimMemory() {

@@ -43,6 +43,7 @@
 #include "sql/streaming_blob_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 // Forward declaration for SQLite structures. Headers in the public sql:: API
 // must NOT include sqlite3.h.
@@ -454,7 +455,7 @@ class COMPONENT_EXPORT(SQL) Database {
       }
     }
 
-    std::string_view value;
+    const char* value;
   };
 
   // Creates an instance that can receive Open() / OpenInMemory() calls.
@@ -1208,9 +1209,9 @@ class COMPONENT_EXPORT(SQL) Database {
   void RecordTimingHistogram(std::string_view name_prefix,
                              base::TimeDelta timing) const;
 
-  // Returns the name of the track in which to record this database's events
-  // based on its histogram tag.
-  perfetto::NamedTrack GetTracingNamedTrack() const
+  // Returns the track in which to record this database's events based on its
+  // histogram tag.
+  const perfetto::NamedTrack& GetTracingNamedTrack() const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -1286,9 +1287,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // Developer-friendly database ID used in logging output and memory dumps.
   const std::string histogram_tag_;
 
-  // Persist the track name as a member since perfetto needs the original string
-  // for the name to remain alive (without taking ownership of it).
-  const std::string tracing_track_name_;
+  // Tracing track used for async events.
+  const perfetto::NamedTrack tracing_track_;
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_
