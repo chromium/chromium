@@ -20,6 +20,10 @@
 
 namespace jni_zero {
 
+ScopedJavaLocalRef<jstring> NewAsciiString(JNIEnv* env, const char* str) {
+  return ScopedJavaLocalRef<jstring>::Adopt(env, env->NewStringUTF(str));
+}
+
 ScopedJavaLocalRef<jobjectArray> CollectionToArray(
     JNIEnv* env,
     const JavaRef<jobject>& collection) {

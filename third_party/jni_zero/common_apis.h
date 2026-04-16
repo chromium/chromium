@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// IWYU pragma: private, include "third_party/jni_zero/jni_zero.h"
+
 #ifndef JNI_ZERO_COMMON_APIS_H_
 #define JNI_ZERO_COMMON_APIS_H_
 
@@ -13,6 +15,11 @@
 #include "third_party/jni_zero/type_conversions.h"
 
 namespace jni_zero {
+
+// A wrapper around NewStringUTF(), so technically accepts MUTF-8.
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jstring>
+NewAsciiString(JNIEnv* env, const char* str);
+
 // Wraps Collection.toArray().
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobjectArray>
 CollectionToArray(JNIEnv* env, const JavaRef<jobject>& collection);

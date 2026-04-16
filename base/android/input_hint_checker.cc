@@ -239,7 +239,7 @@ void InputHintChecker::InitGlobalRefsAndMethodIds(JNIEnv* env) {
     return;
   }
   ScopedJavaLocalRef<jstring> has_input_string =
-      ConvertUTF8ToJavaString(env, "probablyHasInput");
+      jni_zero::NewAsciiString(env, "probablyHasInput");
   auto method = ScopedJavaLocalRef<jobject>::Adopt(
       env, env->CallObjectMethod(view_class_.obj(), get_method_id,
                                  has_input_string.obj(), nullptr));

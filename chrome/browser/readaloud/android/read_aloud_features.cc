@@ -26,7 +26,7 @@ static ScopedJavaLocalRef<jstring> JNI_ReadAloudFeatures_GetMetricsId(
     return ConvertUTF8ToJavaString(
         env, g_browser_process->metrics_service()->GetClientId());
   }
-  return ConvertUTF8ToJavaString(env, "");
+  return jni_zero::g_empty_string.AsLocalRef(env);
 }
 
 static ScopedJavaLocalRef<jstring>
@@ -35,7 +35,7 @@ JNI_ReadAloudFeatures_GetServerExperimentFlag(JNIEnv* env) {
       base::FeatureList::GetInstance()->GetAssociatedFieldTrialByFeatureName(
           chrome::android::kReadAloudServerExperiments.name);
   if (!trial) {
-    return ConvertUTF8ToJavaString(env, "");
+    return jni_zero::g_empty_string.AsLocalRef(env);
   }
   return ConvertUTF8ToJavaString(
       env, base::StrCat({trial->trial_name(), "_", trial->group_name()}));

@@ -185,20 +185,20 @@ static void JNI_JniCallbacksTest_PassRepeatingCallback2(
 static void JNI_JniCallbacksTest_PassOnceCallbackWithSubtype(
     JNIEnv* env,
     base::OnceCallback<void(const jni_zero::JavaRef<jstring>&)> callback) {
-  std::move(callback).Run(ConvertUTF8ToJavaString(env, "test string"));
+  std::move(callback).Run(jni_zero::NewAsciiString(env, "test string"));
 }
 
 static void JNI_JniCallbacksTest_PassOnceCallbackWithScopedSubtype(
     JNIEnv* env,
     base::OnceCallback<void(jni_zero::ScopedJavaLocalRef<jstring>)> callback) {
-  std::move(callback).Run(ConvertUTF8ToJavaString(env, "scoped string"));
+  std::move(callback).Run(jni_zero::NewAsciiString(env, "scoped string"));
 }
 
 static void JNI_JniCallbacksTest_PassRepeatingCallbackWithSubtype(
     JNIEnv* env,
     base::RepeatingCallback<void(const jni_zero::JavaRef<jstring>&)> callback) {
-  callback.Run(ConvertUTF8ToJavaString(env, "s1"));
-  callback.Run(ConvertUTF8ToJavaString(env, "s2"));
+  callback.Run(jni_zero::NewAsciiString(env, "s1"));
+  callback.Run(jni_zero::NewAsciiString(env, "s2"));
 }
 
 }  // namespace base::android
