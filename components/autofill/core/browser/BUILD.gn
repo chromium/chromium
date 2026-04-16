@@ -955,7 +955,6 @@ static_library("browser") {
       "payments/autofill_save_card_delegate.h",
       "payments/autofill_save_card_infobar_delegate_mobile.cc",
       "payments/autofill_save_card_infobar_delegate_mobile.h",
-      "payments/autofill_save_card_infobar_mobile.h",
       "payments/autofill_save_card_ui_info.cc",
       "payments/autofill_save_card_ui_info.h",
       "payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.cc",

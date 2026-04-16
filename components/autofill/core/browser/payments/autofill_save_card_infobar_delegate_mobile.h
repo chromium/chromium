@@ -99,10 +99,6 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   AutofillSaveCardDelegate* delegate() { return delegate_.get(); }
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  void RemoveInfobar();
-#endif
-
   // Strings and assets provided to the info bar UI.
   AutofillSaveCardUiInfo ui_info_;
   // UI actions (accept, cancel, dismiss etc.) are forwarded to this object that

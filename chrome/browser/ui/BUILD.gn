@@ -961,8 +961,6 @@ static_library("ui") {
       "android/exclusive_access/exclusive_access_context_android.h",
       "android/exclusive_access/exclusive_access_manager_android.cc",
       "android/exclusive_access/exclusive_access_manager_android.h",
-      "android/infobars/autofill_save_card_infobar.cc",
-      "android/infobars/autofill_save_card_infobar.h",
       "android/infobars/infobar_container_android.cc",
       "android/infobars/infobar_container_android.h",
       "android/infobars/simple_confirm_infobar_builder.cc",
