@@ -33,6 +33,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -136,13 +138,13 @@ bool TurnSyncOnHelper::Delegate::IsProfileCreationRequiredByPolicy() const {
 // static
 void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   if (!browser) {
     // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     return;
   }
-  LoginUIServiceFactory::GetForProfile(browser->profile())
+  LoginUIServiceFactory::GetForProfile(browser->GetProfile())
       ->DisplayLoginResult(browser->GetFeatures(), error);
 }
 

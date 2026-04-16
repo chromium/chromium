@@ -79,7 +79,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
                               signin::SigninChoiceCallback callback,
                               bool prompt_for_new_profile);
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
 
   // Used to fetch the cloud user level policy value of

@@ -189,9 +189,9 @@ void InstantMessageQueueProcessor::MaybeShowInstantMessage() {
       GetMessageInterval());
 }
 
-Browser* InstantMessageQueueProcessor::GetBrowser(
+BrowserWindowInterface* InstantMessageQueueProcessor::GetBrowser(
     const InstantMessage& message) {
-  Browser* browser = nullptr;
+  BrowserWindowInterface* browser = nullptr;
 
   const bool is_tab_removed_message =
       message.collaboration_event == CollaborationEvent::TAB_REMOVED &&
@@ -222,7 +222,7 @@ Browser* InstantMessageQueueProcessor::GetBrowser(
 }
 
 bool InstantMessageQueueProcessor::MaybeShowToastInBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<ToastParams> params) {
   if (!browser) {
     // Browser state does not support showing this message or this is
@@ -235,8 +235,7 @@ bool InstantMessageQueueProcessor::MaybeShowToastInBrowser(
     return false;
   }
 
-  ToastController* toast_controller =
-      browser->browser_window_features()->toast_controller();
+  ToastController* toast_controller = browser->GetFeatures().toast_controller();
   if (!toast_controller) {
     // Encountered an issue with the toast controller for this browser.
     return false;

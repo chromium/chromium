@@ -429,7 +429,7 @@ void BackgroundModeManager::LaunchBackgroundApplication(
 // static
 BrowserWindowInterface* BackgroundModeManager::GetBrowserWindowForProfile(
     Profile* profile) {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(profile);
   return browser ? browser : chrome::OpenEmptyWindow(profile);
 }
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -161,12 +162,12 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   // Note: This will be executed after the profile management view closes, so
   // the step instance will already be deleted.
   static void ContinueSAMLSignin(std::unique_ptr<content::WebContents> contents,
-                                 Browser* browser) {
+                                 BrowserWindowInterface* browser) {
     DCHECK(browser);
     // Make a new tab with the desired contents and close the old tab.
-    browser->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                  /*foreground=*/true);
-    browser->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
+    browser->GetTabStripModel()->AppendWebContents(std::move(contents),
+                                                   /*foreground=*/true);
+    browser->GetTabStripModel()->DetachAndDeleteWebContentsAt(/*index=*/0);
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
         ProfileMetrics::ProfileSignedInFlowOutcome::kSAML);

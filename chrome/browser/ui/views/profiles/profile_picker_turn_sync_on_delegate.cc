@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -54,7 +55,7 @@ std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
   }
 }
 
-void OpenSettingsInBrowser(Browser* browser) {
+void OpenSettingsInBrowser(BrowserWindowInterface* browser) {
   if (!browser) {
     // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.

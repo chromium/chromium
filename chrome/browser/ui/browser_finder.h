@@ -162,7 +162,7 @@ Browser* FindBrowserWithUiElementContext(ui::ElementContext context);
 // returns nullptr.
 //
 // WARNING #2: This will always return nullptr in unit tests run on the bots.
-Browser* FindLastActiveWithProfile(Profile* profile);
+BrowserWindowInterface* FindLastActiveWithProfile(Profile* profile);
 
 // Returns the browser whose window was most recently active. Returns nullptr if
 // no such browser currently exists.

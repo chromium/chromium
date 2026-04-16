@@ -43,23 +43,27 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/base_window.h"
 
 namespace {
 
 // If the |browser| argument is non-null, returns the pointer directly.
 // Otherwise creates a new browser for the profile, adds an empty tab and makes
 // sure the browser is visible.
-Browser* EnsureBrowser(Browser* browser, Profile* profile) {
+BrowserWindowInterface* EnsureBrowser(BrowserWindowInterface* browser,
+                                      Profile* profile) {
   if (!browser) {
     // The user just created a new profile or has closed the browser that
-    // we used previously. Grab the most recently active browser or else
+    // we used previously. Grab an existing browser for the profile or else
     // create a new one.
     browser = chrome::FindLastActiveWithProfile(profile);
     if (!browser) {
-      browser = Browser::Create(Browser::CreateParams(profile, true));
-      chrome::AddTabAt(browser, GURL(), -1, true);
+      Browser* new_browser =
+          Browser::Create(Browser::CreateParams(profile, true));
+      chrome::AddTabAt(new_browser, GURL(), -1, true);
+      browser = new_browser;
     }
-    browser->window()->Show();
+    browser->GetWindow()->Show();
   }
   return browser;
 }
@@ -90,7 +94,7 @@ TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(
     bool is_sync_promo,
     bool user_already_signed_in)
     : browser_(browser),
-      profile_(browser_->profile()),
+      profile_(browser_->GetProfile()),
       is_sync_promo_(is_sync_promo),
       user_already_signed_in_(user_already_signed_in) {
   DCHECK(browser);
@@ -223,13 +227,13 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     return;
   }
   profile_creation_required_by_policy_ =
-      signin_util::IsProfileSeparationEnforcedByProfile(browser_->profile(),
+      signin_util::IsProfileSeparationEnforcedByProfile(browser_->GetProfile(),
                                                         account_info.email) ||
       signin_util::IsProfileSeparationEnforcedByPolicies(
           profile_separation_policies);
   bool show_link_data_option = signin_util::
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
-          browser_->profile(), profile_separation_policies);
+          browser_->GetProfile(), profile_separation_policies);
   browser_->GetFeatures()
       .signin_view_controller()
       ->ShowModalManagedUserNoticeDialog(
@@ -256,15 +260,15 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
   if (prompt_for_new_profile) {
     account_level_signin_restriction_policy_fetcher_
         ->GetManagedAccountsSigninRestriction(
-            IdentityManagerFactory::GetForProfile(browser_->profile()),
+            IdentityManagerFactory::GetForProfile(browser_->GetProfile()),
             account_info.account_id,
             base::BindOnce(&TurnSyncOnHelperDelegateImpl::
                                OnProfileSigninRestrictionsFetched,
                            weak_ptr_factory_.GetWeakPtr(), account_info,
                            std::move(callback)),
             policy::utils::IsPolicyTestingEnabled(
-                browser_->profile()->GetPrefs(), chrome::GetChannel())
-                ? browser_->profile()
+                browser_->GetProfile()->GetPrefs(), chrome::GetChannel())
+                ? browser_->GetProfile()
                       ->GetPrefs()
                       ->GetDefaultPrefValue(
                           prefs::

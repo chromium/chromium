@@ -132,7 +132,10 @@ void PrependTabs(const StartupTabs& from, StartupTabs* to) {
 Browser* GetExistingBrowserForOpenBehavior(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup) {
-  Browser* workspace_browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* current_browser =
+      chrome::FindLastActiveWithProfile(profile);
+  Browser* workspace_browser =
+      current_browser ? current_browser->GetBrowserForMigrationOnly() : nullptr;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // On Windows and ChromeOS we specifically want to select the last active

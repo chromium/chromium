@@ -26,6 +26,7 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class SigninUIError;
 class TurnSyncOnHelperPolicyFetchTracker;
 
@@ -129,7 +130,7 @@ class TurnSyncOnHelper {
     // This helper is static because in some cases it needs to be called
     // after this object gets destroyed.
     static void ShowLoginErrorForBrowser(const SigninUIError& error,
-                                         Browser* browser);
+                                         BrowserWindowInterface* browser);
   };
 
   // Create a helper that turns sync on for an account that is already present

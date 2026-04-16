@@ -1450,7 +1450,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Initially there should be no browsers for incognito profile.
   EXPECT_EQ(chrome::FindLastActiveWithProfile(incognito_profile), nullptr);
 
-  Browser* new_browser = nullptr;
+  BrowserWindowInterface* new_browser = nullptr;
   {
     // Call ResolveTargetSurface with incognito profile.
     GlicInvokeHandler::ResolvedTarget resolved =
@@ -1462,7 +1462,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     // Verify it created an incognito browser.
     new_browser = chrome::FindLastActiveWithProfile(incognito_profile);
     ASSERT_TRUE(new_browser);
-    EXPECT_TRUE(new_browser->profile()->IsOffTheRecord());
+    EXPECT_TRUE(new_browser->GetProfile()->IsOffTheRecord());
   }
 
   // Clean up the new window.

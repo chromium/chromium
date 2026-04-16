@@ -15,6 +15,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 
 struct CoreAccountInfo;
+class Browser;
 class Profile;
 class ProfilePickerPostSignInAdapter;
 class ForceSigninUIError;

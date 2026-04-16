@@ -147,7 +147,10 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
 // |profile|, or schedules it to run once a browser is added.
 void RunOnBrowserReady(Profile* profile,
                        base::OnceCallback<void(Browser*)> callback) {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* current_browser =
+      chrome::FindLastActiveWithProfile(profile);
+  Browser* browser =
+      current_browser ? current_browser->GetBrowserForMigrationOnly() : nullptr;
   if (browser) {
     std::move(callback).Run(browser);
   } else {

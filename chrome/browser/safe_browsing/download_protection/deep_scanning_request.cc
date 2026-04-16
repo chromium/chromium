@@ -1075,11 +1075,11 @@ content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
   // contents of the browser to show the dialog on.
   if (!force_save_web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-    Browser* browser = chrome::FindLastActiveWithProfile(
+    BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(
         Profile::FromBrowserContext(metadata_->GetBrowserContext()));
     if (browser) {
       force_save_web_contents =
-          browser->tab_strip_model()->GetActiveWebContents();
+          browser->GetTabStripModel()->GetActiveWebContents();
     }
 #endif
   }

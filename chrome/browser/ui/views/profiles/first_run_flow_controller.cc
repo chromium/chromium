@@ -443,15 +443,16 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
   }
 
   PostHostClearedCallback CreateSupervisedUserIphCallback() {
-    return PostHostClearedCallback(base::BindOnce([](Browser* browser) {
-      CHECK(browser);
-      BrowserView* browser_view =
-          BrowserView::GetBrowserViewForBrowser(browser);
-      if (!browser_view) {
-        return;
-      }
-      browser_view->MaybeShowSupervisedUserProfileSignInIPH();
-    }));
+    return PostHostClearedCallback(
+        base::BindOnce([](BrowserWindowInterface* browser) {
+          CHECK(browser);
+          BrowserView* browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser);
+          if (!browser_view) {
+            return;
+          }
+          browser_view->MaybeShowSupervisedUserProfileSignInIPH();
+        }));
   }
 
   void FinishAndOpenBrowserInternal(
@@ -469,7 +470,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     callbacks.push_back(std::move(post_host_cleared_callback));
     callbacks.push_back(CreateSupervisedUserIphCallback());
     auto combined_callback =
-        CombineCallbacks<PostHostClearedCallback, Browser*>(
+        CombineCallbacks<PostHostClearedCallback, BrowserWindowInterface*>(
             std::move(callbacks));
     std::move(step_completed_callback_)
         .Run(std::move(combined_callback), is_continue_callback);

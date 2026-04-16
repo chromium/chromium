@@ -87,13 +87,13 @@ class InstantMessageQueueProcessor {
   // for the new message queue head.
   void ProceedToNextQueueMessage();
 
-  // Finds the toast controller needed to show a message for the group
+  // Finds the browser window needed to show a message for the group
   // contained in this message.
-  Browser* GetBrowser(const InstantMessage& message);
+  BrowserWindowInterface* GetBrowser(const InstantMessage& message);
 
   // Finds the toast controller needed to show a message for the group
   // contained in this message. Virtual for testing purposes only.
-  virtual bool MaybeShowToastInBrowser(Browser* browser,
+  virtual bool MaybeShowToastInBrowser(BrowserWindowInterface* browser,
                                        std::optional<ToastParams> params);
 
   // Returns the toast params populated for this message. Returns

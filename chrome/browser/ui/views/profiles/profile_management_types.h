@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/strong_alias.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Type of the callbacks that are called to be notified that the switch to a
 // given step by `ProfileManagementFlowController` is completed. `success` is
@@ -26,10 +26,11 @@ using StepSwitchFinishedCallback =
 // we opened a browser for the newly set up profile.
 // This callback should not rely on profile management flow instances, as we
 // assume that they are deleted when the host is cleared.
-// The provided `Browser*` may be `nullptr` if the operation failed.
+// The provided `BrowserWindowInterface*` may be `nullptr` if the operation
+// failed.
 using PostHostClearedCallback =
     base::StrongAlias<class PostHostClearedCallbackTag,
-                      base::OnceCallback<void(Browser*)>>;
+                      base::OnceCallback<void(BrowserWindowInterface*)>>;
 
 // Generic template to combine multiple callbacks of the same type without
 // needing to forward the input parameters between all callbacks. `Params` must

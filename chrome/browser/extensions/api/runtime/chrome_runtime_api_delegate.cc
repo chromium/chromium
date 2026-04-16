@@ -277,15 +277,16 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(
 void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  if (!browser) {
-    browser = Browser::Create(Browser::CreateParams(profile, false));
+  BrowserWindowInterface* current_browser =
+      chrome::FindLastActiveWithProfile(profile);
+  if (!current_browser) {
+    current_browser = Browser::Create(Browser::CreateParams(profile, false));
   }
-  if (!browser) {
+  if (!current_browser) {
     return;
   }
 
-  NavigateParams params(browser, uninstall_url,
+  NavigateParams params(current_browser, uninstall_url,
                         ui::PAGE_TRANSITION_CLIENT_REDIRECT);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.user_gesture = false;

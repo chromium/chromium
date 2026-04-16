@@ -12,6 +12,8 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -24,13 +26,14 @@
 
 namespace {
 
-void ShowLoginErrorForBrowser(const SigninUIError& error, Browser* browser) {
+void ShowLoginErrorForBrowser(const SigninUIError& error,
+                              BrowserWindowInterface* browser) {
   if (!browser) {
     // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     return;
   }
-  LoginUIServiceFactory::GetForProfile(browser->profile())
+  LoginUIServiceFactory::GetForProfile(browser->GetProfile())
       ->DisplayLoginResult(browser->GetFeatures(), error);
 }
 

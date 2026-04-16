@@ -79,13 +79,13 @@ extensions::WebViewGuest* GetAuthWebViewGuest(
       GetAuthFrame(web_contents, parent_frame_name));
 }
 
-Browser* GetDesktopBrowser(content::WebUI* web_ui) {
+BrowserWindowInterface* GetDesktopBrowser(content::WebUI* web_ui) {
   BrowserWindowInterface* browser =
       chrome::FindBrowserWithTab(web_ui->GetWebContents());
   if (!browser) {
     return chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
   }
-  return browser->GetBrowserForMigrationOnly();
+  return browser;
 }
 
 base::TimeDelta GetMinorModeRestrictionsDeadline() {

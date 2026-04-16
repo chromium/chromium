@@ -79,7 +79,7 @@ class TestInstantMessageQueueProcessor : public InstantMessageQueueProcessor {
       : InstantMessageQueueProcessor(profile) {}
   ~TestInstantMessageQueueProcessor() override = default;
 
-  bool MaybeShowToastInBrowser(Browser* browser,
+  bool MaybeShowToastInBrowser(BrowserWindowInterface* browser,
                                std::optional<ToastParams> params) override {
     return toast_will_be_shown_;
   }

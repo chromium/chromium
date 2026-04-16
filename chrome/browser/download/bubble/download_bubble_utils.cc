@@ -202,7 +202,7 @@ BrowserWindowInterface* FindBrowserToShowAnimation(
       web_contents = inspected;
     }
   }
-  Browser* browser_to_show_animation =
+  BrowserWindowInterface* browser_to_show_animation =
       web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
 
   // As a last resort, use the last active browser for this profile. Not ideal,

@@ -408,12 +408,11 @@ Browser* FindBrowserWithUiElementContext(ui::ElementContext context) {
   return found;
 }
 
-Browser* FindLastActiveWithProfile(Profile* profile) {
+BrowserWindowInterface* FindLastActiveWithProfile(Profile* profile) {
   // We are only interested in last active browsers, so we don't fall back to
   // all browsers like FindBrowserWith* do.
-  BrowserWindowInterface* browser = FindBrowserOrderedByActivationMatching(
+  return FindBrowserOrderedByActivationMatching(
       profile, Browser::WindowFeature::kFeatureNone, kMatchAny);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 BrowserWindowInterface* FindLastActive() {

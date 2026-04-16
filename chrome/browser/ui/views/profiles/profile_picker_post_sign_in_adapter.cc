@@ -20,6 +20,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
@@ -54,7 +55,7 @@ bool ShouldOpenUrlAfterBrowserCreation(const GURL& url) {
 
 // Opens a new tab with `url` in `browser`. Tabs opened using this function will
 // not replace existing tabs.
-void OpenNewTabInBrowser(const GURL& url, Browser* browser) {
+void OpenNewTabInBrowser(const GURL& url, BrowserWindowInterface* browser) {
   if (browser) {
     browser->OpenGURL(url, WindowOpenDisposition::SINGLETON_TAB);
   }
@@ -216,8 +217,9 @@ void ProfilePickerPostSignInAdapter::FinishAndOpenBrowser(
     std::vector<PostHostClearedCallback> callbacks;
     callbacks.push_back(std::move(open_url_callback));
     callbacks.push_back(std::move(callback));
-    callback = CombineCallbacks<PostHostClearedCallback, Browser*>(
-        std::move(callbacks));
+    callback =
+        CombineCallbacks<PostHostClearedCallback, BrowserWindowInterface*>(
+            std::move(callbacks));
   }
 
   FinishAndOpenBrowserInternal(std::move(callback), is_continue_callback);

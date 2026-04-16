@@ -28,6 +28,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -102,7 +103,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
 // should be used. An IPH is shown after the bubble, or right away if the bubble
 // cannot be shown.
 void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
-                             Browser* browser) {
+                             BrowserWindowInterface* browser) {
   DCHECK(browser);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view || !browser_view->toolbar_button_provider()) {
@@ -111,7 +112,7 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
 
   BrowserWindowFeatures& features = browser->GetFeatures();
   if (ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
-          browser->profile())) {
+          browser->GetProfile())) {
     // For sync users, their profile color has not been applied yet. Call a
     // helper class that applies the color and shows the bubble only if there is
     // no conflict with a synced theme / color.
@@ -123,7 +124,7 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
   }
 }
 
-void MaybeShowProfileIPHs(Browser* browser) {
+void MaybeShowProfileIPHs(BrowserWindowInterface* browser) {
   DCHECK(browser);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view) {
@@ -215,8 +216,9 @@ class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
     std::vector<PostHostClearedCallback> callbacks;
     callbacks.push_back(std::move(callback));
     callbacks.push_back(CreateFreshProfileExperienceCallback());
-    callback = CombineCallbacks<PostHostClearedCallback, Browser*>(
-        std::move(callbacks));
+    callback =
+        CombineCallbacks<PostHostClearedCallback, BrowserWindowInterface*>(
+            std::move(callbacks));
 
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &ProfileCreationPostSignInAdapter::FinishFlow,
@@ -394,7 +396,7 @@ bool FirstWebContentsProfilerForProfilePicker::WasStartupInterrupted() {
 }
 
 // Measures time to display the first web contents.
-void BeginFirstWebContentsProfiling(Browser* browser,
+void BeginFirstWebContentsProfiling(BrowserWindowInterface* browser,
                                     base::TimeTicks pick_time) {
   content::WebContents* visible_contents =
       metrics::FirstWebContentsProfilerBase::GetVisibleContents(browser);
@@ -417,15 +419,15 @@ void BeginFirstWebContentsProfiling(Browser* browser,
 
 void ShowLocalProfileCustomization(
     base::TimeTicks profile_picked_time_on_startup,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   if (!browser) {
     // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     return;
   }
 
-  DCHECK(browser->window());
-  Profile* profile = browser->profile();
+  DCHECK(browser->GetWindow());
+  Profile* profile = browser->GetProfile();
 
   TRACE_EVENT1("browser", "ShowLocalProfileCustomization", "profile_path",
                profile->GetPath().AsUTF8Unsafe());
@@ -440,7 +442,7 @@ void ShowLocalProfileCustomization(
           /*is_local_profile_creation=*/true);
 }
 
-void MaybeOpenPageInBrowser(Browser* browser,
+void MaybeOpenPageInBrowser(BrowserWindowInterface* browser,
                             const GURL& target_page_url,
                             bool open_settings) {
   // User clicked 'Edit' from the profile card menu.
