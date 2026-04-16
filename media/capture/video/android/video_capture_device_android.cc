@@ -347,21 +347,26 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
   const int y_plane_length = width * height;
   const int uv_plane_length = y_plane_length / 4;
   const int buffer_length = y_plane_length + uv_plane_length * 2;
-  auto buffer = base::HeapArray<uint8_t>::Uninit(
-      base::checked_cast<size_t>(buffer_length));
+  const size_t unsigned_buffer_length =
+      base::checked_cast<size_t>(buffer_length);
 
-  auto dst_y_span = buffer.subspan(0, y_plane_length);
-  auto dst_u_span = buffer.subspan(y_plane_length, uv_plane_length);
+  if (i420_buffer_.size() < unsigned_buffer_length) {
+    i420_buffer_ = base::HeapArray<uint8_t>::Uninit(unsigned_buffer_length);
+  }
+
+  auto dst_y_span = i420_buffer_.subspan(0, y_plane_length);
+  auto dst_u_span = i420_buffer_.subspan(y_plane_length, uv_plane_length);
   auto dst_v_span =
-      buffer.subspan(y_plane_length + uv_plane_length, uv_plane_length);
+      i420_buffer_.subspan(y_plane_length + uv_plane_length, uv_plane_length);
 
   libyuv::Android420ToI420(y_src, y_stride, u_src, uv_row_stride, v_src,
                            uv_row_stride, uv_pixel_stride, dst_y_span.data(),
                            width, dst_u_span.data(), width / 2,
                            dst_v_span.data(), width / 2, width, height);
 
-  SendIncomingDataToClient(buffer.data(), buffer_length, rotation, current_time,
-                           capture_time, ColorSpaceFromADataSpace(data_space));
+  SendIncomingDataToClient(i420_buffer_.data(), buffer_length, rotation,
+                           current_time, capture_time,
+                           ColorSpaceFromADataSpace(data_space));
 }
 
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
