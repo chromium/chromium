@@ -504,8 +504,9 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
           [_inputViewController.view.trailingAnchor
               constraintEqualToAnchor:_closeButton.leadingAnchor
                              constant:-kInputPlateTrailingPadding],
-          [_closeButton.centerYAnchor
-              constraintEqualToAnchor:_inputViewController.view.centerYAnchor]
+          [_closeButton.topAnchor
+              constraintEqualToAnchor:_inputViewController.view.topAnchor
+                             constant:0]
         ]];
 
         _closeButton.hidden = NO;

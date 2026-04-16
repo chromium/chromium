@@ -347,8 +347,7 @@
 - (BOOL)shouldUseIpadPresentationController {
   return IsComposeboxIpadEnabled() &&
          UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
-         (base::ios::IsRunningOnIOS26OrLater() ||
-          IsRegularXRegularSizeClass(self.baseViewController.traitCollection));
+         IsRegularXRegularSizeClass(self.baseViewController.traitCollection);
 }
 
 // Represents the coordinator's view controller with no animation.
