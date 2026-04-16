@@ -8,8 +8,8 @@ source_set("public") {
     "google_services_settings_constants.mm",
   ]
   deps = [
-    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
-    "//ios/chrome/browser/settings/google_services/manage_sync/public",
+    "//ios/chrome/browser/settings/manage_accounts/public",
+    "//ios/chrome/browser/settings/manage_sync/public",
     "//ios/chrome/browser/shared/ui/list_model",
   ]
 }
