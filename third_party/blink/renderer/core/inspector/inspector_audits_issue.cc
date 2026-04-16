@@ -186,6 +186,14 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
         kFormModelContextMissingToolDescription:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormModelContextMissingToolDescription;
+    case mojom::blink::GenericIssueErrorType::
+        kFormModelContextRequiredParameterMissingName:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextRequiredParameterMissingName;
+    case mojom::blink::GenericIssueErrorType::
+        kFormModelContextParameterMissingName:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextParameterMissingName;
   }
 }
 

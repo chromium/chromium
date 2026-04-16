@@ -153,7 +153,7 @@ class CORE_EXPORT FormMCPSchema {
   void ProcessForm(HTMLFormElement&);
   ControlVector& EnsureControlVector(const String& name);
 
-  // AuditsIssues.
+  void ReportMissingParamNameIssuesIfNeeded();
   void ReportParameterIssueIfNeeded(const String& name, const JSONObject&);
 
   bool IsText(ListedElement&) const;

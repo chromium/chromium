@@ -326,6 +326,8 @@ enum GenericIssueErrorType {
   kFormModelContextParameterMissingTitleAndDescription,
   kFormModelContextMissingToolName,
   kFormModelContextMissingToolDescription,
+  kFormModelContextRequiredParameterMissingName,
+  kFormModelContextParameterMissingName,
 };
 
 struct GenericIssueDetails {

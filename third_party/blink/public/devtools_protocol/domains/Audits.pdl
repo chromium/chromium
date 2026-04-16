@@ -431,6 +431,8 @@ experimental domain Audits
       FormModelContextParameterMissingTitleAndDescription
       FormModelContextMissingToolName
       FormModelContextMissingToolDescription
+      FormModelContextRequiredParameterMissingName
+      FormModelContextParameterMissingName
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object

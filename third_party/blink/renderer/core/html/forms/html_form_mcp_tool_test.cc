@@ -3431,4 +3431,136 @@ TEST_F(HTMLFormMcpToolTest, GenericIssue_NotConnectedNoIssues) {
   EXPECT_EQ(0u, storage.size());
 }
 
+TEST_F(HTMLFormMcpToolTest, GenericIssue_ParameterMissingName) {
+  SetBodyInnerHTML(R"HTML(
+    <form id="form" toolname="my_tool" tooldescription="My tool description">
+      <input id="text_missing_name" type="text" toolparamdescription="Some nice text">
+      <select id="select_missing_name" toolparamdescription="Some nice text">
+    </form>
+  )HTML");
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  ComputeInputSchema(*form_element);
+
+  EXPECT_EQ(2u, storage.size());
+
+  protocol::Audits::InspectorIssue* issue0 = storage.at(0);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue0->getCode());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextParameterMissingName,
+            issue0->getDetails()->getGenericIssueDetails()->getErrorType());
+
+  protocol::Audits::InspectorIssue* issue1 = storage.at(1);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue1->getCode());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextParameterMissingName,
+            issue1->getDetails()->getGenericIssueDetails()->getErrorType());
+  EXPECT_TRUE(
+      issue0->getDetails()->getGenericIssueDetails()->hasViolatingNodeId());
+  HTMLInputElement* text = GetInputElement("text_missing_name");
+  ASSERT_TRUE(text);
+  EXPECT_EQ(
+      static_cast<int>(DOMNodeIds::IdForNode(text)),
+      issue0->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
+
+  EXPECT_TRUE(
+      issue1->getDetails()->getGenericIssueDetails()->hasViolatingNodeId());
+  Element* select = GetElementById("select_missing_name");
+  ASSERT_TRUE(select);
+  EXPECT_EQ(
+      static_cast<int>(DOMNodeIds::IdForNode(select)),
+      issue1->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_RequiredParameterMissingName) {
+  SetBodyInnerHTML(R"HTML(
+    <form id="form" toolname="my_tool" tooldescription="My tool description">
+      <input id="text_req_missing_name" type="text" required toolparamdescription="Some nice text">
+    </form>
+  )HTML");
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  ComputeInputSchema(*form_element);
+
+  EXPECT_EQ(1u, storage.size());
+
+  protocol::Audits::InspectorIssue* issue = storage.at(0);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue->getCode());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextRequiredParameterMissingName,
+            issue->getDetails()->getGenericIssueDetails()->getErrorType());
+  EXPECT_TRUE(
+      issue->getDetails()->getGenericIssueDetails()->hasViolatingNodeId());
+  HTMLInputElement* text = GetInputElement("text_req_missing_name");
+  ASSERT_TRUE(text);
+  EXPECT_EQ(
+      static_cast<int>(DOMNodeIds::IdForNode(text)),
+      issue->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
+}
+
+TEST_F(HTMLFormMcpToolTest,
+       GenericIssue_RequiredParameterMissingNameAndTitleDescription) {
+  SetBodyInnerHTML(R"HTML(
+    <form id="form" toolname="my_tool" tooldescription="My tool description">
+      <input id="text_both_missing" type="text" required>
+    </form>
+  )HTML");
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  ComputeInputSchema(*form_element);
+
+  EXPECT_EQ(2u, storage.size());
+
+  protocol::Audits::InspectorIssue* issue1 = storage.at(0);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue1->getCode());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextRequiredParameterMissingName,
+            issue1->getDetails()->getGenericIssueDetails()->getErrorType());
+  EXPECT_TRUE(
+      issue1->getDetails()->getGenericIssueDetails()->hasViolatingNodeId());
+  HTMLInputElement* text = GetInputElement("text_both_missing");
+  ASSERT_TRUE(text);
+  EXPECT_EQ(
+      static_cast<int>(DOMNodeIds::IdForNode(text)),
+      issue1->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
+
+  protocol::Audits::InspectorIssue* issue2 = storage.at(1);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue2->getCode());
+  EXPECT_TRUE(issue2->getDetails()->hasGenericIssueDetails());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextParameterMissingTitleAndDescription,
+            issue2->getDetails()->getGenericIssueDetails()->getErrorType());
+  EXPECT_TRUE(
+      issue2->getDetails()->getGenericIssueDetails()->hasViolatingNodeId());
+  EXPECT_EQ(
+      static_cast<int>(DOMNodeIds::IdForNode(text)),
+      issue2->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
+}
+
 }  // namespace blink
