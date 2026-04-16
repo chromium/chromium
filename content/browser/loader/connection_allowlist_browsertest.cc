@@ -347,8 +347,9 @@ class AlwaysPreconnectContentBrowserClient
   }
 };
 
+// TODO(https://crbug.com/497205155): Fix flakiness and enable this test.
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
-                       NavigationRequestPreconnectAllowed) {
+                       DISABLED_NavigationRequestPreconnectAllowed) {
   net::test_server::ConnectionTracker connection_tracker(
       &embedded_https_test_server());
   AlwaysPreconnectContentBrowserClient client;
