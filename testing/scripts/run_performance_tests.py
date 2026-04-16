@@ -775,7 +775,7 @@ class CrossbenchTest(object):
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
   CHROME_BROWSER = '--browser=%s'
-  ANDROID_HJSON = ('{browser:"%s", driver:{type:"Android", '
+  ANDROID_HJSON = ('{browser:"%s", %s driver:{type:"Android", '
                    f'adb_bin:"{ADB_TOOL}", '
                    f'bundletool:"{BUNDLETOOL}'
                    '"}}')
@@ -830,6 +830,10 @@ class CrossbenchTest(object):
                         type=str,
                         required=False,
                         help='Use official build of the browser')
+    parser.add_argument('--reinstall',
+                        action='store_true',
+                        default=False,
+                        help='Reinstall Android APK even if already installed')
     parser.add_argument(
         '--connect-to-device-over-network',
         action='store_true',
@@ -952,7 +956,9 @@ class CrossbenchTest(object):
     ]
     if self.cb_options.official_browser:
       if self.is_android:
-        android_json = self.ANDROID_HJSON % self.cb_options.official_browser
+        extra_config = '"reinstall":true,' if self.cb_options.reinstall else ''
+        android_json = self.ANDROID_HJSON % (self.cb_options.official_browser,
+                                             extra_config)
         self.browser = self.CHROME_BROWSER % android_json
       else:
         self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
@@ -980,7 +986,7 @@ class CrossbenchTest(object):
       # Check for an arg with embedder package name to override browser (WV)
       browser_app = (self._check_for_embedder_arg()
                      or possible_browser.settings.package)
-      android_json = self.ANDROID_HJSON % browser_app
+      android_json = self.ANDROID_HJSON % (browser_app, '')
       self.browser = self.CHROME_BROWSER % android_json
     else:
       assert hasattr(possible_browser, 'local_executable')
