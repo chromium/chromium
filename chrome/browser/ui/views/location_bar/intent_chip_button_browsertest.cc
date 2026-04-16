@@ -330,6 +330,8 @@ class IntentChipButtonBrowserUiTest
     if (!browser_view) {
       return false;
     }
+
+    auto* const location_bar = browser_view->GetLocationBarView();
     const views::Button* intent_chip = GetIntentChip(browser());
 
     bool is_intent_chip_visible_and_expanded =
@@ -345,7 +347,7 @@ class IntentChipButtonBrowserUiTest
     // TODO(crbug.com/384567062): Support set_baseline() in UiBrowserTest.
     const std::string screenshot_name = base::StrCat(
         {test_info->test_suite_name(), "_", test_info->name(), "_7763146"});
-    return VerifyPixelUi(browser_view->GetWidget(),
+    return VerifyPixelUi(location_bar,
                          test_info->test_suite_name(),
                          screenshot_name) != ui::test::ActionResult::kFailed;
   }
