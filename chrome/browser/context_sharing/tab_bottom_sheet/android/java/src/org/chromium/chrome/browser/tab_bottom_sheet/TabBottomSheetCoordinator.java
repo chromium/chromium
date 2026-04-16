@@ -256,6 +256,15 @@ public class TabBottomSheetCoordinator {
     }
 
     /**
+     * Removes the peek view from the bottom sheet.
+     *
+     * @param peekView The peek view to remove.
+     */
+    void removePeekView(View peekView) {
+        mCoBrowseViews.removePeekView(peekView);
+    }
+
+    /**
      * Shows the peek view and hides the expanded content.
      *
      * @return Whether the peek view was successfully shown.

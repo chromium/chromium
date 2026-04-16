@@ -1203,7 +1203,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initiateTabBottomSheetManagers();
         initializeSideUi();
 
-        if (ChromeFeatureList.sGlic.isEnabled()) {
+        if (ChromeFeatureList.sGlic.isEnabled() && mTabBottomSheetManager != null) {
             mActorControlCoordinator =
                     new ActorControlCoordinator(
                             mActivity,

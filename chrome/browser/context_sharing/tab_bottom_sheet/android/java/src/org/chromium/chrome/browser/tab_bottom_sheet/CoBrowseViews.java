@@ -86,16 +86,34 @@ public class CoBrowseViews {
         }
         if (mPeekView != null) {
             peekContainer.removeAllViews();
+            mPeekView = null;
         }
     }
 
-    /** Attaches the peek view for the co-browse content. */
+    /**
+     * Attaches the peek view for the co-browse content.
+     *
+     * @param peekView The peek view to attach.
+     */
     public void attachPeekView(View peekView) {
         ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
         assert peekContainer.getChildCount() == 0;
         detachFromParent(peekView);
         mPeekView = peekView;
         peekContainer.addView(mPeekView);
+    }
+
+    /**
+     * Detaches the peek view if it matches the provided view.
+     *
+     * @param peekView The peek view to be removed.
+     */
+    public void removePeekView(View peekView) {
+        if (mPeekView == peekView) {
+            ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
+            peekContainer.removeView(mPeekView);
+            mPeekView = null;
+        }
     }
 
     /** Sets the WebContents of the WebUi. */

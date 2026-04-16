@@ -12,7 +12,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
@@ -37,6 +36,8 @@ public class ActorControlCoordinator
     private final ActorControlMediator mMediator;
     private final Context mContext;
     private final PropertyModel mModel;
+    private final ActorControlView mView;
+    private final PropertyModelChangeProcessor mViewBinder;
     private final TabSupplierObserver mTabObserver;
     private final Callback<Profile> mProfileObserver;
     private final TabBottomSheetManager mTabBottomSheetManager;
@@ -44,8 +45,6 @@ public class ActorControlCoordinator
 
     private @Nullable ActorKeyedService mActorKeyedService;
     private @Nullable ActorUiTabController mActorUiTabController;
-    private @MonotonicNonNull PropertyModelChangeProcessor mViewBinder;
-    private @MonotonicNonNull ActorControlView mView;
 
     /**
      * Constructs a new {@link ActorControlCoordinator}.
@@ -87,20 +86,26 @@ public class ActorControlCoordinator
                         mActorUiTabController = tab != null ? ActorUiTabController.from(tab) : null;
                         if (mActorUiTabController != null) {
                             mActorUiTabController.addObserver(ActorControlCoordinator.this);
-                            if (mView == null) {
-                                attachPeekView();
-                            }
                         }
                     }
                 };
 
         mProfileObserver = this::onProfileAdded;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
+
+        mView =
+                (ActorControlView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.actor_control_layout, null, false);
+        mViewBinder =
+                PropertyModelChangeProcessor.create(mModel, mView, ActorControlViewBinder::bind);
+        setPeekViewContent("", PeekViewUiState.DEFAULT);
+        mTabBottomSheetManager.setPeekView(mView);
     }
 
     private void onProfileAdded(Profile profile) {
         if (mActorKeyedService != null) {
-            mActorKeyedService.removeObserver(ActorControlCoordinator.this);
+            mActorKeyedService.removeObserver(this);
             mActorKeyedService = null;
         }
 
@@ -117,13 +122,22 @@ public class ActorControlCoordinator
             return;
         }
 
-        mActorKeyedService.addObserver(ActorControlCoordinator.this);
+        mActorKeyedService.addObserver(this);
         ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
-        if (activeTask != null) {
-            onTaskStateChanged(activeTask.getId(), activeTask.getState());
-        } else {
+        if (activeTask == null) {
             clearPeekViewContent();
+            return;
         }
+
+        onTaskStateChanged(activeTask.getId(), activeTask.getState());
+    }
+
+    private void setPeekViewContent(String title, PeekViewUiState state) {
+        mMediator.setContent(title, state);
+    }
+
+    private void clearPeekViewContent() {
+        mMediator.setContent("", PeekViewUiState.DEFAULT);
     }
 
     /**
@@ -159,27 +173,19 @@ public class ActorControlCoordinator
                 break;
             case ActorTaskState.PAUSED_BY_ACTOR:
             case ActorTaskState.WAITING_ON_USER:
+            case ActorTaskState.FINISHED:
+            case ActorTaskState.FAILED:
                 setPeekViewContent(taskTitle, PeekViewUiState.WAITING);
                 break;
             case ActorTaskState.CREATED:
             case ActorTaskState.CANCELLED:
-            case ActorTaskState.FINISHED:
-            case ActorTaskState.FAILED:
-                clearPeekViewContent();
+                setPeekViewContent(taskTitle, PeekViewUiState.DEFAULT);
                 break;
             default:
                 assert false : "Unhandled ActorTaskState " + newState;
                 clearPeekViewContent();
                 break;
         }
-    }
-
-    private void setPeekViewContent(String title, PeekViewUiState state) {
-        mMediator.setContent(title, state);
-    }
-
-    private void clearPeekViewContent() {
-        mMediator.setContent("", PeekViewUiState.DEFAULT);
     }
 
     /**
@@ -193,9 +199,6 @@ public class ActorControlCoordinator
             return;
         }
         if (state.actorOverlay.isActive) {
-            if (mView == null) {
-                attachPeekView();
-            }
             if (!mTabBottomSheetManager.showPeekViewAndHideExpandedContent()) {
                 Log.d(TAG, "onUiTabStateChanged: Failed to show peek view.");
             }
@@ -207,28 +210,8 @@ public class ActorControlCoordinator
         }
     }
 
-    /**
-     * Initializes peek view, if it is not already initialized, and attaches it to the bottom sheet.
-     */
-    public void attachPeekView() {
-        assert mView == null;
-        if (mTabBottomSheetManager == null || !mTabBottomSheetManager.isSheetInitialized()) {
-            return;
-        }
-        mView =
-                (ActorControlView)
-                        LayoutInflater.from(mContext)
-                                .inflate(R.layout.actor_control_layout, null, false);
-        mTabBottomSheetManager.attachPeekView(mView);
-        mViewBinder =
-                PropertyModelChangeProcessor.create(mModel, mView, ActorControlViewBinder::bind);
-    }
-
     /** Cleans up component */
     public void destroy() {
-        if (mViewBinder != null) {
-            mViewBinder.destroy();
-        }
         if (mActorUiTabController != null) {
             mActorUiTabController.removeObserver(this);
         }
@@ -238,6 +221,8 @@ public class ActorControlCoordinator
         if (mProfileSupplier != null && mProfileObserver != null) {
             mProfileSupplier.removeObserver(mProfileObserver);
         }
+        mTabBottomSheetManager.removePeekView(mView);
+        mViewBinder.destroy();
         mTabObserver.destroy();
     }
 

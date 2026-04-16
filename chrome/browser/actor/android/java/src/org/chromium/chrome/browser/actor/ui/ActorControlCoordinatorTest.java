@@ -109,7 +109,7 @@ public class ActorControlCoordinatorTest {
         mMediator = mCoordinator.getMediatorForTesting();
 
         ShadowLooper.idleMainLooper();
-        reset(mTabBottomSheetManager, mActorUiTabController);
+        reset(mActorUiTabController);
     }
 
     private void expectValidProfile() {
@@ -123,10 +123,8 @@ public class ActorControlCoordinatorTest {
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
     }
 
-    private void setUpProfileSupplierAndAttachPeekView() {
+    private void setUpProfileSupplier() {
         expectValidProfile();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
         mProfileSupplier.set(mProfile);
         ShadowLooper.idleMainLooper();
     }
@@ -156,20 +154,7 @@ public class ActorControlCoordinatorTest {
         assertNotNull(mModel);
         assertNotNull(mModel.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
         assertNotNull(mModel.get(ActorControlProperties.ON_CLOSE_CLICKED));
-    }
-
-    @Test
-    public void testAttachPeekView() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
-        verify(mTabBottomSheetManager).attachPeekView(any());
-    }
-
-    @Test
-    public void testAttachPeekView_sheetNotInitialized() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(false);
-        mCoordinator.attachPeekView();
-        verify(mTabBottomSheetManager, never()).attachPeekView(any());
+        verify(mTabBottomSheetManager).setPeekView(any());
     }
 
     @Test
@@ -183,22 +168,18 @@ public class ActorControlCoordinatorTest {
     @Test
     public void testTabObserver_nonNullTab() {
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
         when(mActorUiTabController.getUiTabState()).thenReturn(createUiTabState(true));
         mTabSupplier.set(mTab);
         verify(mActorUiTabController).addObserver(mActorObserverCaptor.capture());
-        verify(mTabBottomSheetManager).attachPeekView(any());
     }
 
     @Test
     public void testTabObserver_nullTab() {
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
         when(mTabBottomSheetManager.hidePeekViewAndShowExpandedContent()).thenReturn(true);
         mTabSupplier.set(mTab);
         ShadowLooper.idleMainLooper();
         reset(mTabBottomSheetManager, mActorUiTabController);
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
 
         mTabSupplier.set(null);
 
@@ -218,7 +199,6 @@ public class ActorControlCoordinatorTest {
     public void testOnUiTabStateChanged_actorOverlayActive() {
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
         mCoordinator.onUiTabStateChanged(createUiTabState(true));
-        verify(mTabBottomSheetManager).attachPeekView(any());
         verify(mTabBottomSheetManager).showPeekViewAndHideExpandedContent();
     }
 
@@ -233,8 +213,6 @@ public class ActorControlCoordinatorTest {
     public void testSetContent_ActingState() {
         expectValidProfile();
         expectValidActorTask();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.ACTING);
@@ -251,8 +229,6 @@ public class ActorControlCoordinatorTest {
     public void testSetContent_PausedState() {
         expectValidProfile();
         expectValidActorTask();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.PAUSED);
@@ -269,8 +245,6 @@ public class ActorControlCoordinatorTest {
     public void testSetContent_WaitingState() {
         expectValidProfile();
         expectValidActorTask();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.WAITING);
@@ -288,8 +262,6 @@ public class ActorControlCoordinatorTest {
     public void testSetContent_DefaultState() {
         expectValidProfile();
         expectValidActorTask();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
         mProfileSupplier.set(mProfile);
 
         mMediator.setContent(TASK_TITLE, PeekViewUiState.DEFAULT);
@@ -308,8 +280,6 @@ public class ActorControlCoordinatorTest {
         expectValidProfile();
         when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
         expectValidActorTask();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
 
         mProfileSupplier.set(mProfile);
 
@@ -322,8 +292,6 @@ public class ActorControlCoordinatorTest {
     public void testOnProfileAdded_validProfile_noTask() {
         expectValidProfile();
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
 
         mProfileSupplier.set(mProfile);
 
@@ -336,8 +304,6 @@ public class ActorControlCoordinatorTest {
     @Test
     public void testOnProfileAdded_nonValidProfile() {
         when(mProfile.isNativeInitialized()).thenReturn(false);
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
         mProfileSupplier.set(mProfile);
 
         verify(mActorKeyedService, never()).addObserver(any());
@@ -345,7 +311,7 @@ public class ActorControlCoordinatorTest {
     }
 
     private void setUpForOnTaskStateChanged() {
-        setUpProfileSupplierAndAttachPeekView();
+        setUpProfileSupplier();
         expectValidActorTask();
     }
 
@@ -366,6 +332,15 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testOnTaskStateChanged_pausedByActor() {
+        setUpForOnTaskStateChanged();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.PAUSED_BY_ACTOR);
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
     public void testOnTaskStateChanged_waitingOnUser() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.WAITING_ON_USER);
@@ -378,7 +353,7 @@ public class ActorControlCoordinatorTest {
     public void testOnTaskStateChanged_cancelled() {
         setUpForOnTaskStateChanged();
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.CANCELLED);
-        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
@@ -392,8 +367,26 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testOnTaskStateChanged_created() {
+        setUpForOnTaskStateChanged();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.CREATED);
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_finished() {
+        setUpForOnTaskStateChanged();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
     public void testOnActorControlClick_taskActing_pauses() {
-        setUpProfileSupplierAndAttachPeekView();
+        setUpProfileSupplier();
         expectValidActorTask();
         when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
 
@@ -405,7 +398,7 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testOnActorControlClick_taskPaused_resumes() {
-        setUpProfileSupplierAndAttachPeekView();
+        setUpProfileSupplier();
         expectValidActorTask();
         when(mActorTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
 
@@ -417,7 +410,7 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testOnActorControlClick_taskUnhandledState() {
-        setUpProfileSupplierAndAttachPeekView();
+        setUpProfileSupplier();
         expectValidActorTask();
         when(mActorTask.getState()).thenReturn(ActorTaskState.CREATED);
 
@@ -429,7 +422,7 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testOnViewClick_opensBottomSheet() {
-        setUpProfileSupplierAndAttachPeekView();
+        setUpProfileSupplier();
         expectValidActorTask();
         when(mActorTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
 
@@ -443,7 +436,6 @@ public class ActorControlCoordinatorTest {
     @Test
     public void testOnCloseClick_sheetInitialized_closesBottomSheet() {
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
 
         performCloseClick();
 
@@ -452,7 +444,7 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testOnPeekViewClick_expandsBottomSheet() {
-        setUpProfileSupplierAndAttachPeekView();
+        setUpProfileSupplier();
 
         performPeekViewClick();
 

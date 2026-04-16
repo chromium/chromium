@@ -107,6 +107,7 @@ public class TabBottomSheetManager implements Destroyable {
     private boolean mIsSuppressedOnToolbarSwipe;
     private boolean mIsSuppressedByReadAloud;
 
+    private @Nullable View mPeekView;
     private @Nullable NullableObservableSupplier<Tab> mActivePlaybackTabSupplier;
     private final Callback<@Nullable Tab> mActivePlaybackTabObserver =
             this::onActivePlaybackTabChanged;
@@ -179,6 +180,9 @@ public class TabBottomSheetManager implements Destroyable {
                         mTouchEventProvider,
                         coBrowseViews,
                         mSheetEventsCallback);
+        if (mPeekView != null) {
+            mTabBottomSheetCoordinator.attachPeekView(mPeekView);
+        }
 
         if (mIsSuppressedOnTabSwitcher || mIsSuppressedOnToolbarSwipe || mIsSuppressedByReadAloud) {
             // We are currently suppressed, save this sheet to be shown when suppression ends.
@@ -215,13 +219,30 @@ public class TabBottomSheetManager implements Destroyable {
     }
 
     /**
-     * Attaches the peek view to the bottom sheet.
+     * Sets the peek view to be displayed.
      *
-     * @param peekView The peek view to attach.
+     * @param peekView The peek view to be displayed.
      */
-    public void attachPeekView(View peekView) {
+    public void setPeekView(View peekView) {
+        assert mPeekView == null : "Peek view is already set.";
+        mPeekView = peekView;
+
         if (mTabBottomSheetCoordinator != null) {
-            mTabBottomSheetCoordinator.attachPeekView(peekView);
+            mTabBottomSheetCoordinator.attachPeekView(mPeekView);
+        }
+    }
+
+    /**
+     * Removes the peek view if it matches the provided view.
+     *
+     * @param peekView The peek view to be removed.
+     */
+    public void removePeekView(View peekView) {
+        if (mPeekView == peekView) {
+            mPeekView = null;
+            if (mTabBottomSheetCoordinator != null) {
+                mTabBottomSheetCoordinator.removePeekView(peekView);
+            }
         }
     }
 
