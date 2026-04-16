@@ -408,6 +408,11 @@ class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
   JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobjectArray>(env, obj) {}
 };
 
+template <typename T>
+JavaRef<T> CreateLeaky(JNIEnv* env, T obj) {
+  return JavaRef<T>::CreateLeaky(env, obj);
+}
+
 // Holds a local reference to a Java object. The local reference is scoped
 // to the lifetime of this object.
 // Instances of this class may hold onto any JNIEnv passed into it until

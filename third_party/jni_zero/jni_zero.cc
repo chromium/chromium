@@ -177,10 +177,9 @@ void InitVM(JavaVM* vm) {
   jobject jni_class_loader = env->GetObjectArrayElement(globals.obj(), 2);
 
   // Leak a few local refs since JNI will clean them up for us anyways.
-  g_empty_list.Reset(env, JavaRef<>::CreateLeaky(env, empty_list));
-  g_empty_map.Reset(env, JavaRef<>::CreateLeaky(env, empty_map));
-  g_empty_string.Reset(env,
-                       JavaRef<>::CreateLeaky(env, env->NewString(nullptr, 0)));
+  g_empty_list.Reset(env, CreateLeaky(env, empty_list));
+  g_empty_map.Reset(env, CreateLeaky(env, empty_map));
+  g_empty_string.Reset(env, CreateLeaky(env, env->NewString(nullptr, 0)));
 
   g_string_class = GetClassGlobalRef(env, g_empty_string.obj());
   g_class_loader_class = GetClassGlobalRef(env, jni_class_loader);
@@ -192,7 +191,7 @@ void InitVM(JavaVM* vm) {
     // env->FindClass() uses the bootstrap classloader for threads created by
     // native code (which leads to classes not being able to be found).
     if (!g_class_loader) {
-      g_class_loader.Reset(env, JavaRef<>::CreateLeaky(env, jni_class_loader));
+      g_class_loader.Reset(env, CreateLeaky(env, jni_class_loader));
     }
     g_class_resolver = &DefaultClassResolver;
   }
