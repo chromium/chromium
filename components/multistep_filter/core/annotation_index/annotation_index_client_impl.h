@@ -60,13 +60,17 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
+  // Creates a resource POST request for the given endpoint.
+  std::unique_ptr<network::ResourceRequest> CreatePostResourceRequest(
+      const GURL& api_base_url,
+      std::string_view endpoint) const;
+
   // Centralized helper to launch a network request. It creates the loader,
   // stores it in `active_url_loaders_` to keep it alive, and dispatches the
   // network request. It forwards the raw response to the provided callback.
   void ExecuteRequest(
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
-      net::NetworkTrafficAnnotationTag traffic_annotation,
       base::OnceCallback<void(std::optional<std::string>)> callback);
 
   // Invoked when `SimpleURLLoader` finishes. Cleans up the specific loader

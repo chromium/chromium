@@ -59,6 +59,8 @@ constexpr base::TimeDelta kNetworkRequestTimeout = base::Seconds(10);
 // the response when there is a failure, which makes debugging hard.
 constexpr bool kAllowHttpErrorResults = true;
 
+constexpr char kPostMethod[] = "POST";
+
 // `SiteAutomationIndexServer` API endpoints.
 constexpr std::string_view kGetTaskExecutionStrategiesEndpoint =
     "GetTaskExecutionStrategies";
@@ -123,6 +125,23 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
   return google_apis::GetAPIKey(channel);
 }
 
+template <typename ProtoType, typename ResultType, typename ReturnType>
+base::OnceCallback<void(std::optional<std::string>)> BindParseAndConvert(
+    base::OnceCallback<void(std::optional<ResultType>)> callback,
+    ReturnType (*convert_func)(const ProtoType&)) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(std::optional<ResultType>)> cb,
+         ReturnType (*conv)(const ProtoType&),
+         std::optional<std::string> response_body) {
+        if (ProtoType proto; response_body && proto.ParseFromString(*response_body)) {
+          std::move(cb).Run(conv(proto));
+        } else {
+          std::move(cb).Run(std::nullopt);
+        }
+      },
+      std::move(callback), convert_func);
+}
+
 }  // namespace
 
 // static
@@ -159,30 +178,13 @@ void AnnotationIndexClientImpl::GetFilterSuggestionCandidates(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  GetTaskExecutionStrategiesRequest proto_request =
-      ToGetTaskExecutionStrategiesRequest(url, filter_annotations);
 
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = api_base_url.Resolve(kGetTaskExecutionStrategiesEndpoint);
-  request->method = "POST";
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  auto parse_and_convert_callback = base::BindOnce(
-      [](base::OnceCallback<void(
-             std::optional<std::vector<FilterSuggestionCandidate>>)> callback,
-         std::optional<std::string> response_body) {
-        if (GetTaskExecutionStrategiesResponse proto;
-            response_body && proto.ParseFromString(*response_body)) {
-          std::move(callback).Run(ToFilterSuggestionCandidates(proto));
-        } else {
-          std::move(callback).Run(std::nullopt);
-        }
-      },
-      std::move(callback));
-
-  ExecuteRequest(std::move(request), proto_request.SerializeAsString(),
-                 kMultiStepFilterServerRequestsTrafficAnnotation,
-                 std::move(parse_and_convert_callback));
+  ExecuteRequest(
+      CreatePostResourceRequest(api_base_url,
+                                kGetTaskExecutionStrategiesEndpoint),
+      ToGetTaskExecutionStrategiesRequest(url, filter_annotations)
+          .SerializeAsString(),
+      BindParseAndConvert(std::move(callback), &ToFilterSuggestionCandidates));
 }
 
 void AnnotationIndexClientImpl::GetSupportedTaskTypesForDomain(
@@ -194,29 +196,11 @@ void AnnotationIndexClientImpl::GetSupportedTaskTypesForDomain(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  GetSupportedTasksRequest proto_request = ToGetSupportedTasksRequest(domain);
 
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = api_base_url.Resolve(kGetSupportedTasksEndpoint);
-  request->method = "POST";
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  auto parse_and_convert_callback = base::BindOnce(
-      [](base::OnceCallback<void(std::optional<std::vector<std::string>>)>
-             callback,
-         std::optional<std::string> response_body) {
-        if (GetSupportedTasksResponse proto;
-            response_body && proto.ParseFromString(*response_body)) {
-          std::move(callback).Run(ToSupportedTasks(proto));
-        } else {
-          std::move(callback).Run(std::nullopt);
-        }
-      },
-      std::move(callback));
-
-  ExecuteRequest(std::move(request), proto_request.SerializeAsString(),
-                 kMultiStepFilterServerRequestsTrafficAnnotation,
-                 std::move(parse_and_convert_callback));
+  ExecuteRequest(
+      CreatePostResourceRequest(api_base_url, kGetSupportedTasksEndpoint),
+      ToGetSupportedTasksRequest(domain).SerializeAsString(),
+      BindParseAndConvert(std::move(callback), &ToSupportedTasks));
 }
 
 void AnnotationIndexClientImpl::ExtractFilterAnnotation(
@@ -227,36 +211,22 @@ void AnnotationIndexClientImpl::ExtractFilterAnnotation(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  ExtractTaskAttributesRequest proto_request =
-      ToExtractTaskAttributesRequest(url);
 
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = api_base_url.Resolve(kExtractTaskAttributesEndpoint);
-  request->method = "POST";
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  auto parse_and_convert_callback = base::BindOnce(
-      [](base::OnceCallback<void(std::optional<FilterAnnotation>)> callback,
-         std::optional<std::string> response_body) {
-        if (ExtractTaskAttributesResponse proto;
-            response_body && proto.ParseFromString(*response_body)) {
-          std::move(callback).Run(ToFilterAnnotation(proto));
-        } else {
-          std::move(callback).Run(std::nullopt);
-        }
-      },
-      std::move(callback));
-
-  ExecuteRequest(std::move(request), proto_request.SerializeAsString(),
-                 kMultiStepFilterServerRequestsTrafficAnnotation,
-                 std::move(parse_and_convert_callback));
+  ExecuteRequest(
+      CreatePostResourceRequest(api_base_url, kExtractTaskAttributesEndpoint),
+      ToExtractTaskAttributesRequest(url).SerializeAsString(),
+      BindParseAndConvert(std::move(callback), &ToFilterAnnotation));
 }
 
-void AnnotationIndexClientImpl::ExecuteRequest(
-    std::unique_ptr<network::ResourceRequest> request,
-    std::string request_body,
-    net::NetworkTrafficAnnotationTag traffic_annotation,
-    base::OnceCallback<void(std::optional<std::string>)> callback) {
+std::unique_ptr<network::ResourceRequest>
+AnnotationIndexClientImpl::CreatePostResourceRequest(
+    const GURL& api_base_url,
+    std::string_view endpoint) const {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = api_base_url.Resolve(endpoint);
+  request->method = kPostMethod;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
   // Add API key to the request if a key exists, and the endpoint is trusted by
   // Google.
   if (!api_key_.empty() && request->url.SchemeIs(url::kHttpsScheme) &&
@@ -264,8 +234,15 @@ void AnnotationIndexClientImpl::ExecuteRequest(
     google_apis::AddAPIKeyToRequest(*request, api_key_);
   }
 
-  active_url_loaders_.push_back(
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation));
+  return request;
+}
+
+void AnnotationIndexClientImpl::ExecuteRequest(
+    std::unique_ptr<network::ResourceRequest> request,
+    std::string request_body,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  active_url_loaders_.push_back(network::SimpleURLLoader::Create(
+      std::move(request), kMultiStepFilterServerRequestsTrafficAnnotation));
   auto loader_it = std::prev(active_url_loaders_.end());
   network::SimpleURLLoader* loader = loader_it->get();
 
