@@ -161,20 +161,30 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 BASE_FEATURE(kUseDestinationColorSpaceInVideoEncode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVideoEncodeAdapterUseCorrectColorSpace,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 gfx::ColorSpace GetDestinationColorSpace(
     VideoPixelFormat src_format,
     const gfx::ColorSpace& src_color_space) {
   bool is_src_rgb =
       src_format == PIXEL_FORMAT_XBGR || src_format == PIXEL_FORMAT_XRGB ||
       src_format == PIXEL_FORMAT_ABGR || src_format == PIXEL_FORMAT_ARGB;
-  // For RGB frames, ConvertAndScale uses BT.601 as that is used for libyuv's
-  // RGB to YUV conversion. For YUV frames, ConvertAndScale uses `src_frame`
-  // color space so use that directly.
   // TODO(b/425634684): Update all callsites of ConvertAndScale so that the
   // VideoFrame::set_color_space is performed by callers and not set inside.
-  // TODO(b/425634684): Check for `src_color_space` validity and use
-  // default BT.709 if it is invalid.
-  return is_src_rgb ? gfx::ColorSpace::CreateREC601() : src_color_space;
+  if (is_src_rgb) {
+    // For RGB frames, ConvertAndScale uses BT.601 as that is used for libyuv's
+    // RGB to YUV conversion.
+    return gfx::ColorSpace::CreateREC601();
+  }
+  // For YUV frames, ConvertAndScale uses `src_frame` color space so use that
+  // directly. Check for `src_color_space` validity and use default BT.709 if
+  // it is invalid.
+  if (!src_color_space.IsValid() &&
+      base::FeatureList::IsEnabled(kVideoEncodeAdapterUseCorrectColorSpace)) {
+    return gfx::ColorSpace::CreateREC709();
+  }
+  return src_color_space;
 }
 
 }  // namespace
