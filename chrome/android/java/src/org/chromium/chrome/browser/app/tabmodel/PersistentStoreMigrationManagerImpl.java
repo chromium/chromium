@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_SHADOW_WRITTEN_STORE;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_STORE_MANAGER_VERSION;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.allowFullMigration;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.fullRollback;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isStorageAuthoritative;
@@ -21,14 +22,27 @@ import java.util.Map;
 
 @NullMarked
 public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigrationManager {
+    /**
+     * Incrementing this value will reset all manager prefs and forces all windows to be reset to a
+     * default state.
+     *
+     * <p>This can be potentially destructive if users have any non-legacy authoritative stores.
+     */
+    public static final int MANAGER_VERSION = 1;
+
     private final String mCurrentAuthoritativeStoreKey;
     private final String mShadowWrittenStoreKey;
     private @StoreType int mShadowStoreType = StoreType.INVALID;
 
+    /**
+     * @param windowTag The tag of the window to manage state for.
+     */
     public PersistentStoreMigrationManagerImpl(String windowTag) {
         mCurrentAuthoritativeStoreKey =
                 TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.createKey(windowTag);
         mShadowWrittenStoreKey = TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.createKey(windowTag);
+
+        clearPrefsIfVersionChanged();
     }
 
     @Override
@@ -166,6 +180,15 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
         Map<String, Integer> authoritativeStores = prefs.readIntsWithPrefix(prefix);
         for (Map.Entry<String, Integer> entry : authoritativeStores.entrySet()) {
             prefs.writeInt(entry.getKey(), StoreType.UNKNOWN);
+        }
+    }
+
+    private void clearPrefsIfVersionChanged() {
+        SharedPreferencesManager prefs = getPrefs();
+        if (MANAGER_VERSION != prefs.readInt(TAB_PERSISTENCE_STORE_MANAGER_VERSION, 0)) {
+            prefs.removeKeysWithPrefix(TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE);
+            prefs.removeKeysWithPrefix(TAB_PERSISTENCE_SHADOW_WRITTEN_STORE);
+            prefs.writeInt(TAB_PERSISTENCE_STORE_MANAGER_VERSION, MANAGER_VERSION);
         }
     }
 }

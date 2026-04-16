@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_SHADOW_WRITTEN_STORE;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_STORE_MANAGER_VERSION;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +61,7 @@ public class PersistentStoreMigrationManagerImplUnitTest {
                 .removeKeysWithPrefix(TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE);
         ChromeSharedPreferences.getInstance()
                 .removeKeysWithPrefix(TAB_PERSISTENCE_SHADOW_WRITTEN_STORE);
+        ChromeSharedPreferences.getInstance().removeKey(TAB_PERSISTENCE_STORE_MANAGER_VERSION);
     }
 
     @Test
@@ -653,5 +655,41 @@ public class PersistentStoreMigrationManagerImplUnitTest {
                 StoreType.UNKNOWN,
                 ChromeSharedPreferences.getInstance()
                         .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
+    }
+
+    @Test
+    public void testVersionUpgradeClearsPrefs() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(TAB_PERSISTENCE_STORE_MANAGER_VERSION, 0);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.LEGACY);
+
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+
+        assertFalse(
+                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
+        assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
+        assertEquals(
+                1,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(TAB_PERSISTENCE_STORE_MANAGER_VERSION, 0));
+    }
+
+    @Test
+    public void testVersionNotUpgradedDoesNotClearPrefs() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(TAB_PERSISTENCE_STORE_MANAGER_VERSION, 1);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.LEGACY);
+
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+
+        assertTrue(
+                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
+        assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
     }
 }

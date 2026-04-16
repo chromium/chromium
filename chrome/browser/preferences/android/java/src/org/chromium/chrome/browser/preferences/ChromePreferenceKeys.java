@@ -647,6 +647,10 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix TAB_PERSISTENCE_SHADOW_WRITTEN_STORE =
             new KeyPrefix("Chrome.TabPersistence.ShadowWrittenStore.*");
 
+    /** The version of the PersistentStoreManager. */
+    public static final String TAB_PERSISTENCE_STORE_MANAGER_VERSION =
+            "Chrome.TabPersistence.StoreManagerVersion";
+
     /**
      * Indicates whether or not there is any persistent (i.e. non-transient) content in chrome that
      * can be viewed offline.
@@ -1291,6 +1295,7 @@ public final class ChromePreferenceKeys {
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT,
                 TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.pattern(),
                 TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.pattern(),
+                TAB_PERSISTENCE_STORE_MANAGER_VERSION,
                 TIPS_NOTIFICATIONS_CHANNEL_ENABLED,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,
                 TOOLBAR_TOP_ANCHORED,

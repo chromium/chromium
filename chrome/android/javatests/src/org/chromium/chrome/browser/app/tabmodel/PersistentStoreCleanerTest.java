@@ -11,8 +11,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.chrome.browser.app.tabmodel.PersistentStoreMigrationManagerImpl.MANAGER_VERSION;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.createNewChromeTabbedActivity;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_STORE_MANAGER_VERSION;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.os.Build.VERSION_CODES;
@@ -29,6 +31,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Holder;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -289,8 +292,10 @@ public class PersistentStoreCleanerTest {
         // 1. Configure Full Migration state before Activity start
         ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
                 TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
-        ChromeSharedPreferences.getInstance()
-                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
+
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        prefs.writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
+        prefs.writeIntSync(TAB_PERSISTENCE_STORE_MANAGER_VERSION, MANAGER_VERSION);
 
         File baseStateDir = TabStateDirectory.getOrCreateBaseStateDirectory();
         File windowStateDir = new File(baseStateDir, WINDOW_TAG);
