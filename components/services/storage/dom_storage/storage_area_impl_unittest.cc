@@ -1118,12 +1118,6 @@ TEST_P(StorageAreaImplTest, GetAllAfterSetCacheMode) {
         key, value, value2, test::MakeStorageAreaSource(),
         MakeSuccessCallback(barrier.AddClosure(), &put_success));
 
-    // Put task triggers database upgrade, so there should be another map load.
-    base::RunLoop upgrade_loop;
-    storage_area_impl()->SetOnLoadCallbackForTesting(
-        upgrade_loop.QuitClosure());
-    upgrade_loop.Run();
-
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
     std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
     storage_area()->GetAll(std::move(unused_observer),
@@ -1134,6 +1128,10 @@ TEST_P(StorageAreaImplTest, GetAllAfterSetCacheMode) {
                            barrier.AddClosure());
   }
   loop.Run();
+
+  // This test's third Put() loads the storage area's values into the cache.
+  EXPECT_TRUE(storage_area_impl()->map_state_ ==
+              StorageAreaImpl::MapState::LOADED_KEYS_AND_VALUES);
 
   EXPECT_EQ(2u, data.size());
   EXPECT_TRUE(data[1]->Equals(

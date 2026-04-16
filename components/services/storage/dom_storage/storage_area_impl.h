@@ -198,10 +198,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
 
   void OnCommitComplete(DbStatus status);
 
-  void SetOnLoadCallbackForTesting(base::OnceClosure callback) {
-    on_load_callback_for_testing_ = std::move(callback);
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, GetAllAfterSetCacheMode);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest,
@@ -337,8 +333,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   int commit_batches_in_flight_ = 0;
   bool has_committed_data_ = false;
   std::unique_ptr<CommitBatch> commit_batch_;
-
-  base::OnceClosure on_load_callback_for_testing_;
 
   base::WeakPtrFactory<StorageAreaImpl> weak_ptr_factory_{this};
 

@@ -580,9 +580,6 @@ void StorageAreaImpl::OnMapLoaded(StatusOr<ValueMap> map_from_database) {
   }
   CalculateStorageAndMemoryUsed();
   delegate_->OnMapLoaded();
-  if (on_load_callback_for_testing_)
-    std::move(on_load_callback_for_testing_).Run();
-
   OnLoadComplete();
 }
 
