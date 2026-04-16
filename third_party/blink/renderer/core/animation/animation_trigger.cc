@@ -82,6 +82,7 @@ void PerformReplay(Animation& animation,
 void AnimationTrigger::PerformBehavior(Animation& animation,
                                        Behavior behavior,
                                        ExceptionState& exception_state) {
+  ScriptForbiddenScope forbid_script;
   V8AnimationPlayState::Enum play_state =
       animation.CalculateAnimationPlayState();
   switch (behavior) {
@@ -175,6 +176,8 @@ void AnimationTrigger::addAnimation(
     V8AnimationTriggerBehavior activate_behavior,
     V8AnimationTriggerBehavior deactivate_behavior,
     ExceptionState& exception_state) {
+  CHECK(!is_activating_or_deactivating_);
+
   if (!animation) {
     return;
   }
@@ -204,6 +207,8 @@ void AnimationTrigger::addAnimation(
 }
 
 void AnimationTrigger::removeAnimation(Animation* animation) {
+  CHECK(!is_activating_or_deactivating_);
+
   if (!animation) {
     return;
   }
@@ -249,8 +254,9 @@ void AnimationTrigger::UpdateBehaviorMap(Animation& animation,
 }
 
 void AnimationTrigger::PerformActivate() {
-  auto map_copy = animation_behavior_map_;
-  for (auto [animation, behaviors] : map_copy) {
+  base::AutoReset<bool> is_activating(&is_activating_or_deactivating_, true);
+
+  for (auto [animation, behaviors] : animation_behavior_map_) {
     if (HasPausedCSSPlayState(animation) ||
         (compositor_trigger_ && IsTriggeredOnCompositor(animation))) {
       continue;
@@ -260,8 +266,9 @@ void AnimationTrigger::PerformActivate() {
 }
 
 void AnimationTrigger::PerformDeactivate() {
-  auto map_copy = animation_behavior_map_;
-  for (auto [animation, behaviors] : map_copy) {
+  base::AutoReset<bool> is_deactivating(&is_activating_or_deactivating_, true);
+
+  for (auto [animation, behaviors] : animation_behavior_map_) {
     if (HasPausedCSSPlayState(animation) ||
         (compositor_trigger_ && IsTriggeredOnCompositor(animation))) {
       continue;

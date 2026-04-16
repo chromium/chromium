@@ -806,6 +806,8 @@ class CORE_EXPORT Animation : public EventTarget,
   FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest, ChangeTriggerAttachments);
   FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest,
                            SameTriggerNameDifferentSource);
+  FRIEND_TEST_ALL_PREFIXES(ScriptedTimelineTriggerTest,
+                           ForbidScriptDuringActivation);
 };
 
 }  // namespace blink
