@@ -829,6 +829,53 @@ TEST_F(IsolationInfoTest, ValidateFrameAncestorRelationForRedirects) {
   }
 }
 
+TEST_F(IsolationInfoTest, DoNotUseCreatePartialFromNak) {
+  // Test with an empty NAK (general partition).
+  NetworkAnonymizationKey empty_nak_general;
+  IsolationInfo isolation_info_empty_general =
+      IsolationInfo::DoNotUseCreatePartialFromNak(empty_nak_general);
+  EXPECT_TRUE(isolation_info_empty_general.IsEmpty());
+  EXPECT_EQ(NetworkIsolationPartition::kGeneral,
+            isolation_info_empty_general.GetNetworkIsolationPartition());
+
+  // Test with an empty NAK and a non-general partition.
+  NetworkAnonymizationKey empty_nak_doh =
+      NetworkAnonymizationKey::CreateEmptyWithPartition(
+          NetworkIsolationPartition::kDnsOverHttps);
+  IsolationInfo isolation_info_empty_doh =
+      IsolationInfo::DoNotUseCreatePartialFromNak(empty_nak_doh);
+  EXPECT_TRUE(isolation_info_empty_doh.IsEmpty());
+  EXPECT_EQ(NetworkIsolationPartition::kDnsOverHttps,
+            isolation_info_empty_doh.GetNetworkIsolationPartition());
+
+  // Test with a non-empty NAK (general partition).
+  NetworkAnonymizationKey non_empty_nak_general =
+      NetworkAnonymizationKey::CreateFromFrameSite(SchemefulSite(kOrigin1),
+                                                   SchemefulSite(kOrigin2));
+  IsolationInfo isolation_info_non_empty_general =
+      IsolationInfo::DoNotUseCreatePartialFromNak(non_empty_nak_general);
+  EXPECT_FALSE(isolation_info_non_empty_general.IsEmpty());
+  EXPECT_EQ(kSite1, isolation_info_non_empty_general.top_frame_origin());
+  EXPECT_TRUE(isolation_info_non_empty_general.frame_origin()->opaque());
+  EXPECT_EQ(NetworkIsolationPartition::kGeneral,
+            isolation_info_non_empty_general.GetNetworkIsolationPartition());
+
+  // Test with a non-empty NAK and a non-general partition.
+  NetworkAnonymizationKey non_empty_nak_doh =
+      NetworkAnonymizationKey::CreateFromFrameSite(
+          SchemefulSite(kOrigin1), SchemefulSite(kOrigin2),
+          /*nonce=*/std::nullopt, NetworkIsolationPartition::kDnsOverHttps);
+  IsolationInfo isolation_info_non_empty_doh =
+      IsolationInfo::DoNotUseCreatePartialFromNak(non_empty_nak_doh);
+  EXPECT_FALSE(isolation_info_non_empty_doh.IsEmpty());
+  EXPECT_EQ(kSite1, isolation_info_non_empty_doh.top_frame_origin());
+  // DoNotUseCreatePartialFromNak creates an opaque frame origin for cross-site
+  // NAKs.
+  EXPECT_TRUE(isolation_info_non_empty_doh.frame_origin()->opaque());
+  EXPECT_EQ(NetworkIsolationPartition::kDnsOverHttps,
+            isolation_info_non_empty_doh.GetNetworkIsolationPartition());
+}
+
 }  // namespace
 
 }  // namespace net
