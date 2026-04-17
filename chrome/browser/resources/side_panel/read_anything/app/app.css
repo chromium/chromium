@@ -248,6 +248,11 @@
   text-decoration: none;
 }
 
+/* Always hide nav elements. */
+#appFlexParent nav {
+  display: none;
+}
+
 #docs-load-more-button {
   background: var(--color-sys-tonal-container);
   margin: 0 auto;
