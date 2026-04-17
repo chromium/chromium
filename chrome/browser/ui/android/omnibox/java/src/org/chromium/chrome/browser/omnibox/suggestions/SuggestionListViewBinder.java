@@ -63,6 +63,11 @@ class SuggestionListViewBinder {
                     .getLayoutScrollListener()
                     .setSuggestionDropdownOverscrolledToTopListener(
                             model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
+        } else if (SuggestionListProperties.DROPDOWN_SCROLL_OFFSET_LISTENER.equals(propertyKey)) {
+            view.dropdown
+                    .getLayoutScrollListener()
+                    .setScrollOffsetListener(
+                            model.get(SuggestionListProperties.DROPDOWN_SCROLL_OFFSET_LISTENER));
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChangedAnnouncement();

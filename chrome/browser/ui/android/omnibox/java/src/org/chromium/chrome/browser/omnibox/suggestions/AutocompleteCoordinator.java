@@ -154,6 +154,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         listModel.set(
                 SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER,
                 this::dropdownOverscrolledToTop);
+        listModel.set(
+                SuggestionListProperties.DROPDOWN_SCROLL_OFFSET_LISTENER,
+                this::dropdownScrollOffsetChanged);
 
         ViewProvider<SuggestionListViewHolder> viewProvider = createViewProvider();
         viewProvider.whenLoaded(
@@ -542,6 +545,12 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     public void dropdownOverscrolledToTop() {
         for (OmniboxSuggestionsDropdownScrollListener listener : mScrollListenerList) {
             listener.onSuggestionDropdownOverscrolledToTop();
+        }
+    }
+
+    public void dropdownScrollOffsetChanged(int newOffset) {
+        for (OmniboxSuggestionsDropdownScrollListener listener : mScrollListenerList) {
+            listener.onSuggestionDropdownScrollOffsetChanged(newOffset);
         }
     }
 

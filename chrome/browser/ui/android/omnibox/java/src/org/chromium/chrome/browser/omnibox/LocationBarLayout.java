@@ -520,4 +520,11 @@ public class LocationBarLayout extends ConstraintLayout {
         if (!ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) return;
         setPaddingRelative(padding, getPaddingTop(), getPaddingEnd(), getPaddingBottom());
     }
+
+    /**
+     * Signal that the associated omnibox suggestions list has changed scroll offset.
+     *
+     * @param verticalScrollOffset The current vertical scroll offset.
+     */
+    void onSuggestionsListScrollOffsetChanged(int verticalScrollOffset) {}
 }

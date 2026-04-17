@@ -1156,8 +1156,7 @@ class AutocompleteMediator
                     mDropdownViewInfoListBuilder.buildDropdownViewInfoList(
                             input, autocompleteResult);
             mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
-            mDelegate.onSuggestionsChanged(
-                    defaultMatch, !autocompleteResult.getSuggestionsList().isEmpty());
+            mDelegate.onSuggestionsChanged(defaultMatch, !viewInfoList.isEmpty());
         }
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);

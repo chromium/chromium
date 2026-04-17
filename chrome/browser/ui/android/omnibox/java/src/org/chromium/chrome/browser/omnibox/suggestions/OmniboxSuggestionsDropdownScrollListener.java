@@ -16,4 +16,7 @@ public interface OmniboxSuggestionsDropdownScrollListener {
 
     /** Invoked whenever the User scrolls the list to the top. */
     void onSuggestionDropdownOverscrolledToTop();
+
+    /** Invoked whenever the scroll offset changes */
+    default void onSuggestionDropdownScrollOffsetChanged(int scrollOffset) {}
 }

@@ -70,6 +70,8 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchBoxHintTextObserver;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -80,6 +82,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SiteSearchActivationSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -106,6 +109,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -131,18 +135,19 @@ import java.util.function.Supplier;
  */
 @NullMarked
 class LocationBarMediator
-        implements LocationBarDataProvider.Observer,
+        implements Observer,
                 OmniboxStub,
                 VoiceRecognitionHandler.Observer,
                 UrlBarDelegate,
                 OnKeyListener,
                 FuseboxAttachmentChangeListener,
                 ComponentCallbacks,
-                TemplateUrlService.TemplateUrlServiceObserver,
+                TemplateUrlServiceObserver,
                 BackPressHandler,
                 PauseResumeWithNativeObserver,
-                SearchEngineUtils.SearchBoxHintTextObserver,
-                AppBannerManager.Observer {
+                SearchBoxHintTextObserver,
+                AppBannerManager.Observer,
+                OmniboxSuggestionsDropdownScrollListener {
 
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
@@ -385,6 +390,8 @@ class LocationBarMediator
             mVoiceRecognitionHandler.addObserver(this);
         }
 
+        mAutocompleteCoordinator.addOmniboxSuggestionsDropdownScrollListener(this);
+
         updateShouldAnimateIconChanges();
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
@@ -401,6 +408,7 @@ class LocationBarMediator
             mSearchEngineUtils.removeSearchBoxHintTextObserver(this);
         }
         mStatusCoordinator = null;
+        mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(this);
         mAutocompleteCoordinator = null;
         mUrlCoordinator = null;
         mVoiceRecognitionHandler.removeObserver(this);
@@ -707,6 +715,17 @@ class LocationBarMediator
         }
 
         return true;
+    }
+
+    @Override
+    public void onSuggestionDropdownScroll() {}
+
+    @Override
+    public void onSuggestionDropdownOverscrolledToTop() {}
+
+    @Override
+    public void onSuggestionDropdownScrollOffsetChanged(int scrollOffset) {
+        mLocationBarLayout.onSuggestionsListScrollOffsetChanged(scrollOffset);
     }
 
     /* package */ void onSuggestionsChanged(

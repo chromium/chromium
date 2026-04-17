@@ -89,6 +89,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
@@ -726,8 +727,10 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
+    @EnableFeatures(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH)
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
-        mMediator.beginInput(createEmptySession());
+        FuseboxSessionState session = createEmptySession();
+        mMediator.beginInput(session);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged(any(), anyBoolean());
 
@@ -743,6 +746,19 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, true);
+
+        defaultMatch =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setDisplayText("Suggestion1")
+                        .setInlineAutocompletion("inline_autocomplete2")
+                        .setAllowedToBeDefaultMatch(true)
+                        .build();
+        mSuggestionsList.clear();
+        mSuggestionsList.add(0, defaultMatch);
+        var autocompleteInput = session.getAutocompleteInput();
+        autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
+        verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, false);
     }
 
     @Test

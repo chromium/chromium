@@ -72,8 +72,11 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private WindowAndroid mWindowAndroid;
     private @FuseboxState int mFuseboxState;
     private boolean mHasSuggestions;
+    private int mSuggestionsListScrollOffset;
     private int mScreenWidthDp;
     private @Nullable ViewOutlineProvider mOutlineProvider;
+    private final int mLocationBarTabletFuseboxPopupInset;
+    private final float mOmniboxSuggestionDropdownRoundCornerRadius;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -86,14 +89,19 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
         mMicButtonWidth = locationBarIconWidth;
         mLensButtonWidth = locationBarIconWidth;
+        Resources resources = context.getResources();
         mFocusedPopupDrawable =
                 (LayerDrawable)
                         assumeNonNull(
-                                context.getDrawable(
+                                resources.getDrawable(
                                         R.drawable
                                                 .modern_toolbar_tablet_text_box_background_focused_popup));
         mFocusedPopupDrawable.mutate();
         mGlifBorderDrawable = new GlifStrokeDrawable(context);
+        mLocationBarTabletFuseboxPopupInset =
+                resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+        mOmniboxSuggestionDropdownRoundCornerRadius =
+                resources.getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
         mHandler = new Handler();
     }
 
@@ -443,6 +451,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    void onSuggestionsListScrollOffsetChanged(int verticalScrollOffset) {
+        mSuggestionsListScrollOffset = verticalScrollOffset;
+        if (getBackground() != mFocusedPopupDrawable) {
+            return;
+        }
+
+        adjustBackgroundForSuggestions();
+    }
+
+    @Override
     public void onSpecializedFuseboxModeActivated(boolean isSpecializedRequestType) {
         if (isSpecializedRequestType) {
             mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, mGlifBorderDrawable);
@@ -570,41 +588,39 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 (GradientDrawable)
                         mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);
 
-        Resources resources = getResources();
-        int inset =
-                resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
-        float cornerRadius =
-                resources.getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
-        if (mHasSuggestions || mFuseboxState == FuseboxState.DISABLED) {
-            // Remove the extra padding and un-round the corners of the outer rect since we're now
-            // bleeding into the suggestions dropdown or are in steady state.
-            layoutParams.bottomMargin = 0;
-            outerRect.setCornerRadii(
-                    new float[] {
-                        cornerRadius, cornerRadius, cornerRadius, cornerRadius, 0, 0, 0, 0
-                    });
-            mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, 0);
-            mFocusedPopupDrawable.setLayerInsetRelative(
-                    mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer),
-                    inset,
-                    inset,
-                    inset,
-                    0);
-            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), 0);
-        } else {
-            // Add extra padding and round the corners of the outer rect to account for the lack of
-            // a visible suggestions dropdown to bleed into.
-            layoutParams.bottomMargin = -inset;
-            outerRect.setCornerRadius(cornerRadius);
-            mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, inset);
-            mFocusedPopupDrawable.setLayerInsetRelative(
-                    mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer),
-                    inset,
-                    inset,
-                    inset,
-                    inset);
-            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), inset);
-        }
+        boolean suggestionsListScrolledDown =
+                mSuggestionsListScrollOffset > mLocationBarTabletFuseboxPopupInset;
+        boolean bleedIntoDropdown =
+                mFuseboxState == FuseboxState.DISABLED
+                        || (mHasSuggestions && !suggestionsListScrolledDown);
+
+        int bottomInset = bleedIntoDropdown ? 0 : mLocationBarTabletFuseboxPopupInset;
+        boolean roundBottomCorners = !bleedIntoDropdown && !suggestionsListScrolledDown;
+        float bottomRadius = roundBottomCorners ? mOmniboxSuggestionDropdownRoundCornerRadius : 0f;
+
+        layoutParams.bottomMargin = -bottomInset;
+        outerRect.setCornerRadii(
+                new float[] {
+                    mOmniboxSuggestionDropdownRoundCornerRadius,
+                            mOmniboxSuggestionDropdownRoundCornerRadius,
+                            mOmniboxSuggestionDropdownRoundCornerRadius,
+                            mOmniboxSuggestionDropdownRoundCornerRadius, // Top corners
+                    bottomRadius, bottomRadius, bottomRadius, bottomRadius // Bottom corners
+                });
+        mFocusedPopupDrawable.setLayerInsetRelative(
+                1,
+                mLocationBarTabletFuseboxPopupInset,
+                mLocationBarTabletFuseboxPopupInset,
+                mLocationBarTabletFuseboxPopupInset,
+                bottomInset);
+        mFocusedPopupDrawable.setLayerInsetRelative(
+                mFocusedPopupDrawable.findIndexByLayerId(R.id.glif_border_layer),
+                mLocationBarTabletFuseboxPopupInset,
+                mLocationBarTabletFuseboxPopupInset,
+                mLocationBarTabletFuseboxPopupInset,
+                bottomInset);
+        mFocusedPopupDrawable.invalidateSelf();
+        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), bottomInset);
         setLayoutParams(layoutParams);
     }
 
