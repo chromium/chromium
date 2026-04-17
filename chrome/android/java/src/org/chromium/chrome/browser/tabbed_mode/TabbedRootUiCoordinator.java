@@ -915,7 +915,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSystemUiCoordinator =
                 new TabbedSystemUiCoordinator(
                         mActivity.getWindow(),
-                        mTabModelSelectorSupplier.get(),
+                        mTabModelSelectorSupplier.asNonNull().get(),
                         mLayoutManagerSupplier,
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
@@ -1045,7 +1045,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActorOverlayCoordinator =
                     new ActorOverlayCoordinator(
                             stub,
-                            assumeNonNull(mTabModelSelectorSupplier.get()),
+                            mTabModelSelectorSupplier.asNonNull().get(),
                             mBrowserControlsManager,
                             mTabObscuringHandlerSupplier.get(),
                             assumeNonNull(mSnackbarManagerSupplier.get()),
@@ -1138,7 +1138,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ChromeTabbedOnDragListener chromeTabbedOnDragListener =
                     new ChromeTabbedOnDragListener(
                             mMultiInstanceManager,
-                            mTabModelSelectorSupplier.get(),
+                            mTabModelSelectorSupplier.asNonNull().get(),
                             mActivity,
                             mLayoutStateProviderOneShotSupplier);
 
@@ -1311,7 +1311,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
                 new IncognitoReauthCoordinatorFactory(
                         mActivity,
-                        mTabModelSelectorSupplier.get(),
+                        mTabModelSelectorSupplier.asNonNull().get(),
                         mModalDialogManagerSupplier.get(),
                         new IncognitoReauthManager(mActivity, profile),
                         mLayoutManager,
@@ -1515,7 +1515,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         new LinkToTextIphController(
                 mActivityTabProvider.asObservable(),
-                mTabModelSelectorSupplier.get(),
+                mTabModelSelectorSupplier.asNonNull().get(),
                 mProfileSupplier);
 
         Tab tab = mActivityTabProvider.get();
@@ -1724,7 +1724,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     CommerceSubscriptionsServiceFactory.getInstance()
                                             .getForProfile(mProfileSupplier.get());
                             mCommerceSubscriptionsService.initDeferredStartupForActivity(
-                                    mTabModelSelectorSupplier.get(), mActivityLifecycleDispatcher);
+                                    mTabModelSelectorSupplier.asNonNull().get(),
+                                    mActivityLifecycleDispatcher);
                         }),
                 mTabModelSelectorSupplier,
                 mProfileSupplier);
@@ -1733,7 +1734,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initUndoGroupSnackbarController() {
         mUndoGroupSnackbarController =
                 new UndoGroupSnackbarController(
-                        mActivity, mTabModelSelectorSupplier.get(), mSnackbarManagerSupplier.get());
+                        mActivity,
+                        mTabModelSelectorSupplier.asNonNull().get(),
+                        mSnackbarManagerSupplier.get());
     }
 
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
@@ -1966,7 +1969,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return new DataSharingTabGroupsDelegate() {
             @Override
             public void openTabGroup(@Nullable Token tabGroupId) {
-                TabModel tabModel = mTabModelSelectorSupplier.get().getModel(false);
+                TabModel tabModel = mTabModelSelectorSupplier.asNonNull().get().getModel(false);
                 if (!tabModel.tabGroupExists(tabGroupId)) {
                     // This method is only supposed to be called when the tab group is in the local
                     // model. However it's possible that something has recently changed. In which
@@ -2507,7 +2510,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        Profile profile = mTabModelSelectorSupplier.get().getCurrentModel().getProfile();
+        Profile profile =
+                mTabModelSelectorSupplier.asNonNull().get().getCurrentModel().getProfile();
         assert profile != null;
 
         return GlicKeyedServiceHandler.toggleGlic(

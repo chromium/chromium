@@ -46,18 +46,18 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final Supplier<@Nullable TabBookmarker> mTabBookmarkerSupplier;
     private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final Supplier<@Nullable TabCreatorManager> mTabCreatorManagerSupplier;
     private final Runnable mRegisterVoiceSearchRunnable;
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final MonotonicObservableSupplier<@StripVisibilityState Integer>
             mTabStripVisibilitySupplier;
     private final GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
-    private final Supplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
+    private final Supplier<@Nullable ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     /**
      * @param context The Android context.
@@ -77,16 +77,16 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
-            Supplier<TabBookmarker> tabBookmarkerSupplier,
+            Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
             NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             ActivityTabProvider activityTabProvider,
             Runnable registerVoiceSearchRunnable,
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonController,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier,
             GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback,
-            Supplier<ChromeAndroidTask> chromeAndroidTaskSupplier) {
+            Supplier<@Nullable ChromeAndroidTask> chromeAndroidTaskSupplier) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;

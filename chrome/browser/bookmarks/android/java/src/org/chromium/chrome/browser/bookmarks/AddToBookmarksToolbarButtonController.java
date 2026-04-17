@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvider
         implements ConfigurationChangedObserver {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
+    private final Supplier<@Nullable TabBookmarker> mTabBookmarkerSupplier;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ButtonSpec mFilledButtonSpec;
@@ -84,7 +84,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
             NullableObservableSupplier<Tab> activeTabSupplier,
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Supplier<TabBookmarker> tabBookmarkerSupplier,
+            Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
             Supplier<@Nullable Tracker> trackerSupplier,
             NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
         // By default use the empty star drawable with an "Add to bookmarks" description.
@@ -190,7 +190,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
 
         RecordUserAction.record("MobileTopToolbarAddToBookmarksButton");
         // mActiveTabSupplier.hasValue() is true, so .get() should be non-null
-        mTabBookmarkerSupplier.get().addOrEditBookmark(activeTab);
+        tabBookmarker.addOrEditBookmark(activeTab);
     }
 
     @Override

@@ -26,14 +26,14 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
 
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
 
     public GroupSuggestionsButtonDataProvider(
             Supplier<@Nullable Tab> activeTabSupplier,
             Context context,
             Drawable buttonDrawable,
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonControllerSupplier,
-            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,

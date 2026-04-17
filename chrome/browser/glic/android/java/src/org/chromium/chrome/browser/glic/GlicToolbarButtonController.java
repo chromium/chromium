@@ -76,7 +76,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private final Context mContext;
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
-    private final Supplier<ChromeAndroidTask> mTaskSupplier;
+    private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
     private @Nullable GlicKeyedService mCurrentGlicService;
@@ -101,7 +101,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             Supplier<@Nullable Tab> activeTabSupplier,
             GlicButtonDelegate toggleGlicCallback,
             Supplier<@Nullable Tracker> trackerSupplier,
-            Supplier<ChromeAndroidTask> taskSupplier) {
+            Supplier<@Nullable ChromeAndroidTask> taskSupplier) {
         // TODO(crbug.com/482372270): Add correct styling to button including Nudge state text,
         // active state shape change, and appropriate colors.
         super(
