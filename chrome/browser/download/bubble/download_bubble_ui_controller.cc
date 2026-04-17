@@ -107,17 +107,18 @@ DownloadBubbleUIController* DownloadBubbleUIController::GetForDownload(
   return controller;
 }
 
-DownloadBubbleUIController::DownloadBubbleUIController(Browser* browser)
+DownloadBubbleUIController::DownloadBubbleUIController(
+    BrowserWindowInterface* browser)
     : DownloadBubbleUIController(
           browser,
           DownloadBubbleUpdateServiceFactory::GetForProfile(
-              browser->profile())) {}
+              browser->GetProfile())) {}
 
 DownloadBubbleUIController::DownloadBubbleUIController(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     DownloadBubbleUpdateService* update_service)
     : browser_(browser),
-      profile_(browser->profile()),
+      profile_(browser->GetProfile()),
       update_service_(update_service),
       offline_manager_(
           OfflineItemModelManagerFactory::GetForBrowserContext(profile_)) {
@@ -210,7 +211,7 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
     return all_items;
   }
   update_service_->GetAllModelsToDisplay(
-      all_items, GetWebAppIdForBrowser(browser_),
+      all_items, GetWebAppIdForBrowser(browser_->GetBrowserForMigrationOnly()),
       /*force_backfill_download_items=*/true);
   std::vector<DownloadUIModelPtr> items_to_return;
   for (auto& model : all_items) {
@@ -299,7 +300,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::REVIEW:
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       model->ReviewScanningVerdict(
-          browser_->tab_strip_model()->GetActiveWebContents());
+          browser_->GetTabStripModel()->GetActiveWebContents());
 #endif
       break;
     case DownloadCommands::RETRY:
@@ -425,7 +426,7 @@ void DownloadBubbleUIController::RecordDangerousDownloadShownToUser(
     download::DownloadItem* download) {
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser_->profile());
+          browser_->GetProfile());
   tracker->NotifyEvent("download_bubble_dangerous_download_detected");
 
   // Schedule a survey to be shown if the user ignores the survey for the whole

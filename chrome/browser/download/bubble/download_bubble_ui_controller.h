@@ -19,6 +19,7 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace offline_items_collection {
@@ -37,10 +38,10 @@ class DownloadBubbleUIController {
   static DownloadBubbleUIController* GetForDownload(
       download::DownloadItem* download);
 
-  explicit DownloadBubbleUIController(Browser* browser);
+  explicit DownloadBubbleUIController(BrowserWindowInterface* browser);
   // Used to inject a custom DownloadBubbleUpdateService for testing. Prefer
   // the constructor above which uses that of the profile.
-  DownloadBubbleUIController(Browser* browser,
+  DownloadBubbleUIController(BrowserWindowInterface* browser,
                              DownloadBubbleUpdateService* update_service);
 
   DownloadBubbleUIController(const DownloadBubbleUIController&) = delete;
@@ -145,7 +146,7 @@ class DownloadBubbleUIController {
   // Callback for `browser_activity_observer_`.
   void OnBrowserActivity();
 
-  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<DownloadBubbleUpdateService, DanglingUntriaged> update_service_;
   raw_ptr<OfflineItemModelManager, DanglingUntriaged> offline_manager_;
