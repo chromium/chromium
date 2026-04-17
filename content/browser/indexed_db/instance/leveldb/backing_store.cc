@@ -1132,13 +1132,12 @@ BackingStore::RecordIdentifier CreateRecordIdentifier(const IndexedDBKey& key,
 
 }  // namespace
 
-BackingStore::BackingStore(
-    Mode backing_store_mode,
-    const storage::BucketLocator& bucket_locator,
-    const base::FilePath& blob_path,
-    std::unique_ptr<TransactionalLevelDBDatabase> db,
-    BlobFilesCleanedCallback blob_files_cleaned,
-    ReportOutstandingBlobsCallback report_outstanding_blobs)
+BackingStore::BackingStore(Mode backing_store_mode,
+                           const storage::BucketLocator& bucket_locator,
+                           const base::FilePath& blob_path,
+                           std::unique_ptr<TransactionalLevelDBDatabase> db,
+                           BlobFilesCleanedCallback blob_files_cleaned,
+                           base::RepeatingClosure on_can_close)
     : backing_store_mode_(backing_store_mode),
       bucket_locator_(bucket_locator),
       blob_path_(backing_store_mode == Mode::kInMemory ? base::FilePath()
@@ -1146,9 +1145,11 @@ BackingStore::BackingStore(
       origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)),
+      on_can_close_(std::move(on_can_close)),
       level_db_cleanup_scheduler_(db_->db(), this) {
   active_blob_registry_ = std::make_unique<ActiveBlobRegistry>(
-      std::move(report_outstanding_blobs),
+      base::BindRepeating(&BackingStore::OnOutstandingBlobsChanged,
+                          weak_factory_.GetWeakPtr()),
       base::BindRepeating(&BackingStore::ReportBlobUnused,
                           weak_factory_.GetWeakPtr()));
   InitializeGlobalSweepAndCompactionTimes();
@@ -1272,9 +1273,7 @@ Status BackingStore::Initialize(bool clean_active_journal) {
 }
 
 bool BackingStore::CanOpportunisticallyClose() const {
-  // For LevelDB, the logic here is implemented at the BucketContext level, so
-  // just return true here.
-  return true;
+  return !active_blob_registry_->HasOutstandingBlobs();
 }
 
 void BackingStore::SignalWhenDestructionComplete(
@@ -1497,7 +1496,8 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
                               PartitionedLockManager* lock_manager,
                               bool is_first_attempt,
                               bool create_if_missing,
-                              bool skip_create_on_data_loss) {
+                              bool skip_create_on_data_loss,
+                              base::RepeatingClosure on_can_close) {
   CHECK_EQ(database_path.empty(), data_directory.empty());
   CHECK_EQ(blob_path.empty(), data_directory.empty());
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify");
@@ -1610,8 +1610,7 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
       backing_store_mode, bucket_locator, blob_path, std::move(database),
       base::BindRepeating(bucket_context.delegate().on_files_written,
                           /*flushed=*/true),
-      base::BindRepeating(&BucketContext::ReportOutstandingBlobs,
-                          bucket_context.AsWeakPtr()));
+      std::move(on_can_close));
   status = backing_store->Initialize(/*clean_active_blob_journal=*/!in_memory);
   if (!status.ok()) [[unlikely]] {
     base::WaitableEvent destruct_event;
@@ -1639,10 +1638,12 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
                             PartitionedLockManager* lock_manager,
                             bool is_first_attempt,
                             bool create_if_missing,
-                            bool skip_create_on_data_loss) {
-  auto return_values = DoOpenAndVerify(
-      bucket_context, data_directory, database_path, blob_path, lock_manager,
-      is_first_attempt, create_if_missing, skip_create_on_data_loss);
+                            bool skip_create_on_data_loss,
+                            base::RepeatingClosure on_can_close) {
+  auto return_values =
+      DoOpenAndVerify(bucket_context, data_directory, database_path, blob_path,
+                      lock_manager, is_first_attempt, create_if_missing,
+                      skip_create_on_data_loss, std::move(on_can_close));
 
   Status& status = std::get<Status>(return_values);
   if (status.IsCorruption()) {
@@ -2611,6 +2612,12 @@ BackingStore::Transaction::KeyExistsInObjectStore(int64_t object_store_id,
   }
 
   return CreateRecordIdentifier(key, version);
+}
+
+void BackingStore::OnOutstandingBlobsChanged(bool blobs_outstanding) {
+  if (!blobs_outstanding) {
+    on_can_close_.Run();
+  }
 }
 
 void BackingStore::ReportBlobUnused(int64_t database_id, int64_t blob_number) {

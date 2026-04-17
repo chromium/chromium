@@ -67,6 +67,10 @@ base::RepeatingClosure ActiveBlobRegistry::GetMarkBlobActiveCallback(
                              blob_number);
 }
 
+bool ActiveBlobRegistry::HasOutstandingBlobs() const {
+  return !blob_reference_tracker_.empty();
+}
+
 void ActiveBlobRegistry::ForceShutdown() {
   weak_factory_.InvalidateWeakPtrs();
   blob_reference_tracker_.clear();

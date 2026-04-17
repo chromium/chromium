@@ -61,6 +61,9 @@ class CONTENT_EXPORT ActiveBlobRegistry {
   // called after it is deleted.
   base::RepeatingClosure GetMarkBlobActiveCallback(int64_t database_id,
                                                    int64_t blob_number);
+  // Returns true if any blobs are currently referenced by clients.
+  bool HasOutstandingBlobs() const;
+
   // Call this to force the registry to drop its use counts, permitting the
   // factory to drop any blob-related refcount for the backing store.
   // This will also turn any outstanding callbacks into no-ops.

@@ -454,10 +454,6 @@ uint64_t BucketContext::GetUsage(bool write_in_progress) {
                         : ReadUsageFromDisk(bucket_locator(), data_path_);
 }
 
-void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
-  has_blobs_outstanding_ = blobs_outstanding;
-  MaybeStartClosing();
-}
 
 void BucketContext::CheckCanUseDiskSpace(
     int64_t space_requested,
@@ -925,8 +921,7 @@ bool BucketContext::CanClose() {
     return false;
   }
 
-  return !has_blobs_outstanding_ && (!backing_store() || !in_memory()) &&
-         databases_.empty();
+  return (!backing_store() || !in_memory()) && databases_.empty();
 }
 
 void BucketContext::MaybeStartClosing() {
@@ -1266,7 +1261,9 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       std::tie(backing_store, status, data_loss_info, disk_full) =
           level_db::BackingStore::OpenAndVerify(
               *this, data_path_, database_path, blob_path, lock_manager.get(),
-              is_first_attempt, create_if_missing, skip_create_on_data_loss);
+              is_first_attempt, create_if_missing, skip_create_on_data_loss,
+              base::BindRepeating(&BucketContext::MaybeStartClosing,
+                                  base::Unretained(this)));
       CHECK_EQ(status.ok(), !!backing_store);
       if (is_first_attempt) [[likely]] {
         first_try_status = status;
@@ -1358,7 +1355,6 @@ void BucketContext::ResetBackingStore() {
   databases_.clear();
   lock_manager_.reset();
   closing_stage_ = ClosingState::kNotClosing;
-  has_blobs_outstanding_ = false;
   running_tasks_ = false;
 
   if (receivers_.empty() && delegate().on_ready_for_destruction) {

@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -48,8 +49,7 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
               leveldb::Status::IOError("It's broken!"), path),
           nullptr, task_runner.get(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
-      BackingStore::BlobFilesCleanedCallback(),
-      BackingStore::ReportOutstandingBlobsCallback());
+      BackingStore::BlobFilesCleanedCallback(), base::DoNothing());
   Status s = backing_store->Initialize(false);
   EXPECT_FALSE(s.ok());
   ASSERT_TRUE(temp_directory.Delete());
@@ -83,8 +83,7 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
             FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
             task_runner.get(),
             TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
-        BackingStore::BlobFilesCleanedCallback(),
-        BackingStore::ReportOutstandingBlobsCallback());
+        BackingStore::BlobFilesCleanedCallback(), base::DoNothing());
     Status s = backing_store->Initialize(false);
     ASSERT_TRUE(s.IsIOError());
   }

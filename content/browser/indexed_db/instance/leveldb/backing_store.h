@@ -425,8 +425,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   };
 
   using BlobFilesCleanedCallback = base::RepeatingClosure;
-  using ReportOutstandingBlobsCallback =
-      base::RepeatingCallback<void(/*outstanding_blobs=*/bool)>;
 
   enum class Mode { kInMemory, kOnDisk };
 
@@ -441,12 +439,13 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   static constexpr const base::TimeDelta kInitialJournalCleaningWindowTime =
       base::Seconds(2);
 
+  // `on_can_close` is called when `CanOpportunisticallyClose()` becomes true.
   BackingStore(Mode backing_store_mode,
                const storage::BucketLocator& bucket_locator,
                const base::FilePath& blob_path,
                std::unique_ptr<TransactionalLevelDBDatabase> db,
                BlobFilesCleanedCallback blob_files_cleaned,
-               ReportOutstandingBlobsCallback report_outstanding_blobs);
+               base::RepeatingClosure on_can_close);
 
   BackingStore(const BackingStore&) = delete;
   BackingStore& operator=(const BackingStore&) = delete;
@@ -538,7 +537,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                 PartitionedLockManager* lock_manager,
                 bool is_first_attempt,
                 bool create_if_missing,
-                bool skip_create_on_data_loss);
+                bool skip_create_on_data_loss,
+                base::RepeatingClosure on_can_close);
 
   static uint64_t ReadSizeFromDisk(const base::FilePath& database_path,
                                    const base::FilePath& blob_path);
@@ -577,7 +577,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                   PartitionedLockManager* lock_manager,
                   bool is_first_attempt,
                   bool create_if_missing,
-                  bool skip_create_on_data_loss);
+                  bool skip_create_on_data_loss,
+                  base::RepeatingClosure on_can_close);
 
   // Fills in metadata for the database specified by `metadata->name` by reading
   // from disk. If no database is found, `metadata->id` will remain null.
@@ -627,6 +628,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   // Used by ActiveBlobRegistry::MarkBlobInactive.
   void ReportBlobUnused(int64_t database_id, int64_t blob_number);
+
+  // Called by ActiveBlobRegistry when outstanding blob state changes.
+  void OnOutstandingBlobsChanged(bool blobs_outstanding);
 
   // Remove the blob directory for the specified database and all contained
   // blob files.
@@ -686,6 +690,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   const std::unique_ptr<TransactionalLevelDBDatabase> db_;
 
   const BlobFilesCleanedCallback blob_files_cleaned_;
+
+  // Called when `CanOpportunisticallyClose()` becomes true.
+  base::RepeatingClosure on_can_close_;
 
   // Whenever blobs are registered in active_blob_registry_,
   // indexed_db_factory_ will hold a reference to this backing store.

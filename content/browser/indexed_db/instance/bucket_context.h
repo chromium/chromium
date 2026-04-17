@@ -221,8 +221,6 @@ class CONTENT_EXPORT BucketContext
 
   ClosingState closing_stage() const { return closing_stage_; }
 
-  void ReportOutstandingBlobs(bool blobs_outstanding);
-
   // Called when `space_requested` bytes are about to be used by committing a
   // transaction. Will invoke `disk_space_check_callback` if this usage is
   // approved, or false if there's insufficient space as per the `QuotaManager`.
@@ -438,10 +436,6 @@ class CONTENT_EXPORT BucketContext
   // Set at construction. Can be overridden by
   // `SetSqliteRolloutStageForTesting()`.
   SqliteRolloutStage sqlite_rollout_stage_;
-
-  // True if there are blobs referencing this backing store that are still
-  // alive. This is used as closing criteria for this object, see CanClose.
-  bool has_blobs_outstanding_ = false;
 
   bool running_tasks_ = false;
 
