@@ -136,13 +136,14 @@ enum class PrerenderCrossOriginRedirectionProtocolChange {
 
 std::string GeneratePrerenderHistogramSuffix(
     PreloadingTriggerType trigger_type,
-    const std::string& histogram_suffix);
+    const std::string& embedder_suffix);
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
-void RecordPrerenderActivationTime(base::TimeDelta delta,
-                                   PreloadingTriggerType trigger_type,
-                                   const std::string& histogram_suffix);
+void RecordPrerenderActivationTime(
+    base::TimeDelta delta,
+    PreloadingTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
 
 // Used by failing prerender attempts. Records the status to UMA and UKM, and
 // reports the failing reason to devtools. In the attributes, `initiator_ukm_id`
@@ -220,7 +221,7 @@ void RecordPrerenderBackNavigationEligibility(
 void RecordPrerenderActivationCommitDeferTime(
     base::TimeDelta time_delta,
     PreloadingTriggerType trigger_type,
-    const std::string& histogram_suffix);
+    const std::string& embedder_histogram_suffix);
 
 void RecordReceivedPrerendersPerPrimaryPageChangedCount(
     int number,

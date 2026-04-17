@@ -170,7 +170,7 @@ class ScopedPrefetchServiceContentBrowserClient
   bool ShouldAllowPrefetchRedirection(
       content::BrowserContext& browser_context,
       const GURL& url,
-      const std::string& histogram_suffix) override {
+      const std::string& embedder_histogram_suffix) override {
     // Block any URL with "blocked" in it to simulate the behavior.
     return url.spec().find("blocked") == std::string::npos;
   }
@@ -1339,14 +1339,15 @@ TEST_P(PrefetchServiceTest, SuccessCase) {
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
            GetMetricsSuffixTriggerTypeAndEagerness(
-               prefetch_type, /*histogram_suffix=*/std::nullopt)}),
+               prefetch_type, /*embedder_histogram_suffix=*/std::nullopt)}),
       false, 1);
 
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Prefetch.PrefetchPotentialCandidateServingResult."
-                    "PerMatchingCandidate.",
-                    GetMetricsSuffixTriggerTypeAndEagerness(
-                        prefetch_type, /*histogram_suffix=*/std::nullopt)}),
+      base::StrCat(
+          {"Prefetch.PrefetchPotentialCandidateServingResult."
+           "PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               prefetch_type, /*embedder_histogram_suffix=*/std::nullopt)}),
       PrefetchPotentialCandidateServingResult::kServed, 1);
 }
 

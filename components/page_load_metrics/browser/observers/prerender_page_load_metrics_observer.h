@@ -115,9 +115,9 @@ class PrerenderPageLoadMetricsObserver
 
   // The type to trigger prerendering.
   std::optional<content::PreloadingTriggerType> trigger_type_;
-  // The suffix for metrics. This value is valid when PreloadingTriggerType is
-  // kEmbedder or when Speculation Rules have specific variants.
-  std::string histogram_suffix_;
+  // The suffix of a prerender embedder. This value is valid only when
+  // PreloadingTriggerType is kEmbedder. Otherwise, it's an empty string.
+  std::string embedder_histogram_suffix_;
   int64_t soft_navigation_count_ = 0;
 };
 

@@ -1716,7 +1716,7 @@ void PrefetchService::OnPrefetchRedirect(
                       redirect_info.new_url,
                       prefetch_container->request()
                           .GetBrowserInitiatorInfo()
-                          ->histogram_suffix())) {
+                          ->embedder_histogram_suffix())) {
     // TODO(crbug.com/413259638): If a finer granularity of metrics is
     // required, introduce a new type of `PrefetchRedirectResult`.
     failure = PrefetchRedirectResult::kFailedIneligible;

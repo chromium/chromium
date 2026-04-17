@@ -6438,15 +6438,16 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   // the navigation commit to be able to check that it didn't change, as
   // NavigationRequest will be destroyed by that point.
   blink::mojom::FrameReplicationState prerender_main_frame_replication_state;
-  // Copy the prerendering trigger type and the histogram suffix for metrics
-  // before NavigationRequest is destroyed.
+  // Copy the prerendering trigger type and the embbeder histogram suffix for
+  // metrics before NavigationRequest is destroyed.
   PreloadingTriggerType prerender_trigger_type;
-  std::string prerender_histogram_suffix;
+  std::string prerender_embedder_histogram_suffix;
   if (is_prerender_page_activation) {
     prerender_main_frame_replication_state =
         owned_request->prerender_main_frame_replication_state();
     prerender_trigger_type = owned_request->GetPrerenderTriggerType();
-    prerender_histogram_suffix = owned_request->GetPrerenderHistogramSuffix();
+    prerender_embedder_histogram_suffix =
+        owned_request->GetPrerenderEmbedderHistogramSuffix();
   }
 
 #if DCHECK_IS_ON()
@@ -6519,7 +6520,7 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     // Record metric to check navigation time with prerender activation.
     base::TimeDelta delta = base::TimeTicks::Now() - navigation_start;
     RecordPrerenderActivationTime(delta, prerender_trigger_type,
-                                  prerender_histogram_suffix);
+                                  prerender_embedder_histogram_suffix);
 
     // We haven't sent any updates to the proxies during prerendering
     // activation, so we need to ensure that the new frame replication being

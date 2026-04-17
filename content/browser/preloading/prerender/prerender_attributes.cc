@@ -22,7 +22,7 @@ void PrerenderAttributes::WriteIntoTrace(
 PrerenderAttributes::PrerenderAttributes(
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
-    const std::string& histogram_suffix,
+    const std::string& embedder_histogram_suffix,
     std::optional<SpeculationRulesParams> speculation_rules_params,
     Referrer referrer,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -42,7 +42,7 @@ PrerenderAttributes::PrerenderAttributes(
     bool form_submission)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
-      histogram_suffix(histogram_suffix),
+      embedder_histogram_suffix(embedder_histogram_suffix),
       speculation_rules_params(std::move(speculation_rules_params)),
       referrer(std::move(referrer)),
       no_vary_search_hint(std::move(no_vary_search_hint)),

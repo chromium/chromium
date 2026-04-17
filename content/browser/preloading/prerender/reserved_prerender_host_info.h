@@ -15,12 +15,12 @@ namespace content {
 struct ReservedPrerenderHostInfo {
   ReservedPrerenderHostInfo(PrerenderHostId prerender_host_id,
                             PreloadingTriggerType trigger_type,
-                            std::string histogram_suffix,
+                            std::string embedder_histogram_suffix,
                             bool is_prerender_host_reused);
 
   PrerenderHostId prerender_host_id;
   PreloadingTriggerType trigger_type;
-  std::string histogram_suffix;
+  std::string embedder_histogram_suffix;
   bool is_prerender_host_reused;
 };
 

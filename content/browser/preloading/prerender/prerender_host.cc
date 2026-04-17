@@ -456,7 +456,8 @@ PrerenderHost::PrerenderHost(
     : attributes_(attributes),
       prerender_host_id_(NextPrerenderHostId()),
       metric_suffix_(
-          GeneratePrerenderHistogramSuffix(trigger_type(), histogram_suffix())),
+          GeneratePrerenderHistogramSuffix(trigger_type(),
+                                           embedder_histogram_suffix())),
       attempt_(std::move(attempt)),
       devtools_attempt_(std::move(devtools_attempt)),
       web_contents_(web_contents),

@@ -13,11 +13,11 @@ namespace content {
 ReservedPrerenderHostInfo::ReservedPrerenderHostInfo(
     PrerenderHostId prerender_host_id,
     PreloadingTriggerType trigger_type,
-    std::string histogram_suffix,
+    std::string embedder_histogram_suffix,
     bool is_prerender_host_reused)
     : prerender_host_id(prerender_host_id),
       trigger_type(trigger_type),
-      histogram_suffix(std::move(histogram_suffix)),
+      embedder_histogram_suffix(std::move(embedder_histogram_suffix)),
       is_prerender_host_reused(is_prerender_host_reused) {
   CHECK(prerender_host_id);
 }
