@@ -55,6 +55,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -131,6 +132,7 @@ public class ToolbarControlContainerTest {
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private OptionalButtonCoordinator mOptionalButtonCoordinator;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
 
@@ -142,6 +144,7 @@ public class ToolbarControlContainerTest {
                     new BrowserStateBrowserControlsVisibilityDelegate(
                             ObservableSuppliers.alwaysFalse());
     private final AtomicInteger mOnResourceRequestedCount = new AtomicInteger();
+    private final AtomicInteger mTriggerBitmapCaptureCount = new AtomicInteger();
 
     private boolean mIsVisible;
     private final BooleanSupplier mIsVisibleSupplier = () -> mIsVisible;
@@ -164,6 +167,12 @@ public class ToolbarControlContainerTest {
                         // No-op normal functionality and just count calls instead.
                         mOnResourceRequestedCount.getAndIncrement();
                     }
+
+                    @Override
+                    public void triggerBitmapCapture() {
+                        mTriggerBitmapCaptureCount.getAndIncrement();
+                        setDirtyRectEmpty();
+                    }
                 };
     }
 
@@ -177,11 +186,13 @@ public class ToolbarControlContainerTest {
                 mIsVisibleSupplier,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
-                mToolbarDataProvider);
+                mToolbarDataProvider,
+                mBrowserControlsStateProvider);
         // The adapter may observe some of these already, which will post events.
         RobolectricUtil.runAllBackgroundAndUi();
-        // The initial addObserver triggers an event that we don't care about. Reset count.
+        // The initial addObserver triggers an event that we don't care about. Reset counts.
         mOnResourceRequestedCount.set(0);
+        mTriggerBitmapCaptureCount.set(0);
     }
 
     private void makeAndInitAdapter() {
@@ -205,7 +216,8 @@ public class ToolbarControlContainerTest {
                 mBrowserStateBrowserControlsVisibilityDelegate,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
-                mToolbarDataProvider);
+                mToolbarDataProvider,
+                mBrowserControlsStateProvider);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 mControlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
@@ -488,6 +500,17 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    public void testInvalidate_controlsFullyHidden_capturesBitmap() {
+        makeAndInitAdapter();
+        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
+
+        int captureCount = mTriggerBitmapCaptureCount.get();
+        mAdapter.invalidate(null);
+
+        assertEquals(captureCount + 1, mTriggerBitmapCaptureCount.get());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
     public void testIsDirty_InMotionAndToolbarSwipe() {
         makeAndInitAdapter();
@@ -641,7 +664,8 @@ public class ToolbarControlContainerTest {
                 mBrowserStateBrowserControlsVisibilityDelegate,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
-                mToolbarDataProvider);
+                mToolbarDataProvider,
+                mBrowserControlsStateProvider);
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
@@ -709,7 +733,8 @@ public class ToolbarControlContainerTest {
                 mBrowserStateBrowserControlsVisibilityDelegate,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
-                mToolbarDataProvider);
+                mToolbarDataProvider,
+                mBrowserControlsStateProvider);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);

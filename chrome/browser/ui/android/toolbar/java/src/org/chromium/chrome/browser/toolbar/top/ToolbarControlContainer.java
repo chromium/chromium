@@ -42,6 +42,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -455,7 +456,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             FullscreenManager fullscreenManager,
-            ToolbarDataProvider toolbarDataProvider) {
+            ToolbarDataProvider toolbarDataProvider,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mToolbar = toolbar;
         mIncognito = isIncognito;
         mToolbarDataProvider = toolbarDataProvider;
@@ -472,7 +474,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 layoutStateProviderSupplier,
                 fullscreenManager,
                 () -> mMidVisibilityToggle,
-                toolbarDataProvider);
+                toolbarDataProvider,
+                browserControlsStateProvider);
 
         mToolbarView = toolbarView;
         assert mToolbarView != null;
@@ -600,7 +603,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
                 FullscreenManager fullscreenManager,
                 BooleanSupplier isMidVisibilityToggle,
-                ToolbarDataProvider toolbarDataProvider) {
+                ToolbarDataProvider toolbarDataProvider,
+                BrowserControlsStateProvider browserControlsStateProvider) {
             mIsMidVisibilityToggle = isMidVisibilityToggle;
             ToolbarViewResourceAdapter adapter =
                     ((ToolbarViewResourceAdapter) getResourceAdapter());
@@ -613,7 +617,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     isVisible,
                     layoutStateProviderSupplier,
                     fullscreenManager,
-                    toolbarDataProvider);
+                    toolbarDataProvider,
+                    browserControlsStateProvider);
 
             MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
             mBaseMarginStart = params.getMarginStart();
@@ -678,12 +683,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 mBrowserStateBrowserControlsVisibilityDelegate;
 
         private BooleanSupplier mControlContainerIsVisibleSupplier;
+        private @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
         private @Nullable LayoutStateProvider mLayoutStateProvider;
         private FullscreenManager mFullscreenManager;
 
         private int mControlsToken = TokenHolder.INVALID_TOKEN;
 
         private boolean mNeedCaptureAfterPageLoad;
+        private boolean mIsCapturing;
+        private boolean mIsDestroyed;
 
         private ToolbarDataProvider mToolbarDataProvider;
 
@@ -720,7 +728,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 BooleanSupplier controlContainerIsVisibleSupplier,
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
                 FullscreenManager fullscreenManager,
-                ToolbarDataProvider toolbarDataProvider) {
+                ToolbarDataProvider toolbarDataProvider,
+                BrowserControlsStateProvider browserControlsStateProvider) {
             assert mToolbar == null;
             mToolbar = toolbar;
 
@@ -737,11 +746,29 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             mBrowserStateBrowserControlsVisibilityDelegate =
                     browserStateBrowserControlsVisibilityDelegate;
             mControlContainerIsVisibleSupplier = controlContainerIsVisibleSupplier;
+            mBrowserControlsStateProvider = browserControlsStateProvider;
             layoutStateProviderSupplier.onAvailable(
                     (layoutStateProvider) -> mLayoutStateProvider = layoutStateProvider);
             mFullscreenManager = fullscreenManager;
             mToolbarDataProvider = toolbarDataProvider;
             mMostRecentlyCapturedUrl = "";
+        }
+
+        @Override
+        public void invalidate(@Nullable Rect dirtyRect) {
+            super.invalidate(dirtyRect);
+            // When controls are fully hidden and the view is invalidated (e.g. URL
+            // changed during a navigation), capture a fresh bitmap immediately so the
+            // texture is up-to-date when the user scrolls the toolbar back into view.
+            if (ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()
+                    && !mIsCapturing
+                    && !mIsDestroyed
+                    && mBrowserControlsStateProvider != null
+                    && mBrowserControlsStateProvider.getBrowserControlHiddenRatio() >= 1f
+                    && (mCompositorInMotionSupplier == null
+                            || !mCompositorInMotionSupplier.get())) {
+                triggerBitmapCapture();
+            }
         }
 
         @Override
@@ -839,6 +866,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             canvas.restore();
             dirtyRect.set(0, 0, mToolbarContainer.getWidth(), mToolbarContainer.getHeight());
 
+            mIsCapturing = true;
             mToolbar.setTextureCaptureMode(true);
 
             super.onCaptureStart(canvas, dirtyRect);
@@ -846,6 +874,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         @Override
         public void onCaptureEnd() {
+            mIsCapturing = false;
             mToolbar.setTextureCaptureMode(false);
             mMostRecentlyCapturedUrl = mToolbarDataProvider.getUrlBarData().displayText;
         }
@@ -899,6 +928,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         public void destroy() {
+            mIsDestroyed = true;
             if (mConstraintsObserver != null) {
                 mConstraintsObserver.destroy();
             }
@@ -932,33 +962,38 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                             mControlsToken);
                     mControlsToken = TokenHolder.INVALID_TOKEN;
                 }
-            } else if (Boolean.TRUE.equals(compositorInMotion)
-                    && super.isDirty()
-                    && (ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()
-                            || mControlContainerIsVisibleSupplier.getAsBoolean())) {
-                CaptureReadinessResult captureReadinessResult = mToolbar.isReadyForTextureCapture();
-                CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);
-                if (ToolbarFeatures.shouldRecordSuppressionMetrics()) {
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Android.TopToolbar.InMotionStage",
-                            ToolbarInMotionStage.READINESS_CHECKED,
-                            ToolbarInMotionStage.NUM_ENTRIES);
-                }
-                if (captureReadinessResult.blockReason
-                        == TopToolbarBlockCaptureReason.SNAPSHOT_SAME) {
-                    setDirtyRectEmpty();
-                } else {
-                    // Motion is starting, and we don't have a good capture. Lock the controls so
-                    // that we keep using the Java view. After the touch event is over we'll unlock
-                    // and try to capture.
-                    mControlsToken =
-                            mBrowserStateBrowserControlsVisibilityDelegate
-                                    .showControlsPersistentAndClearOldToken(mControlsToken);
-                    // Utilize posted task in ConstraintsChecker to drive new capture.
-                    mConstraintsObserver.scheduleRequestResourceOnUnlock();
-                    CaptureReadinessResult.logCaptureReasonFromResult(
-                            CaptureReadinessResult.notReady(
-                                    TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));
+            } else if (Boolean.TRUE.equals(compositorInMotion) && super.isDirty()) {
+                boolean controlsPartiallyVisible =
+                        ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()
+                                && mBrowserControlsStateProvider != null
+                                && mBrowserControlsStateProvider.getBrowserControlHiddenRatio()
+                                        < 1f;
+                if (controlsPartiallyVisible || mControlContainerIsVisibleSupplier.getAsBoolean()) {
+                    CaptureReadinessResult captureReadinessResult =
+                            mToolbar.isReadyForTextureCapture();
+                    CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);
+                    if (ToolbarFeatures.shouldRecordSuppressionMetrics()) {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Android.TopToolbar.InMotionStage",
+                                ToolbarInMotionStage.READINESS_CHECKED,
+                                ToolbarInMotionStage.NUM_ENTRIES);
+                    }
+                    if (captureReadinessResult.blockReason
+                            == TopToolbarBlockCaptureReason.SNAPSHOT_SAME) {
+                        setDirtyRectEmpty();
+                    } else {
+                        // Motion is starting, and we don't have a good capture. Lock the
+                        // controls so that we keep using the Java view. After the touch
+                        // event is over we'll unlock and try to capture.
+                        mControlsToken =
+                                mBrowserStateBrowserControlsVisibilityDelegate
+                                        .showControlsPersistentAndClearOldToken(mControlsToken);
+                        // Utilize posted task in ConstraintsChecker to drive new capture.
+                        mConstraintsObserver.scheduleRequestResourceOnUnlock();
+                        CaptureReadinessResult.logCaptureReasonFromResult(
+                                CaptureReadinessResult.notReady(
+                                        TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));
+                    }
                 }
             }
         }
