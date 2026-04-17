@@ -138,15 +138,9 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
     case KeyStatus::KEY_STATUS_OUTPUT_NOT_ALLOWED:
       return CdmKeyInformation::OUTPUT_RESTRICTED;
     case KeyStatus::KEY_STATUS_PENDING:
-      // On pre-Q versions of Android, 'status-pending' really means "usable in
-      // the future". Starting with Android Q, 'status-pending' means what you
-      // expect. See crbug.com/889272 for explanation.
       // TODO(jrummell): "KEY_STATUS_PENDING" should probably be renamed to
       // "STATUS_PENDING".
-      return (base::android::android_info::sdk_int() <=
-              base::android::android_info::SDK_VERSION_P)
-                 ? CdmKeyInformation::USABLE_IN_FUTURE
-                 : CdmKeyInformation::KEY_STATUS_PENDING;
+      return CdmKeyInformation::KEY_STATUS_PENDING;
     case KeyStatus::KEY_STATUS_INTERNAL_ERROR:
       return CdmKeyInformation::INTERNAL_ERROR;
     case KeyStatus::KEY_STATUS_USABLE_IN_FUTURE:
