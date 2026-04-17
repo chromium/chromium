@@ -30,13 +30,16 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  // Create a bidirectional stream without explicit sendOrder (defaults to 0).
+  // Create a bidirectional stream with sendorder
   const {readable, writable} = await wt.createBidirectionalStream();
   assert_equals(writable.sendOrder, 0);
   // modify it
   writable.sendOrder = 4;
   assert_equals(writable.sendOrder, 4);
-}, 'WebTransport client should be able to modify default sendOrder after stream creation');
+  // Test null coercion: long long converts null via ToNumber(null) = +0
+  writable.sendOrder = null;
+  assert_equals(writable.sendOrder, 0);
+}, 'WebTransport client should be able to modify unset sendOrder after stream creation');
 
 promise_test(async t => {
   // Establish a WebTransport session.
@@ -49,7 +52,6 @@ promise_test(async t => {
   // modify it
   writable.sendOrder = 5;
   assert_equals(writable.sendOrder, 5);
-  // sendOrder is not nullable (long long); setting to 0 resets it.
   writable.sendOrder = 0;
   assert_equals(writable.sendOrder, 0);
   // Note: this doesn't verify the underlying stack actually changes priority, just the API

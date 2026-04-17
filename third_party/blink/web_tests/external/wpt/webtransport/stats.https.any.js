@@ -81,7 +81,7 @@ promise_test(async t => {
   const numDatagrams = 64;
   wt.datagrams.incomingHighWaterMark = 4;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
   const promises = [];
   while (promises.length < numDatagrams) {

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] WebTransport client should be able to provide droppedIncoming values for datagrams
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+Harness: the test ran to completion.
+

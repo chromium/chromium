@@ -99,7 +99,7 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader();
 
   const controller = new AbortController();
@@ -122,7 +122,7 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader({ mode: 'byob' });
 
   const controller = new AbortController();
@@ -149,7 +149,7 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader({ mode: 'byob' });
 
   const controller = new AbortController();
@@ -173,7 +173,7 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo_datagram_length.py'));
   await wt.ready;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader();
 
   // Write and read max-size datagram.
@@ -195,7 +195,7 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader();
 
   let maxDatagramSize = wt.datagrams.maxDatagramSize;
@@ -222,7 +222,7 @@ promise_test(async t => {
   // Make a WebTransport connection, but session is not necessarily established.
   const wt = new WebTransport(webtransport_url('echo.py'));
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const reader = wt.datagrams.readable.getReader();
 
   const controller = new AbortController();
@@ -252,7 +252,7 @@ promise_test(async t => {
   const N = 5;
   wt.datagrams.outgoingHighWaterMark = N;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
 
   // Write N-1 datagrams.
@@ -297,7 +297,7 @@ promise_test(async t => {
   const N = 5;
   wt.datagrams.incomingHighWaterMark = N;
 
-  const writer = wt.datagrams.writable.getWriter();
+  const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
 
   // Write 10*N datagrams.
@@ -339,8 +339,8 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('echo.py'));
   await wt.ready;
 
-  assert_equals(wt.datagrams.incomingMaxAge, Infinity);
-  assert_equals(wt.datagrams.outgoingMaxAge, Infinity);
+  assert_equals(wt.datagrams.incomingMaxAge, null);
+  assert_equals(wt.datagrams.outgoingMaxAge, null);
 
   wt.datagrams.incomingMaxAge = 5;
   assert_equals(wt.datagrams.incomingMaxAge, 5);
@@ -353,9 +353,9 @@ promise_test(async t => {
   assert_throws_js(RangeError, () => { wt.datagrams.outgoingMaxAge = NaN; });
 
   wt.datagrams.incomingMaxAge = 0;
-  assert_equals(wt.datagrams.incomingMaxAge, Infinity);
+  assert_equals(wt.datagrams.incomingMaxAge, null);
   wt.datagrams.outgoingMaxAge = 0;
-  assert_equals(wt.datagrams.outgoingMaxAge, Infinity);
+  assert_equals(wt.datagrams.outgoingMaxAge, null);
 }, 'Datagram MaxAge getters/setters work correctly');
 
 promise_test(async t => {
