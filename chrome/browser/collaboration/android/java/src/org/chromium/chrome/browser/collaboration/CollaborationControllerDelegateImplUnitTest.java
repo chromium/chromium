@@ -66,6 +66,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 /** Unit test for {@link CollaborationControllerDelegateImpl} */
@@ -210,7 +211,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         long resultCallback = 1;
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
 
-        ArgumentCaptor<Callback<Boolean>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> successCallback = MockitoHelper.callbackCaptor();
         verify(mStartAccountRefreshCallback).onResult(successCallback.capture());
 
         successCallback.getValue().onResult(true);
@@ -465,8 +466,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(accessToken),
                         eq(resultCallback));
 
-        ArgumentCaptor<Callback<Boolean>> onFinishCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> onFinishCallback = MockitoHelper.callbackCaptor();
         mCollaborationControllerDelegateImpl.onUrlReadyToShare(
                 collaborationId, url, resultCallback);
         verify(mDataSharingTabManager)

@@ -34,6 +34,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.paintpreview.player.PlayerManager;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.concurrent.ExecutionException;
 
@@ -84,7 +85,7 @@ public class DemoPaintPreviewTest {
 
         // When PaintPreviewTabService#captureTab is called, return true for future calls to
         // PaintPreviewTabService#hasCaptureForTab and call the success callback with true.
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         Mockito.doAnswer(
                         invocation -> {
                             Mockito.doReturn(true)

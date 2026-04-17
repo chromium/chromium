@@ -6,6 +6,7 @@ package org.chromium.ui.test.util;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.Stubber;
@@ -111,5 +112,14 @@ public class MockitoHelper {
     @SuppressWarnings("unchecked")
     public static <T> Callback<T> anyCallback() {
         return any(Callback.class);
+    }
+
+    /**
+     * Type-safe wrapper around {@code ArgumentCaptor.forClass(Callback.class)} that avoids
+     * unchecked warnings. For field-level captors, prefer the {@code @Captor} annotation.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ArgumentCaptor<Callback<T>> callbackCaptor() {
+        return ArgumentCaptor.forClass(Callback.class);
     }
 }

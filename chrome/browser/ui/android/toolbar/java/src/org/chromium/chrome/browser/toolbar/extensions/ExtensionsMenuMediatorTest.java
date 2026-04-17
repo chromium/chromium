@@ -65,6 +65,7 @@ import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1324,7 +1325,7 @@ public class ExtensionsMenuMediatorTest {
         assertTrue(sitePermissionsState.onAllSitesOption.isOn);
 
         // Select 'on site' option.
-        ArgumentCaptor<Callback<Integer>> listenerCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Integer>> listenerCaptor = MockitoHelper.callbackCaptor();
         verify(mSitePermissionsPropertyModel)
                 .set(
                         eq(SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER),

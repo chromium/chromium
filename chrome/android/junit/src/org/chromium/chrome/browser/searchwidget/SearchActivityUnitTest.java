@@ -91,6 +91,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.Map;
@@ -731,7 +732,7 @@ public class SearchActivityUnitTest {
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
-        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> captor = MockitoHelper.callbackCaptor();
         verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
 
         // Notify Activity that the search engine promo dialog was canceled.
@@ -750,7 +751,7 @@ public class SearchActivityUnitTest {
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
-        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> captor = MockitoHelper.callbackCaptor();
         verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
 
         // "should never happen".
@@ -769,7 +770,7 @@ public class SearchActivityUnitTest {
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
-        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> captor = MockitoHelper.callbackCaptor();
         verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
 
         // Notify Activity that the search engine promo dialog was completed.
@@ -800,7 +801,7 @@ public class SearchActivityUnitTest {
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
-        ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> captor = MockitoHelper.callbackCaptor();
         verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
 
         // Cancel activity, and notify that the search engine promo dialog was completed.

@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
@@ -592,8 +593,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         mMultiInstanceOrchestrator.moveTabsToOtherWindow(tabs, NewWindowAppSource.MENU);
 
         // Verify.
-        ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mMultiInstanceManager1)
                 .showTargetSelectorDialog(
                         callbackCaptor.capture(),
@@ -780,8 +780,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 mTabGroupMetadata, NewWindowAppSource.MENU);
 
         // Verify.
-        ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mMultiInstanceManager1)
                 .showTargetSelectorDialog(
                         callbackCaptor.capture(),
@@ -1042,8 +1041,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                     mUrlParams.getUrl(),
                     intentCaptor.getValue().getData().toString());
         } else {
-            ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor =
-                    ArgumentCaptor.forClass(Callback.class);
+            ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
             verify(mMultiInstanceManager1)
                     .showTargetSelectorDialog(
                             callbackCaptor.capture(),
@@ -1130,8 +1128,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                             /* finalizeCallback= */ null,
                             NewWindowAppSource.MENU);
         } else {
-            ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor =
-                    ArgumentCaptor.forClass(Callback.class);
+            ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
             verify(mMultiInstanceManager1)
                     .showTargetSelectorDialog(
                             callbackCaptor.capture(),
@@ -1171,8 +1168,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                             /* openAdjacently= */ true,
                             NewWindowAppSource.MENU);
         } else {
-            ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor =
-                    ArgumentCaptor.forClass(Callback.class);
+            ArgumentCaptor<Callback<InstanceInfo>> callbackCaptor = MockitoHelper.callbackCaptor();
             verify(mMultiInstanceManager1)
                     .showTargetSelectorDialog(
                             callbackCaptor.capture(),

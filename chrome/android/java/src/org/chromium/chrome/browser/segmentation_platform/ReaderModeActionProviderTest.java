@@ -58,6 +58,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -296,7 +297,7 @@ public class ReaderModeActionProviderTest {
     @EnableFeatures(DomDistillerFeatures.READER_MODE_USE_READABILITY + ":use_heuristic/true")
     public void testReadabiltyHeuristicUsed() throws TimeoutException {
         ArgumentCaptor<Callback<Boolean>> readabilityHeuristicCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         provider.getAction(mMockTab, mMockSignalAccumulator);
@@ -338,7 +339,7 @@ public class ReaderModeActionProviderTest {
     public void testDistillableButSupressed_ReadabiltyHeuristicUsed() throws TimeoutException {
         when(mReaderModeActionRateLimiter.isActionSuppressed()).thenReturn(true);
         ArgumentCaptor<Callback<Boolean>> readabilityHeuristicCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
         provider.getAction(mMockTab, mMockSignalAccumulator);

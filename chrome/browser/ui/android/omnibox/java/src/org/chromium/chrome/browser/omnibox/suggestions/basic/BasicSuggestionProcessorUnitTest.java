@@ -56,6 +56,7 @@ import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateI
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -427,7 +428,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
@@ -464,7 +465,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);

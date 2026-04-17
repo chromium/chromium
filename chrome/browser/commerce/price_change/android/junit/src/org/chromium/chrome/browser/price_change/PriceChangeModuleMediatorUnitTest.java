@@ -213,7 +213,7 @@ public class PriceChangeModuleMediatorUnitTest {
 
         // Mock return value of ImageFetcher.
         ArgumentCaptor<Callback<Bitmap>> productImageCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         verify(mImageFetcher).fetchImage(any(Params.class), productImageCallbackCaptor.capture());
         productImageCallbackCaptor.getValue().onResult(mProductImageBitmap);
 
@@ -255,7 +255,7 @@ public class PriceChangeModuleMediatorUnitTest {
         mMediator.showModule();
 
         ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
         dataCallbackCaptor.getValue().onResult(new ArrayList<>());
         verify(mService, times(0)).initialize(any(Set.class));
@@ -315,7 +315,7 @@ public class PriceChangeModuleMediatorUnitTest {
         ShoppingPersistedTabData data = mock(ShoppingPersistedTabData.class);
         PriceChangeItem item = new PriceChangeItem(null, data);
         ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
         dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
         verify(mService, times(0)).initialize(any(Set.class));
@@ -335,7 +335,7 @@ public class PriceChangeModuleMediatorUnitTest {
         doReturn(0).when(mTabModel).getCount();
         doReturn(null).when(mTabModel).getTabById(mTab.getId());
         ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
         dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
         verify(mService, times(0)).initialize(any(Set.class));
@@ -382,7 +382,7 @@ public class PriceChangeModuleMediatorUnitTest {
 
         // Mock return value of ShoppingPersistedTabDataService.
         ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
         PriceChangeItem item = new PriceChangeItem(mTab, data);
         dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));

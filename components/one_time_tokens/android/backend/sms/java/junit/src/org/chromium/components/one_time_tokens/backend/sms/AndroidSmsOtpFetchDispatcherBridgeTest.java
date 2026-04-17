@@ -27,6 +27,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests that dispatcher bridge calls reach the OTP fetcher. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,7 +64,7 @@ public class AndroidSmsOtpFetchDispatcherBridgeTest {
                         .build();
 
         mDispatcherBridge.retrieveSmsOtp();
-        ArgumentCaptor<Callback<String>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<String>> successCallback = MockitoHelper.callbackCaptor();
         verify(mSmsOtpFetcherMock).retrieveSmsOtp(successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
@@ -86,8 +87,7 @@ public class AndroidSmsOtpFetchDispatcherBridgeTest {
                         .build();
 
         mDispatcherBridge.retrieveSmsOtp();
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mSmsOtpFetcherMock).retrieveSmsOtp(any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 

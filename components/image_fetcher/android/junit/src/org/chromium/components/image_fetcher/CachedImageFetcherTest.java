@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -71,8 +72,7 @@ public class CachedImageFetcherTest {
                 new ImageDataFetchResult(
                         mTestGifData,
                         new RequestMetadata("image/gif", 200, "test_content_location_header"));
-        ArgumentCaptor<Callback<Bitmap>> bitmapCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> bitmapCallbackCaptor = MockitoHelper.callbackCaptor();
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             bitmapCallbackCaptor.getValue().onResult(mBitmap);
@@ -82,7 +82,7 @@ public class CachedImageFetcherTest {
                 .fetchImage(anyInt(), any(), bitmapCallbackCaptor.capture());
 
         ArgumentCaptor<Callback<ImageDataFetchResult>> gifCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             gifCallbackCaptor.getValue().onResult(mImageDataFetchResult);

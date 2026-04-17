@@ -79,6 +79,7 @@ robolectric_binary("one_time_tokens_junit_tests") {
     "//base:base_junit_test_support",
     "//components/one_time_tokens/android/backend/common:java",
     "//third_party/junit",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

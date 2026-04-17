@@ -19,6 +19,7 @@ include_rules = [
 specific_include_rules = {
   "CredManHelperRobolectricTest.java": [
     "+components/payments/content/android/junit",
+    "+ui/android/javatests/src/org/chromium/ui/test/util",
   ],
   "Fido2CredentialRequestRobolectricTest.java": [
     "+ui/android/javatests",

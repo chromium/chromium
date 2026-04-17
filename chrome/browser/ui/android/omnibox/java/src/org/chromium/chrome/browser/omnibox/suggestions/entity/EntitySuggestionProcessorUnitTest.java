@@ -57,6 +57,7 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -210,7 +211,7 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
 
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
         verify(mImageSupplier).fetchImage(eq(WEB_URL), callback.capture());
 
         assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));

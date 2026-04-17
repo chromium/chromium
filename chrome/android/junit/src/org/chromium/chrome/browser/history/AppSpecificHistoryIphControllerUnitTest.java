@@ -39,6 +39,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Unit tests for {@link AppSpecificHistoryIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -90,7 +91,7 @@ public class AppSpecificHistoryIphControllerUnitTest {
 
     @Test
     public void testNotifyUserEngaged() {
-        var captor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> captor = MockitoHelper.callbackCaptor();
         mController.notifyUserEngaged();
         verify(mTracker).addOnInitializedCallback(captor.capture());
         captor.getValue().onResult(true);

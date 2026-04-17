@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -83,10 +84,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     private MostVisitedTilesProcessor mProcessor;
     private List<AutocompleteMatch> mMatches;
 
-    private final ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor =
-            ArgumentCaptor.forClass(Callback.class);
-    private final ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor =
-            ArgumentCaptor.forClass(Callback.class);
+    private @Captor ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor;
+    private @Captor ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor;
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;

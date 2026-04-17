@@ -71,6 +71,7 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPre
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo_base.mojom.String16;
+import org.chromium.ui.test.util.MockitoHelper;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -622,7 +623,7 @@ public class CredManHelperRobolectricTest {
     @SmallTest
     public void
             testStartGetRequestAfterStartPrefetchRequest_userCancelWhileWaitingForSelection_doesNotCancelConditionalRequest() {
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
@@ -677,7 +678,7 @@ public class CredManHelperRobolectricTest {
     @SmallTest
     public void
             testStartGetRequestAfterStartPrefetchRequest_userSelectsPassword_canHavePasswordResponse() {
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);

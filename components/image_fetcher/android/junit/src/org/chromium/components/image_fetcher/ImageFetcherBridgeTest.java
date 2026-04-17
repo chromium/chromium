@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Test for ImageFetcherBridge.java. */
@@ -56,8 +57,7 @@ public class ImageFetcherBridgeTest {
 
     @Test
     public void testFetchImage() {
-        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor = MockitoHelper.callbackCaptor();
         final ArgumentCaptor<Bitmap> resultCaptor = ArgumentCaptor.forClass(Bitmap.class);
         final Bitmap bitmap = Bitmap.createBitmap(WIDTH_PX, HEIGHT_PX, Bitmap.Config.ARGB_8888);
         final RequestMetadata requestMetadata =
@@ -87,8 +87,7 @@ public class ImageFetcherBridgeTest {
 
     @Test
     public void testFetchImageWithExpirationInterval() {
-        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor = MockitoHelper.callbackCaptor();
         final ArgumentCaptor<Bitmap> resultCaptor = ArgumentCaptor.forClass(Bitmap.class);
         final Bitmap bitmap = Bitmap.createBitmap(WIDTH_PX, HEIGHT_PX, Bitmap.Config.ARGB_8888);
         final RequestMetadata requestMetadata =
@@ -128,8 +127,7 @@ public class ImageFetcherBridgeTest {
         int desiredWidth = 100;
         int desiredHeight = 100;
 
-        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor = MockitoHelper.callbackCaptor();
         final Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         final ImageFetchResult imageFetchResult =
                 new ImageFetchResult(
@@ -167,8 +165,7 @@ public class ImageFetcherBridgeTest {
 
     @Test
     public void testFetchImageWithRequestMetadata() {
-        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor = MockitoHelper.callbackCaptor();
         final ArgumentCaptor<ImageFetchResult> resultCaptor =
                 ArgumentCaptor.forClass(ImageFetchResult.class);
         final Bitmap bitmap = Bitmap.createBitmap(WIDTH_PX, HEIGHT_PX, Bitmap.Config.ARGB_8888);
@@ -204,8 +201,7 @@ public class ImageFetcherBridgeTest {
 
     @Test
     public void testFetchImageWithRequestMetadataWithExpirationInterval() {
-        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor = MockitoHelper.callbackCaptor();
         final ArgumentCaptor<ImageFetchResult> resultCaptor =
                 ArgumentCaptor.forClass(ImageFetchResult.class);
         final Bitmap bitmap = Bitmap.createBitmap(WIDTH_PX, HEIGHT_PX, Bitmap.Config.ARGB_8888);
@@ -249,8 +245,7 @@ public class ImageFetcherBridgeTest {
         int desiredWidth = 100;
         int desiredHeight = 100;
 
-        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<ImageFetchResult>> callbackCaptor = MockitoHelper.callbackCaptor();
         final Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         final RequestMetadata requestMetadata =
                 new RequestMetadata("image/jpeg", 200, "test_content_location_header");
@@ -293,7 +288,7 @@ public class ImageFetcherBridgeTest {
     @Test
     public void testFetchGif() {
         ArgumentCaptor<Callback<ImageDataFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         final byte[] imageData = new byte[] {1, 2, 3};
         final RequestMetadata requestMetadata =
                 new RequestMetadata("image/gif", 200, "test_content_location_header");
@@ -326,7 +321,7 @@ public class ImageFetcherBridgeTest {
     @Test
     public void testFetchGif_imageDataEmpty() {
         ArgumentCaptor<Callback<ImageDataFetchResult>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
         final ImageDataFetchResult imageDataFetchResult =
                 new ImageDataFetchResult(
                         new byte[] {},

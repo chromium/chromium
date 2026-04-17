@@ -92,6 +92,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -740,7 +741,7 @@ public class AutofillOptionsTest {
                 .onPreferenceChange(mFragment.getAutofillAiAuthenticationSwitch(), true);
 
         // Verify reauth is triggered.
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
 
         // Simulate successful reauth.

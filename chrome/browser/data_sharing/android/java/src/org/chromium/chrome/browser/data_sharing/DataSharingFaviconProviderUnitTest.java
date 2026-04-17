@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -58,8 +59,7 @@ public class DataSharingFaviconProviderUnitTest {
     @Test
     public void testBasic() {
         mFaviconProvider.fetchFavicon(TAB_URL, mCallback);
-        ArgumentCaptor<Callback<List<Drawable>>> callbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<List<Drawable>>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mBulkFaviconUtil)
                 .fetchAsDrawable(any(), eq(mProfile), any(), anyInt(), callbackCaptor.capture());
         callbackCaptor.getValue().onResult(Arrays.asList(mDrawable));

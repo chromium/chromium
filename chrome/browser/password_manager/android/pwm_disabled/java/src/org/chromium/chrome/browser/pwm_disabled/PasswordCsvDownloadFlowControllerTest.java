@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.ui.widget.ToastManager;
 
 import java.io.BufferedReader;
@@ -169,8 +170,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         Dialog dialog = ShadowDialog.getLatestDialog();
         dialog.findViewById(R.id.positive_button).performClick();
 
-        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor = MockitoHelper.callbackCaptor();
         verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
         resultCallbackCaptor.getValue().onResult(false);
 
@@ -200,8 +200,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         Dialog exportDialog = ShadowDialog.getLatestDialog();
         exportDialog.findViewById(R.id.positive_button).performClick();
 
-        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor = MockitoHelper.callbackCaptor();
         verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
         resultCallbackCaptor.getValue().onResult(true);
 
@@ -245,8 +244,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         Dialog exportDialog = ShadowDialog.getLatestDialog();
         exportDialog.findViewById(R.id.positive_button).performClick();
 
-        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor = MockitoHelper.callbackCaptor();
         verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
         resultCallbackCaptor.getValue().onResult(true);
 
@@ -319,8 +317,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         Dialog dialog = ShadowDialog.getLatestDialog();
         dialog.findViewById(R.id.positive_button).performClick();
 
-        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor = MockitoHelper.callbackCaptor();
         verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
         resultCallbackCaptor.getValue().onResult(true);
 
@@ -365,8 +362,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         Dialog dialog = ShadowDialog.getLatestDialog();
         dialog.findViewById(R.id.positive_button).performClick();
 
-        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor = MockitoHelper.callbackCaptor();
         verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
         resultCallbackCaptor.getValue().onResult(true);
 

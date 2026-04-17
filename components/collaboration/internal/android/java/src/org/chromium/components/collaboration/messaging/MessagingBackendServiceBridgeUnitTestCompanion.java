@@ -44,8 +44,11 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
 
     private final ArgumentCaptor<InstantMessage> mInstantMessageCaptor =
             ArgumentCaptor.forClass(InstantMessage.class);
-    private final ArgumentCaptor<Callback> mInstantMessageCallbackCaptor =
+
+    @SuppressWarnings("unchecked") // Callback.class is raw; Java erases Callback<Boolean>.
+    private final ArgumentCaptor<Callback<Boolean>> mInstantMessageCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
+
     private final ArgumentCaptor<Set<String>> mHideInstantMessageIdsCaptor =
             ArgumentCaptor.forClass(Set.class);
 

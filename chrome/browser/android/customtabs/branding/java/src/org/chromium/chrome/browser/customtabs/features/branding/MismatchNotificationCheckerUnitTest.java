@@ -40,6 +40,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Unit test for {@link MismatchNotificationChecker} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -173,7 +174,7 @@ public class MismatchNotificationCheckerUnitTest {
                 boolean shown, MismatchNotificationData mimData) {
             when(mDelegate.maybeShow(any(), any(), anyLong(), any(), any())).thenReturn(shown);
 
-            ArgumentCaptor<Callback> captor = ArgumentCaptor.forClass(Callback.class);
+            ArgumentCaptor<Callback<Integer>> captor = MockitoHelper.callbackCaptor();
             if (mimData != null) mimData.setAppData(mChecker.getAccountId(), "app-id", mAppData);
             mChecker.maybeShow("app-id", /* lastShowTime= */ 12345, mimData, mOnClose);
             verify(mDelegate).maybeShow(any(), any(), anyLong(), any(), captor.capture());

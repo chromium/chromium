@@ -53,6 +53,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -173,7 +174,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipboardSuggestion_showsFaviconWhenAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
@@ -190,7 +191,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipboardSuggestion_showsFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
@@ -206,7 +207,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipobardSuggestion_urlAndTextDirection() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
         // URL
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         Assert.assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));

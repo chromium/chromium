@@ -43,6 +43,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfoCallback;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -145,7 +146,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         ArgumentCaptor<CommerceSubscription> commerceSubscriptionArgumentCaptor =
                 ArgumentCaptor.forClass(CommerceSubscription.class);
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
         supplier.addSyncObserver(mockCallback);
@@ -185,7 +186,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
 
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
         supplier.addSyncObserver(mockCallback);
@@ -222,7 +223,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         ArgumentCaptor<CommerceSubscription> commerceSubscriptionArgumentCaptor =
                 ArgumentCaptor.forClass(CommerceSubscription.class);
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
         supplier.addSyncObserver(mockCallback);
@@ -270,7 +271,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         ArgumentCaptor<CommerceSubscription> commerceSubscriptionArgumentCaptor =
                 ArgumentCaptor.forClass(CommerceSubscription.class);
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
         supplier.addSyncObserver(mockCallback);
@@ -318,7 +319,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         when(anotherTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
 
         ArgumentCaptor<Callback<Boolean>> shoppingServiceCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
+                MockitoHelper.callbackCaptor();
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
         supplier.addSyncObserver(mockCallback);

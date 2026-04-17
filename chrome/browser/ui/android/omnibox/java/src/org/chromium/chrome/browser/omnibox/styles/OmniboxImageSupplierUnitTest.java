@@ -43,6 +43,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -263,7 +264,7 @@ public final class OmniboxImageSupplierUnitTest {
         // Observe only one interaction with ImageFetcher.
         ArgumentCaptor<ImageFetcher.Params> paramCaptor =
                 ArgumentCaptor.forClass(ImageFetcher.Params.class);
-        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mImageFetcher, times(1)).fetchImage(paramCaptor.capture(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher);
 
@@ -292,7 +293,7 @@ public final class OmniboxImageSupplierUnitTest {
         // Observe only one interaction with ImageFetcher.
         ArgumentCaptor<ImageFetcher.Params> paramCaptor =
                 ArgumentCaptor.forClass(ImageFetcher.Params.class);
-        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mImageFetcher, times(1)).fetchImage(paramCaptor.capture(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher);
 
@@ -332,7 +333,7 @@ public final class OmniboxImageSupplierUnitTest {
     public void fetchImage_callbacksAreNotRetainedAfterCompletion() {
         mSupplier.setImageFetcherForTesting(mImageFetcher);
 
-        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
         var url = JUnitTestGURLs.RED_1;
 
         // Issue first request and observe the interaction with ImageFetcher.
@@ -360,8 +361,8 @@ public final class OmniboxImageSupplierUnitTest {
 
         var url1 = JUnitTestGURLs.RED_1;
         var url2 = JUnitTestGURLs.RED_2;
-        ArgumentCaptor<Callback<Bitmap>> captor1 = ArgumentCaptor.forClass(Callback.class);
-        ArgumentCaptor<Callback<Bitmap>> captor2 = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> captor1 = MockitoHelper.callbackCaptor();
+        ArgumentCaptor<Callback<Bitmap>> captor2 = MockitoHelper.callbackCaptor();
 
         // Issue 2 requests for two different URLs.
         mSupplier.fetchImage(url1, mCallback1);
@@ -390,7 +391,7 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.fetchImage(url, mCallback1);
 
         // Observe only one interaction with ImageFetcher.
-        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mImageFetcher, times(1)).fetchImage(any(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher, mCallback1);
 
@@ -413,7 +414,7 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.fetchImage(url, mCallback1);
 
         // Observe only one interaction with ImageFetcher.
-        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mImageFetcher, times(1)).fetchImage(any(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher, mCallback1);
 
@@ -437,7 +438,7 @@ public final class OmniboxImageSupplierUnitTest {
         mSupplier.fetchImage(url, mCallback1);
 
         // Observe only one interaction with ImageFetcher.
-        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Bitmap>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mImageFetcher, times(1)).fetchImage(any(), callbackCaptor.capture());
         verifyNoMoreInteractions(mImageFetcher, mCallback1);
 

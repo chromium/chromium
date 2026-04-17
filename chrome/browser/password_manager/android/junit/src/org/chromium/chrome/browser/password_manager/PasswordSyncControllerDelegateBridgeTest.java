@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /**
  * Tests that bridge calls as invoked by the password sync controller delegate reach the delegate
@@ -74,8 +75,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
     @Test
     public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnFailure() {
         mDelegateBridge.notifyCredentialManagerWhenSyncing(TEST_EMAIL_ADDRESS);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mDelegateMock)
                 .notifyCredentialManagerWhenSyncing(
                         eq(TEST_EMAIL_ADDRESS), any(), failureCallback.capture());
@@ -90,8 +90,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
     @Test
     public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnAPIError() {
         mDelegateBridge.notifyCredentialManagerWhenSyncing(TEST_EMAIL_ADDRESS);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mDelegateMock)
                 .notifyCredentialManagerWhenSyncing(
                         eq(TEST_EMAIL_ADDRESS), any(), failureCallback.capture());
@@ -123,8 +122,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
     public void testNotifyCredentialManagerWhenNotSyncingCallsBridgeOnFailure() {
         // Ensure the delegate is called with a valid failure callback.
         mDelegateBridge.notifyCredentialManagerWhenNotSyncing();
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
 
         verify(mDelegateMock)
                 .notifyCredentialManagerWhenNotSyncing(any(), failureCallback.capture());

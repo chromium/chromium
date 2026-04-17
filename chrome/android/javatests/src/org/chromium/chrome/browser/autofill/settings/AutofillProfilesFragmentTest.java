@@ -122,6 +122,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -1906,7 +1907,7 @@ public class AutofillProfilesFragmentTest {
 
         // Click entity and capture reauth callback.
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
 
         // Simulate successful reauth.
@@ -1955,7 +1956,7 @@ public class AutofillProfilesFragmentTest {
 
         // Click entity and capture reauth callback.
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
-        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
 
         // Simulate failed reauth.

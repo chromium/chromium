@@ -41,6 +41,7 @@ import org.chromium.components.password_manager.core.browser.proto.ListPasswords
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Optional;
 
@@ -86,7 +87,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         mBackendDispatcherBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
-        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(sTestAccount), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
@@ -101,8 +102,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
@@ -118,8 +118,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
@@ -137,8 +136,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
@@ -156,7 +154,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         mBackendDispatcherBridge.getAllLoginsWithBrandingInfo(kTestTaskId, sTestAccountEmail);
-        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAllLoginsWithBrandingInfo(eq(sTestAccount), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
@@ -176,8 +174,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAllLoginsWithBrandingInfo(kTestTaskId, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAllLoginsWithBrandingInfo(eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
@@ -194,8 +191,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
@@ -215,7 +211,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         mBackendDispatcherBridge.getAutofillableLogins(kTestTaskId, null);
-        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAutofillableLogins(eq(Optional.empty()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
@@ -231,8 +227,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAutofillableLogins(kTestTaskId, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAutofillableLogins(eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
@@ -250,7 +245,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid success callback.
         mBackendDispatcherBridge.getLoginsForSignonRealm(
                 kTestTaskId, "https://test_signon_realm.com", null);
-        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getLoginsForSignonRealm(
                         any(), eq(Optional.empty()), successCallback.capture(), any());
@@ -268,8 +263,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getLoginsForSignonRealm(
                 kTestTaskId, "https://test_signon_realm.com", sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getLoginsForSignonRealm(any(), eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
@@ -287,7 +281,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid success callback.
         mBackendDispatcherBridge.getAffiliatedLoginsForSignonRealm(
                 kTestTaskId, "https://test_signon_realm.com", sTestAccountEmail);
-        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<byte[]>> successCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAffiliatedLoginsForSignonRealm(
                         any(), eq(sTestAccount), successCallback.capture(), any());
@@ -311,8 +305,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid failure callback.
         mBackendDispatcherBridge.getAffiliatedLoginsForSignonRealm(
                 kTestTaskId, "https://test_signon_realm.com", sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock)
                 .getAffiliatedLoginsForSignonRealm(
                         any(), eq(sTestAccount), any(), failureCallback.capture());
@@ -347,8 +340,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid failure callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
         mBackendDispatcherBridge.addLogin(kTestTaskId, pwdWithLocalData, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).addLogin(any(), eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
@@ -381,8 +373,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid failure callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
         mBackendDispatcherBridge.updateLogin(kTestTaskId, pwdWithLocalData, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).updateLogin(any(), eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
@@ -415,8 +406,7 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         // Ensure the backend is called with a valid failure callback.
         byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
         mBackendDispatcherBridge.removeLogin(kTestTaskId, pwdSpecificsData, sTestAccountEmail);
-        ArgumentCaptor<Callback<Exception>> failureCallback =
-                ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Exception>> failureCallback = MockitoHelper.callbackCaptor();
         verify(mBackendMock).removeLogin(any(), eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 

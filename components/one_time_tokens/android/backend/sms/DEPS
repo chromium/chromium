@@ -2,3 +2,9 @@ include_rules = [
     "+components/keyed_service/core",
     "+content/public",
 ]
+
+specific_include_rules = {
+  ".*Test\.java": [
+    "+ui/android/javatests/src/org/chromium/ui/test/util",
+  ],
+}
