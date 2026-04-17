@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/ui/views/autofill/at_memory_promo_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -580,6 +582,18 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(
               137, "vizcay@google.com",
               "Triggered after loyalty card autofill suggestions are shown.")));
+
+  // At-Memory Autofill Promo.
+  registry.RegisterFeature(std::move(
+      user_education::FeaturePromoSpecification::CreateForCustomUi(
+          feature_engagement::kIPHAutofillAtMemoryFeature, kOmniboxElementId,
+          user_education::CreateCustomHelpBubbleViewFactoryCallback(
+              base::BindRepeating(&autofill::AtMemoryPromoBubbleView::Create)))
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
+          .SetMetadata(
+              149, "mmaryia@google.com",
+              "Triggered when the user copy-pasted info from another tab "
+              "within a specific time window.")));
 
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
