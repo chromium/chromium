@@ -24,7 +24,6 @@ android_library("core_java") {
     "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
     "java/src/org/chromium/chrome/browser/toolbar/FormFieldFocusedSupplier.java",
     "java/src/org/chromium/chrome/browser/toolbar/KeyboardAccessoryStateSupplier.java",
-    "java/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/LocationBarModel.java",
     "java/src/org/chromium/chrome/browser/toolbar/MenuBuilderHelper.java",
     "java/src/org/chromium/chrome/browser/toolbar/MiniOriginBarController.java",
@@ -375,7 +374,6 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsCheckerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/FormFieldFocusedSupplierTest.java",
-    "java/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandlerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/MiniOriginBarControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarLongPressMenuHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarPositionControllerTest.java",

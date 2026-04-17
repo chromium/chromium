@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -16,8 +16,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -135,8 +133,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     }
 
     /**
-     * @return Whether the scrim should wait to be shown until after the omnibox is done
-     *         animating.
+     * @return Whether the scrim should wait to be shown until after the omnibox is done animating.
      */
     private boolean showScrimAfterAnimationCompletes() {
         return mLocationBarDataProvider.getNewTabPageDelegate().isLocationBarShown();
