@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/setup/daemon_controller_delegate_linux.h"
+#include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
 
 #include <unistd.h>
 
@@ -106,11 +106,13 @@ bool RunHostScript(const std::vector<std::string>& args) {
 
 }  // namespace
 
-DaemonControllerDelegateLinux::DaemonControllerDelegateLinux() = default;
+DaemonControllerDelegateLinuxSingleProcess::
+    DaemonControllerDelegateLinuxSingleProcess() = default;
 
-DaemonControllerDelegateLinux::~DaemonControllerDelegateLinux() = default;
+DaemonControllerDelegateLinuxSingleProcess::
+    ~DaemonControllerDelegateLinuxSingleProcess() = default;
 
-DaemonController::State DaemonControllerDelegateLinux::GetState() {
+DaemonController::State DaemonControllerDelegateLinuxSingleProcess::GetState() {
   base::FilePath script_path;
   if (!GetScriptPath(&script_path)) {
     LOG(ERROR) << "GetScriptPath() failed.";
@@ -146,7 +148,8 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
   }
 }
 
-std::optional<base::DictValue> DaemonControllerDelegateLinux::GetConfig() {
+std::optional<base::DictValue>
+DaemonControllerDelegateLinuxSingleProcess::GetConfig() {
   std::optional<base::DictValue> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!host_config.has_value()) {
@@ -169,13 +172,13 @@ std::optional<base::DictValue> DaemonControllerDelegateLinux::GetConfig() {
   return result;
 }
 
-void DaemonControllerDelegateLinux::CheckPermission(
+void DaemonControllerDelegateLinuxSingleProcess::CheckPermission(
     bool it2me,
     DaemonController::BoolCallback callback) {
   std::move(callback).Run(true);
 }
 
-void DaemonControllerDelegateLinux::SetConfigAndStart(
+void DaemonControllerDelegateLinuxSingleProcess::SetConfigAndStart(
     base::DictValue config,
     bool consent,
     DaemonController::CompletionCallback done) {
@@ -217,7 +220,7 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
   std::move(done).Run(DaemonController::RESULT_OK);
 }
 
-void DaemonControllerDelegateLinux::UpdateConfig(
+void DaemonControllerDelegateLinuxSingleProcess::UpdateConfig(
     base::DictValue config,
     DaemonController::CompletionCallback done) {
   std::optional<base::DictValue> new_config(
@@ -246,7 +249,7 @@ void DaemonControllerDelegateLinux::UpdateConfig(
   std::move(done).Run(result);
 }
 
-void DaemonControllerDelegateLinux::Stop(
+void DaemonControllerDelegateLinuxSingleProcess::Stop(
     DaemonController::CompletionCallback done) {
   std::vector<std::string> args = {"--stop",
                                    "--config=" + GetConfigPath().value()};
@@ -259,7 +262,7 @@ void DaemonControllerDelegateLinux::Stop(
 }
 
 DaemonController::UsageStatsConsent
-DaemonControllerDelegateLinux::GetUsageStatsConsent() {
+DaemonControllerDelegateLinuxSingleProcess::GetUsageStatsConsent() {
   // Crash dump collection is not implemented on Linux yet.
   // http://crbug.com/130678.
   DaemonController::UsageStatsConsent consent;
@@ -269,14 +272,14 @@ DaemonControllerDelegateLinux::GetUsageStatsConsent() {
   return consent;
 }
 
-void DaemonControllerDelegateLinux::set_start_host_after_setup(
+void DaemonControllerDelegateLinuxSingleProcess::set_start_host_after_setup(
     bool start_host) {
   start_host_after_setup = start_host;
 }
 
 scoped_refptr<DaemonController> DaemonController::Create() {
   return new DaemonController(
-      base::WrapUnique(new DaemonControllerDelegateLinux()));
+      base::WrapUnique(new DaemonControllerDelegateLinuxSingleProcess()));
 }
 
 }  // namespace remoting

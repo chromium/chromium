@@ -43,7 +43,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/base/crash/crash_reporting_crashpad.h"
-#include "remoting/host/setup/daemon_controller_delegate_linux.h"
+#include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
 #include "remoting/host/setup/start_host_as_root.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -406,7 +406,8 @@ int StartHostMain(int argc, char** argv) {
     // root and can do complete the setup itself. Since this functionality is
     // Linux-specific, it isn't plumbed through the platform-independent daemon
     // controller code, and must be configured on the Linux delegate explicitly.
-    DaemonControllerDelegateLinux::set_start_host_after_setup(false);
+    DaemonControllerDelegateLinuxSingleProcess::set_start_host_after_setup(
+        false);
     // Remove the switch from the command line to simplify arg count checks.
     command_line->RemoveSwitch("no-start");
   }

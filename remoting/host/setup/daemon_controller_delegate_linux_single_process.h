@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_H_
-#define REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_H_
+#ifndef REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_SINGLE_PROCESS_H_
+#define REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_SINGLE_PROCESS_H_
 
 #include <memory>
 
@@ -11,15 +11,18 @@
 
 namespace remoting {
 
-class DaemonControllerDelegateLinux : public DaemonController::Delegate {
+// DaemonController::Delegate implementation for the single-process Linux host.
+class DaemonControllerDelegateLinuxSingleProcess
+    : public DaemonController::Delegate {
  public:
-  DaemonControllerDelegateLinux();
+  DaemonControllerDelegateLinuxSingleProcess();
 
-  DaemonControllerDelegateLinux(const DaemonControllerDelegateLinux&) = delete;
-  DaemonControllerDelegateLinux& operator=(
-      const DaemonControllerDelegateLinux&) = delete;
+  DaemonControllerDelegateLinuxSingleProcess(
+      const DaemonControllerDelegateLinuxSingleProcess&) = delete;
+  DaemonControllerDelegateLinuxSingleProcess& operator=(
+      const DaemonControllerDelegateLinuxSingleProcess&) = delete;
 
-  ~DaemonControllerDelegateLinux() override;
+  ~DaemonControllerDelegateLinuxSingleProcess() override;
 
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
@@ -43,4 +46,4 @@ class DaemonControllerDelegateLinux : public DaemonController::Delegate {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_H_
+#endif  // REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_SINGLE_PROCESS_H_

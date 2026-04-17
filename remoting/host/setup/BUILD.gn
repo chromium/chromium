@@ -50,8 +50,8 @@ source_set("common") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "daemon_controller_delegate_linux.cc",
-      "daemon_controller_delegate_linux.h",
+      "daemon_controller_delegate_linux_single_process.cc",
+      "daemon_controller_delegate_linux_single_process.h",
     ]
   }
 
