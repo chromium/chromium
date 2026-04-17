@@ -484,8 +484,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
 
-  int max_inflight_resources_ = 0;
-
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
@@ -555,7 +553,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       const gfx::ColorSpace&,
                                       WebGraphicsSharedImageInterfaceProvider*,
                                       Delegate*);
-  ~Canvas2DResourceProviderSharedImage() override = default;
+  ~Canvas2DResourceProviderSharedImage() override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -625,6 +623,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 
   int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -779,6 +778,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
   int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
 };
 
 }  // namespace blink

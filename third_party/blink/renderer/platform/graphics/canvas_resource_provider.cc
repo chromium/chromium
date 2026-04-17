@@ -345,8 +345,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
 }
 
 CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
   if (is_software_) {
     if (shared_image_interface_provider_) {
       shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
@@ -2199,6 +2197,11 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
+Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
+  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
+                             max_inflight_resources_, 20);
+}
+
 CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -2255,7 +2258,10 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                                        /*client=*/nullptr)) {}
 
 CanvasNon2DResourceProviderSharedImage::
-    ~CanvasNon2DResourceProviderSharedImage() = default;
+    ~CanvasNon2DResourceProviderSharedImage() {
+  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
+                             max_inflight_resources_, 20);
+}
 
 void CanvasNon2DResourceProviderSharedImage::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
