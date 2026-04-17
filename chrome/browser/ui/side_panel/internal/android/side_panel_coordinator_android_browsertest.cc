@@ -26,6 +26,10 @@
 #include "ui/base/base_window.h"
 
 namespace {
+using base::android::AttachCurrentThread;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
+
 class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
  public:
   TestSidePanelEntryObserver() = default;
@@ -63,28 +67,42 @@ class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
       reason_for_last_entry_hidden_with_reason_;
 };
 
+// Returns a `SidePanelEntry` that can create a test Android View.
+//
+// `browser` provides the Android Context needed to create the test View.
+//
+// `on_view_created` is an optional callback for tests to be notified of the
+// View.
 std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(
     SidePanelEntryKey key,
-    BrowserWindowInterface* browser) {
+    BrowserWindowInterface* browser,
+    base::RepeatingCallback<void(SidePanelNativeViewAndroid*)> on_view_created =
+        {}) {
   SidePanelEntry::CreateContentCallback create_content_callback =
       base::BindRepeating(
-          [](BrowserWindowInterface* browser, SidePanelEntryScope& scope) {
+          [](BrowserWindowInterface* browser,
+             base::RepeatingCallback<void(SidePanelNativeViewAndroid*)>
+                 on_view_created,
+             SidePanelEntryScope& scope) {
             ui::WindowAndroid* window_android =
                 browser->GetWindow()->GetNativeWindow();
-            base::android::ScopedJavaLocalRef<jobject> java_view =
+            ScopedJavaLocalRef<jobject> java_view =
                 Java_SidePanelCoordinatorAndroidBrowserTestSupport_createTestView(
-                    base::android::AttachCurrentThread(),
-                    window_android->GetJavaObject());
-            return std::make_unique<SidePanelNativeViewAndroid>(
-                base::android::ScopedJavaGlobalRef<jobject>(java_view));
+                    AttachCurrentThread(), window_android->GetJavaObject());
+            auto native_view = std::make_unique<SidePanelNativeViewAndroid>(
+                ScopedJavaGlobalRef<jobject>(java_view));
+
+            if (on_view_created) {
+              on_view_created.Run(native_view.get());
+            }
+
+            return native_view;
           },
-          base::Unretained(browser));
+          base::Unretained(browser), std::move(on_view_created));
 
-  auto default_content_width_callback = base::RepeatingCallback<int()>();
-
-  return std::make_unique<SidePanelEntry>(SidePanelType::kToolbar, key,
-                                          create_content_callback,
-                                          default_content_width_callback);
+  return std::make_unique<SidePanelEntry>(
+      SidePanelType::kToolbar, key, create_content_callback,
+      /*default_content_width_callback=*/base::RepeatingCallback<int()>());
 }
 }  // namespace
 
@@ -185,6 +203,95 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       registry->GetActiveEntryFor(entry_type);
   EXPECT_TRUE(active_entry.has_value());
   EXPECT_EQ(entry_ptr, active_entry.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Show_SidePanelNotCurrentlyShown_CachesEntryView) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  ScopedJavaGlobalRef<jobject> entry_java_view;
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser, /*on_view_created=*/
+                           base::BindRepeating(
+                               [](ScopedJavaGlobalRef<jobject>* java_view,
+                                  SidePanelNativeViewAndroid* native_view) {
+                                 *java_view = native_view->view();
+                               },
+                               base::Unretained(&entry_java_view)));
+  SidePanelEntry* entry_ptr = entry.get();
+
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Act:
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+
+  // Assert:
+  EXPECT_NE(nullptr, entry_ptr->CachedView().get());
+  EXPECT_TRUE(AttachCurrentThread()->IsSameObject(
+      entry_java_view.obj(), entry_ptr->CachedView()->view().obj()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    Show_SidePanelAlreadyShownWithDifferentEntry_CachesEntryViewForBothPreviousAndCurrentEntries) {
+  // Arrange: Register two entries in the tab-scoped registry.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+  auto* registry = SidePanelRegistry::From(active_tab);
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+
+  ScopedJavaGlobalRef<jobject> first_java_view;
+  ScopedJavaGlobalRef<jobject> second_java_view;
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  auto first_entry =
+      CreateSidePanelEntry(first_entry_key, browser,
+                           /*on_view_created=*/
+                           base::BindRepeating(
+                               [](ScopedJavaGlobalRef<jobject>* java_view,
+                                  SidePanelNativeViewAndroid* native_view) {
+                                 *java_view = native_view->view();
+                               },
+                               base::Unretained(&first_java_view)));
+  auto second_entry =
+      CreateSidePanelEntry(second_entry_key, browser,
+                           /*on_view_created=*/
+                           base::BindRepeating(
+                               [](ScopedJavaGlobalRef<jobject>* java_view,
+                                  SidePanelNativeViewAndroid* native_view) {
+                                 *java_view = native_view->view();
+                               },
+                               base::Unretained(&second_java_view)));
+  SidePanelEntry* first_entry_ptr = first_entry.get();
+  SidePanelEntry* second_entry_ptr = second_entry.get();
+  registry->Register(std::move(first_entry));
+  registry->Register(std::move(second_entry));
+
+  // Arrange: Show the first entry.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(first_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+
+  // Act: Show the second entry.
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+
+  // Assert: Both entries should have cached views.
+  JNIEnv* env = AttachCurrentThread();
+  EXPECT_TRUE(env->IsSameObject(first_java_view.obj(),
+                                first_entry_ptr->CachedView()->view().obj()));
+  EXPECT_TRUE(env->IsSameObject(second_java_view.obj(),
+                                second_entry_ptr->CachedView()->view().obj()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -372,6 +479,90 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   std::optional<SidePanelEntry*> active_entry =
       registry->GetActiveEntryFor(entry_type);
   EXPECT_FALSE(active_entry.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    Close_ClearsCachedEntryViewForInactiveEntriesInContextualRegistries) {
+  // Arrange: Register two tab-scoped entries.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  std::unique_ptr<SidePanelEntry> first_entry =
+      CreateSidePanelEntry(first_entry_key, browser);
+  std::unique_ptr<SidePanelEntry> second_entry =
+      CreateSidePanelEntry(second_entry_key, browser);
+  SidePanelEntry* first_entry_ptr = first_entry.get();
+  SidePanelEntry* second_entry_ptr = second_entry.get();
+
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  auto* second_registry = SidePanelRegistry::From(second_tab);
+  first_registry->Register(std::move(first_entry));
+  second_registry->Register(std::move(second_entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Arrange:
+  // Activate the first tab and show the first entry.
+  // Activate the second tab and show the second entry.
+  // Go back to the first tab.
+  // At this point, all entries should have cached Views.
+  tab_list->ActivateTab(first_tab->GetHandle());
+  coordinator->SidePanelUIBase::Show(first_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  tab_list->ActivateTab(second_tab->GetHandle());
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  tab_list->ActivateTab(first_tab->GetHandle());
+  ASSERT_NE(nullptr, first_entry_ptr->CachedView().get());
+  ASSERT_NE(nullptr, second_entry_ptr->CachedView().get());
+
+  // Act: Close the side panel.
+  coordinator->Close(first_entry_ptr->type(),
+                     SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // Assert: Cached Views for the first entry should be cleared.
+  // The second entry should still have its cached View since it's still the
+  // active entry in its registry.
+  EXPECT_EQ(nullptr, first_entry_ptr->CachedView().get());
+  EXPECT_NE(nullptr, second_entry_ptr->CachedView().get());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Close_ClearsCachedEntryViewForWindowRegistry) {
+  // Arrange: Register a window-scoped entry.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* registry = SidePanelRegistry::From(browser);
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  SidePanelEntry* entry_ptr = entry.get();
+  registry->Register(std::move(entry));
+
+  // Arrange: Show the entry.
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_NE(nullptr, entry_ptr->CachedView().get());
+
+  // Act: Close the side panel.
+  coordinator->Close(entry_ptr->type(),
+                     SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // Assert: The cached view should be cleared.
+  EXPECT_EQ(nullptr, entry_ptr->CachedView().get());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
@@ -656,26 +847,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 
   // 2. Prepare a second entry (Glic) that is not available immediately.
   auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
-  SidePanelEntry::CreateContentCallback create_content_callback =
-      base::BindRepeating(
-          [](BrowserWindowInterface* browser, SidePanelEntryScope& scope) {
-            ui::WindowAndroid* window_android =
-                browser->GetWindow()->GetNativeWindow();
-            base::android::ScopedJavaLocalRef<jobject> java_view =
-                Java_SidePanelCoordinatorAndroidBrowserTestSupport_createTestView(
-                    base::android::AttachCurrentThread(),
-                    window_android->GetJavaObject());
-            auto native_view = std::make_unique<SidePanelNativeViewAndroid>(
-                base::android::ScopedJavaGlobalRef<jobject>(java_view));
-            SidePanelUtil::GetSidePanelContentProxy(native_view.get())
-                ->SetAvailable(false);
-            return native_view;
-          },
-          base::Unretained(browser));
-  auto default_content_width_callback = base::RepeatingCallback<int()>();
-  registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelType::kToolbar, second_entry_key, create_content_callback,
-      default_content_width_callback));
+  auto on_view_created =
+      base::BindRepeating([](SidePanelNativeViewAndroid* view) {
+        SidePanelUtil::GetSidePanelContentProxy(view)->SetAvailable(false);
+      });
+  registry->Register(
+      CreateSidePanelEntry(second_entry_key, browser, on_view_created));
 
   // 3. Act: Start showing the second entry (starts loading).
   coordinator->SetNoDelaysForTesting(false);

@@ -92,6 +92,11 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
       SidePanelRegistry* new_contextual_registry) override;
 
  private:
+  // Delegates to `SidePanelRegistry::ClearCachedEntryViews` in all
+  // `SidePanelRegistry` instances accessible from this class, including
+  // the window-scoped registry and all contextual (tab-scoped) registries.
+  void ClearCachedEntryViews(SidePanelType type);
+
   base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
   // The current state of the Side Panel

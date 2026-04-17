@@ -124,6 +124,8 @@ void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
     window_registry->ResetActiveEntryFor(panel_type);
   }
 
+  ClearCachedEntryViews(panel_type);
+
   // TODO(crbug.com/493931023): Record metrics here
   // (SidePanelMetrics::RecordSidePanelClosed).
 
@@ -282,16 +284,29 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   // TOOD(crbug.com/494001968): Handle suppressed animations case.
   state_ = SidePanelState::kShown;
 
-  // If the side panel isn't shown, just show it.
+  // Case 1: If the side panel isn't shown, just show it.
   if (!IsSidePanelShowing(entry->type())) {
     Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
         AttachCurrentThread(), java_coordinator(), native_view->view());
     SetCurrentKey(entry->type(), unique_key);
     entry->OnEntryShown();
+
+    // We need to cache the `native_view` here after its internal Java View has
+    // been populated into the UI. Otherwise, the `native_view` will be
+    // destroyed since `entry->GetContent()` std::moved it. The underlying Java
+    // View will still be alive, since it's in the View hierarchy. Without
+    // caching the `native_view`, a new Java View will be created for the same
+    // entry in cases like switching tabs.
+    //
+    // Note that this is slightly different from the WML `SidePanelCoordinator`.
+    // On WML, when the View is being shown on the UI, the ownership of the View
+    // is transferred to the UI and the cache in `SidePanelEntry` is empty.
+    // When the View is removed from the UI, it'll be put back into the cache.
+    entry->CacheView(std::move(native_view));
     return;
   }
 
-  // Otherwise, replace the UI contents.
+  // Case 2: If the side panel is already shown, replace the UI contents.
   //
   // Note: when we replace the side panel's UI contents, no animation should be
   // played. However, we can't CHECK(suppress_animations) as the side panel
@@ -315,6 +330,13 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   entry->OnEntryShown();
   previous_entry->OnEntryHidden();
   previous_entry->OnEntryHiddenWithReason(previous_entry_hide_reason);
+
+  // Similar to Case 1, we need to cache the `native_view` here.
+  //
+  // Note: we don't clear the cached View for `previous_entry`, regardless of
+  // `previous_entry_hide_reason`. This mirrors the WML `SidePanelCoordinator`
+  // behavior.
+  entry->CacheView(std::move(native_view));
 }
 
 void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
@@ -363,6 +385,20 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
     UniqueKey key{new_contextual_registry->GetTabInterface().GetHandle(),
                   (*new_active_entry)->key()};
     Show(key, SidePanelOpenTrigger::kTabChanged, /*suppress_animations=*/true);
+  }
+}
+
+void SidePanelCoordinatorAndroid::ClearCachedEntryViews(SidePanelType type) {
+  if (auto* window_registry = SidePanelRegistry::From(browser())) {
+    window_registry->ClearCachedEntryViews(type);
+  }
+
+  if (auto* tab_list = TabListInterface::From(browser())) {
+    for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+      if (auto* registry = SidePanelRegistry::From(tab)) {
+        registry->ClearCachedEntryViews(type);
+      }
+    }
   }
 }
 

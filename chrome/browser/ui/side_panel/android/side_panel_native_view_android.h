@@ -17,11 +17,6 @@ class SidePanelNativeViewAndroid : public ui::PropertyHandler {
 
   base::android::ScopedJavaGlobalRef<jobject> view() const { return view_; }
 
-  // Matches the method signature of ScopedJavaGlobalRef::Reset rather than of
-  // views::View. This means call sites must guard with a build flag, but this
-  // is preferred over having to pass a meaningless pointer on Android.
-  void Reset() { view_.Reset(); }
-
  private:
   base::android::ScopedJavaGlobalRef<jobject> view_;
 };

@@ -68,11 +68,7 @@ void SidePanelEntry::CacheView(SidePanelNativeView view) {
 }
 
 void SidePanelEntry::ClearCachedView() {
-#if !BUILDFLAG(IS_ANDROID)
-  content_view_.reset(nullptr);
-#else
-  content_view_->Reset();
-#endif
+  content_view_.reset();
 }
 
 void SidePanelEntry::OnEntryShown() {
