@@ -7,15 +7,16 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -40,9 +41,13 @@ constexpr auto kSkipShowNotificationLanguages =
 
 }  // anonymous namespace
 
-LocaleChangeGuard::LocaleChangeGuard(Profile* profile, PrefService* local_state)
-    : profile_(profile), local_state_(local_state) {
-  DCHECK(profile_);
+LocaleChangeGuard::LocaleChangeGuard(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      profile_(CHECK_DEREF(profile)) {
   DeviceSettingsService::Get()->AddObserver(this);
 }
 
@@ -87,10 +92,6 @@ void LocaleChangeGuard::OwnershipStatusChanged() {
     return;
   }
 
-  if (!local_state_) {
-    return;
-  }
-
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
   std::string owner_locale =
@@ -102,7 +103,7 @@ void LocaleChangeGuard::OwnershipStatusChanged() {
 }
 
 void LocaleChangeGuard::Check() {
-  std::string cur_locale = g_browser_process->GetApplicationLocale();
+  std::string cur_locale = application_locale_storage_->Get();
   if (cur_locale.empty()) {
     NOTREACHED();
   }
@@ -186,7 +187,6 @@ void LocaleChangeGuard::AcceptLocaleChange() {
 
 void LocaleChangeGuard::PrepareChangingLocale(std::string_view from_locale,
                                               std::string_view to_locale) {
-  std::string cur_locale = g_browser_process->GetApplicationLocale();
   if (!from_locale.empty())
     from_locale_ = std::string(from_locale);
   if (!to_locale.empty())
