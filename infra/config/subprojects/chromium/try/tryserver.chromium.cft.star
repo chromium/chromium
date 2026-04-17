@@ -47,6 +47,7 @@ try_.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    siso_remote_linking = True,
 )
 
 try_.builder(
@@ -88,5 +89,5 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
-    execution_timeout = 6 * time.hour,
+    siso_remote_linking = True,
 )
