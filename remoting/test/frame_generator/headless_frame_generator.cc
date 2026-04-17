@@ -85,13 +85,21 @@ bool HeadlessFrameGenerator::Initialize() {
   // escaping is handled correctly, which is especially important on Windows.
   base::CommandLine cmd(base::FilePath(FILE_PATH_LITERAL("vpython3")));
   cmd.AppendArgPath(script_path);
-  cmd.AppendSwitchASCII("scenario", scenario_);
-  cmd.AppendSwitchASCII("width", base::NumberToString(size_.width()));
-  cmd.AppendSwitchASCII("height", base::NumberToString(size_.height()));
-  cmd.AppendSwitchASCII("frames", base::NumberToString(frame_count_));
-  cmd.AppendSwitchASCII("fps", base::NumberToString(fps_));
-  cmd.AppendSwitchPath("out-dir", temp_dir_.GetPath());
-  cmd.AppendSwitchPath("chrome-path", chrome_path);
+
+  // We use AppendArg instead of AppendSwitch because base::CommandLine places
+  // switches before arguments. Since the script path is an argument, using
+  // AppendSwitch would place the script options before the script path, causing
+  // the python interpreter to consume them instead of passing them to the
+  // script.
+  cmd.AppendArg("--scenario=" + scenario_);
+  cmd.AppendArg("--width=" + base::NumberToString(size_.width()));
+  cmd.AppendArg("--height=" + base::NumberToString(size_.height()));
+  cmd.AppendArg("--frames=" + base::NumberToString(frame_count_));
+  cmd.AppendArg("--fps=" + base::NumberToString(fps_));
+  cmd.AppendArg("--out-dir=" + temp_dir_.GetPath().AsUTF8Unsafe());
+  if (!chrome_path.empty()) {
+    cmd.AppendArg("--chrome-path=" + chrome_path.AsUTF8Unsafe());
+  }
 
   VLOG(1) << "Launching frame generator: " << cmd.GetCommandLineString();
 

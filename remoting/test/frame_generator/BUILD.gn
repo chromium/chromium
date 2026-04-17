@@ -2,32 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("frame_generator_test_support") {
-  testonly = true
+if (!is_component_build && (is_win || is_linux)) {
+  source_set("frame_generator_test_support") {
+    testonly = true
 
-  sources = [
-    "differ_frame_generator.cc",
-    "differ_frame_generator.h",
-    "file_frame_generator.cc",
-    "file_frame_generator.h",
-    "frame_generator.h",
-    "headless_frame_generator.cc",
-    "headless_frame_generator.h",
-  ]
+    sources = [
+      "differ_frame_generator.cc",
+      "differ_frame_generator.h",
+      "file_frame_generator.cc",
+      "file_frame_generator.h",
+      "frame_generator.h",
+      "headless_frame_generator.cc",
+      "headless_frame_generator.h",
+    ]
 
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//skia",
-    "//third_party/webrtc/modules/desktop_capture",
-    "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/gfx/codec",
-  ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//skia",
 
-  configs += [ "//third_party/webrtc:common_config" ]
+      # Note: We do not explicitly depend on //third_party/webrtc/modules/desktop_capture
+      # because it restricts visibility to webrtc and webrtc_overrides. We get the
+      # required headers and static linkage via webrtc_component.
+      "//third_party/webrtc_overrides:webrtc_component",
+      "//ui/gfx/codec",
+    ]
 
-  data = [
-    "frame_generator.py",
-    "scenarios/",
-  ]
+    configs += [ "//third_party/webrtc:common_config" ]
+
+    data = [
+      "frame_generator.py",
+      "scenarios/",
+    ]
+  }
+} else {
+  group("frame_generator_test_support") {
+    testonly = true
+  }
 }
