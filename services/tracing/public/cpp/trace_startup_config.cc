@@ -71,6 +71,10 @@ constexpr std::string_view kDefaultStartupCategories[] = {
     "download_service",
     "disabled-by-default-histogram_samples",
     "disabled-by-default-user_action_samples",
+#elif BUILDFLAG(IS_IOS)
+    "startup",       "browser",    "toplevel",
+    "toplevel.flow", "navigation", "loading",
+    "gpu",           "ui",         "disabled-by-default-histogram_samples",
 #else
     "benchmark",     "toplevel",         "startup", "disabled-by-default-file",
     "toplevel.flow", "download_service",
