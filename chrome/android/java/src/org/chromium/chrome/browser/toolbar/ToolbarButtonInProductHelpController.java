@@ -108,7 +108,11 @@ public class ToolbarButtonInProductHelpController {
                                 showPriceTrackingIph(tab);
                                 showPageSummaryIph(tab);
                                 maybeShowNewTabPageThemeCustomizationIph(tab);
-                                maybeShowBackButtonIph(tab);
+                                if (appMenuCoordinator
+                                        .getAppMenuPropertiesDelegate()
+                                        .shouldShowIconRow()) {
+                                    maybeShowBackButtonIph(tab);
+                                }
                             }
 
                             private void handleIphForErrorPageShown(Tab tab) {
