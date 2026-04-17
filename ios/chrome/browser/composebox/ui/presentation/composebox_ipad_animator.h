@@ -28,9 +28,6 @@ enum class ComposeboxMode;
 // Whether the animator is presenting or dismissing.
 @property(nonatomic, assign) BOOL presenting;
 
-// YES if the animator should position its container according to a larger
-// layout.
-@property(nonatomic, assign) BOOL shouldUseLargeLayout;
 
 // YES if AI mode should be immediately turned on during the presentation
 // animation.
