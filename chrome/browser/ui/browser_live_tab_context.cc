@@ -214,8 +214,19 @@ BrowserLiveTabContext::GetGroupIdForSavedGroup(const base::Uuid& saved) const {
 
   const std::optional<tab_groups::SavedTabGroup> saved_group =
       tab_group_service->GetGroup(saved);
+  if (!saved_group || !saved_group->local_group_id().has_value()) {
+    return std::nullopt;
+  }
 
-  return saved_group ? saved_group->local_group_id() : std::nullopt;
+  const tab_groups::TabGroupId& local_group_id =
+      saved_group->local_group_id().value();
+  TabGroupModel* group_model = tab_strip_model_->group_model();
+  // Check that the group is in the current tab strip model.
+  if (group_model && group_model->ContainsTabGroup(local_group_id)) {
+    return local_group_id;
+  }
+
+  return std::nullopt;
 }
 
 bool BrowserLiveTabContext::IsTabPinned(int index) const {
