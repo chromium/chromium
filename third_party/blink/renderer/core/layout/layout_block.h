@@ -191,9 +191,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void Paint(const PaintInfo&) const override;
 
   virtual bool HasLineIfEmpty() const;
-  // Returns baseline offset if we can get |SimpleFontData| from primary font.
-  // Or returns no value if we can't get font data.
-  std::optional<LayoutUnit> BaselineForEmptyLine() const;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

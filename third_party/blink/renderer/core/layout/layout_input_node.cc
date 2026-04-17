@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -190,6 +191,10 @@ PhysicalSize LayoutInputNode::InitialContainingBlockSize() const {
   gfx::Size icb_size =
       GetDocument().GetLayoutView()->GetLayoutSize(kIncludeScrollbars);
   return PhysicalSize(icb_size);
+}
+
+const ComputedStyle& LayoutInputNode::FirstLineStyle() const {
+  return box_->FirstLineStyleRef();
 }
 
 String LayoutInputNode::ToString() const {

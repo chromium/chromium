@@ -367,6 +367,10 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // class B breakpoint), and store it.
   void UpdateEarlyBreakBetweenLines();
 
+  // Returns baseline offset if we can get `SimpleFontData` from the primary
+  // font.
+  std::optional<LayoutUnit> BaselineForEmptyLine() const;
+
   // Propagates the baseline from the given |child| if needed.
   void PropagateBaselineFromLineBox(const PhysicalFragment& child,
                                     LayoutUnit block_offset);

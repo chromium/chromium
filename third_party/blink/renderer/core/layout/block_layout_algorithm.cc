@@ -1219,9 +1219,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     // Test [1][2] require baseline offset for empty editable.
     // [1] css3/flexbox/baseline-for-empty-line.html
     // [2] inline-block/contenteditable-baseline.html
-    const LayoutBlock* const layout_block =
-        To<LayoutBlock>(Node().GetLayoutBox());
-    if (auto baseline_offset = layout_block->BaselineForEmptyLine()) {
+    if (std::optional<LayoutUnit> baseline_offset = BaselineForEmptyLine()) {
       container_builder_.SetBaselines(*baseline_offset);
     }
   }
@@ -3667,6 +3665,26 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   }
 
   return builder.ToConstraintSpace();
+}
+
+std::optional<LayoutUnit> BlockLayoutAlgorithm::BaselineForEmptyLine() const {
+  // TODO(layout-dev): This function should return the distance from the
+  // block-start, not from the line-over.
+  const ComputedStyle& first_line_style = Node().FirstLineStyle();
+  const SimpleFontData* font_data = first_line_style.GetFont()->PrimaryFont();
+  if (!font_data) {
+    return std::nullopt;
+  }
+  const FontMetrics& font_metrics = font_data->GetFontMetrics();
+  const FontBaseline baseline_type = first_line_style.GetFontBaseline();
+  const LayoutUnit line_height = first_line_style.ComputedLineHeightAsFixed();
+  int offset = IsFlippedLinesWritingMode(first_line_style.GetWritingMode())
+                   ? font_metrics.Descent(baseline_type)
+                   : font_metrics.Ascent(baseline_type);
+  LayoutUnit baseline = Borders().block_start + Padding().block_start + offset +
+                        (line_height - font_metrics.Height()) / 2;
+  // TODO(layout-dev): No idea why or whether truncating to int is important.
+  return LayoutUnit(baseline.ToInt());
 }
 
 void BlockLayoutAlgorithm::PropagateBaselineFromLineBox(

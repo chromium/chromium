@@ -221,6 +221,7 @@ class CORE_EXPORT LayoutInputNode {
   LayoutBox* GetLayoutBox() const { return box_.Get(); }
 
   const ComputedStyle& Style() const { return box_->StyleRef(); }
+  const ComputedStyle& FirstLineStyle() const;
 
   bool ShouldApplySizeContainment() const {
     return box_->ShouldApplySizeContainment();
