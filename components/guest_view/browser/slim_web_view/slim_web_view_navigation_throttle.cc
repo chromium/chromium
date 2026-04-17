@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -43,26 +44,18 @@ class SlimWebViewNavigationThrottle : public content::NavigationThrottle {
 
  private:
   ThrottleCheckResult CheckUrl(const GURL& url) {
-    // about:blank is allowed for initialization and internal state resets.
-    if (url.IsAboutBlank()) {
-      return PROCEED;
-    }
-
-    // Only enforce on network navigations. Non-network schemes (e.g.
-    // chrome-error://) may be used for internal error pages.
-    if (!url.SchemeIsHTTPOrHTTPS()) {
-      return PROCEED;
-    }
-
     // Re-lookup the guest each time to avoid holding a raw pointer that could
     // outlive the guest.
     auto* guest =
         SlimWebViewGuest::FromNavigationHandle(navigation_handle());
-    if (!guest || guest->IsUrlAllowed(url)) {
+    CHECK(guest) << "The throttle should only be created if there is a guest "
+                    "associated with the navigation handle.";
+    auto result = guest->IsUrlAllowed(url);
+    if (result.has_value()) {
       return PROCEED;
     }
 
-    DVLOG(2) << "Blocked SlimWebView navigation outside allowlist: " << url;
+    DVLOG(2) << "Blocked SlimWebView navigation: " << result.error();
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 };

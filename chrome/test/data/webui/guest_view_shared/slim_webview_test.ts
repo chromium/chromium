@@ -14,6 +14,7 @@ declare global {
   interface Window {
     canGetLocation: boolean;
     testServerUrl: string;
+    crossOriginUrl: string;
   }
 }
 
@@ -40,6 +41,14 @@ function getTestUrl(url: string): string {
   return resolved.href;
 }
 
+function getCrossOriginUrl(url: string): string {
+  const baseUrl = window.crossOriginUrl;
+  assertTrue(baseUrl.length > 0);
+  const resolved = URL.parse(url, baseUrl);
+  assertTrue(resolved !== null);
+  return resolved.href;
+}
+
 function getOrigin(url: string): string {
   return URL.parse('/', url)!.href;
 }
@@ -52,7 +61,7 @@ async function navigateAndWaitForContentLoad(
 }
 
 function evalOnWebview(
-    webview: SlimWebviewElement, fn: Function, args: any[] = []): Promise<any> {
+    webview: SlimWebviewElement, fn: Function, ...args: any[]): Promise<any> {
   return new Promise(function(resolve, reject) {
     const messageHandler = (e: MessageEvent) => {
       if (e.data.eval === undefined) {
@@ -289,13 +298,58 @@ suite('Requests', function() {
         eventToPromise<LoadAbortEvent>('loadabort', webview);
 
     // Trigger a navigation to a DISALLOWED origin via window.location.
-    evalOnWebview(webview, () => {
-      window.location.href = 'https://www.google.com/';
-    });
+    evalOnWebview(webview, (url: string) => {
+      window.location.href = url;
+    }, getCrossOriginUrl('/simple.html'));
 
     const loadAbortEvent = await loadAbortPromise;
 
     assertEquals('ERR_BLOCKED_BY_CLIENT', loadAbortEvent.reason);
+  });
+
+  test('FetchAllowedCrossOriginSucceeds', async function() {
+    const webview = document.createElement('webview');
+    webview.allowedOrigins = [window.testServerUrl, window.crossOriginUrl];
+    document.body.appendChild(webview);
+
+    await navigateAndWaitForContentLoad(
+        webview, getTestUrl('webui/guest_view_shared/eval_post_message.html'));
+
+    const fetchResult = await evalOnWebview(webview, async (url: string) => {
+      try {
+        await fetch(url);
+        return {success: true};
+      } catch (error: any) {
+        return {success: false};
+      }
+    }, getCrossOriginUrl('/capture-headers'));
+
+    assertTrue(fetchResult.success);
+  });
+
+  test('FetchDisallowedOriginFails', async function() {
+    const webview = document.createElement('webview');
+    webview.allowedOrigins = [window.testServerUrl];
+    document.body.appendChild(webview);
+
+    await navigateAndWaitForContentLoad(
+        webview, getTestUrl('webui/guest_view_shared/eval_post_message.html'));
+
+    const fetchResult = await evalOnWebview(webview, async (url: string) => {
+      try {
+        await fetch(url);
+        return {success: true};
+      } catch (error: any) {
+        return {success: false, error: error.name};
+      }
+    }, getCrossOriginUrl('/capture-headers'));
+
+    assertFalse(fetchResult.success);
+    // The fetch API wraps most errors in a generic `TypeError`, so there is no
+    // more specific error to check for.
+    // However, we don't need to worry about name resolution or network errors,
+    // as the test is configured to resolve the above hostname to 127.0.0.1.
+    assertEquals('TypeError', fetchResult.error);
   });
 
   test('HeadersConfigured', async function() {

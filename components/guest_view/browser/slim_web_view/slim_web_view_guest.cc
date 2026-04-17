@@ -223,17 +223,27 @@ bool SlimWebViewGuest::HasAllowedOrigins() const {
   return !allowed_origins_.empty();
 }
 
-bool SlimWebViewGuest::IsUrlAllowed(const GURL& url) const {
+base::expected<void, std::string> SlimWebViewGuest::IsUrlAllowed(
+    const GURL& url) const {
+  if (!url.is_valid()) {
+    return base::unexpected("URL is not valid.");
+  }
+  if (url.IsAboutBlank()) {
+    return base::ok();
+  }
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return base::unexpected("URL must be https, http, or about:blank.");
+  }
   if (allowed_origins_.empty()) {
-    return true;
+    return base::ok();
   }
   url::Origin candidate_origin = url::Origin::Create(url);
   for (const auto& origin : allowed_origins_) {
     if (origin.IsSameOriginWith(candidate_origin)) {
-      return true;
+      return base::ok();
     }
   }
-  return false;
+  return base::unexpected("URL origin is not allowed.");
 }
 
 SlimWebViewGuest::SlimWebViewGuest(

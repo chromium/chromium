@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
@@ -55,9 +56,9 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   // Returns true if an origin allowlist was provided at creation time.
   bool HasAllowedOrigins() const;
 
-  // Returns true if |url|'s origin matches the allowlist, or if no allowlist
-  // was configured.
-  bool IsUrlAllowed(const GURL& url) const;
+  // Returns an error message if the URL is not allowed, based on scheme and
+  // allowed origins.
+  base::expected<void, std::string> IsUrlAllowed(const GURL& url) const;
 
  private:
   explicit SlimWebViewGuest(content::RenderFrameHost* owner_render_frame_host);

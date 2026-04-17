@@ -4,11 +4,13 @@
 
 #include "components/guest_view/browser/slim_web_view/slim_web_view_url_loader_factory_interceptor.h"
 
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
@@ -84,9 +86,11 @@ class URLLoaderFactoryProxy
           header_client_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
           target_header_client_remote,
-      SlimWebViewGuest* guest)
+      SlimWebViewGuest* guest,
+      bool is_subframe_request)
       : network::SelfDeletingURLLoaderFactory(std::move(loader_receiver)),
-        guest_(guest->GetWeakPtr()) {
+        guest_(guest->GetWeakPtr()),
+        is_subframe_request_(is_subframe_request) {
     target_factory_.Bind(std::move(target_factory));
     target_factory_.set_disconnect_handler(
         base::BindOnce(&URLLoaderFactoryProxy::DisconnectReceiversAndDestroy,
@@ -115,11 +119,23 @@ class URLLoaderFactoryProxy
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
+    if (guest_) {
+      const GURL& url = request.url;
+      if (auto result = guest_->IsUrlAllowed(url); !result.has_value()) {
+        DVLOG(2) << "Blocked SlimWebView request: " << result.error();
+        mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+            ->OnComplete(
+                network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
+        return;
+      }
+    }
+
     auto type = RequestResourceTypeFromResourceRequest(request);
     bool should_add_headers = false;
     if (guest_) {
       const auto& params = guest_->before_send_headers_params();
-      if (params.has_value() && params->resource_types.contains(type)) {
+      if (params.has_value() && params->resource_types.contains(type) &&
+          (params->include_sub_frame_requests || !is_subframe_request_)) {
         should_add_headers = true;
       }
     }
@@ -192,6 +208,7 @@ class URLLoaderFactoryProxy
   }
 
   base::WeakPtr<SlimWebViewGuest> guest_;
+  bool is_subframe_request_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   mojo::Remote<network::mojom::TrustedURLLoaderHeaderClient>
       target_url_loader_header_client_;
@@ -217,13 +234,6 @@ void MaybeInterceptURLLoaderFactoryForSlimWebView(
   if (!guest) {
     return;
   }
-  if (!guest->before_send_headers_params().has_value()) {
-    return;
-  }
-  if (!guest->before_send_headers_params()->include_sub_frame_requests &&
-      render_frame_host->GetParent() != nullptr) {
-    return;
-  }
 
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       target_header_client;
@@ -243,9 +253,10 @@ void MaybeInterceptURLLoaderFactoryForSlimWebView(
   // Insert the proxy factory.
   auto [receiver, remote] = factory_builder.Append();
   // The proxy factory manages its own lifetime.
-  new URLLoaderFactoryProxy(std::move(receiver), std::move(remote),
-                            std::move(header_client_receiver),
-                            std::move(target_header_client), guest);
+  bool is_subframe_request = render_frame_host->GetParent() != nullptr;
+  new URLLoaderFactoryProxy(
+      std::move(receiver), std::move(remote), std::move(header_client_receiver),
+      std::move(target_header_client), guest, is_subframe_request);
 }
 
 }  // namespace guest_view

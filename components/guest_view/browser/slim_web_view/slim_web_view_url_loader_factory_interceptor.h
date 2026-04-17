@@ -22,9 +22,11 @@ class TrustedURLLoaderHeaderClient;
 namespace guest_view {
 
 // Inserts a proxy URLLoaderFactory into the factory builder, if the frame has a
-// SlimWebViewGuest. This proxy intercepts requests that match the
-// `before_send_headers_params` of the SlimWebViewGuest to inject additional
-// headers.
+// SlimWebViewGuest.
+// This proxy implements the following features:
+// - Blocks requests that do not match the allowed origins of the guest.
+// - Intercepts requests that match the `before_send_headers_params` of the
+// SlimWebViewGuest to inject additional headers.
 void MaybeInterceptURLLoaderFactoryForSlimWebView(
     content::RenderFrameHost* render_frame_host,
     network::URLLoaderFactoryBuilder& factory_builder,
