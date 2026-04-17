@@ -259,12 +259,12 @@ public class PlatformAuthEntraTokensReader {
         TRUSTED_PROVIDERS.put(
                 "com.microsoft.windowsintune.companyportal",
                 Base64.decode(
-                        "oIuNoUwMsxC10VneTQXnt/GXN+Pjqd6mpOKEMF/cH3i06K93TZMBWq+fHN/zt4zUe/W6zGj6YLymd1/tGuypNQ==",
+                        "jPpMoaNvcxSLMX4yG4C3Gf86rtTqh33SqpuRKg4WOP+MnnpA52zZgvKLW76U4Cqqf68iaBk9W7k/jhciiSAtgQ==",
                         Base64.DEFAULT));
         TRUSTED_PROVIDERS.put(
                 "com.microsoft.appmanager",
                 Base64.decode(
-                        "5PAhhZNSRRvq7vpTT5vrYJbSLh05AU8USf7oUTS239PEltebX87uGN7GhAe5244lJepwZ5RU4vu8N6ospXVOlg==",
+                        "WhUdh04ZkQLmNb//lKmohyqDdPMWXHcI0O3AvoLMtgF/smnED4r+Vguvgj6d4QG77Jl3avUKt6LeqF2TJPZVzg==",
                         Base64.DEFAULT));
 
         // Note: Certain package names overlap, but unlike `TRUSTED_PROVIDERS` these represent

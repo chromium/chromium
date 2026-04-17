@@ -121,12 +121,15 @@ void EntraProviderAndroid::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-  VLOG_POLICY(2, POLICY_AUTH)
-      << kLogTag << " fetching headers for " << url.spec();
   if (sso_disabled_) {
+    VLOG_POLICY(2, POLICY_AUTH)
+        << kLogTag << " skipping fetching headers for " << url.GetHost()
+        << " because the SSO has been disabled.";
     std::move(callback).Run({});
     return;
   }
+  VLOG_POLICY(2, POLICY_AUTH)
+      << kLogTag << " fetching headers for " << url.spec();
 
   // Binds OnJavaHeadersRead to the main thread with the
   // PlatformAuthProviderManager's callback.
