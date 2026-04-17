@@ -559,81 +559,11 @@ TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
 
 
 
-TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
-  // Disable the proactive nudge
-  compose::Config& config = compose::GetMutableConfigForTesting();
-  config.proactive_nudge_enabled = false;
-  autofill::FormData form_data;
-  form_data.set_url(
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-  form_data.set_fields({autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
-
-  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
-  selected_field_data.set_origin(
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  const autofill::AutofillSuggestionTriggerSource trigger_source =
-      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
-
-  // By default the proactive nudge is disabled.
-  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
-                                           trigger_source));
-
-  // Commit metrics on page navigation.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  // Check that the proactive nudge UKM was still captured.
-  auto ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
-
-  ASSERT_EQ(ukm_entries.size(), 1UL);
-
-  EXPECT_THAT(
-      ukm_entries[0].metrics,
-      testing::UnorderedElementsAre(
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        0),
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
-
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
-              1),
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
-}
 
 
 
-TEST_F(ChromeComposeClientTest,
-       TestShouldTriggerProactiveNudgePageChecksFailUKM) {
-  autofill::FormData form_data;
-  form_data.set_url(GURL("www.example.com"));
-  form_data.set_fields({autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
-  const autofill::AutofillSuggestionTriggerSource trigger_source =
-      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
 
-  // Will fail because field origin does not match page origin.
-  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
-                                           trigger_source));
-
-  // Commit metrics on page navigation.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  // Check that the proactive nudge UKM was not captured.
-  auto ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
-
-  ASSERT_EQ(ukm_entries.size(), 0UL);
-}
 
 TEST_F(ChromeComposeClientTest, TestProactiveNudgeMSBBDisabled) {
   SetPrefsForComposeMSBBState(false);
@@ -658,36 +588,7 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeMSBBDisabled) {
       compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB, 1);
 }
 
-TEST_F(ChromeComposeClientTest, TestComposeShouldTriggerSavedStateNudgeUKM) {
-  autofill::FormData form_data;
-  form_data.set_url(GetPageUrl());
-  form_data.set_fields({autofill::test::CreateTestFormField(
-      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
 
-  const autofill::FormFieldData& selected_field_data =
-      test_api(form_data).field(0);
-  const autofill::AutofillSuggestionTriggerSource trigger_source =
-      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
-
-  // Start a Compose session on selected field.
-  ShowDialogAndBindMojoWithFieldData(selected_field_data);
-
-  // By default the saved state nudge is shown.
-  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
-                                          trigger_source));
-
-  // Commit metrics on page navigation.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  // Check that no proactive nudge UKM was recorded.
-  auto ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
-
-  EXPECT_EQ(ukm_entries.size(), 0UL);
-}
 
 TEST_F(ChromeComposeClientTest, TestComposeRequestTimeout) {
   // Set config such that requests time out immediately.

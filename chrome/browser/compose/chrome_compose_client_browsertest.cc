@@ -36,6 +36,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -433,6 +434,33 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
   testing::NiceMock<optimization_guide::MockRemoteModelExecutor>&
   model_executor() {
     return model_executor_;
+  }
+
+  // Creates a simple FormData with a single textarea field.
+  // We construct this manually instead of using
+  // `autofill::test::CreateTestFormField` because that helper requires
+  // `autofill::test::AutofillBrowserTestEnvironment`.
+  // Instantiating `AutofillBrowserTestEnvironment` in a browser test
+  // introduces a conflicting `ScopedFeatureList` that crashes the test
+  // during teardown.
+  autofill::FormData CreateManualFormData(const GURL& url = GURL()) {
+    autofill::FormData form_data;
+    if (url.is_empty()) {
+      form_data.set_url(browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetPrimaryMainFrame()
+                            ->GetLastCommittedURL());
+    } else {
+      form_data.set_url(url);
+    }
+    autofill::FormFieldData field;
+    field.set_name(u"name0");
+    field.set_id_attribute(u"name0");
+    field.set_value(u"value0");
+    field.set_form_control_type(autofill::FormControlType::kTextArea);
+    form_data.set_fields({field});
+    return form_data;
   }
 
  protected:
@@ -2257,7 +2285,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   FlushPageHandler();
 
   // Also verify that the feedback state is correctly preserved in the session
-  // state (this is an added check not present in the original unit test).
+  // state.
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> initial_state_future;
   page_handler()->RequestInitialState(initial_state_future.GetCallback());
   auto open_metadata = initial_state_future.Take();
@@ -2454,4 +2482,108 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   histograms.ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestShouldTriggerProactiveNudgeDisabledUKM) {
+  // Override country to "us" to ensure it's enabled for proactive nudge.
+  auto country_override = ComposeEnabling::OverrideCountryForTesting("us");
+
+  // Disable the proactive nudge
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = false;
+  autofill::FormData form_data = CreateManualFormData();
+
+  autofill::FormFieldData& selected_field_data =
+      autofill::test_api(form_data).field(0);
+  selected_field_data.set_origin(browser()
+                                     ->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetPrimaryMainFrame()
+                                     ->GetLastCommittedOrigin());
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+
+  // By default the proactive nudge is disabled.
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+
+  // Commit metrics on page navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check that the proactive nudge UKM was still captured.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+              1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestShouldTriggerProactiveNudgePageChecksFailUKM) {
+  autofill::FormData form_data = CreateManualFormData(GURL("www.example.com"));
+
+  autofill::FormFieldData& selected_field_data =
+      autofill::test_api(form_data).field(0);
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+
+  // Will fail because field origin does not match page origin.
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+
+  // Commit metrics on page navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check that the proactive nudge UKM was not captured.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
+
+  ASSERT_EQ(ukm_entries.size(), 0UL);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeShouldTriggerSavedStateNudgeUKM) {
+  autofill::FormData form_data = CreateManualFormData();
+
+  const autofill::FormFieldData& selected_field_data =
+      autofill::test_api(form_data).field(0);
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+
+  // Start a Compose session on selected field.
+  ShowDialogAndBindMojoWithFieldData(selected_field_data);
+
+  // By default the saved state nudge is shown.
+  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
+
+  // Commit metrics on page navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check that no proactive nudge UKM was recorded.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
+
+  EXPECT_EQ(ukm_entries.size(), 0UL);
 }
