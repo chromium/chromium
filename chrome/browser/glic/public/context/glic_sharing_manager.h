@@ -245,6 +245,9 @@ class GlicSharingManager {
   virtual std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
       tabs::TabHandle tab_handle) = 0;
 
+  virtual std::optional<GlicGetContextError> CheckContextSharingEligibility(
+      tabs::TabHandle tab_handle) const = 0;
+
   virtual void GetContextFromTab(
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,

@@ -232,33 +232,43 @@ int32_t GlicSharingManagerImpl::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
   return pinned_tab_manager()->SetMaxPinnedTabs(max_pinned_tabs);
 }
 
-void GlicSharingManagerImpl::GetContextFromTab(
-    tabs::TabHandle tab_handle,
-    const mojom::GetTabContextOptions& options,
-    base::OnceCallback<void(GlicGetContextResult)> callback) {
+std::optional<GlicGetContextError>
+GlicSharingManagerImpl::CheckContextSharingEligibility(
+    tabs::TabHandle tab_handle) const {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab) {
-    std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromTabError::kTabNotFound, "tab not found"}));
-    return;
+    return GlicGetContextError{GlicGetContextFromTabError::kTabNotFound,
+                               "tab not found"};
   }
 
-  const bool is_pinned = pinned_tab_manager()->IsTabPinned(tab_handle);
+  const bool is_pinned = IsTabPinned(tab_handle);
   if (!is_pinned && !IsGlicTabContextEnabled(profile_->GetPrefs())) {
-    std::move(callback).Run(base::unexpected(GlicGetContextError{
+    return GlicGetContextError{
         GlicGetContextFromTabError::
             kPermissionDeniedContextPermissionNotEnabled,
-        "permission denied: context permission not enabled"}));
-    return;
+        "permission denied: context permission not enabled"};
   }
 
   const bool is_focused = focused_tab_manager_->IsTabFocused(tab_handle);
   const bool is_shared = is_focused || is_pinned;
   if (!is_shared || !IsTabValidForSharing(tab->GetContents())) {
-    std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromTabError::kPermissionDenied, "permission denied"}));
+    return GlicGetContextError{GlicGetContextFromTabError::kPermissionDenied,
+                               "permission denied"};
+  }
+
+  return std::nullopt;
+}
+
+void GlicSharingManagerImpl::GetContextFromTab(
+    tabs::TabHandle tab_handle,
+    const mojom::GetTabContextOptions& options,
+    base::OnceCallback<void(GlicGetContextResult)> callback) {
+  if (auto error = CheckContextSharingEligibility(tab_handle)) {
+    std::move(callback).Run(base::unexpected(*error));
     return;
   }
+  tabs::TabInterface* tab = tab_handle.Get();
+  CHECK(tab);
 
   // If tab context was allowed to be extracted, report to metrics.
   // Instance-level metrics for context requests are recorded by the caller
