@@ -243,11 +243,12 @@ bool XRRenderState::HasLayer(XRLayer* layer) const {
 }
 
 void XRRenderState::OnFrameStart() {
+  if (camera_helper_) {
+    camera_helper_->OnFrameStart(base_layer_->session());
+  }
+
   if (base_layer_) {
     base_layer_->OnFrameStart();
-    if (camera_helper_) {
-      camera_helper_->OnFrameStart(base_layer_->session());
-    }
   }
 
   if (layers_) {
@@ -258,11 +259,12 @@ void XRRenderState::OnFrameStart() {
 }
 
 void XRRenderState::OnFrameEnd() {
+  if (camera_helper_) {
+    camera_helper_->OnFrameEnd(base_layer_->session());
+  }
+
   if (base_layer_) {
     base_layer_->OnFrameEndWithoutSubmit();
-    if (camera_helper_) {
-      camera_helper_->OnFrameEnd(base_layer_->session());
-    }
     base_layer_->SubmitLayer();
   }
 
