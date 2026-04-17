@@ -734,9 +734,8 @@ bool AXTreeSerializer<AXSourceNode,
         // In this path, our assumptions in the rest of this method are no
         // longer valid. Abort now so we can recover.
         return false;
-      } else {
-        out_update->node_id_to_clear = tree_->GetId(lca);
       }
+      out_update->node_id_to_clear = tree_->GetId(lca);
     }
   } else {
     // First serialization for this tree, after a changed root, or after a
