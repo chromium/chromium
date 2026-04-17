@@ -1147,21 +1147,6 @@
             ]
         }
     ],
-    "AndroidPageInfoAsAppMenuItem": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidPageInfoAsAppMenuItem"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidParentalControlsV2": [
         {
             "platforms": [
