@@ -746,7 +746,7 @@ void WebGL2RenderingContextBase::readBuffer(GLenum mode) {
     case GL_COLOR_ATTACHMENT0:
       break;
     default:
-      if (mode < GL_COLOR_ATTACHMENT0 && mode > GL_COLOR_ATTACHMENT0 + 31) {
+      if (mode < GL_COLOR_ATTACHMENT0 || mode > GL_COLOR_ATTACHMENT0 + 31) {
         SynthesizeGLError(GL_INVALID_ENUM, "readBuffer", "invalid read buffer");
         return;
       } else if (mode >= static_cast<GLenum>(GL_COLOR_ATTACHMENT0 +
