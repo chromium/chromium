@@ -72,6 +72,15 @@ public class FakeModalDialogManager extends ModalDialogManager {
 
     @Override
     @CalledByNativeForTesting
+    public void dismissAllDialogs(int dismissalCause) {
+        super.dismissAllDialogs(dismissalCause);
+        if (mShownDialogModel != null) {
+            dismissDialog(mShownDialogModel, dismissalCause);
+        }
+    }
+
+    @Override
+    @CalledByNativeForTesting
     public boolean isSuspended(@ModalDialogType int dialogType) {
         return super.isSuspended(dialogType);
     }

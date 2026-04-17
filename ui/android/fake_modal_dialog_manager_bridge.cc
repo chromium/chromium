@@ -132,6 +132,12 @@ bool FakeModalDialogManagerBridge::IsSuspend(
       env, j_fake_manager_, static_cast<int>(dialog_type)));
 }
 
+void FakeModalDialogManagerBridge::DismissAllDialogs(int dismissal_cause) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FakeModalDialogManager_dismissAllDialogs(env, j_fake_manager_,
+                                                dismissal_cause);
+}
+
 // private.
 FakeModalDialogManagerBridge::FakeModalDialogManagerBridge(
     base::android::ScopedJavaLocalRef<jobject> j_fake_manager,

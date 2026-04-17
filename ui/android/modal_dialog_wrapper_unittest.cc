@@ -292,6 +292,38 @@ TEST_F(ModalDialogWrapperTest, CloseDialogFromNative) {
   EXPECT_TRUE(dialog_destroyed_);
 }
 
+// Regression test for crbug.com/502262217.
+TEST_F(ModalDialogWrapperTest, NoCrashOnJavaDismissAfterNativeDestroy) {
+  bool ok_called = false, cancel_called = false, closed = false;
+
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::BindLambdaForTesting([&]() { ok_called = true; }))
+          .WithCancelButton(
+              base::BindLambdaForTesting([&]() { cancel_called = true; }))
+          .WithCloseAction(base::BindLambdaForTesting([&]() { closed = true; }))
+          .Build();
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  ModalDialogWrapper* wrapper = ModalDialogWrapper::GetDialogForTesting();
+  base::android::ScopedJavaGlobalRef<jobject> java_obj = wrapper->java_obj_;
+
+  // Destroy the native wrapper. This should clear the native pointer on the
+  // Java side.
+  delete wrapper;
+
+  // Simulate the Java side dismissing the dialog.
+  // 1 corresponds to DialogDismissalCause.POSITIVE_BUTTON_CLICKED.
+  fake_dialog_manager_->DismissAllDialogs(1);
+
+  // We expect no crash to occur here.
+  EXPECT_FALSE(ok_called);
+  EXPECT_FALSE(cancel_called);
+  EXPECT_FALSE(closed);
+  EXPECT_TRUE(dialog_destroyed_);
+}
+
 TEST_F(ModalDialogWrapperTest, ModalButtonsDefaultPrimaryProminent) {
   auto dialog_model = DialogModelBuilder(&dialog_destroyed_).Build();
 

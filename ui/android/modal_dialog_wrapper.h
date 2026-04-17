@@ -67,6 +67,8 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
   FRIEND_TEST_ALL_PREFIXES(ModalDialogWrapperTest, CloseDialogFromNative);
   FRIEND_TEST_ALL_PREFIXES(ModalDialogWrapperTest,
                            MenuItem_CallbackDismissesDialog);
+  FRIEND_TEST_ALL_PREFIXES(ModalDialogWrapperTest,
+                           NoCrashOnJavaDismissAfterNativeDestroy);
 
   ModalDialogWrapper(std::unique_ptr<ui::DialogModel> dialog_model,
                      ui::WindowAndroid* window_android);

@@ -35,7 +35,7 @@ import java.util.ArrayList;
 @NullMarked
 public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     /** The native-side counterpart of this class */
-    private final long mNativeDelegatePtr;
+    private long mNativeDelegatePtr;
 
     private final @Nullable ModalDialogManager mModalDialogManager;
 
@@ -48,6 +48,12 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     @CalledByNative
     private static ModalDialogWrapper create(long nativeDelegatePtr, WindowAndroid window) {
         return new ModalDialogWrapper(nativeDelegatePtr, window);
+    }
+
+    @CalledByNative
+    private void clearNativePtr() {
+        assert mNativeDelegatePtr != 0;
+        mNativeDelegatePtr = 0;
     }
 
     private ModalDialogWrapper(long nativeDelegatePtr, WindowAndroid window) {
@@ -175,6 +181,8 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+        if (mNativeDelegatePtr == 0) return;
+
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 ModalDialogWrapperJni.get().positiveButtonClicked(mNativeDelegatePtr);

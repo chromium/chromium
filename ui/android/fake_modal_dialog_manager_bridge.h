@@ -51,6 +51,8 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
 
   bool IsSuspend(ModalDialogManagerBridge::ModalDialogType dialog_type);
 
+  void DismissAllDialogs(int dismissal_cause);
+
  private:
   FakeModalDialogManagerBridge(
       base::android::ScopedJavaLocalRef<jobject> j_fake_manager_,

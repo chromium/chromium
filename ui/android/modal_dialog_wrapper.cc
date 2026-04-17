@@ -71,6 +71,8 @@ ModalDialogWrapper::ModalDialogWrapper(
 
 ModalDialogWrapper::~ModalDialogWrapper() {
   dialog_model_->OnDialogDestroying(DialogModelHost::GetPassKey());
+  Java_ModalDialogWrapper_clearNativePtr(base::android::AttachCurrentThread(),
+                                         java_obj_);
 }
 
 namespace {  // private helper for ModalDialogWrapper::BuildPropertyModel
