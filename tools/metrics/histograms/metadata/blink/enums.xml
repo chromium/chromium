@@ -6512,6 +6512,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5870" label="WebAuthnConditionalCreate"/>
   <int value="5871" label="WebAuthnConditionalCreateSuccess"/>
   <int value="5872" label="AdScriptMainFrameNavigationWithoutUserGesture"/>
+  <int value="5873" label="FocusWithoutUserActivationAllowedByPolicy"/>
+  <int value="5874" label="FocusWithoutUserActivationAllowedByDescendant"/>
+  <int value="5875" label="FocusWithoutUserActivationBlocked"/>
+  <int value="5876" label="FocusWithoutUserActivationPolicySet"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -5187,6 +5187,10 @@ enum WebFeature {
   kWebAuthnConditionalCreate = 5870,
   kWebAuthnConditionalCreateSuccess = 5871,
   kAdScriptMainFrameNavigationWithoutUserGesture = 5872,
+  kFocusWithoutUserActivationAllowedByPolicy = 5873,
+  kFocusWithoutUserActivationAllowedByDescendant = 5874,
+  kFocusWithoutUserActivationBlocked = 5875,
+  kFocusWithoutUserActivationPolicySet = 5876,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

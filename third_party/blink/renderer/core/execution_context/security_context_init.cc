@@ -184,6 +184,25 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     container_policy = frame_policy.container_policy;
   }
 
+  if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled(
+          execution_context_)) {
+    // Track when the focus-without-user-activation policy is declared via any
+    // source: iframe allow attribute, Permissions-Policy header, or
+    // Permissions-Policy-Report-Only header.
+    if (IsFeatureDeclared(network::mojom::PermissionsPolicyFeature::
+                              kFocusWithoutUserActivation,
+                          container_policy) ||
+        IsFeatureDeclared(network::mojom::PermissionsPolicyFeature::
+                              kFocusWithoutUserActivation,
+                          permissions_policy_header_) ||
+        IsFeatureDeclared(network::mojom::PermissionsPolicyFeature::
+                              kFocusWithoutUserActivation,
+                          parsed_report_only_permissions_policy_header)) {
+      UseCounter::Count(execution_context_,
+                        WebFeature::kFocusWithoutUserActivationPolicySet);
+    }
+  }
+
   // DocumentLoader applied the sandbox flags before calling this function, so
   // they are accessible here.
   auto sandbox_flags = execution_context_->GetSandboxFlags();

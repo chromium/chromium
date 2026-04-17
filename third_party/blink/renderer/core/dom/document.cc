@@ -9574,6 +9574,7 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
   }
   CountUse(uma_type);
 
+  // All logic below is part of the BlockingFocusWithoutUserActivation feature.
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled(
           GetExecutionContext())) {
     return true;
@@ -9582,12 +9583,14 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
   if (trigger == FocusTrigger::kUserGesture) {
     return true;
   }
+
   // Check the focus setter's permissions policy to see if it allows focus
   // without user activation.
   const ExecutionContext* initiator_context = initiator_frame.DomWindow();
   if (initiator_context && initiator_context->IsFeatureEnabled(
                                network::mojom::PermissionsPolicyFeature::
                                    kFocusWithoutUserActivation)) {
+    CountUse(WebFeature::kFocusWithoutUserActivationAllowedByPolicy);
     return true;
   }
 
@@ -9601,6 +9604,7 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
     Frame* focused_frame =
         page->GetFocusController().FocusedFrameIncludingRemote();
     if (focused_frame && focused_frame->IsDescendantOf(&initiator_frame)) {
+      CountUse(WebFeature::kFocusWithoutUserActivationAllowedByDescendant);
       return true;
     }
   }
@@ -9610,6 +9614,7 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
       "Blocked focus call from a frame because its "
       "'focus-without-user-activation' permissions policy is denied."));
 
+  CountUse(WebFeature::kFocusWithoutUserActivationBlocked);
   return false;
 }
 

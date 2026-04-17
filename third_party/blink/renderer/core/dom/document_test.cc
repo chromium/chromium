@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
@@ -2296,6 +2298,178 @@ TEST_F(DocumentTest, ParseHTMLSanitizerException) {
     EXPECT_EQ(doc, nullptr);
     EXPECT_TRUE(exception_state.HadException());
   }
+}
+
+class DocumentFocusUseCounterTest : public DocumentSimTest {
+ protected:
+  void SetUpChildFrame(const char* allow_attribute) {
+    SetUpChildFrameWithHeader(allow_attribute, nullptr, nullptr);
+  }
+
+  void SetUpChildFrameWithHeader(
+      const char* allow_attribute,
+      const char* permissions_policy_header,
+      const char* report_only_permissions_policy_header = nullptr) {
+    std::string iframe_tag = "<iframe src=\"https://example.com/child.html\"";
+    if (allow_attribute) {
+      iframe_tag += " allow=\"";
+      iframe_tag += allow_attribute;
+      iframe_tag += "\"";
+    }
+    iframe_tag += "></iframe>";
+
+    SimRequest main_resource("https://example.com/test.html", "text/html");
+    SimRequestBase::Params child_params;
+    if (permissions_policy_header) {
+      child_params.response_http_headers.Set(String("Permissions-Policy"),
+                                             String(permissions_policy_header));
+    }
+    if (report_only_permissions_policy_header) {
+      child_params.response_http_headers.Set(
+          String("Permissions-Policy-Report-Only"),
+          String(report_only_permissions_policy_header));
+    }
+    SimRequest child_resource("https://example.com/child.html", "text/html",
+                              std::move(child_params));
+    LoadURL("https://example.com/test.html");
+    main_resource.Complete(String("<!DOCTYPE html>") + iframe_tag.c_str());
+    child_resource.Complete(R"HTML(
+      <!DOCTYPE html>
+      <input id="target">
+    )HTML");
+    Compositor().BeginFrame();
+  }
+
+  LocalFrame* ChildFrame() {
+    return To<LocalFrame>(GetDocument().GetFrame()->FirstChild());
+  }
+
+  Document* ChildDocument() { return ChildFrame()->GetDocument(); }
+};
+
+TEST_F(DocumentFocusUseCounterTest, Blocked) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationBlocked));
+
+  // Call IsFocusAllowed on the child document with the child frame as
+  // initiator. Since the main frame has focus (not a descendant of child)
+  // and policy is disabled, focus should be blocked.
+  EXPECT_FALSE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationBlocked));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+}
+
+TEST_F(DocumentFocusUseCounterTest, AllowedByPolicy) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation");
+
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+
+  EXPECT_TRUE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationBlocked));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+}
+
+TEST_F(DocumentFocusUseCounterTest, AllowedByDescendant) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+
+  // Set focus to the child frame so that the focused frame is the child,
+  // which is an inclusive descendant of the initiator (also the child).
+  ChildDocument()->GetPage()->GetFocusController().SetFocusedFrame(
+      ChildFrame());
+
+  EXPECT_TRUE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationBlocked));
+}
+
+TEST_F(DocumentFocusUseCounterTest, NotFiredWithFeatureDisabled) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(false);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+
+  ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame());
+
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationBlocked));
+}
+
+TEST_F(DocumentFocusUseCounterTest, PolicySetViaAllow) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationPolicySet));
+}
+
+TEST_F(DocumentFocusUseCounterTest, PolicySetViaAllowAllowed) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame("focus-without-user-activation");
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationPolicySet));
+}
+
+TEST_F(DocumentFocusUseCounterTest, PolicySetViaHeader) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrameWithHeader(nullptr, "focus-without-user-activation=()");
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationPolicySet));
+}
+
+TEST_F(DocumentFocusUseCounterTest, PolicySetViaReportOnlyHeader) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrameWithHeader(nullptr, nullptr,
+                            "focus-without-user-activation=()");
+
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationPolicySet));
+}
+
+TEST_F(DocumentFocusUseCounterTest, PolicyNotSet) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(true);
+  SetUpChildFrame(nullptr);
+
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationPolicySet));
+}
+
+TEST_F(DocumentFocusUseCounterTest, PolicySetNotFiredWithFeatureDisabled) {
+  ScopedBlockingFocusWithoutUserActivationForTest feature(false);
+  SetUpChildFrame("focus-without-user-activation 'none'");
+
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationPolicySet));
 }
 
 }  // namespace blink
