@@ -226,6 +226,11 @@ BrowserSavePasswordProgressLogger::BrowserSavePasswordProgressLogger(
 BrowserSavePasswordProgressLogger::~BrowserSavePasswordProgressLogger() =
     default;
 
+void BrowserSavePasswordProgressLogger::LogValue(StringID label,
+                                                 const base::Value& log) {
+  autofill::SavePasswordProgressLogger::LogValue(label, log);
+}
+
 void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
     const autofill::FormData& form,
     const base::flat_map<FieldGlobalId, AutofillServerPrediction>&

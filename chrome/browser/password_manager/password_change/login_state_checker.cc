@@ -11,6 +11,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
+#include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -25,10 +26,12 @@
 
 namespace {
 
-using autofill::SavePasswordProgressLogger;
-using password_manager::BrowserSavePasswordProgressLogger;
-using QualityStatus = optimization_guide::proto::
-    PasswordChangeQuality_StepQuality_SubmissionStatus;
+using Logger = password_manager::BrowserSavePasswordProgressLogger;
+using SavePasswordProgressLogger = autofill::SavePasswordProgressLogger;
+using password_change::LogBoolean;
+using password_change::LogMessage;
+using password_change::LogNumber;
+using password_change::LogResponse;
 
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kLoginCheckStep = optimization_guide::proto::PasswordChangeRequest::
@@ -41,35 +44,6 @@ constexpr optimization_guide::proto::IsLoggedInResponseData::ErrorCase
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   return optimization_guide::DefaultAIPageContentOptions(
       /* on_critical_path =*/false);
-}
-
-void LogMessage(password_manager::PasswordManagerClient* client,
-                autofill::SavePasswordProgressLogger::StringID message_id) {
-  if (client && client->GetCurrentLogManager() &&
-      client->GetCurrentLogManager()->IsLoggingActive()) {
-    BrowserSavePasswordProgressLogger(client->GetCurrentLogManager())
-        .LogMessage(message_id);
-  }
-}
-
-void LogBoolean(password_manager::PasswordManagerClient* client,
-                autofill::SavePasswordProgressLogger::StringID message_id,
-                bool value) {
-  if (client && client->GetCurrentLogManager() &&
-      client->GetCurrentLogManager()->IsLoggingActive()) {
-    BrowserSavePasswordProgressLogger(client->GetCurrentLogManager())
-        .LogBoolean(message_id, value);
-  }
-}
-
-void LogNumber(password_manager::PasswordManagerClient* client,
-               autofill::SavePasswordProgressLogger::StringID message_id,
-               int error_enum) {
-  if (client && client->GetCurrentLogManager() &&
-      client->GetCurrentLogManager()->IsLoggingActive()) {
-    BrowserSavePasswordProgressLogger(client->GetCurrentLogManager())
-        .LogNumber(message_id, error_enum);
-  }
 }
 
 }  // namespace
@@ -185,6 +159,7 @@ void LoginStateChecker::OnExecutionResponseCallback(
   LogMessage(
       client_,
       SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED);
+
   if (!execution_result.response.has_value()) {
     LogNumber(client_,
               SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_SERVER_ERROR,
@@ -197,7 +172,11 @@ void LoginStateChecker::OnExecutionResponseCallback(
       optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::PasswordChangeResponse>(
           execution_result.response.value());
-  if (!response) {
+
+  if (response) {
+    LogResponse(client_, autofill::SavePasswordProgressLogger::STRING_MESSAGE,
+                *response);
+  } else {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
     TerminateLoginChecks();

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -30,18 +31,7 @@
 namespace {
 
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
-
-std::unique_ptr<Logger> GetLoggerIfAvailable(
-    password_manager::PasswordManagerClient* client) {
-  if (!client) {
-    return nullptr;
-  }
-  autofill::LogManager* log_manager = client->GetCurrentLogManager();
-  if (log_manager && log_manager->IsLoggingActive()) {
-    return std::make_unique<Logger>(log_manager);
-  }
-  return nullptr;
-}
+using password_change::LogMessage;
 
 void RecordStabilityWaitDuration(base::Time start_time) {
   base::UmaHistogramTimes(
@@ -70,10 +60,7 @@ PasswordChangePageStabilityWaiter::PasswordChangePageStabilityWaiter(
 }
 
 void PasswordChangePageStabilityWaiter::StartWaiting() {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(
-        Logger::STRING_PASSWORD_CHANGE_STABILITY_MONITOR_STARTED);
-  }
+  LogMessage(client_, Logger::STRING_PASSWORD_CHANGE_STABILITY_MONITOR_STARTED);
 
   if (web_contents()->IsLoading()) {
     return;
@@ -150,20 +137,16 @@ void PasswordChangePageStabilityWaiter::CheckVisualState() {
 }
 
 void PasswordChangePageStabilityWaiter::OnAllChecksCompleted() {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(
-        Logger::STRING_PASSWORD_CHANGE_STABILITY_MONITOR_SUCCEEDED);
-  }
+  LogMessage(client_,
+             Logger::STRING_PASSWORD_CHANGE_STABILITY_MONITOR_SUCCEEDED);
   if (callback_) {
     std::move(callback_).Run();
   }
 }
 
 void PasswordChangePageStabilityWaiter::OnTimeout() {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(
-        Logger::STRING_PASSWORD_CHANGE_STABILITY_MONITOR_TIMED_OUT);
-  }
+  LogMessage(client_,
+             Logger::STRING_PASSWORD_CHANGE_STABILITY_MONITOR_TIMED_OUT);
   // Even if disconnected, we invoke the callback unconditionally so that we
   // don't leave callers hanging forever in case of mojo errors.
   if (callback_) {

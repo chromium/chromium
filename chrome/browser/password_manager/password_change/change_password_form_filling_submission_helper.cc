@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/form_filling_helper.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
+#include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -34,6 +35,10 @@ namespace {
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 using SubmissionResult =
     ChangePasswordFormFillingSubmissionHelper::SubmissionResult;
+using password_change::LogBoolean;
+using password_change::LogMessage;
+using password_change::LogResponse;
+using password_change::LogString;
 
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kSubmitFormFlowStep = optimization_guide::proto::PasswordChangeRequest::
@@ -55,20 +60,6 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   }
   options->include_same_site_only = true;
   return options;
-}
-
-std::unique_ptr<Logger> GetLoggerIfAvailable(
-    password_manager::PasswordManagerClient* client) {
-  if (!client) {
-    return nullptr;
-  }
-
-  autofill::LogManager* log_manager = client->GetCurrentLogManager();
-  if (log_manager && log_manager->IsLoggingActive()) {
-    return std::make_unique<Logger>(log_manager);
-  }
-
-  return nullptr;
 }
 
 FormFillingHelper::FillingTasks PrepareFormForFilling(
@@ -206,18 +197,16 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
   observed_fields_.push_back(autofill::FieldGlobalId{
       form.form_data.host_frame(), form.new_password_element_renderer_id});
 
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogString(
-        Logger::STRING_PASSWORD_CHANGE_CURRENT_PASSWORD_RENDERER_ID,
-        base::NumberToString(form.password_element_renderer_id.value()));
-    logger->LogString(
-        Logger::STRING_PASSWORD_CHANGE_NEW_PASSWORD_RENDERER_ID,
-        base::NumberToString(form.new_password_element_renderer_id.value()));
-    logger->LogString(
-        Logger::STRING_PASSWORD_CHANGE_CONFIRMATION_PASSWORD_RENDERER_ID,
-        base::NumberToString(
-            form.confirmation_password_element_renderer_id.value()));
-  }
+  LogString(client_,
+            Logger::STRING_PASSWORD_CHANGE_CURRENT_PASSWORD_RENDERER_ID,
+            base::NumberToString(form.password_element_renderer_id.value()));
+  LogString(
+      client_, Logger::STRING_PASSWORD_CHANGE_NEW_PASSWORD_RENDERER_ID,
+      base::NumberToString(form.new_password_element_renderer_id.value()));
+  LogString(client_,
+            Logger::STRING_PASSWORD_CHANGE_CONFIRMATION_PASSWORD_RENDERER_ID,
+            base::NumberToString(
+                form.confirmation_password_element_renderer_id.value()));
 
   auto filling_callback = base::BindOnce(
       &ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled,
@@ -266,10 +255,8 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
             password_manager::kMaxSingleUsernameFieldsToStore));
   }
 
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT,
-                       provisionally_saved);
-  }
+  LogBoolean(client_, Logger::STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT,
+             provisionally_saved);
 
   if (!provisionally_saved) {
     if (logs_uploader_) {
@@ -319,11 +306,9 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
 
 void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
     optimization_guide::AIPageContentResultOrError content) {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(
-        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED,
-        content.has_value());
-  }
+  LogBoolean(client_,
+             Logger::STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED,
+             content.has_value());
   if (!content.has_value()) {
     LogPageContentCaptureFailure(password_manager::metrics_util::
                                      PasswordChangeFlowStep::kSubmitFormStep);
@@ -362,6 +347,9 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     response = optimization_guide::ParsedAnyMetadata<
         optimization_guide::proto::PasswordChangeResponse>(
         execution_result.response.value());
+    if (response) {
+      LogResponse(client_, Logger::STRING_MESSAGE, *response);
+    }
   }
   if (logs_uploader_) {
     logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data));
@@ -414,10 +402,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnTimeout() {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(Logger::STRING_AUTOMATED_PASSWORD_CHANGE_TIMEOUT);
-  }
-
+  LogMessage(client_, Logger::STRING_AUTOMATED_PASSWORD_CHANGE_TIMEOUT);
   std::move(callback_).Run(base::unexpected(SubmissionError::kTimeout));
 }
 
@@ -429,9 +414,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnChangePasswordFormFound(
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
 
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_FOUND);
-  }
+  LogMessage(client_, Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_FOUND);
 
   form_manager_ = form_manager->Clone();
   TriggerFilling(*form_manager->GetParsedObservedForm(),

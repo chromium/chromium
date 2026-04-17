@@ -90,6 +90,7 @@ class PasswordChangeSubmissionVerifier {
 
   const base::Time creation_time_;
   const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<password_manager::PasswordManagerClient> client_;
   std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
   FormSubmissionVerificationResultCallback callback_;

@@ -41,6 +41,8 @@ class BrowserSavePasswordProgressLogger
       const BrowserSavePasswordProgressLogger&) = delete;
   ~BrowserSavePasswordProgressLogger() override;
 
+  void LogValue(StringID label, const base::Value& log);
+
   // Sanitizes `form` input and passes it to `SendLog` to display with matching
   // server `predictions`.
   void LogFormDataWithServerPredictions(

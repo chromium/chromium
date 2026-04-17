@@ -26,6 +26,8 @@ source_set("password_change") {
     "login_state_checker.h",
     "model_quality_logs_uploader.cc",
     "model_quality_logs_uploader.h",
+    "password_change_logging_util.cc",
+    "password_change_logging_util.h",
     "password_change_page_stability_waiter.cc",
     "password_change_page_stability_waiter.h",
     "password_change_submission_verifier.cc",
