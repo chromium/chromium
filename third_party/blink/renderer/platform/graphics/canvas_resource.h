@@ -61,9 +61,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   using LastUnrefCallback = base::OnceCallback<void(
       scoped_refptr<blink::CanvasResource> canvas_resource)>;
 
-  static void OnPlaceholderReleasedResource(
-      scoped_refptr<CanvasResource> resource);
-
   // Returns true if this instance creates TransferableResources for usage with
   // GPU compositing.
   virtual bool CreatesAcceleratedTransferableResources() const = 0;
@@ -147,6 +144,7 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
  private:
   friend class CanvasResourceProviderTest;
   friend class WebGPUMailboxTexture;
+  friend class ExportedCanvasResource;
 
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;

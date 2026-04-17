@@ -157,7 +157,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
       !agent_group_scheduler_compositor_task_runner_) {
     // Inform the resource that the placeholder ref was released so it can do
     // any appropriate cleanup/recycling.
-    CanvasResource::OnPlaceholderReleasedResource(std::move(canvas_resource));
+    CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
     return;
   }
 
@@ -173,8 +173,10 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
     // The previous unposted resource becomes obsolete now.
     // Inform the resource that the placeholder ref was released so it can do
     // any appropriate cleanup/recycling.
-    CanvasResource::OnPlaceholderReleasedResource(
-        std::move(latest_unposted_resource_));
+    if (latest_unposted_resource_) {
+      CanvasResource::DropRefOnOwningThread(
+          std::move(latest_unposted_resource_));
+    }
 
     latest_unposted_resource_ = std::move(canvas_resource);
   }

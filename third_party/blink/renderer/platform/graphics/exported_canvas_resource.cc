@@ -11,19 +11,33 @@ namespace blink {
 
 ExportedCanvasResource::ExportedCanvasResource(
     scoped_refptr<CanvasResource> resource)
-    : resource_(std::move(resource)) {}
+    : resource_(std::move(resource)) {
+  CHECK(resource_);
+}
 
 ExportedCanvasResource::~ExportedCanvasResource() = default;
 
 // static
 void ExportedCanvasResource::OnPlaceholderReleasedResource(
-    scoped_refptr<ExportedCanvasResource>&& resource) {
-  if (!resource) {
+    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
+  if (!exported_resource) {
     return;
   }
 
-  CHECK(resource->HasOneRef());
-  CanvasResource::OnPlaceholderReleasedResource(std::move(resource->resource_));
+  CHECK(exported_resource->HasOneRef());
+
+  scoped_refptr<CanvasResource> canvas_resource =
+      std::move(exported_resource->resource_);
+
+  if (canvas_resource->is_cross_thread()) {
+    auto& owning_thread_task_runner =
+        canvas_resource->owning_thread_task_runner_;
+    owning_thread_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&CanvasResource::DropRefOnOwningThread,
+                                  std::move(canvas_resource)));
+  } else {
+    CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
+  }
 }
 
 gfx::Size ExportedCanvasResource::Size() const {

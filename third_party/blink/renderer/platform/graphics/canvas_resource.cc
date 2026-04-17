@@ -114,22 +114,6 @@ void CanvasResource::ReleaseFrameResources(
 }
 
 // static
-void CanvasResource::OnPlaceholderReleasedResource(
-    scoped_refptr<CanvasResource> resource) {
-  if (!resource) {
-    return;
-  }
-
-  if (resource->is_cross_thread()) {
-    auto& owning_thread_task_runner = resource->owning_thread_task_runner_;
-    owning_thread_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&DropRefOnOwningThread, std::move(resource)));
-  } else {
-    DropRefOnOwningThread(std::move(resource));
-  }
-}
-
-// static
 void CanvasResource::DropRefOnOwningThread(
     scoped_refptr<CanvasResource> resource) {
   CHECK(resource);
