@@ -201,23 +201,46 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   if (!are_cleanups_pending_ || ShouldWaitForSync(sync_service_)) {
     return;
   }
+
+  // Since deduplication (more specifically, comparing profiles) depends on the
+  // `AlternativeStateNameMap`, make sure that it gets populated first.
+  if (alternative_state_name_map_updater_ &&
+      !alternative_state_name_map_updater_
+           ->is_alternative_state_name_map_populated()) {
+    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
+        base::BindOnce(&AddressDataCleaner::MaybeCleanupAddressData,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   are_cleanups_pending_ = false;
 
-  int chrome_version_major = version_info::GetMajorVersionNumberAsInt();
+  // Accumulates the local changes applied to profiles during cleanup routines
+  // (e.g. deduplication or phonetic name migration). Modifying them
+  // directly won't update them in the database and calling
+  // `PDM:UpdateProfile()` would discard them as a duplicate.
+  const std::vector<AutofillProfile> profiles = base::ToVector(
+      address_data_manager_->GetProfiles(
+          AddressDataManager::ProfileOrder::kHighestFrecencyDesc),
+      [](const AutofillProfile* profile) { return *profile; });
+
+  // Disused profiles are deleted on every browser start.
+  DeleteDisusedAddresses(profiles);
+
+  // Profiles with an eligible name are migrated to a phonetic name on every
+  // browser start.
+  MigratePhoneticNames(profiles);
+
   // Ensure that deduplication is only run once per milestone, unless it is
   // explicitly always enabled.
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
-          chrome_version_major ||
+          version_info::GetMajorVersionNumberAsInt() ||
       base::FeatureList::IsEnabled(
           features::debug::kAutofillSkipDeduplicationRequirements)) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
-                              chrome_version_major);
-    ApplyDeduplicationRoutine();
+                              version_info::GetMajorVersionNumberAsInt());
+    ApplyDeduplicationRoutine(profiles);
   }
-
-  // Other cleanups are performed on every browser start.
-  MigratePhoneticNames();
-  DeleteDisusedAddresses();
 }
 
 // static
@@ -233,52 +256,32 @@ AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
       });
 }
 
-void AddressDataCleaner::ApplyDeduplicationRoutine() {
-  // Since deduplication (more specifically, comparing profiles) depends on the
-  // `AlternativeStateNameMap`, make sure that it gets populated first.
-  if (alternative_state_name_map_updater_ &&
-      !alternative_state_name_map_updater_
-           ->is_alternative_state_name_map_populated()) {
-    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-        base::BindOnce(&AddressDataCleaner::ApplyDeduplicationRoutine,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  const std::vector<const AutofillProfile*>& profiles =
-      address_data_manager_->GetProfiles(
-          AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
+void AddressDataCleaner::ApplyDeduplicationRoutine(
+    const std::vector<AutofillProfile>& profiles) {
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.size() < 2) {
     return;
   }
 
-  // `profiles` contains pointers to the PDM's state. Modifying them directly
-  // won't update them in the database and calling `PDM:UpdateProfile()`
-  // would discard them as a duplicate.
-  std::vector<AutofillProfile> deduplicated_profiles;
-  for (const AutofillProfile* profile : profiles) {
-    deduplicated_profiles.push_back(*profile);
-  }
-
   autofill_metrics::LogNumberOfProfilesConsideredForDedupe(profiles.size());
   autofill_metrics::LogNumberOfProfilesConsideredForDedupePerCountryCode(
-      deduplicated_profiles);
+      profiles);
 
   DeduplicateProfiles(
-      AutofillProfileComparator(address_data_manager_->app_locale()),
-      std::move(deduplicated_profiles), *address_data_manager_);
+      AutofillProfileComparator(address_data_manager_->app_locale()), profiles,
+      *address_data_manager_);
 }
 
-void AddressDataCleaner::MigratePhoneticNames() {
+void AddressDataCleaner::MigratePhoneticNames(
+    const std::vector<AutofillProfile>& profiles) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
     return;
   }
   int migrated_names = 0;
-  for (const AutofillProfile* profile : address_data_manager_->GetProfiles()) {
-    if (profile->GetNameInfo().HasNameEligibleForPhoneticNameMigration()) {
-      AutofillProfile profile_to_migrate = *profile;
+  for (const AutofillProfile& profile : profiles) {
+    if (profile.GetNameInfo().HasNameEligibleForPhoneticNameMigration()) {
+      AutofillProfile profile_to_migrate = profile;
       profile_to_migrate.MigrateRegularNameToPhoneticName();
       address_data_manager_->UpdateProfile(profile_to_migrate);
       migrated_names++;
@@ -287,9 +290,8 @@ void AddressDataCleaner::MigratePhoneticNames() {
   autofill_metrics::LogNumberOfNamesMigratedDuringCleanup(migrated_names);
 }
 
-void AddressDataCleaner::DeleteDisusedAddresses() {
-  std::vector<const AutofillProfile*> profiles =
-      address_data_manager_->GetProfiles();
+void AddressDataCleaner::DeleteDisusedAddresses(
+    const std::vector<AutofillProfile>& profiles) {
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {
     return;
@@ -297,10 +299,10 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
   // Don't call `PDM::RemoveByGUID()` directly, since this can invalidate the
   // pointers in `profiles`.
   std::vector<std::string> guids_to_delete;
-  for (const AutofillProfile* profile : profiles) {
+  for (const AutofillProfile& profile : profiles) {
     if (IsAutofillEntryWithUseDateDeletable(
-            profile->usage_history().use_date())) {
-      guids_to_delete.push_back(profile->guid());
+            profile.usage_history().use_date())) {
+      guids_to_delete.push_back(profile.guid());
     }
   }
   for (const std::string& guid : guids_to_delete) {

@@ -72,15 +72,18 @@ class AddressDataCleaner : public AddressDataManager::Observer,
   // Deduplicates the PDMs profiles, by merging profile pairs where one is a
   // subset of the other. Account profiles are never deduplication.
   // Virtual for testing.
-  virtual void ApplyDeduplicationRoutine();
+  virtual void ApplyDeduplicationRoutine(
+      const std::vector<AutofillProfile>& profiles);
 
   // Migrates the phonetic names that were stored in the regular name fields to
   // alternative name fields.
   // TODO(crbug.com/359768803): Remove this method once the migration is done.
-  virtual void MigratePhoneticNames();
+  virtual void MigratePhoneticNames(
+      const std::vector<AutofillProfile>& profiles);
 
-  // Delete profiles unused for at least `kDisusedDataModelDeletionTimeDelta`.
-  void DeleteDisusedAddresses();
+  // Delete profiles from `profiles` that were unused for at least
+  // `kDisusedDataModelDeletionTimeDelta`.
+  void DeleteDisusedAddresses(const std::vector<AutofillProfile>& profiles);
 
   // AddressDataManager::Observer
   void OnAddressDataChanged() override;

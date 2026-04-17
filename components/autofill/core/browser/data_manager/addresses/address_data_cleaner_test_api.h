@@ -15,18 +15,14 @@ class AddressDataCleanerTestApi {
   explicit AddressDataCleanerTestApi(AddressDataCleaner& data_cleaner)
       : data_cleaner_(data_cleaner) {}
 
-  void ApplyDeduplicationRoutine() {
-    data_cleaner_->ApplyDeduplicationRoutine();
-  }
-
-  void DeleteDisusedAddresses() { data_cleaner_->DeleteDisusedAddresses(); }
+  void MaybeCleanupAddressData() { data_cleaner_->MaybeCleanupAddressData(); }
 
   bool AreCleanupsPending() const {
     return data_cleaner_->are_cleanups_pending_;
   }
 
-  void ResetAreCleanupsPending() {
-    data_cleaner_->are_cleanups_pending_ = true;
+  void SetAreCleanupsPending(bool are_cleanups_pending) {
+    data_cleaner_->are_cleanups_pending_ = are_cleanups_pending;
   }
 
  private:
