@@ -180,7 +180,8 @@ void ManifestBrokerState::OnManifestUpdated() {
   // Init will complete the first time we finish loading all available assets
   // for a manifest.
   auto factory = std::make_unique<ManifestSolutionFactory>(
-      *manifest_monitor_.manifest(), model_broker_impl_, service_client_,
+      *manifest_monitor_.manifest(), model_broker_impl_, usage_tracker_,
+      service_client_,
       base::BindOnce(&ManifestBrokerState::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   if (!asset_manager_) {

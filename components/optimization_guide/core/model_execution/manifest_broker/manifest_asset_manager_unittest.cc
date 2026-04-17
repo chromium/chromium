@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -43,6 +44,7 @@ struct DummyAsset {
   std::string asset_id;
   std::string public_key;
   std::string version = "1.0.0.0";
+  bool background_download = false;
 
   TestManifestAssetManagerComponentState::InstallTarget ToInstallTarget()
       const {
@@ -75,6 +77,12 @@ struct DummyAsset {
     copy.asset_id = std::move(new_asset_id);
     return copy;
   }
+
+  DummyAsset WithBackgroundDownload(bool bg) const {
+    DummyAsset copy = *this;
+    copy.background_download = bg;
+    return copy;
+  }
 };
 
 class DummyManifest {
@@ -104,8 +112,20 @@ class DummyManifest {
       builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, asset.use_case},
                   asset.asset_id + "_solution");
     }
+
+    proto::Manifest manifest = builder.Build();
+    for (const auto& asset : assets_) {
+      if (asset.background_download) {
+        auto& category_config =
+            (*manifest.mutable_category_configs())["gpu_high_tier"];
+        auto& use_case_config =
+            (*category_config.mutable_use_cases())[asset.use_case];
+        use_case_config.set_background_download(true);
+      }
+    }
+
     auto component =
-        std::make_unique<ManifestComponentDirectory>(builder.Build());
+        std::make_unique<ManifestComponentDirectory>(std::move(manifest));
     component->Add("config.pb", proto::SolutionConfig());
     return component;
   }
@@ -576,6 +596,29 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
   Startup();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
+}
+
+TEST_F(ManifestAssetManagerTest, BackgroundDownloadForManifestEnabledUseCase) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {features::kOptimizationGuideModelExecution,
+       features::kOptimizationGuideOnDeviceModel,
+       features::kOnDeviceModelBackgroundDownload},
+      {});
+
+  component_state_.SetFreeDiskSpace(base::GiB(100));
+
+  DummyAsset compose_asset =
+      DummyAsset::For("compose").WithBackgroundDownload(true);
+  DummyAsset test_asset = DummyAsset::For("test").WithBackgroundDownload(false);
+
+  UpdateManifest(DummyManifest().Add(compose_asset).Add(test_asset));
+  Startup();
+
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(compose_asset.ToInstallTarget()));
+  EXPECT_FALSE(component_state_.IsRegistered(test_asset.public_key));
 }
 
 }  // namespace

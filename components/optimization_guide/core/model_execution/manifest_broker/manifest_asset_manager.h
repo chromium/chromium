@@ -258,6 +258,10 @@ class ManifestAssetManager : public UsageTracker::Observer {
   absl::flat_hash_set<Manifest::AssetId> active_assets_by_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Tracks the manifest assets that are enabled for background download.
+  absl::flat_hash_set<Manifest::AssetId> background_download_assets_by_id_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>
       usage_tracker_observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);

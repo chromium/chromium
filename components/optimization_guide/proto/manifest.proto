@@ -131,6 +131,9 @@ message UseCaseConfig {
 
   // This could be extended to include multiple solution recipe IDs per use
   // case, if the Broker needs to select solutions for e.g. memory pressure.
+
+  // True if assets for this use case should be downloaded proactively.
+  bool background_download = 2;
 }
 
 // Device category specific configuration.

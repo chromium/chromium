@@ -26,6 +26,8 @@
 
 namespace optimization_guide {
 
+class UsageTracker;
+
 class ManifestSolutionFactory {
  public:
   enum class AssetUnavailableReason {
@@ -92,6 +94,7 @@ class ManifestSolutionFactory {
 
   ManifestSolutionFactory(Manifest manifest,
                           ModelBrokerImpl& broker_impl,
+                          UsageTracker& usage_tracker,
                           on_device_model::ServiceClient& service_client,
                           base::OnceClosure on_init_complete);
   ~ManifestSolutionFactory();
@@ -137,6 +140,7 @@ class ManifestSolutionFactory {
 
   const raw_ref<ModelBrokerImpl> broker_impl_;
   const raw_ref<on_device_model::ServiceClient> service_client_;
+  const raw_ref<UsageTracker> usage_tracker_;
 
   const Manifest manifest_;
 

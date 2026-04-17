@@ -310,6 +310,17 @@ void ManifestAssetManager::UpdateSolutionFactory(
         *ledger_.GetOrCreateContext(component.public_key());
     context.SetAssetId(asset_id);
   }
+
+  std::vector<Manifest::UseCaseName> background_download_use_cases;
+  for (const auto& [use_case_name, use_case_config] :
+       factory_->manifest().GetDeviceCategoryConfig().use_cases()) {
+    if (use_case_config.background_download()) {
+      background_download_use_cases.push_back(use_case_name);
+    }
+  }
+  background_download_assets_by_id_ =
+      factory_->manifest().GetRequiredAssets(background_download_use_cases);
+
   UpdateActiveAssets();
 }
 
@@ -375,7 +386,8 @@ bool ManifestAssetManager::ShouldInstall(
   if (active_assets_by_id_.contains(context.asset_id())) {
     return true;
   }
-  return disk_space_status_.CanSupportProactiveDownload();
+  return disk_space_status_.CanSupportProactiveDownload() &&
+         background_download_assets_by_id_.contains(context.asset_id());
 }
 
 void ManifestAssetManager::UpdateRegistrations() {

@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -246,10 +247,12 @@ ManifestSolutionFactory::SolutionState::operator=(SolutionState&& other) =
 ManifestSolutionFactory::ManifestSolutionFactory(
     Manifest manifest,
     ModelBrokerImpl& broker_impl,
+    UsageTracker& usage_tracker,
     on_device_model::ServiceClient& service_client,
     base::OnceClosure on_init_complete)
     : broker_impl_(broker_impl),
       service_client_(service_client),
+      usage_tracker_(usage_tracker),
       manifest_(std::move(manifest)),
       assets_(MakeAssetsMap(manifest_.GetAssets())),
       base_models_(MakeBaseModelsMap(manifest_.GetRecipes())),
@@ -406,14 +409,17 @@ ManifestSolutionFactory::CreateSolutionForUseCase(
     }
     has_unavailable_asset = true;
   }
+  const proto::UseCaseConfig& use_case =
+      manifest_.GetDeviceCategoryConfig().use_cases().at(use_case_name);
+
   if (has_unavailable_asset) {
+    if (!usage_tracker_->WasUseCaseRecentlyUsed(use_case_name)) {
+      return base::unexpected(
+          OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);
+    }
     return base::unexpected(
         OnDeviceModelEligibilityReason::kModelToBeInstalled);
   }
-
-  // Check solution configs are loaded.
-  const proto::UseCaseConfig& use_case =
-      manifest_.GetDeviceCategoryConfig().use_cases().at(use_case_name);
   const std::string& solution_id = use_case.solution_recipe_id();
   switch (solutions_.at(solution_id).status_) {
     case SolutionState::kNotLoaded:
