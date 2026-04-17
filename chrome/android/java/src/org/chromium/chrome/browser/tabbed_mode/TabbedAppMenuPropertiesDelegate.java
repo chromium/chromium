@@ -33,7 +33,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
-import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
@@ -1497,8 +1496,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 WebFeedFaviconFetcher.createDefault(),
                 mFeedLauncher,
                 mModalDialogManager,
-                mSnackbarManager,
-                CreatorActivity.class);
+                mSnackbarManager);
         return footer;
     }
 

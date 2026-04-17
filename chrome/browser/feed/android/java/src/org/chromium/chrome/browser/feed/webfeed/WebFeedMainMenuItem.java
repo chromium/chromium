@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed.webfeed;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -21,16 +20,12 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
-import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -60,7 +55,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private Tab mTab;
     private @Nullable String mTitle;
     private AppMenuHandler mAppMenuHandler;
-    private @Nullable Class<?> mCreatorActivityClass;
 
     // Points to the currently shown chip: null, mFollowingChipView, mFollowChipView,
     private @Nullable ChipView mChipView;
@@ -118,8 +112,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             WebFeedFaviconFetcher faviconFetcher,
             FeedLauncher feedLauncher,
             ModalDialogManager dialogManager,
-            SnackbarManager snackbarManager,
-            Class<?> creatorActivityClass) {
+            SnackbarManager snackbarManager) {
         mUrl = tab.getOriginalUrl();
         mTab = tab;
         mAppMenuHandler = appMenuHandler;
@@ -127,7 +120,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mWebFeedSnackbarController =
                 new WebFeedSnackbarController(
                         mContext, feedLauncher, dialogManager, snackbarManager);
-        mCreatorActivityClass = creatorActivityClass;
         Callback<WebFeedMetadata> metadataCallback =
                 result -> {
                     initializeFavicon(result);
@@ -172,14 +164,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
         }
         mItemText.setText(mTitle);
-        if (WebFeedBridge.isCormorantEnabledForLocale()) {
-            mItemText.setContentDescription(
-                    mContext.getString(R.string.cormorant_creator_preview, mTitle));
-            mItemText.setOnClickListener(
-                    (view) -> {
-                        PostTask.postTask(TaskTraits.UI_DEFAULT, this::launchCreatorActivity);
-                    });
-        }
     }
 
     private void initializeChipView(@Nullable WebFeedMetadata webFeedMetadata) {
@@ -344,32 +328,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mIcon.setImageBitmap(icon);
         if (icon == null) {
             mIcon.setVisibility(View.GONE);
-        }
-        if (WebFeedBridge.isCormorantEnabledForLocale()) {
-            mIcon.setOnClickListener(
-                    (view) -> {
-                        PostTask.postTask(TaskTraits.UI_DEFAULT, this::launchCreatorActivity);
-                    });
-        }
-    }
-
-    private void launchCreatorActivity() {
-        try {
-            // Launch a new activity for the creator page.
-            Intent intent = new Intent(mContext, mCreatorActivityClass);
-            if (mRecommendedWebFeedName != null) {
-                intent.putExtra(
-                        CreatorIntentConstants.CREATOR_WEB_FEED_ID, mRecommendedWebFeedName);
-            }
-            intent.putExtra(CreatorIntentConstants.CREATOR_URL, mUrl.getSpec());
-            intent.putExtra(
-                    CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.MENU);
-            intent.putExtra(
-                    CreatorIntentConstants.CREATOR_FOLLOWING, mChipView == mFollowingChipView);
-            intent.putExtra(CreatorIntentConstants.CREATOR_TAB_ID, mTab.getId());
-            mContext.startActivity(intent);
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to launch CreatorActivity " + e);
         }
     }
 }

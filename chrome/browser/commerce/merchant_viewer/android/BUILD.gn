@@ -160,8 +160,8 @@ android_library("javatests") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android/features/tab_ui:java_resources",
     "//chrome/browser/commerce/merchant_viewer/android:java",
-    "//chrome/browser/creator/android:creator_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/profiles/android:java",

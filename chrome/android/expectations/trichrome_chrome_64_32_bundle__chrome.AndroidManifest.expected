@@ -129,13 +129,6 @@
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
         android:windowSoftInputMode="stateAlwaysHidden">
     </activity>  # DIFF-ANCHOR: 002f9e99
-    <activity  # DIFF-ANCHOR: 9bfe10ab
-        android:name="org.chromium.chrome.browser.app.creator.CreatorActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-    </activity>  # DIFF-ANCHOR: 9bfe10ab
     <activity  # DIFF-ANCHOR: 8f3f76d9
         android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"

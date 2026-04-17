@@ -613,7 +613,6 @@ public class NewTabPage
                                 modalDialogManager,
                                 mNewTabPageManager.getNavigationDelegate(),
                                 BookmarkModel.getForProfile(profile),
-                                tabModelSelector,
                                 profile,
                                 mBottomSheetController) {
                             @Override

@@ -14,15 +14,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
-import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -33,7 +30,6 @@ import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherIm
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -70,7 +66,6 @@ public class FeedActionDelegateImpl
     private final BookmarkModel mBookmarkModel;
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
-    private final TabModelSelector mTabModelSelector;
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
 
@@ -91,14 +86,12 @@ public class FeedActionDelegateImpl
             ModalDialogManager modalDialogManager,
             NativePageNavigationDelegate navigationDelegate,
             BookmarkModel bookmarkModel,
-            TabModelSelector tabModelSelector,
             Profile profile,
             BottomSheetController bottomSheetController) {
         mActivity = activity;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
-        mTabModelSelector = tabModelSelector;
         mProfile = profile;
         mBottomSheetController = bottomSheetController;
 
@@ -210,17 +203,7 @@ public class FeedActionDelegateImpl
 
     @Override
     public void openWebFeed(String webFeedName, @SingleWebFeedEntryPoint int entryPoint) {
-        if (!WebFeedBridge.isCormorantEnabledForLocale()) {
-            return;
-        }
-
-        assert ThreadUtils.runningOnUiThread();
-        Class<?> creatorActivityClass = CreatorActivity.class;
-        Intent intent = new Intent(mActivity, creatorActivityClass);
-        intent.putExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID, webFeedName.getBytes());
-        intent.putExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT, entryPoint);
-        intent.putExtra(CreatorIntentConstants.CREATOR_TAB_ID, mTabModelSelector.getCurrentTabId());
-        mActivity.startActivity(intent);
+        // TODO(crbug.com/407797637): Remove the function openWebFeed as Creator page is removed.
     }
 
     @Override

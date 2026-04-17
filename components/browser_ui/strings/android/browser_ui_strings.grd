@@ -325,9 +325,6 @@
       <message name="IDS_ALWAYS" desc="Generic label for a user to select an always option">
         Always
       </message>
-      <message name="IDS_PROVIDED_BY_GOOGLE" desc="Generic label for something that comes from Google servers.">
-        Provided by Google
-      </message>
       <message name="IDS_TURN_ON" desc="Generic label for a user to turn">
         Turn on
       </message>

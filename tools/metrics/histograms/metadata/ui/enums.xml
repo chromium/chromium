@@ -449,10 +449,10 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO"/>
   <int value="54" label="UMA_PRIVACY_SANDBOX_ADD_SITE"/>
   <int value="55" label="UMA_PRIVACY_SANDBOX_REMOVE_SITE"/>
-  <int value="56" label="UMA_CREATOR_FOLLOW_SUCCESS"/>
-  <int value="57" label="UMA_CREATOR_FOLLOW_FAILURE"/>
-  <int value="58" label="UMA_CREATOR_UNFOLLOW_SUCCESS"/>
-  <int value="59" label="UMA_CREATOR_UNFOLLOW_FAILURE"/>
+  <int value="56" label="(Obsolete) UMA_CREATOR_FOLLOW_SUCCESS"/>
+  <int value="57" label="(Obsolete) UMA_CREATOR_FOLLOW_FAILURE"/>
+  <int value="58" label="(Obsolete) UMA_CREATOR_UNFOLLOW_SUCCESS"/>
+  <int value="59" label="(Obsolete) UMA_CREATOR_UNFOLLOW_FAILURE"/>
   <int value="60" label="UMA_QUICK_DELETE"/>
   <int value="61" label="UMA_AUTO_TRANSLATE"/>
   <int value="63" label="UMA_CLEAR_BROWSING_DATA"/>

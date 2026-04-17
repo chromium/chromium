@@ -10,11 +10,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -1288,39 +1286,6 @@ public class FeedStream implements Stream {
         if (mStreamKind == StreamKind.FOLLOWING) {
             return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, R.layout.following_empty_state);
-        }
-        if (mStreamKind == StreamKind.SINGLE_WEB_FEED) {
-            View creatorErrorCard;
-            // TODO(crbug.com/40882611): Add offline error scenario.
-            if (slice.getZeroStateSlice().getType()
-                    == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE) {
-                creatorErrorCard =
-                        LayoutInflater.from(mActivity)
-                                .inflate(
-                                        R.layout.creator_content_unavailable_error,
-                                        mRecyclerView,
-                                        false);
-            } else {
-                mStreamsMediator.disableFollowButton();
-                creatorErrorCard =
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.creator_general_error, mRecyclerView, false);
-            }
-            // TODO(crbug.com/40879463): Replace display height dependency with setting the
-            // RecyclerView height to match_parent.
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            MarginLayoutParams marginParams =
-                    (MarginLayoutParams) creatorErrorCard.getLayoutParams();
-            marginParams.setMargins(
-                    0,
-                    displayMetrics.heightPixels / 4,
-                    0,
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.creator_error_margin_bottom));
-            return new FeedListContentManager.NativeViewContent(
-                    getLateralPaddingsPx(), sliceId, creatorErrorCard);
         }
         if (slice.getZeroStateSlice().getType() == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
             return new FeedListContentManager.NativeViewContent(

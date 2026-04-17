@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/browser_ui/share/android",
-  "+components/thin_webview",
-]

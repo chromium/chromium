@@ -4064,36 +4064,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SYNCED_SET_UP_SNACKBAR_REMOVED_CONFIRMATION" desc="The message text for the snackbar shown after preferences have been removed (a redo button is available).">
         Removed your appearance preferences
       </message>
-      <message name="IDS_CORMORANT_CREATOR_CONTENT_UNAVAILABLE_ERROR_TITLE" desc="Creator page error title when the creator has no content available.">
-        Nothing to show yet
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_CONTENT_UNAVAILABLE_ERROR_DESCRIPTION" desc="Creator page error description when the creator has no content available.">
-        You'll see content when it becomes available
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_GENERAL_ERROR_TITLE" desc="Creator page general error title when something goes wrong.">
-        Something went wrong
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_GENERAL_ERROR_DESCRIPTION" desc="Creator page general error description when something goes wrong.">
-        Try again later
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_FOLLOW_SUCCESS_SNACKBAR" desc="Creator page snackbar messsage after successfully following a particular site.">
-        Following <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph>
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_FOLLOW_FAILURE_SNACKBAR" desc="Creator page snackbar messsage after a failing to follow a particular site but the reason for the failure is unknown.">
-        Can’t follow. Something went wrong.
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_UNFOLLOW_SUCCESS_SNACKBAR" desc="Creator page snackbar messsage after successfully unfollowing a particular site.">
-        Unfollowed <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph>
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_UNFOLLOW_FAILURE_SNACKBAR" desc="Creator page snackbar messsage after a failing to unfollow a particular site but the reason for the failure is unknown.">
-        Can’t unfollow. Something went wrong.
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_OFFLINE_FAILURE_SNACKBAR" desc="Creator page snackbar messsage after a user take a follow/unfollow action while offline.">
-        You’re offline. Check your internet connection and try again.
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_PREVIEW" desc="Accessibility readout for the title of a Creator feed, informing the user that it's the preview of the feed content from a particular website.">
-        <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> Preview
-      </message>
       <message name="IDS_FEED_MANAGE_ACTIVITY" desc="Menu item to manage my activity from the feed header overflow menu.">
         Activity
       </message>

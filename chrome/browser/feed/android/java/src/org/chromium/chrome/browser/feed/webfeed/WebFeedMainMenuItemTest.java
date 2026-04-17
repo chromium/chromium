@@ -6,17 +6,13 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -76,7 +72,6 @@ public final class WebFeedMainMenuItemTest {
 
     @Captor ArgumentCaptor<Intent> mIntentCaptor;
 
-    @Mock private Context mContext;
     @Mock private FeedLauncher mFeedLauncher;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private ModalDialogManager mDialogManager;
@@ -85,7 +80,6 @@ public final class WebFeedMainMenuItemTest {
     @Mock public WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     private Activity mActivity;
-    private Class<?> mCreatorActivityClass;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
     private final TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
     private final ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
@@ -122,10 +116,6 @@ public final class WebFeedMainMenuItemTest {
                         anyInt(),
                         MockitoHelper.anyCallback());
 
-        // Initialize an empty class for mCreatorActivityClass
-        class CreatorActivityClassTest {}
-        mCreatorActivityClass = CreatorActivityClassTest.class;
-
         mWebFeedMainMenuItem =
                 (WebFeedMainMenuItem)
                         LayoutInflater.from(mActivity)
@@ -156,8 +146,7 @@ public final class WebFeedMainMenuItemTest {
                 mFaviconFetcher,
                 mFeedLauncher,
                 mDialogManager,
-                mSnackBarManager,
-                mCreatorActivityClass);
+                mSnackBarManager);
         respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
@@ -175,29 +164,6 @@ public final class WebFeedMainMenuItemTest {
                 "Title should be shortened URL.",
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(TEST_URL),
                 textView.getText());
-    }
-
-    @Test
-    public void initialize_launchCreatorActivity() {
-        initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(
-                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED, GURL.emptyGURL()));
-
-        mIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
-        mWebFeedMainMenuItem.setContextForTest(mContext);
-        textView.performClick();
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mContext).startActivity(mIntentCaptor.capture());
-        Intent intent = mIntentCaptor.getValue();
-        assertNotNull(intent);
-        assertEquals(4, intent.getExtras().size());
-        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_URL));
-        assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_URL));
-        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT));
-        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_FOLLOWING));
-        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_TAB_ID));
     }
 
     @Test
@@ -361,8 +327,7 @@ public final class WebFeedMainMenuItemTest {
                 mFaviconFetcher,
                 mFeedLauncher,
                 mDialogManager,
-                mSnackBarManager,
-                mCreatorActivityClass);
+                mSnackBarManager);
     }
 
     /**
