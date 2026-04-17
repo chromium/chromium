@@ -160,8 +160,8 @@ TEST_F(PermissionUtilTest, ToPermissionStatusWithDetails_ContentSetting) {
   PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
                           PermissionStatusSource::UNSPECIFIED,
                           CONTENT_SETTING_ALLOW);
-  auto status_with_details =
-      PermissionUtil::ToPermissionStatusWithDetails(result);
+  auto status_with_details = PermissionUtil::ToPermissionStatusWithDetails(
+      blink::mojom::PermissionName::GEOLOCATION, result);
   EXPECT_EQ(status_with_details,
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::GRANTED, nullptr));
@@ -175,13 +175,16 @@ TEST_F(PermissionUtilTest,
   PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
                           PermissionStatusSource::UNSPECIFIED,
                           geolocation_setting);
-  auto status_with_details =
-      PermissionUtil::ToPermissionStatusWithDetails(result);
-  EXPECT_EQ(status_with_details,
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION, result),
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::GRANTED,
                 blink::mojom::PermissionDetails::NewGeolocationAccuracy(
                     blink::mojom::GeolocationAccuracy::kPrecise)));
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE, result),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED, nullptr));
 }
 
 TEST_F(PermissionUtilTest,
@@ -192,13 +195,16 @@ TEST_F(PermissionUtilTest,
   PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
                           PermissionStatusSource::UNSPECIFIED,
                           geolocation_setting);
-  auto status_with_details =
-      PermissionUtil::ToPermissionStatusWithDetails(result);
-  EXPECT_EQ(status_with_details,
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION, result),
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::GRANTED,
                 blink::mojom::PermissionDetails::NewGeolocationAccuracy(
                     blink::mojom::GeolocationAccuracy::kApproximate)));
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE, result),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED, nullptr));
 }
 
 TEST_F(PermissionUtilTest,
@@ -206,16 +212,21 @@ TEST_F(PermissionUtilTest,
   GeolocationSetting geolocation_setting = {
       .approximate = PermissionOption::kAllowed,
       .precise = PermissionOption::kAsk};
-  PermissionResult result(blink::mojom::PermissionStatus::GRANTED,
-                          PermissionStatusSource::UNSPECIFIED,
-                          geolocation_setting);
-  auto status_with_details =
-      PermissionUtil::ToPermissionStatusWithDetails(result);
-  EXPECT_EQ(status_with_details,
+  PermissionResult precise_result(blink::mojom::PermissionStatus::ASK,
+                                  PermissionStatusSource::UNSPECIFIED,
+                                  geolocation_setting);
+  PermissionResult approximate_result(blink::mojom::PermissionStatus::GRANTED,
+                                      PermissionStatusSource::UNSPECIFIED,
+                                      geolocation_setting);
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION, precise_result),
             blink::mojom::PermissionStatusWithDetails::New(
-                blink::mojom::PermissionStatus::GRANTED,
-                blink::mojom::PermissionDetails::NewGeolocationAccuracy(
-                    blink::mojom::GeolocationAccuracy::kApproximate)));
+                blink::mojom::PermissionStatus::ASK, nullptr));
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE,
+                approximate_result),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED, nullptr));
 }
 
 TEST_F(PermissionUtilTest,
@@ -226,9 +237,12 @@ TEST_F(PermissionUtilTest,
   PermissionResult result(blink::mojom::PermissionStatus::DENIED,
                           PermissionStatusSource::UNSPECIFIED,
                           geolocation_setting);
-  auto status_with_details =
-      PermissionUtil::ToPermissionStatusWithDetails(result);
-  EXPECT_EQ(status_with_details,
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION, result),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::DENIED, nullptr));
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE, result),
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::DENIED, nullptr));
 }
@@ -240,9 +254,12 @@ TEST_F(PermissionUtilTest,
   PermissionResult result(blink::mojom::PermissionStatus::ASK,
                           PermissionStatusSource::UNSPECIFIED,
                           geolocation_setting);
-  auto status_with_details =
-      PermissionUtil::ToPermissionStatusWithDetails(result);
-  EXPECT_EQ(status_with_details,
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION, result),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::ASK, nullptr));
+  EXPECT_EQ(PermissionUtil::ToPermissionStatusWithDetails(
+                blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE, result),
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::ASK, nullptr));
 }

@@ -2438,18 +2438,33 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
 
   const char kQueryPermission[] = R"(
       (async () => {
-        let status = await navigator.permissions.query({name: 'geolocation'});
+        const status = await navigator.permissions.query({name: 'geolocation'});
         return {name: status.name, state: status.state,
                 toString: status.toString(), accuracyMode: status.accuracyMode};
       })();
     )";
 
+  const char kQueryApproximatePermission[] = R"(
+      (async () => {
+        const status = await navigator.permissions.query(
+            {name: 'geolocation-approximate'});
+        return {name: status.name, state: status.state,
+                toString: status.toString()};
+      })();
+    )";
+
   const char kSubscribeToPermissionChanges[] = R"(
         var statuses = [];
+        var approximateStatuses = [];
         navigator.permissions.query({name: 'geolocation'}).then(status => {
           status.onchange = () =>
               statuses.push({state: status.state,
                 accuracyMode: status.accuracyMode});
+        });
+        navigator.permissions.query(
+            {name: 'geolocation-approximate'}).then(status => {
+          status.onchange = () =>
+              approximateStatuses.push(status.state);
         });
     )";
 
@@ -2462,6 +2477,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
      "state": "prompt",
      "toString": "[object GeolocationPermissionStatus]",
      "accuracyMode": null
+  })")));
+  EXPECT_THAT(content::EvalJs(web_contents, kQueryApproximatePermission),
+              content::EvalJsResult::IsOkAndHolds(base::test::IsJson(
+                  R"({
+     "name": "geolocation-approximate",
+     "state": "prompt",
+     "toString": "[object PermissionStatus]",
   })")));
 
   HostContentSettingsMap* hcsm = HostContentSettingsMapFactory::GetForProfile(
@@ -2481,6 +2503,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
      "toString": "[object GeolocationPermissionStatus]",
      "accuracyMode": null
   })")));
+  EXPECT_THAT(content::EvalJs(web_contents, kQueryApproximatePermission),
+              content::EvalJsResult::IsOkAndHolds(base::test::IsJson(
+                  R"({
+     "name": "geolocation-approximate",
+     "state": "granted",
+     "toString": "[object PermissionStatus]",
+  })")));
 
   hcsm->SetPermissionSettingDefaultScope(
       permission_origin, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
@@ -2494,6 +2523,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
      "state": "granted",
      "toString": "[object GeolocationPermissionStatus]",
      "accuracyMode": "approximate"
+  })")));
+  EXPECT_THAT(content::EvalJs(web_contents, kQueryApproximatePermission),
+              content::EvalJsResult::IsOkAndHolds(base::test::IsJson(
+                  R"({
+     "name": "geolocation-approximate",
+     "state": "granted",
+     "toString": "[object PermissionStatus]",
   })")));
 
   hcsm->SetPermissionSettingDefaultScope(
@@ -2509,6 +2545,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
      "toString": "[object GeolocationPermissionStatus]",
      "accuracyMode": "precise"
   })")));
+  EXPECT_THAT(content::EvalJs(web_contents, kQueryApproximatePermission),
+              content::EvalJsResult::IsOkAndHolds(base::test::IsJson(
+                  R"({
+     "name": "geolocation-approximate",
+     "state": "granted",
+     "toString": "[object PermissionStatus]",
+  })")));
 
   hcsm->SetPermissionSettingDefaultScope(
       permission_origin, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
@@ -2522,6 +2565,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
      "state": "denied",
      "toString": "[object GeolocationPermissionStatus]",
      "accuracyMode": null
+  })")));
+  EXPECT_THAT(content::EvalJs(web_contents, kQueryApproximatePermission),
+              content::EvalJsResult::IsOkAndHolds(base::test::IsJson(
+                  R"({
+     "name": "geolocation-approximate",
+     "state": "denied",
+     "toString": "[object PermissionStatus]",
   })")));
 
   hcsm->SetPermissionSettingDefaultScope(
@@ -2537,6 +2587,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
      "toString": "[object GeolocationPermissionStatus]",
      "accuracyMode": null
   })")));
+  EXPECT_THAT(content::EvalJs(web_contents, kQueryApproximatePermission),
+              content::EvalJsResult::IsOkAndHolds(base::test::IsJson(
+                  R"({
+     "name": "geolocation-approximate",
+     "state": "prompt",
+     "toString": "[object PermissionStatus]",
+  })")));
 
   // onchange events should only be delivered when there is an actual,
   // observable change.
@@ -2548,6 +2605,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
     { "state": "denied", "accuracyMode": null },
     { "state": "prompt", "accuracyMode": null },
   ])")));
+  EXPECT_THAT(content::EvalJs(web_contents, "approximateStatuses"),
+              content::EvalJsResult::IsOkAndHolds(
+                  base::test::IsJson(R"(["granted", "denied", "prompt"])")));
 }
 
 }  // anonymous namespace

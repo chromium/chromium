@@ -26,7 +26,8 @@ class PermissionUtil {
 
   // Converts a PermissionResult to a PermissionStatusWithDetails.
   CONTENT_EXPORT static blink::mojom::PermissionStatusWithDetailsPtr
-  ToPermissionStatusWithDetails(PermissionResult result);
+  ToPermissionStatusWithDetails(blink::mojom::PermissionName permission_name,
+                                PermissionResult result);
 
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `render_frame_host`.

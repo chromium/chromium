@@ -251,6 +251,17 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     case V8PermissionName::Enum::kGeolocation:
       return CreatePermissionDescriptor(PermissionName::GEOLOCATION);
 
+    case V8PermissionName::Enum::kGeolocationApproximate:
+      if (!RuntimeEnabledFeatures::ApproximateGeolocationPermissionAPIEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError(
+            "Permission API support for approximate geolocation is not "
+            "enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(
+          PermissionName::GEOLOCATION_APPROXIMATE);
+
     case V8PermissionName::Enum::kNotifications:
       return CreatePermissionDescriptor(PermissionName::NOTIFICATIONS);
 

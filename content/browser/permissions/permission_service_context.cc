@@ -47,10 +47,12 @@ DOCUMENT_USER_DATA_KEY_IMPL(
 class PermissionServiceContext::PermissionSubscription {
  public:
   PermissionSubscription(
+      blink::mojom::PermissionName permission_name,
       blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
       PermissionServiceContext* context,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer)
-      : last_known_status_(std::move(last_known_status)),
+      : permission_name_(permission_name),
+        last_known_status_(std::move(last_known_status)),
         context_(context),
         observer_(std::move(observer)) {
     observer_.set_disconnect_handler(base::BindOnce(
@@ -91,7 +93,8 @@ class PermissionServiceContext::PermissionSubscription {
     }
 
     blink::mojom::PermissionStatusWithDetailsPtr new_status =
-        PermissionUtil::ToPermissionStatusWithDetails(permission_result);
+        PermissionUtil::ToPermissionStatusWithDetails(permission_name_,
+                                                      permission_result);
     if (new_status == last_known_status_) {
       return;
     }
@@ -113,6 +116,7 @@ class PermissionServiceContext::PermissionSubscription {
   }
 
  private:
+  blink::mojom::PermissionName permission_name_;
   blink::mojom::PermissionStatusWithDetailsPtr last_known_status_;
   const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
@@ -189,7 +193,7 @@ void PermissionServiceContext::CreateSubscription(
   }
 
   auto subscription = std::make_unique<PermissionSubscription>(
-      last_known_status.Clone(), this, std::move(observer));
+      permission->name, last_known_status.Clone(), this, std::move(observer));
 
   subscription->OnPermissionStatusChanged(current_result);
 
