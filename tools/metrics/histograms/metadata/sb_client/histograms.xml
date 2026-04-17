@@ -433,8 +433,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}MalwareDeepScanResult2.{trigger}"
-    enum="SBClientDownloadCheckResult" expires_after="2026-05-24">
-  <owner>drubery@chromium.org</owner>
+    enum="SBClientDownloadCheckResult" expires_after="2027-05-24">
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the result of deep scanning {Encryption}, split by the reason the
