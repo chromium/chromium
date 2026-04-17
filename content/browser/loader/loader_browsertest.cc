@@ -38,17 +38,24 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -1253,6 +1260,103 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleRedirectModify) {
     ASSERT_EQ(header_map[expected_url]["ExemptFoo"], "ExemptBarRedirect");
     ASSERT_NE(urls_requested.find(expected_url), urls_requested.end());
   }
+}
+
+class LoaderOriginForgeryBrowserTest : public LoaderBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoaderBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(network::switches::kIgnoreBadMessageForTesting);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LoaderOriginForgeryBrowserTest,
+                       OriginForgeryOnRedirect) {
+  net::EmbeddedTestServer test_server;
+
+  // Setup controllable responses.
+  net::test_server::ControllableHttpResponse redirect_response(&test_server,
+                                                               "/redirect");
+  net::test_server::ControllableHttpResponse target_response(&test_server,
+                                                             "/target");
+
+  ASSERT_TRUE(test_server.Start());
+
+  GURL redirect_url = test_server.GetURL("b.test", "/redirect");
+  GURL target_url = test_server.GetURL("c.test", "/target");
+
+  // Get NetworkContext.
+  StoragePartition* partition = shell()
+                                    ->web_contents()
+                                    ->GetBrowserContext()
+                                    ->GetDefaultStoragePartition();
+  network::mojom::NetworkContext* network_context =
+      partition->GetNetworkContext();
+
+  // Create a URLLoaderFactory that simulates a renderer process locked to
+  // a.test.
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_remote;
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      network::mojom::URLLoaderFactoryParams::New();
+  params->process_id = network::OriginatingProcessId::renderer(
+      network::RendererProcessId(shell()
+                                     ->web_contents()
+                                     ->GetPrimaryMainFrame()
+                                     ->GetProcess()
+                                     ->GetID()
+                                     .GetUnsafeValue()));
+  params->request_initiator_origin_lock =
+      url::Origin::Create(GURL("https://a.test"));
+
+  network_context->CreateURLLoaderFactory(
+      loader_factory_remote.BindNewPipeAndPassReceiver(), std::move(params));
+
+  // Create a request from a.test to /redirect.
+  network::ResourceRequest request;
+  request.url = redirect_url;
+  request.request_initiator = url::Origin::Create(GURL("https://a.test"));
+  request.mode = network::mojom::RequestMode::kCors;
+  request.redirect_mode = network::mojom::RedirectMode::kFollow;
+  request.credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto client = std::make_unique<network::TestURLLoaderClient>();
+  mojo::Remote<network::mojom::URLLoader> loader;
+
+  loader_factory_remote->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0,
+      network::mojom::kURLLoadOptionNone, request, client->CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Wait for the request to reach the server.
+  redirect_response.WaitForRequest();
+
+  // Send a redirect response to b.test.
+  redirect_response.Send(
+      "HTTP/1.1 302 Moved Temporarily\r\n"
+      "Access-Control-Allow-Origin: *\r\n"
+      "Location: " +
+      target_url.spec() + "\r\n\r\n");
+  redirect_response.Done();
+
+  // Wait for the client to receive the redirect.
+  client->RunUntilRedirectReceived();
+
+  // Now simulate the compromised renderer by calling FollowRedirect with a
+  // forged Origin.
+  net::HttpRequestHeaders modified_headers;
+  modified_headers.SetHeader("Origin", "https://evil.test");
+
+  base::RunLoop disconnect_run_loop;
+  loader.set_disconnect_handler(disconnect_run_loop.QuitClosure());
+
+  loader->FollowRedirect(/*removed_headers=*/{}, modified_headers,
+                         /*modified_cors_exempt_headers=*/{},
+                         /*new_url=*/std::nullopt);
+
+  // Wait for the request to fail by disconnection.
+  disconnect_run_loop.Run();
+
+  EXPECT_FALSE(loader.is_connected());
 }
 
 class LoaderNoScriptStreamingBrowserTest : public ContentBrowserTest {
