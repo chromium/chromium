@@ -113,13 +113,15 @@ public class CustomTabBottomBarDelegateUnitTest {
 
     @Test
     public void testIsSwipeEnabled() {
+        MotionEvent ev = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0f, 0f, 0);
+
         // Swipe should only be enabled when the bottom bar is visible and the direction is up.
         when(mBottomBarView.getVisibility()).thenReturn(View.VISIBLE);
-        assertTrue(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.UP));
-        assertFalse(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.DOWN));
+        assertTrue(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.UP, ev));
+        assertFalse(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.DOWN, ev));
 
         when(mBottomBarView.getVisibility()).thenReturn(View.INVISIBLE);
-        assertFalse(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.UP));
+        assertFalse(mBottomBarDelegate.isSwipeEnabled(ScrollDirection.UP, ev));
     }
 
     @Test

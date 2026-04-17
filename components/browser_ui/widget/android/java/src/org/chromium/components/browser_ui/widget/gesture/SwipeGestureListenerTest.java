@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.widget.gesture;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 import android.view.MotionEvent;
@@ -72,7 +73,7 @@ public class SwipeGestureListenerTest {
     }
 
     private void testSwipeByGivenDirection(int expectedDirection, List<MotionEvent> eventStream) {
-        Mockito.when(mHandler.isSwipeEnabled(anyInt())).thenReturn(true);
+        Mockito.when(mHandler.isSwipeEnabled(anyInt(), any())).thenReturn(true);
         for (MotionEvent event : eventStream) {
             mListener.onTouchEvent(event);
         }

@@ -65,7 +65,7 @@ public class SnackbarSwipeHandler implements SwipeHandler {
     }
 
     @Override
-    public boolean isSwipeEnabled(int direction) {
+    public boolean isSwipeEnabled(int direction, MotionEvent triggerEvent) {
         return direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT;
     }
 

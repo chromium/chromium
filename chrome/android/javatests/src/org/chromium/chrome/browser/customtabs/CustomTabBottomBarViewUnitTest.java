@@ -71,7 +71,7 @@ public class CustomTabBottomBarViewUnitTest {
 
     @Before
     public void setUp() {
-        when(mSwipeHandler.isSwipeEnabled(eq(ScrollDirection.UP))).thenReturn(true);
+        when(mSwipeHandler.isSwipeEnabled(eq(ScrollDirection.UP), any())).thenReturn(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView =

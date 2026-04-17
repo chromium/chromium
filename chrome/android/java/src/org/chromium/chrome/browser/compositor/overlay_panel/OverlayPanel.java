@@ -926,7 +926,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     // SwipeHandler implementation.
 
     @Override
-    public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
+    public void onSwipeStarted(@ScrollDirection int direction, MotionEvent triggerEvent) {
         if (onInterceptBarSwipe()) {
             mIgnoreSwipeEvents = true;
             return;
@@ -962,7 +962,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public boolean isSwipeEnabled(@ScrollDirection int direction) {
+    public boolean isSwipeEnabled(@ScrollDirection int direction, MotionEvent triggerEvent) {
         return direction == ScrollDirection.UP && isShowing();
     }
 

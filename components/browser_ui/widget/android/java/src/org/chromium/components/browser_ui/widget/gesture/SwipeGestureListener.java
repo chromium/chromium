@@ -68,18 +68,18 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
     public interface SwipeHandler {
         /**
          * @param direction The {@link ScrollDirection} representing the swipe direction.
-         * @param ev The first down motion event triggering the swipe.
+         * @param triggerEvent The first down motion event triggering the swipe.
          */
-        default void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {}
+        default void onSwipeStarted(@ScrollDirection int direction, MotionEvent triggerEvent) {}
 
         /**
          * @param current The move motion event triggering the current swipe.
          * @param tx The horizontal difference between the start and the current position in px.
          * @param ty The vertical difference between the start and the current position in px.
          * @param distanceX The distance along the X axis that has been scrolled since the last call
-         *         to onScroll.
+         *     to onScroll.
          * @param distanceY The distance along the Y axis that has been scrolled since the last call
-         *         to onScroll.
+         *     to onScroll.
          */
         default void onSwipeUpdated(
                 MotionEvent current, float tx, float ty, float distanceX, float distanceY) {}
@@ -107,9 +107,10 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
 
         /**
          * @param direction The direction of the on-going swipe.
+         * @param triggerEvent The {@link MotionEvent} that is triggering the swipe.
          * @return False if this direction should be ignored.
          */
-        default boolean isSwipeEnabled(@ScrollDirection int direction) {
+        default boolean isSwipeEnabled(@ScrollDirection int direction, MotionEvent triggerEvent) {
             return true;
         }
     }
@@ -215,7 +216,7 @@ public class SwipeGestureListener extends SimpleOnGestureListener {
                 direction = ty > 0.f ? ScrollDirection.DOWN : ScrollDirection.UP;
             }
 
-            if (direction != ScrollDirection.UNKNOWN && mHandler.isSwipeEnabled(direction)) {
+            if (direction != ScrollDirection.UNKNOWN && mHandler.isSwipeEnabled(direction, e2)) {
                 mDirection = direction;
                 mHandler.onSwipeStarted(direction, e2);
                 mMotionStartPoint.set(e2.getRawX(), e2.getRawY());

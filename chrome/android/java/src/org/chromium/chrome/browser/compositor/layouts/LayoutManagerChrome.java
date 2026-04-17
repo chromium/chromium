@@ -407,7 +407,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         }
 
         @Override
-        public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
+        public void onSwipeStarted(@ScrollDirection int direction, MotionEvent triggerEvent) {
             mScrollDirection = ScrollDirection.UNKNOWN;
         }
 
@@ -494,7 +494,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         }
 
         @Override
-        public boolean isSwipeEnabled(@ScrollDirection int direction) {
+        public boolean isSwipeEnabled(@ScrollDirection int direction, MotionEvent triggerEvent) {
             FullscreenManager manager = mHost.getFullscreenManager();
             if (!DeviceClassManager.enableToolbarSwipe()
                     || getActiveLayout() != mStaticLayout

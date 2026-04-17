@@ -621,7 +621,7 @@ public class CustomTabBottomBarDelegate
     // SwipeGestureListener.SwipeHandler methods
 
     @Override
-    public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
+    public void onSwipeStarted(@ScrollDirection int direction, MotionEvent triggerEvent) {
         if (mSwipeUpPendingIntent == null) return;
         // Do not send URL or additional content for swipe action.
         sendPendingIntentWithUrl(
@@ -634,7 +634,7 @@ public class CustomTabBottomBarDelegate
     }
 
     @Override
-    public boolean isSwipeEnabled(@ScrollDirection int direction) {
+    public boolean isSwipeEnabled(@ScrollDirection int direction, MotionEvent triggerEvent) {
         return direction == ScrollDirection.UP
                 && getBottomBarView().getVisibility() == View.VISIBLE;
     }
