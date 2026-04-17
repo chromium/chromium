@@ -1027,8 +1027,8 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_KLARNA" desc="Text for the payment option button in the BNPL Pay Later tab, explaining that users can pay monthly or in installments. It is specifically for Klarna options.">
       Pay in 4 or monthly
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the user must clear the form to enable and use the pay later option.">
-      Clear form to use pay later option
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the user must clear the form to enable and use the pay later option." translateable="false">
+      Clear form to use pay later
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the option is not available right now.">
       Not available right now
