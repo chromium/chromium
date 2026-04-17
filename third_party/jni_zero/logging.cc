@@ -15,6 +15,7 @@
 #include <memory>
 #ifndef JNI_ZERO_IS_ROBOLECTRIC
 #include <android/log.h>
+#include <android/set_abort_message.h>
 #endif
 
 namespace jni_zero {
@@ -72,6 +73,9 @@ void LogMessage(LogLev level,
 #else
   __android_log_print(int{ANDROID_LOG_DEBUG} + level, "jni_zero", "%s:%d %s",
                       fname, line, log_msg);
+  if (level >= kLogFatal) {
+    android_set_abort_message(log_msg);
+  }
 #endif
   if (level >= kLogFatal) {
     JNI_ZERO_IMMEDIATE_CRASH();
