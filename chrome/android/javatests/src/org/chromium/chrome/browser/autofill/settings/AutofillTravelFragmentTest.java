@@ -4,18 +4,29 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
 import androidx.test.filters.SmallTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Tests for {@link AutofillTravelFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -26,12 +37,45 @@ public class AutofillTravelFragmentTest {
     public SettingsActivityTestRule<AutofillTravelFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AutofillTravelFragment.class);
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private SettingsIndexData mSearchIndexDataMock;
+    @Mock private Profile mProfileMock;
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
+    public void testSearchIndexWhenAllEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillTravelFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mProfileMock);
+                });
+
+        verifyNoInteractions(mSearchIndexDataMock);
+    }
+
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-    public void testTravelFragmentToggleVisible() {
-        mSettingsActivityTestRule.startSettingsActivity();
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testSearchIndexEmptyWhenFeatureDisabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillTravelFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mProfileMock);
+                });
 
-        // TODO(crbug.com/482994258): Tests in next CLs once the fragment is implemented.
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        AutofillTravelFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                AutofillTravelFragment.PREF_OPT_IN_TOGGLE));
     }
 }

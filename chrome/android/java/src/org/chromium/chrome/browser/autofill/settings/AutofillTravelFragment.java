@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -12,14 +13,19 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
-import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
-import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Fragment to manage Autofill AI Travel information. */
 @NullMarked
 public class AutofillTravelFragment extends ChromeBaseSettingsFragment {
+
+    public static final String PREF_OPT_IN_TOGGLE = "autofill_ai_travel_opt_in";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -27,6 +33,7 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_travel_title));
+        SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_travel_preferences);
     }
 
     @Override
@@ -39,7 +46,23 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment {
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/482994258): Implement search index provider.
-    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(AutofillTravelFragment.class.getName());
+    private static boolean shouldShowOptInToggle() {
+        // TODO(crbug.com/482994258): Implement proper visibility logic for Travel.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID);
+    }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    AutofillTravelFragment.class.getName(), R.xml.autofill_travel_preferences) {
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    if (!shouldShowOptInToggle()) {
+                        indexData.removeEntry(getUniqueId(PREF_OPT_IN_TOGGLE));
+                    }
+                }
+            };
 }

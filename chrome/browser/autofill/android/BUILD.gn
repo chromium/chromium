@@ -236,6 +236,7 @@ android_resources("java_resources") {
     "java/res/values/ids.xml",
     "java/res/xml/autofill_identity_docs_preferences.xml",
     "java/res/xml/autofill_options_preferences.xml",
+    "java/res/xml/autofill_travel_preferences.xml",
     "java/res/xml/home_of_transactions_preferences.xml",
   ]
 }
