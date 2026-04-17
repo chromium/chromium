@@ -448,7 +448,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
 
-  bool resource_recycling_enabled_ = true;
   const bool is_accelerated_;
 
   // The resource that is currently being used by this provider.
@@ -621,6 +620,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
+  bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 };
