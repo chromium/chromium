@@ -34,6 +34,7 @@ import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.ExperimentalCronetEngine;
@@ -123,6 +124,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "/echostream")
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamAdaptiveHost_success() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -155,6 +157,7 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void tlsConnectionFailsNoFallback_throwsConnectionTimeoutError() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -193,6 +196,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "/echostream,/echostream2")
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void adaptiveNetworkPaths() throws Exception {
         CronetAdaptiveRequestContext adaptiveRequestContext =
                 new CronetAdaptiveRequestContext(mTestRule.getTestFramework().getContext());
@@ -232,6 +236,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "")
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void adaptiveNetworkPaths_empty() throws Exception {
         CronetAdaptiveRequestContext adaptiveRequestContext =
                 new CronetAdaptiveRequestContext(mTestRule.getTestFramework().getContext());
