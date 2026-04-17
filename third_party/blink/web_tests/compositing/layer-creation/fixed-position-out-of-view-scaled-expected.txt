@@ -17,24 +17,9 @@ Not scaled:
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
+      "position": [-1000, 0],
+      "bounds": [1010, 10],
       "transform": 3
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 4
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
     }
   ],
   "transforms": [
@@ -67,16 +52,6 @@ Not scaled:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [1000, 0, 0, 1]
-      ]
-    },
-    {
-      "id": 4,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [600, 0, 0, 1]
       ]
     }
   ]
@@ -101,24 +76,9 @@ Scale=0.5:
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
+      "position": [-1000, 0],
+      "bounds": [1010, 10],
       "transform": 3
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 4
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
     }
   ],
   "transforms": [
@@ -152,16 +112,6 @@ Scale=0.5:
         [0, 0, 1, 0],
         [1000, 0, 0, 1]
       ]
-    },
-    {
-      "id": 4,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [600, 0, 0, 1]
-      ]
     }
   ]
 }
@@ -185,24 +135,9 @@ Scale=1.5:
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
+      "position": [-1000, 0],
+      "bounds": [1010, 10],
       "transform": 3
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 4
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
     }
   ],
   "transforms": [
@@ -235,16 +170,6 @@ Scale=1.5:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [1000, 0, 0, 1]
-      ]
-    },
-    {
-      "id": 4,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [600, 0, 0, 1]
       ]
     }
   ]

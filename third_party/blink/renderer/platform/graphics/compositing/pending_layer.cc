@@ -394,6 +394,18 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   hit_test_opaqueness_ = merged_hit_test_opaqueness;
   non_composited_scroll_translations_.append_range(
       guest.non_composited_scroll_translations_);
+
+  // For metrics.
+  merged_across_compositing_boundary_count_ +=
+      guest.merged_across_compositing_boundary_count_;
+  // We don't merge across compositing boundaries except for MergeFixedLayers.
+  if (property_tree_state_.Transform().NearestDirectlyCompositedAncestor() !=
+      guest.property_tree_state_.Transform()
+          .NearestDirectlyCompositedAncestor()) {
+    CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled());
+    merged_across_compositing_boundary_count_++;
+  }
+
   return true;
 }
 

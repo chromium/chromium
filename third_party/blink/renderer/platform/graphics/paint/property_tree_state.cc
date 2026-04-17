@@ -27,27 +27,42 @@ const TransformPaintPropertyNode* NearestCompositedScrollTranslation(
   return nullptr;
 }
 
-bool InSameTransformCompositingBoundary(
+enum TransformCompositingBoundaryType {
+  kNotSameBoundary,
+  kSameBoundary,
+  kSameBoundaryThroughMergeableComposited,
+};
+
+TransformCompositingBoundaryType InSameTransformCompositingBoundary(
     const TransformPaintPropertyNode& t1,
     const TransformPaintPropertyNode& t2,
     IsCompositedScrollFunction is_composited_scroll) {
   const auto* composited_ancestor1 = t1.NearestDirectlyCompositedAncestor();
   const auto* composited_ancestor2 = t2.NearestDirectlyCompositedAncestor();
   if (composited_ancestor1 != composited_ancestor2) {
-    return false;
+    if (RuntimeEnabledFeatures::MergeFixedLayersEnabled() &&
+        composited_ancestor1 && composited_ancestor2 &&
+        composited_ancestor1->CanMergeForFixedPosition(*composited_ancestor2)) {
+      return kSameBoundaryThroughMergeableComposited;
+    }
+    return kNotSameBoundary;
   }
+
   // There may be indirectly composited scroll translations below the common
   // nearest directly composited ancestor. Check if t1 and t2 have the same
   // nearest composited scroll translation.
   const auto& scroll_translation1 = t1.NearestScrollTranslationNode();
   const auto& scroll_translation2 = t2.NearestScrollTranslationNode();
   if (&scroll_translation1 == &scroll_translation2) {
-    return true;
+    return kSameBoundary;
   }
-  return NearestCompositedScrollTranslation(scroll_translation1,
-                                            is_composited_scroll) ==
-         NearestCompositedScrollTranslation(scroll_translation2,
-                                            is_composited_scroll);
+  if (NearestCompositedScrollTranslation(scroll_translation1,
+                                         is_composited_scroll) ==
+      NearestCompositedScrollTranslation(scroll_translation2,
+                                         is_composited_scroll)) {
+    return kSameBoundary;
+  }
+  return kNotSameBoundary;
 }
 
 bool ClipChainInTransformCompositingBoundary(
@@ -56,9 +71,9 @@ bool ClipChainInTransformCompositingBoundary(
     const TransformPaintPropertyNode& transform,
     IsCompositedScrollFunction is_composited_scroll) {
   for (const auto* n = &node; n != &ancestor; n = n->UnaliasedParent()) {
-    if (!InSameTransformCompositingBoundary(transform,
-                                            n->LocalTransformSpace().Unalias(),
-                                            is_composited_scroll)) {
+    if (InSameTransformCompositingBoundary(
+            transform, n->LocalTransformSpace().Unalias(),
+            is_composited_scroll) == kNotSameBoundary) {
       return false;
     }
   }
@@ -87,16 +102,56 @@ std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
   if (&Transform() == &guest.Transform()) {
     upcast_transform = &Transform();
   } else {
-    if (!InSameTransformCompositingBoundary(Transform(), guest.Transform(),
-                                            is_composited_scroll)) {
+    auto same_boundary = InSameTransformCompositingBoundary(
+        Transform(), guest.Transform(), is_composited_scroll);
+    if (same_boundary == kNotSameBoundary) {
       return std::nullopt;
     }
     if (Transform().IsBackfaceHidden() !=
         guest.Transform().IsBackfaceHidden()) {
       return std::nullopt;
     }
-    upcast_transform =
-        &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
+
+    if (same_boundary == kSameBoundary) {
+      upcast_transform =
+          &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
+    } else {
+      DCHECK_EQ(same_boundary, kSameBoundaryThroughMergeableComposited);
+      CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled());
+      const auto* composited1 = Transform().NearestDirectlyCompositedAncestor();
+      const auto* composited2 =
+          guest.Transform().NearestDirectlyCompositedAncestor();
+      // We will merge across `composited1` and `composited2`. They are ensured
+      // by TransformPaintPropertyNode::CanMerge*() to have a common composited
+      // ancestor, so that we won't merge though any other compositing
+      // boundaries.
+      //           common_composited_ancestor
+      //               |               |
+      //             T1...           T2...
+      //               |               |
+      //          composited1     composited2
+      //               |               |
+      //              this           guest
+      DCHECK_EQ(
+          composited1->UnaliasedParent()->NearestDirectlyCompositedAncestor(),
+          composited2->UnaliasedParent()->NearestDirectlyCompositedAncestor());
+      // The merge will not across any non-2d-translation transforms, to ensure
+      // the additional compositor translation on the layer is equivalent to it
+      // applied on `composited1` and `composited2` separately. This is implied
+      // by the conditions in TransformPaintPropertyNode::CanMerge*().
+      DCHECK_EQ(composited1->RootOf2dTranslation(),
+                composited2->RootOf2dTranslation());
+      // Use `composited1` instead of the common ancestor to make `composited1`
+      // still composited to keep the fixed-position flags etc. and allow cc
+      // to apply additional translation on the node.
+      // For paint chunks under `guest`, PaintChunksToCcLayers::Convert() will
+      // generate paint operations that are equivalent to the following:
+      //    Save
+      //    Concat(composited1^-1 * T1...^-1 * composited2 * T2... * guest)
+      //      paint chunk paint operations
+      //    Restore
+      upcast_transform = composited1;
+    }
   }
 
   const ClipPaintPropertyNode* upcast_clip = nullptr;

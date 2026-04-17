@@ -23,17 +23,24 @@ class OutlineRectCollector {
   virtual ~OutlineRectCollector() = default;
 
   virtual Type GetType() const = 0;
+
   // Collects a rect. Empty rect should be respected because an empty box
   // can still have an outline.
   virtual void AddRect(const PhysicalRect&) = 0;
+
   virtual std::unique_ptr<OutlineRectCollector> ForDescendantCollector()
       const = 0;
-  virtual void Combine(OutlineRectCollector*,
+
+  // Combines outline rects from `collector` into this collector.
+  // The values in `collector` may be cleared or mutated, so it
+  // should not be used any more after this function.
+  virtual void Combine(OutlineRectCollector* collector,
                        const LayoutObject& descendant,
                        const LayoutBoxModelObject* ancestor,
                        const PhysicalOffset& post_offset) = 0;
-  virtual void Combine(OutlineRectCollector*,
+  virtual void Combine(OutlineRectCollector* collector,
                        const PhysicalOffset& additional_offset) = 0;
+
   // Returns true if the collector has not collected any rects.
   virtual bool IsEmpty() const = 0;
 };

@@ -8,16 +8,7 @@
     },
     {
       "name": "LayoutBlockFlow (positioned, children-inline) DIV class='fixed parent'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFFF00"
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='fixed nested'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFFF00",
-      "transform": 1
+      "bounds": [300, 100]
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='overlapped with-parent'",
@@ -29,17 +20,6 @@
       "position": [785, 0],
       "bounds": [15, 600],
       "contentsOpaque": true
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [200, 0, 0, 1]
-      ]
     }
   ]
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/span.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -65,10 +66,12 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
         ->GetFrame()
         .GetSettings()
         ->SetPreferCompositingToLCDTextForTesting(true);
-    web_view_helper_->Resize(gfx::Size(200, 200));
+    SetViewSize(gfx::Size(200, 200));
   }
 
   void TearDown() override { web_view_helper_.reset(); }
+
+  void SetViewSize(gfx::Size size) { web_view_helper_->Resize(size); }
 
   // Both sets the inner html and runs the document lifecycle.
   void InitializeWithHTML(LocalFrame& frame, const String& html_content) {
@@ -937,6 +940,113 @@ TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
   EXPECT_LT(scroll_translation_id,
             CcLayersByDOMElementId(RootCcLayer(), "anchored2")[0]
                 ->transform_tree_index());
+}
+
+TEST_P(CompositingTest, MergeFixedLayers) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  std::optional<base::HistogramTester> histograms;
+  histograms.emplace();
+
+  SetViewSize(gfx::Size(1000, 500));
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      body { margin: 0; height: 10000px; }
+      .fixed { position: fixed; width: 100px; height: 100px; }
+    </style>
+    <div id="a" class="fixed" style="top: 100px; left: 0"></div>
+    <div id="b" class="fixed" style="top: 150px; left: 80px"></div>
+  )HTML");
+
+  // Merge a and b. b only affects size of the merged layer.
+  cc::Layer* a = CcLayerByDOMElementId("a");
+  ASSERT_TRUE(a);
+  cc::Layer* b = CcLayerByDOMElementId("b");
+  EXPECT_FALSE(b);
+  EXPECT_EQ(gfx::Vector2dF(), a->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(180, 150), a->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(0, 100),
+            GetTransformNode(a)->local);
+  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 1, 1);
+  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 1,
+                                 1);
+
+  // Merge a and b. b affects both offset and size of the merged layer.
+  histograms.emplace();
+  GetElementById("b")->SetInlineStyleProperty(CSSPropertyID::kTop, "40px");
+  UpdateAllLifecyclePhases();
+  a = CcLayerByDOMElementId("a");
+  ASSERT_TRUE(a);
+  b = CcLayerByDOMElementId("b");
+  EXPECT_FALSE(b);
+  EXPECT_EQ(gfx::Vector2dF(0, -60), a->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(180, 160), a->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(0, 100),
+            GetTransformNode(a)->local);
+  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 1, 1);
+  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 1,
+                                 1);
+
+  // Don't merge a and b because the merged layer would be too sparse.
+  histograms.emplace();
+  GetElementById("b")->SetInlineStyleProperty(CSSPropertyID::kLeft, "800px");
+  UpdateAllLifecyclePhases();
+  a = CcLayerByDOMElementId("a");
+  ASSERT_TRUE(a);
+  b = CcLayerByDOMElementId("b");
+  ASSERT_TRUE(b);
+  EXPECT_EQ(gfx::Vector2dF(), a->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(100, 100), a->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(0, 100),
+            GetTransformNode(a)->local);
+  EXPECT_EQ(gfx::Vector2dF(), b->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(100, 100), b->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(800, 40),
+            GetTransformNode(b)->local);
+  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 2, 1);
+  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 0,
+                                 1);
+
+  // Don't merge a and b because they have different fixed-position-specific
+  // flags (moved_by_outer_viewport_bounds_delta_y in this case).
+  histograms.emplace();
+  GetElementById("b")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("bottom: 200px; left: 0"));
+  UpdateAllLifecyclePhases();
+  a = CcLayerByDOMElementId("a");
+  ASSERT_TRUE(a);
+  b = CcLayerByDOMElementId("b");
+  ASSERT_TRUE(b);
+  EXPECT_EQ(gfx::Vector2dF(), a->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(100, 100), a->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(0, 100),
+            GetTransformNode(a)->local);
+  EXPECT_FALSE(GetTransformNode(a)->moved_by_outer_viewport_bounds_delta_y);
+  EXPECT_EQ(gfx::Vector2dF(), b->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(100, 100), b->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(0, 200),
+            GetTransformNode(b)->local);
+  EXPECT_TRUE(GetTransformNode(b)->moved_by_outer_viewport_bounds_delta_y);
+  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 2, 1);
+  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 0,
+                                 1);
+
+  // Merge a and b which are both attached to the bottom of viewport.
+  histograms.emplace();
+  GetElementById("a")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("bottom: 250px; left: 0"));
+  UpdateAllLifecyclePhases();
+  a = CcLayerByDOMElementId("a");
+  ASSERT_TRUE(a);
+  b = CcLayerByDOMElementId("b");
+  EXPECT_FALSE(b);
+  EXPECT_EQ(gfx::Vector2dF(), a->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(100, 150), a->bounds());
+  EXPECT_EQ(gfx::Transform::MakeTranslation(0, 150),
+            GetTransformNode(a)->local);
+  EXPECT_TRUE(GetTransformNode(a)->moved_by_outer_viewport_bounds_delta_y);
+  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 1, 1);
+  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 1,
+                                 1);
 }
 
 class ScrollingContentsCullRectTest : public CompositingTest {

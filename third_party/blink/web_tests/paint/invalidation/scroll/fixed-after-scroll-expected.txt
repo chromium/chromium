@@ -11,15 +11,8 @@
       "name": "LayoutBlockFlow (positioned) DIV class='red fixed'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#FF0000",
-      "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='t' class='green absolute'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 3
+      "transform": 2
     },
     {
       "name": "VerticalScrollbar",
@@ -40,15 +33,6 @@
     },
     {
       "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 200, 0, 1]
-      ]
-    },
-    {
-      "id": 3,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

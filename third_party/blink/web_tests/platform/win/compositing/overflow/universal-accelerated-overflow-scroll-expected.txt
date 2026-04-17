@@ -467,38 +467,13 @@
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='sibling-absolute-sibling-grandchildren' class='positionFixed sibling'",
-      "bounds": [50, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
+      "bounds": [290, 100],
       "transform": 30
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='sibling-absolute-sibling-not-contained' class='positionFixed sibling'",
-      "bounds": [50, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 31
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='sibling-absolute-sibling' class='positionFixed sibling'",
-      "bounds": [50, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 32
-    },
-    {
       "name": "LayoutBlockFlow (positioned) DIV id='sibling-fixed-sibling-grandchildren' class='positionFixed sibling'",
-      "bounds": [50, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 33
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='sibling-fixed-sibling' class='positionFixed sibling'",
-      "bounds": [50, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 34
+      "bounds": [170, 100],
+      "transform": 31
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren-not-contained' class='scrolled onTop'",
@@ -850,34 +825,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [135, 140, 0, 1]
-      ]
-    },
-    {
-      "id": 32,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [255, 140, 0, 1]
-      ]
-    },
-    {
-      "id": 33,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [15, 260, 0, 1]
-      ]
-    },
-    {
-      "id": 34,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [135, 260, 0, 1]
       ]
     }
   ]

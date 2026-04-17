@@ -160,6 +160,18 @@ void TransformPaintPropertyNodeOrAlias::ClearChangedToRoot(
   }
 }
 
+bool TransformPaintPropertyNode::CanMergeForFixedPosition(
+    const TransformPaintPropertyNode& other) const {
+  // A fixed-position transform node can have kFixedPosition and other
+  // fixed-position-specific compositing reasons such as kUndoOverscroll.
+  // The two nodes can be merged only if they have the exact same reasons.
+  return DirectCompositingReasons() == other.DirectCompositingReasons() &&
+         RequiresCompositingForFixedPositionOnly() &&
+         other.RequiresCompositingForFixedPositionOnly() &&
+         ScrollTranslationForFixed() == other.ScrollTranslationForFixed() &&
+         Parent() == other.Parent();
+}
+
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   auto json = TransformPaintPropertyNodeOrAlias::ToJSON();
   if (IsIdentityOr2dTranslation()) {

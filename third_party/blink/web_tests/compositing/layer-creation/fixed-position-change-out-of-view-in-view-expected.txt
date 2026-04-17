@@ -27,17 +27,8 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='fixed1'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
+      "bounds": [10, 60],
       "transform": 1
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='fixed2'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 2
     },
     {
       "name": "VerticalScrollbar",
@@ -54,15 +45,6 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [100, 50, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, 100, 0, 1]
       ]
     }
   ]

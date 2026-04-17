@@ -12,6 +12,8 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "cc/base/features.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
@@ -868,7 +870,9 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
             new_layer.GetPropertyTreeState()
                 .Transform()
                 .NearestDirectlyCompositedAncestor()) {
-      if (directly_composited_transforms_.insert(composited_transform)
+      if ((!RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
+           !composited_transform->RequiresCompositingForFixedPositionOnly()) &&
+          directly_composited_transforms_.insert(composited_transform)
               .is_new_entry) {
         continue;
       }
@@ -1136,6 +1140,11 @@ void PaintArtifactCompositor::Update(
     property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
+  // For metrics.
+  const bool report_metrics = base::ShouldRecordSubsampledMetric(0.01);
+  int fixed_count = 0;
+  int merged_fixed_count = 0;
+
   cc::LayerSelection layer_selection;
   HashSet<int> layers_having_text;
   HashSet<int> layers_having_video;
@@ -1213,6 +1222,20 @@ void PaintArtifactCompositor::Update(
 
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
+
+    if (report_metrics) {
+      if (transform.RequiresCompositingForFixedPosition()) {
+        ++fixed_count;
+        merged_fixed_count +=
+            pending_layer.MergedAcrossCompositingBoundaryCount();
+      }
+    }
+  }
+
+  if (report_metrics) {
+    UMA_HISTOGRAM_COUNTS_100("Blink.Compositor.FixedLayerCount", fixed_count);
+    UMA_HISTOGRAM_COUNTS_100("Blink.Compositor.MergedFixedLayerCount",
+                             merged_fixed_count);
   }
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);

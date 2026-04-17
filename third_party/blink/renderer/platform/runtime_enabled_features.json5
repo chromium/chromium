@@ -3855,6 +3855,10 @@
       status: "experimental",
     },
     {
+      name: "MergeFixedLayers",
+      status: "experimental",
+    },
+    {
       name: "MessagePortCloseEvent",
       status: "test",
     },

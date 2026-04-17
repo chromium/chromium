@@ -194,6 +194,10 @@ class PLATFORM_EXPORT PendingLayer {
   // draw a solid color (see comment above `solid_color_chunk_index_`).
   bool IsSolidColor() const { return solid_color_chunk_index_ != kNotFound; }
 
+  int MergedAcrossCompositingBoundaryCount() const {
+    return merged_across_compositing_boundary_count_;
+  }
+
  private:
   // Checks basic merge-ability with `guest` and calls
   // PropertyTreeState::CanUpcastWith().
@@ -260,6 +264,10 @@ class PLATFORM_EXPORT PendingLayer {
   CompositingType compositing_type_ = kOther;
   cc::HitTestOpaqueness hit_test_opaqueness_ =
       cc::HitTestOpaqueness::kTransparent;
+
+  // For metrics.
+  int merged_across_compositing_boundary_count_ = 0;
+
   bool has_text_ = false;
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
