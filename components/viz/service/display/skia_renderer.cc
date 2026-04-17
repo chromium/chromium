@@ -21,8 +21,10 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/angle_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
@@ -43,6 +45,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
+#include "components/viz/common/quads/render_pass_io.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -339,6 +342,34 @@ SkCanvas::SrcRectConstraint GetTextureConstraint(
   return SkCanvas::kFast_SrcRectConstraint;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SrcRectConstraintUMA { kStrict = 0, kFast = 1, kMaxValue = kFast };
+
+void LogSrcRectConstraintUMA(SkCanvas::SrcRectConstraint constraint,
+                             DrawQuad::Material material) {
+  if (material != DrawQuad::Material::kAggregatedRenderPass &&
+      material != DrawQuad::Material::kTextureContent &&
+      material != DrawQuad::Material::kTiledContent) {
+    // We are only interested in recording UMA for these DrawQuad types.
+    return;
+  }
+
+  // Subsample this metric as it is critical path and can be called a lot for
+  // each Quad per frame.
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    std::string_view material_name = DrawQuadMaterialToString(material);
+    if (material_name.starts_with('k')) {
+      material_name.remove_prefix(1);
+    }
+    std::string uma_name = "Compositing.SkiaRenderer." +
+                           std::string(material_name) + ".SrcRectConstraint";
+    SrcRectConstraintUMA value =
+        static_cast<SrcRectConstraintUMA>(static_cast<int>(constraint));
+    base::UmaHistogramEnumeration(uma_name, value);
+  }
+}
+
 // Return a color filter that multiplies the incoming color by the fixed alpha
 sk_sp<SkColorFilter> MakeOpacityFilter(float alpha, sk_sp<SkColorFilter> in) {
   SkColor4f alpha_as_color = {1.0, 1.0, 1.0, alpha};
@@ -523,6 +554,7 @@ struct SkiaRenderer::DrawQuadParams {
                  SkBlendMode blend_mode,
                  float opacity,
                  const SkSamplingOptions& sampling,
+                 const DrawQuad::Material material,
                  const gfx::QuadF* draw_region);
 
   // target_to_device_transform * quad_to_target_transform normally, or
@@ -545,6 +577,8 @@ struct SkiaRenderer::DrawQuadParams {
   float opacity;
   // Resolved sampling from quad settings
   SkSamplingOptions sampling;
+  // Quad material type
+  DrawQuad::Material material;
   // Optional restricted draw geometry, will point to a length 4 SkPoint array
   // with its points in CW order matching Skia's vertex/edge expectations.
   std::optional<SkDrawRegion> draw_region;
@@ -588,6 +622,7 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
                                              SkBlendMode blend_mode,
                                              float opacity,
                                              const SkSamplingOptions& sampling,
+                                             const DrawQuad::Material material,
                                              const gfx::QuadF* draw_region)
     : content_device_transform(cdt),
       rect(rect),
@@ -596,7 +631,8 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
       aa_flags(aa_flags),
       blend_mode(blend_mode),
       opacity(opacity),
-      sampling(sampling) {
+      sampling(sampling),
+      material(material) {
   if (draw_region) {
     this->draw_region.emplace(*draw_region);
   }
@@ -1772,7 +1808,7 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
       quad->shared_quad_state->quad_to_target_transform, gfx::RectF(quad->rect),
       gfx::RectF(quad->visible_rect), SkCanvas::kNone_QuadAAFlags,
       quad->shared_quad_state->blend_mode, quad->shared_quad_state->opacity,
-      GetSampling(quad), draw_region);
+      GetSampling(quad), quad->material, draw_region);
 
   params.content_device_transform.PostConcat(target_to_device);
   params.content_device_transform.Flatten();
@@ -2272,6 +2308,8 @@ void SkiaRenderer::AddQuadToBatch(const SkImage* image,
                                   DrawQuadParams* params) {
   SkCanvas::SrcRectConstraint constraint =
       ResolveTextureConstraints(image, valid_texel_bounds, params);
+  LogSrcRectConstraintUMA(constraint, params->material);
+
   // Last check for flushing the batch, since constraint can't be known until
   // the last minute.
   if (!batched_quads_.empty() && batched_quad_state_.constraint != constraint) {
@@ -2425,6 +2463,7 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
 
   SkCanvas::SrcRectConstraint constraint =
       ResolveTextureConstraints(image, valid_texel_bounds, params);
+  LogSrcRectConstraintUMA(constraint, params->material);
 
   // Use -1 for matrix index since the cdt is set on the canvas.
   SkCanvas::ImageSetEntry entry = MakeEntry(image, matrix_index, *params);

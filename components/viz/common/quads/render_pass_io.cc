@@ -1787,6 +1787,7 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
     MAP_MATERIAL_TO_STRING(kDebugBorder)
     MAP_MATERIAL_TO_STRING(kPictureContent)
     MAP_MATERIAL_TO_STRING(kCompositorRenderPass)
+    MAP_MATERIAL_TO_STRING(kAggregatedRenderPass)
     MAP_MATERIAL_TO_STRING(kSharedElement)
     MAP_MATERIAL_TO_STRING(kSolidColor)
     MAP_MATERIAL_TO_STRING(kSurfaceContent)

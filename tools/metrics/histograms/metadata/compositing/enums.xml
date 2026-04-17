@@ -151,6 +151,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FrameProduced"/>
 </enum>
 
+<enum name="SrcRectConstraintUMA">
+  <int value="0" label="Strict"/>
+  <int value="1" label="Fast"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

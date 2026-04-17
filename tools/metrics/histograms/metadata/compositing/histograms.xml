@@ -41,6 +41,12 @@ chromium-metrics-reviews@google.com.
                not fully rastered or recorded."/>
 </variants>
 
+<variants name="DrawQuadMaterial">
+  <variant name="AggregatedRenderPass"/>
+  <variant name="TextureContent"/>
+  <variant name="TiledContent"/>
+</variants>
+
 <variants name="LCDTextDisallowedReasonDPI">
   <variant name="HighDPI"
       summary="In web pages where device scale factor is greater than or
@@ -566,6 +572,20 @@ chromium-metrics-reviews@google.com.
     relatively niche use case. Recorded when a compositor frame is started, at a
     subsampled rate.
   </summary>
+</histogram>
+
+<histogram name="Compositing.SkiaRenderer.{DrawQuadMaterial}.SrcRectConstraint"
+    enum="SrcRectConstraintUMA" expires_after="2026-10-16">
+  <owner>hitawala@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Reports how the edges of a DrawQuad's source rect are sampled over
+    SkiaRenderer. This is done on a per DrawQuad basis and recorded through
+    SrcRectConstraintUMA which corresponds to SkCanvas::SrcRectConstraint.
+    Recorded at a subsampled rate (1/100) for Tile, Texture or
+    AggregatedRenderPass DrawQuads per frame.
+  </summary>
+  <token key="DrawQuadMaterial" variants="DrawQuadMaterial"/>
 </histogram>
 
 <histogram name="Compositing.Slim.BeginFrameResult" enum="SlimBeginFrameResult"
