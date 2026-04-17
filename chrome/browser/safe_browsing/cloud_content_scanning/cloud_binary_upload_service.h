@@ -62,8 +62,6 @@ class CloudBinaryUploadService
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
  private:
-  using TokenAndConnector =
-      std::pair<std::string, enterprise_connectors::AnalysisConnector>;
   friend class CloudBinaryUploadServiceTest;
 
   // CloudBinaryUploadServiceBase:

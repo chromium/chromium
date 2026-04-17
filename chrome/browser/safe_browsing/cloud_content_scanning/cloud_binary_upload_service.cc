@@ -74,18 +74,16 @@ bool CanUseAccessToken(const BinaryUploadRequest& request, Profile* profile) {
 }  // namespace
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
-    : profile_(profile) {
-  url_loader_factory_ = profile->GetURLLoaderFactory();
-  ui_task_runner_ = content::GetUIThreadTaskRunner({});
-}
+    : CloudBinaryUploadServiceBase(profile->GetURLLoaderFactory(),
+                                   content::GetUIThreadTaskRunner({})),
+      profile_(profile) {}
 
 CloudBinaryUploadService::CloudBinaryUploadService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile)
-    : profile_(profile) {
-  url_loader_factory_ = url_loader_factory;
-  ui_task_runner_ = content::GetUIThreadTaskRunner({});
-}
+    : CloudBinaryUploadServiceBase(url_loader_factory,
+                                   content::GetUIThreadTaskRunner({})),
+      profile_(profile) {}
 
 CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 

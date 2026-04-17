@@ -38,6 +38,10 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
   using CloudBinaryUploadServiceBase::RecordRequestMetrics;
   using CloudBinaryUploadServiceBase::start_times_;
 
+  TestCloudBinaryUploadServiceBase()
+      : CloudBinaryUploadServiceBase(/*url_loader_factory=*/nullptr,
+                                     /*ui_task_runner=*/nullptr) {}
+
   // CloudBinaryUploadServiceBase:
   void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) override {}
   enterprise_connectors::BinaryUploadRequest::BrowserPolicyConnectorGetter

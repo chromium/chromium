@@ -146,23 +146,50 @@ bool IgnoreErrorResultForResumableUpload(BinaryUploadRequest* request,
           result == ScanRequestUploadResult::kFileEncrypted);
 }
 
+// Auth request class that is used to check if the browser can upload
+// content to the server.
+class ValidateDataUploadRequest : public BinaryUploadRequest {
+ public:
+  ValidateDataUploadRequest(
+      ContentAnalysisCallback callback,
+      CloudAnalysisSettings settings,
+      BrowserPolicyConnectorGetter policy_connector_getter)
+      : BinaryUploadRequest(std::move(callback),
+                            CloudOrLocalAnalysisSettings(std::move(settings)),
+                            std::move(policy_connector_getter)) {}
+  ValidateDataUploadRequest(const ValidateDataUploadRequest&) = delete;
+  ValidateDataUploadRequest& operator=(const ValidateDataUploadRequest&) =
+      delete;
+  ~ValidateDataUploadRequest() override = default;
+
+ private:
+  // BinaryUploadRequest implementation.
+  void GetRequestData(DataCallback callback) override;
+
+  bool IsAuthRequest() const override;
+};
+
+inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
+  std::move(callback).Run(
+      enterprise_connectors::ScanRequestUploadResult::kSuccess,
+      BinaryUploadRequest::Data());
+}
+
+bool ValidateDataUploadRequest::IsAuthRequest() const {
+  return true;
+}
+
 }  // namespace
 
-CloudBinaryUploadServiceBase::CloudBinaryUploadServiceBase() = default;
+CloudBinaryUploadServiceBase::CloudBinaryUploadServiceBase(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : url_loader_factory_(url_loader_factory),
+      ui_task_runner_(ui_task_runner) {}
 
 CloudBinaryUploadServiceBase::~CloudBinaryUploadServiceBase() = default;
 
-CloudBinaryUploadServiceBase::ValidateDataUploadRequest::
-    ValidateDataUploadRequest(
-        ContentAnalysisCallback callback,
-        CloudAnalysisSettings settings,
-        BrowserPolicyConnectorGetter policy_connector_getter)
-    : BinaryUploadRequest(std::move(callback),
-                          CloudOrLocalAnalysisSettings(std::move(settings)),
-                          std::move(policy_connector_getter)) {}
 
-CloudBinaryUploadServiceBase::ValidateDataUploadRequest::
-    ~ValidateDataUploadRequest() = default;
 
 void CloudBinaryUploadServiceBase::MaybeUploadForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
@@ -175,8 +202,8 @@ void CloudBinaryUploadServiceBase::MaybeUploadForDeepScanning(
     return;
   }
 
-  std::optional<enterprise_connectors::ScanRequestUploadResult>
-      enterprise_auth_result = MaybeGetEnterpriseAuthResult(*request);
+  std::optional<ScanRequestUploadResult> enterprise_auth_result =
+      MaybeGetEnterpriseAuthResult(*request);
   if (enterprise_auth_result.has_value()) {
     MaybeUploadForDeepScanningCallback(std::move(request),
                                        enterprise_auth_result.value());
@@ -199,16 +226,7 @@ void CloudBinaryUploadServiceBase::MaybeUploadForDeepScanning(
       dm_token, connector);
 }
 
-void CloudBinaryUploadServiceBase::ValidateDataUploadRequest::GetRequestData(
-    DataCallback callback) {
-  std::move(callback).Run(ScanRequestUploadResult::kSuccess,
-                          BinaryUploadRequest::Data());
-}
 
-bool CloudBinaryUploadServiceBase::ValidateDataUploadRequest::IsAuthRequest()
-    const {
-  return true;
-}
 
 size_t CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax() {
   size_t experiment_max = kParallelContentAnalysisRequestCountMax.Get();
@@ -298,12 +316,11 @@ void CloudBinaryUploadServiceBase::LogResponseDebugInfo(
 #endif
 }
 
-void CloudBinaryUploadServiceBase::IsAuthorized(
-    const GURL& url,
-    bool per_profile_request,
-    AuthorizationCallback callback,
-    const std::string& dm_token,
-    enterprise_connectors::AnalysisConnector connector) {
+void CloudBinaryUploadServiceBase::IsAuthorized(const GURL& url,
+                                                bool per_profile_request,
+                                                AuthorizationCallback callback,
+                                                const std::string& dm_token,
+                                                AnalysisConnector connector) {
   // Start |timer_| on the first call to IsAuthorized. This is necessary in
   // order to invalidate the authorization every 24 hours.
   if (!timer_.IsRunning()) {
@@ -318,17 +335,17 @@ void CloudBinaryUploadServiceBase::IsAuthorized(
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
       can_upload_enterprise_data_[token_and_connector] !=
-          enterprise_connectors::ScanRequestUploadResult::kSuccess) {
+          ScanRequestUploadResult::kSuccess) {
     // Send a request to check if the browser can upload data.
     auto [iter, inserted] = authorization_callbacks_.try_emplace(
         token_and_connector,
-        std::make_unique<base::OnceCallbackList<void(
-            enterprise_connectors::ScanRequestUploadResult)>>());
+        std::make_unique<
+            base::OnceCallbackList<void(ScanRequestUploadResult)>>());
     iter->second->AddUnsafe(std::move(callback));
 
     if (!pending_validate_data_upload_request_.contains(token_and_connector)) {
       pending_validate_data_upload_request_.insert(token_and_connector);
-      enterprise_connectors::CloudAnalysisSettings settings;
+      CloudAnalysisSettings settings;
       settings.analysis_url = url;
       settings.dm_token = dm_token;
       auto request = std::make_unique<ValidateDataUploadRequest>(
@@ -344,7 +361,7 @@ void CloudBinaryUploadServiceBase::IsAuthorized(
       // WebProtect handles requests from ChromeOS Managed Guest Sessions
       // differently, as it cannot rely on the GAIA ID to determine whether or
       // not the user has the BCE license.
-      enterprise_connectors::ClientMetadata client_metadata;
+      ClientMetadata client_metadata;
       client_metadata.set_is_chrome_os_managed_guest_session(
           IsManagedGuestSession());
       request->set_client_metadata(std::move(client_metadata));
@@ -363,7 +380,7 @@ void CloudBinaryUploadServiceBase::ResetAuthorizationData(const GURL& url) {
   auto it = can_upload_enterprise_data_.begin();
   while (it != can_upload_enterprise_data_.end()) {
     std::string dm_token = it->first.first;
-    enterprise_connectors::AnalysisConnector connector = it->first.second;
+    AnalysisConnector connector = it->first.second;
     it = can_upload_enterprise_data_.erase(it);
     IsAuthorized(url, /*per_profile_request*/ false, base::DoNothing(),
                  dm_token, connector);
@@ -722,12 +739,10 @@ CloudBinaryUploadServiceBase::CreateUploadRequest(
 
 void CloudBinaryUploadServiceBase::MaybeUploadForDeepScanningCallback(
     std::unique_ptr<BinaryUploadRequest> request,
-    enterprise_connectors::ScanRequestUploadResult auth_check_result) {
+    ScanRequestUploadResult auth_check_result) {
   // Ignore the request if the browser cannot upload data.
-  if (auth_check_result !=
-      enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    request->FinishRequest(auth_check_result,
-                           enterprise_connectors::ContentAnalysisResponse());
+  if (auth_check_result != ScanRequestUploadResult::kSuccess) {
+    request->FinishRequest(auth_check_result, ContentAnalysisResponse());
     return;
   }
   QueueForDeepScanning(std::move(request));
@@ -781,7 +796,7 @@ void CloudBinaryUploadServiceBase::PrepareRequestForUpload(
   } else if (!IsConsumerScanRequest(*request)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&::enterprise_connectors::GetLocalIpAddresses),
+        base::BindOnce(&GetLocalIpAddresses),
         base::BindOnce(&CloudBinaryUploadServiceBase::OnIpAddressesFetched,
                        weakptr_factory_.GetWeakPtr(), request_id));
   } else {
@@ -932,41 +947,40 @@ bool CloudBinaryUploadServiceBase::ShouldTerminateRequestEarly(
   return false;
 }
 
-std::optional<enterprise_connectors::ScanRequestUploadResult>
+std::optional<ScanRequestUploadResult>
 CloudBinaryUploadServiceBase::MaybeGetEnterpriseAuthResult(
-    const enterprise_connectors::BinaryUploadRequest& request) {
+    const BinaryUploadRequest& request) {
   auto connector = request.analysis_connector();
   std::string dm_token = request.device_token();
   TokenAndConnector token_and_connector = {dm_token, connector};
 
   if (dm_token.empty()) {
-    return enterprise_connectors::ScanRequestUploadResult::kUnauthorized;
+    return ScanRequestUploadResult::kUnauthorized;
   }
 
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
       can_upload_enterprise_data_[token_and_connector] !=
-          enterprise_connectors::ScanRequestUploadResult::kSuccess) {
+          ScanRequestUploadResult::kSuccess) {
     return std::nullopt;
   }
 
   return can_upload_enterprise_data_[token_and_connector];
 }
 
-enterprise_connectors::ScanRequestUploadResult
-CloudBinaryUploadServiceBase::GetConsumerAuthResult(
-    const enterprise_connectors::BinaryUploadRequest& request) {
+ScanRequestUploadResult CloudBinaryUploadServiceBase::GetConsumerAuthResult(
+    const BinaryUploadRequest& request) {
   DCHECK(!request.IsAuthRequest());
 
   return IsAdvancedProtection() || IsEnhancedProtection()
-             ? enterprise_connectors::ScanRequestUploadResult::kSuccess
-             : enterprise_connectors::ScanRequestUploadResult::kUnauthorized;
+             ? ScanRequestUploadResult::kSuccess
+             : ScanRequestUploadResult::kUnauthorized;
 }
 
 void CloudBinaryUploadServiceBase::ValidateDataUploadRequestConnectorCallback(
     const std::string& dm_token,
-    enterprise_connectors::AnalysisConnector connector,
-    enterprise_connectors::ScanRequestUploadResult result,
-    enterprise_connectors::ContentAnalysisResponse response) {
+    AnalysisConnector connector,
+    ScanRequestUploadResult result,
+    ContentAnalysisResponse response) {
   TokenAndConnector token_and_connector = {dm_token, connector};
   pending_validate_data_upload_request_.erase(token_and_connector);
   can_upload_enterprise_data_[token_and_connector] = result;
