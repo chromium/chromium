@@ -225,6 +225,8 @@ Iban::IbanSupportedCountry Iban::GetIbanSupportedCountry(
     return IbanSupportedCountry::kHR;
   } else if (country_code == "HU") {
     return IbanSupportedCountry::kHU;
+  } else if (country_code == "IE") {
+    return IbanSupportedCountry::kIE;
   } else if (country_code == "IL") {
     return IbanSupportedCountry::kIL;
   } else if (country_code == "IQ") {
@@ -391,6 +393,8 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
       return 21;
     case IbanSupportedCountry::kHU:
       return 28;
+    case IbanSupportedCountry::kIE:
+      return 22;
     case IbanSupportedCountry::kIL:
       return 23;
     case IbanSupportedCountry::kIQ:
