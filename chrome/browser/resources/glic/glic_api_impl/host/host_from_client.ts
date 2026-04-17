@@ -653,7 +653,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   glicBrowserOnRecordUseCounter(request: {counter: number}): void {
-    this.handler.onRecordUseCounter(request.counter);
+    chrome.histograms.recordSparseValue('Glic.Api.UseCounter', request.counter);
   }
 
   glicBrowserLogBeginAsyncEvent(request: {

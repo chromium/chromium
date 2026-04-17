@@ -221,7 +221,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnContextUploadCompleted();
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
-  void OnRecordUseCounter(uint16_t counter);
 
   void OnAttachedToBrowser(AttachChangeReason reason);
   void OnDetachedFromBrowser(AttachChangeReason reason);

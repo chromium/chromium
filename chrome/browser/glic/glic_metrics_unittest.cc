@@ -1024,23 +1024,6 @@ TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnlyOnce) {
                                         1);
 }
 
-TEST_F(GlicMetricsTest, OnRecordUseCounter) {
-  metrics()->OnRecordUseCounter(
-      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue));
-  metrics()->OnRecordUseCounter(
-      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue) + 1);
-  metrics()->OnRecordUseCounter(1001);
-
-  histogram_tester().ExpectBucketCount("Glic.Api.UseCounter", 1000, 1);
-  histogram_tester().ExpectBucketCount(
-      "Glic.Api.UseCounter",
-      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue), 1);
-  histogram_tester().ExpectBucketCount(
-      "Glic.Api.UseCounter",
-      static_cast<uint16_t>(mojom::WebUseCounter::kMaxValue) + 1, 1);
-  histogram_tester().ExpectTotalCount("Glic.Api.UseCounter", 3);
-}
-
 class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
  public:
   void SetUp() override {
