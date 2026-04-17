@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] User activation propagation across a same-origin navigation
+  assert_equals: Sticky bit after window nagivated and redirected expected false but got true
+Harness: the test ran to completion.
+

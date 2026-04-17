@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<title>User activation propagation across a same-origin navigation</title>
+<title>User activation propagation across a cross-origin redirection</title>
 <script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -18,7 +19,12 @@
 
   let uuid1 = token();
   let uuid2 = token();
-  let clicked_link = `/common/dispatcher/remote-executor.html?uuid=${uuid2}`
+
+  let origin = get_host_info().HTTP_ORIGIN;
+  let remote_origin = get_host_info().HTTP_REMOTE_ORIGIN;
+  let clicked_link =
+        `${remote_origin}/common/redirect.py?location=` +
+        `${origin}/common/dispatcher/remote-executor.html?uuid=${uuid2}`;
 
   const getUserActivationState = () =>
     [navigator.userActivation.isActive, navigator.userActivation.hasBeenActive];
@@ -54,6 +60,7 @@
         let elem2 = document.createElement("a");
         elem2.textContent = "Dummy text to make it clickable";
         elem2.href = link;
+
         document.body.appendChild(elem2);
       }, [clicked_link]);
     }
@@ -80,7 +87,8 @@
     {
       const context = new RemoteContext(uuid2);
       const result = await context.execute_script(getUserActivationState);
-      assertUserActivationState(result, false, true, "after window redirected");
+      assertUserActivationState(result, false, false,
+            "after window nagivated and redirected");
     }
 }, "User activation propagation across a same-origin navigation");
 </script>
