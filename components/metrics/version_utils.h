@@ -27,6 +27,9 @@ SystemProfileProto::Channel AsProtobufChannel(version_info::Channel channel);
 // platforms.
 std::string GetAppPackageName();
 
+// Gets the operating system name.
+std::string GetOperatingSystemName();
+
 }  // namespace metrics
 
 #endif  // COMPONENTS_METRICS_VERSION_UTILS_H_

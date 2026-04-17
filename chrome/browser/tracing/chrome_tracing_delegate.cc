@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/values.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_otr_state.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -161,6 +163,12 @@ std::string ChromeTracingDelegate::RecordSerializedSystemProfileMetrics()
 tracing::MetadataDataSource::BundleRecorder
 ChromeTracingDelegate::CreateSystemProfileMetadataRecorder() const {
   return base::BindRepeating(&tracing::RecordSystemProfileMetadata);
+}
+
+tracing::MetadataDataSource::ChromeMetadataRecorder
+ChromeTracingDelegate::CreateChromeMetadataPacketRecorder() const {
+  return base::BindRepeating(&tracing::FillChromeMetadataPacket,
+                             chrome::GetChannel());
 }
 
 #if BUILDFLAG(IS_WIN)

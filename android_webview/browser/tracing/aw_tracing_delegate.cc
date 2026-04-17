@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "base/system/sys_info.h"
+#include "components/metrics/version_utils.h"
 #include "components/tracing/common/background_tracing_metrics_provider.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/pref_names.h"
 #include "components/tracing/common/system_profile_metadata_recorder.h"
+#include "components/version_info/android/channel_getter.h"
 
 namespace android_webview {
 
@@ -51,6 +54,12 @@ std::string AwTracingDelegate::RecordSerializedSystemProfileMetrics() const {
 tracing::MetadataDataSource::BundleRecorder
 AwTracingDelegate::CreateSystemProfileMetadataRecorder() const {
   return base::BindRepeating(&tracing::RecordSystemProfileMetadata);
+}
+
+tracing::MetadataDataSource::ChromeMetadataRecorder
+AwTracingDelegate::CreateChromeMetadataPacketRecorder() const {
+  return base::BindRepeating(&tracing::FillChromeMetadataPacket,
+                             version_info::android::GetChannel());
 }
 
 }  // namespace android_webview

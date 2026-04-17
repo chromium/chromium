@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/perfetto/include/perfetto/tracing/data_source.h"
+#include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
 namespace tracing {
 
@@ -38,6 +39,8 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
   using PacketRecorder =
       base::RepeatingCallback<void(perfetto::protos::pbzero::TracePacket*,
                                    bool /*privacy_filtering_enabled*/)>;
+  using ChromeMetadataRecorder = base::RepeatingCallback<void(
+      perfetto::protos::pbzero::ChromeMetadataPacket*)>;
   static void RecordDefaultBundleMetadata(
       perfetto::protos::pbzero::ChromeEventBundle* bundle);
 
@@ -45,11 +48,13 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
 
   static void Register(scoped_refptr<base::SequencedTaskRunner> task_runner,
                        std::vector<BundleRecorder> bundle_recorders,
-                       std::vector<PacketRecorder> packet_recorders);
+                       std::vector<PacketRecorder> packet_recorders,
+                       ChromeMetadataRecorder chrome_metadata_recorder = {});
 
   MetadataDataSource(scoped_refptr<base::SequencedTaskRunner> task_runner,
                      std::vector<BundleRecorder> bundle_recorders,
-                     std::vector<PacketRecorder> packet_recorders);
+                     std::vector<PacketRecorder> packet_recorders,
+                     ChromeMetadataRecorder chrome_metadata_recorder);
   ~MetadataDataSource() override;
 
   void OnSetup(const SetupArgs&) override;
@@ -71,7 +76,8 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
  protected:
   static void WriteMetadata(uintptr_t instance,
                             std::vector<BundleRecorder> bundle_recorders,
-                            std::vector<PacketRecorder> packet_recorders);
+                            std::vector<PacketRecorder> packet_recorders,
+                            ChromeMetadataRecorder chrome_metadata_recorder);
 
  private:
   bool privacy_filtering_enabled_ = false;
@@ -79,6 +85,7 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::vector<BundleRecorder> bundle_recorders_;
   std::vector<PacketRecorder> packet_recorders_;
+  ChromeMetadataRecorder chrome_metadata_recorder_;
 };
 
 }  // namespace tracing
