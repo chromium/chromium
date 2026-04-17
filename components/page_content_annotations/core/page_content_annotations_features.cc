@@ -40,7 +40,7 @@ constexpr auto enabled_by_default_ios_only =
 #endif
 
 const base::FeatureParam<base::TimeDelta> kAnnotatedPageContentCaptureDelay{
-    &kAnnotatedPageContentExtraction, "capture_delay", base::Seconds(5)};
+    &kAnnotatedPageContentExtraction, "capture_delay", base::Seconds(3)};
 
 const base::FeatureParam<bool> kAnnotatedPageContentStudyIncludeInnerText{
     &kAnnotatedPageContentExtraction, "include_inner_text", false};
