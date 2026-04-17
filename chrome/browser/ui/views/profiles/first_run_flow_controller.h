@@ -28,6 +28,10 @@ std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     base::RepeatingCallback<void(IntroChoice)> choice_callback,
     bool enable_animations);
 
+std::unique_ptr<ProfileManagementStepController> CreateDefaultBrowserStep(
+    ProfilePickerWebContentsHost* host,
+    base::OnceClosure step_completed_callback);
+
 class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
  public:
   // Profile management flow controller that will run the FRE for `profile` in

@@ -1,0 +1,157 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+
+// Tests for the chrome://intro/default-browser WebUI page. They live here and
+// not in the webui directory because they manipulate views.
+namespace {
+
+using testing::TestParamInfo;
+using testing::ValuesIn;
+
+struct FirstRunTestParam {
+  PixelTestParam pixel_test_param;
+  bool use_refreshed_ui = true;
+};
+
+constexpr gfx::Size kSmallWindowSize{740, 550};
+constexpr gfx::Size kDefaultWindowSize{1024, 768};
+
+const std::vector<FirstRunTestParam>& GetTestParams() {
+  static const base::NoDestructor<std::vector<FirstRunTestParam>> kParams([] {
+    const PixelTestParam kBaseTestParams[] = {
+        {.test_suffix = "LightTheme", .window_size = kDefaultWindowSize},
+        {.test_suffix = "LightThemeSmallWindow",
+         .window_size = kSmallWindowSize},
+        {.test_suffix = "DarkTheme",
+         .use_dark_theme = true,
+         .window_size = kDefaultWindowSize},
+        {.test_suffix = "RtlLanguage",
+         .use_right_to_left_language = true,
+         .window_size = kDefaultWindowSize},
+    };
+
+    std::vector<FirstRunTestParam> params;
+    for (const auto& pixel_test_param : kBaseTestParams) {
+      for (bool use_refreshed_ui : {false, true}) {
+        params.push_back({.pixel_test_param = pixel_test_param,
+                          .use_refreshed_ui = use_refreshed_ui});
+      }
+    }
+    return params;
+  }());
+  return *kParams;
+}
+
+}  // namespace
+
+class FirstRunDefaultBrowserPixelTest
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
+      public testing::WithParamInterface<FirstRunTestParam>,
+      public views::ViewObserver {
+ public:
+  FirstRunDefaultBrowserPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
+    scoped_feature_list_.InitWithFeatureState(switches::kFirstRunDesktopRefresh,
+                                              GetParam().use_refreshed_ui);
+  }
+
+  ~FirstRunDefaultBrowserPixelTest() override {
+    if (profile_picker_view_) {
+      profile_picker_view_->views::View::RemoveObserver(this);
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ProfilesPixelTestBaseT<UiBrowserTest>::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForceFreDefaultBrowserStep);
+  }
+
+  void ShowUi(const std::string& name) override {
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+
+    profile_picker_view_ = new ProfileManagementStepTestView(
+        ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
+                                           base::DoNothing()),
+        ProfileManagementFlowController::Step::kDefaultBrowser,
+        /*step_controller_factory=*/
+        base::BindRepeating([](ProfilePickerWebContentsHost* host) {
+          return CreateDefaultBrowserStep(host, base::DoNothing());
+        }));
+    profile_picker_view_->views::View::AddObserver(this);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
+  }
+
+  bool VerifyUi() override {
+    views::Widget* widget = GetWidgetForScreenshot();
+
+    const testing::TestInfo* test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    const std::string screenshot_name =
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
+
+    return VerifyPixelUi(widget, "FirstRunDefaultBrowserPixelTest",
+                         screenshot_name) != ui::test::ActionResult::kFailed;
+  }
+
+  void WaitForUserDismissal() override {
+    if (!profile_picker_view_) {
+      return;
+    }
+    DCHECK(GetWidgetForScreenshot());
+    ViewDeletedWaiter(profile_picker_view_).Wait();
+  }
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override {
+    profile_picker_view_ = nullptr;
+  }
+
+ private:
+  views::Widget* GetWidgetForScreenshot() {
+    if (!profile_picker_view_) {
+      return nullptr;
+    }
+    return profile_picker_view_->GetWidget();
+  }
+
+  raw_ptr<ProfileManagementStepTestView> profile_picker_view_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(FirstRunDefaultBrowserPixelTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FirstRunDefaultBrowserPixelTest,
+    testing::ValuesIn(GetTestParams()),
+    [](const testing::TestParamInfo<FirstRunTestParam>& info) {
+      return base::StrCat({info.param.pixel_test_param.test_suffix,
+                           info.param.use_refreshed_ui ? "Refresh" : ""});
+    });

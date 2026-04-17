@@ -62,6 +62,7 @@ ExtensionUninstallDialogViewInteractiveBrowserTest.*
 FeaturePromoDialogIntentChipTest.InvokeUi_*
 FeaturePromoDialogTest.InvokeUi_*
 FileSystemAccessUsageBubbleViewTest.*
+FirstRunDefaultBrowserPixelTest.*
 FirstRunDialogTest.*
 FirstRunIntroPixelTest.*
 GlobalErrorBubbleTest.*

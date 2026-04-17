@@ -4596,8 +4596,10 @@ if (!is_android) {
         sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]
       }
       if (is_win || is_linux) {
-        sources +=
-            [ "../browser/ui/views/profiles/first_run_intro_browsertest.cc" ]
+        sources += [
+          "../browser/ui/views/profiles/first_run_default_browser_ui_browsertest.cc",
+          "../browser/ui/views/profiles/first_run_intro_browsertest.cc",
+        ]
       }
       if (!is_chromeos) {
         deps += [ "//chrome/browser/ui/webui/signin:profile" ]

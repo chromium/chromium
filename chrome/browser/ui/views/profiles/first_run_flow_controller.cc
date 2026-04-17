@@ -490,6 +490,13 @@ std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
                                                enable_animations);
 }
 
+std::unique_ptr<ProfileManagementStepController> CreateDefaultBrowserStep(
+    ProfilePickerWebContentsHost* host,
+    base::OnceClosure step_completed_callback) {
+  return std::make_unique<DefaultBrowserStepController>(
+      host, std::move(step_completed_callback));
+}
+
 FirstRunFlowController::FirstRunFlowController(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
@@ -699,7 +706,7 @@ FirstRunFlowController::RegisterPostIdentitySteps(
       base::BindOnce(&FirstRunFlowController::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
   RegisterStep(Step::kDefaultBrowser,
-               std::make_unique<DefaultBrowserStepController>(
+               CreateDefaultBrowserStep(
                    host(), std::move(default_browser_promo_step_completed)));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kDefaultBrowser);
