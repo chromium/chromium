@@ -15,13 +15,19 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/web/public/web_state_id.h"
 
+@class PageContextWrapper;
 class ProfileIOS;
+
+namespace web {
+class WebState;
+}
 
 namespace actor {
 
 class ActorTask;
+class ActorTool;
 class ActorToolFactory;
 class AggregatedJournal;
 
@@ -48,12 +54,21 @@ class ActorService : public KeyedService {
   ActorTaskId CreateTask(const std::string& title,
                          bool allow_incognito_web_states);
 
-  // Submits tools to an active task with a task update string (a short blurb
+  // Submits actions to an active task with a task update string (a short blurb
   // which tells the user what the Actor is currently doing in plain language).
-  void ExecuteTools(ActorTaskId task_id,
-                    std::vector<std::unique_ptr<ActorTool>> tools,
-                    const std::string& task_update,
-                    PerformActionsCallback callback);
+  void PerformActions(ActorTaskId task_id,
+                      std::vector<std::unique_ptr<ActorTool>> actions,
+                      const std::string& task_update,
+                      PerformActionsCallback callback);
+
+  // Requests a "tab observation" (nomenclature aligned with
+  // `chrome/browser/actor`). Tab is equivalent to WebState and "observation" is
+  // equivalent to a PageContext extraction. Not an "observing" pattern. In
+  // practice, this is equivalent to requesting a rich actionable mode
+  // extraction on `PageContextWrapper`, with a completion callback.
+  void RequestTabObservation(ActorTaskId task_id,
+                             web::WebState* web_state,
+                             TabObservationCallback callback);
 
   // Pauses a task.
   void PauseTask(ActorTaskId task_id, bool from_actor);
@@ -80,6 +95,16 @@ class ActorService : public KeyedService {
 
   // Map of active tasks, keyed by their task ID.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> active_tasks_;
+
+  // Map of pending PageContext extractions ("observations"). Used to keep the
+  // wrapper alive while the extraction is in progress.
+  std::map<web::WebStateID, PageContextWrapper*> pending_observations_;
+
+  // Callback for when PageContext extraction completes.
+  void OnPageContextExtractionComplete(
+      web::WebStateID web_state_id,
+      TabObservationCallback callback,
+      PageContextWrapperCallbackResponse response);
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;

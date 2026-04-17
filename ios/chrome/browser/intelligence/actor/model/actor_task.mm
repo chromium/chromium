@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/web_state.h"
@@ -21,9 +22,21 @@ ActorTaskState ActorTask::GetState() const {
   return state_;
 }
 
-void ActorTask::ExecuteTools(std::vector<std::unique_ptr<ActorTool>> tools,
-                             const std::string& task_update) {
-  // TODO(crbug.com/496164697): Implement and test.
+void ActorTask::Act(std::vector<std::unique_ptr<ActorTool>> actions,
+                    const std::string& task_update,
+                    PerformActionsCallback callback) {
+  // TODO(crbug.com/503054406): Check for invalid states.
+  state_ = ActorTaskState::kActing;
+  engine_->Act(
+      std::move(actions),
+      base::BindOnce(&ActorTask::OnActCompleted, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void ActorTask::OnActCompleted(PerformActionsCallback callback,
+                               std::vector<ActionResult> results) {
+  // TODO(crbug.com/503054406): Check for tool errors.
+  std::move(callback).Run(std::move(results));
 }
 
 void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {

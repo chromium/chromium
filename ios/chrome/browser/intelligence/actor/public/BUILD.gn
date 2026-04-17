@@ -10,6 +10,7 @@ source_set("actor_types") {
   deps = [
     "//base",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
   ]
 }
 

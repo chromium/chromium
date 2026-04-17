@@ -10,6 +10,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/types/id_type.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 
 namespace actor {
 
@@ -74,6 +75,14 @@ struct ActionResult {
 // Callback for when a set of actions finishes execution.
 using PerformActionsCallback =
     base::OnceCallback<void(std::vector<ActionResult>)>;
+
+// Callback for a "tab observation" (nomenclature aligned with
+// `chrome/browser/actor`). Tab is equivalent to WebState and observation is
+// equivalent to a PageContext extraction. Not an "observing" pattern. In
+// practice, this is the completion callback executed after a rich actionable
+// mode PageContextWrapper extraction.
+using TabObservationCallback =
+    base::OnceCallback<void(PageContextWrapperCallbackResponse)>;
 
 }  // namespace actor
 

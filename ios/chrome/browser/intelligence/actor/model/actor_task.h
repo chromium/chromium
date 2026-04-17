@@ -19,11 +19,11 @@ class WebState;
 
 namespace actor {
 
-class ActorTool;
 class ActorEngine;
+class ActorTool;
 
 // A class representing a task managed by `ActorService`. A task should live for
-// a whole Actor journey and be passed multiple sets of tools to execute
+// a whole Actor journey and be passed multiple sets of actions to execute
 // sequentially.
 class ActorTask {
  public:
@@ -41,17 +41,18 @@ class ActorTask {
   // Returns the current execution state of the task.
   ActorTaskState GetState() const;
 
-  // Begins executing the given sequence of tools on the underlying execution
+  // Begins executing the given sequence of actions on the underlying execution
   // engine with a string update blurb in plain language about what the actor is
   // doing.
-  void ExecuteTools(std::vector<std::unique_ptr<ActorTool>> tools,
-                    const std::string& task_update);
+  void Act(std::vector<std::unique_ptr<ActorTool>> actions,
+           const std::string& task_update,
+           PerformActionsCallback callback);
 
-  // Stops the task and cancels any pending tools.
+  // Stops the task and cancels any pending actions.
   void Stop(ActorTaskStoppedReason stop_reason);
 
   // Pauses execution (either initiated by the actor or the user). Subsequent
-  // `ExecuteTools()` calls are invalid while paused.
+  // `Act()` calls are invalid while paused.
   void Pause(bool from_actor);
 
   // Resumes task execution from a paused state.
@@ -64,6 +65,10 @@ class ActorTask {
  private:
   friend class ActorTaskTest;
 
+  // Called when tools execution is completed.
+  void OnActCompleted(PerformActionsCallback callback,
+                      std::vector<ActionResult> results);
+
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
 
@@ -73,13 +78,15 @@ class ActorTask {
   // The task's title.
   const std::string title_;
 
-
   // The execution engine for this task.
   std::unique_ptr<ActorEngine> engine_;
 
   // Set of web states actively controlled (observed and/or being actuated on)
   // by this task.
   std::vector<base::WeakPtr<web::WebState>> controlled_web_states_;
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

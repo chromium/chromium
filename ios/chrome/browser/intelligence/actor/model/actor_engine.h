@@ -10,15 +10,25 @@
 #import <vector>
 
 #import "base/functional/callback.h"
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 namespace actor {
 
 class ActorTool;
 
 // Executes a sequence of actions moving through the state machine.
+//
+// Note on terminology: A "tool" (represented by `ActorTool`) is the capability
+// (e.g., click or type), while an "action" is a specific instance of that
+// capability being executed with specific parameters.
+//
+// Each action execution includes checks, UI updates, and the core work which is
+// the tool invocation.
 class ActorEngine {
  public:
-  // Represents the current execution stage of the engine for the active tools.
+  // Represents the current execution stage of the engine for the active
+  // actions.
   enum class State {
     // Default value.
     kUnknown = 0,
@@ -34,9 +44,9 @@ class ActorEngine {
     kToolInvoke,
     // Invokes UI updates after tool execution.
     kUiPostInvoke,
-    // Tool execution finished successfully.
+    // Action execution finished successfully.
     kCompleted,
-    // Tool execution hit a terminal failure.
+    // Action execution hit a terminal failure.
     kFailed
   };
 
@@ -44,17 +54,16 @@ class ActorEngine {
   enum class EngineResult {
     // Default value.
     kUnknown = 0,
-    // All requested tools completed successfully.
+    // All requested actions completed successfully.
     kSuccess,
-    // A tool failed or could not be verified, aborting the remaining sequence.
+    // An action failed or could not be verified, aborting the remaining
+    // sequence.
     kFailed,
-    // A tool operation or prompt timed out.
+    // An action tool invocation or prompt timed out.
     kTimeout,
     // The engine's execution was manually aborted.
     kCancelled,
   };
-
-  using EngineCompletionCallback = base::OnceCallback<void(EngineResult)>;
 
   ActorEngine();
   ~ActorEngine();
@@ -63,49 +72,64 @@ class ActorEngine {
 
   // Performs the given sequence of tools and invokes the callback when
   // completed.
-  void ExecuteTools(std::vector<std::unique_ptr<ActorTool>> tools,
-                    EngineCompletionCallback callback);
+  void Act(std::vector<std::unique_ptr<ActorTool>> actions,
+           PerformActionsCallback callback);
 
-  // Cancels any ongoing and pending tools.
-  void CancelOngoingAndPendingTools(EngineResult reason);
-
-  // Accessors. TODO(crbug.com/496164779): Remove when they
-  // are used internally in ActorEngine, this is to fix
-  // compilation warnings about unused fields.
-  State state() const { return state_; }
-  const std::vector<std::unique_ptr<ActorTool>>& pending_tools() const {
-    return pending_tools_;
-  }
-  const EngineCompletionCallback& completion_callback() const {
-    return completion_callback_;
-  }
+  // Cancels any ongoing and pending actions.
+  void CancelOngoingAndPendingActions(EngineResult reason);
 
  private:
-  // The core state machine loop. Evaluates `state_` and
-  // routes to the correct method.
-  void AdvanceState();
+  friend class ActorEngineTest;
 
-  // Executes the next tool.
-  void ExecuteNextTool();
+  // Executes the next action.
+  void ExecuteNextAction();
 
-  // State machine handlers.
-  void HandlePreExecutionChecks();
-  void HandleToolVerify();
-  void HandleUiPreInvoke();
-  void HandleToolInvoke();
-  void HandleUiPostInvoke();
-  void HandleToolCompleted();
-  void HandleToolFailed();
+  // Callback for when UI pre-invoke is finished.
+  void FinishedUiPreInvoke(ActionResult result);
+
+  // Callback invoked when a tool completes execution, which bridges the tool's
+  // `ToolExecutionResult` into an `ActionResult`.
+  void OnToolExecutionComplete(ToolExecutionResult tool_result);
+
+  // Callback for when tool execution is finished.
+  void FinishedToolInvoke(ActionResult result);
+
+  // Callback for when UI post-invoke is finished.
+  void FinishedUiPostInvoke(ActionResult result);
+
+  // Completes the current sequence of actions, handling success or failure.
+  // This method should be called when the execution of the tool sequence is
+  // finished or when a terminal failure occurs in the action. It updates the
+  // engine state and runs the completion callback. If a failure occurs, it
+  // records the failure result, potentially overwriting a previous success
+  // result for the same actions if it failed in a post-tool-invoke step.
+  void CompleteActions(ActionResult result);
+
+  // Returns the index of the action currently in progress.
+  size_t InProgressActionIndex() const;
 
   // The current state of the execution engine.
   State state_;
 
-  // The sequence of tools remaining to be executed.
-  std::vector<std::unique_ptr<ActorTool>> pending_tools_;
+  // The sequence of actions to be executed.
+  std::vector<std::unique_ptr<ActorTool>> action_sequence_;
 
-  // Invoked when all actions complete successfully or a
-  // terminal error occurs.
-  EngineCompletionCallback completion_callback_;
+  // The index of the next action that will be invoked.
+  size_t next_action_index_ = 0;
+
+  // Invoked when all actions complete or a terminal error occurs.
+  PerformActionsCallback completion_callback_;
+
+  // Accumulated results of executed actions. Results are added here in
+  // `FinishedToolInvoke` on successful tool execution. If a subsequent step
+  // (like UI post-invoke) fails, the result at the corresponding index is
+  // overwritten with the failure. If a failure occurs before tool execution,
+  // the failure result is added here by `CompleteActions`. Aligns with Desktop
+  // implementation.
+  std::vector<ActionResult> action_results_;
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<ActorEngine> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

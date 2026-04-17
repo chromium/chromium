@@ -29,9 +29,17 @@ class ActorTaskTest : public PlatformTest {
     task_->controlled_web_states_.push_back(web_state);
   }
 
+  const std::vector<base::WeakPtr<web::WebState>>& GetControlledWebStates()
+      const {
+    return task_->controlled_web_states_;
+  }
+
   std::unique_ptr<ActorTask> task_;
 };
 
+// Tests that the task correctly identifies if it is controlling a given
+// WebState. It also verifies that it handles destroyed WebStates and null
+// pointers gracefully.
 TEST_F(ActorTaskTest, IsControllingWebState) {
   std::unique_ptr<web::FakeWebState> web_state1 =
       std::make_unique<web::FakeWebState>();
@@ -58,6 +66,18 @@ TEST_F(ActorTaskTest, IsControllingWebState) {
 
   // Test that passing nullptr returns false gracefully.
   EXPECT_FALSE(task_->IsControllingWebState(nullptr));
+}
+
+// Tests that the getter for controlled WebStates returns the correct list of
+// WebStates.
+TEST_F(ActorTaskTest, ControlledWebStatesGetter) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  AddControlledWebState(web_state->GetWeakPtr());
+
+  const auto& controlled_states = GetControlledWebStates();
+  EXPECT_EQ(1u, controlled_states.size());
+  EXPECT_EQ(web_state.get(), controlled_states[0].get());
 }
 
 }  // namespace actor

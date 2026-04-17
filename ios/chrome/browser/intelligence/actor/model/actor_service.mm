@@ -17,7 +17,10 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/web/public/web_state.h"
 
 namespace actor {
 
@@ -120,12 +123,58 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   return task_id;
 }
 
-void ActorService::ExecuteTools(ActorTaskId task_id,
-                                std::vector<std::unique_ptr<ActorTool>> tools,
-                                const std::string& task_update,
-                                PerformActionsCallback callback) {
-  // TODO(crbug.com/496163986): Implement and test.
-  std::move(callback).Run({});
+void ActorService::PerformActions(
+    ActorTaskId task_id,
+    std::vector<std::unique_ptr<ActorTool>> actions,
+    const std::string& task_update,
+    PerformActionsCallback callback) {
+  auto it = active_tasks_.find(task_id);
+  if (it == active_tasks_.end()) {
+    // TODO(crbug.com/503054406): Return high level error for non-existent
+    // task.
+    std::move(callback).Run(std::vector<ActionResult>());
+    return;
+  }
+
+  // TODO(crbug.com/503054406): Return high level error for already acting task.
+  it->second->Act(std::move(actions), task_update, std::move(callback));
+}
+
+void ActorService::RequestTabObservation(ActorTaskId task_id,
+                                         web::WebState* web_state,
+                                         TabObservationCallback callback) {
+  auto it = active_tasks_.find(task_id);
+  if (it == active_tasks_.end() || !web_state) {
+    std::move(callback).Run(PageContextWrapperCallbackResponse());
+    return;
+  }
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRichExtraction(true);
+  builder.SetUseRichExtractionWithActionable(true);
+  PageContextWrapperConfig config = builder.Build();
+
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+  PageContextWrapper* page_context_wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state
+                  config:config
+      completionCallback:base::BindOnce(
+                             &ActorService::OnPageContextExtractionComplete,
+                             weak_ptr_factory_.GetWeakPtr(), web_state_id,
+                             std::move(callback))];
+
+  pending_observations_[web_state_id] = page_context_wrapper;
+
+  [page_context_wrapper populatePageContextFieldsAsync];
+}
+
+void ActorService::OnPageContextExtractionComplete(
+    web::WebStateID web_state_id,
+    TabObservationCallback callback,
+    PageContextWrapperCallbackResponse response) {
+  pending_observations_.erase(web_state_id);
+  std::move(callback).Run(std::move(response));
 }
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
