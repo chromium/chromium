@@ -224,7 +224,8 @@ OnDeviceSpeechRecognitionEngine::ConvertAccumulatedAudioData() {
   auto signed_buffer = on_device_model::mojom::AudioData::New();
   signed_buffer->channel_count = audio_parameters_.channels();
   signed_buffer->sample_rate = audio_parameters_.sample_rate();
-  signed_buffer->frame_count = accumulated_audio_data_.size();
+  signed_buffer->frame_count =
+      base::checked_cast<int32_t>(accumulated_audio_data_.size());
 
   // Normalization factor for converting int16_t audio samples to float.
   constexpr float kInt16ToFloatNormalizer = 32768.0f;
