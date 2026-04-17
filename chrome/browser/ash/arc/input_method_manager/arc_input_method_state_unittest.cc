@@ -38,8 +38,8 @@ class FakeDelegate : public ArcInputMethodState::Delegate {
   bool ShouldArcIMEAllowed() const override { return allowed; }
   InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfoPtr& info) const override {
-    return InputMethodDescriptor(info->ime_id, "", "", {}, {}, false, GURL(),
-                                 GURL(),
+    return InputMethodDescriptor(info->ime_id, "", "", {}, {}, false,
+                                 GURL(info->settings_url), GURL(),
                                  /*handwriting_language=*/std::nullopt);
   }
   bool allowed = false;
@@ -108,6 +108,45 @@ TEST(ArcInputMethodState, AllowDisallowInputMethods) {
   delegate.allowed = false;
   EXPECT_EQ(1u, state.GetAvailableInputMethods().size());
   EXPECT_EQ("ime_a", state.GetAvailableInputMethods()[0].id());
+}
+
+TEST(ArcInputMethodState, ValidateImeInfo) {
+  FakeDelegate delegate;
+  delegate.allowed = true;
+
+  ArcInputMethodState state(&delegate);
+  std::vector<mojom::ImeInfoPtr> imes;
+
+  // Valid IME
+  imes.push_back(GenerateImeInfo("ime_valid", true, true));
+  imes.back()->settings_url = "intent://valid_settings";
+
+  // Invalid: empty ID
+  imes.push_back(GenerateImeInfo("", true, true));
+
+  // Invalid: comma in ID
+  imes.push_back(GenerateImeInfo("ime,invalid", true, true));
+
+  // Invalid: duplicate ID
+  imes.push_back(GenerateImeInfo("ime_valid", true, true));
+
+  // Malicious: non-intent settings URL
+  imes.push_back(GenerateImeInfo("ime_malicious_url", true, true));
+  imes.back()->settings_url = "javascript:alert(1)";
+
+  state.InitializeWithImeInfo("ime_id", imes);
+
+  const InputMethodDescriptors available_imes =
+      state.GetAvailableInputMethods();
+  // Only "ime_valid" and "ime_malicious_url" should be accepted.
+  ASSERT_EQ(2u, available_imes.size());
+  EXPECT_EQ("ime_valid", available_imes[0].id());
+  EXPECT_EQ(GURL("intent://valid_settings"),
+            available_imes[0].options_page_url());
+
+  EXPECT_EQ("ime_malicious_url", available_imes[1].id());
+  // settings_url should be cleared for non-intent URLs.
+  EXPECT_TRUE(available_imes[1].options_page_url().is_empty());
 }
 
 }  // namespace arc
