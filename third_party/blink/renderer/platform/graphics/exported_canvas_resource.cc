@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
@@ -25,13 +26,6 @@ ExportedCanvasResource::~ExportedCanvasResource() {
 }
 
 // static
-void ExportedCanvasResource::DropRefOnOwningThread(
-    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
-  CHECK(exported_resource);
-  CHECK(exported_resource->HasOneRef());
-}
-
-// static
 void ExportedCanvasResource::OnPlaceholderReleasedResource(
     scoped_refptr<ExportedCanvasResource>&& exported_resource) {
   if (!exported_resource) {
@@ -44,10 +38,7 @@ void ExportedCanvasResource::OnPlaceholderReleasedResource(
     auto& owning_thread_task_runner =
         exported_resource->resource_->owning_thread_task_runner_;
     owning_thread_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DropRefOnOwningThread, std::move(exported_resource)));
-  } else {
-    DropRefOnOwningThread(std::move(exported_resource));
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(exported_resource)));
   }
 }
 

@@ -32,9 +32,6 @@ class PLATFORM_EXPORT ExportedCanvasResource
   CanvasResource* GetResourceForTesting() const { return resource_.get(); }
 
  private:
-  static void DropRefOnOwningThread(
-      scoped_refptr<ExportedCanvasResource>&& exported_resource);
-
   scoped_refptr<CanvasResource> resource_;
 };
 
