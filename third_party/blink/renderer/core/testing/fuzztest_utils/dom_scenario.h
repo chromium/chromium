@@ -46,6 +46,15 @@ struct NodeSpecification {
   NodeState modified_state;
 };
 
+// Combines predefined node specs with domains for generating their initial
+// and modified states. Returned by GetPredefinedNodes().
+struct PredefinedNodesConfig {
+  std::vector<NodeSpecification> nodes;
+  // When set, initial attributes/styles/text are also fuzzed.
+  std::optional<fuzztest::Domain<std::vector<NodeState>>> initial_states_domain;
+  fuzztest::Domain<std::vector<NodeState>> modified_states_domain;
+};
+
 // Represents the test case that will be used by the test runner, namely
 // a root element tag and a set of node specifications (each containing
 // initial state and modifications).
@@ -77,10 +86,10 @@ class DomScenarioDomainSpecification {
     return fuzztest::Just(std::string(""));
   }
 
-  // Optional predefined nodes - if provided, these will be used as the initial
-  // DOM structure instead of generating random nodes. Modifications will still
-  // be applied as usual.
-  virtual std::optional<std::vector<NodeSpecification>> GetPredefinedNodes() {
+  // Optional predefined nodes with their state domains. If provided,
+  // these will be used as the initial DOM structure instead of generating
+  // random nodes.
+  virtual std::optional<PredefinedNodesConfig> GetPredefinedNodes() {
     return std::nullopt;
   }
 
@@ -88,6 +97,13 @@ class DomScenarioDomainSpecification {
   // the runner to wrap them in a div shadow host.
   virtual bool UseShadowDOM() { return false; }
 };
+
+// Domain for a node's state (parent index, attributes, styles, text).
+fuzztest::Domain<NodeState> AnyNodeState(
+    DomScenarioDomainSpecification* spec,
+    int num_nodes,
+    fuzztest::Domain<std::pair<QualifiedName, std::string>> attribute_domain,
+    fuzztest::Domain<std::string> styles_domain);
 
 // Domain building functions
 fuzztest::Domain<DomScenario> AnyDomScenarioForSpec(

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/testing/fuzztest_utils/dom_scenario.h"
 
-#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/types/optional_ref.h"
@@ -191,11 +190,34 @@ std::string DomScenarioToString(const DomScenario& scenario) {
   return out;
 }
 
+// Combines predefined node tags/parent indices with fuzzed states to produce
+// a vector of NodeSpecifications.
+std::vector<NodeSpecification> BuildNodeSpecificationsForPredefinedNodes(
+    const std::vector<NodeSpecification>& predefined_nodes,
+    std::optional<std::vector<NodeState>> initial_states,
+    std::vector<NodeState> modified_states) {
+  std::vector<NodeSpecification> out;
+  out.reserve(predefined_nodes.size());
+  for (size_t i = 0; i < predefined_nodes.size(); ++i) {
+    NodeState initial = initial_states.has_value()
+                            ? std::move((*initial_states)[i])
+                            : predefined_nodes[i].initial_state;
+    initial.parent_index = predefined_nodes[i].initial_state.parent_index;
+    out.push_back(NodeSpecification{.tag = predefined_nodes[i].tag,
+                                    .initial_state = std::move(initial),
+                                    .modified_state = modified_states[i]});
+  }
+  return out;
+}
+
 }  // namespace
 
 // Domain for a node's state (parent index, attributes, styles, text).
-fuzztest::Domain<NodeState> AnyNodeState(DomScenarioDomainSpecification* spec,
-                                         int num_nodes) {
+fuzztest::Domain<NodeState> AnyNodeState(
+    DomScenarioDomainSpecification* spec,
+    int num_nodes,
+    fuzztest::Domain<std::pair<QualifiedName, std::string>> attribute_domain,
+    fuzztest::Domain<std::string> styles_domain) {
   fuzztest::Domain<bool> in_shadow_dom_domain =
       spec->UseShadowDOM() ? fuzztest::ElementOf({true, false})
                            : fuzztest::Just(false);
@@ -209,9 +231,9 @@ fuzztest::Domain<NodeState> AnyNodeState(DomScenarioDomainSpecification* spec,
       fuzztest::Arbitrary<bool>();
   return fuzztest::StructOf<NodeState>(
       fuzztest::InRange(kIndexOfRootElement, num_nodes - 1),
-      fuzztest::OptionalOf(fuzztest::VectorOf(spec->AnyAttributeNameValuePair())
+      fuzztest::OptionalOf(fuzztest::VectorOf(std::move(attribute_domain))
                                .WithMaxSize(spec->GetMaxAttributesPerNode())),
-      fuzztest::OptionalOf(spec->AnyStyles()),
+      fuzztest::OptionalOf(std::move(styles_domain)),
       fuzztest::OptionalOf(spec->AnyText()), in_shadow_dom_domain,
       use_slot_projection_domain, should_focus_domain,
       should_scroll_into_view_domain, should_enter_fullscreen_domain,
@@ -223,31 +245,37 @@ fuzztest::Domain<NodeState> AnyNodeState(DomScenarioDomainSpecification* spec,
 fuzztest::Domain<NodeSpecification> AnyNodeSpecification(
     DomScenarioDomainSpecification* spec,
     int num_nodes) {
-  return fuzztest::StructOf<NodeSpecification>(spec->AnyTag(),
-                                               AnyNodeState(spec, num_nodes),
-                                               AnyNodeState(spec, num_nodes));
+  return fuzztest::StructOf<NodeSpecification>(
+      spec->AnyTag(),
+      AnyNodeState(spec, num_nodes, spec->AnyAttributeNameValuePair(),
+                   spec->AnyStyles()),
+      AnyNodeState(spec, num_nodes, spec->AnyAttributeNameValuePair(),
+                   spec->AnyStyles()));
 }
 
-// Domain for a node specification vector using predefined nodes and fuzzing
-// only the modified state for each.
+// Domain for a node specification vector using predefined nodes. When
+// initial_states_domain is provided, initial attributes/styles/text are
+// also fuzzed; otherwise the predefined initial states are used as-is.
 fuzztest::Domain<std::vector<NodeSpecification>>
-NodeSpecificationsForPredefinedNodes(std::vector<NodeSpecification> nodes,
-                                     DomScenarioDomainSpecification* spec) {
-  const size_t n = nodes.size();
+NodeSpecificationsForPredefinedNodes(PredefinedNodesConfig config) {
+  if (config.initial_states_domain.has_value()) {
+    return fuzztest::Map(
+        [nodes = std::move(config.nodes)](
+            std::vector<NodeState> initial_states,
+            std::vector<NodeState> modified_states) {
+          return BuildNodeSpecificationsForPredefinedNodes(
+              nodes, std::move(initial_states), std::move(modified_states));
+        },
+        std::move(*config.initial_states_domain),
+        std::move(config.modified_states_domain));
+  }
   return fuzztest::Map(
-      [node_specs = std::move(nodes),
-       expected = n](base::span<const NodeState> modified_states) {
-        std::vector<NodeSpecification> out;
-        out.reserve(expected);
-        for (size_t i = 0; i < expected; ++i) {
-          out.push_back(
-              NodeSpecification{.tag = node_specs[i].tag,
-                                .initial_state = node_specs[i].initial_state,
-                                .modified_state = modified_states[i]});
-        }
-        return out;
+      [nodes =
+           std::move(config.nodes)](std::vector<NodeState> modified_states) {
+        return BuildNodeSpecificationsForPredefinedNodes(
+            nodes, std::nullopt, std::move(modified_states));
       },
-      fuzztest::VectorOf(AnyNodeState(spec, static_cast<int>(n))).WithSize(n));
+      std::move(config.modified_states_domain));
 }
 
 fuzztest::Domain<DomScenario> AnyDomScenarioForSpec(
@@ -262,7 +290,7 @@ fuzztest::Domain<DomScenario> AnyDomScenarioForSpec(
             [&]() -> fuzztest::Domain<std::vector<NodeSpecification>> {
           if (predefined_nodes.has_value()) {
             return NodeSpecificationsForPredefinedNodes(
-                std::move(*predefined_nodes), spec);
+                std::move(*predefined_nodes));
           }
           return fuzztest::VectorOf(AnyNodeSpecification(spec, num_nodes))
               .WithSize(num_nodes);

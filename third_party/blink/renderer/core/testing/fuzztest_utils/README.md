@@ -24,6 +24,15 @@ functions, as well as support for other specifications, are encouraged.
 - **`NodeSpecification`** - Represents a single DOM node with its tag, initial
   state, and modified state. Each node has a 1:1 mapping between initial and
   modified states.
+- **`PredefinedNodesConfig`** - Combines predefined node specs with domains for
+  generating their initial and modified states. Returned by
+  `GetPredefinedNodes()`. Contains:
+  - `nodes` - the predefined node specs (tags and parent indices are always
+    preserved)
+  - `modified_states_domain` - domain for generating modified states
+  - `initial_states_domain` (optional) - domain for generating initial states.
+    When set, initial attributes, styles, and text are also fuzzed. When
+    omitted, initial states are taken as-is from the predefined nodes.
 - **`DomScenario`** - Represents a complete test case containing a root element
   tag, a vector of `NodeSpecification` objects, and an optional stylesheet
   injected as a `<style>` element in the document head.
@@ -38,8 +47,8 @@ functions, as well as support for other specifications, are encouraged.
   - `GetRootElementTag()` - root element type
   - `AnyStylesheet()` (optional) - the pool of possible stylesheets (defaults
     to empty string)
-  - `GetPredefinedNodes()` (optional) - provides a fixed initial DOM structure
-    instead of generating random nodes. Modifications are still fuzzed.
+  - `GetPredefinedNodes()` (optional) - returns a `PredefinedNodesConfig`
+    providing a fixed DOM structure instead of generating random nodes.
   - `UseShadowDOM()` (optional) - returns true to enable shadow DOM fuzzing,
     which wraps nodes in shadow hosts with optional slot projection (defaults
     to false)
