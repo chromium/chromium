@@ -327,13 +327,12 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   if (data.GetEvent() == v8::kPromiseHandlerAddedAfterReject) {
     rejected_promises.HandlerAdded(data);
     return;
-  } else if (data.GetEvent() == v8::kPromiseRejectAfterResolved ||
-             data.GetEvent() == v8::kPromiseResolveAfterResolved) {
-    // Ignore reject/resolve after resolved.
+  } else if (data.GetEvent() != v8::kPromiseRejectWithNoHandler) {
+    // The only other types are kPromiseRejectAfterResolved and
+    // kPromiseResolveAfterResolved. Those are being deprecated in
+    // V8 so we want to avoid explicitly mentioning them here.
     return;
   }
-
-  DCHECK_EQ(v8::kPromiseRejectWithNoHandler, data.GetEvent());
 
   v8::Isolate* isolate = script_state->GetIsolate();
   ExecutionContext* context = ExecutionContext::From(script_state);
