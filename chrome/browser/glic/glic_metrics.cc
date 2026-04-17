@@ -349,6 +349,7 @@ void GlicMetrics::OnFreAccepted() {
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   if (!fre_accepted_time_.is_null()) {
     base::TimeDelta delta = base::TimeTicks::Now() - fre_accepted_time_;
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.InputSubmitted"));
     base::UmaHistogramLongTimes("Glic.FreToFirstQueryTime", delta);
     base::UmaHistogramCustomTimes("Glic.FreToFirstQueryTimeMax24H", delta,
                                   base::Milliseconds(1), base::Hours(24), 50);

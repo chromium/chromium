@@ -15092,6 +15092,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.InputSubmitted">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged when input is submitted after accepting the FRE. Is logged for both
+    automatic and user initiated input.
+  </description>
+</action>
+
 <action name="Glic.Fre.LoadingPanelClosed">
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>

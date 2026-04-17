@@ -1129,6 +1129,7 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, FreToFirstQueryTimeRecorded) {
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
 
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTime", 1000, 1);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.InputSubmitted"), 1);
 }
 
 TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedInMultiInstance) {
