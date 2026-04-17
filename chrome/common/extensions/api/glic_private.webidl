@@ -52,7 +52,7 @@ interface GlicPrivate {
   // Retrieves the current Glic state for the profile.
   // |Returns|: Promise that resolves to the current Glic state.
   // |PromiseValue|: state: The current Glic state.
-  [requiredCallback] static Promise<ProfileState> getState();
+  static Promise<ProfileState> getState();
 
   // Invokes glic with details.
   static Promise<undefined> invoke(InvokeDetails details);

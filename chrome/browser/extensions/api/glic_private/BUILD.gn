@@ -28,17 +28,3 @@ source_set("glic_private") {
     "//url",
   ]
 }
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "glic_private_apitest.cc" ]
-  deps = [
-    ":glic_private",
-    "//chrome/browser/extensions:test_support",
-    "//chrome/browser/glic",
-    "//chrome/browser/glic/test_support",
-    "//chrome/test:test_support",
-    "//extensions/common",
-  ]
-}

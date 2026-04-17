@@ -30,11 +30,13 @@
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/version_info/version_info.h"
@@ -392,6 +394,13 @@ void ComponentLoader::AddNetworkSpeechSynthesisExtension() {
   }
 }
 
+void ComponentLoader::AddGlicExtension() {
+  if (base::FeatureList::IsEnabled(extensions_features::kApiGlicPrivate)) {
+    Add(IDR_GLIC_EXTENSION_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("glic_extension")));
+  }
+}
+
 void ComponentLoader::AddWithNameAndDescription(
     int manifest_resource_id,
     const base::FilePath& root_directory,
@@ -603,6 +612,8 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
         base::FilePath(FILE_PATH_LITERAL("chromeos/arc_support")));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
+
+  AddGlicExtension();
 
 // http://crbug.com/41070702
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
