@@ -39,11 +39,12 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
   using CloudBinaryUploadServiceBase::start_times_;
 
   TestCloudBinaryUploadServiceBase()
-      : CloudBinaryUploadServiceBase(/*url_loader_factory=*/nullptr,
-                                     /*ui_task_runner=*/nullptr) {}
+      : CloudBinaryUploadServiceBase(/*url_loader_factory=*/nullptr) {}
 
   // CloudBinaryUploadServiceBase:
-  void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) override {}
+  void MaybeGetAccessToken(BinaryUploadRequest* request,
+                           base::OnceCallback<void(const std::string&)>
+                               access_token_callback) override {}
   enterprise_connectors::BinaryUploadRequest::BrowserPolicyConnectorGetter
   BrowserPolicyConnectorGetter() override {
     return base::BindRepeating(

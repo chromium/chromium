@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_cancel_requests.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
@@ -24,8 +25,7 @@ namespace enterprise_connectors {
 class CloudBinaryUploadServiceBase {
  public:
   CloudBinaryUploadServiceBase(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   virtual ~CloudBinaryUploadServiceBase();
 
   // The maximum number of uploads that can happen in parallel.
@@ -39,6 +39,9 @@ class CloudBinaryUploadServiceBase {
   // Upload the given file contents for deep scanning if the browser is
   // authorized to upload data, otherwise queue the request.
   void MaybeUploadForDeepScanning(std::unique_ptr<BinaryUploadRequest> request);
+
+  // Cancel requests for the given action.
+  void MaybeCancelRequests(std::unique_ptr<BinaryUploadCancelRequests> cancel);
 
   // Returns true if all expected connector results (tags) have been received
   // for the given `request_id`.
@@ -82,7 +85,9 @@ class CloudBinaryUploadServiceBase {
   // the migration is complete.
   // Get the access token only if the user matches the management and
   // affiliation requirements.
-  virtual void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) = 0;
+  virtual void MaybeGetAccessToken(
+      BinaryUploadRequest* request,
+      base::OnceCallback<void(const std::string&)> access_token_callback) = 0;
   virtual BinaryUploadRequest::BrowserPolicyConnectorGetter
   BrowserPolicyConnectorGetter() = 0;
   virtual bool IsAdvancedProtection() = 0;
@@ -227,6 +232,9 @@ class CloudBinaryUploadServiceBase {
   base::RepeatingTimer timer_;
 
  private:
+  void OnGetAccessToken(BinaryUploadRequest::Id request_id,
+                        const std::string& access_token);
+
   void RegisterOnGotHashCallback(BinaryUploadRequest::Id request_id,
                                  OnGotHashCallback on_got_hash_callback);
 

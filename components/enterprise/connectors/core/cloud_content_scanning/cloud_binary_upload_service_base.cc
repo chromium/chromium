@@ -182,10 +182,9 @@ bool ValidateDataUploadRequest::IsAuthRequest() const {
 }  // namespace
 
 CloudBinaryUploadServiceBase::CloudBinaryUploadServiceBase(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory),
-      ui_task_runner_(ui_task_runner) {}
+      ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 CloudBinaryUploadServiceBase::~CloudBinaryUploadServiceBase() = default;
 
@@ -226,7 +225,44 @@ void CloudBinaryUploadServiceBase::MaybeUploadForDeepScanning(
       dm_token, connector);
 }
 
+void CloudBinaryUploadServiceBase::MaybeCancelRequests(
+    std::unique_ptr<BinaryUploadCancelRequests> cancel) {
+  AssertCalledOnUIThread();
 
+  std::string action_id = cancel->get_user_action_id();
+  if (user_action_data_.contains(action_id)) {
+    user_action_data_[action_id].cancelled_time = base::TimeTicks::Now();
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
+    return;
+  }
+
+  base::EraseIf(
+      request_queue_,
+      [&cancel](const std::unique_ptr<BinaryUploadRequest>& request) {
+        if (request->user_action_id() == cancel->get_user_action_id()) {
+          request->FinishRequest(ScanRequestUploadResult::kUserCancelled,
+                                 ContentAnalysisResponse());
+          return true;
+        }
+        return false;
+      });
+
+  // Also cancel active requests.
+  std::vector<BinaryUploadRequest::Id> ids_to_cancel;
+  for (const auto& it : active_requests_) {
+    if (it.second->user_action_id() == cancel->get_user_action_id()) {
+      ids_to_cancel.push_back(it.first);
+    }
+  }
+
+  for (const auto& id : ids_to_cancel) {
+    FinishIfActive(id, ScanRequestUploadResult::kUserCancelled,
+                   ContentAnalysisResponse());
+  }
+}
 
 size_t CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax() {
   size_t experiment_max = kParallelContentAnalysisRequestCountMax.Get();
@@ -561,6 +597,23 @@ void CloudBinaryUploadServiceBase::OnUploadComplete(
   OnContentUploaded(request_id);
 }
 
+void CloudBinaryUploadServiceBase::OnGetAccessToken(
+    BinaryUploadRequest::Id request_id,
+    const std::string& access_token) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (!request) {
+    return;
+  }
+
+  if (!access_token.empty()) {
+    request->set_access_token(access_token);
+  }
+
+  request->GetRequestData(
+      base::BindOnce(&CloudBinaryUploadServiceBase::OnGetRequestData,
+                     weakptr_factory_.GetWeakPtr(), request_id));
+}
+
 void CloudBinaryUploadServiceBase::OnGetContentAnalysisResponse(
     BinaryUploadRequest::Id request_id,
     bool success,
@@ -800,7 +853,9 @@ void CloudBinaryUploadServiceBase::PrepareRequestForUpload(
         base::BindOnce(&CloudBinaryUploadServiceBase::OnIpAddressesFetched,
                        weakptr_factory_.GetWeakPtr(), request_id));
   } else {
-    MaybeGetAccessToken(request_id);
+    MaybeGetAccessToken(
+        request, base::BindOnce(&CloudBinaryUploadServiceBase::OnGetAccessToken,
+                                weakptr_factory_.GetWeakPtr(), request_id));
   }
 
   // `request` might have been destroyed by `OnGetRequestData`
@@ -830,7 +885,9 @@ void CloudBinaryUploadServiceBase::OnIpAddressesFetched(
     request->add_local_ips(ip_address);
   }
 
-  MaybeGetAccessToken(request_id);
+  MaybeGetAccessToken(
+      request, base::BindOnce(&CloudBinaryUploadServiceBase::OnGetAccessToken,
+                              weakptr_factory_.GetWeakPtr(), request_id));
 }
 
 void CloudBinaryUploadServiceBase::RegisterOnGotHashCallback(

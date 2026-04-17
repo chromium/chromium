@@ -65,8 +65,9 @@ class CloudBinaryUploadService
   friend class CloudBinaryUploadServiceTest;
 
   // CloudBinaryUploadServiceBase:
-  void MaybeGetAccessToken(
-      enterprise_connectors::BinaryUploadRequest::Id request_id) override;
+  void MaybeGetAccessToken(enterprise_connectors::BinaryUploadRequest* request,
+                           base::OnceCallback<void(const std::string&)>
+                               access_token_callback) override;
   enterprise_connectors::BinaryUploadRequest::BrowserPolicyConnectorGetter
   BrowserPolicyConnectorGetter() override;
   bool IsAdvancedProtection() override;
@@ -74,10 +75,6 @@ class CloudBinaryUploadService
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsManagedGuestSession() override;
 #endif
-
-  void OnGetAccessToken(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      const std::string& access_token);
 
   const raw_ptr<Profile> profile_;
 

@@ -74,16 +74,13 @@ bool CanUseAccessToken(const BinaryUploadRequest& request, Profile* profile) {
 }  // namespace
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
-    : CloudBinaryUploadServiceBase(profile->GetURLLoaderFactory(),
-                                   content::GetUIThreadTaskRunner({})),
+    : CloudBinaryUploadServiceBase(profile->GetURLLoaderFactory()),
       profile_(profile) {}
 
 CloudBinaryUploadService::CloudBinaryUploadService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile)
-    : CloudBinaryUploadServiceBase(url_loader_factory,
-                                   content::GetUIThreadTaskRunner({})),
-      profile_(profile) {}
+    : CloudBinaryUploadServiceBase(url_loader_factory), profile_(profile) {}
 
 CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 
@@ -101,43 +98,9 @@ void CloudBinaryUploadService::MaybeAcknowledge(
 
 void CloudBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel) {
-  AssertCalledOnUIThread();
-
-  std::string action_id = cancel->get_user_action_id();
-  if (user_action_data_.contains(action_id)) {
-    user_action_data_[action_id].cancelled_time = base::TimeTicks::Now();
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
-    return;
-  }
-
-  base::EraseIf(
-      request_queue_,
-      [&cancel](const std::unique_ptr<BinaryUploadRequest>& request) {
-        if (request->user_action_id() == cancel->get_user_action_id()) {
-          request->FinishRequest(
-              enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
-              enterprise_connectors::ContentAnalysisResponse());
-          return true;
-        }
-        return false;
-      });
-
-  // Also cancel active requests.
-  std::vector<BinaryUploadRequest::Id> ids_to_cancel;
-  for (const auto& it : active_requests_) {
-    if (it.second->user_action_id() == cancel->get_user_action_id()) {
-      ids_to_cancel.push_back(it.first);
-    }
-  }
-
-  for (const auto& id : ids_to_cancel) {
-    FinishIfActive(
-        id, enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
-        enterprise_connectors::ContentAnalysisResponse());
-  }
+  // TODO(crbug.com/501456247): Clean up this indirection layer once
+  // CloudBinaryUploadServiceBase inherits from BinaryUploadService.
+  CloudBinaryUploadServiceBase::MaybeCancelRequests(std::move(cancel));
 }
 
 base::WeakPtr<enterprise_connectors::BinaryUploadService>
@@ -146,26 +109,20 @@ CloudBinaryUploadService::AsWeakPtr() {
 }
 
 void CloudBinaryUploadService::MaybeGetAccessToken(
-    BinaryUploadRequest::Id request_id) {
-  BinaryUploadRequest* request = GetRequest(request_id);
-  if (!request) {
-    return;
-  }
-
+    BinaryUploadRequest* request,
+    base::OnceCallback<void(const std::string&)> access_token_callback) {
   if (CanUseAccessToken(*request, profile_)) {
     if (!token_fetcher_) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile_));
     }
-    token_fetcher_->Start(
-        base::BindOnce(&CloudBinaryUploadService::OnGetAccessToken,
-                       weakptr_factory_.GetWeakPtr(), request_id));
+    token_fetcher_->Start(std::move(access_token_callback));
     return;
   }
 
   request->GetRequestData(
       base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
-                     weakptr_factory_.GetWeakPtr(), request_id));
+                     weakptr_factory_.GetWeakPtr(), request->id()));
 }
 
 BinaryUploadRequest::BrowserPolicyConnectorGetter
@@ -188,20 +145,6 @@ bool CloudBinaryUploadService::IsManagedGuestSession() {
   return chromeos::IsManagedGuestSession();
 }
 #endif
-
-void CloudBinaryUploadService::OnGetAccessToken(
-    BinaryUploadRequest::Id request_id,
-    const std::string& access_token) {
-  BinaryUploadRequest* request = GetRequest(request_id);
-  if (!request) {
-    return;
-  }
-
-  request->set_access_token(access_token);
-  request->GetRequestData(
-      base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
-                     weakptr_factory_.GetWeakPtr(), request_id));
-}
 
 void CloudBinaryUploadService::SetAuthForTesting(
     const std::string& dm_token,
