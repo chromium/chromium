@@ -80,6 +80,10 @@
   // Tracks if External Privacy Contexts are currently being built
   // asynchronously.
   BOOL _areExternalPrivacyContextsBeingBuilt;
+
+  // The UI blocker needs to be reseted in -[SceneStateObserver
+  // sceneStateDidDisableUI:] if it still exists.
+  std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
@@ -126,6 +130,7 @@
   _ageMismatchSignoutCoordinator.delegate = nil;
   [_ageMismatchSignoutCoordinator stop];
   _ageMismatchSignoutCoordinator = nil;
+  _applicationUIBlocker.reset();
 }
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
@@ -253,19 +258,17 @@
 
   _areExternalPrivacyContextsBeingBuilt = YES;
 
-  std::unique_ptr<ScopedUIBlocker> applicationUIBlocker =
-      std::make_unique<ScopedUIBlocker>(self.sceneState,
-                                        UIBlockerExtent::kApplication);
+  _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
+      self.sceneState, UIBlockerExtent::kApplication);
 
   __weak __typeof(self) weakSelf = self;
 
   // Closure to be executed after all External Privacy Contexts have been built.
   base::OnceClosure finalClosure = base::BindOnce(
-      [](std::unique_ptr<ScopedUIBlocker> blocker,
-         __weak __typeof(self) weak_self) {
+      [](__weak __typeof(self) weak_self) {
         [weak_self onAllExternalPrivacyContextsBuilt];
       },
-      std::move(applicationUIBlocker), weakSelf);
+      weakSelf);
 
   [self buildExternalPrivacyContextForIdentities:identities
                                            index:0
@@ -310,6 +313,8 @@
 
 // Called after all External Privacy Contexts have been built.
 - (void)onAllExternalPrivacyContextsBuilt {
+  CHECK(_applicationUIBlocker, base::NotFatalUntil::M155);
+  _applicationUIBlocker.reset();
   _areExternalPrivacyContextsBeingBuilt = NO;
 
   // Read capability value and signout if needed.
@@ -341,17 +346,15 @@
   if (primaryIdentity && !_isAgeMismatchSignoutInProgress) {
     _isAgeMismatchSignoutInProgress = YES;
 
-    std::unique_ptr<ScopedUIBlocker> applicationUIBlocker =
-        std::make_unique<ScopedUIBlocker>(self.sceneState,
-                                          UIBlockerExtent::kApplication);
+    _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
+        self.sceneState, UIBlockerExtent::kApplication);
 
     base::OnceClosure signoutCompletion = base::BindOnce(
-        [](std::unique_ptr<ScopedUIBlocker> blocker, __typeof(self) strong_self,
-           id<SystemIdentity> primary_identity) {
+        [](__typeof(self) strong_self, id<SystemIdentity> primary_identity) {
           [strong_self markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
                            primary_identity];
         },
-        std::move(applicationUIBlocker), self, primaryIdentity);
+        self, primaryIdentity);
 
     authenticationService->SignOut(
         signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
@@ -420,6 +423,8 @@
 
 - (void)markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
     (id<SystemIdentity>)identity {
+  CHECK(_applicationUIBlocker, base::NotFatalUntil::M155);
+  _applicationUIBlocker.reset();
   _isAgeMismatchSignoutInProgress = NO;
 
   // Show the age mismatch signout screen.
