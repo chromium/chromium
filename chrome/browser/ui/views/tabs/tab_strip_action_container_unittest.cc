@@ -324,3 +324,20 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(),
             u"Ask Gemini");
 }
+
+TEST_F(TabStripActionContainerTest, GlicAnchoredMessageHideNudgeOnTabChange) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
+  glic_nudge_controller_->SetTabStripDelegate(
+      tab_strip_action_container_.get());
+
+  ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
+
+  glic_nudge_controller_->UpdateNudgeLabel(
+      web_contents(), "DummyLabel", /*prompt_suggestion=*/std::nullopt,
+      /*anchored_message_text=*/"Anchored Test",
+      /*activity=*/std::nullopt, base::NullCallback());
+  ASSERT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());
+
+  SimulateActiveTabChanged();
+  ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
+}
