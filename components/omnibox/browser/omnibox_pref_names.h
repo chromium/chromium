@@ -103,6 +103,11 @@ inline constexpr char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
 inline constexpr char kZeroSuggestCachedResultsWithURL[] =
     "zerosuggest.cachedresults_with_url";
 
+// A cache of composebox zero suggest results using a JSON dictionary serialized
+// into a string.
+inline constexpr char kZeroSuggestCachedResultsComposebox[] =
+    "zerosuggest.cachedresults_composebox";
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PREF_NAMES_H_

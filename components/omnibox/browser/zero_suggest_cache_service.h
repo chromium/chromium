@@ -32,9 +32,11 @@ class ZeroSuggestCacheService : public ZeroSuggestCacheServiceInterface,
   ~ZeroSuggestCacheService() override;
 
   // Read/write zero suggest cache entries.
-  CacheEntry ReadZeroSuggestResponse(const std::string& page_url) const;
+  CacheEntry ReadZeroSuggestResponse(const std::string& page_url,
+                                     bool is_composebox = false) const;
   void StoreZeroSuggestResponse(const std::string& page_url,
-                                const std::string& response_json);
+                                const std::string& response_json,
+                                bool is_composebox = false);
 
   // Remove all zero suggest cache entries.
   void ClearCache();

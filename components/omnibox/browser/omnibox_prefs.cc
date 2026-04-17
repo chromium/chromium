@@ -61,11 +61,16 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kIsOmniboxInBottomPosition, false);
 }
 
-void SetUserPreferenceForZeroSuggestCachedResponse(
-    PrefService* prefs,
-    const std::string& page_url,
-    const std::string& response) {
+void SetUserPreferenceForZeroSuggestCachedResponse(PrefService* prefs,
+                                                   const std::string& page_url,
+                                                   const std::string& response,
+                                                   bool is_composebox) {
   DCHECK(prefs);
+
+  if (is_composebox) {
+    prefs->SetString(omnibox::kZeroSuggestCachedResultsComposebox, response);
+    return;
+  }
 
   if (page_url.empty()) {
     prefs->SetString(kZeroSuggestCachedResults, response);
@@ -79,8 +84,13 @@ void SetUserPreferenceForZeroSuggestCachedResponse(
 
 std::string GetUserPreferenceForZeroSuggestCachedResponse(
     PrefService* prefs,
-    const std::string& page_url) {
+    const std::string& page_url,
+    bool is_composebox) {
   DCHECK(prefs);
+
+  if (is_composebox) {
+    return prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox);
+  }
 
   if (page_url.empty()) {
     return prefs->GetString(omnibox::kZeroSuggestCachedResults);

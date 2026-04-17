@@ -89,6 +89,9 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP, DISABLED);
 // performance impact of ZPS prefetching on the remote Suggest service).
 BASE_FEATURE(kZeroSuggestPrefetchDebouncing, DISABLED);
 
+// Enables prefetching of the zero prefix suggestions for composebox contexts.
+BASE_FEATURE(kZeroSuggestPrefetchingForComposebox, DISABLED);
+
 // Enables prefetching of the zero prefix suggestions for eligible users on SRP.
 BASE_FEATURE(kZeroSuggestPrefetchingOnSRP, enable_if(!IS_ANDROID));
 

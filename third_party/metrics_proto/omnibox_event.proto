@@ -246,6 +246,12 @@ message OmniboxEventProto {
     // Co-browsing composebox
     CO_BROWSING_COMPOSEBOX = 36;
 
+    // The New Tab Page composebox zero-prefix suggestion prefetch.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
+    NTP_COMPOSEBOX_PREFETCH = 37;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also

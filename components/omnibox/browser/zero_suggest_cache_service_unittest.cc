@@ -89,6 +89,27 @@ TEST_F(ZeroSuggestCacheServiceTest, StoreResponseUpdatesExistingEntry) {
             new_response);
 }
 
+TEST_F(ZeroSuggestCacheServiceTest, StoreComposeboxResponseIsolatedFromNTP) {
+  ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
+                                    GetPrefs());
+
+  const std::string page_url = "";
+  const std::string ntp_response = "ntp_response";
+  const std::string composebox_response = "composebox_response";
+
+  cache_svc.StoreZeroSuggestResponse(page_url, ntp_response,
+                                     /*is_composebox=*/false);
+  cache_svc.StoreZeroSuggestResponse(page_url, composebox_response,
+                                     /*is_composebox=*/true);
+
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(page_url, /*is_composebox=*/false)
+                .response_json,
+            ntp_response);
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(page_url, /*is_composebox=*/true)
+                .response_json,
+            composebox_response);
+}
+
 TEST_F(ZeroSuggestCacheServiceTest, StoreResponseNotifiesObservers) {
   ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
                                     GetPrefs());

@@ -24,6 +24,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -57,6 +58,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient() {
     ZeroSuggestProvider::RegisterProfilePrefs(
+        search_engines_test_environment_.pref_service().registry());
+    AimEligibilityService::RegisterProfilePrefs(
         search_engines_test_environment_.pref_service().registry());
     zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
         std::make_unique<TestSchemeClassifier>(),
@@ -113,11 +116,20 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     return scheme_classifier_;
   }
 
+  AimEligibilityService* GetAimEligibilityService() const override {
+    return aim_eligibility_service_;
+  }
+
+  void set_aim_eligibility_service(AimEligibilityService* service) {
+    aim_eligibility_service_ = service;
+  }
+
  private:
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   bool is_url_data_collection_active_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
   TestSchemeClassifier scheme_classifier_;
+  raw_ptr<AimEligibilityService> aim_eligibility_service_ = nullptr;
 };
 
 }  // namespace
@@ -143,11 +155,14 @@ class ZeroSuggestProviderTest : public testing::Test,
   GURL GetSuggestURL(
       metrics::OmniboxEventProto::PageClassification page_classification,
       metrics::OmniboxFocusType focus_type,
-      const std::string& page_url) {
+      const std::string& page_url,
+      TemplateURLRef::RequestSource request_source =
+          TemplateURLRef::RequestSource::SEARCHBOX) {
     TemplateURLRef::SearchTermsArgs search_terms_args;
     search_terms_args.page_classification = page_classification;
     search_terms_args.focus_type = focus_type;
     search_terms_args.current_page_url = page_url;
+    search_terms_args.request_source = request_source;
 
     TemplateURLService* template_url_service = client_->GetTemplateURLService();
     return RemoteSuggestionsService::EndpointUrl(
@@ -2300,6 +2315,70 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     EXPECT_EQ(json_response3,
               prefs->GetString(omnibox::kZeroSuggestCachedResults));
   }
+}
+
+TEST_F(ZeroSuggestProviderTest,
+       TestPsuggestZeroSuggestPrefetchThenNTPOnFocusWithComposebox) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kZeroSuggestPrefetchingForComposebox);
+
+  PrefService* prefs = client_->GetPrefs();
+
+  base::HistogramTester histogram_tester;
+
+  MockAimEligibilityService aim_service(
+      *client_->GetPrefs(), client_->GetTemplateURLService(), nullptr, nullptr);
+  EXPECT_CALL(aim_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+  client_->set_aim_eligibility_service(&aim_service);
+
+  // Start a prefetch request.
+  AutocompleteInput input = ZeroPrefixInputForNTP(/*is_prefetch = */ true);
+  provider_->StartPrefetch(input);
+  EXPECT_TRUE(provider_->done());
+
+  // Verify both loaders are populated!
+  GURL ntp_suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
+  GURL composebox_suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "",
+                    TemplateURLRef::RequestSource::NTP_COMPOSEBOX);
+
+  EXPECT_TRUE(test_loader_factory()->IsPending(ntp_suggest_url.spec()));
+  EXPECT_TRUE(test_loader_factory()->IsPending(composebox_suggest_url.spec()));
+
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+
+  test_loader_factory()->AddResponse(ntp_suggest_url.spec(), json_response);
+  test_loader_factory()->AddResponse(composebox_suggest_url.spec(),
+                                     json_response);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // Verify metrics for two separate prefetch requests
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", 6);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", /*kRequestSent*/ 1, 2);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", /*kResponseReceived*/ 3, 2);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.ZeroSuggestProvider.NoURL.Prefetch", /*kRemoteResponseCached*/ 4,
+      2);
+
+  // Verify storage isolated correctly!
+  EXPECT_EQ(json_response,
+            prefs->GetString(omnibox::kZeroSuggestCachedResults));
+  EXPECT_EQ(json_response,
+            prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox));
 }
 
 TEST_F(ZeroSuggestProviderTest, TestCacheStateWithSRPPrefetchDisabled) {
