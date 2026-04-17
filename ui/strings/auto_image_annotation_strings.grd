@@ -211,7 +211,7 @@ need to be translated for each locale. Note that some accessibility strings rema
       </if>
       <if expr="is_android">
         <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' at the top of the browser." is_accessibility_with_no_ui="true">
-          This image isn’t labeled. Double tap on the more options button at the top of the browser to get image descriptions.
+          This image isn’t labeled. Use the more options button at the top of the browser to get image descriptions.
         </message>
       </if>
       <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION" desc="Accessibility message spoken out loud to screen reader users to inform them that they can get a description of an image by opening the context menu." is_accessibility_with_no_ui="true">
