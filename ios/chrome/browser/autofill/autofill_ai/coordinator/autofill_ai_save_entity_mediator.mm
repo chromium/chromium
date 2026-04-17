@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_consumer.h"
 
 @implementation AutofillAISaveEntityMediator {
@@ -25,7 +26,6 @@
 
 - (void)disconnect {
   if (_params && !_params->callback.is_null()) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(_params->callback)
         .Run(autofill::AutofillClient::AutofillAiBubbleResult::kUnknown, {});
   }
@@ -47,14 +47,19 @@
   }
 
   CHECK(!_params->callback.is_null());
-  // TODO(crbug.com/489354073): Pass the correct UI context.
-  std::move(_params->callback)
-      .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted, {});
+  if ([self isSaveToWallet]) {
+    std::move(_params->callback)
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted,
+             {autofill::GetSaveToWalletSubtitleStringId(),
+              autofill::GetSaveEntityAcceptButtonStringId()});
+  } else {
+    std::move(_params->callback)
+        .Run(autofill::AutofillClient::AutofillAiBubbleResult::kAccepted, {});
+  }
 }
 
 - (void)cancelSaving {
   if (_params && !_params->callback.is_null()) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(_params->callback)
         .Run(autofill::AutofillClient::AutofillAiBubbleResult::kCancelled, {});
   }
@@ -76,6 +81,11 @@
                 oldEntity:_params->old_entity
                 userEmail:_params->user_email
         saveIsSynchronous:_params->save_is_synchronous];
+}
+
+- (BOOL)isSaveToWallet {
+  return _params->new_entity.record_type() ==
+         autofill::EntityInstance::RecordType::kServerWallet;
 }
 
 @end

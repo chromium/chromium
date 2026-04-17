@@ -28,7 +28,6 @@ AutofillAiSaveEntityInfoBarDelegateIOS::AutofillAiSaveEntityInfoBarDelegateIOS(
 AutofillAiSaveEntityInfoBarDelegateIOS::
     ~AutofillAiSaveEntityInfoBarDelegateIOS() {
   if (!params_.callback.is_null() && accept_callback_) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(params_.callback)
         .Run(AutofillClient::AutofillAiBubbleResult::kUnknown, {});
   }
@@ -92,7 +91,6 @@ bool AutofillAiSaveEntityInfoBarDelegateIOS::Accept() {
 
 bool AutofillAiSaveEntityInfoBarDelegateIOS::Cancel() {
   if (!params_.callback.is_null()) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(params_.callback)
         .Run(AutofillClient::AutofillAiBubbleResult::kCancelled, {});
   }
@@ -101,7 +99,6 @@ bool AutofillAiSaveEntityInfoBarDelegateIOS::Cancel() {
 
 void AutofillAiSaveEntityInfoBarDelegateIOS::InfoBarDismissed() {
   if (!params_.callback.is_null()) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(params_.callback)
         .Run(AutofillClient::AutofillAiBubbleResult::kClosed, {});
   }
