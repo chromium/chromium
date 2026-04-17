@@ -7429,6 +7429,72 @@
             ]
         }
     ],
+    "CriticalUserJourneyService_ClearBrowsingHistory": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "probability": "0.05",
+                        "trigger_id": "uAmt8ZyqJ0ugnJ3q1cK0PAWUdnZB"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForClearBrowsingHistory"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CriticalUserJourneyService_DownloadJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "probability": "0.05",
+                        "trigger_id": "Y2We4jMf70ugnJ3q1cK0QFVzpBEr"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForDownloadJourney"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CriticalUserJourneyService_PinExtensionJourney": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "probability": "0.05",
+                        "trigger_id": "ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForPinExtensionJourney"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosBatterySaver": [
         {
             "platforms": [
