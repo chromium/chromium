@@ -4,12 +4,18 @@
 
 #include "remoting/host/win/event_trace_data.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/logging_win.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -70,38 +76,60 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
   // - For LOG_MESSAGE_FULL events, the MofData buffer is comprised of 5 fields
   //   which must be parsed (or skipped) in sequence.
   if (data.event_type == logging::LOG_MESSAGE) {
-    data.message.assign(reinterpret_cast<const char*>(event->MofData),
-                        event->MofLength);
+    // SAFETY: `event->MofData` and `event->MofLength` are provided by the
+    // Windows ETW subsystem. We trust these values to define the valid memory
+    // range for the event payload.
+    auto message_span = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const uint8_t*>(event->MofData), event->MofLength));
+    std::string_view message_view = base::as_string_view(message_span);
+    data.message.assign(message_view.substr(0, message_view.find('\0')));
   } else if (data.event_type == logging::LOG_MESSAGE_FULL) {
-    const uint8_t* mof_data = reinterpret_cast<const uint8_t*>(event->MofData);
-    uint32_t offset = 0;
+    // SAFETY: `event->MofData` and `event->MofLength` are provided by the
+    // Windows ETW subsystem. We trust these values to define the valid memory
+    // range for the event payload.
+    base::SpanReader reader(UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const uint8_t*>(event->MofData), event->MofLength)));
 
     // Read the size, skip past the stack info, and move the cursor.
-    DWORD stack_depth = *reinterpret_cast<const DWORD*>(mof_data);
-    int bytes_to_skip = sizeof(DWORD) + stack_depth * sizeof(intptr_t);
-    offset += bytes_to_skip;
+    uint32_t stack_depth;
+    if (!reader.ReadU32NativeEndian(stack_depth)) {
+      return data;
+    }
+    base::CheckedNumeric<size_t> bytes_to_skip = stack_depth;
+    bytes_to_skip *= sizeof(intptr_t);
+    if (!bytes_to_skip.IsValid() || !reader.Skip(bytes_to_skip.ValueOrDie())) {
+      return data;
+    }
 
     // Read the line info and move the cursor.
-    data.line =
-        *reinterpret_cast<const int32_t*>(UNSAFE_TODO(mof_data + offset));
-    offset += sizeof(int32_t);
+    if (!reader.ReadI32NativeEndian(data.line)) {
+      return data;
+    }
 
     // Read the file info and move the cursor.
-    const char* file_info =
-        reinterpret_cast<const char*>(UNSAFE_TODO(mof_data + offset));
-    size_t str_len = strnlen_s(file_info, event->MofLength - offset);
-    base::FilePath file_path(base::UTF8ToWide(file_info));
+    std::string_view file_info_view =
+        base::as_string_view(reader.remaining_span());
+    size_t nul_pos = file_info_view.find('\0');
+    if (nul_pos == std::string_view::npos) {
+      return data;
+    }
+    base::FilePath file_path(
+        base::UTF8ToWide(file_info_view.substr(0, nul_pos)));
     data.file_name = base::WideToUTF8(file_path.BaseName().value());
-    offset += (str_len + 1);
+    reader.Skip(nul_pos + 1);
 
     // Read the message and move the cursor.
-    const char* message =
-        reinterpret_cast<const char*>(UNSAFE_TODO(mof_data + offset));
-    str_len = strnlen_s(message, event->MofLength - offset);
-    data.message.assign(message);
-    offset += (str_len + 1);
+    std::string_view message_view =
+        base::as_string_view(reader.remaining_span());
+    nul_pos = message_view.find('\0');
+    if (nul_pos == std::string_view::npos) {
+      return data;
+    }
+    data.message.assign(message_view.substr(0, nul_pos));
+    reader.Skip(nul_pos + 1);
 
-    DCHECK_EQ(event->MofLength, offset);
+    // Ensure that the entire buffer was consumed.
+    DCHECK_EQ(reader.remaining(), 0u);
   } else {
     NOTREACHED() << "Unknown event type: " << data.event_type;
   }
