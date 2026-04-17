@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_drs_view_controller.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
-#import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator_parity.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -273,7 +272,7 @@
   [self.secondaryToolbarCoordinator start];
 
   if (!IsChromeNextIaEnabled()) {
-    self.orchestrator = [[OmniboxFocusOrchestratorParity alloc] init];
+    self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
     [self updateOrchestratorAnimatee];
   }
 

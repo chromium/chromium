@@ -9,8 +9,6 @@ source_set("ui_bundled") {
     "location_bar_offset_provider.h",
     "omnibox_focus_orchestrator.h",
     "omnibox_focus_orchestrator.mm",
-    "omnibox_focus_orchestrator_parity.h",
-    "omnibox_focus_orchestrator_parity.mm",
     "toolbar_animatee.h",
   ]
   deps = [
