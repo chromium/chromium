@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
+import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.AttributeTypeName;
@@ -657,10 +658,10 @@ public class EntityEditorModuleTest {
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         AttributeInstance passportIssueDate =
                 updatedEntityInstance.getAttribute(PASSPORT_ISSUE_DATE_TYPE);
-        assertTrue(passportIssueDate.getAttributeValue() instanceof AttributeInstance.DateValue);
+        assertTrue(passportIssueDate.getAttributeValue() instanceof DateValue);
         assertEquals(
                 LocalDate.of(2026, 6, 20),
-                ((AttributeInstance.DateValue) passportIssueDate.getAttributeValue()).getDate());
+                ((DateValue) passportIssueDate.getAttributeValue()).getDate());
     }
 
     @Test
@@ -681,23 +682,32 @@ public class EntityEditorModuleTest {
                         .build();
         showEditorDialog(entity);
 
-        ViewGroup content = mCoordinator.getEntityEditorViewForTest().getContentView();
-
         PropertyModel model = mCoordinator.getEditorModelForTest();
         ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
         EditorItem passportNameItem = editorFields.get(0);
         EditorItem passportNumberItem = editorFields.get(2);
+        EditorItem issueDateItem = editorFields.get(3);
 
         // Update some fields to values with whitespaces.
         passportNameItem.model.set(VALUE, "     ");
         passportNumberItem.model.set(VALUE, "    ");
 
+        // Set partial date to make sure date error message is displayed as well.
+        ViewGroup content = mCoordinator.getEntityEditorViewForTest().getContentView();
+        DateFieldView issueDate = (DateFieldView) content.getChildAt(3);
+        setDropdownValue(
+                issueDate.getMonthPickerForTest(),
+                DateFieldView.getMonthName(mActivity, /* month= */ 6));
+
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The passport number field is required, it's not possible to leave it empty.
         verify(mDelegate, times(0)).onDone(any());
         assertFalse(TextUtils.isEmpty(passportNumberItem.model.get(ERROR_MESSAGE)));
+        assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
 
         passportNumberItem.model.set(VALUE, "  BB123456  ");
+        setDropdownValue(
+                issueDate.getMonthPickerForTest(), DateFieldView.getMonthDropdownHint(mActivity));
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         verify(mDelegate).onDone(mEntityInstanceCaptor.capture());
 
@@ -709,6 +719,72 @@ public class EntityEditorModuleTest {
                 updatedEntityInstance
                         .getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE)
                         .getAttributeValue());
+    }
+
+    /** Test that the entity editor works correctly if the date fields are required. */
+    @Test
+    @SmallTest
+    public void testCommitChangesWithDatesRequired() {
+        EntityType passportType =
+                new EntityType(
+                        /* typeName= */ EntityTypeName.PASSPORT,
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ false,
+                        /* isMaskedStorageSupported= */ true,
+                        /* typeNameAsString= */ "Passport",
+                        /* typeNameAsMetricsString= */ "Passport",
+                        /* addEntityTypeString= */ "Add passport",
+                        /* editEntityTypeString= */ "Edit passport",
+                        /* deleteEntityTypeString= */ "Delete passport",
+                        /* attributeTypes= */ List.of(
+                                PASSPORT_NAME_ATTRIBUTE_TYPE,
+                                PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                PASSPORT_ISSUE_DATE_TYPE,
+                                PASSPORT_EXPIRATION_DATE_TYPE),
+                        /* requiredAttributes= */ List.of(
+                                PASSPORT_ISSUE_DATE_TYPE, PASSPORT_EXPIRATION_DATE_TYPE));
+        EntityInstance entity =
+                new EntityInstance.Builder(passportType)
+                        .setGUID("guid")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .addAttribute(
+                                new AttributeInstance(
+                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
+                        .addAttribute(
+                                new AttributeInstance(
+                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                        .build();
+        showEditorDialog(entity);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+        EditorItem passportIssueDate = editorFields.get(3);
+        EditorItem passportExpirationDate = editorFields.get(4);
+
+        // Make sure the fields are required.
+        assertTrue(passportIssueDate.model.get(IS_REQUIRED));
+        assertTrue(passportExpirationDate.model.get(IS_REQUIRED));
+
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        // The passport number field is required, it's not possible to leave it empty.
+        verify(mDelegate, times(0)).onDone(any());
+        assertFalse(TextUtils.isEmpty(passportIssueDate.model.get(ERROR_MESSAGE)));
+        assertFalse(TextUtils.isEmpty(passportExpirationDate.model.get(ERROR_MESSAGE)));
+
+        passportIssueDate.model.set(VALUE, LocalDate.of(2026, 2, 15).toString());
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture());
+
+        EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
+        // The name attribute should not be added to the entity because it wasn't set before.
+        assertTrue(updatedEntityInstance.hasAttribute(PASSPORT_ISSUE_DATE_TYPE));
+        assertEquals(
+                new DateValue(LocalDate.of(2026, 2, 15).toString()),
+                updatedEntityInstance.getAttribute(PASSPORT_ISSUE_DATE_TYPE).getAttributeValue());
     }
 
     @Test

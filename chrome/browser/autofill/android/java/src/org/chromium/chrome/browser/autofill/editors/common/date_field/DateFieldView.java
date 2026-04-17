@@ -380,7 +380,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
     }
 
     @VisibleForTesting
-    static String getMonthDropdownHint(Context context) {
+    public static String getMonthDropdownHint(Context context) {
         return context.getString(R.string.autofill_ai_entity_editor_date_field_month_label);
     }
 

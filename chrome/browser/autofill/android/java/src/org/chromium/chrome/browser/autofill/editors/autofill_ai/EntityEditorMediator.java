@@ -205,6 +205,8 @@ class EntityEditorMediator {
                 }
             }
         }
+        // Run other validators in any case so set the corresponding error messages.
+        final boolean isFormValid = validateForm(mEditorModel.get(EDITOR_FIELDS));
         if (hasRequiredFields && !hasNonEmptyRequiredField) {
             for (EditorItem editorItem : emptyRequiredFields) {
                 editorItem.model.set(
@@ -212,7 +214,7 @@ class EntityEditorMediator {
             }
             return false;
         }
-        return validateForm(mEditorModel.get(EDITOR_FIELDS));
+        return isFormValid;
     }
 
     private void commitChanges() {
