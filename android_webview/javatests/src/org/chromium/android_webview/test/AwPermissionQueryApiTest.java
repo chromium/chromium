@@ -53,7 +53,7 @@ public class AwPermissionQueryApiTest extends AwParameterizedTest {
                       resultListener.postMessage("not_enabled");
                   }
                   else if (e instanceof TypeError &&
-                           e.message.includes("isn't available on Android")) {
+                           e.message.includes("isn't available on this platform")) {
                       resultListener.postMessage("not_available");
                   }
                   else {
