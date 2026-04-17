@@ -24,8 +24,7 @@ PageActionModel::~PageActionModel() {
       &PageActionModelObserver::OnPageActionModelWillBeDeleted, *this);
 }
 
-void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
-                                       bool requested) {
+void PageActionModel::SetShowRequested(PageActionPassKey, bool requested) {
   if (show_requested_ == requested) {
     return;
   }
@@ -33,9 +32,8 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
   NotifyChange(Property::kShowRequested);
 }
 
-void PageActionModel::SetShouldShowSuggestionChip(
-    base::PassKey<PageActionController>,
-    bool show) {
+void PageActionModel::SetShouldShowSuggestionChip(PageActionPassKey,
+                                                  bool show) {
   did_show_chip_ = false;
   if (should_show_suggestion_chip_ == show) {
     return;
@@ -45,7 +43,7 @@ void PageActionModel::SetShouldShowSuggestionChip(
 }
 
 void PageActionModel::SetSuggestionChipConfig(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const SuggestionChipConfig& config) {
   if (should_animate_ == config.should_animate &&
       should_announce_chip_ == config.should_announce_chip) {
@@ -56,8 +54,7 @@ void PageActionModel::SetSuggestionChipConfig(
   NotifyChange(Property::kSuggestionChipConfig);
 }
 
-void PageActionModel::SetTabActive(base::PassKey<PageActionController>,
-                                   bool is_active) {
+void PageActionModel::SetTabActive(PageActionPassKey, bool is_active) {
   if (is_tab_active_ == is_active) {
     return;
   }
@@ -65,7 +62,7 @@ void PageActionModel::SetTabActive(base::PassKey<PageActionController>,
   NotifyChange(Property::kTabActive);
 }
 
-void PageActionModel::SetHasPinnedIcon(base::PassKey<PageActionController>,
+void PageActionModel::SetHasPinnedIcon(PageActionPassKey,
                                        bool has_pinned_icon) {
   if (has_pinned_icon_ == has_pinned_icon) {
     return;
@@ -74,9 +71,8 @@ void PageActionModel::SetHasPinnedIcon(base::PassKey<PageActionController>,
   NotifyChange(Property::kHasPinnedIcon);
 }
 
-void PageActionModel::SetActionItemProperties(
-    base::PassKey<PageActionController>,
-    const ActionItem* action_item) {
+void PageActionModel::SetActionItemProperties(PageActionPassKey,
+                                              const ActionItem* action_item) {
   bool model_changed = false;
 
   if (action_item_enabled_ != action_item->GetEnabled()) {
@@ -171,7 +167,7 @@ PageActionColorSource PageActionModel::GetColorSource() const {
 }
 
 void PageActionModel::SetOverrideText(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const std::optional<std::u16string>& override_text) {
   if (override_text_ == override_text) {
     return;
@@ -181,7 +177,7 @@ void PageActionModel::SetOverrideText(
 }
 
 void PageActionModel::SetOverrideAccessibleName(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const std::optional<std::u16string>& override_accessible_name) {
   if (override_accessible_name_ == override_accessible_name) {
     return;
@@ -191,7 +187,7 @@ void PageActionModel::SetOverrideAccessibleName(
 }
 
 void PageActionModel::SetOverrideImage(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const std::optional<ui::ImageModel>& override_image,
     PageActionColorSource color_source) {
   if (override_image_ == override_image && color_source == color_source_) {
@@ -203,7 +199,7 @@ void PageActionModel::SetOverrideImage(
 }
 
 void PageActionModel::SetOverrideTooltip(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const std::optional<std::u16string>& override_tooltip) {
   if (override_tooltip_ == override_tooltip) {
     return;
@@ -212,9 +208,8 @@ void PageActionModel::SetOverrideTooltip(
   NotifyChange(Property::kOverrideTooltip);
 }
 
-void PageActionModel::SetIsSuppressedByOmnibox(
-    base::PassKey<PageActionController>,
-    bool is_suppressed) {
+void PageActionModel::SetIsSuppressedByOmnibox(PageActionPassKey,
+                                               bool is_suppressed) {
   if (is_suppressed_by_omnibox_ == is_suppressed) {
     return;
   }
@@ -222,9 +217,8 @@ void PageActionModel::SetIsSuppressedByOmnibox(
   NotifyChange(Property::kIsSuppressedByOmnibox);
 }
 
-void PageActionModel::SetExemptFromOmniboxSuppression(
-    base::PassKey<PageActionController>,
-    bool is_exempt) {
+void PageActionModel::SetExemptFromOmniboxSuppression(PageActionPassKey,
+                                                      bool is_exempt) {
   if (is_exempt_from_omnibox_suppression_ == is_exempt) {
     return;
   }
@@ -232,7 +226,7 @@ void PageActionModel::SetExemptFromOmniboxSuppression(
   NotifyChange(Property::kExemptFromOmniboxSuppression);
 }
 
-void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
+void PageActionModel::SetIsChipShowing(PageActionPassKey,
                                        bool is_chip_showing) {
   did_show_chip_ |= is_chip_showing;
   if (is_chip_showing_ == is_chip_showing) {
@@ -243,8 +237,7 @@ void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
   NotifyChange(Property::kIsChipShowing);
 }
 
-void PageActionModel::SetActionActive(base::PassKey<PageActionController>,
-                                      bool is_active) {
+void PageActionModel::SetActionActive(PageActionPassKey, bool is_active) {
   if (action_active_ == is_active) {
     return;
   }
@@ -284,9 +277,8 @@ bool PageActionModel::IsEphemeral() const {
   return is_ephemeral_;
 }
 
-void PageActionModel::SetShouldShowAnchoredMessage(
-    base::PassKey<PageActionController>,
-    bool show) {
+void PageActionModel::SetShouldShowAnchoredMessage(PageActionPassKey,
+                                                   bool show) {
   if (should_show_anchored_message_ == show) {
     return;
   }
@@ -295,7 +287,7 @@ void PageActionModel::SetShouldShowAnchoredMessage(
 }
 
 void PageActionModel::SetAnchoredMessageText(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const std::u16string& anchored_message) {
   if (anchored_message_text_ == anchored_message) {
     return;
@@ -305,7 +297,7 @@ void PageActionModel::SetAnchoredMessageText(
 }
 
 void PageActionModel::SetAnchoredMessageAction(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const AnchoredMessageActionIconType action_icon_type,
     std::unique_ptr<ui::SimpleMenuModel> model) {
   anchored_message_action_icon_type_ = action_icon_type;
@@ -316,7 +308,7 @@ void PageActionModel::SetAnchoredMessageAction(
 }
 
 void PageActionModel::SetAnchoredMessageIcon(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     const std::optional<ui::ImageModel>& icon) {
   anchored_message_icon_ = icon;
   NotifyChange(Property::kAnchoredMessageIcon);
@@ -331,7 +323,7 @@ bool PageActionModel::IsAnchoredMessageShowing() const {
 }
 
 void PageActionModel::SetIsAnchoredMessageShowing(
-    base::PassKey<PageActionController>,
+    PageActionPassKey,
     bool is_anchored_message_showing) {
   if (is_anchored_message_showing_ == is_anchored_message_showing) {
     return;

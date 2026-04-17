@@ -95,19 +95,11 @@ class MockPageActionController : public PageActionController {
               RegisterOnWillDestroyCallback,
               (base::OnceCallback<void(PageActionController&)>),
               (override));
-  MOCK_METHOD(base::RepeatingCallback<void(PageActionTrigger)>,
-              GetClickCallback,
-              (base::PassKey<PageActionView>, actions::ActionId),
-              (override));
-  MOCK_METHOD(base::RepeatingClosure,
-              GetAnchoredMessageCloseCallback,
-              (base::PassKey<PageActionView>, actions::ActionId),
-              (override));
   MOCK_METHOD(void,
               RegisterCallbacks,
-              (base::PassKey<PageActionView>,
+              (PageActionPassKey,
                actions::ActionId,
-               PageActionView*),
+               PageActionController::Delegate*),
               (override));
   MOCK_METHOD(void, DecrementActivityCounter, (actions::ActionId), (override));
 

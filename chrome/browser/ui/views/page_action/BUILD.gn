@@ -24,6 +24,7 @@ source_set("page_action") {
     "page_action_icon_view.h",
     "page_action_icon_view_observer.h",
     "page_action_observer.h",
+    "page_action_pass_key.h",
     "page_action_properties_provider.h",
     "page_action_triggers.h",
     "page_action_view.h",

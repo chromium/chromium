@@ -45,56 +45,52 @@ class PageActionModelInterface {
   virtual void RemoveObserver(PageActionModelObserver* observer) = 0;
 
   virtual void SetActionItemProperties(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const actions::ActionItem* action_item) = 0;
-  virtual void SetShowRequested(base::PassKey<PageActionController>,
-                                bool requested) = 0;
-  virtual void SetShouldShowSuggestionChip(base::PassKey<PageActionController>,
+  virtual void SetShowRequested(PageActionPassKey pass_key, bool requested) = 0;
+  virtual void SetShouldShowSuggestionChip(PageActionPassKey pass_key,
                                            bool show) = 0;
-  virtual void SetSuggestionChipConfig(base::PassKey<PageActionController>,
+  virtual void SetSuggestionChipConfig(PageActionPassKey pass_key,
                                        const SuggestionChipConfig& config) = 0;
-  virtual void SetShouldShowAnchoredMessage(base::PassKey<PageActionController>,
+  virtual void SetShouldShowAnchoredMessage(PageActionPassKey pass_key,
                                             bool show) = 0;
-  virtual void SetTabActive(base::PassKey<PageActionController>,
-                            bool is_active) = 0;
-  virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
+  virtual void SetTabActive(PageActionPassKey pass_key, bool is_active) = 0;
+  virtual void SetHasPinnedIcon(PageActionPassKey pass_key,
                                 bool has_pinned_icon) = 0;
   // TODO(crbug.com/376285838): Move overrides to SuggestionChip and
   // AnchoredMessage configs.
   virtual void SetOverrideText(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_text) = 0;
   virtual void SetOverrideAccessibleName(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_accessible_name) = 0;
   virtual void SetOverrideImage(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<ui::ImageModel>& override_image,
       PageActionColorSource color_source) = 0;
   virtual void SetOverrideTooltip(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_tooltip) = 0;
   virtual void SetAnchoredMessageText(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::u16string& anchored_message) = 0;
   virtual void SetAnchoredMessageAction(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const AnchoredMessageActionIconType action_icon_type,
       std::unique_ptr<ui::SimpleMenuModel> model) = 0;
   virtual void SetAnchoredMessageIcon(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<ui::ImageModel>& icon) = 0;
-  virtual void SetActionActive(base::PassKey<PageActionController>,
-                               bool is_active) = 0;
-  virtual void SetIsSuppressedByOmnibox(base::PassKey<PageActionController>,
+  virtual void SetActionActive(PageActionPassKey pass_key, bool is_active) = 0;
+  virtual void SetIsSuppressedByOmnibox(PageActionPassKey pass_key,
                                         bool is_suppressed) = 0;
-  virtual void SetExemptFromOmniboxSuppression(
-      base::PassKey<PageActionController>,
-      bool is_exempt) = 0;
-  virtual void SetIsChipShowing(base::PassKey<PageActionController>,
+  virtual void SetExemptFromOmniboxSuppression(PageActionPassKey pass_key,
+                                               bool is_exempt) = 0;
+  virtual void SetIsChipShowing(PageActionPassKey pass_key,
                                 bool is_chip_showing) = 0;
   virtual void SetIsAnchoredMessageShowing(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       bool is_anchored_message_showing) = 0;
 
   virtual bool GetVisible() const = 0;
@@ -135,62 +131,59 @@ class PageActionModel : public PageActionModelInterface {
 
   // Applies any relevant ActionItem properties to the model, including
   // visibility, text and icon properties.
-  void SetActionItemProperties(base::PassKey<PageActionController>,
+  void SetActionItemProperties(PageActionPassKey pass_key,
                                const actions::ActionItem* action_item) override;
-  void SetShowRequested(base::PassKey<PageActionController>,
-                        bool requested) override;
-  void SetShouldShowSuggestionChip(base::PassKey<PageActionController>,
+  void SetShowRequested(PageActionPassKey pass_key, bool requested) override;
+  void SetShouldShowSuggestionChip(PageActionPassKey pass_key,
                                    bool show) override;
-  void SetSuggestionChipConfig(base::PassKey<PageActionController>,
+  void SetSuggestionChipConfig(PageActionPassKey pass_key,
                                const SuggestionChipConfig& config) override;
-  void SetShouldShowAnchoredMessage(base::PassKey<PageActionController>,
+  void SetShouldShowAnchoredMessage(PageActionPassKey pass_key,
                                     bool show) override;
-  void SetTabActive(base::PassKey<PageActionController>,
-                    bool is_active) override;
-  void SetHasPinnedIcon(base::PassKey<PageActionController>,
+  void SetTabActive(PageActionPassKey pass_key, bool is_active) override;
+  void SetHasPinnedIcon(PageActionPassKey pass_key,
                         bool has_pinned_icon) override;
 
   void SetOverrideText(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_text) override;
 
   void SetOverrideAccessibleName(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_accessible_name) override;
 
-  void SetOverrideImage(base::PassKey<PageActionController>,
+  void SetOverrideImage(PageActionPassKey pass_key,
                         const std::optional<ui::ImageModel>& override_image,
                         PageActionColorSource color_source) override;
 
   void SetOverrideTooltip(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_tooltip) override;
 
-  void SetAnchoredMessageText(base::PassKey<PageActionController>,
+  void SetAnchoredMessageText(PageActionPassKey pass_key,
                               const std::u16string& anchored_message) override;
 
   void SetAnchoredMessageAction(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const AnchoredMessageActionIconType action_icon_type,
       std::unique_ptr<ui::SimpleMenuModel> model) override;
 
   void SetAnchoredMessageIcon(
-      base::PassKey<PageActionController>,
+      PageActionPassKey pass_key,
       const std::optional<ui::ImageModel>& icon) override;
 
-  void SetActionActive(base::PassKey<PageActionController>,
-                       bool is_active) override;
+  void SetActionActive(PageActionPassKey pass_key, bool is_active) override;
 
-  void SetIsSuppressedByOmnibox(base::PassKey<PageActionController>,
+  void SetIsSuppressedByOmnibox(PageActionPassKey pass_key,
                                 bool is_suppressed) override;
 
-  void SetExemptFromOmniboxSuppression(base::PassKey<PageActionController>,
+  void SetExemptFromOmniboxSuppression(PageActionPassKey pass_key,
                                        bool is_exempt) override;
 
-  void SetIsChipShowing(base::PassKey<PageActionController>,
+  void SetIsChipShowing(PageActionPassKey pass_key,
                         bool is_chip_showing) override;
 
-  void SetIsAnchoredMessageShowing(base::PassKey<PageActionController>,
+  void SetIsAnchoredMessageShowing(PageActionPassKey pass_key,
                                    bool is_anchored_message_showing) override;
 
   // The model distills all visibility properties into a single result.
@@ -346,7 +339,7 @@ class PageActionModelFactory {
   virtual ~PageActionModelFactory() = default;
 
   virtual std::unique_ptr<PageActionModelInterface> Create(
-      int action_id,
+      actions::ActionId action_id,
       bool is_ephemeral) = 0;
 };
 

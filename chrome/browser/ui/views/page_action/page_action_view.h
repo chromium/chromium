@@ -17,8 +17,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
-#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
@@ -29,14 +29,14 @@
 
 namespace page_actions {
 
-class PageActionController;
 class PageActionModelInterface;
 struct PageActionViewParams;
 
 // PageActionView is the view displaying the page action. There is one per
 // browser, per page action.
 class PageActionView : public IconLabelBubbleView,
-                       public PageActionModelObserver {
+                       public PageActionModelObserver,
+                       public PageActionController::Delegate {
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
@@ -66,10 +66,12 @@ class PageActionView : public IconLabelBubbleView,
       ChipVisibilityChanged callback);
 
   // Reports the chip visibility change state at the end of the animation.
-  using IsChipShowingChangedCallback =
-      base::RepeatingCallback<void(bool is_chip_showing)>;
-  void SetIsChipShowingChangedCallback(IsChipShowingChangedCallback callback);
-  void SetAnchoredMessageCloseCallback(base::RepeatingClosure callback);
+  void SetIsChipShowingChangedCallback(
+      IsChipShowingChangedCallback callback) override;
+  void SetAnchoredMessageCloseCallback(
+      base::RepeatingClosure callback) override;
+  void SetClickCallback(
+      base::RepeatingCallback<void(PageActionTrigger)> callback) override;
 
   // PageActionModelObserver:
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
@@ -97,12 +99,10 @@ class PageActionView : public IconLabelBubbleView,
   gfx::SlideAnimation& GetSlideAnimationForTesting();
   AnchoredMessageBubbleView* GetAnchoredMessageForTesting();
 
-  static base::PassKey<PageActionView> PassKeyForTesting() { return PassKey(); }
+  static PageActionPassKey PassKeyForTesting() { return PageActionPassKey(); }
 
  protected:
-  static base::PassKey<PageActionView> PassKey() {
-    return base::PassKey<PageActionView>();
-  }
+  static PageActionPassKey PassKey() { return PageActionPassKey(); }
 
  private:
   // The image associated with the `action_item_` size may be different from the

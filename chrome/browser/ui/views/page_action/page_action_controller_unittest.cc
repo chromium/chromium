@@ -18,11 +18,10 @@
 #include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_pass_key.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -30,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace page_actions {
@@ -147,7 +147,7 @@ class PageActionControllerTest : public testing::Test {
 
   FakeTabInterface* tab_interface() { return tab_interface_.get(); }
 
-  std::unique_ptr<ActionItem> BuildActionItem(int action_id) {
+  std::unique_ptr<ActionItem> BuildActionItem(actions::ActionId action_id) {
     return ActionItem::Builder()
         .SetActionId(action_id)
         .SetVisible(true)
@@ -164,7 +164,6 @@ class PageActionControllerTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<PageActionControllerImpl> controller_;
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
-  std::unique_ptr<ActionItem> action_item_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
 };
 
@@ -398,7 +397,7 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   auto action_item = BuildActionItem(kFirstActionItemId);
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
-  controller()->AddObserver(0, observation);
+  controller()->AddObserver(kFirstActionItemId, observation);
 
   const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
@@ -413,10 +412,25 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   // sample).
   controller()->Show(kFirstActionItemId);
 
-  controller()
-      ->GetClickCallback(PageActionView::PassKeyForTesting(),
-                         kFirstActionItemId)
-      .Run(PageActionTrigger::kMouse);
+  class TestDelegate : public PageActionController::Delegate {
+   public:
+    void SetIsChipShowingChangedCallback(
+        IsChipShowingChangedCallback callback) override {}
+    void SetAnchoredMessageCloseCallback(
+        base::RepeatingClosure callback) override {}
+    void SetClickCallback(
+        base::RepeatingCallback<void(PageActionTrigger)> callback) override {
+      click_callback_ = std::move(callback);
+    }
+
+    base::RepeatingCallback<void(PageActionTrigger)> click_callback_;
+  };
+
+  TestDelegate delegate;
+  controller()->RegisterCallbacks(PageActionPassKey::PassKeyForTesting(),
+                                  kFirstActionItemId, &delegate);
+
+  delegate.click_callback_.Run(PageActionTrigger::kMouse);
 
   histogram_tester.ExpectTotalCount(general_histogram, 2);
   histogram_tester.ExpectBucketCount(general_histogram,
@@ -425,10 +439,7 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   histogram_tester.ExpectBucketCount(specific_histogram,
                                      PageActionCTREvent::kClicked, 1);
 
-  controller()
-      ->GetClickCallback(PageActionView::PassKeyForTesting(),
-                         kFirstActionItemId)
-      .Run(PageActionTrigger::kKeyboard);
+  delegate.click_callback_.Run(PageActionTrigger::kKeyboard);
 
   histogram_tester.ExpectTotalCount(general_histogram, 3);
   histogram_tester.ExpectBucketCount(general_histogram,
@@ -477,7 +488,7 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideText(_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
-  controller().ClearOverrideText(0);
+  controller().ClearOverrideText(kFirstActionItemId);
 }
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideAccessibleName) {
@@ -566,6 +577,8 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideImage) {
       .Times(1);
   controller().OverrideImage(kFirstActionItemId, override_image);
 
+  EXPECT_CALL(models().Get(kFirstActionItemId), GetColorSource())
+      .WillOnce(testing::Return(PageActionColorSource::kForeground));
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt),
                                PageActionColorSource::kForeground))

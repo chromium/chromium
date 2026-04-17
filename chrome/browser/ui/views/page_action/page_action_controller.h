@@ -21,8 +21,8 @@
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/views/page_action/chip_selector.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
+#include "chrome/browser/ui/views/page_action/page_action_pass_key.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
@@ -42,7 +42,6 @@ class SimpleMenuModel;
 
 namespace page_actions {
 
-class PageActionView;
 class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
@@ -143,6 +142,24 @@ std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config);
 // receive updates from this controller.
 class PageActionController {
  public:
+  // Interface implemented by the View to allow the Controller to push
+  // internal callbacks without a direct dependency on the View class.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    using IsChipShowingChangedCallback =
+        base::RepeatingCallback<void(bool is_chip_showing)>;
+    using AnchoredMessageCloseCallback = base::RepeatingClosure;
+    using ClickCallback = base::RepeatingCallback<void(PageActionTrigger)>;
+
+    virtual void SetIsChipShowingChangedCallback(
+        IsChipShowingChangedCallback callback) = 0;
+    virtual void SetAnchoredMessageCloseCallback(
+        AnchoredMessageCloseCallback callback) = 0;
+    virtual void SetClickCallback(ClickCallback callback) = 0;
+  };
+
   virtual ~PageActionController() = default;
 
   // Requests that the page action be shown or hidden.
@@ -244,32 +261,16 @@ class PageActionController {
   virtual base::CallbackListSubscription RegisterOnWillDestroyCallback(
       base::OnceCallback<void(PageActionController&)> callback) = 0;
 
-  // Provides a metric recording callback to the caller. The callback won't run
-  // if the page action controller is destroyed.
-  virtual base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
-      base::PassKey<PageActionView>,
-      actions::ActionId action_id) = 0;
-
-  // Provides callback for when an anchored message is closed by used, either by
-  // interacting with it or clicking the close icon.
-  virtual base::RepeatingClosure GetAnchoredMessageCloseCallback(
-      base::PassKey<PageActionView>,
-      actions::ActionId action_id) = 0;
-
   // Subscribes this controller to get `page_action_view` complete chip
   // visibility change (it final state after animation).
-  virtual void RegisterCallbacks(base::PassKey<PageActionView>,
+  virtual void RegisterCallbacks(PageActionPassKey pass_key,
                                  actions::ActionId action_id,
-                                 PageActionView* page_action_view) = 0;
+                                 Delegate* delegate) = 0;
 
-  static base::PassKey<PageActionController> PassKeyForTesting() {
-    return base::PassKey<PageActionController>();
-  }
+  static PageActionPassKey PassKeyForTesting() { return PageActionPassKey(); }
 
  protected:
-  static base::PassKey<PageActionController> PassKey() {
-    return base::PassKey<PageActionController>();
-  }
+  static PageActionPassKey PassKey() { return PageActionPassKey(); }
 
  private:
   friend class ScopedPageActionActivity;
@@ -337,17 +338,11 @@ class PageActionControllerImpl : public PageActionController,
   base::CallbackListSubscription CreateActionItemSubscription(
       actions::ActionItem* action_item) override;
   void SetShouldHidePageActions(bool should_hide_page_actions) override;
-  base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
-      base::PassKey<PageActionView>,
-      actions::ActionId action_id) override;
-  base::RepeatingClosure GetAnchoredMessageCloseCallback(
-      base::PassKey<PageActionView>,
-      actions::ActionId action_id) override;
   base::CallbackListSubscription RegisterOnWillDestroyCallback(
       base::OnceCallback<void(PageActionController&)> callback) override;
-  void RegisterCallbacks(base::PassKey<PageActionView>,
+  void RegisterCallbacks(PageActionPassKey pass_key,
                          actions::ActionId action_id,
-                         PageActionView* page_action_view) override;
+                         Delegate* delegate) override;
 
   // PinnedToolbarActionsModel::Observer
   void OnActionsChanged() override;

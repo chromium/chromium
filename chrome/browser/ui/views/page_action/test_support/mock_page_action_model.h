@@ -62,91 +62,85 @@ class MockPageActionModel : public PageActionModelInterface {
               (override));
   MOCK_METHOD(void,
               SetActionItemProperties,
-              (base::PassKey<PageActionController>,
-               const actions::ActionItem* action_item),
+              (PageActionPassKey, const actions::ActionItem* action_item),
               (override));
   MOCK_METHOD(void,
               SetShowRequested,
-              (base::PassKey<PageActionController>, bool requested),
+              (PageActionPassKey, bool requested),
               (override));
   MOCK_METHOD(void,
               SetShouldShowSuggestionChip,
-              (base::PassKey<PageActionController>, bool show),
+              (PageActionPassKey, bool show),
               (override));
   MOCK_METHOD(void,
               SetSuggestionChipConfig,
-              (base::PassKey<PageActionController>,
-               const SuggestionChipConfig& config),
+              (PageActionPassKey, const SuggestionChipConfig& config),
               (override));
   MOCK_METHOD(void,
               SetShouldShowAnchoredMessage,
-              (base::PassKey<PageActionController>, bool show),
+              (PageActionPassKey, bool show),
               (override));
   MOCK_METHOD(void,
               SetAnchoredMessageText,
-              (base::PassKey<PageActionController>,
-               const std::u16string& anchored_message),
+              (PageActionPassKey, const std::u16string& anchored_message),
               (override));
   MOCK_METHOD(void,
               SetAnchoredMessageAction,
-              (base::PassKey<PageActionController>,
+              (PageActionPassKey,
                const AnchoredMessageActionIconType action_icon_type,
                std::unique_ptr<ui::SimpleMenuModel> model),
               (override));
   MOCK_METHOD(void,
               SetAnchoredMessageIcon,
-              (base::PassKey<PageActionController>,
-               const std::optional<ui::ImageModel>& icon),
+              (PageActionPassKey, const std::optional<ui::ImageModel>& icon),
               (override));
   MOCK_METHOD(void,
               SetIsChipShowing,
-              (base::PassKey<PageActionController>, bool is_chip_showing),
+              (PageActionPassKey, bool is_chip_showing),
               (override));
   MOCK_METHOD(void,
               SetIsAnchoredMessageShowing,
-              (base::PassKey<PageActionController>,
-               bool is_anchored_message_showing),
+              (PageActionPassKey, bool is_anchored_message_showing),
               (override));
   MOCK_METHOD(void,
               SetHasPinnedIcon,
-              (base::PassKey<PageActionController>, bool has_pinned_icon),
+              (PageActionPassKey, bool has_pinned_icon),
               (override));
   MOCK_METHOD(void,
               SetTabActive,
-              (base::PassKey<PageActionController>, bool is_active),
+              (PageActionPassKey, bool is_active),
               (override));
   MOCK_METHOD(void,
               SetOverrideText,
-              (base::PassKey<PageActionController>,
-               const std::optional<std::u16string>& text),
+              (PageActionPassKey, const std::optional<std::u16string>& text),
               (override));
   MOCK_METHOD(void,
               SetOverrideAccessibleName,
-              (base::PassKey<PageActionController>,
+              (PageActionPassKey,
                const std::optional<std::u16string>& override_accessible_name),
               (override));
   MOCK_METHOD(void,
               SetOverrideImage,
-              (base::PassKey<PageActionController>,
+              (PageActionPassKey,
                const std::optional<ui::ImageModel>& override_text,
                PageActionColorSource color_source),
               (override));
   MOCK_METHOD(void,
               SetOverrideTooltip,
-              (base::PassKey<PageActionController>,
+              (PageActionPassKey,
                const std::optional<std::u16string>& override_tooltip),
               (override));
   MOCK_METHOD(void,
               SetActionActive,
-              (base::PassKey<PageActionController>, bool is_active),
+              (PageActionPassKey, bool is_active),
               (override));
   MOCK_METHOD(void,
               SetIsSuppressedByOmnibox,
-              (base::PassKey<PageActionController>, bool is_suppressed),
+              (PageActionPassKey, bool is_suppressed),
               (override));
   MOCK_METHOD(void,
               SetExemptFromOmniboxSuppression,
-              (base::PassKey<PageActionController>, bool is_exempt),
+              (PageActionPassKey, bool is_exempt),
               (override));
   MOCK_METHOD(bool, IsEphemeral, (), (const, override));
 };
@@ -154,16 +148,15 @@ class MockPageActionModel : public PageActionModelInterface {
 template <typename PageActionModelType>
 class FakePageActionModelFactory : public PageActionModelFactory {
  public:
-  std::unique_ptr<PageActionModelInterface> Create(
-      int action_id,
-      bool /*is_ephemeral*/) override {
+  std::unique_ptr<PageActionModelInterface> Create(actions::ActionId action_id,
+                                                   bool is_ephemeral) override {
     auto model = std::make_unique<PageActionModelType>();
     model_map_.emplace(action_id, model.get());
     return model;
   }
 
   // Model getter for tests to set expectations.
-  PageActionModelType& Get(int action_id) {
+  PageActionModelType& Get(actions::ActionId action_id) {
     auto id_to_model = model_map_.find(action_id);
     CHECK(id_to_model != model_map_.end());
     CHECK_NE(id_to_model->second, nullptr);

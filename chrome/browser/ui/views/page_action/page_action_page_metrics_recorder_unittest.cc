@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_page_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"

@@ -18,15 +18,12 @@
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_page_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace page_actions {
-
-using PassKey = base::PassKey<PageActionController>;
 
 ScopedPageActionActivity::ScopedPageActionActivity(
     PageActionController& controller,
@@ -148,8 +145,8 @@ void PageActionControllerImpl::Register(
     bool is_exempt_from_omnibox_suppression) {
   std::unique_ptr<PageActionModelInterface> model =
       CreateModel(action_id, is_ephemeral);
-  model->SetTabActive(PassKey(), is_tab_active);
-  model->SetExemptFromOmniboxSuppression(PassKey(),
+  model->SetTabActive(PageActionPassKey(), is_tab_active);
+  model->SetExemptFromOmniboxSuppression(PageActionPassKey(),
                                          is_exempt_from_omnibox_suppression);
   page_actions_.emplace(action_id, std::move(model));
   // Initialize counter to 0
@@ -157,12 +154,12 @@ void PageActionControllerImpl::Register(
 }
 
 void PageActionControllerImpl::Show(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(PassKey(),
+  FindPageActionModel(action_id).SetShowRequested(PageActionPassKey(),
                                                   /*requested=*/true);
 }
 
 void PageActionControllerImpl::Hide(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(PassKey(),
+  FindPageActionModel(action_id).SetShowRequested(PageActionPassKey(),
                                                   /*requested=*/false);
 }
 
@@ -189,8 +186,8 @@ void PageActionControllerImpl::DoShowSuggestionChip(
     actions::ActionId action_id,
     const SuggestionChipConfig& config) {
   PageActionModelInterface& model = FindPageActionModel(action_id);
-  model.SetSuggestionChipConfig(PassKey(), config);
-  model.SetShouldShowSuggestionChip(PassKey(), /*show=*/true);
+  model.SetSuggestionChipConfig(PageActionPassKey(), config);
+  model.SetShouldShowSuggestionChip(PageActionPassKey(), /*show=*/true);
 }
 
 void PageActionControllerImpl::HideSuggestionChip(actions::ActionId action_id) {
@@ -199,8 +196,9 @@ void PageActionControllerImpl::HideSuggestionChip(actions::ActionId action_id) {
 
 void PageActionControllerImpl::DoHideSuggestionChip(
     actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShouldShowSuggestionChip(PassKey(),
-                                                             /*show=*/false);
+  FindPageActionModel(action_id).SetShouldShowSuggestionChip(
+      PageActionPassKey(),
+      /*show=*/false);
 }
 
 void PageActionControllerImpl::ShowAnchoredMessage(
@@ -221,8 +219,9 @@ void PageActionControllerImpl::ShowAnchoredMessage(
 void PageActionControllerImpl::DoShowAnchoredMessage(
     actions::ActionId action_id,
     const AnchoredMessageConfig& config) {
-  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(PassKey(),
-                                                              /*show=*/true);
+  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(
+      PageActionPassKey(),
+      /*show=*/true);
   active_anchored_message_ = action_id;
   anchored_message_timeout_.Start(
       FROM_HERE, base::Seconds(12),
@@ -239,8 +238,9 @@ void PageActionControllerImpl::HideAnchoredMessage(
 
 void PageActionControllerImpl::DoHideAnchoredMessage(
     actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(PassKey(),
-                                                              /*show=*/false);
+  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(
+      PageActionPassKey(),
+      /*show=*/false);
   if (active_anchored_message_ == action_id) {
     active_anchored_message_ = std::nullopt;
     if (anchored_message_timeout_.IsRunning()) {
@@ -253,7 +253,7 @@ ScopedPageActionActivity PageActionControllerImpl::AddActivity(
     actions::ActionId action_id) {
   auto& counter = activity_counters_[action_id];
   ++counter;
-  FindPageActionModel(action_id).SetActionActive(PassKey(), true);
+  FindPageActionModel(action_id).SetActionActive(PageActionPassKey(), true);
   return ScopedPageActionActivity(*this, action_id);
 }
 
@@ -264,14 +264,14 @@ void PageActionControllerImpl::DecrementActivityCounter(
   --it->second;
   CHECK_GE(it->second, 0);
   if (it->second == 0) {
-    FindPageActionModel(action_id).SetActionActive(PassKey(), false);
+    FindPageActionModel(action_id).SetActionActive(PageActionPassKey(), false);
   }
 }
 
 void PageActionControllerImpl::ActionItemChanged(
     const actions::ActionItem* action_item) {
   auto& model = FindPageActionModel(action_item->GetActionId().value());
-  model.SetActionItemProperties(PassKey(), action_item);
+  model.SetActionItemProperties(PageActionPassKey(), action_item);
 }
 
 void PageActionControllerImpl::OnTabActivated(tabs::TabInterface* tab) {
@@ -287,32 +287,34 @@ void PageActionControllerImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
 
 void PageActionControllerImpl::SetModelsTabActive(bool is_active) {
   for (auto& [id, model] : page_actions_) {
-    model->SetTabActive(PassKey(), is_active);
+    model->SetTabActive(PageActionPassKey(), is_active);
   }
 }
 
 void PageActionControllerImpl::OverrideText(
     actions::ActionId action_id,
     const std::u16string& override_text) {
-  FindPageActionModel(action_id).SetOverrideText(PassKey(), override_text);
+  FindPageActionModel(action_id).SetOverrideText(PageActionPassKey(),
+                                                 override_text);
 }
 
 void PageActionControllerImpl::ClearOverrideText(actions::ActionId action_id) {
   FindPageActionModel(action_id).SetOverrideText(
-      PassKey(), /*override_text=*/std::nullopt);
+      PageActionPassKey(), /*override_text=*/std::nullopt);
 }
 
 void PageActionControllerImpl::OverrideAccessibleName(
     actions::ActionId action_id,
     const std::u16string& override_accessible_name) {
   FindPageActionModel(action_id).SetOverrideAccessibleName(
-      PassKey(), /*override_accessible_name=*/override_accessible_name);
+      PageActionPassKey(),
+      /*override_accessible_name=*/override_accessible_name);
 }
 
 void PageActionControllerImpl::ClearOverrideAccessibleName(
     actions::ActionId action_id) {
   FindPageActionModel(action_id).SetOverrideAccessibleName(
-      PassKey(), /*override_accessible_name=*/std::nullopt);
+      PageActionPassKey(), /*override_accessible_name=*/std::nullopt);
 }
 
 void PageActionControllerImpl::OverrideImage(
@@ -325,45 +327,47 @@ void PageActionControllerImpl::OverrideImage(
     actions::ActionId action_id,
     const ui::ImageModel& override_image,
     PageActionColorSource color_source) {
-  FindPageActionModel(action_id).SetOverrideImage(PassKey(), override_image,
-                                                  color_source);
+  FindPageActionModel(action_id).SetOverrideImage(PageActionPassKey(),
+                                                  override_image, color_source);
 }
 
 void PageActionControllerImpl::ClearOverrideImage(actions::ActionId action_id) {
   auto& model = FindPageActionModel(action_id);
-  model.SetOverrideImage(PassKey(), /*override_image=*/std::nullopt,
+  model.SetOverrideImage(PageActionPassKey(),
+                         /*override_image=*/std::nullopt,
                          model.GetColorSource());
 }
 
 void PageActionControllerImpl::OverrideTooltip(
     actions::ActionId action_id,
     const std::u16string& override_tooltip) {
-  FindPageActionModel(action_id).SetOverrideTooltip(PassKey(),
+  FindPageActionModel(action_id).SetOverrideTooltip(PageActionPassKey(),
                                                     override_tooltip);
 }
 
 void PageActionControllerImpl::ClearOverrideTooltip(
     actions::ActionId action_id) {
   FindPageActionModel(action_id).SetOverrideTooltip(
-      PassKey(), /*override_tooltip=*/std::nullopt);
+      PageActionPassKey(), /*override_tooltip=*/std::nullopt);
 }
 
 void PageActionControllerImpl::SetAnchoredMessageText(
     actions::ActionId action_id,
     const std::u16string& anchored_message_text) {
-  FindPageActionModel(action_id).SetAnchoredMessageText(PassKey(),
+  FindPageActionModel(action_id).SetAnchoredMessageText(PageActionPassKey(),
                                                         anchored_message_text);
 }
 
 void PageActionControllerImpl::SetAnchoredMessageIcon(
     actions::ActionId action_id,
     const ui::ImageModel& icon) {
-  FindPageActionModel(action_id).SetAnchoredMessageIcon(PassKey(), icon);
+  FindPageActionModel(action_id).SetAnchoredMessageIcon(PageActionPassKey(),
+                                                        icon);
 }
 
 void PageActionControllerImpl::ClearAnchoredMessageIcon(
     actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetAnchoredMessageIcon(PassKey(),
+  FindPageActionModel(action_id).SetAnchoredMessageIcon(PageActionPassKey(),
                                                         std::nullopt);
 }
 
@@ -378,7 +382,7 @@ void PageActionControllerImpl::SetAnchoredMessageAction(
   }
 
   FindPageActionModel(action_id).SetAnchoredMessageAction(
-      PassKey(), action_icon_type, std::move(model));
+      PageActionPassKey(), action_icon_type, std::move(model));
 }
 
 void PageActionControllerImpl::AddObserver(
@@ -402,7 +406,8 @@ PageActionControllerImpl::CreateActionItemSubscription(
 void PageActionControllerImpl::SetShouldHidePageActions(
     bool should_hide_page_actions) {
   for (auto& [id, model] : page_actions_) {
-    model->SetIsSuppressedByOmnibox(PassKey(), should_hide_page_actions);
+    model->SetIsSuppressedByOmnibox(PageActionPassKey(),
+                                    should_hide_page_actions);
   }
 }
 
@@ -416,7 +421,7 @@ void PageActionControllerImpl::PinnedActionsModelChanged() {
   CHECK(pinned_actions_model);
   for (auto& [id, model] : page_actions_) {
     const bool is_pinned = pinned_actions_model->Contains(id);
-    model->SetHasPinnedIcon(PassKey(), is_pinned);
+    model->SetHasPinnedIcon(PageActionPassKey(), is_pinned);
   }
 }
 
@@ -473,11 +478,19 @@ PageActionControllerImpl::CreatePageMetricsRecorder(
   }
 }
 
-base::RepeatingCallback<void(PageActionTrigger)>
-PageActionControllerImpl::GetClickCallback(base::PassKey<PageActionView>,
-                                           actions::ActionId action_id) {
-  return base::BindRepeating(&PageActionControllerImpl::RecordClickMetric,
-                             weak_factory_.GetWeakPtr(), action_id);
+void PageActionControllerImpl::RegisterCallbacks(PageActionPassKey,
+                                                 actions::ActionId action_id,
+                                                 Delegate* delegate) {
+  CHECK(delegate);
+  delegate->SetIsChipShowingChangedCallback(
+      base::BindRepeating(&PageActionControllerImpl::OnIsChipShowingChanged,
+                          weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetAnchoredMessageCloseCallback(
+      base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
+                          weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetClickCallback(
+      base::BindRepeating(&PageActionControllerImpl::RecordClickMetric,
+                          weak_factory_.GetWeakPtr(), action_id));
 }
 
 void PageActionControllerImpl::RecordClickMetric(
@@ -487,14 +500,6 @@ void PageActionControllerImpl::RecordClickMetric(
   CHECK(id_and_recorder != metrics_recorders_.end());
   CHECK(id_and_recorder->second.get());
   id_and_recorder->second->RecordClick(trigger_source);
-}
-
-base::RepeatingClosure
-PageActionControllerImpl::GetAnchoredMessageCloseCallback(
-    base::PassKey<PageActionView>,
-    actions::ActionId action_id) {
-  return base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
-                             base::Unretained(this), action_id);
 }
 
 int PageActionControllerImpl::GetVisibleEphemeralPageActionsCount() const {
@@ -514,23 +519,11 @@ PageActionControllerImpl::RegisterOnWillDestroyCallback(
   return on_will_destroy_callback_list_.Add(std::move(callback));
 }
 
-void PageActionControllerImpl::RegisterCallbacks(
-    base::PassKey<PageActionView>,
-    actions::ActionId action_id,
-    PageActionView* page_action_view) {
-  CHECK(page_action_view);
-  page_action_view->SetIsChipShowingChangedCallback(
-      base::BindRepeating(&PageActionControllerImpl::OnIsChipShowingChanged,
-                          weak_factory_.GetWeakPtr(), action_id));
-  page_action_view->SetAnchoredMessageCloseCallback(
-      base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
-                          base::Unretained(this), action_id));
-}
-
 void PageActionControllerImpl::OnIsChipShowingChanged(
     actions::ActionId action_id,
     bool is_chip_showing) {
-  FindPageActionModel(action_id).SetIsChipShowing(PassKey(), is_chip_showing);
+  FindPageActionModel(action_id).SetIsChipShowing(PageActionPassKey(),
+                                                  is_chip_showing);
 }
 
 std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {

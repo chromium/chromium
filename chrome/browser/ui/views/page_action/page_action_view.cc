@@ -97,6 +97,11 @@ void PageActionView::SetAnchoredMessageCloseCallback(
   anchored_message_close_callback_ = std::move(callback);
 }
 
+void PageActionView::SetClickCallback(
+    base::RepeatingCallback<void(PageActionTrigger)> callback) {
+  click_callback_ = std::move(callback);
+}
+
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
@@ -104,8 +109,6 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
     controller->RegisterCallbacks(PassKey(),
                                   action_item_->GetActionId().value(), this);
 
-    click_callback_ = controller->GetClickCallback(
-        PassKey(), action_item_->GetActionId().value());
     controller->AddObserver(action_item_->GetActionId().value(), observation_);
     // TODO(crbug.com/388524315): Have the controller manage its own ActionItem
     // observation. See bug for more explanation.
@@ -113,6 +116,9 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
         controller->CreateActionItemSubscription(action_item_.get());
     OnPageActionModelChanged(*observation_.GetSource());
   } else {
+    SetIsChipShowingChangedCallback(base::NullCallback());
+    SetAnchoredMessageCloseCallback(base::NullCallback());
+    SetClickCallback(base::NullCallback());
     SetVisible(false);
   }
 }

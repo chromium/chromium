@@ -28,8 +28,8 @@ const std::u16string kOverrideName = u"OverrideName";
 const ui::ImageModel kTestImage =
     ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/16));
 
-base::PassKey<PageActionController> PassKey() {
-  return PageActionController::PassKeyForTesting();
+PageActionPassKey PassKey() {
+  return PageActionPassKey::PassKeyForTesting();
 }
 
 class MockPageActionModelObserver : public PageActionModelObserver {
