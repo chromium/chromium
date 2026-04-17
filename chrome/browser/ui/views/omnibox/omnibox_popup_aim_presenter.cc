@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 
 #include <optional>
 #include <string_view>
@@ -12,6 +11,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
@@ -50,6 +51,11 @@ void OmniboxPopupAimPresenter::Hide() {
 
 std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
   return "Omnibox.Popup.Aim";
+}
+
+bool OmniboxPopupAimPresenter::ShouldDeferUntilVisualStateReady() const {
+  return base::FeatureList::IsEnabled(
+      omnibox::kOmniboxAimDeferShowUntilVisualStateReady);
 }
 
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
