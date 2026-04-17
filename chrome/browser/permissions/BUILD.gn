@@ -96,6 +96,7 @@ source_set("permissions") {
     "//chrome/browser/serial",
     "//chrome/browser/storage",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/subresource_filter",
     "//chrome/browser/tab_contents",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/translate",

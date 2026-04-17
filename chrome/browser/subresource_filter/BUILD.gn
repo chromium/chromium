@@ -2,7 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(csharrison): Move subresource_filter_browsertests here.
+source_set("subresource_filter") {
+  public = [
+    "chrome_content_subresource_filter_web_contents_helper_factory.h",
+    "subresource_filter_history_observer.h",
+    "subresource_filter_profile_context_factory.h",
+  ]
+
+  sources = [
+    "chrome_content_subresource_filter_web_contents_helper_factory.cc",
+    "subresource_filter_history_observer.cc",
+    "subresource_filter_profile_context_factory.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/history/core/browser",
+    "//components/subresource_filter/content/browser",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
+    "//chrome/browser/safe_browsing",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/subresource_filter/content/browser",
+    "//components/subresource_filter/core/browser",
+    "//url",
+  ]
+}
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -61,8 +93,8 @@ if (is_android) {
     deps = [
       ":jni_headers",
       "//base",
-      "//chrome/browser",
       "//chrome/browser:browser_process",
+      "//chrome/browser:test_support",
       "//components/subresource_filter/content/browser",
       "//components/subresource_filter/core/common:test_support",
     ]

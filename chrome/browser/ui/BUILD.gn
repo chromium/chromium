@@ -388,6 +388,7 @@ static_library("ui") {
     "//chrome/browser/site_protection",
     "//chrome/browser/status_icons",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/subresource_filter",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager:impl",
     "//chrome/browser/task_manager/common",

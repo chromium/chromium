@@ -470,6 +470,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/speech",
     "//chrome/browser/storage",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/subresource_filter",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",

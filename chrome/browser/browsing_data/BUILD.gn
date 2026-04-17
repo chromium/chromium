@@ -265,6 +265,7 @@ source_set("unit_tests") {
     "//chrome/browser/spellchecker",
     "//chrome/browser/storage",
     "//chrome/browser/strike_database",
+    "//chrome/browser/subresource_filter",
     "//chrome/browser/sync",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/webdata_services",
