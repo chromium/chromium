@@ -22,9 +22,7 @@ bool IsPrimaryAccountGoogleInternal(signin::IdentityManager& signin_manager);
 // Decides when to refresh sign-in cookies for the webview.
 class AuthController : public signin::IdentityManager::Observer {
  public:
-  AuthController(Profile* profile,
-                 signin::IdentityManager* identity_manager,
-                 bool use_for_fre);
+  AuthController(Profile* profile, signin::IdentityManager* identity_manager);
   ~AuthController() override;
 
   // Called before the glic web client is loaded. Tries to sync cookies to the
@@ -33,11 +31,6 @@ class AuthController : public signin::IdentityManager::Observer {
   void CheckAuthBeforeLoad(
       base::OnceCallback<void(mojom::PrepareForClientResult)> callback);
 
-  // Called before the glic window is shown. Returns true if the glic window
-  // should be shown. Returns false if the login page is shown instead, in which
-  // case the glic window should not be shown.
-  bool CheckAuthBeforeShowSync(base::OnceClosure after_signin);
-
   // Sync cookies, even if it appears as though a sync is not required.
   void ForceSyncCookies(base::OnceCallback<void(bool)> callback);
 
@@ -45,15 +38,10 @@ class AuthController : public signin::IdentityManager::Observer {
   // signed in. It will not be called if the user cancels the sign-in, or the
   // sign-in doesn't happen before:
   // * ShowReauthForAccount is called again
-  // * CheckAuthBeforeShow is called
   // * The AuthController is destroyed
   // * Too much time has passed (5 minutes).
-  // * OnGlicWindowOpened is called.
   // TODO(crbug.com/406529330): Track sign-in flow correctly.
   void ShowReauthForAccount(base::OnceClosure after_signin);
-  void OnGlicWindowOpened();
-
-  bool RequiresSignIn() const;
 
   void SetCookieSynchronizerForTesting(
       std::unique_ptr<GlicCookieSynchronizer> synchronizer);

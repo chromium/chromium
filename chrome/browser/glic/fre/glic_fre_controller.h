@@ -15,7 +15,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
-#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/tabs/public/tab_interface.h"
@@ -25,6 +24,10 @@
 #endif
 
 class Profile;
+
+namespace signin {
+class IdentityManager;
+}
 
 namespace content {
 class WebContents;
@@ -164,8 +167,6 @@ class GlicFreController {
 
   void UpdateFreWidgetSize(const gfx::Size& new_size);
 
-  AuthController& GetAuthControllerForTesting() { return auth_controller_; }
-
   Profile* profile() { return profile_; }
 
   base::WeakPtr<GlicFreController> GetWeakPtr() {
@@ -211,7 +212,6 @@ class GlicFreController {
   // that we can continue to reference it even after `fre_view_` relinquishes
   // ownership to the widget.
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  AuthController auth_controller_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // The invocation source browser.

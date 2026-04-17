@@ -186,9 +186,8 @@ GlicKeyedService::GlicKeyedService(
       region_capture_controller_(
           std::make_unique<GlicRegionCaptureController>()),
 #endif
-      auth_controller_(std::make_unique<AuthController>(profile,
-                                                        identity_manager,
-                                                        /*use_for_fre=*/false)),
+      auth_controller_(
+          std::make_unique<AuthController>(profile, identity_manager)),
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
       occlusion_notifier_(nullptr),

@@ -41,11 +41,8 @@ class GlicCookieSynchronizer
   // underlying multilogin operation hangs.
   static constexpr base::TimeDelta kCookieSyncDefaultTimeout = base::Seconds(7);
 
-  // If `use_for_fre` the storage partition is configured for use by the glic
-  // FRE webview. Otherwise, it is configured for use by the main glic webview.
   GlicCookieSynchronizer(content::BrowserContext* context,
-                         signin::IdentityManager* identity_manager,
-                         bool use_for_fre);
+                         signin::IdentityManager* identity_manager);
   GlicCookieSynchronizer(const GlicCookieSynchronizer&) = delete;
   GlicCookieSynchronizer& operator=(const GlicCookieSynchronizer&) = delete;
   ~GlicCookieSynchronizer() override;
@@ -100,9 +97,6 @@ class GlicCookieSynchronizer
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       observation_{this};
-
-  // Whether to configure the storage partition for use by the glic FRE webview.
-  bool use_for_fre_ = false;
 
   std::vector<base::OnceCallback<void(bool)>> callbacks_;
   base::OneShotTimer timeout_;

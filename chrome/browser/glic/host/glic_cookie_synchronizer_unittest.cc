@@ -78,9 +78,7 @@ class GlicCookieSynchronizerWithTestPartition : public GlicCookieSynchronizer {
       content::BrowserContext* context,
       signin::IdentityManager* identity_manager,
       content::TestStoragePartition* test_storage_partition)
-      : GlicCookieSynchronizer(context,
-                               identity_manager,
-                               /*use_for_fre=*/false),
+      : GlicCookieSynchronizer(context, identity_manager),
         test_storage_partition_(test_storage_partition) {}
 
   content::TestStoragePartition* GetStoragePartition() override {
@@ -266,40 +264,6 @@ TEST_F(GlicCookieSynchronizerTest, WorksAfterTimeout) {
       result.GetCallback());
 
   EXPECT_TRUE(result.Get());
-}
-
-TEST_F(GlicCookieSynchronizerTest,
-       UnifiedFreUsesGlicPartitionWithBugfixFeature) {
-  base::test::ScopedFeatureList common_feature_list;
-  common_feature_list.InitAndEnableFeature(features::kGlicMultiInstance);
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kGlicUseMainPartitionForUnifiedFre);
-
-    GlicCookieSynchronizer fre_cookie_synchronizer(
-        &test_profile_, identity_test_env_.identity_manager(),
-        /*use_for_fre=*/true);
-    GlicCookieSynchronizer glic_cookie_synchronizer(
-        &test_profile_, identity_test_env_.identity_manager(),
-        /*use_for_fre=*/false);
-    EXPECT_EQ(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
-              glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kGlicUseMainPartitionForUnifiedFre);
-
-    GlicCookieSynchronizer fre_cookie_synchronizer(
-        &test_profile_, identity_test_env_.identity_manager(),
-        /*use_for_fre=*/true);
-    GlicCookieSynchronizer glic_cookie_synchronizer(
-        &test_profile_, identity_test_env_.identity_manager(),
-        /*use_for_fre=*/false);
-    EXPECT_NE(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
-              glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
-  }
 }
 
 TEST_F(GlicCookieSynchronizerTest, ClearsCookiesOnFirstSync) {

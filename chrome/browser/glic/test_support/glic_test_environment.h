@@ -155,13 +155,11 @@ class GlicTestEnvironmentService : public KeyedService {
   // default, this class replaces this step with an immediately fake success.
   // Change the result of this operation here.
   void SetResultForFutureCookieSync(bool result);
-  void SetResultForFutureCookieSyncInFre(bool result);
 
  private:
   raw_ptr<Profile> profile_;
   // Null during teardown.
   base::WeakPtr<internal::TestCookieSynchronizer> cookie_synchronizer_;
-  base::WeakPtr<internal::TestCookieSynchronizer> fre_cookie_synchronizer_;
 };
 
 // For testing Glic in unit tests.

@@ -38,34 +38,16 @@ bool IsPrimaryAccountGoogleInternal(signin::IdentityManager& signin_manager) {
 }
 
 AuthController::AuthController(Profile* profile,
-                               signin::IdentityManager* identity_manager,
-                               bool use_for_fre)
+                               signin::IdentityManager* identity_manager)
     : profile_(profile),
       identity_manager_(identity_manager),
       cookie_synchronizer_(
-          std::make_unique<GlicCookieSynchronizer>(profile,
-                                                   identity_manager,
-                                                   use_for_fre)),
+          std::make_unique<GlicCookieSynchronizer>(profile, identity_manager)),
       observation_(this) {
   observation_.Observe(identity_manager_);
 }
 
 AuthController::~AuthController() = default;
-
-bool AuthController::CheckAuthBeforeShowSync(base::OnceClosure after_signin) {
-  if (IsAutomationEnabled()) {
-    return true;
-  }
-  switch (GetTokenState()) {
-    case TokenState::kRequiresSignIn:
-      ShowReauthForAccount(std::move(after_signin));
-      return false;
-    case TokenState::kUnknownError:
-    case TokenState::kOk:
-    default:
-      return true;
-  }
-}
 
 void AuthController::CheckAuthBeforeLoad(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
@@ -193,14 +175,6 @@ void AuthController::ShowReauthForAccount(base::OnceClosure after_signin) {
       profile_, primary_account_info.email,
       signin_metrics::AccessPoint::kGlicLaunchButton);
 #endif
-}
-
-void AuthController::OnGlicWindowOpened() {
-  after_signin_callback_.Reset();
-}
-
-bool AuthController::RequiresSignIn() const {
-  return GetTokenState() == TokenState::kRequiresSignIn;
 }
 
 void AuthController::CookieSyncBeforeLoadDone(

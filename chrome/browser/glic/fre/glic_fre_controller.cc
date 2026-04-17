@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +49,7 @@ namespace glic {
 
 GlicFreController::GlicFreController(Profile* profile,
                                      signin::IdentityManager* identity_manager)
-    : profile_(profile),
-      auth_controller_(profile, identity_manager, /*use_for_fre=*/true) {}
+    : profile_(profile) {}
 
 GlicFreController::~GlicFreController() = default;
 
@@ -229,23 +229,26 @@ void GlicFreController::PrepareForClient(
     base::OnceCallback<void(bool)> callback) {
   // TODO(b:501139710): With the unified FRE, we shouldn't need a separate auth
   // controller.
-  auth_controller_.CheckAuthBeforeLoad(
-      base::BindOnce([](mojom::PrepareForClientResult result) {
-        switch (result) {
-          case mojom::PrepareForClientResult::kErrorResyncingCookies:
-            base::UmaHistogramEnumeration(
-                "Glic.FreErrorStateReason",
-                FreErrorStateReason::kErrorResyncingCookies);
-            break;
-          case mojom::PrepareForClientResult::kRequiresSignIn:
-            base::UmaHistogramEnumeration("Glic.FreErrorStateReason",
-                                          FreErrorStateReason::kSignInRequired);
-            break;
-          case mojom::PrepareForClientResult::kSuccess:
-            break;
-        }
-        return result == mojom::PrepareForClientResult::kSuccess;
-      }).Then(std::move(callback)));
+  GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
+      ->GetAuthController()
+      .CheckAuthBeforeLoad(
+          base::BindOnce([](mojom::PrepareForClientResult result) {
+            switch (result) {
+              case mojom::PrepareForClientResult::kErrorResyncingCookies:
+                base::UmaHistogramEnumeration(
+                    "Glic.FreErrorStateReason",
+                    FreErrorStateReason::kErrorResyncingCookies);
+                break;
+              case mojom::PrepareForClientResult::kRequiresSignIn:
+                base::UmaHistogramEnumeration(
+                    "Glic.FreErrorStateReason",
+                    FreErrorStateReason::kSignInRequired);
+                break;
+              case mojom::PrepareForClientResult::kSuccess:
+                break;
+            }
+            return result == mojom::PrepareForClientResult::kSuccess;
+          }).Then(std::move(callback)));
 }
 
 void GlicFreController::ExceededTimeoutError() {
