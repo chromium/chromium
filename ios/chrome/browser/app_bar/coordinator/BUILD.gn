@@ -30,6 +30,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model:search_engines_util",

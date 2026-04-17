@@ -302,10 +302,8 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   NOTREACHED();
 }
 
-- (void)setAssistantButtonState:(AppBarAssistantButtonState)state
-                         avatar:(UIImage*)avatar {
+- (void)setAssistantButtonState:(AppBarAssistantButtonState)state {
   _assistantButtonState = state;
-  _assistantButtonAvatar = avatar;
 
   [self updateAssistantButton];
 }
@@ -471,14 +469,9 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   NSString* title = [self assistantButtonTitleForCurrentState];
   UIImage* image;
   switch (_assistantButtonState) {
-    case AppBarAssistantButtonState::kSignedOut:
-      title =
-          l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_SIGNIN_BUTTON);
-      image = DefaultAppBarSymbol(kPersonCropCircleSymbol);
-      break;
-    case AppBarAssistantButtonState::kAccount:
-      title = l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE);
-      image = _assistantButtonAvatar;
+    case AppBarAssistantButtonState::kLens:
+      title = @"TODO(crbug.com/484000888): Use actual text";
+      image = CustomAppBarSymbol(kCameraLensSymbol);
       break;
     case AppBarAssistantButtonState::kAsk:
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
@@ -494,8 +487,7 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
 
   UIButtonConfiguration* configuration = _assistantButton.configuration;
   configuration.title = title;
-  configuration.image =
-      image ? image : DefaultAppBarSymbol(kPersonCropCircleSymbol);
+  configuration.image = image ? image : CustomAppBarSymbol(kCameraLensSymbol);
   _assistantButton.configuration = configuration;
 }
 

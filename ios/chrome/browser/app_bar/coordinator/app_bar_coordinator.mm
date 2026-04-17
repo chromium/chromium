@@ -24,14 +24,13 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @interface AppBarCoordinator () <AccountMenuCoordinatorDelegate,
@@ -70,6 +69,8 @@
       HandlerForProtocol(regularDispatcher, SceneCommands);
   id<TabGridCommands> tabGridHandler =
       HandlerForProtocol(regularDispatcher, TabGridCommands);
+  id<LensCommands> lensHandler =
+      HandlerForProtocol(regularDispatcher, LensCommands);
   id<BWGCommands> geminiHandler =
       HandlerForProtocol(regularDispatcher, BWGCommands);
 
@@ -117,15 +118,12 @@
                                           GetForProfile(profile)
                         geminiService:GeminiServiceFactory::GetForProfile(
                                           profile)
-                accountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForProfile(profile)
-                      identityManager:IdentityManagerFactory::GetForProfile(
-                                          profile)
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                           _regularBrowser)
                          tabGridState:sceneState.tabGridState
                        incognitoState:sceneState.incognitoState];
   _mediator.sceneHandler = sceneHandler;
+  _mediator.lensHandler = lensHandler;
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.settingsHandler =
       HandlerForProtocol(regularDispatcher, SettingsCommands);

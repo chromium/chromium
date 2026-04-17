@@ -11,8 +11,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
@@ -25,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
@@ -35,6 +34,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -43,10 +44,6 @@
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -54,9 +51,7 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-@interface AppBarMediator () <AuthenticationServiceObserving,
-                              IdentityManagerObserverBridgeDelegate,
-                              IncognitoStateObserver,
+@interface AppBarMediator () <IncognitoStateObserver,
                               TabGridStateObserver,
                               ToolbarButtonMenuFactoryDelegate,
                               WebStateListObserving>
@@ -71,8 +66,6 @@
 
 @implementation AppBarMediator {
   std::unique_ptr<WebStateListObserverBridge> _observerBridge;
-  std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
-  std::unique_ptr<signin::IdentityManagerObserverBridge> _identityManagerBridge;
   raw_ptr<WebStateList> _regularWebStateList;
   raw_ptr<WebStateList> _incognitoWebStateList;
   raw_ptr<FullscreenController> _regularFullscreenController;
@@ -88,8 +81,6 @@
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<GeminiService> _geminiService;
-  raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   raw_ptr<TemplateURLService> _templateURLService;
   TabGridPage _currentPage;
@@ -118,9 +109,6 @@
               authenticationService:
                   (AuthenticationService*)authenticationService
                       geminiService:(GeminiService*)geminiService
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
-                    identityManager:(signin::IdentityManager*)identityManager
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                        tabGridState:(TabGridState*)tabGridState
                      incognitoState:(IncognitoState*)incognitoState {
@@ -141,16 +129,8 @@
     _templateURLService = templateURLService;
 
     _authenticationService = authenticationService;
-    _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
-        _authenticationService, self);
 
     _geminiService = geminiService;
-    _accountManagerService = accountManagerService;
-
-    _identityManager = identityManager;
-    _identityManagerBridge =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            _identityManager, self);
 
     _tabGridState = tabGridState;
     [_tabGridState addObserver:self];
@@ -284,9 +264,6 @@
   _incognitoFullscreenBrowserAgent = nullptr;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
-  _identityManager = nullptr;
-  _authServiceBridge.reset();
-  _identityManagerBridge.reset();
   _observerBridge.reset();
   _regularWebStateList = nullptr;
   _incognitoWebStateList = nullptr;
@@ -294,7 +271,6 @@
   _templateURLService = nullptr;
   _authenticationService = nullptr;
   _geminiService = nullptr;
-  _accountManagerService = nullptr;
   _URLLoader = nullptr;
   _incognitoState = nil;
   _tabGridState = nil;
@@ -426,32 +402,6 @@
   }
 }
 
-#pragma mark - AuthenticationServiceObserving
-
-- (void)onServiceStatusChanged {
-  [self updateAssistantButton];
-}
-
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  [self updateAssistantButton];
-}
-
-- (void)onAccountsOnDeviceChanged {
-  [self updateAssistantButton];
-}
-
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  [self updateAssistantButton];
-}
-
-- (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager {
-  _identityManager = nullptr;
-  _identityManagerBridge.reset();
-}
-
 #pragma mark - AppBarMutator
 
 - (void)createNewTabFromView:(UIView*)sender {
@@ -485,24 +435,24 @@
 
 - (void)assistantButtonTappedWithState:(AppBarAssistantButtonState)state {
   switch (state) {
-    case AppBarAssistantButtonState::kSignedOut: {
-      ShowSigninCommand* command = [[ShowSigninCommand alloc]
-          initWithOperation:AuthenticationOperation::kSigninOnly
-                accessPoint:signin_metrics::AccessPoint::kIosAppBar];
-      [self.sceneHandler showSignin:command
-                 baseViewController:self.baseViewController];
-      break;
-    }
-    case AppBarAssistantButtonState::kAccount: {
-      [self.settingsHandler
-          showAccountsSettingsFromViewController:self.baseViewController
-                            skipIfUINotAvailable:NO];
+    case AppBarAssistantButtonState::kLens: {
+      OpenLensInputSelectionCommand* command =
+          [[OpenLensInputSelectionCommand alloc]
+                  initWithEntryPoint:LensEntrypoint::AppBar
+                   presentationStyle:LensInputSelectionPresentationStyle::
+                                         SlideFromRight
+              presentationCompletion:nil];
+      [self.lensHandler openLensInputSelection:command];
       break;
     }
     case AppBarAssistantButtonState::kAsk: {
       if (!_authenticationService->HasPrimaryIdentity(
               signin::ConsentLevel::kSignin)) {
-        // TODO(crbug.com/484000888): Prompt user to sign in.
+        ShowSigninCommand* command = [[ShowSigninCommand alloc]
+            initWithOperation:AuthenticationOperation::kSigninOnly
+                  accessPoint:signin_metrics::AccessPoint::kIosAppBar];
+        [self.sceneHandler showSignin:command
+                   baseViewController:self.baseViewController];
         return;
       }
       if (!_geminiService || !_geminiService->IsProfileEligibleForGemini()) {
@@ -683,28 +633,15 @@
 
 // Updates the consumer with the latest state of the assistant button.
 - (void)updateAssistantButton {
-  AppBarAssistantButtonState state = AppBarAssistantButtonState::kSignedOut;
-  UIImage* avatar = nil;
+  AppBarAssistantButtonState state = AppBarAssistantButtonState::kLens;
 
   if (IsPageActionMenuEnabled()) {
     state = AppBarAssistantButtonState::kAsk;
   } else if (IsAimCobrowseEnabled() && IsAssistantContainerEnabled()) {
     state = AppBarAssistantButtonState::kAIM;
-  } else if (_authenticationService->HasPrimaryIdentity(
-                 signin::ConsentLevel::kSignin)) {
-    state = AppBarAssistantButtonState::kAccount;
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    ApplicationContext* context = GetApplicationContext();
-    signin::AvatarProvider* avatarProvider =
-        context ? context->GetIdentityAvatarProvider() : nullptr;
-    if (avatarProvider) {
-      avatar = avatarProvider->GetIdentityAvatar(
-          identity, IdentityAvatarSize::TableViewIcon);
-    }
   }
 
-  [self.consumer setAssistantButtonState:state avatar:avatar];
+  [self.consumer setAssistantButtonState:state];
 }
 
 // Updates for `incognito` being visible.

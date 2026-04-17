@@ -29,7 +29,8 @@ enum class LensEntrypoint {
   LensOverlayAIHub = 19,
   LensOverlayFREPromo = 20,
   Composebox = 21,
-  kMaxValue = Composebox,
+  AppBar = 22,
+  kMaxValue = AppBar,
 };
 
 extern const char kIOSLensEntrypoint[];
