@@ -28,10 +28,10 @@ const char kIgnoredAppIdPrefix[] = "org.chromium.guest_os.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
 const re2::LazyRE2 kURLAllowlistRegex[] = {
-    {"//store/[0-9]{1,32}"},
-    {"//run/[0-9]{1,32}"},
-    {"//subscriptioninstall/[0-9]{1,32}"},
-    {"//launch/[0-9]{1,32}/Dialog"}};
+    {"steam://store/[0-9]{1,32}"},
+    {"steam://run/[0-9]{1,32}"},
+    {"steam://subscriptioninstall/[0-9]{1,32}"},
+    {"steam://launch/[0-9]{1,32}/Dialog"}};
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 
@@ -173,11 +173,8 @@ bool ShouldHideIrrelevantApp(
 }
 
 bool IsExternalURLAllowed(const GURL& url) {
-  if (url.GetScheme() != kAllowedScheme) {
-    return false;
-  }
   for (auto& allowed_url : kURLAllowlistRegex) {
-    if (re2::RE2::FullMatch(url.GetContentPiece(), *allowed_url)) {
+    if (re2::RE2::FullMatch(url.spec(), *allowed_url)) {
       return true;
     }
   }

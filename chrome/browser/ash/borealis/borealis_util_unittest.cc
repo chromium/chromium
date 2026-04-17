@@ -282,4 +282,12 @@ TEST_F(BorealisUtilTest, DoesNotHideGames) {
       "fake app id", "Proton Rush", "steam://rungameid/123456789")));
 }
 
+TEST_F(BorealisUtilTest, IsExternalURLAllowed) {
+  GURL valid_url("steam://run/123");
+  EXPECT_TRUE(IsExternalURLAllowed(valid_url));
+
+  GURL malicious_url("steam://run/123#$(id)");
+  EXPECT_FALSE(IsExternalURLAllowed(malicious_url));
+}
+
 }  // namespace borealis
