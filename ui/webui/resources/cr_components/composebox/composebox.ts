@@ -40,7 +40,7 @@ import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
-import {ComposeboxEmbedderMixin} from './composebox_mixin.js';
+import {ComposeboxEmbedderMixin, VoiceSearchAction} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {ContextUploadStatus, InputType, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
@@ -48,13 +48,8 @@ import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
-import {WindowProxy} from './window_proxy.js';
 
-export enum VoiceSearchAction {
-  ACTIVATE = 0,
-  QUERY_SUBMITTED = 1,
-}
-
+export {VoiceSearchAction};
 
 export enum SubmitButtonIconType {
   FORWARD = 'forward',
@@ -110,10 +105,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
-      animationState: {
-        reflect: true,
-        type: String,
-      },
       isCanvasQuerySubmitted: {
         type: Boolean,
       },
@@ -142,16 +133,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
-      searchboxLayoutMode: {
-        type: String,
-        reflect: true,
-      },
       carouselOnTop_: {
         type: Boolean,
       },
       showMenuOnClick: {type: Boolean},
       entrypointName: {type: String, reflect: true},
-      disableVoiceSearchAnimation: {type: Boolean},
       disableCaretColorAnimation: {
         type: Boolean,
         reflect: true,
@@ -183,12 +169,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor showLensButton: boolean = true;
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor searchboxNextEnabled: boolean = false;
-  accessor searchboxLayoutMode: string = '';
   accessor carouselOnTop_: boolean = false;
-  accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
-  accessor disableVoiceSearchAnimation: boolean = false;
   accessor lensButtonDisabled: boolean = false;
 
   accessor submitButtonIconType: SubmitButtonIconType =
@@ -693,15 +676,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return showActivityLink;
   }
 
-  protected shouldShowVoiceSearch_(): boolean {
-    return this.showVoiceSearch &&
-        WindowProxy.getInstance().hasWebkitSpeechRecognition();
-  }
-
-  protected shouldShowVoiceSearchAnimation_(): boolean {
-    return !this.disableVoiceSearchAnimation && this.shouldShowVoiceSearch_();
-  }
-
   // TODO(crbug.com/486706573): Refactor this function and move the common logic
   // to the mixin class. Move embedder specific logic to the embedder class.
   override deleteFile(
@@ -999,33 +973,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  protected voiceSearchEndCleanup_() {
-    this.inVoiceSearchMode = false;
-    this.animationState = GlowAnimationState.NONE;
-    this.transcript = '';
-  }
-
-  protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
-    e.stopPropagation();
-    this.voiceSearchEndCleanup_();
-    // For contextual tasks composebox voice metrics.
-    // TODO(crbug.com/466412331): Don't only fire this for composebox, this
-    // should be recorded for all.
-    this.fire('composebox-voice-search-transcription-success');
-    // TODO(crbug.com/466412331): Remove, only recorded for the NTP.
-    this.fire(
-        'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
-    this.input = e.detail;
-    const metricName =
-        `ContextualSearch.UserAction.SubmitVoiceQuery.${this.composeboxSource}`;
-    recordUserAction(metricName);
-    recordBoolean(metricName, true);
-    this.searchboxHandler_.submitQuery(
-        e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
-        /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
-    this.submitCleanup();
-  }
-
   protected onVoiceSearchButtonClick_() {
     this.inVoiceSearchMode = true;
     this.animationState = GlowAnimationState.LISTENING;
@@ -1035,27 +982,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.shadowRoot
         .querySelector<ComposeboxVoiceSearchElement>(
             'cr-composebox-voice-search')!.start();
-  }
-
-  protected onVoiceSearchCancel_(e: CustomEvent<boolean>) {
-    // If closing was the user canceling voice search:
-    if (e.detail) {
-      // For contextual tasks composebox voice metrics.
-      this.fire('composebox-voice-search-user-canceled');
-    }
-    this.voiceSearchEndCleanup_();
-    this.receivedSpeech = false;
-  }
-
-  protected onVoiceSearchError_(e: CustomEvent<boolean>) {
-    // For contextual tasks composebox voice metrics:
-    if (e.detail) {
-      // An error that canceled voice search.
-      this.fire('composebox-voice-search-error-and-canceled');
-    } else {
-      // An error that did not cancel voice search.
-      this.fire('composebox-voice-search-error');
-    }
   }
 
   protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
@@ -1363,19 +1289,13 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
     this.fileUploadsComplete = this.pendingUploads.size === 0;
     if (this.inVoiceSearchMode) {
-      this.voiceSearchEndCleanup_();
+      this.voiceSearchEndCleanup();
     }
   }
 
   protected shouldDisableFileInputs_() {
     return !this.contextMenuEnabled || !this.showMenuOnClick ||
         this.entrypointName === 'ContextualTasks';
-  }
-
-  protected shouldShowVoiceSearchAtBottom_(): boolean {
-    return (this.searchboxLayoutMode === 'TallBottomContext' ||
-            !this.searchboxLayoutMode) &&
-        this.shouldShowVoiceSearch_();
   }
 
   // TODO(crbug.com/486707998): Move this to omnibox composebox.

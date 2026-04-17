@@ -17,7 +17,7 @@ export function getHtml(this: ComposeboxElement) {
     <search-animated-glow
         animation-state="${this.animationState}"
         .entrypointName="${this.entrypointName}"
-        .requiresVoice="${this.shouldShowVoiceSearchAnimation_()}"
+        .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"
         exportparts="composebox-background">
@@ -118,7 +118,7 @@ export function getHtml(this: ComposeboxElement) {
             ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
               ${this.contextMenuEnabled ? getContextMenuHtml.bind(this)() : ''}
             `: ''}
-            ${this.shouldShowVoiceSearchAtBottom_() ? html`
+            ${this.shouldShowVoiceSearchAtBottom() ? html`
               <cr-icon-button id="voiceSearchButton" class="voice-icon" part="voice-icon"
                   iron-icon="cr:mic" @click="${this.onVoiceSearchButtonClick_}"
                   title="${this.i18n('voiceSearchButtonLabel')}">
@@ -163,11 +163,11 @@ export function getHtml(this: ComposeboxElement) {
         </cr-composebox-submit>
       ` : ''}
     </div>
-  ${this.shouldShowVoiceSearch_() ? html`
+  ${this.shouldShowVoiceSearch() ? html`
     <cr-composebox-voice-search id="voiceSearch"
-        @voice-search-cancel="${this.onVoiceSearchCancel_}"
-        @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
-        @voice-search-error="${this.onVoiceSearchError_}"
+        @voice-search-cancel="${this.onVoiceSearchCancel}"
+        @voice-search-final-result="${this.onVoiceSearchFinalResult}"
+        @voice-search-error="${this.onVoiceSearchError}"
         @transcript-update="${this.onTranscriptUpdate}"
         @speech-received="${this.onSpeechReceived}"
         exportparts="voice-close-button">
