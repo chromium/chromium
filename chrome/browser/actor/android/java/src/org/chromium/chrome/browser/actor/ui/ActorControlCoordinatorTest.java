@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,8 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -29,20 +26,16 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
-import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -57,11 +50,7 @@ public class ActorControlCoordinatorTest {
     private static final int TASK_ID = 123;
     private static final String TASK_TITLE = "Test Task Title";
 
-    @Captor private ArgumentCaptor<ActorUiTabController.Observer> mActorObserverCaptor;
-
-    @Mock private ActorUiTabController mActorUiTabController;
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
-    @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private ActorTask mActorTask;
@@ -70,38 +59,19 @@ public class ActorControlCoordinatorTest {
     private ActorControlCoordinator mCoordinator;
     private PropertyModel mModel;
     private ActorControlMediator mMediator;
-    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
-    private UserDataHost mUserDataHost;
-
-    // Helper method to create UiTabState instances
-    private UiTabState createUiTabState(boolean isActive) {
-        return new UiTabState(
-                /* tabId= */ 0,
-                /* actorOverlay= */ new ActorUiTabController.ActorOverlayState(
-                        isActive, false, false),
-                /* handoffButton= */ new ActorUiTabController.HandoffButtonState(isActive, 0),
-                /* tabIndicator= */ 0,
-                /* borderGlowVisible= */ false);
-    }
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        mActorObserverCaptor = ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
-        mUserDataHost = new UserDataHost();
-        mUserDataHost.setUserData(ActorUiTabController.class, mActorUiTabController);
-
-        mTabSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier = ObservableSuppliers.createMonotonic();
 
         mCoordinator =
                 new ActorControlCoordinator(
                         mActivity,
-                        mTabSupplier,
                         mTabBottomSheetManager,
                         mProfileSupplier);
 
@@ -109,7 +79,6 @@ public class ActorControlCoordinatorTest {
         mMediator = mCoordinator.getMediatorForTesting();
 
         ShadowLooper.idleMainLooper();
-        reset(mActorUiTabController);
     }
 
     private void expectValidProfile() {
@@ -155,58 +124,6 @@ public class ActorControlCoordinatorTest {
         assertNotNull(mModel.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
         assertNotNull(mModel.get(ActorControlProperties.ON_CLOSE_CLICKED));
         verify(mTabBottomSheetManager).setPeekView(any());
-    }
-
-    @Test
-    public void testTabObserver_removeObserver() {
-        when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-        mTabSupplier.set(mTab);
-        mTabSupplier.set(null);
-        verify(mActorUiTabController).removeObserver(mActorObserverCaptor.capture());
-    }
-
-    @Test
-    public void testTabObserver_nonNullTab() {
-        when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-        when(mActorUiTabController.getUiTabState()).thenReturn(createUiTabState(true));
-        mTabSupplier.set(mTab);
-        verify(mActorUiTabController).addObserver(mActorObserverCaptor.capture());
-    }
-
-    @Test
-    public void testTabObserver_nullTab() {
-        when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
-        when(mTabBottomSheetManager.hidePeekViewAndShowExpandedContent()).thenReturn(true);
-        mTabSupplier.set(mTab);
-        ShadowLooper.idleMainLooper();
-        reset(mTabBottomSheetManager, mActorUiTabController);
-
-        mTabSupplier.set(null);
-
-        verify(mActorUiTabController).removeObserver(mCoordinator);
-        verify(mActorUiTabController, never()).addObserver(any());
-    }
-
-    @Test
-    public void testOnUiTabStateChanged_sheetNotInitialized() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(false);
-        mCoordinator.onUiTabStateChanged(createUiTabState(true));
-        verify(mTabBottomSheetManager, never()).showPeekViewAndHideExpandedContent();
-        verify(mTabBottomSheetManager, never()).hidePeekViewAndShowExpandedContent();
-    }
-
-    @Test
-    public void testOnUiTabStateChanged_actorOverlayActive() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.onUiTabStateChanged(createUiTabState(true));
-        verify(mTabBottomSheetManager).showPeekViewAndHideExpandedContent();
-    }
-
-    @Test
-    public void testOnUiTabStateChanged_actorOverlayInactive() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.onUiTabStateChanged(createUiTabState(false));
-        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
     }
 
     @Test
@@ -476,10 +393,23 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
-    public void testOnViewClick_opensBottomSheet() {
+    public void testOnActorControlClick_taskWaitingOnUser_opensBottomSheet() {
         setUpProfileSupplier();
         expectValidActorTask();
         when(mActorTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+
+        performActorControlClick();
+
+        verify(mActorTask, never()).pause();
+        verify(mActorTask, never()).resume();
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
+    }
+
+    @Test
+    public void testOnActorControlClick_taskPausedByActor_opensBottomSheet() {
+        setUpProfileSupplier();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_ACTOR);
 
         performActorControlClick();
 

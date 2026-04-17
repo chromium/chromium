@@ -11,7 +11,6 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
@@ -19,18 +18,14 @@ import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskId;
 import org.chromium.chrome.browser.actor.ActorTaskState;
-import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The Coordinator for the Actor Control component. */
 @NullMarked
-public class ActorControlCoordinator
-        implements ActorUiTabController.Observer, ActorKeyedService.Observer {
+public class ActorControlCoordinator implements ActorKeyedService.Observer {
     private static final String TAG = "ActorControlCoordin";
 
     private final ActorControlMediator mMediator;
@@ -38,13 +33,11 @@ public class ActorControlCoordinator
     private final PropertyModel mModel;
     private final ActorControlView mView;
     private final PropertyModelChangeProcessor mViewBinder;
-    private final TabSupplierObserver mTabObserver;
     private final Callback<Profile> mProfileObserver;
     private final TabBottomSheetManager mTabBottomSheetManager;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
 
     private @Nullable ActorKeyedService mActorKeyedService;
-    private @Nullable ActorUiTabController mActorUiTabController;
 
     private String mActiveTaskTitle = "";
 
@@ -52,14 +45,12 @@ public class ActorControlCoordinator
      * Constructs a new {@link ActorControlCoordinator}.
      *
      * @param context The {@link Context} used to inflate the layout.
-     * @param tabSupplier The {@link ObservableSupplier<Tab>} for the activity.
      * @param tabBottomSheetManager The {@link TabBottomSheetManager} for the tab bottom sheet.
      * @param profileSupplier The {@link ObservableSupplier<Profile>} for the profile.
      */
     // TODO(crbug.com/491895203): Add render test for peek view.
     public ActorControlCoordinator(
             Context context,
-            NullableObservableSupplier<Tab> tabSupplier,
             TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier) {
         mContext = context;
@@ -78,19 +69,6 @@ public class ActorControlCoordinator
                         .build();
 
         mMediator = new ActorControlMediator(mModel);
-        mTabObserver =
-                new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
-                    @Override
-                    protected void onObservingDifferentTab(@Nullable Tab tab) {
-                        if (mActorUiTabController != null) {
-                            mActorUiTabController.removeObserver(ActorControlCoordinator.this);
-                        }
-                        mActorUiTabController = tab != null ? ActorUiTabController.from(tab) : null;
-                        if (mActorUiTabController != null) {
-                            mActorUiTabController.addObserver(ActorControlCoordinator.this);
-                        }
-                    }
-                };
 
         mProfileObserver = this::onProfileAdded;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
@@ -194,33 +172,9 @@ public class ActorControlCoordinator
         }
     }
 
-    /**
-     * Called when the UI tab state changes.
-     *
-     * @param state The new UI tab state.
-     */
-    @Override
-    public void onUiTabStateChanged(UiTabState state) {
-        if (!mTabBottomSheetManager.isSheetInitialized()) {
-            return;
-        }
-        if (state.actorOverlay.isActive) {
-            if (!mTabBottomSheetManager.showPeekViewAndHideExpandedContent()) {
-                Log.d(TAG, "onUiTabStateChanged: Failed to show peek view.");
-            }
-            return;
-        } else {
-            if (!mTabBottomSheetManager.hidePeekViewAndShowExpandedContent()) {
-                Log.d(TAG, "onUiTabStateChanged: Failed to hide peek view.");
-            }
-        }
-    }
 
     /** Cleans up component */
     public void destroy() {
-        if (mActorUiTabController != null) {
-            mActorUiTabController.removeObserver(this);
-        }
         if (mActorKeyedService != null) {
             mActorKeyedService.removeObserver(this);
         }
@@ -229,7 +183,6 @@ public class ActorControlCoordinator
         }
         mTabBottomSheetManager.removePeekView(mView);
         mViewBinder.destroy();
-        mTabObserver.destroy();
     }
 
     /** Called when the actor control button is clicked. */

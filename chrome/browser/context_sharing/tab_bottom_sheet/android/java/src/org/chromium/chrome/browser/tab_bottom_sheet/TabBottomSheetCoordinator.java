@@ -194,6 +194,9 @@ public class TabBottomSheetCoordinator {
         if (mIsShowingTabBottomSheet || mSheetEventsCallback == null) {
             return false;
         }
+        if (mCoBrowseViews.hasPeekView()) {
+            mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK, true);
+        }
         mContentView = mCoBrowseViews.getView();
         mSheetContent =
                 new TabBottomSheetContent(
