@@ -18,7 +18,9 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
@@ -26,6 +28,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
@@ -78,8 +82,15 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
  protected:
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     mock_queue_ = std::make_unique<::reporting::MockReportQueueStrict>();
   }
 
@@ -88,6 +99,7 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
     user_manager_.Reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -137,6 +149,8 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
   std::unique_ptr<::reporting::MockReportQueueStrict> mock_queue_;
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;

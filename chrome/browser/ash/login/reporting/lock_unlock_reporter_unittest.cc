@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/lock_unlock_event.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +27,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 using testing::_;
 using testing::Eq;
@@ -56,14 +59,24 @@ class LockUnlockTestHelper {
   void Init() {
     chromeos::PowerManagerClient::InitializeFake();
     SessionManagerClient::InitializeFake();
+
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 
   void Shutdown() {
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
     fake_user_manager_.Reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
@@ -119,6 +132,8 @@ class LockUnlockTestHelper {
   int GetReportCount() { return report_count_; }
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;

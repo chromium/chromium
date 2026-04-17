@@ -27,7 +27,10 @@ include_rules = [
 
 specific_include_rules = {
   # Allow including browser_process.h only for KeyedService factory class.
-  "kerberos_credentials_manager_factory\.cc": [
+  "kerberos_credentials_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
-  ]
+  ],
+  "kerberos_credentials_manager_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
 }

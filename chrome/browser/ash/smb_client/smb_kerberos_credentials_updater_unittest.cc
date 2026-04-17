@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -22,6 +23,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,8 +48,16 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     // Enable Kerberos via policy.
     SetPref(ash::prefs::kKerberosEnabled, base::Value(true));
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
-    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     user_manager_->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
     // Initialize User, Profile and KerberosCredentialsManager.
@@ -68,6 +79,8 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
     user_manager_.Reset();
+
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
 
  protected:
@@ -92,6 +105,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   std::unique_ptr<TestingProfile> profile_;

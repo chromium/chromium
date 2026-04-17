@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
@@ -93,7 +94,12 @@ class ScreenLockerUnitTest : public testing::Test {
 
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
-    user_session_manager_ = std::make_unique<UserSessionManager>();
+    user_session_manager_ = std::make_unique<UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());

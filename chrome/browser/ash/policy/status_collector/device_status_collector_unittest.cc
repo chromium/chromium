@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
@@ -125,6 +126,8 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
@@ -924,6 +927,9 @@ class DeviceStatusCollectorTestBase : public testing::Test {
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -935,7 +941,12 @@ class DeviceStatusCollectorTestBase : public testing::Test {
         std::make_unique<ash::ProfileUserManagerController>(
             profile_manager_->profile_manager(),
             user_manager::UserManager::Get());
-    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     reporting_user_tracker_ = std::make_unique<ReportingUserTracker>(
         user_manager::UserManager::Get());
   }
@@ -954,6 +965,8 @@ class DeviceStatusCollectorTestBase : public testing::Test {
     user_session_manager_.reset();
     profile_user_manager_controller_.reset();
     test_user_session_manager_.reset();
+
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
 
     ash::SeneschalClient::Shutdown();
     kiosk_chrome_app_manager_.reset();
@@ -1214,6 +1227,7 @@ class DeviceStatusCollectorTestBase : public testing::Test {
   base::ScopedPathOverride crash_dumps_dir_override_;
 
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;

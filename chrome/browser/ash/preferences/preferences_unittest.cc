@@ -41,6 +41,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,12 +155,20 @@ class PreferencesTest : public testing::Test {
   void SetUp() override {
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
-    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
@@ -214,6 +224,8 @@ class PreferencesTest : public testing::Test {
     test_user_ = nullptr;
     user_manager_.Reset();
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+
     fake_update_engine_client_ = nullptr;
     UpdateEngineClient::Shutdown();
   }
@@ -225,6 +237,7 @@ class PreferencesTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;

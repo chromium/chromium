@@ -92,4 +92,7 @@ specific_include_rules = {
     "+chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h",
     "+chrome/browser/ui/ash/wallpaper",
   ],
+  ".*unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
 }

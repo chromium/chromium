@@ -18,6 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -42,10 +43,15 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
+class ApplicationLocaleStorage;
 class GURL;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace user_manager {
 class User;
@@ -149,7 +155,13 @@ class UserSessionManager
   // Returns UserSessionManager instance.
   static UserSessionManager* GetInstance();
 
-  UserSessionManager();
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  UserSessionManager(
+      PrefService* local_state,
+      ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   UserSessionManager(const UserSessionManager&) = delete;
   UserSessionManager& operator=(const UserSessionManager&) = delete;
   ~UserSessionManager() override;
@@ -525,6 +537,11 @@ class UserSessionManager
 
   void FetchTokenHandleLegacy(Profile* profile, const user_manager::User* user);
   void FetchTokenHandle(Profile* profile, const user_manager::User* user);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 

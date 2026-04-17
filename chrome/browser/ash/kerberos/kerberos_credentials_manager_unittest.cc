@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/kerberos/kerberos_files_handler.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,6 +29,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -149,7 +152,15 @@ class KerberosCredentialsManagerTest : public testing::Test {
     KerberosClient::InitializeFake();
     client_test_interface()->SetTaskDelay(base::TimeDelta());
 
-    user_session_manager_ = std::make_unique<UserSessionManager>();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
+    user_session_manager_ = std::make_unique<UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 
     user_manager_->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
@@ -185,6 +196,8 @@ class KerberosCredentialsManagerTest : public testing::Test {
     user_session_manager_->Shutdown();
     profile_.reset();
     user_session_manager_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+
     KerberosClient::Shutdown();
     SessionManagerClient::Shutdown();
   }
@@ -359,6 +372,7 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  network::TestURLLoaderFactory test_url_loader_factory_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
       std::make_unique<FakeChromeUserManager>()};
   std::unique_ptr<UserSessionManager> user_session_manager_;

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/policy/reporting/user_session_activity/user_session_activity_reporter_delegate.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -36,6 +37,8 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,13 +59,21 @@ class UserSessionActivityReporterTest : public ::testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     ash::SessionManagerClient::InitializeFake();
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     session_termination_manager_ =
         std::make_unique<ash::SessionTerminationManager>();
 
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    user_session_manager_ = std::make_unique<ash::UserSessionManager>();
+    user_session_manager_ = std::make_unique<ash::UserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 
   void TearDown() override {
@@ -71,6 +82,7 @@ class UserSessionActivityReporterTest : public ::testing::Test {
     session_manager_.reset();
     fake_user_manager_.Reset();
     session_termination_manager_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
@@ -124,6 +136,7 @@ class UserSessionActivityReporterTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;

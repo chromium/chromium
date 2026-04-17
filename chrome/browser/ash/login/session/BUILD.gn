@@ -116,6 +116,7 @@ static_library("session") {
     "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/account_manager_core",
+    "//components/application_locale_storage",
     "//components/component_updater",
     "//components/language/core/browser",
     "//components/live_caption:utils",
