@@ -59,6 +59,10 @@ ToolRequest::CreateToolResult PageToolRequest::CreateTool(
           MakeOkResult()};
 }
 
+std::string PageToolRequest::GetTextContentSentToRenderer() const {
+  return "";
+}
+
 const PageTarget& PageToolRequest::GetTarget() const {
   return target_;
 }

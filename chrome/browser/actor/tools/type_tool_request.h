@@ -45,6 +45,7 @@ class TypeToolRequest : public PageToolRequest {
   mojom::ToolActionPtr ToMojoToolAction(
       content::RenderFrameHost& frame) const override;
   std::unique_ptr<PageToolRequest> Clone() const override;
+  std::string GetTextContentSentToRenderer() const override;
   ObservationDelayController::PageStabilityConfig
   GetObservationPageStabilityConfig() const override;
 

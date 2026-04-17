@@ -46,6 +46,10 @@ class PageToolRequest : public TabToolRequest {
 
   virtual std::unique_ptr<PageToolRequest> Clone() const = 0;
 
+  // Returns the text content that will be sent to the renderer, if any.
+  // Used for enterprise policy content scanning.
+  virtual std::string GetTextContentSentToRenderer() const;
+
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;

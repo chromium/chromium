@@ -70,6 +70,10 @@ std::unique_ptr<PageToolRequest> TypeToolRequest::Clone() const {
   return std::make_unique<TypeToolRequest>(*this);
 }
 
+std::string TypeToolRequest::GetTextContentSentToRenderer() const {
+  return text;
+}
+
 ObservationDelayController::PageStabilityConfig
 TypeToolRequest::GetObservationPageStabilityConfig() const {
   return ObservationDelayController::PageStabilityConfig{

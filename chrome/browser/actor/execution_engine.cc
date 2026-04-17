@@ -1078,6 +1078,11 @@ favicon::FaviconService* ExecutionEngine::GetFaviconService() {
       task_->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
+const EnterprisePolicyChecker& ExecutionEngine::GetEnterprisePolicyChecker()
+    const {
+  return task_->policy_checker();
+}
+
 void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {

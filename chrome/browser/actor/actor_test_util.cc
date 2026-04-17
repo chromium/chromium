@@ -857,7 +857,8 @@ void MockPolicyChecker::ValidateContentSentToRenderer(
     content::RenderFrameHost* frame,
     const std::string& content,
     ContentValidationCallback callback) const {
-  std::move(callback).Run(content_reason_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), content_reason_));
 }
 
 const EnterprisePolicyChecker* NoEnterprisePolicyChecker() {

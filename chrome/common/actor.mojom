@@ -284,6 +284,10 @@ enum ActionResultCode {
   // Actions may not be taken when the browser is showing an error page.
   kActionsBlockedOnErrorPage = 48,
 
+  // The action was blocked because the text payload failed enterprise policy
+  // inspections for sensitive data.
+  kActionBlockedByEnterpriseContentScan = 49,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

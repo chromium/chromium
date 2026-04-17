@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="ActionsBlockedByEnterprisePolicy"/>
   <int value="47" label="ActionsBlockedForScheme"/>
   <int value="48" label="ActionsBlockedOnErrorPage"/>
+  <int value="49" label="ActionBlockedByEnterpriseContentScan"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="101" label="NavigateFailedToStart"/>
   <int value="102" label="NavigateCommittedErrorPage"/>

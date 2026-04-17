@@ -20,6 +20,7 @@
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -181,6 +182,7 @@ class ExecutionEngine : public ToolDelegate,
   Profile& GetProfile() override;
   AggregatedJournal& GetJournal() override;
   favicon::FaviconService* GetFaviconService() override;
+  const EnterprisePolicyChecker& GetEnterprisePolicyChecker() const override;
   void IsAcceptableNavigationDestination(
       const GURL& url,
       DecisionCallbackWithReason callback) override;

@@ -42,6 +42,7 @@ namespace actor {
 
 class AggregatedJournal;
 class AutofillSelectionDialogEventHandler;
+class EnterprisePolicyChecker;
 class ToolRequest;
 
 // Provides tools with functionality implemented by the code invoking the tool.
@@ -63,6 +64,9 @@ class ToolDelegate {
 
   // Returns the favicon service for the profile associated with the task.
   virtual favicon::FaviconService* GetFaviconService() = 0;
+
+  // Returns the enterprise policy checker associated with the task.
+  virtual const EnterprisePolicyChecker& GetEnterprisePolicyChecker() const = 0;
 
   // Invokes the given callback according to whether the tool may navigate to
   // the given URL.
