@@ -72,6 +72,8 @@ class HTMLSink : public UnderlyingSinkBase {
     // effects.
     CustomElementRegistry* registry = context_element->customElementRegistry();
 
+    target->GetDocument().setAllowDeclarativeShadowRoots(true);
+
     parser = MakeGarbageCollected<HTMLDocumentParser>(
         target->GetDocument().createDocumentFragment(), context_element,
         parser_content_policy, ParserPrefetchPolicy::kDisallowPrefetching,
