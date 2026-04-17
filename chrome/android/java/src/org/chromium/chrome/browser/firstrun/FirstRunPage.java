@@ -53,4 +53,13 @@ public class FirstRunPage<T extends Fragment & FirstRunFragment> {
             return null;
         }
     }
+
+    /**
+     * Returns the class of the fragment associated with this page.
+     *
+     * @return The fragment class.
+     */
+    public Class<T> getFragmentClass() {
+        return mClazz;
+    }
 }

@@ -649,9 +649,18 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             return BackPressResult.SUCCESS;
         }
 
+        int position = mPager.getCurrentItem() - 1;
+
+        if (FeatureList.isNativeInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
+                && position >= 0
+                && mPages.get(position).getFragmentClass() == HistorySyncFirstRunFragment.class) {
+            // The user can now go back to history sync.
+            setHistorySyncStepCompleted(false);
+        }
+
         mFirstRunFlowSequencer.updateFirstRunProperties(assumeNonNull(mFreProperties));
 
-        int position = mPager.getCurrentItem() - 1;
         while (position > 0 && !mPages.get(position).shouldShow()) {
             --position;
         }

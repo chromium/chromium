@@ -75,8 +75,15 @@ public abstract class FirstRunFlowSequencer {
             if (isChild) {
                 return !historySyncHelper.isHistorySyncDisabledByCustodian();
             }
-            if (historySyncHelper.isHistorySyncDisabledByPolicy()
-                    || historySyncHelper.didAlreadyOptIn()) {
+
+            boolean alreadyOptedIn = historySyncHelper.didAlreadyOptIn();
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)) {
+                // HistorySync is no longer the last page in the FRE flow, so users should be able
+                // to navigate back to the history sync page.
+                alreadyOptedIn = false;
+            }
+
+            if (historySyncHelper.isHistorySyncDisabledByPolicy() || alreadyOptedIn) {
                 return false;
             }
             // Show the page only to signed-in users.

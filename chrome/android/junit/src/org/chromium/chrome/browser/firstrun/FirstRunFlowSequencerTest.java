@@ -30,7 +30,10 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
@@ -51,6 +54,7 @@ import org.chromium.components.sync.SyncService;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
 public class FirstRunFlowSequencerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -278,6 +282,7 @@ public class FirstRunFlowSequencerTest {
 
     @Test
     @Feature({"FirstRun"})
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
     public void testFlowUserIsSignedIn_userAlreadySyncsHistory() {
         when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -295,7 +300,8 @@ public class FirstRunFlowSequencerTest {
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
         final Bundle bundle = sequencer.bundle;
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_HISTORY_SYNC_PAGE));
+        // Verify that the history syc page shows even if the user already opted in.
+        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_HISTORY_SYNC_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(2, bundle.size());
     }
