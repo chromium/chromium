@@ -123,6 +123,7 @@ source_set("tests") {
 
   sources = [
     "boringssl_trust_token_issuance_cryptographer_unittest.cc",
+    "boringssl_trust_token_state_unittest.cc",
     "expiry_inspecting_record_expiry_delegate_unittest.cc",
     "pending_trust_token_store_unittest.cc",
     "sqlite_trust_token_persister_unittest.cc",

@@ -18,7 +18,6 @@ class BoringsslTrustTokenState {
   ~BoringsslTrustTokenState();
 
   static std::unique_ptr<BoringsslTrustTokenState> Create(
-      mojom::TrustTokenProtocolVersion issuer_configured_version,
       int issuer_configured_batch_size);
 
   TRUST_TOKEN_CLIENT* Get() const;
