@@ -287,12 +287,20 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void MaybeRecordServiceWorkerMainResourceInfo(
       const network::mojom::URLResponseHeadPtr& head);
 
+  const network::ResourceRequest& resource_request() const;
+
   raw_ptr<NavigationURLLoaderDelegate, DanglingUntriaged> delegate_;
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
   raw_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
+  // Use `resource_request()` for read access.
+  // This is created upon ctor and can be updated upon:
+  // - Request start (`Accept` header and by `ThrottlingURLLoader`).
+  // - ACCEPT_CH frame restart.
+  // - Redirects.
   std::unique_ptr<network::ResourceRequest> resource_request_;
+
   std::unique_ptr<NavigationRequestInfo> request_info_;
 
   // Current URL that is being navigated, updated after redirection.
