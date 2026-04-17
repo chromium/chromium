@@ -171,9 +171,8 @@
   if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
     // Capabilities are only available after the External Privacy Contexts have
     // been built.
-    CHECK(!_areExternalPrivacyContextsBeingBuilt, base::NotFatalUntil::M153);
     CHECK(_handledIdentities.contains(GaiaId(info.gaia)),
-          base::NotFatalUntil::M153);
+          base::NotFatalUntil::M155);
     [self handleAgeMismatchSignout];
   }
 }
