@@ -132,11 +132,11 @@ int32_t GlicDelegatingSharingManagerBase::SetMaxPinnedTabs(
 }
 
 std::optional<GlicGetContextError>
-GlicDelegatingSharingManagerBase::CheckContextSharingEligibility(
+GlicDelegatingSharingManagerBase::CheckPreliminaryContextSharingEligibility(
     tabs::TabHandle tab_handle) const {
   return sharing_manager_delegate_
-             ? sharing_manager_delegate_->CheckContextSharingEligibility(
-                   tab_handle)
+             ? sharing_manager_delegate_
+                   ->CheckPreliminaryContextSharingEligibility(tab_handle)
              : GlicGetContextError{
                    GlicGetContextFromTabError::kPageContextNotEligible,
                    "tab not eligible"};

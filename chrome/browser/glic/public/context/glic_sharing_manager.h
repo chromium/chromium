@@ -245,7 +245,12 @@ class GlicSharingManager {
   virtual std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
       tabs::TabHandle tab_handle) = 0;
 
-  virtual std::optional<GlicGetContextError> CheckContextSharingEligibility(
+  // Performs preliminary browser-side checks to determine if the context from
+  // the given tab is eligible to be shared. This does not check all conditions
+  // and is not the ultimate source of truth for context sharing eligibility
+  // (the Glic web client is).
+  virtual std::optional<GlicGetContextError>
+  CheckPreliminaryContextSharingEligibility(
       tabs::TabHandle tab_handle) const = 0;
 
   virtual void GetContextFromTab(

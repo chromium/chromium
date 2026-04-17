@@ -77,7 +77,7 @@ void GlicRegionCaptureController::CaptureRegion(
     // manager isn't right here.
     std::optional<GlicGetContextError> eligibility_error =
         glic_service->active_instance_sharing_manager()
-            .CheckContextSharingEligibility(tab->GetHandle());
+            .CheckPreliminaryContextSharingEligibility(tab->GetHandle());
     if (eligibility_error.has_value()) {
       mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),

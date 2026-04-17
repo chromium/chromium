@@ -76,7 +76,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
   bool IsTabPinned(tabs::TabHandle tab_handle) const override;
   int32_t SetMaxPinnedTabs(uint32_t max_pinned_tabs) override;
   std::vector<content::WebContents*> GetPinnedTabs() const override;
-  std::optional<GlicGetContextError> CheckContextSharingEligibility(
+  std::optional<GlicGetContextError> CheckPreliminaryContextSharingEligibility(
       tabs::TabHandle tab_handle) const override;
 
   void GetContextFromTab(

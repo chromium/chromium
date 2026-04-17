@@ -233,7 +233,7 @@ int32_t GlicSharingManagerImpl::SetMaxPinnedTabs(uint32_t max_pinned_tabs) {
 }
 
 std::optional<GlicGetContextError>
-GlicSharingManagerImpl::CheckContextSharingEligibility(
+GlicSharingManagerImpl::CheckPreliminaryContextSharingEligibility(
     tabs::TabHandle tab_handle) const {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab) {
@@ -263,7 +263,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
     tabs::TabHandle tab_handle,
     const mojom::GetTabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
-  if (auto error = CheckContextSharingEligibility(tab_handle)) {
+  if (auto error = CheckPreliminaryContextSharingEligibility(tab_handle)) {
     std::move(callback).Run(base::unexpected(*error));
     return;
   }
