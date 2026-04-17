@@ -178,6 +178,10 @@ source_set("unit_tests") {
   if (toolkit_views) {
     sources += [ "bookmark_node_data_unittest.cc" ]
   }
+
+  if (is_mac) {
+    sources += [ "bookmark_pasteboard_helper_mac_unittest.mm" ]
+  }
 }
 
 # The fuzzer depends on code that is not built on Mac.
