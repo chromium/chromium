@@ -4,6 +4,8 @@
 
 source_set("core") {
   sources = [
+    "multistep_filter_log_router_factory.cc",
+    "multistep_filter_log_router_factory.h",
     "multistep_filter_service_factory.cc",
     "multistep_filter_service_factory.h",
   ]
@@ -12,6 +14,7 @@ source_set("core") {
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/multistep_filter/core",
+    "//components/multistep_filter/core/logging",
   ]
   deps = [
     "//chrome/browser:browser_process",
@@ -28,7 +31,10 @@ source_set("unit_tests") {
   sources = []
 
   if (!is_android && !is_ios) {
-    sources += [ "multistep_filter_service_factory_unittest.cc" ]
+    sources += [
+      "multistep_filter_log_router_factory_unittest.cc",
+      "multistep_filter_service_factory_unittest.cc",
+    ]
   }
 
   deps = [
