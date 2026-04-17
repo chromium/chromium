@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -184,6 +185,12 @@ class ManagedUserProfileNoticeUIWindowPixelTest
             GetParam().is_ui_refresh_enabled, account_info));
     profile_picker_view_->views::View::AddObserver(this);
     profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
+    if (ProfilePicker::GetWebViewForTesting()) {
+      profiles::testing::WaitForPickerUrl(
+          GetParam().is_ui_refresh_enabled
+              ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
+              : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+    }
   }
 
   bool VerifyUi() override {
