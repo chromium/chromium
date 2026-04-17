@@ -162,15 +162,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
 }
 
-// TODO(crbug.com/503757209): Test is consistently crashing on MacOS builders.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ClickTabInImmersiveMode DISABLED_ClickTabInImmersiveMode
-#else
-#define MAYBE_ClickTabInImmersiveMode ClickTabInImmersiveMode
-#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
-                       MAYBE_ClickTabInImmersiveMode) {
+                       ClickTabInImmersiveMode) {
   // Add another tab to switch to.
   AppendTab();
 
