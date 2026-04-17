@@ -380,6 +380,10 @@ const base::FeatureParam<base::TimeDelta> kSearchAIModePromoFrequency{
     base::Days(14)};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kEnableWebSigninLoadingDialog, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnforceCanSignInToChromeCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);

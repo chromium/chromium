@@ -3867,6 +3867,17 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Not <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph>?
       </message>
 
+      <!-- Strings for Web Signin Loading Dialog -->
+      <message name="IDS_SIGNIN_WEB_SIGNIN_LOADING_DIALOG_TITLE" desc="Title of the web signin loading dialog. When users need to sign in to access a link the web signin loading dialog is shown while cookies are being minted before being redirected to the link. Pressing cancel stops the redirection.">
+      Signing in
+      </message>
+      <message name="IDS_SIGNIN_WEB_SIGNIN_LOADING_DIALOG_LOADING_TEXT" desc="Text shown next to the progress spinner of the web signin loading dialog. When users need to sign in to access a link the web signin loading dialog is shown while cookies are being minted before being redirected to the link. Pressing cancel stops the redirection.">
+      This may take a few seconds
+      </message>
+      <message name="IDS_SIGNIN_WEB_SIGNIN_LOADING_DIALOG_CANCEL_BUTTON" desc="String for the cancel button of the web signin loading dialog. When users need to sign in to access a link the web signin loading dialog is shown while cookies are being minted before being redirected to the link. Pressing cancel stops the redirection.">
+      Cancel
+      </message>
+
       <!-- Strings for Seamless Sign-in -->
       <message name="IDS_SIGNIN_PROMO_TITLE_NTP_SIGN_IN_AS_BUTTON" desc="This string is the headline of a card that appears when the user visits Chrome's new tab page; the user isn't signed in to Chrome. The line below this string is ether 'To get your passwords and more on all your devices, sign in to Chrome' or 'To get your passwords and more on all your devices, sign in to Chrome as john.doe@example.com'.">
         Your Chrome, everywhere

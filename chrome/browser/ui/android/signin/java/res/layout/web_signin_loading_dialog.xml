@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/web_signin_loading_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/web_signin_loading_dialog_padding"
+    android:paddingBottom="@dimen/web_signin_loading_dialog_padding_small"
+    android:paddingStart="@dimen/web_signin_loading_dialog_padding"
+    android:paddingEnd="@dimen/web_signin_loading_dialog_padding" >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:text="@string/signin_web_signin_loading_dialog_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_width="@dimen/web_signin_loading_dialog_spinner_size"
+        android:layout_height="@dimen/web_signin_loading_dialog_spinner_size"
+        android:layout_marginTop="@dimen/web_signin_loading_dialog_padding_small"
+        android:indeterminate="true"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/loading_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/web_signin_loading_dialog_padding"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:text="@string/signin_web_signin_loading_dialog_loading_text"
+        app:layout_constraintTop_toTopOf="@id/progress_spinner"
+        app:layout_constraintBottom_toBottomOf="@id/progress_spinner"
+        app:layout_constraintStart_toEndOf="@id/progress_spinner"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/spinner_text_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="progress_spinner,loading_text" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/cancel_button"
+        style="@style/TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/web_signin_loading_dialog_margin"
+        android:text="@string/signin_web_signin_loading_dialog_cancel_button"
+        app:layout_constraintTop_toBottomOf="@id/spinner_text_barrier"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

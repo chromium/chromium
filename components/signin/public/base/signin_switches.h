@@ -305,6 +305,11 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<base::TimeDelta> kSearchAIModePromoFrequency;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableWebSigninLoadingDialog);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_IOS)
 // Feature flag controlling whether the CanSignInToChrome account capability
 // should be used to determine whether an account is eligible for sign-in.

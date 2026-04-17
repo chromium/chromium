@@ -26,6 +26,13 @@ found in the LICENSE file.
     <!-- Signin fre uma dialog dimensions -->
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
     <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>
+
+    <!-- Web signin loading dialog dimensions -->
+    <dimen name="web_signin_loading_dialog_padding">24dp</dimen>
+    <dimen name="web_signin_loading_dialog_padding_small">16dp</dimen>
+    <dimen name="web_signin_loading_dialog_margin">12dp</dimen>
+    <dimen name="web_signin_loading_dialog_spinner_size">24dp</dimen>
+
     <!-- Defaults for fullscreen promo dialog mode values. -->
     <item type="dimen" name="dialog_fixed_width_major">100%</item>
     <item type="dimen" name="dialog_fixed_width_minor">100%</item>

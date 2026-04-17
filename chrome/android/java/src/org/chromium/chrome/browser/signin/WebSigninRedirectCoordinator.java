@@ -4,15 +4,29 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.view.LayoutInflater;
+import android.view.View;
+
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.GURL;
 
@@ -20,8 +34,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Coordinator that owns that waits for cookies to be built and displays a dialog if it takes more
- * than {@link SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS}.
+ * Coordinator that waits for cookies to be built and displays a dialog if it takes more than {@link
+ * SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS}.
  */
 @NullMarked
 public class WebSigninRedirectCoordinator {
@@ -41,10 +55,12 @@ public class WebSigninRedirectCoordinator {
     private @Nullable GURL mInitialTabURL;
     private @DialogState int mDialogState = DialogState.NOT_SHOWN;
     private @Nullable WebSigninBridge mWebSigninBridge;
+    private @Nullable PropertyModel mModel;
+    private @Nullable ModalDialogManager mDialogManager;
 
     /**
      * If refresh tokens and cookies are successfully minted for the account associated with the
-     * selected email,a redirect is triggered to the continueUrl in the given tab. A dialog is
+     * selected email, a redirect is triggered to the continueUrl in the given tab. A dialog is
      * displayed if the minting process takes too long.
      */
     public void initializeWebSigninAndRedirect(
@@ -61,12 +77,14 @@ public class WebSigninRedirectCoordinator {
                 new WebSigninBridge.Factory()
                         .createWithEmail(tab.getProfile(), email, this::onSigninResult);
 
-        mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)) {
+            mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
+        }
     }
 
     /**
      * If refresh tokens and cookies are successfully minted for the account associated with
-     * selectedAccountId,a redirect is triggered to the continueUrl in the given tab. A dialog is
+     * selectedAccountId, a redirect is triggered to the continueUrl in the given tab. A dialog is
      * displayed if the minting process takes too long.
      */
     public void initializeWebSigninAndRedirect(
@@ -83,7 +101,9 @@ public class WebSigninRedirectCoordinator {
                 new WebSigninBridge.Factory()
                         .createWithCoreAccountId(tab.getProfile(), accountId, this::onSigninResult);
 
-        mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)) {
+            mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
+        }
     }
 
     /**
@@ -98,17 +118,73 @@ public class WebSigninRedirectCoordinator {
 
         if (mDialogState == DialogState.SHOWN) {
             mDialogState = DialogState.DISMISSED;
-            dismissDialog();
+            if (mModel != null && mDialogManager != null) {
+                mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_CONTENT);
+                mModel = null;
+            }
         }
     }
 
-    private void showDialog() {
-        mDialogState = DialogState.SHOWN;
-        // TODO(crbug.com/477182000): Show dialog here.
+    public void setTabForTesting(Tab tab) {
+        mTab = tab;
     }
 
-    private void dismissDialog() {
-        // TODO(crbug.com/477182000): Dismiss dialog here.
+    public @Nullable PropertyModel getDialogModelForTesting() {
+        return mModel;
+    }
+
+    @VisibleForTesting
+    public void showDialog() {
+        if (mTab == null) {
+            destroy();
+            return;
+        }
+
+        if (mDialogState != DialogState.NOT_SHOWN || mTab.isDestroyed()) {
+            destroy();
+            return;
+        }
+
+        WindowAndroid windowAndroid = mTab.getWindowAndroid();
+        if (windowAndroid == null) {
+            destroy();
+            return;
+        }
+        mDialogManager = windowAndroid.getModalDialogManager();
+        if (mDialogManager == null) {
+            destroy();
+            return;
+        }
+
+        mDialogState = DialogState.SHOWN;
+
+        View customView =
+                LayoutInflater.from(mTab.getContext())
+                        .inflate(R.layout.web_signin_loading_dialog, null);
+        customView.findViewById(R.id.cancel_button).setOnClickListener(v -> destroy());
+
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .build();
+
+        mDialogManager.showDialog(mModel, ModalDialogType.TAB);
+    }
+
+    private Controller createController() {
+        return new Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {}
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                if (mDialogState == DialogState.SHOWN) {
+                    destroy();
+                }
+            }
+        };
     }
 
     private void onSigninResult(@WebSigninTrackerResult int result) {
