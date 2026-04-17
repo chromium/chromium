@@ -151,11 +151,6 @@ class TabStripController {
   // Creates the new tab.
   virtual void CreateNewTab(NewTabTypes context) = 0;
 
-  // Creates a new tab, and loads `location` in the tab. If `location` is a
-  // valid URL, then simply loads the URL, otherwise this can open a
-  // search-result page for `location`.
-  virtual void CreateNewTabWithLocation(const std::u16string& location) = 0;
-
   // Notifies controller that the user started dragging this tabstrip's tabs.
   virtual void OnStartedDragging() = 0;
 

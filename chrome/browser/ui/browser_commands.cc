@@ -26,6 +26,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -145,6 +146,8 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"  // nogncheck
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -186,6 +189,7 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/list_selection_model.h"
@@ -1175,6 +1179,39 @@ void NewTabToRight(BrowserWindowInterface* browser) {
   browser->GetTabStripModel()->ExecuteContextMenuCommand(
       browser->GetTabStripModel()->active_index(),
       TabStripModel::CommandNewTabToRight);
+}
+
+void NewTabFromClipboardURL(BrowserWindowInterface* browser) {
+#if BUILDFLAG(IS_LINUX)
+  if (ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    CHECK(clipboard)
+        << "Clipboard instance is not available, cannot proceed with "
+           "middle mouse button action.";
+    clipboard->ReadText(
+        ui::ClipboardBuffer::kSelection, /* data_dst = */ std::nullopt,
+        base::BindOnce(
+            [](base::WeakPtr<Browser> browser_weak, std::u16string text) {
+              if (!browser_weak || text.empty()) {
+                return;
+              }
+              base::RecordAction(
+                  base::UserMetricsAction("NewTabButton_PasteAndNavigate"));
+              AutocompleteMatch match;
+              AutocompleteClassifierFactory::GetForProfile(
+                  browser_weak->profile())
+                  ->Classify(text, false, false,
+                             metrics::OmniboxEventProto::BLANK, &match,
+                             nullptr);
+              if (match.destination_url.is_valid()) {
+                browser_weak->tab_strip_model()->delegate()->AddTabAt(
+                    match.destination_url, -1, true);
+              }
+            },
+            browser->GetBrowserForMigrationOnly()->AsWeakPtr()));
+  }
+#endif
 }
 
 void CloseTab(BrowserWindowInterface* browser) {

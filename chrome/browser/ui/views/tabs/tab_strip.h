@@ -402,8 +402,6 @@ class TabStrip : public views::View,
 
   void OnTouchUiChanged();
 
-  void OnMiddleClickReadText(std::u16string text);
-
   // Screen-reader-only announcements that depend on tab group titles.
   void AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id);
   void AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id);

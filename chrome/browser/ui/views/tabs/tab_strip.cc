@@ -43,6 +43,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -1191,17 +1192,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
 
     const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
     if (mouse.IsOnlyMiddleMouseButton()) {
-      if (ui::Clipboard::IsSupportedClipboardBuffer(
-              ui::ClipboardBuffer::kSelection)) {
-        ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-        CHECK(clipboard)
-            << "Clipboard instance is not available, cannot proceed with "
-               "middle mouse button action.";
-        clipboard->ReadText(ui::ClipboardBuffer::kSelection,
-                            /* data_dst = */ std::nullopt,
-                            base::BindOnce(&TabStrip::OnMiddleClickReadText,
-                                           weak_ptr_factory_.GetWeakPtr()));
-      }
+      chrome::NewTabFromClipboardURL(GetBrowser());
       return;
     }
   }
@@ -2474,14 +2465,6 @@ void TabStrip::OnTouchUiChanged() {
 
   tab_container_->CompleteAnimationAndLayout();
   PreferredSizeChanged();
-}
-
-void TabStrip::OnMiddleClickReadText(std::u16string text) {
-  if (!text.empty()) {
-    base::RecordAction(
-        base::UserMetricsAction("NewTabButton_PasteAndNavigate"));
-    controller_->CreateNewTabWithLocation(text);
-  }
 }
 
 void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {

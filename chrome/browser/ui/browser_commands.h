@@ -114,6 +114,7 @@ void CloseWindow(BrowserWindowInterface* browser);
 content::WebContents& NewTab(BrowserWindowInterface* browser,
                              NewTabTypes context = NewTabTypes::kNewTabCommand);
 void NewTabToRight(BrowserWindowInterface* browser);
+void NewTabFromClipboardURL(BrowserWindowInterface* browser);
 void CloseTab(BrowserWindowInterface* browser);
 bool CanZoomIn(content::WebContents* contents);
 bool CanZoomOut(content::WebContents* contents);

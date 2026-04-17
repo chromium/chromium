@@ -35,8 +35,6 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView,
       base::RepeatingClosure record_new_tab_button_pressed);
   ~VerticalTabStripBottomContainer() override;
 
-  TabStripFlatEdgeButton* AddChildButtonFor(actions::ActionId action_id);
-
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);

@@ -558,20 +558,6 @@ void BrowserTabStripController::CreateNewTab(NewTabTypes context) {
   chrome::NewTab(browser_view_->browser(), context);
 }
 
-void BrowserTabStripController::CreateNewTabWithLocation(
-    const std::u16string& location) {
-  // Use autocomplete to clean up the text, going so far as to turn it into
-  // a search query if necessary.
-  AutocompleteMatch match;
-  AutocompleteClassifierFactory::GetForProfile(
-      GetBrowserWindowInterface()->GetProfile())
-      ->Classify(location, false, false, metrics::OmniboxEventProto::BLANK,
-                 &match, nullptr);
-  if (match.destination_url.is_valid()) {
-    model_->delegate()->AddTabAt(match.destination_url, -1, true);
-  }
-}
-
 void BrowserTabStripController::OnStartedDragging() {
   if (!immersive_reveal_lock_.get()) {
     // The top-of-window views should be revealed while the user is dragging

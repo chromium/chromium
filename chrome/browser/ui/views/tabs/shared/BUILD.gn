@@ -5,6 +5,7 @@
 source_set("shared") {
   sources = [
     "drop_arrow.h",
+    "new_tab_button.h",
     "rounded_scroll_bar.h",
     "tab_strip_combo_button.h",
     "tab_strip_flat_edge_button.h",
@@ -23,6 +24,7 @@ source_set("shared") {
 source_set("impl") {
   sources = [
     "drop_arrow.cc",
+    "new_tab_button.cc",
     "rounded_scroll_bar.cc",
     "tab_strip_combo_button.cc",
     "tab_strip_flat_edge_button.cc",
