@@ -60,8 +60,6 @@ SharingHubIconView::SharingHubIconView(
                          false) {
   SetID(VIEW_ID_SHARING_HUB_BUTTON);
   SetVisible(false);
-  SetLabel(
-      l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
   SetProperty(views::kElementIdentifierKey,
               SharingHubBubbleController::kIconElementId);
   SetUpForInOutAnimation();
@@ -103,10 +101,6 @@ void SharingHubIconView::UpdateImpl() {
       IsSendTabToSelfDialogOpen(web_contents)) {
     SetHighlighted(true);
   }
-
-  if (enabled) {
-    MaybeAnimateSendingToast();
-  }
 }
 
 void SharingHubIconView::OnExecuting(
@@ -122,20 +116,6 @@ SharingHubBubbleController* SharingHubIconView::GetController() const {
     return nullptr;
   }
   return SharingHubBubbleController::CreateOrGetFromWebContents(web_contents);
-}
-
-void SharingHubIconView::MaybeAnimateSendingToast() {
-  content::WebContents* web_contents = GetWebContents();
-  if (!web_contents) {
-    return;
-  }
-  send_tab_to_self::SendTabToSelfBubbleController* controller =
-      GetSendTabToSelfController(web_contents);
-
-  if (controller && controller->show_confirmation_message()) {
-    controller->SetShowConfirmationMessage(false);
-    AnimateIn(std::nullopt);
-  }
 }
 
 BEGIN_METADATA(SharingHubIconView)

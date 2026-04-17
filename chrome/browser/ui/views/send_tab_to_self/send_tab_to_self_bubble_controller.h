@@ -86,8 +86,6 @@ class SendTabToSelfBubbleController
   void SetInitialSendAnimationShown(bool shown);
 
   bool show_back_button() const { return show_back_button_; }
-  bool show_confirmation_message() const { return show_confirmation_message_; }
-  void SetShowConfirmationMessage(bool show_confirmation_message);
 
   base::WeakPtr<SendTabToSelfBubbleController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -120,8 +118,6 @@ class SendTabToSelfBubbleController
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
   // True if the back button is currently shown.
   bool show_back_button_ = false;
-  // True if a confirmation message should be shown in the omnibox.
-  bool show_confirmation_message_ = false;
   // True if the bubble is currently shown.
   bool bubble_shown_ = false;
 

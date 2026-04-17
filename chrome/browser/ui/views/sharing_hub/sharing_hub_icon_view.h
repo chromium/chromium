@@ -39,9 +39,6 @@ class SharingHubIconView : public PageActionIconView {
 
  private:
   SharingHubBubbleController* GetController() const;
-  // Shows a "Sending..." animation if a device was selected in the send tab to
-  // self dialog.
-  void MaybeAnimateSendingToast();
 };
 
 }  // namespace sharing_hub
