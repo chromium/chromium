@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "components/history/core/browser/history_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 // Convenience Types -----------------------------------------------------------
 
@@ -119,18 +120,19 @@ Char16Set Char16SetFromString16(const std::u16string& uni_word);
 typedef size_t WordID;
 
 // A map allowing a WordID to be determined given a word.
-typedef std::map<std::u16string, WordID> WordMap;
+typedef absl::flat_hash_map<std::u16string, WordID> WordMap;
 
 // A map from character to the word_ids of words containing that character.
 typedef base::flat_set<WordID> WordIDSet;  // An index into the WordList.
-typedef std::map<char16_t, WordIDSet> CharWordIDMap;
+typedef absl::flat_hash_map<char16_t, WordIDSet> CharWordIDMap;
 
-// A map from word (by word_id) to history items containing that word.
+// A map from word (by word_id) to history items (by history_id) containing
+// that word.
 typedef history::URLID HistoryID;
 typedef base::flat_set<HistoryID> HistoryIDSet;
 typedef std::vector<HistoryID> HistoryIDVector;
-typedef std::map<WordID, HistoryIDSet> WordIDHistoryMap;
-typedef std::map<HistoryID, WordIDSet> HistoryIDWordMap;
+typedef absl::flat_hash_map<WordID, HistoryIDSet> WordIDHistoryMap;
+typedef absl::flat_hash_map<HistoryID, WordIDSet> HistoryIDWordMap;
 
 // Information used in scoring a particular URL.
 typedef std::vector<history::VisitInfo> VisitInfoVector;
