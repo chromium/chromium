@@ -147,7 +147,7 @@ class CORE_EXPORT ImageResourceContent final
   base::TimeTicks LoadStart() const override;
   base::TimeTicks LoadEnd() const override;
   AtomicString MediaType() const override;
-  bool IsAccessAllowed() const;
+  bool IsCorsSameOrigin() const;
   const ResourceResponse& GetResponse() const;
   std::optional<ResourceError> GetResourceError() const;
 

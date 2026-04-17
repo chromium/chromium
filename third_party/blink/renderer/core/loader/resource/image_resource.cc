@@ -207,11 +207,11 @@ class ImageResource::ImageResourceInfoImpl final
   bool IsCacheValidator() const override {
     return resource_->IsCacheValidator();
   }
-  bool IsAccessAllowed(
+  bool IsCorsSameOrigin(
       DoesCurrentFrameHaveSingleSecurityOrigin
-          does_current_frame_has_single_security_origin) const override {
-    return resource_->IsAccessAllowed(
-        does_current_frame_has_single_security_origin);
+          does_current_frame_have_single_security_origin) const override {
+    return resource_->IsCorsSameOrigin(
+        does_current_frame_have_single_security_origin);
   }
   std::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
@@ -651,13 +651,13 @@ void ImageResource::MultipartDataReceived(base::span<const uint8_t> bytes) {
   Resource::AppendData(base::as_chars(bytes));
 }
 
-bool ImageResource::IsAccessAllowed(
+bool ImageResource::IsCorsSameOrigin(
     ImageResourceInfo::DoesCurrentFrameHaveSingleSecurityOrigin
-        does_current_frame_has_single_security_origin) const {
-  if (does_current_frame_has_single_security_origin !=
-      ImageResourceInfo::kHasSingleSecurityOrigin)
+        does_current_frame_have_single_security_origin) const {
+  if (does_current_frame_have_single_security_origin !=
+      ImageResourceInfo::kHasSingleSecurityOrigin) {
     return false;
-
+  }
   return GetResponse().IsCorsSameOrigin();
 }
 

@@ -182,7 +182,7 @@ FilterEffect* SVGFEImageElement::Build(SVGFilterBuilder*, Filter* filter) {
 
 bool SVGFEImageElement::TaintsOrigin() const {
   // We always consider a 'href' that references a local element as tainting.
-  return !cached_image_ || !cached_image_->IsAccessAllowed();
+  return !cached_image_ || !cached_image_->IsCorsSameOrigin();
 }
 
 SVGAnimatedPropertyBase* SVGFEImageElement::PropertyFromAttribute(

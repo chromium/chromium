@@ -539,7 +539,7 @@ static void WriteImageToDataObject(DataObject* data_object,
     return;
 
   data_object->AddFileSharedBuffer(
-      image_buffer, cached_image->IsAccessAllowed(), image_url,
+      image_buffer, cached_image->IsCorsSameOrigin(), image_url,
       image->FilenameExtension(),
       cached_image->GetResponse().HttpHeaderFields().Get(
           http_names::kContentDisposition));

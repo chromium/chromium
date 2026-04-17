@@ -182,7 +182,7 @@ void LayoutImageResource::UseBrokenImage() {
 }
 
 bool LayoutImageResource::IsAccessAllowed() const {
-  return !cached_image_ || cached_image_->IsAccessAllowed();
+  return !cached_image_ || cached_image_->IsCorsSameOrigin();
 }
 
 scoped_refptr<Image> LayoutImageResource::GetImage(

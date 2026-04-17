@@ -42,7 +42,7 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
     kHasMultipleSecurityOrigin,
     kHasSingleSecurityOrigin
   };
-  virtual bool IsAccessAllowed(
+  virtual bool IsCorsSameOrigin(
       DoesCurrentFrameHaveSingleSecurityOrigin) const = 0;
   virtual std::optional<ResourceError> GetResourceError() const = 0;
 

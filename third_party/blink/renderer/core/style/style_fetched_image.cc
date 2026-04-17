@@ -125,7 +125,7 @@ bool StyleFetchedImage::IsCorsSameOrigin(String& failing_url) const {
       image_->GetImage()->IsSVGImage()) {
     return false;
   }
-  if (image_->IsAccessAllowed()) {
+  if (image_->IsCorsSameOrigin()) {
     return true;
   }
   failing_url = image_->Url().ElidedString();
