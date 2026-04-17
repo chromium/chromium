@@ -172,8 +172,7 @@ function initialize() {
       .addEventListener('click', onLogMessagesDump);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
-      (eventTime: Time, logSource: number, sourceFile: string,
-       sourceLine: number, message: string) => {
+      (eventTime, logSource, sourceFile, sourceLine, message) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
         const logSourceStr = logSourceToString(logSource);
         logMessages.push({

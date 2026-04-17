@@ -73,13 +73,12 @@ export class CustomizeColorSchemeModeElement extends
     super.connectedCallback();
 
     this.setColorSchemeModeListenerId_ =
-        this.callbackRouter_.setColorSchemeMode.addListener(
-            (colorSchemeMode: ColorSchemeMode) => {
-              const currentMode = colorSchemeModeOptions.find(
-                  (mode) => colorSchemeMode === mode.value);
-              assert(!!currentMode);
-              this.currentMode_ = currentMode;
-            });
+        this.callbackRouter_.setColorSchemeMode.addListener(colorSchemeMode => {
+          const currentMode = colorSchemeModeOptions.find(
+              (mode) => colorSchemeMode === mode.value);
+          assert(!!currentMode);
+          this.currentMode_ = currentMode;
+        });
     this.handler_.initializeColorSchemeMode();
   }
 

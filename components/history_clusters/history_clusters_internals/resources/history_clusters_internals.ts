@@ -69,18 +69,17 @@ function initialize() {
   getRequiredElement('print-keyword-bag-state')
       .addEventListener('click', onPrintKeywordBagState);
 
-  getProxy().getCallbackRouter().onLogMessageAdded.addListener(
-      (message: string) => {
-        logMessages.push(message);
-        if (logMessageContainer) {
-          const logmessage = logMessageContainer.insertRow();
-          const cell = logmessage.insertCell();
-          cell.innerHTML = window.trustedTypes!.emptyHTML;
-          const pre = document.createElement('pre');
-          pre.textContent = message;
-          cell.appendChild(pre);
-        }
-      });
+  getProxy().getCallbackRouter().onLogMessageAdded.addListener(message => {
+    logMessages.push(message);
+    if (logMessageContainer) {
+      const logmessage = logMessageContainer.insertRow();
+      const cell = logmessage.insertCell();
+      cell.innerHTML = window.trustedTypes!.emptyHTML;
+      const pre = document.createElement('pre');
+      pre.textContent = message;
+      cell.appendChild(pre);
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

@@ -11,7 +11,7 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
-import type {BatchUploadAccountInfo, BatchUploadData, DataContainer} from './batch_upload.js';
+import type {BatchUploadAccountInfo, DataContainer} from './batch_upload.js';
 import {getCss} from './batch_upload_app.css.js';
 import {getHtml} from './batch_upload_app.html.js';
 import {BatchUploadBrowserProxyImpl} from './browser_proxy.js';
@@ -87,7 +87,7 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     this.addResizeObserver_();
 
     this.batchUploadBrowserProxy_.callbackRouter.sendBatchUploadData
-        .addListener((batchUploadData: BatchUploadData) => {
+        .addListener(batchUploadData => {
           this.accountInfo_ = batchUploadData.accountInfo;
           this.dialogSubtitle_ = batchUploadData.dialogSubtitle;
 

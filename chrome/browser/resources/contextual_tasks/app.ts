@@ -28,12 +28,12 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {ComposeboxPosition, IconType} from './contextual_tasks.mojom-webui.js';
+import type {ComposeboxPosition} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -335,11 +335,11 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.listenerIds_ = [
       callbackRouter.onSidePanelStateChanged.addListener(
           () => this.updateSidePanelState()),
-      callbackRouter.setThreadTitle.addListener((title: string) => {
+      callbackRouter.setThreadTitle.addListener(title => {
         this.threadTitle_ = title;
         document.title = title || loadTimeData.getString('title');
       }),
-      callbackRouter.onAiPageStatusChanged.addListener((isAiPage: boolean) => {
+      callbackRouter.onAiPageStatusChanged.addListener(isAiPage => {
         this.isAiPage_ = isAiPage;
       }),
       callbackRouter.postMessageToWebview.addListener(
@@ -384,25 +384,22 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.isInBasicMode_ = false;
       }),
       callbackRouter.injectInput.addListener(
-          (title: string, thumbnail: string, fileToken: UnguessableToken,
-           supportsUnimodal: boolean) => {
+          (title, thumbnail, fileToken, supportsUnimodal) => {
             this.composebox_?.injectInput(
                 title, 'chrome://image?url=' + encodeURIComponent(thumbnail),
                 fileToken, supportsUnimodal);
           }),
       callbackRouter.injectInputWithIcon.addListener(
-          (title: string, iconId: IconType, fileToken: UnguessableToken,
-           supportsUnimodal: boolean) => {
+          (title, iconId, fileToken, supportsUnimodal) => {
             this.composebox_?.injectInputWithIcon(
                 title, iconId, fileToken, supportsUnimodal);
           }),
-      callbackRouter.removeInjectedInput.addListener(
-          (fileToken: UnguessableToken) => {
-            this.composebox_?.deleteFile(fileToken);
-          }),
+      callbackRouter.removeInjectedInput.addListener(fileToken => {
+        this.composebox_?.deleteFile(fileToken);
+      }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.setAimUrl.addListener(updateWebuiParams),
-      callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
+      callbackRouter.onZeroStateChange.addListener(isZeroState => {
         this.isZeroState_ = isZeroState;
         // If we just changed to zero state, that means
         // it is a new thread or new AIM page. Otherwise,
@@ -416,8 +413,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         }
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
-          (isOverlayShowing: boolean,
-           isOverlayOpenForAimVisualSearch: boolean) => {
+          (isOverlayShowing, isOverlayOpenForAimVisualSearch) => {
             this.isLensOverlayShowing_ = isOverlayShowing;
             this.isOverlayOpenForAimVisualSearch_ =
                 isOverlayOpenForAimVisualSearch;

@@ -8,11 +8,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import type {Theme} from './new_tab_page_third_party.mojom-webui.js';
+
 
 const {callbackRouter, handler} = BrowserProxy.getInstance();
 
-callbackRouter.setTheme.addListener((theme: Theme) => {
+callbackRouter.setTheme.addListener(theme => {
   const html = document.documentElement;
   html.toggleAttribute('has-custom-background', theme.hasCustomBackground);
   const style = html.style;

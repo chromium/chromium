@@ -273,13 +273,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
     if (this.enableUpfrontInputModes) {
       this.selectedInputMode_ = InputMode.kPolish;
     }
-    this.router_.responseReceived.addListener((response: ComposeResponse) => {
+    this.router_.responseReceived.addListener(response => {
       this.composeResponseReceived_(response);
     });
-    this.router_.partialResponseReceived.addListener(
-        (partialResponse: PartialComposeResponse) => {
-          this.partialComposeResponseReceived_(partialResponse);
-        });
+    this.router_.partialResponseReceived.addListener(partialResponse => {
+      this.partialComposeResponseReceived_(partialResponse);
+    });
   }
 
   override connectedCallback() {

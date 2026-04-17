@@ -98,11 +98,10 @@ export class TopToolbarElement extends CrLitElement {
     super.connectedCallback();
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_ = [
-      callbackRouter.onContextUpdated.addListener(
-          (contextInfos: ContextInfo[]) => {
-            this.contextInfos = contextInfos;
-          }),
-      callbackRouter.setShowReopenTabs.addListener((show: boolean) => {
+      callbackRouter.onContextUpdated.addListener(contextInfos => {
+        this.contextInfos = contextInfos;
+      }),
+      callbackRouter.setShowReopenTabs.addListener(show => {
         this.showReopenTabs_ = show;
       }),
       callbackRouter.onSidePanelPinStateChanged.addListener(

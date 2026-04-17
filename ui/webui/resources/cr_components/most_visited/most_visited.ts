@@ -269,11 +269,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     this.onSingleRowChange_();
 
-    this.callbackRouter_.setMostVisitedInfo.addListener(
-        (info: MostVisitedInfo) => {
-          performance.measure('most-visited-mojo', 'most-visited-mojo-start');
-          this.info_ = info;
-        });
+    this.callbackRouter_.setMostVisitedInfo.addListener(info => {
+      performance.measure('most-visited-mojo', 'most-visited-mojo-start');
+      this.info_ = info;
+    });
 
     this.callbackRouter_.onMostVisitedTilesAutoRemoval.addListener(() => {
       this.autoRemovalToast_();

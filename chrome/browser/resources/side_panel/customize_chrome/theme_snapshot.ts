@@ -52,7 +52,7 @@ export class ThemeSnapshotElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
+        this.apiProxy_.callbackRouter.setTheme.addListener(theme => {
           this.theme_ = theme;
           if (this.theme_) {
             this.style.setProperty(

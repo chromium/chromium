@@ -427,8 +427,7 @@ function initialize() {
       .addEventListener('click', onMqlsLogsPageOpen);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
-      (eventTime: Time, logSource: number, sourceFile: string,
-       sourceLine: bigint, message: string) => {
+      (eventTime, logSource, sourceFile, sourceLine, message) => {
         const eventTimeStr = convertMojoTimeToJS(eventTime).toISOString();
         const logSourceStr = getLogSource(logSource);
         logMessages.push({

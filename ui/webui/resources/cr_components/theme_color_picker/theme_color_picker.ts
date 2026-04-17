@@ -85,7 +85,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     super.connectedCallback();
     this.setThemeListenerId_ =
         ThemeColorPickerBrowserProxy.getInstance()
-            .callbackRouter.setTheme.addListener((theme: Theme) => {
+            .callbackRouter.setTheme.addListener(theme => {
               this.theme_ = theme;
             });
     this.handler_.updateTheme();

@@ -13,9 +13,8 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js';
 import {BrowserProxy} from './browser_proxy.js';
-import type {RuntimeInfo, SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
-import type {XRDeviceId} from './xr_device.mojom-webui.js';
-import type {XrFrameStatistics, XrLogMessage} from './xr_session.mojom-webui.js';
+
+
 
 let browserProxy: BrowserProxy;
 
@@ -88,22 +87,22 @@ function renderSessionInfoContent() {
   const table = document.createElement('session-info-table');
 
   browserProxy.getBrowserCallback().logXrSessionRequested.addListener(
-      (sessionRequestedRecord: SessionRequestedRecord) => {
+      sessionRequestedRecord => {
         table.addSessionRequestedRow(sessionRequestedRecord);
       });
 
   browserProxy.getBrowserCallback().logXrSessionRejected.addListener(
-      (sessionRejectedRecord: SessionRejectedRecord) => {
+      sessionRejectedRecord => {
         table.addSessionRejectedRow(sessionRejectedRecord);
       });
 
   browserProxy.getBrowserCallback().logXrSessionStarted.addListener(
-      (sessionStartedRecord: SessionStartedRecord) => {
+      sessionStartedRecord => {
         table.addSessionStartedRow(sessionStartedRecord);
       });
 
   browserProxy.getBrowserCallback().logXrSessionStopped.addListener(
-      (sessionStoppedRecord: SessionStoppedRecord) => {
+      sessionStoppedRecord => {
         table.addSessionStoppedRow(sessionStoppedRecord);
       });
 
@@ -128,13 +127,13 @@ function renderRuntimeInfoContent() {
   renderActiveRuntimesTable(activeRuntimeTable);
 
   browserProxy.getBrowserCallback().logXrRuntimeAdded.addListener(
-      (runtimeInfo: RuntimeInfo) => {
+      runtimeInfo => {
         runtimeChangelogTable.addRuntimeAddedRecord(runtimeInfo);
         renderActiveRuntimesTable(activeRuntimeTable);
       });
 
   browserProxy.getBrowserCallback().logXrRuntimeRemoved.addListener(
-      (deviceId: XRDeviceId) => {
+      deviceId => {
         runtimeChangelogTable.addRuntimeRemovedRecord(deviceId);
         renderActiveRuntimesTable(activeRuntimeTable);
       });
@@ -151,14 +150,14 @@ function renderSessionStatisticsContent() {
   const table = document.createElement('session-statistics-table');
 
   browserProxy.getBrowserCallback().logConsoleMessages.addListener(
-      (xrLogMessage: XrLogMessage) => {
+      xrLogMessage => {
         table.addConsoleMessageRow(xrLogMessage);
       });
 
   sessionStatisticsContent.appendChild(table);
 
   browserProxy.getBrowserCallback().logFrameData.addListener(
-      (xrSessionStatistics: XrFrameStatistics) => {
+      xrSessionStatistics => {
         table.addXrSessionStatisticsRow(xrSessionStatistics);
       });
 

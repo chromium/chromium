@@ -80,7 +80,7 @@ export class ThemesElement extends ThemesElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
+        this.apiProxy_.callbackRouter.setTheme.addListener(theme => {
           this.theme_ = theme;
         });
     this.apiProxy_.handler.updateTheme();

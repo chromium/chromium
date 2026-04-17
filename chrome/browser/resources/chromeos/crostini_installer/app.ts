@@ -194,11 +194,11 @@ class CrostiniInstallerAppElement extends PolymerElement {
 
     this.listenerIds_ = [
       callbackRouter.onProgressUpdate.addListener(
-          (installerState: InstallerState, progressFraction: number) => {
+          (installerState, progressFraction) => {
             this.installerState_ = installerState;
             this.installerProgress_ = progressFraction * 100;
           }),
-      callbackRouter.onInstallFinished.addListener((error: InstallerError) => {
+      callbackRouter.onInstallFinished.addListener(error => {
         if (error === InstallerError.kNone) {
           // Install succeeded.
           this.closePage_();

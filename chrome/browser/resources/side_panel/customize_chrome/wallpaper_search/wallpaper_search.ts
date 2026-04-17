@@ -227,13 +227,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.setThemeListenerId_ =
-        this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
+        this.apiProxy_.callbackRouter.setTheme.addListener(theme => {
           this.theme_ = theme;
         });
     this.apiProxy_.handler.updateTheme();
     this.setHistoryListenerId_ =
         this.wallpaperSearchProxy_.callbackRouter.setHistory.addListener(
-            (history: WallpaperSearchResult[]) => {
+            history => {
               this.history_ = history;
               this.openInspirations_ = !this.computeShouldShowHistory_();
             });

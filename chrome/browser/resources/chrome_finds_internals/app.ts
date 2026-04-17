@@ -49,7 +49,7 @@ export class ChromeFindsInternalsAppElement extends CrLitElement {
         this.callbackRouter_.$.bindNewPipeAndPassRemote(),
         this.handler_.$.bindNewPipeAndPassReceiver());
 
-    this.callbackRouter_.logMessageAdded.addListener((message: string) => {
+    this.callbackRouter_.logMessageAdded.addListener(message => {
       this.appendLog_(message);
     });
   }

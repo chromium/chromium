@@ -21,7 +21,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {ReadGroupsParams as MojomReadGroupsParams, ReadGroupWithTokenParam} from './data_sharing.mojom-webui.js';
+
 import type {DataSharingSdk, ReadGroupParams} from './data_sharing_sdk_types.js';
 import type {GroupData} from './group_data.mojom-webui.js';
 import {toMojomGroupData} from './mojom_conversion_utils.js';
@@ -38,7 +38,7 @@ dataSharingSdk.setClientVersionAndResetPeopleStore(
 dataSharingSdk.updateClearcut(
     {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
 browserProxy.callbackRouter.onAccessTokenFetched.addListener(
-    (accessToken: string) => {
+    accessToken => {
       dataSharingSdk.setOauthAccessToken({accessToken});
       if (!initialized) {
         browserProxy.handler!.apiInitComplete();
@@ -48,7 +48,7 @@ browserProxy.callbackRouter.onAccessTokenFetched.addListener(
 );
 
 browserProxy.callbackRouter.readGroupWithToken.addListener(
-    (mojomParam: ReadGroupWithTokenParam) => {
+    mojomParam => {
       const groupId = mojomParam.groupId;
       const accessToken = mojomParam.accessToken;
       return new Promise((resolve) => {
@@ -62,7 +62,7 @@ browserProxy.callbackRouter.readGroupWithToken.addListener(
     });
 
 browserProxy.callbackRouter.readGroups.addListener(
-    (mojomParams: MojomReadGroupsParams) => {
+    mojomParams => {
       const params: ReadGroupParams[] = [];
       for (const mojomParam of mojomParams.params) {
         params.push({
@@ -79,7 +79,7 @@ browserProxy.callbackRouter.readGroups.addListener(
       });
     });
 
-browserProxy.callbackRouter.leaveGroup.addListener((groupId: string) => {
+browserProxy.callbackRouter.leaveGroup.addListener(groupId => {
   return new Promise((resolve) => {
     dataSharingSdk.leaveGroup({groupId}).then(({status}) => {
       resolve({statusCode: status});
@@ -87,7 +87,7 @@ browserProxy.callbackRouter.leaveGroup.addListener((groupId: string) => {
   });
 });
 
-browserProxy.callbackRouter.deleteGroup.addListener((groupId: string) => {
+browserProxy.callbackRouter.deleteGroup.addListener(groupId => {
   return new Promise((resolve) => {
     dataSharingSdk.deleteGroup({groupId}).then(({status}) => {
       resolve({statusCode: status});

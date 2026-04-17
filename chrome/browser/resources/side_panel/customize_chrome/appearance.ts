@@ -126,19 +126,19 @@ export class AppearanceElement extends AppearanceElementBase {
     super.connectedCallback();
 
     this.listenerIds_ = [
-      this.apiProxy_.callbackRouter.setTheme.addListener((theme: Theme) => {
+      this.apiProxy_.callbackRouter.setTheme.addListener(theme => {
         this.theme_ = theme;
       }),
       this.apiProxy_.callbackRouter.attachedTabStateUpdated.addListener(
-          (newTabPageType: NewTabPageType) => {
+          newTabPageType => {
             this.newTabPageType_ = newTabPageType;
           }),
       this.apiProxy_.callbackRouter.setThemeEditable.addListener(
-          (isThemeEditable: boolean) => {
+          isThemeEditable => {
             this.showEditTheme_ = isThemeEditable;
           }),
       this.apiProxy_.callbackRouter.ntpManagedByNameUpdated.addListener(
-          (name: string, description: string) => {
+          (name, description) => {
             this.managedByName_ = name;
             this.managedByDesc_ = description;
           }),
