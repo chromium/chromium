@@ -239,6 +239,15 @@
   max-width: 100%;
 }
 
+/*
+ * Removing the visual decoration instead of changing it to a <span> to preserve
+ * the original tag's semantic meaning.
+ */
+#appFlexParent :is(abbr, em, u) {
+  font-style: normal;
+  text-decoration: none;
+}
+
 #docs-load-more-button {
   background: var(--color-sys-tonal-container);
   margin: 0 auto;
