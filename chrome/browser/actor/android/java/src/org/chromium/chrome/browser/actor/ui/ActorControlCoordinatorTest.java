@@ -359,10 +359,10 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
-    public void testOnTaskStateChanged_taskIdMismatch() {
+    public void testOnTaskStateChanged_reflecting() {
         setUpForOnTaskStateChanged();
-        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
-        mCoordinator.onTaskStateChanged(TASK_ID + 1, ActorTaskState.PAUSED_BY_USER);
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.REFLECTING);
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 
@@ -382,6 +382,49 @@ public class ActorControlCoordinatorTest {
         assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_nullTask_notFinished_clearsContent() {
+        setUpProfileSupplier();
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_nullTask_finished_keepsTitle() {
+        setUpProfileSupplier();
+        expectValidActorTask();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_nullTask_cancelled_clearsContent() {
+        setUpProfileSupplier();
+        expectValidActorTask();
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+
+        mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.CANCELLED);
+
+        assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 
     @Test
@@ -409,6 +452,18 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testOnActorControlClick_taskReflecting_pauses() {
+        setUpProfileSupplier();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.REFLECTING);
+
+        performActorControlClick();
+
+        verify(mActorTask).pause();
+        verify(mActorTask, never()).resume();
+    }
+
+    @Test
     public void testOnActorControlClick_taskUnhandledState() {
         setUpProfileSupplier();
         expectValidActorTask();
@@ -431,6 +486,33 @@ public class ActorControlCoordinatorTest {
         verify(mActorTask, never()).pause();
         verify(mActorTask, never()).resume();
         verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
+    }
+
+    @Test
+    public void testOnActorControlClick_noActiveTask_waitingState_hidesPeekView() {
+        setUpProfileSupplier();
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+        mModel.set(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.WAITING);
+
+        performActorControlClick();
+
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnActorControlClick_noActiveTask_notInWaitingState_clearsContent() {
+        setUpProfileSupplier();
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(null);
+        mModel.set(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.ACTING);
+        mModel.set(ActorControlProperties.TASK_TITLE, TASK_TITLE);
+
+        performActorControlClick();
+
+        assertEquals("", mModel.get(ActorControlProperties.TASK_TITLE));
+        assertEquals(
+                PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
 
     @Test

@@ -46,6 +46,8 @@ public class ActorControlCoordinator
     private @Nullable ActorKeyedService mActorKeyedService;
     private @Nullable ActorUiTabController mActorUiTabController;
 
+    private String mActiveTaskTitle = "";
+
     /**
      * Constructs a new {@link ActorControlCoordinator}.
      *
@@ -153,33 +155,37 @@ public class ActorControlCoordinator
         }
 
         ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
-        if (activeTask == null) {
+        // TODO(crbug.com/503370476): Use ActorUiStateManager to track when tasks are finished,
+        // instead of checking activeTask and the newState.
+        if (activeTask != null) {
+            mActiveTaskTitle = activeTask.getTitle();
+        } else if (newState != ActorTaskState.FINISHED
+                && newState != ActorTaskState.CANCELLED
+                && newState != ActorTaskState.FAILED) {
+            Log.w(
+                    TAG,
+                    "Active task is null but task has not been completed. newState: %d",
+                    newState);
             clearPeekViewContent();
             return;
         }
-
-        if (activeTask.getId() != taskId) {
-            return;
-        }
-
-        String taskTitle = activeTask.getTitle() == null ? "" : activeTask.getTitle();
         switch (newState) {
+            case ActorTaskState.CREATED:
+            case ActorTaskState.CANCELLED:
+                setPeekViewContent(mActiveTaskTitle, PeekViewUiState.DEFAULT);
+                break;
             case ActorTaskState.ACTING:
             case ActorTaskState.REFLECTING:
-                setPeekViewContent(taskTitle, PeekViewUiState.ACTING);
+                setPeekViewContent(mActiveTaskTitle, PeekViewUiState.ACTING);
                 break;
             case ActorTaskState.PAUSED_BY_USER:
-                setPeekViewContent(taskTitle, PeekViewUiState.PAUSED);
+                setPeekViewContent(mActiveTaskTitle, PeekViewUiState.PAUSED);
                 break;
             case ActorTaskState.PAUSED_BY_ACTOR:
             case ActorTaskState.WAITING_ON_USER:
             case ActorTaskState.FINISHED:
             case ActorTaskState.FAILED:
-                setPeekViewContent(taskTitle, PeekViewUiState.WAITING);
-                break;
-            case ActorTaskState.CREATED:
-            case ActorTaskState.CANCELLED:
-                setPeekViewContent(taskTitle, PeekViewUiState.DEFAULT);
+                setPeekViewContent(mActiveTaskTitle, PeekViewUiState.WAITING);
                 break;
             default:
                 assert false : "Unhandled ActorTaskState " + newState;
@@ -230,9 +236,21 @@ public class ActorControlCoordinator
     /* package */ void onActorControlClicked() {
         assert mActorKeyedService != null;
 
+        // TODO(crbug.com/503370476): Use ActorUiStateManager to track when tasks are finished,
+        // instead of checking activeTask.
         ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
-        // If there is no active task, the task has just finished.
         if (activeTask == null) {
+            // When a task finishes, PeekView transitions to the "WAITING" state. It will remain in
+            // this state until the user dismisses it, so it is possible for a user to press the
+            // actor control button when there is no active task.
+            if (PeekViewUiState.WAITING.equals(
+                    mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE))) {
+                // In the WAITING state, the actor control button is the "View" button.
+                mTabBottomSheetManager.hidePeekViewAndShowExpandedContent();
+            } else {
+                Log.w(TAG, "onActorControlClicked: No active task and not in WAITING state.");
+            }
+            clearPeekViewContent();
             return;
         }
 
@@ -252,10 +270,9 @@ public class ActorControlCoordinator
             default:
                 Log.w(
                         TAG,
-                        "onActorControlClicked: Unhandled state "
-                                + currentState
-                                + " for task "
-                                + activeTask.getId());
+                        "onActorControlClicked: Unhandled state %d for task %d",
+                        currentState,
+                        activeTask.getId());
                 break;
         }
     }
