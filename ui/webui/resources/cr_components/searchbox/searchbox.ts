@@ -137,9 +137,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     };
   }
 
-  // Required since searchbox_searchbox_dropdown.html.ts
-  // still uses it for other searchboxes despite it not
-  // being needed for regular searchbox
   accessor showThumbnail: boolean = false;
   accessor canShowSecondarySide: boolean = false;
   accessor hadSecondarySide: boolean = false;

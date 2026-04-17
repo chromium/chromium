@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getHtml as getDropdownHtml} from '//resources/cr_components/searchbox/searchbox_searchbox_dropdown.html.js';
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {LensSearchboxElement} from './lens_searchbox.js';
@@ -45,7 +44,16 @@ export function getHtml(this: LensSearchboxElement) {
       </div>
     ` : ''}
   </cr-searchbox-input>
-  ${getDropdownHtml.bind(this as any)()}
+  <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+      exportparts="dropdown-content"
+      role="listbox" .result="${this.result}"
+      selected-match-index="${this.selectedMatchIndex}"
+      @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+      @match-focusin="${this.onMatchFocusin}"
+      @match-click="${this.onMatchClick}"
+      ?hidden="${!this.dropdownIsVisible}"
+      ?show-thumbnail="${this.showThumbnail}">
+  </cr-searchbox-dropdown>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

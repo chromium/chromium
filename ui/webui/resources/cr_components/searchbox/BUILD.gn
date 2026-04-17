@@ -27,7 +27,6 @@ build_webui("build") {
     "searchbox_match.html.ts",
     "searchbox_match.ts",
     "searchbox_mixin.ts",
-    "searchbox_searchbox_dropdown.html.ts",
     "searchbox_thumbnail.html.ts",
     "searchbox_thumbnail.ts",
     "utils.ts",

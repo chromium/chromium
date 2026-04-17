@@ -5,6 +5,7 @@
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
+import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
