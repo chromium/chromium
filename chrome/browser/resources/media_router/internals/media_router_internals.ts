@@ -216,7 +216,7 @@ class StatsHistory {
     return {startTime, columns, data};
   }
 
-  setAll(compact: any) {
+  setAll(compact: unknown) {
     this.history.clear();
     this.lastCumulativeValues.clear();
 
@@ -224,30 +224,34 @@ class StatsHistory {
       return;
     }
 
+    const compactObj = compact as Record<string, unknown>;
+
     // Fallback for old format
-    if (!('columns' in compact)) {
-      this.history = new Map(Object.entries(compact));
+    if (!('columns' in compactObj)) {
+      this.history = new Map(
+          Object.entries(compactObj) as Array<[string, TimeDataPoint[]]>);
       return;
     }
 
-    if (!compact.columns || compact.columns.length === 0) {
+    const compactStats = compact as CompactStats;
+    if (!compactStats.columns || compactStats.columns.length === 0) {
       return;
     }
 
-    const keys = compact.columns.slice(1);
+    const keys = compactStats.columns.slice(1);
     for (const key of keys) {
       this.history.set(key, []);
     }
 
-    for (const row of compact.data) {
+    for (const row of compactStats.data) {
       const timeOffset = row[0] as number;
-      const time = compact.startTime + timeOffset;
+      const time = compactStats.startTime + timeOffset;
 
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i]!;
         const val = row[i + 1];
         if (val !== null) {
-          this.history.get(key)!.push({time, value: val});
+          this.history.get(key)!.push({time, value: val as number});
         }
       }
     }

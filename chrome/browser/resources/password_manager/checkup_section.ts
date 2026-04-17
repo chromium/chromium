@@ -517,7 +517,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     this.focusConfig.set(Page.CHECKUP_DETAILS, () => {
       const previousRoute = Router.getInstance().previousRoute;
 
-      switch (previousRoute?.details as unknown as CheckupSubpage) {
+      switch (previousRoute?.details as CheckupSubpage) {
         case CheckupSubpage.COMPROMISED:
           focusWithoutInk(this.$.compromisedRow);
           break;

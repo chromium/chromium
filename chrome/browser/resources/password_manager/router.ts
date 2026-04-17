@@ -39,7 +39,8 @@ export enum UrlParam {
 }
 
 export class Route {
-  constructor(page: Page, queryParameters?: URLSearchParams, details?: any) {
+  constructor(
+      page: Page, queryParameters?: URLSearchParams, details?: unknown) {
     this.page = page;
     this.queryParameters = queryParameters || new URLSearchParams();
     this.details = details;
@@ -47,7 +48,7 @@ export class Route {
 
   page: Page;
   queryParameters: URLSearchParams;
-  details?: any;
+  details?: unknown;
 
   path(): string {
     let path: string;
@@ -67,7 +68,7 @@ export class Route {
         break;
       case Page.CHECKUP_DETAILS:
         assert(this.details);
-        path = '/' + Page.CHECKUP + '/' + this.details;
+        path = '/' + Page.CHECKUP + '/' + (this.details as string);
         break;
       case Page.PASSWORD_CHANGE:
         path = '/' + Page.SETTINGS + '/' + Page.PASSWORD_CHANGE;
@@ -126,7 +127,7 @@ export class Router {
    * Navigates to a page and pushes a new history entry.
    */
   navigateTo(
-      page: Page, details?: any,
+      page: Page, details?: unknown,
       params: URLSearchParams = new URLSearchParams()) {
     const newRoute = new Route(page, params, details);
     if (this.currentRoute_.path() === newRoute.path()) {

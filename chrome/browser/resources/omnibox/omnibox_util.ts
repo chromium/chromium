@@ -150,15 +150,15 @@ function setFormattedClipboard(text: string) {
 }
 
 export function setFormattedClipboardForMl(
-    matchDetails: Record<string, any>, signals: Signals, shareUrl: string,
+    matchDetails: Record<string, unknown>, signals: Signals, shareUrl: string,
     version: MlVersionObj) {
   return setFormattedClipboard([
     // clang-format off
     ...Object.entries(matchDetails)
-        .flatMap(([k, v]) => ['$h$g', k, ': $0$b', v, '$0$n']),
+        .flatMap(([k, v]) => ['$h$g', k, ': $0$b', String(v), '$0$n']),
     ...Object.entries(signals)
         .filter(([, v]) => v)
-        .flatMap(([k, v]) => ['$h$p', k, ': $0$b', v, '$0$n']),
+        .flatMap(([k, v]) => ['$h$p', k, ': $0$b', String(v), '$0$n']),
     ...shareUrl ? ['$r', shareUrl, '$0$n'] : [],
     '$h$r', 'Version: ', '$0', '$l', version.url, '$l', version.string, '$l$n',
     // clang-format on

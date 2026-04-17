@@ -356,9 +356,12 @@ export class DiagnoseInfoViewElement extends CustomElement {
         LAST_NETWORK_RESPONSE_TABLE_ID, tableData, footerMessage);
   }
 
-  outputTables(): Record<string, any> {
+  outputTables():
+      Record<string, Array<Record<string, Array<Record<string, string>>>>> {
     const tables = this.$all('diagnose-info-table');
-    const output: Record<string, any> = {};
+    const output:
+        Record<string, Array<Record<string, Array<Record<string, string>>>>> =
+            {};
     output['LocationInternals'] = [];
     for (const table of tables) {
       if (!table.visible()) {

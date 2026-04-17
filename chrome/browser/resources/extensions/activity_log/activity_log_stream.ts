@@ -206,11 +206,11 @@ export class ActivityLogStreamElement extends CrLitElement {
       'name',
       'pageUrl',
       'activityType',
-    ];
+    ] as const;
 
     return this.activityStream_.filter(act => {
       return propNames.some(prop => {
-        const value = (act as {[index: string]: any})[prop];
+        const value = act[prop];
         return value && value.toLowerCase().includes(this.lastSearch_);
       });
     });

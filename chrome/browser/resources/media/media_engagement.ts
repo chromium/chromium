@@ -22,7 +22,7 @@ let detailsProvider: MediaEngagementScoreDetailsProviderRemote|null = null;
 let info: MediaEngagementScoreDetails[]|null = null;
 let engagementTableBody: HTMLElement|null = null;
 let sortReverse: boolean = true;
-let sortKey: string = 'totalScore';
+let sortKey: keyof MediaEngagementScoreDetails = 'totalScore';
 let configTableBody: HTMLElement|null = null;
 let showNoPlaybacks: boolean = false;
 
@@ -81,7 +81,7 @@ function sortInfo() {
  *     |b|, a positive number otherwise.
  */
 function compareTableItem(
-    sortKey: string, a: MediaEngagementScoreDetails,
+    sortKey: keyof MediaEngagementScoreDetails, a: MediaEngagementScoreDetails,
     b: MediaEngagementScoreDetails): number {
   // Compare the hosts of the origin ignoring schemes.
   if (sortKey === 'origin') {
@@ -90,11 +90,9 @@ function compareTableItem(
 
   if (sortKey === 'visits' || sortKey === 'mediaPlaybacks' ||
       sortKey === 'lastMediaPlaybackTime' || sortKey === 'totalScore' ||
-      sortKey === 'audiblePlaybacks' || sortKey === 'significantPlaybacks' ||
-      sortKey === 'highScoreChanges' || sortKey === 'mediaElementPlaybacks' ||
-      sortKey === 'audioContextPlaybacks' || sortKey === 'isHigh') {
-    const val1 = (a as {[key: string]: any})[sortKey];
-    const val2 = (b as {[key: string]: any})[sortKey];
+      sortKey === 'isHigh') {
+    const val1 = a[sortKey];
+    const val2 = b[sortKey];
 
     return (val1 as number) - (val2 as number);
   }
@@ -216,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sortReverse = !sortReverse;
       } else {
         assert(newSortKey);
-        sortKey = newSortKey;
+        sortKey = newSortKey as keyof MediaEngagementScoreDetails;
         sortReverse = false;
       }
       const oldSortColumn = document.querySelector<HTMLElement>('.sort-column');

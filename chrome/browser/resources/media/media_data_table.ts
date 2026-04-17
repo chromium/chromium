@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.js';
  */
 export class MediaDataTable {
   private table_: HTMLElement;
-  private data_: Array<{[key: string]: any}> = [];
+  private data_: object[] = [];
   private delegate_: MediaDataTableDelegate;
 
   constructor(table: HTMLElement, delegate: MediaDataTableDelegate) {
@@ -74,7 +74,7 @@ export class MediaDataTable {
         let data = dataRow;
         const expandedKey = key!.split('.');
         expandedKey.forEach((k) => {
-          data = data[k];
+          data = (data as Record<string, unknown>)[k] as object;
           key = k;
         });
 

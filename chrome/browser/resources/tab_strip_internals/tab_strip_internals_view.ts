@@ -178,7 +178,13 @@ export class TabStripInternalsView implements ViewModelObserver {
 
   /** Return a container span with all applicable icons. */
   private renderNodeIcon_(node: ModelNode): HTMLElement|null {
-    const value = node.value as any;
+    interface NodeValue {
+      pinned?: boolean;
+      selected?: boolean;
+      active?: boolean;
+    }
+
+    const value = node.value as NodeValue;
     const iconsEl: HTMLElement[] = [];
 
     if (value?.pinned) {

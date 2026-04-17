@@ -50,7 +50,8 @@ export function handlePageLoadMetric(
       handler.recordEditionPageLoaded(data.page_uid, isAutoOpen);
       break;
     default:
-      console.warn('Unrecognized page version: ' + (data as any)!.type);
+      console.warn(
+          'Unrecognized page version: ' + (data as PageLoadedMetric).type);
   }
 }
 

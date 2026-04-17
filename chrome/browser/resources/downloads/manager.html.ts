@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {MojomData} from './data.js';
 import type {DownloadsManagerElement} from './manager.js';
 
 export function getHtml(this: DownloadsManagerElement) {
@@ -22,7 +23,7 @@ export function getHtml(this: DownloadsManagerElement) {
   <cr-infinite-list id="downloadsList" .items="${this.items_}"
       role="grid" aria-rowcount="${this.items_.length}"
       ?hidden="${!this.hasDownloads_}" .scrollTarget="${this.listScrollTarget_}"
-      .template="${(item: any, index: number, tabindex: number) => html`
+      .template="${(item: MojomData, index: number, tabindex: number) => html`
   <if expr="_google_chrome">
         <downloads-item .data="${item}" tabindex="${tabindex}"
             .listTabIndex="${tabindex}" .lastFocused="${this.lastFocused_}"
