@@ -135,11 +135,18 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
   CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
   CHECK(chromevox_mv3_key_handling_enabled_);
 
-  if (session_id != current_session_id_) {
+  if (session_id < current_session_id_) {
     // This event belongs to a stale ChromeVox instance. We can safely ignore
     // it because the stale events were already flushed when the new session
     // initialized.
     return;
+  } else if (session_id > current_session_id_) {
+    // If we received an event from a newer session before the enable command
+    // reached us, automatically advance the current session ID. We don't need
+    // to explicitly flush the queue here because the loop below will flush
+    // all events with IDs less than the current event, which includes all
+    // events from the previous session since IDs are monotonically increasing.
+    current_session_id_ = session_id;
   }
 
   if (pending_key_events_.empty()) {
@@ -156,8 +163,8 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
 
   // IDs are an ordered long. Assume that events are returned
   // in the order they were sent. However, we must gracefully handle ChromeVox
-  // dropping an event rather than assuming the next event in the queue is
-  // the one we want.
+  // dropping an event (or sending an event from an old session ID) rather than
+  // assuming the next event in the queue is the one we want.
   while (!pending_key_events_.empty() && pending_key_events_.front().id < id) {
     const auto& pending_event_info = pending_key_events_.front();
     SendEventHelper(pending_event_info.continuation,

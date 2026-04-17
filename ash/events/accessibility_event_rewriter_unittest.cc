@@ -1039,6 +1039,41 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
   EXPECT_EQ(1, event_recorder().events_seen());
 }
 
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       NewSessionEventResponseFlushesOldEvents) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
+
+  unsigned int id1 = next_pending_event_id();
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1U, GetPendingKeyEventsSize());
+
+  unsigned int id2 = next_pending_event_id();
+  EXPECT_GT(id2, id1);
+  generator().PressKey(ui::VKEY_B, ui::EF_NONE);
+  EXPECT_EQ(2U, GetPendingKeyEventsSize());
+
+  // Process the second event with a NEW session ID (2).
+  // This simulates the race condition where a response from a new session
+  // arrives before the C++ side is officially notified via
+  // SetSpokenFeedbackMv3KeyHandlingEnabled.
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+      id2, true, /*session_id=*/2);
+
+  // Both events should have been processed (flushed).
+  // Event 1 (VKEY_A) should be flushed by the loop because its ID < id2.
+  // Event 2 (VKEY_B) should be processed because it matches id2.
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+  EXPECT_EQ(2, event_recorder().events_seen());
+
+  const std::vector<ui::KeyEvent>& events = event_capturer().key_events();
+  ASSERT_EQ(2U, events.size());
+  EXPECT_EQ(ui::VKEY_A, events[0].key_code());
+  EXPECT_EQ(ui::VKEY_B, events[1].key_code());
+}
+
 class MouseKeysAccessibilityEventRewriterTest
     : public AccessibilityEventRewriterTestBase {
  public:
