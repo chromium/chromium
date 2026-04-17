@@ -297,7 +297,16 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    public void testBFCacheWithKeepForwardEntries() throws Exception, Throwable {
+    public void testBFCacheWithKeepForwardEntriesDefaultValue() throws Exception, Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
+        Assert.assertTrue(
+                mAwContents.getSettings().getBackForwardCacheSettingsKeepForwardEntries());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testBFCacheWithKeepForwardEntriesEnabled() throws Exception, Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
 
         mAwContents.getSettings().setBackForwardCacheMaxPagesInCache(3);
