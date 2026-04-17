@@ -75,8 +75,7 @@ class ContextProviderCommandBuffer
       int32_t stream_id,
       gpu::SchedulingPriority stream_priority,
       const GURL& active_url,
-      command_buffer_metrics::ContextType type,
-      bool lose_context_when_out_of_memory = false);
+      command_buffer_metrics::ContextType type);
 
   static scoped_refptr<ContextProviderCommandBuffer> CreateForWebGL(
       scoped_refptr<gpu::GpuChannelHost> channel,
@@ -93,8 +92,7 @@ class ContextProviderCommandBuffer
       bool automatic_flushes,
       bool support_locking,
       const gpu::SharedMemoryLimits& memory_limits,
-      command_buffer_metrics::ContextType type,
-      bool lose_context_when_out_of_memory);
+      command_buffer_metrics::ContextType type);
 
   static scoped_refptr<ContextProviderCommandBuffer> CreateForWebGPU(
       scoped_refptr<gpu::GpuChannelHost> channel,

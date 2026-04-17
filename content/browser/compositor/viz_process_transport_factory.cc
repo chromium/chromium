@@ -78,8 +78,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   GURL url("chrome://gpu/VizProcessTransportFactory::CreateContextProvider");
   return viz::ContextProviderCommandBuffer::CreateForRaster(
       std::move(gpu_channel_host), kGpuStreamIdDefault, kGpuStreamPriorityUI,
-      std::move(url), kAutomaticFlushes, supports_locking, memory_limits, type,
-      /*lose_context_when_out_of_memory=*/true);
+      std::move(url), kAutomaticFlushes, supports_locking, memory_limits, type);
 }
 
 bool IsContextLost(viz::RasterContextProvider* context_provider) {

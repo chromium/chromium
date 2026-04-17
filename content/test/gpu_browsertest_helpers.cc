@@ -56,8 +56,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
         content::kGpuStreamPriorityDefault, GURL(),
         /*automatic_flushes=*/false, /*support_locking=*/false,
         gpu::SharedMemoryLimits(),
-        viz::command_buffer_metrics::ContextType::FOR_TESTING,
-        /*lose_context_when_out_of_memory=*/false);
+        viz::command_buffer_metrics::ContextType::FOR_TESTING);
   }
 
   return viz::ContextProviderCommandBuffer::CreateForGL(

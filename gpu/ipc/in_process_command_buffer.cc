@@ -362,9 +362,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
               task_executor_->shared_image_manager(), context_state_,
               /*is_privileged=*/true);
 
-      const auto& attribs = params.attribs->get_raster();
       auto result =
-          raster_decoder->Initialize(attribs->lose_context_when_out_of_memory);
+          raster_decoder->Initialize(/*lose_context_when_out_of_memory=*/true);
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";
@@ -451,7 +450,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       }
       auto result = gles2_decoder->Initialize(
           surface, context_, /*offscreen=*/true, attribs->context_type,
-          attribs->lose_context_when_out_of_memory);
+          /*lose_context_when_out_of_memory=*/true);
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";
