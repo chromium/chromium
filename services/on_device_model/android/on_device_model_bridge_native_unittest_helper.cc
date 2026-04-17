@@ -80,6 +80,19 @@ void OnDeviceModelBridgeNativeUnitTestHelper::
       env, java_helper_);
 }
 
+void OnDeviceModelBridgeNativeUnitTestHelper::SetDefaultStatusCheckResult(
+    ModelDownloaderAndroid::ModelStatus status) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_setDefaultStatusCheckResult(
+      env, java_helper_, static_cast<int>(status));
+}
+
+void OnDeviceModelBridgeNativeUnitTestHelper::ClearDefaultStatusCheckResult() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_clearDefaultStatusCheckResult(
+      env, java_helper_);
+}
+
 void OnDeviceModelBridgeNativeUnitTestHelper::VerifyDownloaderParams(
     optimization_guide::proto::ModelExecutionFeature feature,
     bool require_persistent_mode) {
@@ -113,6 +126,20 @@ void OnDeviceModelBridgeNativeUnitTestHelper::
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OnDeviceModelBridgeNativeUnitTestHelper_triggerDownloaderOnStatusCheckResult(
       env, java_helper_, static_cast<int>(model_status));
+}
+
+void OnDeviceModelBridgeNativeUnitTestHelper::
+    TriggerAllDownloadersOnStatusCheckResult(
+        ModelDownloaderAndroid::ModelStatus model_status) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_triggerAllDownloadersOnStatusCheckResult(
+      env, java_helper_, static_cast<int>(model_status));
+}
+
+int OnDeviceModelBridgeNativeUnitTestHelper::GetStatusCheckerCount() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_OnDeviceModelBridgeNativeUnitTestHelper_getStatusCheckerCount(
+      env, java_helper_);
 }
 
 }  // namespace on_device_model

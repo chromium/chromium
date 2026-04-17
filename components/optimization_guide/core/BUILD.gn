@@ -370,6 +370,7 @@ source_set("ondevice") {
         "model_execution/android/model_broker_android.h",
       ]
       deps += [
+        "//build:branding_buildflags",
         "//services/on_device_model:on_device_model_service",
         "//services/on_device_model/android",
         "//services/on_device_model/android:mojom",
