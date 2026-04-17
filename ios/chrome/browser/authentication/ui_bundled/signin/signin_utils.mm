@@ -169,7 +169,7 @@ void AllBrowsersSignedOut(signin::SignoutCompletion completion,
                           std::string trigger_scene_session_id,
                           std::vector<SceneState*> results) {
   SceneState* new_scene_state = nullptr;
-  if (trigger_scene_session_id.empty()) {
+  if (!trigger_scene_session_id.empty()) {
     for (SceneState* scene_state : results) {
       if (scene_state.sceneSessionID == trigger_scene_session_id) {
         new_scene_state = scene_state;
