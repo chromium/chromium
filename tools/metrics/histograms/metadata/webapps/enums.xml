@@ -313,6 +313,8 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Downgrade is not allowed"/>
 </enum>
 
+<!-- LINT.IfChange(IwaComponentUpdateError) -->
+
 <enum name="IwaComponentUpdateError">
   <int value="0" label="Stale version"/>
   <int value="1" label="Component file not found"/>
@@ -320,16 +322,26 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Malformed base64 key"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h:IwaComponentUpdateError) -->
+
+<!-- LINT.IfChange(IwaComponentUpdateSource) -->
+
 <enum name="IwaComponentUpdateSource">
   <int value="0" label="Preloaded component"/>
   <int value="1" label="Downloaded component"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h:IwaComponentUpdateSource) -->
+
+<!-- LINT.IfChange(KeyDistributionComponentSource) -->
 
 <enum name="KeyDistributionComponentSource">
   <int value="0" label="No component"/>
   <int value="1" label="Preloaded component"/>
   <int value="2" label="Downloaded component"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h:KeyDistributionComponentSource) -->
 
 <enum name="LaunchedAppType">
   <int value="0" label="DIY app launched"/>

@@ -25,6 +25,7 @@ inline constexpr std::string_view
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(KeyDistributionComponentSource)
 enum class KeyDistributionComponentSource {
   // No key distribution component loaded.
   kNone = 0,
@@ -37,12 +38,14 @@ enum class KeyDistributionComponentSource {
 
   kMaxValue = kDownloaded,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:KeyDistributionComponentSource)
 
 inline constexpr std::string_view kIwaKeyRotationInfoSource =
     "WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(IwaComponentUpdateError)
 enum class IwaComponentUpdateError {
   kStaleVersion = 0,
   kFileNotFound = 1,
@@ -50,12 +53,14 @@ enum class IwaComponentUpdateError {
   kMalformedBase64Key = 3,
   kMaxValue = kMalformedBase64Key,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:IwaComponentUpdateError)
 
 inline constexpr std::string_view kIwaKeyDistributionComponentUpdateError =
     "WebApp.Isolated.KeyDistributionComponent.UpdateError";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(IwaComponentUpdateSource)
 enum class IwaComponentUpdateSource {
   // Data comes from a preloaded version of the component.
   kPreloaded = 0,
@@ -65,6 +70,7 @@ enum class IwaComponentUpdateSource {
 
   kMaxValue = kDownloaded,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:IwaComponentUpdateSource)
 
 inline constexpr std::string_view kIwaKeyDistributionComponentUpdateSource =
     "WebApp.Isolated.KeyDistributionComponent.UpdateSource";
