@@ -113,7 +113,9 @@ class OmniboxPopupPresenterBase {
   void ShowWidget(base::TimeTicks show_widget_time);
 
   // Callback for when the visual state is ready.
-  void OnVisualStateReady(base::TimeTicks show_widget_time, bool success);
+  void OnVisualStateReady(base::TimeTicks show_widget_time,
+                          bool from_fallback,
+                          bool success);
 
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget();
