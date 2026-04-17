@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.TEXT_APPEARANCE;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
@@ -936,6 +937,7 @@ public class EntityEditorModuleTest {
                 assertFalse(item.model.get(SHOW_BACKGROUND));
                 assertFalse(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
                 assertFalse(item.model.get(NOTICE_VISIBLE));
+                assertEquals(R.style.TextAppearance_ErrorCaption, item.model.get(TEXT_APPEARANCE));
                 return;
             }
         }

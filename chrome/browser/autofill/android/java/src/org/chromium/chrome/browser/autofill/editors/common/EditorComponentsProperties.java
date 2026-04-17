@@ -108,8 +108,15 @@ public class EditorComponentsProperties {
         public static final WritableBooleanPropertyKey NOTICE_VISIBLE =
                 new WritableBooleanPropertyKey("notice_visible");
 
+        public static final ReadableIntPropertyKey TEXT_APPEARANCE =
+                new ReadableIntPropertyKey("text_appearance");
+
         public static final PropertyKey[] NOTICE_ALL_KEYS = {
-            NOTICE_TEXT, SHOW_BACKGROUND, IMPORTANT_FOR_ACCESSIBILITY, NOTICE_VISIBLE
+            NOTICE_TEXT,
+            SHOW_BACKGROUND,
+            IMPORTANT_FOR_ACCESSIBILITY,
+            NOTICE_VISIBLE,
+            TEXT_APPEARANCE
         };
     }
 

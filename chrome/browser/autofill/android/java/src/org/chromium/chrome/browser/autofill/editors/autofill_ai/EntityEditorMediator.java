@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.TEXT_APPEARANCE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.isEditable;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.validateForm;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsUtil.scrollToFieldWithErrorMessage;
@@ -369,6 +370,7 @@ class EntityEditorMediator {
                         .with(IMPORTANT_FOR_ACCESSIBILITY, false)
                         // TODO: crbug.com/476755159 - Implement dynamic visibility logic.
                         .with(NOTICE_VISIBLE, false)
+                        .with(TEXT_APPEARANCE, R.style.TextAppearance_ErrorCaption)
                         .build(),
                 /* isFullLine= */ true);
     }
