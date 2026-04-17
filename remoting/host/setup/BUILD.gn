@@ -48,10 +48,13 @@ source_set("common") {
     "//services/network/public/mojom",
   ]
 
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     sources += [
+      "daemon_controller_delegate_linux_multi_process.cc",
+      "daemon_controller_delegate_linux_multi_process.h",
       "daemon_controller_delegate_linux_single_process.cc",
       "daemon_controller_delegate_linux_single_process.h",
+      "daemon_controller_linux.cc",
     ]
   }
 

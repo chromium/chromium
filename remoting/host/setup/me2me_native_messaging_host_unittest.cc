@@ -182,6 +182,7 @@ class MockDaemonControllerDelegate : public DaemonController::Delegate {
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
+  bool is_privileged() const override;
 };
 
 MockDaemonControllerDelegate::MockDaemonControllerDelegate() = default;
@@ -236,6 +237,10 @@ MockDaemonControllerDelegate::GetUsageStatsConsent() {
   consent.allowed = true;
   consent.set_by_policy = true;
   return consent;
+}
+
+bool MockDaemonControllerDelegate::is_privileged() const {
+  return true;
 }
 
 class Me2MeNativeMessagingHostTest : public testing::Test {
@@ -364,10 +369,9 @@ void Me2MeNativeMessagingHostTest::StartHost() {
                              base::Unretained(this))),
           test_url_loader_factory_);
 
-  std::unique_ptr<remoting::Me2MeNativeMessagingHost> host(
-      new Me2MeNativeMessagingHost(false, 0, std::move(context),
-                                   daemon_controller, pairing_registry,
-                                   std::move(oauth_client)));
+  auto host = std::make_unique<Me2MeNativeMessagingHost>(
+      0, std::move(context), daemon_controller, pairing_registry,
+      std::move(oauth_client));
   host->Start(native_messaging_pipe_.get());
 
   native_messaging_pipe_->Start(std::move(host), std::move(channel));

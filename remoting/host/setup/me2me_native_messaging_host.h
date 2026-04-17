@@ -37,7 +37,6 @@ class LogMessageHandler;
 class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
  public:
   Me2MeNativeMessagingHost(
-      bool needs_elevation,
       intptr_t parent_window_handle,
       std::unique_ptr<ChromotingHostContext> host_context,
       scoped_refptr<DaemonController> daemon_controller,
@@ -116,15 +115,11 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
   // Returns whether the request was successfully sent to the elevated host.
   DelegationResult DelegateToElevatedHost(base::DictValue message);
 
-  bool needs_elevation_;
-
-#if BUILDFLAG(IS_WIN)
   // Controls the lifetime of the elevated native messaging host process.
   std::unique_ptr<ElevatedNativeMessagingHost> elevated_host_;
 
   // Handle of the parent window.
   intptr_t parent_window_handle_;
-#endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<extensions::NativeMessageHost::Client> client_;
   std::unique_ptr<ChromotingHostContext> host_context_;

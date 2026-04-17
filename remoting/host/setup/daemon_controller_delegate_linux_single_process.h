@@ -35,6 +35,7 @@ class DaemonControllerDelegateLinuxSingleProcess
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
+  bool is_privileged() const override;
 
   // If |start_host| is true (the default), then SetConfigAndStart includes
   // the final step of starting the host (this step requires root, and hence

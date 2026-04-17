@@ -323,6 +323,13 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
   return consent;
 }
 
+bool DaemonControllerDelegateMac::is_privileged() const {
+  // Note: the daemon controller actually runs the helper script elevated, so
+  // the daemon controller itself is always privileged to perform state-changing
+  // operations.
+  return true;
+}
+
 scoped_refptr<DaemonController> DaemonController::Create() {
   return new DaemonController(
       base::WrapUnique(new DaemonControllerDelegateMac()));

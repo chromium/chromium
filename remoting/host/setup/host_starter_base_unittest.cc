@@ -69,6 +69,7 @@ class TestDaemonControllerDelegate : public DaemonController::Delegate {
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
+  bool is_privileged() const override;
 
   // Methods used for controlling behavior of the fake instance.
   void set_result_for_config_and_start(DaemonController::AsyncResult result) {
@@ -132,6 +133,10 @@ DaemonController::UsageStatsConsent
 TestDaemonControllerDelegate::GetUsageStatsConsent() {
   ADD_FAILURE() << "Unexpected call to GetUsageStatsConsent()";
   return DaemonController::UsageStatsConsent();
+}
+
+bool TestDaemonControllerDelegate::is_privileged() const {
+  return true;
 }
 
 class TestHostStarter : public HostStarterBase {

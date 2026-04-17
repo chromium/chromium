@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -56,6 +57,10 @@ DaemonController::DaemonController(std::unique_ptr<Delegate> delegate)
   delegate_task_runner_ =
       delegate_thread_->StartWithType(base::MessagePumpType::DEFAULT);
 #endif
+}
+
+bool DaemonController::is_privileged() const {
+  return delegate_->is_privileged();
 }
 
 DaemonController::State DaemonController::GetState() {
@@ -250,5 +255,11 @@ void DaemonController::ServiceNextRequest() {
     servicing_request_ = true;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+scoped_refptr<DaemonController> DaemonController::Create() {
+  NOTREACHED();
+}
+#endif
 
 }  // namespace remoting

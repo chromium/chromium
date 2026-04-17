@@ -35,9 +35,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
 const int kElevatedHostTimeoutSeconds = 300;
-#endif  // BUILDFLAG(IS_WIN)
 
 // Features supported in addition to the base protocol.
 constexpr const char* kSupportedFeatures[] = {
@@ -64,16 +62,12 @@ std::optional<base::DictValue> ConfigDictionaryFromMessage(
 namespace remoting {
 
 Me2MeNativeMessagingHost::Me2MeNativeMessagingHost(
-    bool needs_elevation,
     intptr_t parent_window_handle,
     std::unique_ptr<ChromotingHostContext> host_context,
     scoped_refptr<DaemonController> daemon_controller,
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
     std::unique_ptr<OAuthClient> oauth_client)
-    : needs_elevation_(needs_elevation),
-#if BUILDFLAG(IS_WIN)
-      parent_window_handle_(parent_window_handle),
-#endif
+    : parent_window_handle_(parent_window_handle),
       host_context_(std::move(host_context)),
       daemon_controller_(daemon_controller),
       pairing_registry_(pairing_registry),
@@ -182,7 +176,7 @@ void Me2MeNativeMessagingHost::ProcessClearPairedClients(
     base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  if (needs_elevation_) {
+  if (!daemon_controller_->is_privileged()) {
     if (DelegateToElevatedHost(std::move(message)) != DELEGATION_SUCCESS) {
       SendBooleanResult(std::move(response), false);
     }
@@ -203,7 +197,7 @@ void Me2MeNativeMessagingHost::ProcessDeletePairedClient(
     base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  if (needs_elevation_) {
+  if (!daemon_controller_->is_privileged()) {
     if (DelegateToElevatedHost(std::move(message)) != DELEGATION_SUCCESS) {
       SendBooleanResult(std::move(response), false);
     }
@@ -270,7 +264,7 @@ void Me2MeNativeMessagingHost::ProcessUpdateDaemonConfig(
     base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  if (needs_elevation_) {
+  if (!daemon_controller_->is_privileged()) {
     DelegationResult result = DelegateToElevatedHost(std::move(message));
     switch (result) {
       case DELEGATION_SUCCESS:
@@ -337,7 +331,7 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(base::DictValue message,
                                                   base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  if (needs_elevation_) {
+  if (!daemon_controller_->is_privileged()) {
     DelegationResult result = DelegateToElevatedHost(std::move(message));
     switch (result) {
       case DELEGATION_SUCCESS:
@@ -375,7 +369,7 @@ void Me2MeNativeMessagingHost::ProcessStopDaemon(base::DictValue message,
                                                  base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  if (needs_elevation_) {
+  if (!daemon_controller_->is_privileged()) {
     DelegationResult result = DelegateToElevatedHost(std::move(message));
     switch (result) {
       case DELEGATION_SUCCESS:
@@ -560,12 +554,10 @@ void Me2MeNativeMessagingHost::OnError(const std::string& error_message) {
   client_->CloseChannel(std::string());
 }
 
-#if BUILDFLAG(IS_WIN)
-
 Me2MeNativeMessagingHost::DelegationResult
 Me2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  DCHECK(needs_elevation_);
+  DCHECK(!daemon_controller_->is_privileged());
 
   if (!elevated_host_) {
     elevated_host_ = std::make_unique<ElevatedNativeMessagingHost>(
@@ -589,14 +581,5 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
       return DELEGATION_FAILED;
   }
 }
-
-#else  // BUILDFLAG(IS_WIN)
-
-Me2MeNativeMessagingHost::DelegationResult
-Me2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
-  NOTREACHED();
-}
-
-#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

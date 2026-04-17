@@ -272,14 +272,13 @@ DaemonControllerDelegateLinuxSingleProcess::GetUsageStatsConsent() {
   return consent;
 }
 
+bool DaemonControllerDelegateLinuxSingleProcess::is_privileged() const {
+  return true;
+}
+
 void DaemonControllerDelegateLinuxSingleProcess::set_start_host_after_setup(
     bool start_host) {
   start_host_after_setup = start_host;
-}
-
-scoped_refptr<DaemonController> DaemonController::Create() {
-  return new DaemonController(
-      base::WrapUnique(new DaemonControllerDelegateLinuxSingleProcess()));
 }
 
 }  // namespace remoting

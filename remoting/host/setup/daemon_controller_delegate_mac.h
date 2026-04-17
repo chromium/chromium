@@ -39,6 +39,7 @@ class DaemonControllerDelegateMac : public DaemonController::Delegate {
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
+  bool is_privileged() const override;
 
  private:
   std::unique_ptr<mac::PermissionWizard> permission_wizard_;

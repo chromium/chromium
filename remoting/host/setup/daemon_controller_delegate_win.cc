@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/process/process_info.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "remoting/base/branding.h"
@@ -392,6 +393,10 @@ DaemonControllerDelegateWin::GetUsageStatsConsent() {
   }
 
   return consent;
+}
+
+bool DaemonControllerDelegateWin::is_privileged() const {
+  return base::IsCurrentProcessElevated();
 }
 
 void DaemonControllerDelegateWin::CheckPermission(
