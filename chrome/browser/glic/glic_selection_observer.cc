@@ -400,11 +400,13 @@ void GlicSelectionObserver::UpdateSelectionState(
       selection_widget_->CloseWithReason(
           views::Widget::ClosedReason::kLostFocus);
     }
-    if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
-      controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
-                                   /*anchored_message_text=*/std::string(),
-                                   GlicNudgeActivity::kNudgeDismissed,
-                                   base::DoNothing());
+    if (bwi) {
+      if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
+        controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
+                                     /*anchored_message_text=*/std::string(),
+                                     GlicNudgeActivity::kNudgeDismissed,
+                                     base::DoNothing());
+      }
     }
 
     if (has_sent_selection_context_ && glic_keyed_service_) {
@@ -418,6 +420,10 @@ void GlicSelectionObserver::UpdateSelectionState(
       has_sent_selection_context_ = false;
     }
 
+    return;
+  }
+
+  if (!bwi) {
     return;
   }
 
