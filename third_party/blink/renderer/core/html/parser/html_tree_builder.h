@@ -27,7 +27,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_
 
+#include <optional>
+
 #include "base/dcheck_is_on.h"
+#include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
@@ -68,6 +72,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   CustomElementRegistry* registry,
                   StreamingSanitizer*,
                   ParserRootInsertionPoint* root_insertion_point);
+
+  CORE_EXPORT static void ResetCachedFeaturesForTesting();
 
  private:
   HTMLTreeBuilder(HTMLDocumentParser*,
@@ -118,7 +124,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   // Synchronously flush pending text and queued tasks, possibly creating more
   // DOM nodes. Flushing pending text depends on |mode|.
-  void Flush() { tree_.Flush(); }
+  void Flush();
 
   void SetShouldSkipLeadingNewline(bool should_skip) {
     should_skip_leading_newline_ = should_skip;
@@ -221,7 +227,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   void ParseError(AtomicHTMLToken*);
 
   InsertionMode GetInsertionMode() const { return insertion_mode_; }
-  void SetInsertionMode(InsertionMode mode) { insertion_mode_ = mode; }
+  void SetInsertionMode(InsertionMode mode);
 
   void ResetInsertionModeAppropriately();
 
@@ -260,6 +266,16 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#insertion-mode
   InsertionMode insertion_mode_;
+
+  // The time when we last successfully flushed in kTextMode.
+  // Used to implement incremental backoff for flushes.
+  // `nullopt` indicates that no flush has occurred yet in the current kTextMode
+  // session.
+  std::optional<base::TimeTicks> last_text_mode_flush_time_;
+
+  // The current interval between flushes in kTextMode.
+  // This doubles with each flush up to a maximum limit.
+  base::TimeDelta current_text_mode_flush_interval_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#original-insertion-mode
   InsertionMode original_insertion_mode_;

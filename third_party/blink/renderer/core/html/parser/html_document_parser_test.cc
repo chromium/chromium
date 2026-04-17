@@ -10,10 +10,12 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 #include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
@@ -22,6 +24,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -49,7 +52,8 @@ class HTMLDocumentParserTest
 
  protected:
   HTMLDocumentParserTest()
-      : original_force_synchronous_parsing_for_testing_(
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        original_force_synchronous_parsing_for_testing_(
             Document::ForceSynchronousParsingForTesting()) {
     Document::SetForceSynchronousParsingForTesting(Policy() ==
                                                    kForceSynchronousParsing);
@@ -112,6 +116,149 @@ TEST_P(HTMLDocumentParserTest, StopThenPrepareToStopShouldNotCrash) {
   // practice it can happen (e.g. if navigation is aborted).
   parser->StopParsing();
   parser->PrepareToStopParsing();
+}
+
+TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlush) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["initial_interval"] = "16ms";
+  params["max_interval"] = "160ms";
+  params["multiplier"] = "2.0";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kDeferTreeBuilderFlush, params);
+  HTMLTreeBuilder::ResetCachedFeaturesForTesting();
+  auto& document = To<HTMLDocument>(GetDocument());
+  if (document.documentElement()) {
+    document.removeChild(document.documentElement());
+  }
+  auto* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  // Append a chunk of data with a script tag (kTextMode) and run the
+  // tasks that were queued by Flush() without advancing the clock.
+  parser->AppendBytes(base::byte_span_from_cstring("<script>aaa"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // The first flush in kTextMode is allowed immediately.
+  Element* script = document.QuerySelector(AtomicString("script"));
+  ASSERT_TRUE(script);
+  ASSERT_TRUE(script->firstChild());
+  EXPECT_EQ(Node::kTextNode, script->firstChild()->getNodeType());
+  EXPECT_EQ("aaa", script->firstChild()->nodeValue());
+
+  // Append a second chunk. Flushes should now be deferred.
+  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // Text node should still only contain "aaa".
+  EXPECT_EQ("aaa", script->firstChild()->nodeValue());
+
+  // Fast forward by more than the initial interval (16ms).
+  task_environment().FastForwardBy(base::Milliseconds(20));
+  parser->AppendBytes(base::byte_span_from_cstring("ccc"));
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // Now it should contain "aaabbbccc".
+  EXPECT_EQ(1u, script->childNodes()->length());
+  EXPECT_EQ("aaabbbccc", script->firstChild()->nodeValue());
+
+  // Append a fourth chunk. Flushes should now be deferred again because the
+  // interval doubled to 32ms.
+  parser->AppendBytes(base::byte_span_from_cstring("ddd"));
+  // Check that it is deferred.
+  EXPECT_EQ("aaabbbccc", script->firstChild()->nodeValue());
+
+  // Now close the script. Leaving kTextMode should cause everything to be
+  // flushed.
+  parser->AppendBytes(base::byte_span_from_cstring("</script>"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  ASSERT_TRUE(script->firstChild());
+  EXPECT_EQ(Node::kTextNode, script->firstChild()->getNodeType());
+  EXPECT_EQ("aaabbbcccddd", script->firstChild()->nodeValue());
+}
+
+TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushEOF) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["initial_interval"] = "16ms";
+  params["max_interval"] = "160ms";
+  params["multiplier"] = "2.0";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kDeferTreeBuilderFlush, params);
+  HTMLTreeBuilder::ResetCachedFeaturesForTesting();
+  auto& document = To<HTMLDocument>(GetDocument());
+  if (document.documentElement()) {
+    document.removeChild(document.documentElement());
+  }
+  auto* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  // Append a chunk of data with a script tag (kTextMode) and run the tasks
+  // that were queued by Flush() without advancing the clock.
+  parser->AppendBytes(base::byte_span_from_cstring("<script>aaa"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // The first flush in kTextMode is allowed immediately.
+  Element* script = document.QuerySelector(AtomicString("script"));
+  ASSERT_TRUE(script);
+  ASSERT_TRUE(script->firstChild());
+  EXPECT_EQ("aaa", script->firstChild()->nodeValue());
+
+  // Append a second chunk (this should be deferred).
+  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  // Should still be "aaa".
+  EXPECT_EQ("aaa", script->firstChild()->nodeValue());
+
+  // Close the stream without an explicit end tag to make sure the text node is
+  // still created.
+  static_cast<DocumentParser*>(parser)->Finish();
+
+  // Run any queued tasks without advancing the clock.
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  ASSERT_TRUE(script->firstChild());
+  EXPECT_EQ(Node::kTextNode, script->firstChild()->getNodeType());
+  EXPECT_EQ("aaabbb", script->firstChild()->nodeValue());
+}
+
+TEST_P(HTMLDocumentParserTest, DeferTreeBuilderFlushDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kDeferTreeBuilderFlush);
+  HTMLTreeBuilder::ResetCachedFeaturesForTesting();
+  auto& document = To<HTMLDocument>(GetDocument());
+  if (document.documentElement()) {
+    document.removeChild(document.documentElement());
+  }
+  auto* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  // With the flush deferring feature disabled, flushes in kTextMode should
+  // happen immediately.
+  parser->AppendBytes(base::byte_span_from_cstring("<script>aaa"));
+  parser->Flush();
+  // Run the tasks that were queued by Flush() without advancing the clock.
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  Element* script = document.QuerySelector(AtomicString("script"));
+  ASSERT_TRUE(script);
+  ASSERT_TRUE(script->firstChild());
+  EXPECT_EQ(Node::kTextNode, script->firstChild()->getNodeType());
+  EXPECT_EQ("aaa", script->firstChild()->nodeValue());
+
+  // Append a second chunk. It should also flush immediately.
+  parser->AppendBytes(base::byte_span_from_cstring("bbb"));
+  parser->Flush();
+  task_environment().FastForwardBy(base::TimeDelta());
+
+  EXPECT_EQ("aaabbb", script->firstChild()->nodeValue());
 }
 
 TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterStopParsing) {

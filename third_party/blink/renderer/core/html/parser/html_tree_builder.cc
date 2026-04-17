@@ -28,6 +28,8 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -77,7 +79,59 @@ namespace {
 inline bool IsHTMLSpaceOrReplacementCharacter(UChar character) {
   return IsHTMLSpace<UChar>(character) || character == kReplacementCharacter;
 }
+
+enum class FeatureResetMode {
+  kUseCached,
+  kResetForTesting,
+};
+
+bool DeferTreeBuilderFlushEnabled(
+    FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
+  static bool kEnabled =
+      base::FeatureList::IsEnabled(features::kDeferTreeBuilderFlush);
+  if (reset_mode == FeatureResetMode::kResetForTesting) {
+    kEnabled = base::FeatureList::IsEnabled(features::kDeferTreeBuilderFlush);
+  }
+  return kEnabled;
+}
+
+base::TimeDelta DeferTreeBuilderFlushInitialInterval(
+    FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
+  static base::TimeDelta kInterval =
+      features::kDeferTreeBuilderFlushInitialInterval.Get();
+  if (reset_mode == FeatureResetMode::kResetForTesting) {
+    kInterval = features::kDeferTreeBuilderFlushInitialInterval.Get();
+  }
+  return kInterval;
+}
+
+base::TimeDelta DeferTreeBuilderFlushMaxInterval(
+    FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
+  static base::TimeDelta kInterval =
+      features::kDeferTreeBuilderFlushMaxInterval.Get();
+  if (reset_mode == FeatureResetMode::kResetForTesting) {
+    kInterval = features::kDeferTreeBuilderFlushMaxInterval.Get();
+  }
+  return kInterval;
+}
+
+double DeferTreeBuilderFlushMultiplier(
+    FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
+  static double kMultiplier = features::kDeferTreeBuilderFlushMultiplier.Get();
+  if (reset_mode == FeatureResetMode::kResetForTesting) {
+    kMultiplier = features::kDeferTreeBuilderFlushMultiplier.Get();
+  }
+  return kMultiplier;
+}
+
 }  // namespace
+
+void HTMLTreeBuilder::ResetCachedFeaturesForTesting() {
+  DeferTreeBuilderFlushEnabled(FeatureResetMode::kResetForTesting);
+  DeferTreeBuilderFlushInitialInterval(FeatureResetMode::kResetForTesting);
+  DeferTreeBuilderFlushMaxInterval(FeatureResetMode::kResetForTesting);
+  DeferTreeBuilderFlushMultiplier(FeatureResetMode::kResetForTesting);
+}
 
 static TextPosition UninitializedPositionValue1() {
   return TextPosition(OrdinalNumber::FromOneBasedInt(-1),
@@ -1874,6 +1928,13 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
   }
 }
 
+void HTMLTreeBuilder::SetInsertionMode(InsertionMode mode) {
+  if (mode == kTextMode && insertion_mode_ != kTextMode) {
+    last_text_mode_flush_time_ = std::nullopt;
+  }
+  insertion_mode_ = mode;
+}
+
 void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#reset-the-insertion-mode-appropriately
   bool last = false;
@@ -3115,6 +3176,40 @@ void HTMLTreeBuilder::Finished() {
 #endif
   // Warning, this may detach the parser. Do not do anything else after this.
   tree_.FinishedParsing();
+}
+
+void HTMLTreeBuilder::Flush() {
+  // In kTextMode (raw text elements like script, style, etc.), character
+  // data is still accumulating and will be flushed when the closing end tag
+  // arrives. Skipping the flush here avoids O(n^2) string copies.
+  // However, to avoid starving incremental rendering for large text blocks,
+  // we use an exponential backoff strategy.
+  if (insertion_mode_ == kTextMode && DeferTreeBuilderFlushEnabled()) {
+    base::TimeTicks now = base::TimeTicks::Now();
+
+    // The first Flush() is allowed immediately and starts the throttling.
+    if (!last_text_mode_flush_time_.has_value()) {
+      last_text_mode_flush_time_ = now;
+      current_text_mode_flush_interval_ =
+          DeferTreeBuilderFlushInitialInterval();
+      tree_.Flush();
+      return;
+    }
+
+    // Each throttled flush extends the timer for the next flush.
+    if (now - *last_text_mode_flush_time_ >=
+        current_text_mode_flush_interval_) {
+      last_text_mode_flush_time_ = now;
+      current_text_mode_flush_interval_ = std::min(
+          current_text_mode_flush_interval_ * DeferTreeBuilderFlushMultiplier(),
+          DeferTreeBuilderFlushMaxInterval());
+      tree_.Flush();
+      return;
+    }
+    return;
+  }
+
+  tree_.Flush();
 }
 
 void HTMLTreeBuilder::ParseError(AtomicHTMLToken*) {}

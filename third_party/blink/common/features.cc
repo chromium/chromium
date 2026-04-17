@@ -480,6 +480,34 @@ BASE_FEATURE(kDeclarativeCSSModulesUseDataURI,
 
 BASE_FEATURE(kDataUrlWorkerOpaqueOrigin, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, HTMLTreeBuilder::Flush() will be throttled in kTextMode
+// to reduce O(n^2) string copies.
+// The first flush will always be allowed to complete immediately, then
+// subsequent flushes will be throttled and will backoff exponentially up to a
+// "max_interval". The "initial_interval" is the delay introduced after the
+// first flush and is increased by "multiplier" for each subsequent flushes.
+// See https://crbug.com/500385603 for more context and how the numbers were
+// selected.
+BASE_FEATURE(kDeferTreeBuilderFlush, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDeferTreeBuilderFlushInitialInterval,
+                   &kDeferTreeBuilderFlush,
+                   "initial_interval",
+                   base::Milliseconds(16));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDeferTreeBuilderFlushMaxInterval,
+                   &kDeferTreeBuilderFlush,
+                   "max_interval",
+                   base::Seconds(2));
+
+BASE_FEATURE_PARAM(double,
+                   kDeferTreeBuilderFlushMultiplier,
+                   &kDeferTreeBuilderFlush,
+                   "multiplier",
+                   2.0);
+
 BASE_FEATURE(kDeferRendererTasksAfterInput, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kDeferRendererTasksAfterInputPolicyParamName[] = "policy";
