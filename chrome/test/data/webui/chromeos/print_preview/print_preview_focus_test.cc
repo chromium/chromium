@@ -87,3 +87,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogFocusTest,
                        EscapeSearchBox) {
   RunTestCase("EscapeSearchBox");
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogFocusTest,
+                       SearchDestinationsKorean) {
+  RunTestCase("SearchDestinationsKorean");
+}

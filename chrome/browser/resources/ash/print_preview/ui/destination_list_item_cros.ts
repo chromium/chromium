@@ -13,7 +13,7 @@ import '/strings.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
+import {removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Destination} from '../data/destination_cros.js';
@@ -128,7 +128,7 @@ export class PrintPreviewDestinationListItemElement extends
     const matches = !this.searchQuery ?
         [] :
         this.destination.extraPropertiesToMatch.filter(
-            p => p.match(this.searchQuery!));
+            p => stripDiacritics(p).match(this.searchQuery!));
     this.searchHint_ = matches.length === 0 ?
         (this.destination.extraPropertiesToMatch.find(p => !!p) || '') :
         matches.join(' ');
