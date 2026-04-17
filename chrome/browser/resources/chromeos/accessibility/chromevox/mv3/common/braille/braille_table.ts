@@ -5,23 +5,14 @@
 /**
  * @fileoverview Holds information about a braille table.
  */
+import {BrailleTable as AshBrailleTable} from '/chromevox/mv3/ash/common/braille_table.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from '../msgs.js';
 
 export namespace BrailleTable {
-  export interface Table {
-    locale: string;
-    dots: string;
-    id: string;
-    grade?: string;
-    variant?: string;
-    fileNames: string;
-    enDisplayName?: string;
-    alwaysUseEnDisplayName: boolean;
-  }
-
   export const TABLE_PATH = 'chromevox/third_party/liblouis/tables.json';
+  export type Table = AshBrailleTable;
 
   /**
    * Retrieves a list of all available braille tables.

@@ -15,6 +15,8 @@ import './ax_annotations_section.js';
 import './bluetooth_braille_display_ui.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import type {BrailleTable} from 'chrome://resources/ash/common/accessibility/braille_table.js';
+import {JP_BRAILLE_TENJI_TABLE} from 'chrome://resources/ash/common/accessibility/braille_table.js';
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -74,20 +76,6 @@ interface TtsHandlerVoice {
   displayName: string;
   remote: boolean;
   extensionId: string;
-}
-
-/**
- * Represents a braille table from liblouis.
- */
-interface BrailleTable {
-  locale: string;
-  dots: string;
-  id: string;
-  grade?: string;
-  variant?: string;
-  fileNames: string;
-  enDisplayName?: string;
-  alwaysUseEnDisplayName: boolean;
 }
 
 export interface SettingsChromeVoxSubpageElement {
@@ -338,6 +326,12 @@ export class SettingsChromeVoxSubpageElement extends
         value: loadTimeData.getBoolean('mainNodeAnnotationsEnabled'),
         readOnly: true,
       },
+
+      japaneseBrailleEnabled_: {
+        type: String,
+        value: loadTimeData.getBoolean('japaneseBrailleEnabled'),
+        readOnly: true,
+      },
     };
   }
 
@@ -365,6 +359,7 @@ export class SettingsChromeVoxSubpageElement extends
   private developerOptionsExpanded_: boolean;
   private readonly eventStreamFilters_: string[];
   private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
+  private readonly japaneseBrailleEnabled_: boolean;
 
   // Regular expressions that will match against a voice name if it contains a
   // speaker ID in it.
@@ -530,7 +525,12 @@ export class SettingsChromeVoxSubpageElement extends
     xhr.open('GET', 'static/liblouis/tables.json', true);
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        const tables: BrailleTable[] = JSON.parse(xhr.responseText);
+        let tables: BrailleTable[] = JSON.parse(xhr.responseText);
+        if (this.japaneseBrailleEnabled_) {
+          tables = tables.filter(
+              (table: BrailleTable) => table.id !== 'ja-kantenji');
+          tables.push(JP_BRAILLE_TENJI_TABLE);
+        }
         this.set('brailleTables_', preprocess(tables));
       }
     };

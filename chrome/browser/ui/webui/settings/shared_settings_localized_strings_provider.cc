@@ -66,6 +66,12 @@ void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "mainNodeAnnotationsEnabled",
       base::FeatureList::IsEnabled(features::kMainNodeAnnotations));
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddBoolean(
+      "japaneseBrailleEnabled",
+      base::FeatureList::IsEnabled(
+          features::kAccessibilityChromeVoxJapaneseBraille));
+#endif
 }
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {

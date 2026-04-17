@@ -127,6 +127,7 @@ web_component_files_ts = [
 ]
 
 ts_files_ts = [
+  "accessibility/braille_table.ts",
   "accessibility/macro_names.ts",
   "accessibility/facial_gestures.ts",
   "bluetooth/bluetooth_metrics_utils.ts",

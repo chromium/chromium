@@ -5,6 +5,7 @@
 /**
  * @fileoverview Keeps track of the current braille translators.
  */
+import {JP_BRAILLE_TENJI_TABLE} from '/chromevox/mv3/ash/common/braille_table.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BrailleTable} from '../../common/braille/braille_table.js';
@@ -71,9 +72,16 @@ export class BrailleTranslatorManager {
     this.changeListeners_.push(listener);
   }
 
-  private useTenjiTranslator_(_: string): boolean {
-    // TODO(crbug.com/500394286): Implement this.
-    return false;
+  private getCurrentLocale_(): string[] {
+    return chrome.i18n.getMessage('@@ui_locale').split(/[_-]/);
+  }
+
+  private useTenjiTranslator_(tableId: string): boolean {
+    // Tenji is only used for Japanese. So use it when no table is specified and
+    // the current locale is Japanese, or the specified table is the Japanese
+    // tenji table.
+    return (!tableId && this.getCurrentLocale_()[0] === 'ja') ||
+        (tableId === JP_BRAILLE_TENJI_TABLE.id);
   }
 
   /**
@@ -100,7 +108,7 @@ export class BrailleTranslatorManager {
       const tenjiTranslator = new TenjiTranslator();
       try {
         await tenjiTranslator.init();
-        // TODO(crbug.com/500394286) this.defaultTableId_ = ...;
+        this.defaultTableId_ = JP_BRAILLE_TENJI_TABLE.id;
         this.defaultTranslator_ = tenjiTranslator;
         this.expandingTranslator_ =
             new ExpandingBrailleTranslator(tenjiTranslator, null);
@@ -127,7 +135,7 @@ export class BrailleTranslatorManager {
     let table = BrailleTable.forId(tables, brailleTable);
     if (!table) {
       // Match table against current locale.
-      const currentLocale = chrome.i18n.getMessage('@@ui_locale').split(/[_-]/);
+      const currentLocale = this.getCurrentLocale_();
       const major = currentLocale[0];
       const minor = currentLocale[1];
       const firstPass =

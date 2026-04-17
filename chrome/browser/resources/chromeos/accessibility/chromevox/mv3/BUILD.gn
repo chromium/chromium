@@ -188,6 +188,13 @@ js_modules = [
   "background/phonetic_data.js",
 ]
 
+copied_ts_modules = [ "ash/common/braille_table.ts" ]
+
+copy("stage_ash_braille_table") {
+  sources = [ "//ash/webui/common/resources/accessibility/braille_table.ts" ]
+  outputs = [ "$ts_build_staging_dir/ash/common/braille_table.ts" ]
+}
+
 # Root dir must be the parent directory so it can reach common/.
 ts_library("build_ts") {
   root_dir = "$ts_build_staging_dir"
@@ -197,6 +204,7 @@ ts_library("build_ts") {
 
   extra_deps = [
     #copied files
+    ":stage_ash_braille_table",
     ":stage_ts_build",
     ":stage_ts_build_sre",
   ]
@@ -234,9 +242,14 @@ ts_library("build_ts") {
     "/chromevox/mv3/third_party/sre/sre_browser.js|" +
         rebase_path("$ts_build_staging_dir/third_party/sre/sre_browser.js",
                     target_gen_dir),
+
+    # Point to the copied version of ash's braille_table.ts.
+    "/chromevox/mv3/ash/common/braille_table.js|" +
+        rebase_path("$ts_build_staging_dir/ash/common/braille_table.ts",
+                    target_gen_dir),
   ]
 
-  in_files = ts_modules + js_modules
+  in_files = ts_modules + js_modules + copied_ts_modules
 
   tsconfig_base = "../../tsconfig.base.json"
 }
