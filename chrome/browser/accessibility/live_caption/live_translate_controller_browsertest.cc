@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/live_caption/live_translate_controller.h"
+
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/accessibility/live_translate_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"

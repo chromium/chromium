@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
-#include "chrome/browser/accessibility/live_translate_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_translate_controller_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/greedy_text_stabilizer.h"

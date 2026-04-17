@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
-#include "chrome/browser/accessibility/live_translate_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"

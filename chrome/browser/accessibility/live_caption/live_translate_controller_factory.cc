@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_translate_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_translate_controller_factory.h"
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
