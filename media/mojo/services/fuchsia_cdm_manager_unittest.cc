@@ -9,16 +9,23 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/fpromise/promise.h>
+
 #include <map>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "crypto/hash.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -425,6 +432,113 @@ TEST_F(FuchsiaCdmManagerTest, EmptyOriginDirectory) {
   EXPECT_FALSE(base::PathExists(temp_path.Append(kInactiveOriginDirectory)));
   EXPECT_TRUE(base::PathExists(
       temp_path.Append(kActiveOriginDirectory).Append(kKeySystemDirectory2)));
+}
+
+TEST_F(FuchsiaCdmManagerTest, StoragePathMigration) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://example.com"));
+  const std::string kKeySystem = "com.key_system";
+  const std::string kOriginStr = kOrigin.Serialize();
+  const base::FilePath temp_path = temp_dir_.GetPath();
+
+  const std::string old_origin_hash = base::HexEncode(
+      base::byte_span_from_ref(base::PersistentHash(kOriginStr)));
+  const std::string old_key_system_hash = base::HexEncode(
+      base::byte_span_from_ref(base::PersistentHash(kKeySystem)));
+  const std::string new_origin_hash = base::HexEncode(
+      base::byte_span_from_ref(crypto::hash::Sha256(kOriginStr)));
+  const std::string new_key_system_hash = base::HexEncode(
+      base::byte_span_from_ref(crypto::hash::Sha256(kKeySystem)));
+
+  base::FilePath old_path =
+      temp_path.Append(old_origin_hash).Append(old_key_system_hash);
+  base::FilePath new_path =
+      temp_path.Append(new_origin_hash).Append(new_key_system_hash);
+
+  // 1. Feature disabled: should use old path.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kFuchsiaCdmStoragePathMigration);
+
+    auto cdm_manager = CreateFuchsiaCdmManager({kKeySystem});
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(_, _, _))
+        .WillOnce([&run_loop](uint32_t, drm::DataStoreParams,
+                              drm::KeySystem::AddDataStoreCallback callback) {
+          callback(fpromise::ok());
+          run_loop.Quit();
+        });
+
+    drm::ContentDecryptionModulePtr cdm_ptr;
+    cdm_manager->CreateAndProvision(
+        kKeySystem, kOrigin, base::BindRepeating(&CreateMockProvisionFetcher),
+        cdm_ptr.NewRequest());
+    run_loop.Run();
+
+    EXPECT_TRUE(base::PathExists(old_path));
+    EXPECT_FALSE(base::PathExists(new_path));
+  }
+
+  ASSERT_TRUE(base::DeletePathRecursively(temp_path));
+  ASSERT_TRUE(base::CreateDirectory(temp_path));
+
+  // 2. Feature enabled, no old data: should use new path.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kFuchsiaCdmStoragePathMigration);
+
+    auto cdm_manager = CreateFuchsiaCdmManager({kKeySystem});
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(_, _, _))
+        .WillOnce([&run_loop](uint32_t, drm::DataStoreParams,
+                              drm::KeySystem::AddDataStoreCallback callback) {
+          callback(fpromise::ok());
+          run_loop.Quit();
+        });
+
+    drm::ContentDecryptionModulePtr cdm_ptr;
+    cdm_manager->CreateAndProvision(
+        kKeySystem, kOrigin, base::BindRepeating(&CreateMockProvisionFetcher),
+        cdm_ptr.NewRequest());
+    run_loop.Run();
+
+    EXPECT_FALSE(base::PathExists(old_path));
+    EXPECT_TRUE(base::PathExists(new_path));
+  }
+
+  ASSERT_TRUE(base::DeletePathRecursively(temp_path));
+  ASSERT_TRUE(base::CreateDirectory(temp_path));
+
+  // 3. Feature enabled, old data exists: should migrate to new path.
+  {
+    // Pre-create old directory with some data.
+    ASSERT_TRUE(base::CreateDirectory(old_path));
+    base::WriteFile(old_path.Append("test_file"), "test_data");
+
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kFuchsiaCdmStoragePathMigration);
+
+    auto cdm_manager = CreateFuchsiaCdmManager({kKeySystem});
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_key_system(kKeySystem), AddDataStore(_, _, _))
+        .WillOnce([&run_loop](uint32_t, drm::DataStoreParams,
+                              drm::KeySystem::AddDataStoreCallback callback) {
+          callback(fpromise::ok());
+          run_loop.Quit();
+        });
+
+    drm::ContentDecryptionModulePtr cdm_ptr;
+    cdm_manager->CreateAndProvision(
+        kKeySystem, kOrigin, base::BindRepeating(&CreateMockProvisionFetcher),
+        cdm_ptr.NewRequest());
+    run_loop.Run();
+
+    EXPECT_FALSE(base::PathExists(old_path));
+    EXPECT_TRUE(base::PathExists(new_path));
+    EXPECT_TRUE(base::PathExists(new_path.Append("test_file")));
+  }
 }
 
 }  // namespace

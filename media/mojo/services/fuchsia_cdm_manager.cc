@@ -26,6 +26,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "crypto/hash.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/services/fuchsia_cdm_provisioning_fetcher_impl.h"
 #include "url/origin.h"
 
@@ -132,6 +134,10 @@ void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
 
 std::string HexEncodeHash(const std::string& name) {
   return base::HexEncode(base::byte_span_from_ref(base::PersistentHash(name)));
+}
+
+std::string HexEncodeSecureHash(const std::string& name) {
+  return base::HexEncode(base::byte_span_from_ref(crypto::hash::Sha256(name)));
 }
 
 // Returns a nullopt if storage was created successfully.
@@ -366,8 +372,41 @@ FuchsiaCdmManager::KeySystemClient* FuchsiaCdmManager::CreateKeySystemClient(
 
 base::FilePath FuchsiaCdmManager::GetStoragePath(const std::string& key_system,
                                                  const url::Origin& origin) {
-  return cdm_data_path_.Append(HexEncodeHash(origin.Serialize()))
-      .Append(HexEncodeHash(key_system));
+  std::string origin_str = origin.Serialize();
+
+  base::FilePath old_origin_path =
+      cdm_data_path_.Append(HexEncodeHash(origin_str))
+          .Append(HexEncodeHash(key_system));
+
+  if (!base::FeatureList::IsEnabled(kFuchsiaCdmStoragePathMigration)) {
+    return old_origin_path;
+  }
+
+  base::FilePath new_origin_path =
+      cdm_data_path_.Append(HexEncodeSecureHash(origin_str))
+          .Append(HexEncodeSecureHash(key_system));
+
+  // Migrate old data to the new path if necessary.
+  if (base::DirectoryExists(old_origin_path) &&
+      !base::DirectoryExists(new_origin_path)) {
+    bool migration_succeeded = base::CreateDirectory(new_origin_path);
+    migration_succeeded =
+        migration_succeeded && base::Move(old_origin_path, new_origin_path);
+
+    if (!migration_succeeded) {
+      DLOG(ERROR) << "Failed to migrate CDM storage from " << old_origin_path
+                  << " to " << new_origin_path;
+    }
+  }
+
+  // Delete old data if necessary.
+  if (base::DirectoryExists(old_origin_path)) {
+    if (!base::DeletePathRecursively(old_origin_path)) {
+      DLOG(ERROR) << "Failed to delete CDM storage at " << old_origin_path;
+    }
+  }
+
+  return new_origin_path;
 }
 
 void FuchsiaCdmManager::CreateCdm(

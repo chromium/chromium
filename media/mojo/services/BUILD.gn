@@ -229,7 +229,10 @@ component("services") {
     ]
 
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm:fuchsia.media.drm_hlcpp" ]
-    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
+    deps += [
+      "//crypto",
+      "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
+    ]
   }
 }
 
