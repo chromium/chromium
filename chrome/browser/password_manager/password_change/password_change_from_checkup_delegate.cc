@@ -62,15 +62,16 @@ bool IsValidUrl(const GURL& url) {
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
 }
 
-void CreateDummyTaskAndTiedTab(glic::GlicKeyedService* glic_service,
-                               content::WebContents* web_contents) {
+std::optional<actor::TaskId> CreateDummyTaskAndTiedTab(
+    glic::GlicKeyedService* glic_service,
+    content::WebContents* web_contents) {
   if (!glic_service || !web_contents) {
-    return;
+    return std::nullopt;
   }
   actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   if (!actor_service) {
-    return;
+    return std::nullopt;
   }
   actor::TaskId dummy_task_id = actor_service->CreateTask(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic, std::nullopt),
@@ -82,6 +83,23 @@ void CreateDummyTaskAndTiedTab(glic::GlicKeyedService* glic_service,
   CHECK(dummy_task && actuation_tab);
   dummy_task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
                      base::DoNothing());
+  return dummy_task_id;
+}
+
+void RemoveActuationTabFromTask(std::optional<actor::TaskId> task_id,
+                                content::WebContents* web_contents) {
+  if (!task_id || !web_contents) {
+    return;
+  }
+  actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  CHECK(actor_service);
+  tabs::TabInterface* actuation_tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  CHECK(actuation_tab);
+  actor::ActorTask* task = actor_service->GetTask(*task_id);
+  CHECK(task);
+  task->RemoveTab(actuation_tab->GetHandle());
 }
 
 bool IsSameOrigin(const std::u16string& credential_source_site_or_app,
@@ -363,10 +381,8 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
 
   if (new_state == actor::ActorTask::State::kFinished) {
     actor_task_state_subscription_ = {};
-    if (!client_) {
-      return;
-    }
-    CreateDummyTaskAndTiedTab(GetGlicService(), actuation_web_contents_.get());
+    dummy_task_id_ = CreateDummyTaskAndTiedTab(GetGlicService(),
+                                               actuation_web_contents_.get());
     form_waiter_ = ChangePasswordFormWaiter::Builder(
                        actuation_web_contents_.get(),
                        ChromePasswordManagerClient::FromWebContents(
@@ -388,7 +404,7 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
     return;
   }
 
-  std::u16string new_password = GeneratePassword(
+  generated_password_ = GeneratePassword(
       *form_manager->GetParsedObservedForm(),
       form_manager->GetDriver()->GetPasswordGenerationHelper());
 
@@ -398,13 +414,15 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
 
   submission_helper_ =
       std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-          actuation_web_contents_.get(), client_,
+          actuation_web_contents_.get(),
+          ChromePasswordManagerClient::FromWebContents(
+              actuation_web_contents_.get()),
           base::BindOnce(
               &PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted,
               weak_ptr_factory_.GetWeakPtr()));
 
-  submission_helper_->FillChangePasswordForm(form_manager, username_,
-                                             current_password_, new_password);
+  submission_helper_->FillChangePasswordForm(
+      form_manager, username_, current_password_, generated_password_);
 }
 
 void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
@@ -447,12 +465,11 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
 
   glic_service->CloseAndShutdown(
       actuation_web_contents_->GetPrimaryMainFrame());
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordChangeFromCheckupDelegate::InvokeVerificationFlow,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(post_submission_prompt)),
-      base::Seconds(1));
+                     std::move(post_submission_prompt)));
 }
 
 void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
@@ -475,6 +492,7 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
       // A task was created, so stopping the timer to not trigger
       // the password being saved.
       verification_timer_.Stop();
+      RegisterAutoSelectCredential(task);
     } else {
       return;
     }
@@ -492,6 +510,11 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
       logger->LogMessage(
           Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_FINISHED);
     }
+    glic::GlicKeyedService* glic_service = GetGlicService();
+    if (glic_service && actuation_web_contents_) {
+      glic_service->CloseAndShutdown(
+          actuation_web_contents_->GetPrimaryMainFrame());
+    }
     HandleMaybeSuccessfulPasswordChange();
   }
 }
@@ -502,6 +525,7 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTimeout() {
       logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT);
     }
     actor_task_state_subscription_ = {};
+    RemoveActuationTabFromTask(dummy_task_id_, actuation_web_contents_.get());
     HandleMaybeSuccessfulPasswordChange();
   }
 }

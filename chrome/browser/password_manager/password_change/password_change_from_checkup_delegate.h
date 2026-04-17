@@ -50,7 +50,10 @@ class PasswordChangeFromCheckupDelegate {
   std::optional<actor::ActorTask::State> GetFindFormTaskState() const {
     return find_form_task_state_;
   }
-
+  std::optional<actor::TaskId> GetVerificationTaskId() const {
+    return verification_task_id_;
+  }
+  std::u16string generated_password() const { return generated_password_; }
 #endif
 
  private:
@@ -79,6 +82,7 @@ class PasswordChangeFromCheckupDelegate {
 
   std::u16string username_;
   std::u16string current_password_;
+  std::u16string generated_password_;
   GURL credential_url_;
 
   std::optional<actor::TaskId> find_form_task_id_;
@@ -91,6 +95,7 @@ class PasswordChangeFromCheckupDelegate {
   std::optional<actor::ActorTask::State> find_form_task_state_ = std::nullopt;
 
   std::optional<actor::TaskId> verification_task_id_;
+  std::optional<actor::TaskId> dummy_task_id_;
   std::unique_ptr<password_manager::PasswordFormManager> saved_form_manager_;
   bool verification_task_created_ = false;
   base::OneShotTimer verification_timer_;
