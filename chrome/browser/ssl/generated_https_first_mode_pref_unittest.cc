@@ -436,7 +436,8 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
       HttpsFirstModeSetting::kDisabled);
 }
 
-// Tests the collection of settings changed metrics.
+// Tests the collection of settings changed metrics when Balanced Mode is
+// disabled.
 TEST_F(GeneratedHttpsFirstModePrefTest, SettingChangedMetricsLogged) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
@@ -449,17 +450,16 @@ TEST_F(GeneratedHttpsFirstModePrefTest, SettingChangedMetricsLogged) {
   pref.SetPref(std::make_unique<base::Value>(
                    static_cast<int>(HttpsFirstModeSetting::kEnabledFull))
                    .get());
-  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 1);
-  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", true,
-                               1);
+  histograms.ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged2",
+                                HttpsFirstModeSetting::kEnabledFull, 1);
 
   // Emulate changing the UI to disabled.
   pref.SetPref(std::make_unique<base::Value>(
                    static_cast<int>(HttpsFirstModeSetting::kDisabled))
                    .get());
-  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 2);
-  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", false,
-                               1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kDisabled, 1);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 2);
 }
 
 // Tests the collection of settings changed metrics, with the

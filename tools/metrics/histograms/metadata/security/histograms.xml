@@ -492,17 +492,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.HttpsFirstMode.SettingChanged" enum="BooleanEnabled"
-    expires_after="2025-04-15">
-  <owner>cthomp@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Records the HTTPS-First Mode preference state when it changes for a profile.
-    Recorded for regular profiles only (not for Incognito, Guest, or Sign-in
-    profiles).
-  </summary>
-</histogram>
-
 <histogram name="Security.HttpsFirstMode.SettingChanged2"
     enum="HttpsFirstModeSetting" expires_after="2026-07-05">
   <owner>cthomp@chromium.org</owner>
@@ -510,8 +499,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the HTTPS-First Mode setting state when it changes for a profile.
     Recorded for regular profiles only (not for Incognito, Guest, or Sign-in
-    profiles). Supersedes Security.HttpsFirstMode.SettingChanged after the
-    rollout of HTTPS-First Balanced Mode. Note: Compared to the original
+    profiles). Supersedes the original (superseded)
+    Security.HttpsFirstMode.SettingChanged after the rollout of HTTPS-First
+    Balanced Mode. Note: Compared to the original (superseded)
     Security.HttpsFirstMode.SettingChanged histogram, this is logged at the
     point of the UI setting changing, rather than the underlying prefs updating.
     This change was made to avoid double-counting now that the feature logic is

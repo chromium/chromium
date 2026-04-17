@@ -557,7 +557,7 @@ bool HttpsFirstModeService::UpdatePrefs(
   // default. If the feature flag is disabled, then the kEnabledFull and
   // kDisabled settings will only be mapped to the kHttpsOnlyModeEnabled pref.
   //
-  // Note: The Security.HttpsFirstMode.SettingChanged* histograms are logged
+  // Note: The Security.HttpsFirstMode.SettingChanged2 histogram is logged
   // here instead of in HttpsFirstModeService::OnHttpsFirstModePrefChanged()
   // because this will fire the pref observer _twice_, so logging the histogram
   // in the pref observer would cause double counting.
@@ -585,8 +585,8 @@ bool HttpsFirstModeService::UpdatePrefs(
   } else {
     // TODO(crbug.com/349860796): Remove old settings path once Balanced Mode
     // is launched.
-    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged",
-                              selection == HttpsFirstModeSetting::kEnabledFull);
+    base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                  selection);
     profile_->GetPrefs()->SetBoolean(
         prefs::kHttpsOnlyModeEnabled,
         selection == HttpsFirstModeSetting::kEnabledFull);

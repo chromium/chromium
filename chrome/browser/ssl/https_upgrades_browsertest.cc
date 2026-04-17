@@ -3854,8 +3854,8 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PRE_PrefStatesRecorded) {
   // Emulate changing the UI setting to Enabled. This should get recorded
   // in the histogram.
   SetUISetting(HttpsFirstModeSetting::kEnabledFull);
-  histograms()->ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged",
-                                   true, 1);
+  histograms()->ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged2",
+                                   HttpsFirstModeSetting::kEnabledFull, 1);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
                                                   "Enabled"));
 }
