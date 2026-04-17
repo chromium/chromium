@@ -62,6 +62,7 @@
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/verifier_formats.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -233,6 +234,10 @@ SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!g_verifier_format_override_for_test.has_value());
   g_verifier_format_override_for_test = format;
+  if (format == crx_file::VerifierFormat::CRX3) {
+    publisher_verification_override_ =
+        extensions::DisablePublisherKeyVerificationForTests();  // IN-TEST
+  }
 }
 
 SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::

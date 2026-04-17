@@ -35,6 +35,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_utils.h"
+#include "crypto/hash.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -224,6 +225,12 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
 
  private:
+  base::FilePath GetCrxPath(const std::string& test_path) {
+    base::FilePath test_data_dir;
+    CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    return test_data_dir.AppendASCII(test_path);
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL url = test_server_->GetURL(request.relative_url);
@@ -231,20 +238,34 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
       if (url.GetPath() == test_extension.update_path) {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
-        response->set_content(CreateUpdateManifest(
-            {UpdateManifestItem(test_extension.app_id)
-                 .version(test_extension.version)
-                 .codebase(
-                     test_server_->GetURL(test_extension.app_path).spec())}));
-        response->set_content_type("text/xml");
+        if (url.GetPath() == kInAppPaymentsApp.update_path) {
+          // SetUp() configured kInAppPaymentsApp.update_path as the gallery
+          // URL. A V4 response is needed in this case.
+          std::string contents;
+          base::ReadFileToString(GetCrxPath(test_extension.crx_path),
+                                 &contents);
+          response->set_content(CreateUpdateManifestV4(
+              {UpdateManifestItem(test_extension.app_id)
+                   .version(test_extension.version)
+                   .hash_sha256(base::HexEncode(crypto::hash::Sha256(contents)))
+                   .size(base::GetFileSize(GetCrxPath(test_extension.crx_path))
+                             .value_or(0))
+                   .codebase(
+                       test_server_->GetURL(test_extension.app_path).spec())}));
+          response->set_content_type("application/json");
+        } else {
+          response->set_content(CreateUpdateManifest(
+              {UpdateManifestItem(test_extension.app_id)
+                   .version(test_extension.version)
+                   .codebase(
+                       test_server_->GetURL(test_extension.app_path).spec())}));
+          response->set_content_type("text/xml");
+        }
         return std::move(response);
       }
       if (url.GetPath() == test_extension.app_path) {
-        base::FilePath test_data_dir;
-        base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
         std::string contents;
-        base::ReadFileToString(
-            test_data_dir.AppendASCII(test_extension.crx_path), &contents);
+        base::ReadFileToString(GetCrxPath(test_extension.crx_path), &contents);
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
         response->set_content(contents);

@@ -212,10 +212,18 @@ struct UpdateManifestItem {
     updatecheck_params.emplace("version", std::move(value));
     return std::move(*this);
   }
+  UpdateManifestItem&& size(uint64_t value) && {
+    size_ = value;
+    return std::move(*this);
+  }
 
   ExtensionId id;
   std::map<std::string, std::string> updatecheck_params;
+  uint64_t size_ = 0;
 };
+
+std::string CreateUpdateManifestV4(
+    const std::vector<UpdateManifestItem>& extensions);
 
 // A generic method to create an XML update manifest. For each extension an
 // extension ID should be provided along with parameters of the updatecheck
