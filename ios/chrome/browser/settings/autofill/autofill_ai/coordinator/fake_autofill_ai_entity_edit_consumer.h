@@ -29,10 +29,10 @@
 // User email with the account.
 @property(nonatomic, strong) NSString* userEmail;
 
-// YES if `showLoadingState` was called on the consumer.
+// YES if `setLoadingState:YES` was called on the consumer.
 @property(nonatomic, assign) BOOL showLoadingStateCalled;
 
-// YES if `hideLoadingState` was called on the consumer.
+// YES if `setLoadingState:NO` was called on the consumer.
 @property(nonatomic, assign) BOOL hideLoadingStateCalled;
 
 // YES if `didFinishSavingWithLocalFallback:` was called with NO.

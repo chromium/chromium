@@ -207,7 +207,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   BOOL isSaveAsynchronous = autofill::IsMaskedStorageSupported(
       _entityInstance->type(), _entityInstance->record_type());
   if (isSaveAsynchronous && _walletPassManager) {
-    [self.consumer showLoadingState];
+    [self.consumer setLoadingState:YES];
 
     autofill::EntityInstance originalEntity = *_entityInstance;
 
@@ -372,7 +372,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
             (std::optional<autofill::EntityInstance>)savedEntity
                            originalEntity:
                                (autofill::EntityInstance)originalEntity {
-  [self.consumer hideLoadingState];
+  [self.consumer setLoadingState:NO];
 
   if (savedEntity.has_value()) {
     _entityDataManager->AddOrUpdateEntityInstance(std::move(*savedEntity));
