@@ -724,7 +724,13 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
 }
 
 // Verifies decode audio as well as the Decode() -> ResetDecoder() sequence.
-TEST_P(AudioDecoderTest, ProduceAudioSamples) {
+// TODO(crbug.com/503857970): Flaky on Win ARM64 builders.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_ProduceAudioSamples DISABLED_ProduceAudioSamples
+#else
+#define MAYBE_ProduceAudioSamples ProduceAudioSamples
+#endif
+TEST_P(AudioDecoderTest, MAYBE_ProduceAudioSamples) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
   // Run the test multiple times with a reset back to the beginning in between.
