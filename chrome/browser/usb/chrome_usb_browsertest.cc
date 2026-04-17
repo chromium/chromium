@@ -71,7 +71,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -86,14 +86,14 @@
 #include "components/account_id/account_id_literal.h"  // nogncheck
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
 
 using ::content::JsReplace;
 using ::testing::Return;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using ::base::test::TestFuture;
 using ::extensions::Extension;
 using ::extensions::ExtensionId;
@@ -108,7 +108,7 @@ constexpr const char kTestExtensionKey[] =
     "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
     "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
     "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr uint8_t kUsbPrinterClass = 7;
@@ -138,7 +138,7 @@ constexpr auto kManagedUserAccountId =
                                             GaiaId::Literal("12345"));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Observer for an extension service worker events like start, activated, and
 // stop.
 class TestServiceWorkerContextObserver
@@ -215,7 +215,7 @@ class TestServiceWorkerContextObserver
       scoped_observation_{this};
   GURL extension_url_;
 };
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 class TestServiceWorkerConsoleObserver
     : public content::ServiceWorkerContextObserver {
@@ -1177,9 +1177,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/502280921): Enable these tests on desktop Android. They
-// currently crash on a NOTREACHED in the WebUsbServiceImpl constructor.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
                                        extensions::ExtensionBrowserTest> {
  public:
@@ -1587,6 +1585,6 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
   EXPECT_EQ(console_observer.messages().begin()->message,
             base::UTF8ToUTF16(base::StringPrintf(kWarningMessage, "connect")));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace

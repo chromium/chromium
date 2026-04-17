@@ -32,6 +32,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "build/android_buildflags.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "content/browser/bad_message.h"
@@ -440,12 +441,14 @@ void ServiceWorkerVersion::SetStatus(Status status) {
     // event handlers.
     context_->hid_delegate_observer()->UpdateHasEventHandlers(
         registration_id_, has_hid_event_handlers_);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
     // Notify the usb delegate observer if the active service worker has any usb
-    // event handlers.
+    // event handlers. This is limited to platforms that support extensions.
     context_->usb_delegate_observer()->UpdateHasEventHandlers(
         registration_id_, has_usb_event_handlers_);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
   } else if (status == REDUNDANT) {
     embedded_worker_->OnWorkerVersionDoomed();
 

@@ -14,6 +14,7 @@ import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//mojo/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -3707,13 +3708,17 @@ test("content_unittests") {
     }
   }
 
+  # Tests for platforms that support extensions. Linux requires udev.
+  if (enable_extensions_core && (!is_linux || use_udev)) {
+    sources += [ "../browser/service_worker/service_worker_usb_delegate_observer_unittest.cc" ]
+  }
+
   # HID support is not available without udev.
   is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
   if (!is_linux_without_udev && !is_android) {
     sources += [
       "../browser/hid/hid_service_unittest.cc",
       "../browser/service_worker/service_worker_hid_delegate_observer_unittest.cc",
-      "../browser/service_worker/service_worker_usb_delegate_observer_unittest.cc",
       "../browser/webauth/authenticator_impl_unittest.cc",
       "../browser/webauth/authenticator_mojom_traits_unittest.cc",
       "../browser/webauth/webauth_request_security_checker_unittest.cc",

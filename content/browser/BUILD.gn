@@ -3548,10 +3548,6 @@ source_set("browser") {
       "service_worker/service_worker_hid_delegate_observer.cc",
       "service_worker/service_worker_hid_delegate_observer.h",
 
-      # WebUSB on extension service workers is non-Android
-      "service_worker/service_worker_usb_delegate_observer.cc",
-      "service_worker/service_worker_usb_delegate_observer.h",
-
       # Most speech code is non-Android.
       "speech/network_speech_recognition_engine_impl.cc",
       "speech/network_speech_recognition_engine_impl.h",
@@ -3618,6 +3614,18 @@ source_set("browser") {
       "//ui/base",
     ]
   }
+
+  # For platforms that support extension service workers.
+  # NOTE: Fuchsia depends on this class, but probably shouldn't, as it doesn't
+  # support extensions.
+  if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android ||
+      is_fuchsia) {
+    sources += [
+      "service_worker/service_worker_usb_delegate_observer.cc",
+      "service_worker/service_worker_usb_delegate_observer.h",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [
       "//content/browser/direct_sockets/firewall_hole_delegate.cc",

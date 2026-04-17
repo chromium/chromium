@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
+#include "build/android_buildflags.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -56,8 +57,11 @@ struct ServiceWorkerContextSynchronousObserverList;
 
 #if !BUILDFLAG(IS_ANDROID)
 class ServiceWorkerHidDelegateObserver;
-class ServiceWorkerUsbDelegateObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+class ServiceWorkerUsbDelegateObserver;
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
 // A smart pointer of `ServiceWorkerClient`.
 //
@@ -565,15 +569,17 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   void SetServiceWorkerHidDelegateObserverForTesting(
       std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
   // In the service worker case, WebUSB is only available in extension service
-  // workers. Since extension isn't available in ANDROID, guard
-  // ServiceWorkerUsbDelegateObserver within non-android platforms.
+  // workers. Limit ServiceWorkerUsbDelegateObserver to platforms that support
+  // extensions.
   ServiceWorkerUsbDelegateObserver* usb_delegate_observer();
 
   void SetServiceWorkerUsbDelegateObserverForTesting(
       std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
  private:
   friend class ServiceWorkerContextCoreTest;
@@ -692,8 +698,11 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
-  std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
   base::ObserverList<TestVersionObserver> test_version_observers_;
 
