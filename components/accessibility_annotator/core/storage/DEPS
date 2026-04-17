@@ -1,3 +1,4 @@
 include_rules = [
+  "+components/os_crypt/async",
   "+net/base/registry_controlled_domains",
 ]

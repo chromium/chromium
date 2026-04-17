@@ -12,6 +12,8 @@ source_set("storage") {
     "accessibility_annotator_backend_impl.h",
     "accessibility_annotator_database.cc",
     "accessibility_annotator_database.h",
+    "content_annotations_table.cc",
+    "content_annotations_table.h",
     "intent_table.cc",
     "intent_table.h",
   ]
@@ -54,6 +56,7 @@ source_set("unit_tests") {
     "accessibility_annotation_sync_bridge_unittest.cc",
     "accessibility_annotator_backend_unittest.cc",
     "accessibility_annotator_database_unittest.cc",
+    "content_annotations_table_unittest.cc",
     "intent_table_unittest.cc",
   ]
 
@@ -61,6 +64,7 @@ source_set("unit_tests") {
     ":storage",
     ":test_support",
     "//base/test:test_support",
+    "//components/os_crypt/async/browser:test_support",
     "//components/sync:test_support",
     "//components/sync/model",
     "//components/sync/protocol",
