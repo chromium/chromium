@@ -11,7 +11,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +31,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -805,11 +803,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return The add to homescreen list item.
      */
     protected ListItem buildAddToHomescreenListItem(Tab currentTab, boolean showIcon) {
-        long addToHomeScreenStart = SystemClock.elapsedRealtime();
         ResolveInfo resolveInfo = queryWebApkResolveInfo(mContext, currentTab);
-        RecordHistogram.recordTimesHistogram(
-                "Android.PrepareMenu.OpenWebApkVisibilityCheck",
-                SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
         // When Universal Install is active, we only show this menu item if we are browsing
         // the root page of an already installed app.
