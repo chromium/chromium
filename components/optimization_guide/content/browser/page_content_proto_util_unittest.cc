@@ -2293,8 +2293,13 @@ TEST_P(PageContentProtoUtilAutofillRedactionTest,
                                             .children_nodes(0)
                                             .content_attributes()
                                             .form_control_data();
-  EXPECT_EQ(form_control_data_proto.redaction_decision(),
-            proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  if (ShouldEnableOtpRedaction()) {
+    EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD);
+  } else {
+    EXPECT_EQ(form_control_data_proto.redaction_decision(),
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  }
   EXPECT_TRUE(form_control_data_proto.field_value().empty());
 }
 

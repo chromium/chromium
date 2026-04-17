@@ -88,7 +88,7 @@ proto::RedactionDecision ConvertAutofillFieldRedactionReason(
                        REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD;
     case AutofillFieldRedactionReason::kShouldRedactForOtp:
       return form_control_data.field_value().empty()
-                 ? proto::REDACTION_DECISION_NO_REDACTION_NECESSARY
+                 ? proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD
                  : proto::REDACTION_DECISION_REDACTED_IS_OTP;
   }
 }
@@ -116,6 +116,7 @@ bool ShouldRedactContent(proto::RedactionDecision redaction_decision) {
     case proto::REDACTION_DECISION_NO_REDACTION_NECESSARY:
     case proto::REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD:
     case proto::REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD:
+    case proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD:
       return false;
 
     case proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD:
