@@ -283,8 +283,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // image. This value is reset when paint is finished and is computed if unset
   // when needed. 0 means that the size has not been computed.
   std::optional<uint64_t> viewport_size_;
-  // Whether the viewport size used is the page viewport.
-  bool uses_page_viewport_;
+
   // Are we recording an LCP candidate? True after a hard navigation until the
   // next user interaction.
   bool recording_largest_image_paint_ = true;

@@ -93,10 +93,7 @@ bool ShouldIgnoreMediaEntropy(const MediaTiming& media_timing,
 }  // namespace
 
 ImagePaintTimingDetector::ImagePaintTimingDetector(LocalFrameView* frame_view)
-    : uses_page_viewport_(
-          base::FeatureList::IsEnabled(features::kUsePageViewportInLCP)),
-      records_manager_(frame_view),
-      frame_view_(frame_view) {}
+    : records_manager_(frame_view), frame_view_(frame_view) {}
 
 void ImagePaintTimingDetector::SendRectsToHud() {
   auto* hud_layer =
@@ -418,16 +415,12 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
       frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
           gfx::RectF(image_border));
   if (!viewport_size_.has_value()) {
-    // If the flag to use page viewport is enabled, we use the page viewport
-    // (aka the main frame viewport) for all frames, including iframes. This
-    // prevents us from discarding images with size equal to the size of its
-    // embedding iframe.
+    // Use the page viewport (aka the main frame viewport) for all frames,
+    // including iframes. This prevents us from discarding images with size
+    // equal to the size of its embedding iframe.
     gfx::Rect viewport_int_rect =
-        uses_page_viewport_
-            ? frame_view_->GetPage()->GetVisualViewport().VisibleContentRect(
-                  kExcludeScrollbars)
-            : frame_view_->GetScrollableArea()->VisibleContentRect(
-                  kExcludeScrollbars);
+        frame_view_->GetPage()->GetVisualViewport().VisibleContentRect(
+            kExcludeScrollbars);
     gfx::RectF viewport =
         frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
             gfx::RectF(viewport_int_rect));

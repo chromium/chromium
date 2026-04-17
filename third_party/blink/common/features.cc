@@ -2549,10 +2549,6 @@ BASE_FEATURE(kUrgentMainFrameForInput,
 BASE_FEATURE(kURLPatternDummyURLCanonicalization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Uses page viewport instead of frame viewport in the Largest Contentful Paint
-// heuristic where images occupying the full viewport are ignored.
-BASE_FEATURE(kUsePageViewportInLCP, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use PersistentCache on either side of blink.mojom.CodeCacheHost. This feature
 // is dependent on net::HttpCache::IsSplitCacheEnabled() being true. Always use
 // IsPersistentCacheForCodeCacheEnabled() rather than querying this feature

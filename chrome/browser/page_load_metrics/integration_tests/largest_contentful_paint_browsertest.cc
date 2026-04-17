@@ -359,18 +359,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(*loading_attr, "");
 }
 
-class PageViewportInLCPTest : public MetricIntegrationTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeatures(
-        {blink::features::kUsePageViewportInLCP} /*enabled*/, {} /*disabled*/);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // TODO(crbug.com/385580803): flaky on all platforms
-IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_FullSizeImageInIframe) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddSubFrameExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
