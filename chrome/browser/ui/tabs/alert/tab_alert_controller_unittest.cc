@@ -20,10 +20,12 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace tabs {
@@ -76,6 +79,15 @@ class TabAlertControllerTest : public testing::Test {
         .WillRepeatedly(testing::Return(tab_strip_model_.get()));
     EXPECT_CALL(*browser_window_interface_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(user_data_host_));
+
+    root_action_item_ = actions::ActionItem::Builder().Build();
+    root_action_item_->AddChild(actions::ActionItem::Builder()
+                                    .SetActionId(kActionShowCookieControls)
+                                    .Build());
+    cookie_controls_coordinator_ =
+        std::make_unique<CookieControlsBubbleCoordinator>(
+            browser_window_interface_.get(), root_action_item_.get());
+
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     tab_model_ = std::make_unique<TabModel>(std::move(web_contents),
@@ -85,6 +97,8 @@ class TabAlertControllerTest : public testing::Test {
   void TearDown() override {
     // Explicitly reset the pointers to prevent them from causing the
     // BrowserTaskEnvironment to time out on destruction.
+    cookie_controls_coordinator_.reset();
+    root_action_item_.reset();
     tab_model_.reset();
     tab_strip_model_.reset();
     tab_strip_model_delegate_.reset();
@@ -110,6 +124,8 @@ class TabAlertControllerTest : public testing::Test {
   }
 
  private:
+  std::unique_ptr<actions::ActionItem> root_action_item_;
+  std::unique_ptr<CookieControlsBubbleCoordinator> cookie_controls_coordinator_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
