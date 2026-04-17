@@ -4,8 +4,40 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.ui.widget.ButtonCompat
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Fusebox.PopupMenu.Item"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/start_icon"
+        android:duplicateParentState="true"
+        android:layout_width="@dimen/fusebox_popup_item_icon_size"
+        android:layout_height="@dimen/fusebox_popup_item_icon_size"
+        android:layout_marginEnd="@dimen/fusebox_popup_item_spacing"
+        android:importantForAccessibility="no"
+        app:tint="@macro/default_icon_color" />
+
+    <TextView
+        android:id="@+id/action_text"
+        android:duplicateParentState="true"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <ImageView
+        android:id="@+id/end_icon"
+        android:duplicateParentState="true"
+        android:layout_width="@dimen/fusebox_popup_item_icon_size"
+        android:layout_height="@dimen/fusebox_popup_item_icon_size"
+        android:layout_marginStart="@dimen/fusebox_popup_item_spacing"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        app:tint="@macro/default_icon_color" />
+</LinearLayout>

@@ -15,9 +15,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -241,13 +242,13 @@ class FuseboxViewBinder {
     }
 
     private static void updateButtonVisibility(
-            PropertyModel model, ReadableBooleanPropertyKey key, Button button) {
+            PropertyModel model, ReadableBooleanPropertyKey key, View button) {
         boolean isVisible = model.get(key);
         button.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     private static void setIsEnabledAndReapplyColorFilter(
-            PropertyModel model, ReadableBooleanPropertyKey key, Button button) {
+            PropertyModel model, ReadableBooleanPropertyKey key, View button) {
         boolean isEnabled = model.get(key);
         button.setEnabled(isEnabled);
         reapplyColorFilter(button);
@@ -264,17 +265,16 @@ class FuseboxViewBinder {
      * the button is enabled. So this method should be called any time a relevant state change
      * happens to the button that would cause the color state list to return a different color.
      */
-    private static void reapplyColorFilter(Button button) {
-        // Only the start drawable needs to have special handling, all the others will always use
-        // the default tint of the button.
-        Drawable drawable = button.getCompoundDrawablesRelative()[0];
+    private static void reapplyColorFilter(View buttonView) {
+        FuseboxItemViewHolder holder = getViewHolder(buttonView);
+        ImageView imageView = holder.mActionIcon;
+        if (imageView == null) return;
+
+        Drawable drawable = imageView.getDrawable();
         if (drawable == null) return;
 
-        Context context = button.getContext();
-        // For some reason, the drawable and the button don't seem to agree on state, use the
-        // button's version, as it tracks what we would expect current setters on the button to
-        // result in.
-        int[] stateSet = button.getDrawableState();
+        Context context = buttonView.getContext();
+        int[] stateSet = buttonView.getDrawableState();
         ColorStateList tint = context.getColorStateList(R.color.default_icon_color_white_tint_list);
         @ColorInt int color = tint.getColorForState(stateSet, Color.TRANSPARENT);
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
@@ -308,24 +308,23 @@ class FuseboxViewBinder {
 
         Drawable aiModeButtonStartDrawable =
                 context.getDrawable(R.drawable.search_spark_black_24dp);
-        view.popup.mAiModeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                aiModeButtonStartDrawable, null, aiModeButtonEndDrawable, null);
+        setCustomButtonDrawables(
+                view.popup.mAiModeButton, aiModeButtonStartDrawable, aiModeButtonEndDrawable);
 
         // This drawable will be manually tinted with a filter, while all the others in this method
         // will pick up the default from the button.
         Drawable imageGenStartDrawable =
                 assumeNonNull(context.getDrawable(R.drawable.create_image_24dp)).mutate();
-        view.popup.mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                imageGenStartDrawable, null, imageGenEndDrawable, null);
+        setCustomButtonDrawables(
+                view.popup.mCreateImageButton, imageGenStartDrawable, imageGenEndDrawable);
         reapplyColorFilter(view.popup.mCreateImageButton);
 
         Drawable deepSearchStartDrawable = context.getDrawable(R.drawable.travel_explore_24dp);
-        view.popup.mDeepSearchButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                deepSearchStartDrawable, null, deepSearchEndDrawable, null);
+        setCustomButtonDrawables(
+                view.popup.mDeepSearchButton, deepSearchStartDrawable, deepSearchEndDrawable);
 
         Drawable canvasStartDrawable = context.getDrawable(R.drawable.draft_spark_24dp);
-        view.popup.mCanvasButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                canvasStartDrawable, null, canvasEndDrawable, null);
+        setCustomButtonDrawables(view.popup.mCanvasButton, canvasStartDrawable, canvasEndDrawable);
     }
 
     private static void updateModelButtons(PropertyModel model, FuseboxViewHolder view) {
@@ -352,46 +351,71 @@ class FuseboxViewBinder {
 
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         for (int i = 0; i < targetCount; i++) {
-            Button button;
+            View buttonView;
             if (i < currentCount) {
-                button = (Button) group.getChildAt(startIndex + i);
+                buttonView = group.getChildAt(startIndex + i);
             } else {
-                ButtonCompat buttonCompat =
-                        new ButtonCompat(group.getContext(), R.style.Fusebox_PopupMenu_Item);
-                buttonCompat.setAllCaps(false);
-                group.addView(buttonCompat);
-                view.popup.mButtons.add(buttonCompat);
-                button = buttonCompat;
+                buttonView =
+                        LayoutInflater.from(group.getContext())
+                                .inflate(R.layout.fusebox_list_item, group, false);
+                group.addView(buttonView);
+                view.popup.mButtons.add(buttonView);
             }
-            bindDynamicButton(button, buttonDataList.get(i), brandedColorScheme);
+            bindDynamicButton(buttonView, buttonDataList.get(i), brandedColorScheme);
         }
     }
 
     private static void bindDynamicButton(
-            Button button, PopupButtonData data, @BrandedColorScheme int brandedColorScheme) {
-        button.setOnClickListener((v) -> data.onClicked.run());
-        button.setText(data.text);
-        button.setEnabled(data.enabled);
+            View buttonView, PopupButtonData data, @BrandedColorScheme int brandedColorScheme) {
+        buttonView.setOnClickListener((v) -> data.onClicked.run());
+        ((TextView) buttonView.findViewById(R.id.action_text)).setText(data.text);
+        buttonView.setEnabled(data.enabled);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(
-                        button.getContext(), brandedColorScheme);
-        themeButton(button, textAppearance, iconTint);
+                        buttonView.getContext(), brandedColorScheme);
+        themeButton(buttonView, textAppearance, iconTint);
 
         @DrawableRes int iconRes = getResIdForIconId(data.iconId);
-        setButtonDrawables(button, data.selected, iconRes);
+        setButtonDrawables(buttonView, data.selected, iconRes);
     }
 
     private static void setButtonDrawables(
-            Button button, boolean selected, @DrawableRes int iconRes) {
-        Context context = button.getContext();
-        Drawable startDrawable = iconRes != Resources.ID_NULL ? context.getDrawable(iconRes) : null;
-        Drawable endDrawable = selected ? context.getDrawable(R.drawable.m3_ic_check_24px) : null;
+            View buttonView, boolean selected, @DrawableRes int iconRes) {
+        FuseboxItemViewHolder holder = getViewHolder(buttonView);
+        ImageView imageView = holder.mActionIcon;
+        ImageView endImageView = holder.mActionEndIcon;
 
-        button.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                startDrawable, null, endDrawable, null);
+        if (iconRes != Resources.ID_NULL) {
+            imageView.setImageResource(iconRes);
+            imageView.setVisibility(View.VISIBLE);
+        } else {
+            imageView.setImageDrawable(null);
+            imageView.setVisibility(View.GONE);
+        }
+
+        if (selected) {
+            endImageView.setImageResource(R.drawable.m3_ic_check_24px);
+            endImageView.setVisibility(View.VISIBLE);
+        } else {
+            endImageView.setImageDrawable(null);
+            endImageView.setVisibility(View.GONE);
+        }
+    }
+
+    private static void setCustomButtonDrawables(
+            View buttonView, @Nullable Drawable startDrawable, @Nullable Drawable endDrawable) {
+        FuseboxItemViewHolder holder = getViewHolder(buttonView);
+        ImageView imageView = holder.mActionIcon;
+        ImageView endImageView = holder.mActionEndIcon;
+
+        imageView.setImageDrawable(startDrawable);
+        imageView.setVisibility(startDrawable != null ? View.VISIBLE : View.GONE);
+
+        endImageView.setImageDrawable(endDrawable);
+        endImageView.setVisibility(endDrawable != null ? View.VISIBLE : View.GONE);
     }
 
     /** Maps ids found in generated protos to local resources backed drawable ids. */
@@ -407,10 +431,21 @@ class FuseboxViewBinder {
     }
 
     private static void themeButton(
-            Button button, @StyleRes int textAppearance, ColorStateList iconTint) {
-        button.setTextAppearance(textAppearance);
-        // Color filters applied to drawables will take precedence over this tint.
-        button.setCompoundDrawableTintList(iconTint);
+            View buttonView, @StyleRes int textAppearance, ColorStateList iconTint) {
+        FuseboxItemViewHolder holder = getViewHolder(buttonView);
+        TextView textView = holder.mActionText;
+        ImageView imageView = holder.mActionIcon;
+        ImageView endImageView = holder.mActionEndIcon;
+
+        if (textView != null) {
+            textView.setTextAppearance(textAppearance);
+        }
+        if (imageView != null) {
+            imageView.setImageTintList(iconTint);
+        }
+        if (endImageView != null) {
+            endImageView.setImageTintList(iconTint);
+        }
     }
 
     private static void updateButtonsA11yAnnouncements(
@@ -610,7 +645,7 @@ class FuseboxViewBinder {
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
-        for (Button button : view.popup.mButtons) {
+        for (View button : view.popup.mButtons) {
             themeButton(button, textAppearance, iconTint);
         }
 
@@ -667,15 +702,14 @@ class FuseboxViewBinder {
         Context context = viewHolder.parentView.getContext();
         Resources res = context.getResources();
         FuseboxPopup popup = viewHolder.popup;
-        Button addCurrentTabButton = popup.mAddCurrentTab;
+        View addCurrentTabButton = popup.mAddCurrentTab;
 
         Drawable drawable =
                 FuseboxTabUtils.getDrawableForTabFavicon(
                         context,
                         favicon,
                         res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size));
-        addCurrentTabButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
+        setCustomButtonDrawables(addCurrentTabButton, drawable, null);
 
         if (favicon != null) {
             // This will change the alpha value based on the enabled state. The rgb values will
@@ -687,5 +721,29 @@ class FuseboxViewBinder {
     private static void scaleDrawable(@Nullable Drawable drawable, @Px int sizePx) {
         if (drawable == null) return;
         drawable.setBounds(0, 0, sizePx, sizePx);
+    }
+
+    /** Helper to retrieve view holder, creating a new one if needed. */
+    private static FuseboxItemViewHolder getViewHolder(View view) {
+        FuseboxItemViewHolder holder =
+                (FuseboxItemViewHolder) view.getTag(R.id.fusebox_view_holder_key);
+        if (holder == null) {
+            holder = new FuseboxItemViewHolder(view);
+            view.setTag(R.id.fusebox_view_holder_key, holder);
+        }
+        return holder;
+    }
+
+    /** View holder to cache frequently accessed views. */
+    private static class FuseboxItemViewHolder {
+        public final ImageView mActionIcon;
+        public final TextView mActionText;
+        public final ImageView mActionEndIcon;
+
+        public FuseboxItemViewHolder(View itemView) {
+            mActionIcon = itemView.findViewById(R.id.start_icon);
+            mActionText = itemView.findViewById(R.id.action_text);
+            mActionEndIcon = itemView.findViewById(R.id.end_icon);
+        }
     }
 }

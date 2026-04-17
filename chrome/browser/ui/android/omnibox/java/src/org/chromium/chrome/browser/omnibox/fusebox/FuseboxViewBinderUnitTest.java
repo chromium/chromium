@@ -21,7 +21,8 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -118,10 +119,10 @@ public class FuseboxViewBinderUnitTest {
         mActivityController.close();
     }
 
-    private Button getDynamicButton(int index) {
+    private View getDynamicButton(int index) {
         ViewGroup group = mPopup.mViewGroup;
         int headerIndex = group.indexOfChild(mPopup.mModelsHeader);
-        return (Button) group.getChildAt(headerIndex + 1 + index);
+        return group.getChildAt(headerIndex + 1 + index);
     }
 
     private void configureFusebox(@Variant int testCase, @AutocompleteRequestType int requestType) {
@@ -261,35 +262,43 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void requestTypePopupDrawables() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
-        assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
-        assertNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
-        assertNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[2]);
-        assertNull(mPopup.mCanvasButton.getCompoundDrawablesRelative()[2]);
+        assertEndIconSelected(mPopup.mAiModeButton, false);
+        assertEndIconSelected(mPopup.mCreateImageButton, false);
+        assertEndIconSelected(mPopup.mDeepSearchButton, false);
+        assertEndIconSelected(mPopup.mCanvasButton, false);
 
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.IMAGE_GENERATION);
-        assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[0]);
-        assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
-        assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[0]);
-        assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(
+                ((ImageView) mPopup.mAiModeButton.findViewById(R.id.start_icon)).getDrawable());
+        assertEndIconSelected(mPopup.mAiModeButton, false);
+        assertNotNull(
+                ((ImageView) mPopup.mCreateImageButton.findViewById(R.id.start_icon))
+                        .getDrawable());
+        assertEndIconSelected(mPopup.mCreateImageButton, true);
 
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
-        assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[0]);
-        assertNotNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
-        assertNotNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[0]);
-        assertNull(mPopup.mCreateImageButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(
+                ((ImageView) mPopup.mAiModeButton.findViewById(R.id.start_icon)).getDrawable());
+        assertEndIconSelected(mPopup.mAiModeButton, true);
+        assertNotNull(
+                ((ImageView) mPopup.mCreateImageButton.findViewById(R.id.start_icon))
+                        .getDrawable());
+        assertEndIconSelected(mPopup.mCreateImageButton, false);
 
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.DEEP_SEARCH);
-        assertNotNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[0]);
-        assertNotNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[2]);
-        assertNull(mPopup.mAiModeButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(
+                ((ImageView) mPopup.mDeepSearchButton.findViewById(R.id.start_icon)).getDrawable());
+        assertEndIconSelected(mPopup.mDeepSearchButton, true);
+        assertEndIconSelected(mPopup.mAiModeButton, false);
 
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.CANVAS);
-        assertNotNull(mPopup.mCanvasButton.getCompoundDrawablesRelative()[0]);
-        assertNotNull(mPopup.mCanvasButton.getCompoundDrawablesRelative()[2]);
-        assertNull(mPopup.mDeepSearchButton.getCompoundDrawablesRelative()[2]);
+        assertNotNull(
+                ((ImageView) mPopup.mCanvasButton.findViewById(R.id.start_icon)).getDrawable());
+        assertEndIconSelected(mPopup.mCanvasButton, true);
+        assertEndIconSelected(mPopup.mDeepSearchButton, false);
     }
 
     @Test
@@ -326,15 +335,17 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         assertEquals(View.VISIBLE, mPopup.mAddCurrentTab.getVisibility());
 
-        assertNull(mPopup.mAddCurrentTab.getCompoundDrawables()[0]);
+        assertNull(((ImageView) mPopup.mAddCurrentTab.findViewById(R.id.start_icon)).getDrawable());
 
         Bitmap favicon = UiUtils.createBitmap(/* size= */ 1, Color.RED);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON, favicon);
-        Drawable faviconDrawable = mPopup.mAddCurrentTab.getCompoundDrawablesRelative()[0];
+        Drawable faviconDrawable =
+                ((ImageView) mPopup.mAddCurrentTab.findViewById(R.id.start_icon)).getDrawable();
         assertNotNull(faviconDrawable);
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON, null);
-        Drawable fallbackDrawable = mPopup.mAddCurrentTab.getCompoundDrawablesRelative()[0];
+        Drawable fallbackDrawable =
+                ((ImageView) mPopup.mAddCurrentTab.findViewById(R.id.start_icon)).getDrawable();
         assertNotNull(fallbackDrawable);
         assertNotEquals(fallbackDrawable, faviconDrawable);
     }
@@ -561,20 +572,20 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(notSelectedData, notSelectedData));
-        assertNull(getDynamicButton(0).getCompoundDrawablesRelative()[2]);
-        assertNull(getDynamicButton(1).getCompoundDrawablesRelative()[2]);
+        assertEndIconSelected(getDynamicButton(0), false);
+        assertEndIconSelected(getDynamicButton(1), false);
 
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(selectedData, notSelectedData));
-        assertNotNull(getDynamicButton(0).getCompoundDrawablesRelative()[2]);
-        assertNull(getDynamicButton(1).getCompoundDrawablesRelative()[2]);
+        assertEndIconSelected(getDynamicButton(0), true);
+        assertEndIconSelected(getDynamicButton(1), false);
 
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(notSelectedData, selectedData));
-        assertNull(getDynamicButton(0).getCompoundDrawablesRelative()[2]);
-        assertNotNull(getDynamicButton(1).getCompoundDrawablesRelative()[2]);
+        assertEndIconSelected(getDynamicButton(0), false);
+        assertEndIconSelected(getDynamicButton(1), true);
     }
 
     @Test
@@ -582,7 +593,9 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 List.of(new PopupButtonDataBuilder().withText("custom text").build()));
-        assertEquals("custom text", getDynamicButton(0).getText());
+        View buttonView = getDynamicButton(0);
+        TextView textView = buttonView.findViewById(R.id.action_text);
+        assertEquals("custom text", textView.getText());
     }
 
     @Test
@@ -590,7 +603,8 @@ public class FuseboxViewBinderUnitTest {
         PopupButtonData buttonData =
                 new PopupButtonDataBuilder().withIconId(IconResourceIds.AUTORENEW_VALUE).build();
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(buttonData));
-        assertNotNull(getDynamicButton(0).getCompoundDrawablesRelative()[0]);
+        assertNotNull(
+                ((ImageView) getDynamicButton(0).findViewById(R.id.start_icon)).getDrawable());
     }
 
     @Test
@@ -649,6 +663,16 @@ public class FuseboxViewBinderUnitTest {
                     mSelected,
                     PopupButtonType.MODEL,
                     /* protoId= */ 0);
+        }
+    }
+
+    private static void assertEndIconSelected(View button, boolean selected) {
+        ImageView endIcon = button.findViewById(R.id.end_icon);
+        if (selected) {
+            assertEquals(View.VISIBLE, endIcon.getVisibility());
+            assertNotNull(endIcon.getDrawable());
+        } else {
+            assertTrue(endIcon.getVisibility() == View.GONE || endIcon.getDrawable() == null);
         }
     }
 }
