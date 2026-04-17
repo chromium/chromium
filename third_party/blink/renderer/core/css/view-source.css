@@ -39,7 +39,7 @@ table {
 
 .line-wrap {
     width: 100%;
-    white-space: pre-wrap !important;
+    white-space: pre-wrap;
     word-break: normal;
     overflow-wrap: anywhere;
 }
@@ -61,17 +61,17 @@ table {
 }
 
 td {
-    padding: 0 !important;
+    padding: 0;
     vertical-align: baseline
 }
 
 .line-gutter-backdrop, .line-number {
     /* Keep this in sync with inspector.css (.webkit-line-gutter-backdrop) */
     box-sizing: border-box;
-    padding: 0 4px !important;
+    padding: 0 4px;
     width: 31px;
     background-color: light-dark(rgb(240, 240, 240), rgb(60, 60, 60));
-    border-right: 1px solid rgb(187, 187, 187) !important;
+    border-right: 1px solid rgb(187, 187, 187);
     user-select: none;
 }
 
@@ -103,7 +103,7 @@ tbody:last-child .line-content:empty:before {
 }
 
 .line-content {
-    padding: 0 5px !important;
+    padding: 0 5px;
 }
 
 .html-tag {
