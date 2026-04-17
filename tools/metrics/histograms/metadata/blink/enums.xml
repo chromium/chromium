@@ -6511,6 +6511,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5869" label="ShadowRootAdoptedStyleSheets"/>
   <int value="5870" label="WebAuthnConditionalCreate"/>
   <int value="5871" label="WebAuthnConditionalCreateSuccess"/>
+  <int value="5872" label="AdScriptMainFrameNavigationWithoutUserGesture"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

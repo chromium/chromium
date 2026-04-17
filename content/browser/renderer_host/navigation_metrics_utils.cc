@@ -20,11 +20,18 @@ void MaybeRecordAdClickMainFrameNavigationMetrics(
     return;
   }
 
-  if (started_with_transient_activation && started_by_ad) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        initiator_frame, blink::mojom::WebFeature::kAdClickMainFrameNavigation);
+  if (started_by_ad) {
+    if (started_with_transient_activation) {
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          initiator_frame,
+          blink::mojom::WebFeature::kAdClickMainFrameNavigation);
 
-    UMA_HISTOGRAM_BOOLEAN("Navigation.MainFrame.FromAdClick", true);
+      UMA_HISTOGRAM_BOOLEAN("Navigation.MainFrame.FromAdClick", true);
+    } else {
+      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+          initiator_frame, blink::mojom::WebFeature::
+                               kAdScriptMainFrameNavigationWithoutUserGesture);
+    }
   }
 }
 
