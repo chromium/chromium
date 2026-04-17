@@ -30,6 +30,7 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_types.h"
+#include "components/accessibility_annotator/core/url_constants.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -92,6 +93,11 @@ static jboolean JNI_EntityDataManager_IsAccessibilityAnnotatorSettingVisible(
   return enablement_service &&
          enablement_service->GetEnablementState() ==
              accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled;
+}
+
+static std::string JNI_EntityDataManager_GetAccessibilityAnnotatorSettingsUrl(
+    JNIEnv* env) {
+  return accessibility_annotator::kAccessibilityAnnotatorSettingsURL;
 }
 
 static int64_t JNI_EntityDataManager_Init(JNIEnv* env,

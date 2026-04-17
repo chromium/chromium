@@ -243,6 +243,11 @@ public class EntityDataManager implements Destroyable {
         return EntityDataManagerJni.get().isAccessibilityAnnotatorSettingVisible(profile);
     }
 
+    public static String getAccessibilityAnnotatorSettingsUrl() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get().getAccessibilityAnnotatorSettingsUrl();
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -270,6 +275,9 @@ public class EntityDataManager implements Destroyable {
         boolean isWalletPublicPassStorageEnabled(long nativeEntityDataManagerAndroid);
 
         boolean isAccessibilityAnnotatorSettingVisible(@JniType("Profile*") Profile profile);
+
+        @JniType("std::string")
+        String getAccessibilityAnnotatorSettingsUrl();
 
         void removeEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
