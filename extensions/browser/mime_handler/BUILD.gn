@@ -13,6 +13,37 @@ source_set("mime_handler_stream_delegate") {
   ]
 }
 
+source_set("mime_handler_registry") {
+  sources = [
+    "mime_handler_registry.cc",
+    "mime_handler_registry.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//extensions/browser:browser_sources",
+    "//extensions/common",
+  ]
+  deps = [
+    "//components/keyed_service/content",
+    "//content/public/browser",
+  ]
+}
+
+source_set("mime_handler_registry_unittest") {
+  testonly = true
+  sources = [ "mime_handler_registry_unittest.cc" ]
+  deps = [
+    ":mime_handler_registry",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}
+
 source_set("stream_info") {
   sources = [
     "stream_info.cc",

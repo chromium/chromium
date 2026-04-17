@@ -80,6 +80,7 @@ source_set("core_keyed_service_factories") {
     "//components/guest_view/buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser:crx_installer",
+    "//extensions/browser/mime_handler:mime_handler_registry",
     "//extensions/browser/updater",
     "//extensions/buildflags",
   ]
@@ -1163,6 +1164,7 @@ source_set("unit_tests") {
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
+    "//extensions/browser/mime_handler:mime_handler_registry_unittest",
     "//extensions/browser/mime_handler:mime_handler_stream_delegate",
     "//extensions/browser/mime_handler:stream_container",
     "//extensions/browser/updater",

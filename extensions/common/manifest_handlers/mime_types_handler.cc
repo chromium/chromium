@@ -31,9 +31,15 @@ namespace errors = extensions::manifest_errors;
 
 namespace {
 
-// This has to by in sync with MimeHandlerType enum.
-// Note that if multiple versions of quickoffice are installed, the
-// higher-indexed entry will clobber earlier entries.
+// This has to be in sync with MimeHandlerType enum.
+//
+// This array defines the set of allowlisted MIME handler extension IDs and
+// their relative precedence as consumed by `MimeHandlerRegistry`. Precedence
+// runs in three tiers: (1) public (non-allowlisted) handlers beat
+// allowlisted ones; (2) among public handlers the most recently installed
+// wins; (3) among allowlisted handlers a higher index in this array wins.
+// As a result, if multiple allowlisted versions of quickoffice are
+// installed the higher-indexed entry wins.
 constexpr const char* kMIMETypeHandlersAllowlist[] = {
     extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS)

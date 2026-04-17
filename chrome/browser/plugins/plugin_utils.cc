@@ -19,12 +19,30 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/mime_handler/mime_handler_registry.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/mime_types_handler.h"
-#endif
+#include "extensions/common/extension_id.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace {
+
+bool IsExtensionAllowedInProfile(Profile* profile,
+                                 const extensions::ExtensionId& extension_id) {
+  if (extension_id == extension_misc::kPdfExtensionId &&
+      profile->GetPrefs()->GetBoolean(prefs::kPluginsAlwaysOpenPdfExternally)) {
+    return false;
+  }
+  if (profile->IsOffTheRecord() &&
+      !extensions::util::IsIncognitoEnabled(extension_id, profile)) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 void PluginUtils::GetPluginContentSetting(
@@ -46,11 +64,24 @@ void PluginUtils::GetPluginContentSetting(
 std::string PluginUtils::GetExtensionIdForMimeType(
     content::BrowserContext* browser_context,
     const std::string& mime_type) {
-  auto map = GetMimeTypeToExtensionIdMap(browser_context);
-  auto it = map.find(mime_type);
-  if (it != map.end())
-    return it->second;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(profile)) {
+    return std::string();
+  }
+  auto* registry = extensions::MimeHandlerRegistry::Get(browser_context);
+  CHECK(registry);
+  for (const extensions::ExtensionId& extension_id :
+       registry->GetHandlersForMimeType(mime_type)) {
+    if (IsExtensionAllowedInProfile(profile, extension_id)) {
+      return extension_id;
+    }
+  }
   return std::string();
+#else
+  return std::string();
+#endif
 }
 
 base::flat_map<std::string, std::string>
@@ -63,38 +94,14 @@ PluginUtils::GetMimeTypeToExtensionIdMap(
           AreExtensionsDisabledForProfile(profile)) {
     return mime_type_to_extension_id_map;
   }
-
-  const std::vector<extensions::ExtensionId>& allowlist =
-      MimeTypesHandler::GetMIMETypeAllowlist();
-  // Go through the allowed extensions and try to use them to intercept
-  // the URL request.
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser_context);
-  DCHECK(registry);
-  for (const extensions::ExtensionId& extension_id : allowlist) {
-    const extensions::Extension* extension =
-        registry->enabled_extensions().GetByID(extension_id);
-    // The allowed extension may not be installed, so we have to nullptr
-    // check |extension|.
-    if (!extension ||
-        (profile->IsOffTheRecord() && !extensions::util::IsIncognitoEnabled(
-                                          extension_id, browser_context))) {
-      continue;
-    }
-
-    if (extension_id == extension_misc::kPdfExtensionId &&
-        profile->GetPrefs()->GetBoolean(
-            prefs::kPluginsAlwaysOpenPdfExternally)) {
-      continue;
-    }
-
-    if (MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension)) {
-      for (const auto& supported_mime_type : handler->GetSupportedMimeTypes()) {
-        // If multiple are installed, Quickoffice extensions may clobber ones
-        // earlier in the allowlist. Silently allow this (logging causes ~100
-        // lines of output since this function is invoked 3 times during startup
-        // for ~30 mime types).
-        mime_type_to_extension_id_map[supported_mime_type] = extension_id;
+  extensions::MimeHandlerRegistry* registry =
+      extensions::MimeHandlerRegistry::Get(browser_context);
+  CHECK(registry);
+  for (const auto& [mime_type, handlers] : registry->GetHandlersByMimeType()) {
+    for (const extensions::ExtensionId& extension_id : handlers) {
+      if (IsExtensionAllowedInProfile(profile, extension_id)) {
+        mime_type_to_extension_id_map[mime_type] = extension_id;
+        break;
       }
     }
   }

@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
+#include "extensions/browser/mime_handler/mime_handler_registry.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -58,6 +59,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ImageLoaderFactory::GetInstance();
   MessageTracker::GetFactory();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  MimeHandlerRegistry::EnsureFactoryBuilt();
   MimeHandlerStreamManager::EnsureFactoryBuilt();
 #endif
   PendingExtensionManagerFactory::GetInstance();

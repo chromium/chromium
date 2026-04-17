@@ -761,6 +761,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "MediaRouter",
     "MediaRouterUIService",
     "MenuManager",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "MimeHandlerRegistry",
+#endif
     "NavigationPredictorKeyedService",
     "NetworkingPrivateEventRouter",
     "NotificationDisplayService",
