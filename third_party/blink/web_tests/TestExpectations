@@ -9785,3 +9785,7 @@ crbug.com/496047707 external/wpt/html/semantics/embedded-content/the-img-element
 # Gardener 2026-03-31
 crbug.com/431038526 external/wpt/css/css-ruby/ruby-text-combine-upright-001a.html [ Failure Pass ]
 crbug.com/431038526 external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html [ Failure Pass ]
+
+# Gardener 2026-04-14
+crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/crossfade.html [ Failure Pass ]
+crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/none-repeat-image-as-background.html [ Failure Pass ]
