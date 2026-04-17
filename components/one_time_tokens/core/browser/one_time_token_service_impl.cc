@@ -21,13 +21,13 @@ OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
     GmailOtpBackend* gmail_otp_backend)
     : sms_{.has_pending_request = false, .backend = sms_otp_backend},
       gmail_{.has_pending_request = false, .backend = gmail_otp_backend},
-      cache_(kCacheDurationForOldTokens) {}
+      cache_(kCacheDurationForOldTokens,
+             &OneTimeToken::on_device_arrival_time) {}
 OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() = default;
 
 void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   std::vector<OneTimeToken> recent_tokens =
-      base::ToVector(cache_.PurgeExpiredAndGetCache(),
-                     [](const OneTimeToken& token) { return token; });
+      base::ToVector(cache_.PurgeExpiredAndGetItems());
   // The tokens in `cache_` are sorted by `on_device_arrival_time` in ascending
   // order. We want to deliver the most recent token first, but `callback` does
   // not strictly guarantee this order, because multiple backends may
@@ -57,8 +57,7 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(base::Time expiration,
 
 std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
     const {
-  return base::ToVector(cache_.GetCache(),
-                        [](const OneTimeToken& token) { return token; });
+  return base::ToVector(cache_.GetItems());
 }
 
 void OneTimeTokenServiceImpl::RequestOneTimeToken(

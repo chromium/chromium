@@ -11,10 +11,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
-#include "components/one_time_tokens/core/browser/one_time_token_cache.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "components/one_time_tokens/core/browser/util/expiring_cache.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 
 namespace one_time_tokens {
@@ -78,7 +78,8 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
 
   ExpiringSubscription gmail_subscription_;
 
-  OneTimeTokenCache cache_;
+  ExpiringCache<OneTimeToken, decltype(&OneTimeToken::on_device_arrival_time)>
+      cache_;
 
   // Weak pointer factory (must be last member in class).
   base::WeakPtrFactory<OneTimeTokenServiceImpl> weakptr_factory_{this};

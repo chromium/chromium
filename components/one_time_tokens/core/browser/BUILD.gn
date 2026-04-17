@@ -15,8 +15,6 @@ static_library("browser") {
     "one_time_token.h",
     "one_time_token_backend_notification.cc",
     "one_time_token_backend_notification.h",
-    "one_time_token_cache.cc",
-    "one_time_token_cache.h",
     "one_time_token_retrieval_error.h",
     "one_time_token_service.h",
     "one_time_token_service_impl.cc",
@@ -24,6 +22,7 @@ static_library("browser") {
     "one_time_token_type.h",
     "sms_otp_backend.cc",
     "sms_otp_backend.h",
+    "util/expiring_cache.h",
     "util/expiring_subscription.cc",
     "util/expiring_subscription.h",
     "util/expiring_subscription_manager.cc",
@@ -62,9 +61,9 @@ source_set("unit_tests") {
     "email_one_time_token_fetch_coordinator_unittest.cc",
     "email_one_time_token_fetcher_unittest.cc",
     "gmail_otp_backend_unittest.cc",
-    "one_time_token_cache_unittest.cc",
     "one_time_token_service_impl_unittest.cc",
     "one_time_token_unittest.cc",
+    "util/expiring_cache_unittest.cc",
     "util/expiring_subscription_manager_unittest.cc",
   ]
   deps = [
