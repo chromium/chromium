@@ -16,6 +16,7 @@
               "builder_group": "chromium.memory",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "ios-asan",
+                "archive_schema_version": 0,
                 "archive_subdir": "ios-asan",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan"

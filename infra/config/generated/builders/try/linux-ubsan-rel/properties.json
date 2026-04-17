@@ -16,6 +16,7 @@
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
                 "archive_name_prefix": "ubsan",
+                "archive_schema_version": 0,
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-ubsan"
               },
