@@ -182,11 +182,13 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
     // interaction.
     extension_suggest_matches_.push_back(provider_->CreateAutocompleteMatch(
         template_url, input, keyword.length(),
-        base::UTF8ToUTF16(suggestion.content), false, --first_relevance,
-        suggestion.deletable));
+        AutocompleteMatch::SanitizeString(
+            base::UTF8ToUTF16(suggestion.content)),
+        false, --first_relevance, suggestion.deletable));
 
     AutocompleteMatch* match = &extension_suggest_matches_.back();
-    match->contents.assign(base::UTF8ToUTF16(suggestion.description));
+    match->contents.assign(AutocompleteMatch::SanitizeString(
+        base::UTF8ToUTF16(suggestion.description)));
 
     // No match should have empty classifications.
     CHECK(!suggestion.match_classifications.empty());
