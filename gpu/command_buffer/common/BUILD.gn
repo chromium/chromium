@@ -76,6 +76,7 @@ source_set("common_sources") {
     "scheduling_priority.h",
     "shared_image_capabilities.cc",
     "shared_image_capabilities.h",
+    "shared_image_info.h",
     "shared_image_pool_id.cc",
     "shared_image_pool_id.h",
     "shared_image_trace_utils.cc",
@@ -100,6 +101,8 @@ source_set("common_sources") {
     "//base",
     "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/system",
+    "//skia",
+    "//ui/gfx:color_space",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
