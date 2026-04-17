@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/rainbow_slider.h"
 
+#import <algorithm>
+
 namespace {
 // The thickness of the slider's gradient track layer.
 const CGFloat kTrackThickness = 13.0;
@@ -140,6 +142,14 @@ const CGSize kThumbShadowOffset = {0.0, 1.0};
   _gradientLayer.frame = trackFrame;
 }
 
+#pragma mark - UIControl
+
+- (BOOL)beginTrackingWithTouch:(UITouch*)touch withEvent:(UIEvent*)event {
+  CGPoint location = [touch locationInView:self];
+  [self updateValueForLocationX:location.x];
+  return YES;
+}
+
 #pragma mark - UISlider
 
 - (CGRect)trackRectForBounds:(CGRect)bounds {
@@ -179,6 +189,18 @@ const CGSize kThumbShadowOffset = {0.0, 1.0};
 }
 
 #pragma mark - Private
+
+// Sets the slider value and updates the thumb color for the given horizontal
+// touch position.
+- (void)updateValueForLocationX:(CGFloat)locationX {
+  CGRect trackRect = [self trackRectForBounds:self.bounds];
+  CGFloat percentage = std::clamp<CGFloat>(
+      (locationX - trackRect.origin.x) / trackRect.size.width, 0.0, 1.0);
+  float newValue =
+      self.minimumValue + percentage * (self.maximumValue - self.minimumValue);
+  [self setValue:newValue animated:NO];
+  [self sendActionsForControlEvents:UIControlEventValueChanged];
+}
 
 // Calculates the color based on the current value and sets the thumb image.
 - (void)updateThumbColor {

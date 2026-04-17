@@ -24,3 +24,9 @@ NSString* const kPickerViewCancelButtonAccessibilityIdentifier =
 
 NSString* const kPickerViewDoneButtonAccessibilityIdentifier =
     @"kPickerViewDoneButtonAccessibilityIdentifier";
+
+NSString* const kRainbowSliderAccessibilityIdentifier =
+    @"kRainbowSliderAccessibilityIdentifier";
+
+NSString* const kCustomColorCellAccessibilityIdentifier =
+    @"kCustomColorCellAccessibilityIdentifier";

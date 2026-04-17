@@ -111,6 +111,8 @@ source_set("unit_tests") {
   sources = [
     "home_customization_background_cell_unittest.mm",
     "home_customization_image_view_unittest.mm",
+    "rainbow_slider+testing.h",
+    "rainbow_slider_unittest.mm",
   ]
   deps = [
     ":ui",

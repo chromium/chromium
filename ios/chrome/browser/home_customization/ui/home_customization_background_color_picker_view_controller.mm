@@ -148,6 +148,8 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
     _customColorSlider = [[RainbowSlider alloc] init];
     _customColorSlider.translatesAutoresizingMaskIntoConstraints = NO;
+    _customColorSlider.accessibilityIdentifier =
+        kRainbowSliderAccessibilityIdentifier;
     _customColorSlider.color = _customColorConfiguration.backgroundColor;
     [_customColorSlider addTarget:self
                            action:@selector(customColorChanged:)

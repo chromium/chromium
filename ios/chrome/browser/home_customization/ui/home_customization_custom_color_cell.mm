@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -42,6 +43,7 @@ const CGFloat kEyedropperSymbolSize = 15.0;
   if (self) {
     self.contentView.backgroundColor = UIColor.clearColor;
     self.isAccessibilityElement = YES;
+    self.accessibilityIdentifier = kCustomColorCellAccessibilityIdentifier;
     self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     // Outer container view that holds the highlight border.

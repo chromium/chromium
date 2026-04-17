@@ -294,4 +294,51 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that tapping on the rainbow slider track changes the background color.
+- (void)testTapOnRainbowSliderChangesColor {
+  // Navigate to the color picker.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPCustomizationMenuButtonIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBackgroundPickerCellAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertAction(l10n_util::GetNSStringWithFixup(
+                     IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE))]
+      performAction:grey_tap()];
+
+  // Tap the custom color cell (eyedropper) to reveal the rainbow slider.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kCustomColorCellAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Record the initial background color.
+  NewTabPageColorPalette* initialPalette =
+      [NewTabPageAppInterface currentBackgroundColor];
+
+  // Tap near the trailing end of the slider to pick a different hue.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kRainbowSliderAccessibilityIdentifier)]
+      performAction:grey_tapAtPoint(CGPointMake(250, 22))];
+
+  // Verify the background color changed.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        NewTabPageColorPalette* palette =
+            [NewTabPageAppInterface currentBackgroundColor];
+        if (!palette) {
+          return initialPalette == nil;
+        }
+        return skia::UIColorToSkColor(palette.seedColor) !=
+               skia::UIColorToSkColor(initialPalette.seedColor);
+      }));
+}
+
 @end
