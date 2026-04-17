@@ -837,6 +837,7 @@ void OverlayBaseController::ShowPreselectionBubble() {
             tab_->GetHandle(), preselection_widget_anchor_,
             net::NetworkChangeNotifier::IsOffline(), config.show_cancel_button,
             config.bubble_background_color, config.icon,
+            config.cancel_button_color,
             /*exit_clicked_callback=*/
             base::BindRepeating(&OverlayBaseController::RequestSyncClose,
                                 weak_factory_.GetWeakPtr(),

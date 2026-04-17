@@ -242,6 +242,8 @@ class OverlayBaseController : public content::WebContentsDelegate,
   struct PreselectionUIConfig {
     int message_string_id = -1;
     bool show_cancel_button = false;
+    // Only read if show_cancel_button is true.
+    std::optional<ui::ColorId> cancel_button_color = std::nullopt;
     ui::ColorId bubble_background_color = ui::kUiColorsLast;
     raw_ptr<const gfx::VectorIcon> icon = nullptr;
   };
