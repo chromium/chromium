@@ -838,6 +838,58 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
       testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
 
+// Test suite that makes the sync service unavailable.
+class ProfileMenuViewSyncServiceUnavailableTest
+    : public ProfileMenuViewBrowserTest {
+ public:
+  ProfileMenuViewSyncServiceUnavailableTest() {
+    // Register a callback to set the SyncService to null for this test.
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfileMenuViewSyncServiceUnavailableTest::SetTestingFactories,
+                base::Unretained(this)));
+  }
+
+ private:
+  void SetTestingFactories(content::BrowserContext* context) {
+    // Make SyncService return nullptr for this profile.
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return nullptr;
+            }));
+  }
+
+  base::CallbackListSubscription dependency_manager_subscription_;
+};
+
+// Checks that the profile menu does not crash and handles kSyncPaused
+// gracefully when the sync service is not available. Regression test for
+// crbug.com/436603637.
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncServiceUnavailableTest,
+                       DoesNotCrashWhenSyncPaused) {
+  // Add an account with sync consent.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, kTestEmail, signin::ConsentLevel::kSync);
+
+  // Set an invalid refresh token to trigger the kSyncPaused state.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+
+  // Verify that the menu is showing successfully.
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  EXPECT_TRUE(coordinator->IsShowing());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 
 class ProfileMenuViewWebOnlyTest : public ProfileMenuViewTestBase,
