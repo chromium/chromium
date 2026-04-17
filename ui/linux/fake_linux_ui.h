@@ -62,8 +62,10 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   bool PreferDarkTheme() const override;
   void SetDarkTheme(bool dark) override;
   void SetAccentColor(std::optional<SkColor> accent_color) override;
-  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
-  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider(
+      FrameType type) override;
+  ui::WindowFrameProvider* GetWindowFrameProvider(FrameType type,
+                                                  bool solid_frame,
                                                   bool tiled,
                                                   bool maximized) override;
 };

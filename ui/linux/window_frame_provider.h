@@ -30,6 +30,18 @@ class WindowFrameProvider {
   // Returns the shadow and border drawn around the window in DIPs.
   virtual gfx::Insets GetFrameThicknessDip() = 0;
 
+  // Returns the minimum content height of the top area as specified by the
+  // native toolkit theme.
+  virtual int GetTopAreaMinHeightDip() = 0;
+
+  // Returns the padding around the top area content as specified by the
+  // native toolkit theme.
+  virtual gfx::Insets GetTopAreaPaddingDip() = 0;
+
+  // Returns the border around the top area content as specified by the
+  // native toolkit theme.
+  virtual gfx::Insets GetTopAreaBorderDip() = 0;
+
   // Draws a native window border and shadow.  |rect| is the bounds of the
   // window.  The decoration will be drawn outside of that region.
   virtual void PaintWindowFrame(gfx::Canvas* canvas,

@@ -118,6 +118,8 @@ class TestNavButtonProvider : public ui::NavButtonProvider {
 
   gfx::Insets GetTopAreaSpacing() const override { return kTopAreaSpacing; }
 
+  int GetNavButtonHeight(bool maximized) const override { return 0; }
+
   int GetInterNavButtonSpacing() const override {
     return kInterNavButtonSpacing;
   }
@@ -133,6 +135,9 @@ class TestFrameProvider : public ui::WindowFrameProvider {
   int GetTopCornerRadiusDip() override { return 0; }
   bool IsTopFrameTranslucent() override { return false; }
   gfx::Insets GetFrameThicknessDip() override { return {}; }
+  int GetTopAreaMinHeightDip() override { return 24; }
+  gfx::Insets GetTopAreaPaddingDip() override { return gfx::Insets::VH(6, 0); }
+  gfx::Insets GetTopAreaBorderDip() override { return gfx::Insets(); }
   void PaintWindowFrame(gfx::Canvas* canvas,
                         const gfx::Rect& rect,
                         int top_area_height,

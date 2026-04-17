@@ -155,6 +155,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     // True when Chromium renders the titlebar.  False when the window
     // manager renders the titlebar.
     bool use_custom_frame = false;
+    // True when frame borders should be rendered in the custom frame.
+    bool has_frame_border = false;
     // If the NativeTheme will paint a solid color, it should use
     // |default_background_color|.
     SkColor default_background_color = gfx::kPlaceholderColor;

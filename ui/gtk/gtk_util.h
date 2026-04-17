@@ -187,6 +187,10 @@ void GtkWindowDestroy(GtkWidget* widget);
 
 GtkWidget* GetDummyWindow();
 
+// Returns the CSS min-width and min-height of the content area for the given
+// context, excluding margin, border, and padding.
+gfx::Size GetMinimumContentSize(GtkCssContext context);
+
 gfx::Size GetSeparatorSize(bool horizontal);
 
 float GetDeviceScaleFactor();

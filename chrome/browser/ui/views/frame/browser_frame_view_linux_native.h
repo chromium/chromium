@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_frame_provider.h"
+#include "ui/views/window/frame_view_utils_linux.h"
 
 class BrowserFrameViewLayoutLinuxNative;
 
@@ -44,14 +45,6 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
   void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
 
  private:
-  struct DrawFrameButtonParams {
-    bool operator==(const DrawFrameButtonParams& other) const;
-
-    int top_area_height;
-    bool maximized;
-    bool active;
-  };
-
   // Redraws the image resources associated with the minimize, maximize,
   // restore, and close buttons.
   virtual void MaybeUpdateCachedFrameButtonImages();
@@ -67,7 +60,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   // Cache the last parameters with which the caption buttons were drawn.
   // Parameters still need to be computed even if the buttons cannot be drawn.
-  std::optional<DrawFrameButtonParams> cache_;
+  std::optional<views::DrawFrameButtonParams> cache_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_

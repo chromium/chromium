@@ -5,13 +5,16 @@
 #ifndef UI_VIEWS_WINDOW_FRAME_VIEW_UTILS_LINUX_H_
 #define UI_VIEWS_WINDOW_FRAME_VIEW_UTILS_LINUX_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/linux/nav_button_provider.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
 #include "ui/views/window/frame_buttons.h"
 
@@ -26,6 +29,29 @@ namespace views {
 
 class FrameBackground;
 class View;
+
+// Parameters used for drawing frame buttons, used for caching.
+struct VIEWS_EXPORT DrawFrameButtonParams {
+  bool operator==(const DrawFrameButtonParams& other) const;
+
+  int top_area_height;
+  bool maximized;
+  bool active;
+};
+
+// Redraws the image resources associated with the minimize, maximize,
+// restore, and close buttons.
+VIEWS_EXPORT void MaybeUpdateCachedFrameButtonImages(
+    ui::NavButtonProvider* nav_button_provider,
+    const DrawFrameButtonParams& params,
+    std::optional<DrawFrameButtonParams>& cache,
+    base::FunctionRef<views::Button*(
+        ui::NavButtonProvider::FrameButtonDisplayType)> get_button);
+
+// Converts a views::Button::ButtonState to the corresponding
+// ui::NavButtonProvider::ButtonState.
+VIEWS_EXPORT ui::NavButtonProvider::ButtonState
+ButtonStateToNavButtonProviderState(Button::ButtonState state);
 
 // Returns the FrameButtonDisplayType for the given FrameButton, taking into
 // account the current maximized state of the window.

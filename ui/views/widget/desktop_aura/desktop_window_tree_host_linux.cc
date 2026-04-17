@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/scoped_observation.h"
@@ -39,6 +41,7 @@
 #include "ui/views/window/frame_view_linux.h"
 #include "ui/views/window/frame_view_utils_linux.h"
 #include "ui/views/window/native_frame_view.h"
+#include "ui/views/window/native_frame_view_linux.h"
 
 #if BUILDFLAG(USE_ATK)
 #include "ui/accessibility/platform/atk_util_auralinux.h"
@@ -105,6 +108,37 @@ std::unique_ptr<FrameView> DesktopWindowTreeHostLinux::CreateFrameView() {
     return std::make_unique<NativeFrameView>(GetWidget());
   }
 
+  auto* linux_ui_theme = ui::LinuxUiTheme::GetForWindow(GetContentWindow());
+  if (linux_ui_theme) {
+    auto nav_button_provider =
+        linux_ui_theme->CreateNavButtonProvider(ui::FrameType::kDefault);
+    if (nav_button_provider) {
+      // base::Unretained is safe: linux_ui_theme outlives this host, and the
+      // callback is stored in NativeFrameViewLinux which is destroyed before
+      // this host.
+      auto frame_provider_getter = base::BindRepeating(
+          [](ui::LinuxUiTheme* theme, DesktopWindowTreeHostLinux* host,
+             bool tiled, bool maximized) -> ui::WindowFrameProvider* {
+            // A solid frame is used when the platform doesn't support
+            // transparency.
+            const bool solid_frame = !host->ShouldWindowContentsBeTransparent();
+            return theme->GetWindowFrameProvider(ui::FrameType::kDefault,
+                                                 solid_frame, tiled, maximized);
+          },
+          base::Unretained(linux_ui_theme), base::Unretained(this));
+
+      auto frame_view = std::make_unique<NativeFrameViewLinux>(
+          GetWidget(), std::move(nav_button_provider),
+          std::move(frame_provider_getter));
+      frame_view->SetSupportsClientFrameShadow(
+          platform_window()->CanSetDecorationInsets() &&
+          Widget::IsWindowCompositingSupported());
+      frame_view->InitViews();
+      return frame_view;
+    }
+  }
+
+  // Fallback when no native toolkit is available.
   auto frame_view = std::make_unique<FrameViewLinux>(GetWidget());
   frame_view->SetSupportsClientFrameShadow(
       platform_window()->CanSetDecorationInsets() &&

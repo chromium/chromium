@@ -164,6 +164,12 @@ enum class WindowResizePrecheckResult {
 #endif
 };
 
+// Distinguishes browser from non-browser windows for frame decoration styling.
+enum class FrameType {
+  kBrowser,
+  kDefault,
+};
+
 }  // namespace ui
 
 #endif  // UI_BASE_UI_BASE_TYPES_H_

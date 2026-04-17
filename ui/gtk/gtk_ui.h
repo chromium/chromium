@@ -105,8 +105,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
   bool PreferDarkTheme() const override;
   void SetDarkTheme(bool dark) override;
   void SetAccentColor(std::optional<SkColor> accent_color) override;
-  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
-  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider(
+      ui::FrameType type) override;
+  ui::WindowFrameProvider* GetWindowFrameProvider(ui::FrameType type,
+                                                  bool solid_frame,
                                                   bool tiled,
                                                   bool maximized) override;
 
@@ -196,11 +198,13 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   // Paints a native window frame.  Typically only one of these will be
   // non-null.  The exception is when the user starts or stops their compositor
-  // while Chrome is running.  This 3D array is indexed first by whether the
-  // frame is translucent (0) or solid(1), then by whether the frame is normal
-  // (0) or tiled (1), then by whether the frame is maximized (0) or not (1).
+  // while Chrome is running.  This 4D array is indexed by
+  // [type][solid_frame][tiled][maximized].
   std::array<
-      std::array<std::array<std::unique_ptr<ui::WindowFrameProvider>, 2>, 2>,
+      std::array<
+          std::array<std::array<std::unique_ptr<ui::WindowFrameProvider>, 2>,
+                     2>,
+          2>,
       2>
       frame_providers_;
 

@@ -6,16 +6,20 @@
 
 #include <cmath>
 
+#include "base/notreached.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 #include "ui/views/window/frame_background.h"
 
@@ -141,6 +145,61 @@ ui::NavButtonProvider::FrameButtonDisplayType GetFrameButtonDisplayType(
                  : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize;
     case FrameButton::kClose:
       return ui::NavButtonProvider::FrameButtonDisplayType::kClose;
+  }
+}
+
+bool DrawFrameButtonParams::operator==(
+    const DrawFrameButtonParams& other) const {
+  return top_area_height == other.top_area_height &&
+         maximized == other.maximized && active == other.active;
+}
+
+void MaybeUpdateCachedFrameButtonImages(
+    ui::NavButtonProvider* nav_button_provider,
+    const DrawFrameButtonParams& params,
+    std::optional<DrawFrameButtonParams>& cache,
+    base::FunctionRef<views::Button*(
+        ui::NavButtonProvider::FrameButtonDisplayType)> get_button) {
+  if (cache == params) {
+    return;
+  }
+  cache = params;
+  nav_button_provider->RedrawImages(params.top_area_height, params.maximized,
+                                    params.active);
+  for (auto type : {
+           ui::NavButtonProvider::FrameButtonDisplayType::kMinimize,
+           params.maximized
+               ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
+               : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize,
+           ui::NavButtonProvider::FrameButtonDisplayType::kClose,
+       }) {
+    for (size_t state = 0; state < views::Button::STATE_COUNT; state++) {
+      views::Button::ButtonState button_state =
+          static_cast<views::Button::ButtonState>(state);
+      views::Button* button = get_button(type);
+      DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
+      static_cast<views::ImageButton*>(button)->SetImageModel(
+          button_state,
+          ui::ImageModel::FromImageSkia(nav_button_provider->GetImage(
+              type, ButtonStateToNavButtonProviderState(button_state))));
+    }
+  }
+}
+
+ui::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
+    Button::ButtonState state) {
+  switch (state) {
+    case Button::STATE_NORMAL:
+      return ui::NavButtonProvider::ButtonState::kNormal;
+    case Button::STATE_HOVERED:
+      return ui::NavButtonProvider::ButtonState::kHovered;
+    case Button::STATE_PRESSED:
+      return ui::NavButtonProvider::ButtonState::kPressed;
+    case Button::STATE_DISABLED:
+      return ui::NavButtonProvider::ButtonState::kDisabled;
+    case Button::STATE_COUNT:
+    default:
+      NOTREACHED();
   }
 }
 

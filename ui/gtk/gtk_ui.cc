@@ -679,17 +679,20 @@ void GtkUi::RemoveWindowButtonOrderObserver(
   window_button_order_observer_list_.RemoveObserver(observer);
 }
 
-std::unique_ptr<ui::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
-  return std::make_unique<gtk::NavButtonProviderGtk>();
+std::unique_ptr<ui::NavButtonProvider> GtkUi::CreateNavButtonProvider(
+    ui::FrameType type) {
+  return std::make_unique<gtk::NavButtonProviderGtk>(type);
 }
 
-ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame,
+ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(ui::FrameType type,
+                                                       bool solid_frame,
                                                        bool tiled,
                                                        bool maximized) {
-  auto& provider = frame_providers_[solid_frame][tiled][maximized];
+  auto& provider =
+      frame_providers_[static_cast<int>(type)][solid_frame][tiled][maximized];
   if (!provider) {
-    provider = std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame, tiled,
-                                                             maximized);
+    provider = std::make_unique<gtk::WindowFrameProviderGtk>(type, solid_frame,
+                                                             tiled, maximized);
   }
   return provider.get();
 }

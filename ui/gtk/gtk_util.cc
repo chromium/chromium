@@ -668,6 +668,32 @@ GtkWidget* GetDummyWindow() {
   return window;
 }
 
+gfx::Size GetMinimumContentSize(GtkCssContext context) {
+  int min_width = 0;
+  int min_height = 0;
+  if (GtkCheckVersion(4)) {
+    // In GTK4, CSS properties like "min-width" and "min-height" are not
+    // queryable through gtk_style_context_get.  Use gtk_widget_measure to get
+    // the margin box, then subtract margin, border, and padding to recover the
+    // content area minimum size.
+    gtk_widget_measure(context.widget(), GTK_ORIENTATION_HORIZONTAL, -1,
+                       &min_width, nullptr, nullptr, nullptr);
+    gtk_widget_measure(context.widget(), GTK_ORIENTATION_VERTICAL, -1,
+                       &min_height, nullptr, nullptr, nullptr);
+    auto margin = GtkStyleContextGetMargin(context);
+    auto border = GtkStyleContextGetBorder(context);
+    auto padding = GtkStyleContextGetPadding(context);
+    min_width -= margin.width() + border.width() + padding.width();
+    min_height -= margin.height() + border.height() + padding.height();
+    min_width = std::max(0, min_width);
+    min_height = std::max(0, min_height);
+  } else {
+    GtkStyleContextGet(context, "min-width", &min_width, "min-height",
+                       &min_height, nullptr);
+  }
+  return {min_width, min_height};
+}
+
 gfx::Size GetSeparatorSize(bool horizontal) {
   auto widget = TakeGObject(gtk_separator_new(
       horizontal ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL));

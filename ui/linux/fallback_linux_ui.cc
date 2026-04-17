@@ -137,12 +137,13 @@ void FallbackLinuxUi::AddWindowButtonOrderObserver(
 void FallbackLinuxUi::RemoveWindowButtonOrderObserver(
     ui::WindowButtonOrderObserver* observer) {}
 
-std::unique_ptr<ui::NavButtonProvider>
-FallbackLinuxUi::CreateNavButtonProvider() {
+std::unique_ptr<ui::NavButtonProvider> FallbackLinuxUi::CreateNavButtonProvider(
+    ui::FrameType type) {
   return nullptr;
 }
 
 ui::WindowFrameProvider* FallbackLinuxUi::GetWindowFrameProvider(
+    FrameType type,
     bool solid_frame,
     bool tiled,
     bool maximized) {

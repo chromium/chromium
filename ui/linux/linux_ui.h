@@ -57,6 +57,7 @@ class SelectFileDialog;
 class SelectFilePolicy;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
+enum class FrameType;
 enum class TextEditCommand;
 
 // Adapter class with targets to render like different toolkits. Set by any
@@ -319,14 +320,16 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
 
   // Returns a new NavButtonProvider, or nullptr if the underlying
   // toolkit does not support drawing client-side navigation buttons.
-  virtual std::unique_ptr<NavButtonProvider> CreateNavButtonProvider() = 0;
+  virtual std::unique_ptr<NavButtonProvider> CreateNavButtonProvider(
+      FrameType type) = 0;
 
   // Returns a WindowFrameProvider, or nullptr if the underlying toolkit does
   // not support drawing client-side window decorations. |solid_frame| indicates
   // if transparency is unsupported and the frame should be rendered opaque.
   // The returned object is not owned by the caller and will remain alive until
   // the process ends.
-  virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+  virtual WindowFrameProvider* GetWindowFrameProvider(FrameType type,
+                                                      bool solid_frame,
                                                       bool tiled,
                                                       bool maximized) = 0;
 

@@ -71,17 +71,22 @@ GtkCssContext DecorationContext(bool solid_frame,
   return context;
 }
 
-GtkCssContext HeaderContext(bool solid_frame,
+GtkCssContext HeaderContext(ui::FrameType type,
+                            bool solid_frame,
                             bool tiled,
                             bool maximized,
                             bool focused) {
   auto context = WindowContext(solid_frame, tiled, maximized, focused);
-  context =
-      AppendCssNodeToStyleContext(context, "headerbar.header-bar.titlebar");
+  context = AppendCssNodeToStyleContext(
+      context, type == ui::FrameType::kBrowser
+                   ? "headerbar.header-bar.titlebar"
+                   : "headerbar.default-decoration.titlebar");
   if (!focused) {
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
   }
-  ApplyCssToContext(context, "* { border-bottom-style: none; }");
+  if (type == ui::FrameType::kBrowser) {
+    ApplyCssToContext(context, "* { border-bottom-style: none; }");
+  }
   return context;
 }
 
@@ -125,14 +130,14 @@ SkBitmap PaintHeaderbar(const gfx::Size& size,
   return PaintBitmap(size, tabstrip_bounds_dip, context, scale);
 }
 
-int ComputeTopCornerRadius() {
+int ComputeTopCornerRadius(ui::FrameType type, bool tiled, bool maximized) {
   // In GTK4, there's no way to directly obtain CSS values for a context, so we
   // need to experimentally determine the corner radius by rendering a sample.
   // Additionally, in GTK4, the headerbar corners get clipped by the window
   // rather than the headerbar having its own rounded corners.
   auto context = GtkCheckVersion(4)
-                     ? DecorationContext(false, false, false, false)
-                     : HeaderContext(false, false, false, false);
+                     ? DecorationContext(false, tiled, maximized, false)
+                     : HeaderContext(type, false, tiled, maximized, false);
   ApplyCssToContext(context, R"(window, headerbar {
     background-image: none;
     background-color: black;
@@ -163,10 +168,10 @@ int ComputeTopCornerRadius() {
 // is rendering artifacts, but the consequence of a false-positive is only a
 // slight performance penalty, so this function is intentionally conservative
 // in deciding if the header is translucent.
-bool HeaderIsTranslucent() {
+bool HeaderIsTranslucent(ui::FrameType type) {
   // The arbitrary square size to render a sample header.
   constexpr int kHeaderSize = 32;
-  auto context = HeaderContext(false, false, false, false);
+  auto context = HeaderContext(type, false, false, false, false);
   double opacity = GetOpacityFromContext(context);
   if (opacity < 1.0) {
     return true;
@@ -200,10 +205,14 @@ WindowFrameProviderGtk::Asset& WindowFrameProviderGtk::Asset::operator=(
 
 WindowFrameProviderGtk::Asset::~Asset() = default;
 
-WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame,
+WindowFrameProviderGtk::WindowFrameProviderGtk(ui::FrameType type,
+                                               bool solid_frame,
                                                bool tiled,
                                                bool maximized)
-    : solid_frame_(solid_frame), tiled_(tiled), maximized_(maximized) {
+    : type_(type),
+      solid_frame_(solid_frame),
+      tiled_(tiled),
+      maximized_(maximized) {
   GtkSettings* settings = gtk_settings_get_default();
   // Unretained() is safe since WindowFrameProviderGtk will own the signals.
   auto callback = base::BindRepeating(&WindowFrameProviderGtk::OnThemeChanged,
@@ -219,14 +228,14 @@ WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 
 int WindowFrameProviderGtk::GetTopCornerRadiusDip() {
   if (!top_corner_radius_dip_.has_value()) {
-    top_corner_radius_dip_ = ComputeTopCornerRadius();
+    top_corner_radius_dip_ = ComputeTopCornerRadius(type_, tiled_, maximized_);
   }
   return *top_corner_radius_dip_;
 }
 
 bool WindowFrameProviderGtk::IsTopFrameTranslucent() {
   if (!top_frame_is_translucent_.has_value()) {
-    top_frame_is_translucent_ = !solid_frame_ && HeaderIsTranslucent();
+    top_frame_is_translucent_ = !solid_frame_ && HeaderIsTranslucent(type_);
   }
   return *top_frame_is_translucent_;
 }
@@ -264,6 +273,30 @@ gfx::Insets WindowFrameProviderGtk::GetFrameThicknessDip() {
         }));
   }
   return *frame_thickness_dip_;
+}
+
+int WindowFrameProviderGtk::GetTopAreaMinHeightDip() {
+  if (!top_area_min_height_dip_.has_value()) {
+    auto context = HeaderContext(type_, solid_frame_, tiled_, maximized_, true);
+    top_area_min_height_dip_ = GetMinimumContentSize(context).height();
+  }
+  return *top_area_min_height_dip_;
+}
+
+gfx::Insets WindowFrameProviderGtk::GetTopAreaPaddingDip() {
+  if (!top_area_padding_dip_.has_value()) {
+    auto context = HeaderContext(type_, solid_frame_, tiled_, maximized_, true);
+    top_area_padding_dip_ = GtkStyleContextGetPadding(context);
+  }
+  return *top_area_padding_dip_;
+}
+
+gfx::Insets WindowFrameProviderGtk::GetTopAreaBorderDip() {
+  if (!top_area_border_dip_.has_value()) {
+    auto context = HeaderContext(type_, solid_frame_, tiled_, maximized_, true);
+    top_area_border_dip_ = GtkStyleContextGetBorder(context);
+  }
+  return *top_area_border_dip_;
 }
 
 void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
@@ -351,9 +384,14 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   const int top_area_bottom_px = base::ClampCeil(top_area_bottom_dip * scale);
   const int top_area_height_px = top_area_bottom_px - client_bounds_px.y();
 
+  // Skip when the headerbar has no area
+  if (client_bounds_px.width() <= 0 || top_area_height_px <= 0) {
+    return;
+  }
+
   auto header = PaintHeaderbar(
       {client_bounds_px.width(), top_area_height_px},
-      HeaderContext(solid_frame_, tiled_, maximized_, focused), scale);
+      HeaderContext(type_, solid_frame_, tiled_, maximized_, focused), scale);
   image = gfx::ImageSkia::CreateFrom1xBitmap(header);
   // In GTK4, the headerbar gets clipped by the window.
   if (GtkCheckVersion(4)) {
@@ -409,6 +447,9 @@ void WindowFrameProviderGtk::OnThemeChanged(GtkSettings* settings,
   frame_thickness_dip_ = std::nullopt;
   top_corner_radius_dip_ = std::nullopt;
   top_frame_is_translucent_ = std::nullopt;
+  top_area_min_height_dip_ = std::nullopt;
+  top_area_padding_dip_ = std::nullopt;
+  top_area_border_dip_ = std::nullopt;
 }
 
 }  // namespace gtk

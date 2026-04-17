@@ -20,7 +20,10 @@ namespace gtk {
 
 class WindowFrameProviderGtk : public ui::WindowFrameProvider {
  public:
-  WindowFrameProviderGtk(bool solid_frame, bool tiled, bool maximized);
+  WindowFrameProviderGtk(ui::FrameType type,
+                         bool solid_frame,
+                         bool tiled,
+                         bool maximized);
 
   WindowFrameProviderGtk(const WindowFrameProviderGtk&) = delete;
   WindowFrameProviderGtk& operator=(const WindowFrameProviderGtk&) = delete;
@@ -31,6 +34,9 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
   int GetTopCornerRadiusDip() override;
   bool IsTopFrameTranslucent() override;
   gfx::Insets GetFrameThicknessDip() override;
+  int GetTopAreaMinHeightDip() override;
+  gfx::Insets GetTopAreaPaddingDip() override;
+  gfx::Insets GetTopAreaBorderDip() override;
   void PaintWindowFrame(gfx::Canvas* canvas,
                         const gfx::Rect& rect,
                         int top_area_height,
@@ -63,14 +69,18 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
   // Input parameters used for drawing.
+  const ui::FrameType type_;
   const bool solid_frame_;
   const bool tiled_;
   const bool maximized_;
 
-  // Scale-independent metric calculated based on the bitmaps.
+  // Scale-independent metrics calculated based on the bitmaps or CSS.
   std::optional<gfx::Insets> frame_thickness_dip_;
   std::optional<int> top_corner_radius_dip_;
   std::optional<bool> top_frame_is_translucent_;
+  std::optional<int> top_area_min_height_dip_;
+  std::optional<gfx::Insets> top_area_padding_dip_;
+  std::optional<gfx::Insets> top_area_border_dip_;
 
   // Cached bitmaps and metrics.
   base::flat_map<float, Asset> assets_;

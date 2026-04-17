@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/window_frame_provider.h"
 #include "ui/views/window/frame_background.h"
 #include "ui/views/window/frame_view_utils_linux.h"
 
@@ -45,7 +46,7 @@ PictureInPictureBrowserFrameViewLinux::PictureInPictureBrowserFrameViewLinux(
 
     // This may return null, but that's handled below.
     window_frame_provider_ = linux_ui_theme->GetWindowFrameProvider(
-        solid_frame, /*tiled=*/false,
+        ui::FrameType::kBrowser, solid_frame, /*tiled=*/false,
         /*maximized=*/widget->IsMaximized());
   }
 

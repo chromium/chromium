@@ -114,11 +114,13 @@ void FakeLinuxUi::AddWindowButtonOrderObserver(
 void FakeLinuxUi::RemoveWindowButtonOrderObserver(
     ui::WindowButtonOrderObserver* observer) {}
 
-std::unique_ptr<ui::NavButtonProvider> FakeLinuxUi::CreateNavButtonProvider() {
+std::unique_ptr<ui::NavButtonProvider> FakeLinuxUi::CreateNavButtonProvider(
+    ui::FrameType type) {
   return nullptr;
 }
 
-ui::WindowFrameProvider* FakeLinuxUi::GetWindowFrameProvider(bool solid_frame,
+ui::WindowFrameProvider* FakeLinuxUi::GetWindowFrameProvider(FrameType type,
+                                                             bool solid_frame,
                                                              bool tiled,
                                                              bool maximized) {
   return nullptr;

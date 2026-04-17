@@ -62,6 +62,9 @@ class NavButtonProvider {
   // inset represents the trailing spacing.
   virtual gfx::Insets GetTopAreaSpacing() const = 0;
 
+  // Gets the height of the tallest nav button including its margins.
+  virtual int GetNavButtonHeight(bool maximized) const = 0;
+
   // Gets the spacing to be used to separate buttons.
   virtual int GetInterNavButtonSpacing() const = 0;
 };

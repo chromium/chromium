@@ -10,34 +10,7 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/window/frame_background.h"
-
-namespace {
-
-ui::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
-    views::Button::ButtonState state) {
-  switch (state) {
-    case views::Button::STATE_NORMAL:
-      return ui::NavButtonProvider::ButtonState::kNormal;
-    case views::Button::STATE_HOVERED:
-      return ui::NavButtonProvider::ButtonState::kHovered;
-    case views::Button::STATE_PRESSED:
-      return ui::NavButtonProvider::ButtonState::kPressed;
-    case views::Button::STATE_DISABLED:
-      return ui::NavButtonProvider::ButtonState::kDisabled;
-
-    case views::Button::STATE_COUNT:
-    default:
-      NOTREACHED();
-  }
-}
-
-}  // namespace
-
-bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
-    const DrawFrameButtonParams& other) const {
-  return top_area_height == other.top_area_height &&
-         maximized == other.maximized && active == other.active;
-}
+#include "ui/views/window/frame_view_utils_linux.h"
 
 BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
     BrowserWidget* widget,
@@ -91,33 +64,14 @@ void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
 }
 
 void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
-  DrawFrameButtonParams params{
+  views::DrawFrameButtonParams params{
       GetTopAreaHeight() - layout()->FrameEdgeInsets(!IsMaximized()).top(),
       IsMaximized(), ShouldPaintAsActive()};
-  if (cache_ == params) {
-    return;
-  }
-  cache_ = params;
-  nav_button_provider_->RedrawImages(params.top_area_height, params.maximized,
-                                     params.active);
-  for (auto type : {
-           ui::NavButtonProvider::FrameButtonDisplayType::kMinimize,
-           IsMaximized()
-               ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
-               : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize,
-           ui::NavButtonProvider::FrameButtonDisplayType::kClose,
-       }) {
-    for (size_t state = 0; state < views::Button::STATE_COUNT; state++) {
-      views::Button::ButtonState button_state =
-          static_cast<views::Button::ButtonState>(state);
-      views::Button* button = GetButtonFromDisplayType(type);
-      DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
-      static_cast<views::ImageButton*>(button)->SetImageModel(
-          button_state,
-          ui::ImageModel::FromImageSkia(nav_button_provider_->GetImage(
-              type, ButtonStateToNavButtonProviderState(button_state))));
-    }
-  }
+  views::MaybeUpdateCachedFrameButtonImages(
+      nav_button_provider_.get(), params, cache_,
+      [this](ui::NavButtonProvider::FrameButtonDisplayType type) {
+        return GetButtonFromDisplayType(type);
+      });
 }
 
 views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(

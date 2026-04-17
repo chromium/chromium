@@ -408,12 +408,14 @@ void QtUi::RemoveWindowButtonOrderObserver(
   }
 }
 
-std::unique_ptr<ui::NavButtonProvider> QtUi::CreateNavButtonProvider() {
+std::unique_ptr<ui::NavButtonProvider> QtUi::CreateNavButtonProvider(
+    ui::FrameType type) {
   // QT prefers server-side decorations.
   return nullptr;
 }
 
-ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame,
+ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(ui::FrameType type,
+                                                      bool solid_frame,
                                                       bool tiled,
                                                       bool maximized) {
   // QT prefers server-side decorations.

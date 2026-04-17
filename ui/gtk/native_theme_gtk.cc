@@ -160,13 +160,17 @@ void NativeThemeGtk::PaintFrameTopArea(
   GtkCssContext context = GetStyleContextFromCss(
       extra_params.use_custom_frame ? "headerbar.header-bar.titlebar"
                                     : "menubar");
-  ApplyCssToContext(context, "* { border-radius: 0px; border-style: none; }");
+  ApplyCssToContext(context,
+                    extra_params.has_frame_border
+                        ? "* { border-radius: 0px; }"
+                        : "* { border-radius: 0px; border-style: none; }");
   gtk_style_context_set_state(context, extra_params.is_active
                                            ? GTK_STATE_FLAG_NORMAL
                                            : GTK_STATE_FLAG_BACKDROP);
 
   SkBitmap bitmap = GetWidgetBitmap(rect.size(), std::move(context),
-                                    !extra_params.use_custom_frame, false);
+                                    !extra_params.use_custom_frame,
+                                    extra_params.has_frame_border);
   bitmap.setImmutable();
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
                     rect.x(), rect.y());

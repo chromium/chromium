@@ -1188,7 +1188,8 @@ class FakeLinuxUiGetter : public ui::LinuxUiGetter {
       return ui::NativeTheme::GetInstanceForNativeUi();
     }
 
-    ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+    ui::WindowFrameProvider* GetWindowFrameProvider(ui::FrameType type,
+                                                    bool solid_frame,
                                                     bool tiled,
                                                     bool maximized) override {
       // The test relies on this returning null.
