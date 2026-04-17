@@ -1,6 +1,7 @@
 include_rules = [
   "+components/dbus",
   "+components/prefs",
+  "+components/version_info",
   "+crypto",
   "+dbus",
 ]

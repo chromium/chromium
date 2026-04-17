@@ -18,6 +18,20 @@ component("browser") {
   ]
 
   defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
+
+  if (is_win) {
+    sources += [
+      "os_crypt_win.cc",
+      "os_crypt_win.h",
+    ]
+
+    deps += [
+      "//components/prefs",
+      "//components/version_info",
+      "//crypto",
+    ]
+    libs = [ "crypt32.lib" ]
+  }
 }
 
 source_set("test_support") {
@@ -73,6 +87,7 @@ if (is_win) {
       "//base",
       "//components/os_crypt/async/common",
       "//components/prefs",
+      "//components/version_info",
     ]
 
     libs = [ "crypt32.lib" ]
@@ -171,7 +186,10 @@ source_set("unit_tests") {
   }
 
   if (is_win) {
-    sources += [ "dpapi_key_provider_unittest.cc" ]
+    sources += [
+      "dpapi_key_provider_unittest.cc",
+      "os_crypt_win_unittest.cc",
+    ]
     deps += [
       ":dpapi_key_provider",
       "//components/prefs:test_support",
