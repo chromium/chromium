@@ -105,6 +105,14 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
     test_bubble_view_ = std::make_unique<WalletablePassBubbleViewBase>(
         nullptr, tab_interface_->GetContents(), controller_.get());
     controller_->SetTestBubbleView(test_bubble_view_.get());
+
+    auto mock_manager = std::make_unique<NiceMock<MockBubbleManager>>();
+    ON_CALL(*mock_manager, RequestShowController)
+        .WillByDefault([](autofill::BubbleControllerBase& controller, bool) {
+          controller.ShowBubble();
+        });
+    mock_bubble_manager_ = static_cast<MockBubbleManager*>(
+        tab_features_.SetBubbleManagerForTesting(std::move(mock_manager)));
   }
 
  protected:
@@ -113,6 +121,8 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
   }
 
   tabs::TabFeatures& tab_features() { return tab_features_; }
+
+  MockBubbleManager& bubble_manager() { return *mock_bubble_manager_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -124,6 +134,7 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
   std::unique_ptr<FakeTabInterface> tab_interface_;
   std::unique_ptr<WalletablePassBubbleViewBase> test_bubble_view_;
   std::unique_ptr<TestWalletablePassSaveBubbleController> controller_;
+  raw_ptr<MockBubbleManager> mock_bubble_manager_;
 };
 
 // Tests that the callback is run with kAccepted when the bubble is accepted.
@@ -187,21 +198,12 @@ TEST_F(WalletablePassSaveBubbleControllerTest,
   base::test::ScopedFeatureList feature_list{
       autofill::features::kAutofillShowBubblesBasedOnPriorities};
 
-  MockBubbleManager& bubble_manager = *static_cast<MockBubbleManager*>(
-      tab_features().SetBubbleManagerForTesting(
-          std::make_unique<NiceMock<MockBubbleManager>>()));
-
-  ON_CALL(bubble_manager, RequestShowController)
-      .WillByDefault([](autofill::BubbleControllerBase& controller, bool) {
-        controller.ShowBubble();
-      });
-
   base::test::TestFuture<WalletablePassBubbleResult> future;
   controller()->SetUpAndShowSaveBubble({}, future.GetCallback());
   EXPECT_TRUE(controller()->IsShowingBubble());
 
-  EXPECT_CALL(bubble_manager, HasPendingBubbleOfSameType(
-                                  autofill::BubbleType::kWalletablePassSave))
+  EXPECT_CALL(bubble_manager(), HasPendingBubbleOfSameType(
+                                    autofill::BubbleType::kWalletablePassSave))
       .WillOnce(Return(true));
 
   controller()->OnBubbleClosed(WalletablePassBubbleClosedReason::kUnknown);
@@ -216,18 +218,9 @@ TEST_F(WalletablePassSaveBubbleControllerTest, OnBubbleDiscardedRunsCallback) {
   base::test::ScopedFeatureList feature_list{
       autofill::features::kAutofillShowBubblesBasedOnPriorities};
 
-  MockBubbleManager& bubble_manager = *static_cast<MockBubbleManager*>(
-      tab_features().SetBubbleManagerForTesting(
-          std::make_unique<NiceMock<MockBubbleManager>>()));
-
-  ON_CALL(bubble_manager, RequestShowController)
-      .WillByDefault([](autofill::BubbleControllerBase& controller, bool) {
-        controller.ShowBubble();
-      });
-
   base::test::TestFuture<WalletablePassBubbleResult> future;
 
-  EXPECT_CALL(bubble_manager, RequestShowController);
+  EXPECT_CALL(bubble_manager(), RequestShowController);
   controller()->SetUpAndShowSaveBubble({}, future.GetCallback());
   controller()->OnBubbleDiscarded();
   EXPECT_EQ(future.Get(), WalletablePassBubbleResult::kDiscarded);

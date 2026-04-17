@@ -228,8 +228,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
                 base::BindRepeating(&BuildMockTrustSafetySentimentService)));
 
     // Set the visibility to VISIBLE as the web contents are initially hidden.
-    active_web_contents()->UpdateWebContentsVisibility(
-        content::Visibility::VISIBLE);
+    SimulateTabVisibilityChange(content::Visibility::VISIBLE);
   }
 
   void TearDown() override {
@@ -340,6 +339,21 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  void SimulateTabVisibilityChange(content::Visibility visibility) {
+    active_web_contents()->UpdateWebContentsVisibility(visibility);
+
+    // When BubbleManager is enabled, the framework destroys the widget on tab
+    // hide. Because a fake bubble is used that the framework doesn't track, it
+    // must manually simulate this destruction lifecycle.
+    if (visibility == content::Visibility::HIDDEN) {
+      controller()->HideSaveCardBubble();
+    } else if (visibility == content::Visibility::VISIBLE) {
+      if (controller()->ShouldReshowOnTabVisible()) {
+        controller()->ReshowBubble(/*is_user_gesture=*/false);
+      }
+    }
+  }
+
   TestSaveCardBubbleControllerImpl* controller() {
     return static_cast<TestSaveCardBubbleControllerImpl*>(
         TestSaveCardBubbleControllerImpl::FromWebContents(
@@ -1841,16 +1855,14 @@ TEST_F(SaveCardBubbleControllerImplTest, VisibilityChange_Upload_HideBubble) {
   EXPECT_TRUE(IsSaveCardBubbleVisible());
 
   // Simulate switching to a different tab.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
+  SimulateTabVisibilityChange(content::Visibility::HIDDEN);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
 
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 1);
 
   // Simulate returning to tab where bubble was previously shown.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
+  SimulateTabVisibilityChange(content::Visibility::VISIBLE);
 
   EXPECT_FALSE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(controller()->IsIconVisible());
@@ -1872,28 +1884,17 @@ TEST_F(SaveCardBubbleControllerImplTest,
   browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfTab(tab));
 
-  // Usually, the visibility changes when changing tabs but it doesn't in the
-  // test so it needs to be simulated.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
-  EXPECT_FALSE(IsSaveCardBubbleVisible());
-
   // Check that the bubble is shown when returning to the tab which previously
   // showed the bubble.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
   EXPECT_TRUE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(controller()->IsIconVisible());
 
   // Check that the WebContents showing a subsequent time does not show the
   // bubble view.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
+  SimulateTabVisibilityChange(content::Visibility::HIDDEN);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
 
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
-
+  SimulateTabVisibilityChange(content::Visibility::VISIBLE);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(controller()->IsIconVisible());
 }
@@ -1910,11 +1911,9 @@ TEST_F(SaveCardBubbleControllerImplTest,
             PaymentsBubbleType::kUploadInProgress);
 
   // Simulate switching to a different tab and back to the original tab.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
+  SimulateTabVisibilityChange(content::Visibility::HIDDEN);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
+  SimulateTabVisibilityChange(content::Visibility::VISIBLE);
 
   EXPECT_EQ(controller()->GetPaymentsBubbleType(),
             PaymentsBubbleType::kUploadInProgress);
@@ -1937,8 +1936,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   TestSaveCardBubbleControllerImpl* save_card_controller = controller();
 
   // Switch to a different tab.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
+  SimulateTabVisibilityChange(content::Visibility::HIDDEN);
   AddTab(browser(), GURL("about:blank"));
   EXPECT_FALSE(IsSaveCardBubbleVisible());
 
@@ -1954,8 +1952,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // Return to the original tab.
   browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfTab(tab));
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
+  SimulateTabVisibilityChange(content::Visibility::VISIBLE);
 
   // Expect that the confirmation bubble is visible.
   EXPECT_TRUE(IsConfirmationBubbleVisible());
@@ -1976,13 +1973,6 @@ TEST_F(SaveCardBubbleControllerImplTest,
       SaveCardPromptOffer::kShown, 0);
 
   controller()->OnLegalMessageLinkClicked(GURL("about:blank"));
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfTab(tab));
-
-  // Usually, the visibility changes when changing tabs but it doesn't in the
-  // test so it needs to be simulated.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
 
   // Ensure that closing the bubble through clicking a link does not get logged
   // to the metrics.
@@ -1991,9 +1981,8 @@ TEST_F(SaveCardBubbleControllerImplTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveCreditCardPromptResult.Upload.Reshows", 0);
 
-  // Reshow bubble view.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::VISIBLE);
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfTab(tab));
 
   // Expect the prompt metric not to change from the initial bubble showing
   // because this is a reshowing after returning to the original tab after a
@@ -2006,14 +1995,6 @@ TEST_F(SaveCardBubbleControllerImplTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Upload.Reshows",
       SaveCardPromptOffer::kShown, 0);
-
-  // Ensure that metrics are recorded on a subsequent bubble close.
-  active_web_contents()->UpdateWebContentsVisibility(
-      content::Visibility::HIDDEN);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.SaveCreditCardPromptResult.Upload.Reshows", 1);
 }
 
 // Test that `HideSaveCardBubble()` hides save card offer and confirmation
