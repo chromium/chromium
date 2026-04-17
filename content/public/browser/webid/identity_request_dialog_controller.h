@@ -192,6 +192,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
                                    GURL /*idp_login_url*/)>;
   using MoreDetailsCallback = base::OnceCallback<void()>;
   using AccountsDisplayedCallback = base::OnceCallback<void()>;
+  using ShownModalAsyncCallback =
+      base::OnceCallback<void(content::WebContents*)>;
 
   IdentityRequestDialogController() = default;
 
@@ -308,7 +310,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Show a modal dialog that loads content from the IdP.
   virtual WebContents* ShowModalDialog(const GURL& url,
                                        blink::mojom::RpMode rp_mode,
-                                       DismissCallback dismiss_callback);
+                                       DismissCallback dismiss_callback,
+                                       ShownModalAsyncCallback on_shown_async);
 
   // Closes the modal dialog.
   virtual void CloseModalDialog();

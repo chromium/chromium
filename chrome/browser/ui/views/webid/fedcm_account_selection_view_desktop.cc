@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -48,6 +49,30 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace {
+
+// We could have a situation where the WebContents with an actor task opens a
+// popup which then triggers the dialog, so we need to check the opener.
+tabs::TabInterface* InitiatingTaskTab(tabs::TabInterface* source_tab) {
+  if (!base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
+    return nullptr;
+  }
+
+  CHECK(source_tab);
+
+  if (actor::HaveActiveTaskForContents(source_tab->GetContents())) {
+    return source_tab;
+  }
+  content::WebContents* opener =
+      source_tab->GetContents()->GetFirstWebContentsInLiveOriginalOpenerChain();
+  if (actor::HaveActiveTaskForContents(opener)) {
+    return tabs::TabInterface::GetFromContents(opener);
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
@@ -72,6 +97,13 @@ int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
 namespace webid {
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
+
+FedCmAccountSelectionView::WithheldPopupState::WithheldPopupState() = default;
+FedCmAccountSelectionView::WithheldPopupState::WithheldPopupState(
+    const GURL& url,
+    base::OnceCallback<void(content::WebContents*)> on_shown)
+    : url(url), on_shown(std::move(on_shown)) {}
+FedCmAccountSelectionView::WithheldPopupState::~WithheldPopupState() = default;
 
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate,
@@ -810,7 +842,9 @@ void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     const GURL& url,
-    blink::mojom::RpMode rp_mode) {
+    blink::mojom::RpMode rp_mode,
+    content::IdentityRequestDialogController::ShownModalAsyncCallback
+        on_shown_async) {
   if (popup_window_) {
     // TODO(crbug.com/324052630): Support add account with multi IDP API. An add
     // account pop-up of a different IDP might be open, so this might need to
@@ -836,13 +870,19 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
   // better UX.
   UpdateDialogVisibilityAndPosition();
 
-  // The FedCM dialog should not be dismissed if the use other account pop-up is
-  // closed, which can only be triggered from account selection. On the other
-  // hand, if the popup is from another flow, then closing the popup should also
-  // exit out of the entire FedCM flow.
-  bool user_close_cancels_flow =
-      GetSheetType() != webid::SheetType::kAccountSelection;
-  return popup_window_->ShowPopupWindow(url, user_close_cancels_flow);
+  if (tabs::TabInterface* initiating_task_tab = InitiatingTaskTab(tab_)) {
+    if (actor::IsRunningBackgroundActorTask(
+            *initiating_task_tab->GetContents())) {
+      tab_subscriptions_.push_back(
+          initiating_task_tab->RegisterDidActivate(base::BindRepeating(
+              &FedCmAccountSelectionView::BackgroundTaskTabForegrounded,
+              weak_ptr_factory_.GetWeakPtr())));
+      withheld_popup_state_.emplace(url, std::move(on_shown_async));
+      return nullptr;
+    }
+  }
+
+  return ShowPopupWindow(url);
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {
@@ -950,6 +990,18 @@ void FedCmAccountSelectionView::WillDetach(
 void FedCmAccountSelectionView::ModalUIChanged(tabs::TabInterface* tab) {
   if (tab == tab_.get()) {
     UpdateDialogVisibilityAndPosition();
+  }
+}
+
+void FedCmAccountSelectionView::BackgroundTaskTabForegrounded(
+    tabs::TabInterface* tab) {
+  if (withheld_popup_state_) {
+    GURL url = withheld_popup_state_->url;
+    auto on_shown = std::move(withheld_popup_state_->on_shown);
+    withheld_popup_state_.reset();
+    if (popup_window_) {
+      std::move(on_shown).Run(ShowPopupWindow(url));
+    }
   }
 }
 
@@ -1406,6 +1458,18 @@ void FedCmAccountSelectionView::ShouldShowDialog(bool& should_show) {
       should_show = false;
     }
   }
+}
+
+content::WebContents* FedCmAccountSelectionView::ShowPopupWindow(
+    const GURL& url) {
+  CHECK(popup_window_);
+  // The FedCM dialog should not be dismissed if the use other account pop-up
+  // is closed, which can only be triggered from account selection. On the
+  // other hand, if the popup is from another flow, then closing the popup
+  // should also exit out of the entire FedCM flow.
+  bool user_close_cancels_flow =
+      GetSheetType() != webid::SheetType::kAccountSelection;
+  return popup_window_->ShowPopupWindow(url, user_close_cancels_flow);
 }
 
 bool FedCmAccountSelectionView::ShowPageAction(

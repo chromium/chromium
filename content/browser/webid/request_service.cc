@@ -1742,12 +1742,25 @@ void RequestService::ShowModalDialog(DialogType dialog_type,
   config_url_ = idp_config_url;
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Popup.DialogType", dialog_type_);
 
+  auto create_registry_async = [](base::WeakPtr<RequestService> weak_this,
+                                  const GURL& idp_config_url,
+                                  WebContents* web_contents) {
+    if (web_contents && weak_this) {
+      IdentityRegistry::CreateForWebContents(web_contents, weak_this,
+                                             idp_config_url);
+    }
+  };
+
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url_to_show, rp_mode_,
       base::BindOnce(&RequestService::OnDialogDismissed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(create_registry_async, weak_ptr_factory_.GetWeakPtr(),
+                     idp_config_url));
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
+  // If the showing of the model dialog was deferred, this will be null, and
+  // we'll get the future WebContents via `create_registry_async`.
   if (web_contents) {
     IdentityRegistry::CreateForWebContents(
         web_contents, weak_ptr_factory_.GetWeakPtr(), idp_config_url);

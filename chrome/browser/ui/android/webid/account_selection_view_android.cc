@@ -418,7 +418,9 @@ void AccountSelectionViewAndroid::ShowUrl(LinkType link_type, const GURL& url) {
 
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
     const GURL& url,
-    blink::mojom::RpMode rp_mode) {
+    blink::mojom::RpMode rp_mode,
+    content::IdentityRequestDialogController::ShownModalAsyncCallback
+        on_shown_async) {
   if (!MaybeCreateJavaObject(rp_mode)) {
     // The Java object is tied to the bottomsheet availability, so if we hadn't
     // created one and the bottomsheet is not available then the CCT will not be

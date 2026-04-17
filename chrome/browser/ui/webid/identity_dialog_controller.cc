@@ -514,7 +514,9 @@ void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {
 content::WebContents* IdentityDialogController::ShowModalDialog(
     const GURL& url,
     blink::mojom::RpMode rp_mode,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    content::IdentityRequestDialogController::ShownModalAsyncCallback
+        on_shown_async) {
   on_dismiss_ = std::move(dismiss_callback);
   rp_mode_ = rp_mode;
   if (!TrySetAccountView()) {
@@ -526,7 +528,8 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
   did_show_ui_ = true;
   NotifyEmbedderOfResult(FederatedLoginResult::kContinuation);
   // Show the modal dialog even if FedCM UI is not being shown.
-  return account_view_->ShowModalDialog(url, rp_mode);
+  return account_view_->ShowModalDialog(url, rp_mode,
+                                        std::move(on_shown_async));
 }
 
 void IdentityDialogController::CloseModalDialog() {

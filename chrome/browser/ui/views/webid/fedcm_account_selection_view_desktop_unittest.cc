@@ -555,7 +555,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
                          ? controller.GetPopupWindow()->show_popup_window_count_
                          : 0;
     controller.ShowModalDialog(GURL(u"https://example.com"),
-                               blink::mojom::RpMode::kPassive);
+                               blink::mojom::RpMode::kPassive,
+                               base::DoNothing());
     EXPECT_EQ(controller.GetPopupWindow()->show_popup_window_count_,
               show_count + 1);
   }
@@ -1808,7 +1809,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user clicking on a button to sign in with an IDP via active mode.
   controller->ShowModalDialog(GURL(u"https://example.com"),
-                              blink::mojom::RpMode::kActive);
+                              blink::mojom::RpMode::kActive, base::DoNothing());
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
 
   // Emulate user closing the pop-up window.
@@ -2080,7 +2081,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user clicking on a button to sign in with an IDP via active mode.
   controller->ShowModalDialog(GURL(u"https://example.com"),
-                              blink::mojom::RpMode::kActive);
+                              blink::mojom::RpMode::kActive, base::DoNothing());
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
 
   EXPECT_TRUE(controller->IsDialogWidgetVisible());
@@ -2452,7 +2453,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Open loading state pop-up and expect it to call `SetCustomYPosition`.
   controller->ShowModalDialog(GURL(u"https://example.com"),
-                              blink::mojom::RpMode::kActive);
+                              blink::mojom::RpMode::kActive, base::DoNothing());
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
   EXPECT_EQ(controller->GetPopupWindow()->set_custom_y_position_count_, 1);
 
@@ -2471,7 +2472,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Open use other account pop-up and expect it to not call
   // `SetCustomYPosition`.
   controller->ShowModalDialog(GURL(u"https://example.com"),
-                              blink::mojom::RpMode::kActive);
+                              blink::mojom::RpMode::kActive, base::DoNothing());
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
   EXPECT_EQ(controller->GetPopupWindow()->set_custom_y_position_count_, 0);
 
@@ -2488,7 +2489,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Open loading state pop-up and expect it to call `SetActiveModeSheetType`.
   controller->ShowModalDialog(GURL(u"https://example.com"),
-                              blink::mojom::RpMode::kActive);
+                              blink::mojom::RpMode::kActive, base::DoNothing());
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
   EXPECT_EQ(controller->GetPopupWindow()->set_active_mode_sheet_type_count_, 1);
 
@@ -2507,7 +2508,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Open use other account pop-up and expect it to call
   // `SetActiveModeSheetType`.
   controller->ShowModalDialog(GURL(u"https://example.com"),
-                              blink::mojom::RpMode::kActive);
+                              blink::mojom::RpMode::kActive, base::DoNothing());
   EXPECT_EQ(controller->GetPopupWindow()->show_popup_window_count_, 1);
   EXPECT_EQ(controller->GetPopupWindow()->set_active_mode_sheet_type_count_, 1);
 

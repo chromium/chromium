@@ -164,7 +164,8 @@ void IdentityRequestDialogController::ShowUrl(LinkType type, const GURL& url) {}
 WebContents* IdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
     blink::mojom::RpMode rp_mode,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    ShownModalAsyncCallback on_shown_async) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }

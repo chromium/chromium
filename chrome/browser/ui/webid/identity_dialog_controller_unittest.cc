@@ -122,7 +122,10 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(content::WebContents*,
               ShowModalDialog,
-              (const GURL& url, blink::mojom::RpMode rp_mode),
+              (const GURL& url,
+               blink::mojom::RpMode rp_mode,
+               content::IdentityRequestDialogController::ShownModalAsyncCallback
+                   on_shown_async),
               (override));
 
   MOCK_METHOD(void, CloseModalDialog, (), (override));
@@ -952,7 +955,7 @@ TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndSuccess) {
 
     controller->ShowModalDialog(GURL("https://idp.example/login"),
                                 blink::mojom::RpMode::kActive,
-                                base::DoNothing());
+                                base::DoNothing(), base::DoNothing());
   }
 
   // Test Continuation -> Success.
@@ -1002,7 +1005,7 @@ TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndFailure) {
 
     controller->ShowModalDialog(GURL("https://idp.example/login"),
                                 blink::mojom::RpMode::kActive,
-                                base::DoNothing());
+                                base::DoNothing(), base::DoNothing());
   }
 
   // Test Continuation -> Failure.
@@ -1240,7 +1243,8 @@ TEST_F(IdentityDialogControllerTest, ShowModalDialogNotGuardedByActorTask) {
       .WillOnce(testing::Return(nullptr));
 
   controller->ShowModalDialog(GURL("https://idp.example/login"),
-                              blink::mojom::RpMode::kActive, base::DoNothing());
+                              blink::mojom::RpMode::kActive, base::DoNothing(),
+                              base::DoNothing());
 }
 
 TEST_F(IdentityDialogControllerTest, PassiveModeNotGuardedByActorTask) {
