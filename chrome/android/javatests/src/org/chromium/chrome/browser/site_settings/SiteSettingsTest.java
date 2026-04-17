@@ -1743,7 +1743,6 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/503017220
     public void testBlockAllThirdPartyCookiesSnackbarHiddenWhenDeprecationEnabled() {
         var userActionTester = new UserActionTester();
         // Enable Topics API.
@@ -1755,6 +1754,13 @@ public class SiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    CookieSettingsPreference pref = getCookieToggle(settingsActivity);
+                    return pref != null
+                            && pref.getButton(CookieControlsMode.BLOCK_THIRD_PARTY) != null;
+                },
+                "Cookie toggle button was never bound to the view.");
         // Select the block all 3PC option.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
