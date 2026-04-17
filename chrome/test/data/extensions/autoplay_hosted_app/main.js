@@ -9,7 +9,7 @@ function runTest() {
   return new Promise(resolve => {
     iframe.addEventListener('load', function() {
       window.addEventListener('message', (e) => {
-        resolve(('autoplayed' == e.data || 'NotSupportedError' == e.data));
+        resolve(('autoplayed' === e.data || 'NotSupportedError' === e.data));
       }, {once: true});
 
       iframe.contentWindow.postMessage('start', '*');

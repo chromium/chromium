@@ -4,7 +4,7 @@
 
 const validate = function(policy) {
   // This is the policy set by component_cloud_policy_browsertest.cc.
-  if (JSON.stringify(policy) == '{"Another":"turn_it_off"}') {
+  if (JSON.stringify(policy) === '{"Another":"turn_it_off"}') {
     chrome.test.sendMessage('ok');
   } else {
     chrome.test.sendMessage('fail');
@@ -13,10 +13,10 @@ const validate = function(policy) {
 
 // Get the initial policy, in case it was fetched before the extension started.
 chrome.storage.managed.get(function(policy) {
-  if (JSON.stringify(policy) == '{}') {
+  if (JSON.stringify(policy) === '{}') {
     // Start listening for the update event.
     chrome.storage.onChanged.addListener(function(changes, namespace) {
-      if (namespace == 'managed') {
+      if (namespace === 'managed') {
         // Get all the policies and validate them.
         chrome.storage.managed.get(validate);
       }

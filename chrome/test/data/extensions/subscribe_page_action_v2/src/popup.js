@@ -14,7 +14,7 @@ function main() {
     const tab = tabs[0];
     chrome.storage.local.get(tab.id.toString(), function(result) {
       const feeds = result[tab.id];
-      if (feeds.length == 1) {
+      if (feeds.length === 1) {
         // Only one feed, no need for a bubble; go straight to the subscribe
         // page.
         preview(feeds[0].href);
@@ -65,7 +65,7 @@ function onClick(event) {
 function preview(feed_url) {
   // See if we need to skip the preview page and subscribe directly.
   let url = '';
-  if (window.localStorage && window.localStorage.showPreviewPage == 'No') {
+  if (window.localStorage && window.localStorage.showPreviewPage === 'No') {
     // Skip the preview.
     url = window.localStorage.defaultReader.replace('%s', escape(feed_url));
   } else {

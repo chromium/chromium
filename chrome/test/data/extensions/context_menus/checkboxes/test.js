@@ -7,7 +7,7 @@ const checkboxOneId = 'checkbox1';
 const checkboxTwoId = 'checkbox2';
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == menuItemId) {
+  if (info.menuItemId === menuItemId) {
     chrome.test.sendMessage('onclick normal item');
     chrome.contextMenus.update('checkbox2', {checked: false}, function() {
       chrome.test.sendMessage('checkbox2 unchecked');

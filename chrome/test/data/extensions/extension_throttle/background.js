@@ -12,7 +12,7 @@ function canMakeRequest(url) {
   return new Promise(function(resolve, reject) {
     const xhr = new XMLHttpRequest();
     xhr.onload = function() {
-      if (this.status == 503) {
+      if (this.status === 503) {
         resolve(true);
       } else {
         reject('Unexpected status: ' + this.status);
@@ -40,7 +40,7 @@ async function runTest(url, requestsToMake, expectedFailRequestNum) {
 }
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-  if (message.type == 'xhr') {
+  if (message.type === 'xhr') {
     runTest(
         message.url, message.requestsToMake, message.expectedFailRequestNum);
   } else {

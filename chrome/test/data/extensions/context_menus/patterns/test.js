@@ -24,7 +24,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
   // update it, and then proceed with the c++ code in the browser test.
   const properties2 = {title: 'test_item2', id: 'item2'};
 
-  var id2 = chrome.contextMenus.create(properties2, function() {
+  const id2 = chrome.contextMenus.create(properties2, function() {
     const update_properties = {documentUrlPatterns: patterns};
     chrome.contextMenus.update(
         id2, update_properties, make_browsertest_proceed);

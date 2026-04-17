@@ -5,7 +5,7 @@
 const url = new URL(location.href).searchParams.get('url');
 const filter = {
   urls: [url],
-  types: ['xmlhttprequest']
+  types: ['xmlhttprequest'],
 };
 
 chrome.webRequest.onCompleted.addListener(function(details) {

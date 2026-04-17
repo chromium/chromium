@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 window.addEventListener('message', function(event) {
-  if (event.source != window || !event.data) {
+  if (event.source !== window || !event.data) {
     return;
   }
 

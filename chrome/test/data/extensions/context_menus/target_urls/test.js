@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         title: 'item1',
         contexts: ['link'],
         id: 'my_id',
-        targetUrlPatterns: patterns
+        targetUrlPatterns: patterns,
       },
       function() {
         if (!chrome.runtime.lastError) {

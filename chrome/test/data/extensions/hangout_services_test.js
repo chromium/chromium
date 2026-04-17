@@ -119,7 +119,7 @@ function runAllTests(callback) {
   let testIndex = 0;
 
   function startTest(test) {
-    console.log('Starting ' + test.name);
+    console.info('Starting ' + test.name);
 
     // Start the test function...
     test(function(currentResults) {
@@ -136,27 +136,27 @@ function runAllTests(callback) {
   function nextTest(testName, currentResults, timedOut) {
     // The check for testIndex is necessary for timeouts arriving
     // after testIndex is already past the end of the TESTS array.
-    if (testIndex >= TESTS.length || testName != TESTS[testIndex].name) {
+    if (testIndex >= TESTS.length || testName !== TESTS[testIndex].name) {
       // Either a timeout of a function that already completed, or a
       // function completing after a timeout. Either way we ignore.
-      console.log(
+      console.info(
           'Ignoring results for ' + testName + ' (timedout: ' + timedOut + ')');
       return;
     }
 
     if (timedOut) {
-      console.log('Timed out: ' + testName);
+      console.info('Timed out: ' + testName);
       results = results + 'Timed out: ' + testName + '\n';
     } else {
-      console.log('Got results for ' + testName + ': ' + currentResults);
-      if (currentResults != '') {
+      console.info('Got results for ' + testName + ': ' + currentResults);
+      if (currentResults !== '') {
         results = results + 'Failure in ' + testName + ':\n';
         results = results + currentResults;
       }
     }
 
     ++testIndex;
-    if (testIndex == TESTS.length) {
+    if (testIndex === TESTS.length) {
       callback(results);
     } else {
       startTest(TESTS[testIndex]);
@@ -168,8 +168,8 @@ function runAllTests(callback) {
 
 function testCpuGetInfo(callback) {
   cpuGetInfo(function(info) {
-    if (info.numOfProcessors != 0 && info.archName != '' &&
-        info.modelName != '') {
+    if (info.numOfProcessors !== 0 && info.archName !== '' &&
+        info.modelName !== '') {
       callback('');
     } else {
       callback('Missing information in CpuInfo');
@@ -224,7 +224,7 @@ function testStoreLog(callback) {
       loggingStop(function() {
         loggingStore(logId, function() {
           loggingUploadStored(logId, function(loggingResult) {
-            if (loggingResult != '') {
+            if (loggingResult !== '') {
               callback('');
             } else {
               callback('Got empty upload result.');

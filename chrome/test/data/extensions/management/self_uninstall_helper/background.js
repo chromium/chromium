@@ -10,8 +10,9 @@ chrome.management.onUninstalled.addListener(function(id) {
     let found = false;
     for (let i = 0; i < items.length; i++) {
       chrome.test.assertNe(items.id, id);
-      if (items[i].name != EXPECTED_NAME)
+      if (items[i].name !== EXPECTED_NAME) {
         continue;
+      }
       found = true;
     }
     chrome.test.assertFalse(found);

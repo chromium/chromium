@@ -11,7 +11,7 @@ if (!chrome || !chrome.test || !chrome.test.onMessage) {
 }
 
 chrome.test.listenOnce(chrome.test.onMessage, function(args) {
-  if (args.data != 'hi') {
+  if (args.data !== 'hi') {
     console.error('Expected "hi", Actual ' + JSON.stringify(args.data));
     chrome.test.sendMessage('false');
   } else {

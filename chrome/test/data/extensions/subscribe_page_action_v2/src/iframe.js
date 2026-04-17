@@ -59,7 +59,7 @@ function buildPreview(doc) {
   // Now parse the rest. Some use <entry> for each feed item, others use
   // <channel><item>.
   let entries = doc.getElementsByTagName('entry');
-  if (entries.length == 0) {
+  if (entries.length === 0) {
     entries = doc.getElementsByTagName('item');
   }
 
@@ -119,10 +119,10 @@ function buildPreview(doc) {
 
     // If we found a link we'll create an anchor element,
     // otherwise just use a bold headline for the title.
-    const anchor = (link != '') ? document.createElement('a') :
-                                  document.createElement('strong');
+    const anchor = (link !== '') ? document.createElement('a') :
+                                   document.createElement('strong');
     anchor.id = 'anchor_' + String(i);
-    if (link != '') {
+    if (link !== '') {
       goog.dom.safe.setAnchorHref(anchor, goog.html.SafeUrl.sanitize(link));
     }
     goog.dom.safe.setInnerHtml(anchor, sanitizer.sanitize(itemTitle));

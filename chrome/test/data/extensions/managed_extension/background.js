@@ -7,7 +7,7 @@ const events = [];
 const handleReply = function(reply) {
   chrome.test.log('handle reply: "' + reply + '"');
   // |reply| is the next command for the extension.
-  if (reply == 'idle') {
+  if (reply === 'idle') {
     // Do nothing, wait for events.
   } else if (reply.startsWith('get-policy-')) {
     // Send a policy value back.
@@ -24,7 +24,7 @@ const handleReply = function(reply) {
 };
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
-  if (namespace == 'managed') {
+  if (namespace === 'managed') {
     chrome.test.log('change event: ' + JSON.stringify(changes));
     events.push(changes);
     chrome.test.sendMessage('event', handleReply);

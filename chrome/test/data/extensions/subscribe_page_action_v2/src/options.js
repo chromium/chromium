@@ -59,7 +59,7 @@ function main() {
 
   // Set up the 'show preview?' checkbox.
   const skipPreview = document.getElementById('alwaysUseDefault');
-  skipPreview.checked = window.localStorage.showPreviewPage == 'No';
+  skipPreview.checked = window.localStorage.showPreviewPage === 'No';
 }
 
 function toggleFeedPreview() {
@@ -108,13 +108,13 @@ function onSelectionChanged() {
 function editReader(index) {
   const readerListbox = document.getElementById('readerListbox');
 
-  if (index == -1) {
+  if (index === -1) {
     // Adding a new item, make sure the text boxes are empty.
     document.getElementById('urlText').value = '';
     document.getElementById('descriptionText').value = '';
     editingIndex = -1;      // New item.
     editingDefault = true;  // New items become default items.
-  } else if (index == 0) {
+  } else if (index === 0) {
     // Editing some item, find the current item index and store it.
     editingIndex = readerListbox.selectedIndex;
     const oldOption = readerListbox.options[editingIndex];
@@ -191,7 +191,7 @@ function save() {
   const url = document.getElementById('urlText').value;
   const description = document.getElementById('descriptionText').value;
 
-  if (editingIndex == -1) {
+  if (editingIndex === -1) {
     // Construct a new list.
     const newFeedList = [];
 

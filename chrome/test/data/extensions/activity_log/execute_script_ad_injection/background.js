@@ -19,12 +19,12 @@ const code =
  * @param {number} tabId The id of the tab to inject into.
  */
 function injectScript(tabId) {
-  console.log('injectScript');
+  console.info('injectScript');
   if (!didInject) {
-    console.log('injecting');
+    console.info('injecting');
     didInject = true;
     chrome.tabs.executeScript(tabId, {code: code}, function() {
-      console.log('injected');
+      console.info('injected');
       chrome.test.sendMessage('Done');
     });
   }

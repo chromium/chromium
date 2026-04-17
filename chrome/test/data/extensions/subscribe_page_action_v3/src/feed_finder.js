@@ -50,7 +50,7 @@ function isFeedDocument() {
   debugMsg(logLevels.info, 'Checking if document is feed');
 
   let soleTagInBody = '';
-  if (body && body.childElementCount == 1) {
+  if (body && body.childElementCount === 1) {
     soleTagInBody = body.children[0].tagName;
     debugMsg(logLevels.info, 'The sole tag in the body is: ' + soleTagInBody);
   }
@@ -59,8 +59,8 @@ function isFeedDocument() {
   // ComputerWorld feeds. We cannot check for this at document_start since
   // the body tag hasn't been defined at that time (contains only HTML element
   // with no children).
-  if (soleTagInBody == 'RSS' || soleTagInBody == 'FEED' ||
-      soleTagInBody == 'RDF') {
+  if (soleTagInBody === 'RSS' || soleTagInBody === 'FEED' ||
+      soleTagInBody === 'RDF') {
     debugMsg(logLevels.info, 'Found feed: Tag is: ' + soleTagInBody);
     chrome.runtime.sendMessage({msg: 'feedDocument', href: location.href});
     return true;
@@ -70,7 +70,7 @@ function isFeedDocument() {
   // application/atom+xml as text/plain, resulting in a body tag with one
   // PRE child containing the XML. So, we attempt to parse it as XML and look
   // for RSS tags within.
-  if (soleTagInBody == 'PRE') {
+  if (soleTagInBody === 'PRE') {
     debugMsg(logLevels.info, 'Found feed: Wrapped in PRE');
     const domParser = new DOMParser();
     const doc = domParser.parseFromString(body.textContent, 'text/xml');

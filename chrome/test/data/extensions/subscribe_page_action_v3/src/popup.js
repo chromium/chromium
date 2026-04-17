@@ -23,7 +23,7 @@ function main() {
         const msg = document.getElementById('heading');
         msg.innerText =
             chrome.i18n.getMessage('rss_subscription_not_valid_feed');
-      } else if (feeds.length == 1) {
+      } else if (feeds.length === 1) {
         // Only one feed, no need for a bubble; go straight to the subscribe
         // page.
         preview(feeds[0].href);
@@ -74,7 +74,7 @@ function onClick(event) {
 function preview(feed_url) {
   // See if we need to skip the preview page and subscribe directly.
   let url = '';
-  if (window.localStorage && window.localStorage.showPreviewPage == 'No') {
+  if (window.localStorage && window.localStorage.showPreviewPage === 'No') {
     // Skip the preview.
     url = window.localStorage.defaultReader.replace('%s', escape(feed_url));
   } else {

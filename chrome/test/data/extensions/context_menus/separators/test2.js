@@ -6,7 +6,7 @@
 chrome.contextMenus.removeAll();
 
 // Create a bunch of items underneath an explicit parent.
-var parent = chrome.contextMenus.create({'title': 'parent'}, function() {
+const parent = chrome.contextMenus.create({'title': 'parent'}, function() {
   createTestSet(parent, function() {
     chrome.test.sendMessage('test2 create finished');
   });

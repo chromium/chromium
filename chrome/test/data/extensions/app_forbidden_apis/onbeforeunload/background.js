@@ -22,7 +22,7 @@ try {
 }
 
 try {
-  var beforeUnloadTricky = {
+  const beforeUnloadTricky = {
     toString: function() {
       beforeUnloadTricky.toString = function() {
         return 'beforeunload';

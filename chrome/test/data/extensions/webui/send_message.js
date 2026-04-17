@@ -11,7 +11,7 @@ if (!chrome || !chrome.test || !chrome.test.sendMessage) {
 }
 
 chrome.test.sendMessage('ping', function(reply) {
-  if (reply != 'pong') {
+  if (reply !== 'pong') {
     console.error('Expected "pong", Actual ' + JSON.stringify(reply));
     chrome.test.sendMessage('false');
   } else {

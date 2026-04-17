@@ -10,7 +10,7 @@ chrome.test.getConfig(function(config) {
   iframe.addEventListener('load', function() {
     window.addEventListener('message', (e) => {
       chrome.test.assertTrue(
-          'autoplayed' == e.data || 'NotSupportedError' == e.data);
+          'autoplayed' === e.data || 'NotSupportedError' === e.data);
       chrome.test.notifyPass();
     }, {once: true});
 

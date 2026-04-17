@@ -12,17 +12,26 @@
 // NOTE2: Apologies to other people putting things on chrome which aren't
 //        related and whose tests fail.
 
-var expected = [
-  'activityLogPrivate', 'csi', 'developerPrivate', 'getVariableValue',
-  'loadTimes', 'management', 'metricsPrivate', 'runtime', 'send', 'test',
-  'timeTicks'
+const expected = [
+  'activityLogPrivate',
+  'csi',
+  'developerPrivate',
+  'getVariableValue',
+  'loadTimes',
+  'management',
+  'metricsPrivate',
+  'runtime',
+  'send',
+  'test',
+  'timeTicks',
 ];
-var actual = Object.keys(chrome).sort();
+const actual = Object.keys(chrome).sort();
 
-var isEqual = expected.length == actual.length;
-for (var i = 0; i < expected.length && isEqual; i++) {
-  if (expected[i] != actual[i])
+let isEqual = expected.length === actual.length;
+for (let i = 0; i < expected.length && isEqual; i++) {
+  if (expected[i] !== actual[i]) {
     isEqual = false;
+  }
 }
 
 if (!isEqual) {

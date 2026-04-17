@@ -8,16 +8,16 @@ const item1_id = 'item1';
 const item2_id = 'item2';
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == radio1_id) {
+  if (info.menuItemId === radio1_id) {
     chrome.test.sendMessage('onclick radio1');
-  } else if (info.menuItemId == radio2_id) {
+  } else if (info.menuItemId === radio2_id) {
     chrome.test.sendMessage('onclick radio2');
-  } else if (info.menuItemId == item1_id) {
+  } else if (info.menuItemId === item1_id) {
     chrome.test.sendMessage('onclick normal item');
     chrome.contextMenus.update(radio1_id, {checked: false}, function() {
       chrome.test.sendMessage('radio1 updated');
     });
-  } else if (info.menuItemId == item2_id) {
+  } else if (info.menuItemId === item2_id) {
     chrome.test.sendMessage('onclick second normal item');
     chrome.contextMenus.update(radio2_id, {checked: false}, function() {
       chrome.test.sendMessage('radio2 updated');

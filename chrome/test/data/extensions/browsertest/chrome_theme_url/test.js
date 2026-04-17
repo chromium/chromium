@@ -6,7 +6,7 @@ window.onload = function() {
   chrome.test.runTests([
     function theme() {
       const img = document.getElementById('theme');
-      const loaded = img.naturalWidth == 16 && img.naturalHeight == 16;
+      const loaded = img.naturalWidth === 16 && img.naturalHeight === 16;
       chrome.test.sendMessage(loaded ? 'loaded' : 'not loaded');
     },
   ]);

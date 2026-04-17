@@ -187,7 +187,7 @@ const FAKE_SIGN_DIGEST_REQUEST_RESPONSE = (new Uint8Array([1, 2, 3])).buffer;
 
 
 function log(message) {
-  console.log('[Sign-in Screen Test App] ' + message);
+  console.info('[Sign-in Screen Test App] ' + message);
 }
 
 function logError(message) {
@@ -221,7 +221,7 @@ function dumpArrayBuffers(arrayBuffers) {
 }
 
 function arrayBufferEquals(firstArrayBuffer, secondArrayBuffer) {
-  return dumpArrayBuffer(firstArrayBuffer) ==
+  return dumpArrayBuffer(firstArrayBuffer) ===
       dumpArrayBuffer(secondArrayBuffer);
 }
 
@@ -279,7 +279,7 @@ function inputPinAndProcessSignRequest(
           return;
         }
         log('The PIN dialog returned "' + userInput + '"');
-        if (userInput == VALID_PIN) {
+        if (userInput === VALID_PIN) {
           log('The entered PIN is correct');
           stopPinRequest(null /* errorType */, signRequest.signRequestId);
           processSignRequestWithValidPin(

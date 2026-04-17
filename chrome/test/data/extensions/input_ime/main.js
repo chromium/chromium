@@ -46,7 +46,7 @@ ToUpperIME.prototype = new IMEBase();
  **/
 ToUpperIME.prototype.onKeyEvent = function(
     context, engine, keyData, requestID) {
-  if (keyData.type == 'keydown' && /^[a-zA-Z]$/.test(keyData.key)) {
+  if (keyData.type === 'keydown' && /^[a-zA-Z]$/.test(keyData.key)) {
     chrome.input.ime.commitText(
         {
           contextID: context.contextID,

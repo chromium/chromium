@@ -185,10 +185,10 @@ function handleResponse() {
 
   // We must find at least one 'entry' or 'item' element before proceeding.
   let entries = doc.getElementsByTagName('entry');
-  if (entries.length == 0) {
+  if (entries.length === 0) {
     entries = doc.getElementsByTagName('item');
   }
-  if (entries.length == 0) {
+  if (entries.length === 0) {
     handleFeedParsingFailed(
         chrome.i18n.getMessage('rss_subscription_no_entries'));
     return;
@@ -220,7 +220,7 @@ function onSelectChanged() {
 
   // If the last item (Manage...) was selected we show the options.
   const oldSelection = readerDropdown.selectedIndex;
-  if (readerDropdown.selectedIndex == readerDropdown.length - 1) {
+  if (readerDropdown.selectedIndex === readerDropdown.length - 1) {
     window.location = 'options.html';
   }
 }

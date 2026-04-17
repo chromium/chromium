@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Whether we can modify the list of readers.
-const storageEnabled = window.localStorage != null;
+const storageEnabled = window.localStorage !== null;
 
 /**
  *  Returns the default list of feed readers.
@@ -41,7 +41,7 @@ function isDefaultReader(url) {
   defaultReader = window.localStorage.defaultReader ?
       window.localStorage.defaultReader :
       '';
-  return url == defaultReader;
+  return url === defaultReader;
 }
 
 /**

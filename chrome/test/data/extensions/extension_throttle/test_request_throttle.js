@@ -21,5 +21,5 @@ chrome.runtime.sendMessage({
   method: 'GET',
   url: url,
   requestsToMake: requestsToMake,
-  expectedFailRequestNum: expectedFailRequestNum
+  expectedFailRequestNum: expectedFailRequestNum,
 });

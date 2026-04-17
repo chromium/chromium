@@ -17,7 +17,7 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
 
   // This listener should be run 3 times during the test, running more than 3
   // times will be caught by other test expectations.
-  if (num_listener_called == 3) {
+  if (num_listener_called === 3) {
     // Asynchronously send the message that the listener fired so that the event
     // is considered ack'd in the browser C++ code.
     setTimeout(() => {

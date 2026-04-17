@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.management.onInstalled.addListener(function(info) {
-  if (info.name == 'enabled_extension') {
+  if (info.name === 'enabled_extension') {
     chrome.test.sendMessage('got_event');
   }
 });

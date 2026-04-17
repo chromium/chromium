@@ -36,7 +36,7 @@ function containsFeed(doc) {
   // The feed for arab dash jokes dot net, for example, contains
   // a feed that is a child of the body tag so we continue only if the
   // node contains no parent or if the parent is the body tag.
-  if (node.parentElement && node.parentElement.tagName != 'BODY') {
+  if (node.parentElement && node.parentElement.tagName !== 'BODY') {
     debugMsg(logLevels.info, 'exiting: parentElement that\'s not BODY');
     return false;
   }
@@ -48,6 +48,6 @@ function containsFeed(doc) {
 
 function debugMsg(loglevel, text) {
   if (loglevel <= currentLogLevel) {
-    console.log('RSS Subscription extension: ' + text);
+    console.info('RSS Subscription extension: ' + text);
   }
 }

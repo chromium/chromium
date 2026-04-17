@@ -4,7 +4,7 @@
 
 // out/Debug/browser_tests --gtest_filter=ExtensionWebUITest.RuntimeLastError
 
-var success = true;
+let success = true;
 
 if (!chrome.test.checkDeepEq(undefined, chrome.runtime.lastError)) {
   console.error(
@@ -13,7 +13,7 @@ if (!chrome.test.checkDeepEq(undefined, chrome.runtime.lastError)) {
 }
 
 chrome.test.sendMessage('ping', function(reply) {
-  var expected = {'message': 'unknown host'};
+  const expected = {'message': 'unknown host'};
   if (!chrome.test.checkDeepEq(expected, chrome.runtime.lastError)) {
     console.error(
         'Expected ' + JSON.stringify(expected) + ', ' +

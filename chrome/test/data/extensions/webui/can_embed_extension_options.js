@@ -16,7 +16,7 @@ if (!chrome || !chrome.test || !chrome.test.sendMessage) {
 }
 
 chrome.test.sendMessage('ready', function(reply) {
-  var extensionoptions = document.createElement('extensionoptions');
+  const extensionoptions = document.createElement('extensionoptions');
   extensionoptions.addEventListener('load', function() {
     chrome.test.sendMessage('load');
   });

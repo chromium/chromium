@@ -4,7 +4,7 @@
 
 const onMessageReply = function(message) {
   const menuId = 'my_id';
-  const enabled = (message == 'start enabled');
+  const enabled = (message === 'start enabled');
   chrome.contextMenus.create(
       {title: 'Extension Item 1', id: menuId, enabled: enabled}, function() {
         chrome.test.sendMessage('create', function(message) {

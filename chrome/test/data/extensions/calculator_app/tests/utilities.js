@@ -146,7 +146,7 @@ window.calculatorTestRun = {
         });
         parts.push('\n');
       }.bind(this));
-      console.log(parts.join(''));
+      console.info(parts.join(''));
     }
   },
 
@@ -347,7 +347,7 @@ window.calculatorTestRun = {
     for (let i = 0; Array.isArray(adjustments[start + i]); ++i) {
       adjustment = adjustments[start + i];
       expectation = expectations[expectations.length - 1];
-      if (adjustments[start + i].length != 1) {
+      if (adjustments[start + i].length !== 1) {
         expectations.splice(-i - 1, replace ? 0 : 1);
         expectations.push(adjustments[start + i]);
       } else if (i || !expectation || !expectation.length || expectation[0]) {
@@ -446,7 +446,7 @@ window.calculatorTestRun = {
 
   /** @private */
   areEqual_: function(x, y) {
-    return Array.isArray(x) ? this.areArraysEqual_(x, y) : (x == y);
+    return Array.isArray(x) ? this.areArraysEqual_(x, y) : (x === y);
   },
 
   /** @private */

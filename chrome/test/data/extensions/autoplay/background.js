@@ -13,7 +13,7 @@ chrome.test.runTests([
               allowed = true;
             },
             function(e) {
-              allowed = e.name != 'NotAllowedError';
+              allowed = e.name !== 'NotAllowedError';
             })
         .then(function() {
           chrome.test.assertTrue(allowed);

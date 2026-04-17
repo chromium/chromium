@@ -16,6 +16,6 @@ b.onclick = () =>
         .then((result) => result.text())
         .then((text) => {
           window.domAutomationController.send(
-              text == 'File to request via XHR.\n');
+              text === 'File to request via XHR.\n');
         })
         .catch(err => window.domAutomationController.send(false));

@@ -5,21 +5,21 @@
 const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
 
 chrome.extension.onMessage.addListener(function(request, sender) {
-  if (request.msg == 'feedIcon') {
+  if (request.msg === 'feedIcon') {
     // First validate that all the URLs have the right schema.
     const input = [];
     for (let i = 0; i < request.feeds.length; ++i) {
       const feedUrl = new URL(request.feeds[i].href);
-      if (feedUrl.protocol == 'http:' || feedUrl.protocol == 'https:') {
+      if (feedUrl.protocol === 'http:' || feedUrl.protocol === 'https:') {
         input.push(request.feeds[i]);
       } else {
-        console.log(
+        console.info(
             'Warning: feed source rejected (wrong protocol): ' +
             request.feeds[i].href);
       }
     }
 
-    if (input.length == 0) {
+    if (input.length === 0) {
       return;
     }  // We've rejected all the input, so abort.
 
@@ -36,7 +36,7 @@ chrome.extension.onMessage.addListener(function(request, sender) {
       chrome.pageAction.setTitle({tabId: sender.tab.id, title: action_title});
       chrome.pageAction.show(sender.tab.id);
     });
-  } else if (request.msg == 'feedDocument') {
+  } else if (request.msg === 'feedDocument') {
     // We received word from the content script that this document
     // is an RSS feed (not just a document linking to the feed).
     // So, we go straight to the subscribe page in a new tab and

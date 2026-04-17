@@ -5,7 +5,7 @@
 chrome.runtime.onConnectExternal.addListener((p) => {
   p.postMessage('connected');
   p.onMessage.addListener((m) => {
-    if (m == 'disconnect') {
+    if (m === 'disconnect') {
       p.disconnect();
     }
   });

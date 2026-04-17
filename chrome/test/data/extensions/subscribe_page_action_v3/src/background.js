@@ -19,16 +19,16 @@ async function handlePrepareFeedIcon(request, sender) {
   };
   for (let i = 0; i < request.feeds.length; ++i) {
     const feedUrl = new URL(request.feeds[i].href);
-    if (feedUrl.protocol == 'http:' || feedUrl.protocol == 'https:') {
+    if (feedUrl.protocol === 'http:' || feedUrl.protocol === 'https:') {
       input['feeds'].push(request.feeds[i]);
     } else {
-      console.log(
+      console.info(
           'Warning: feed source rejected (wrong protocol): ' +
           request.feeds[i].href);
     }
   }
 
-  if (input['feeds'].length == 0) {
+  if (input['feeds'].length === 0) {
     return;  // We've rejected all the input, so abort.
   }
 
@@ -74,10 +74,11 @@ async function handleFeedDocument(request, sender) {
     //            only time we should attempt to close the page, because it
     //            doesn't make sense to both show the XML code and show the
     //            Subscribe page.
-    if (!navigatedBack)
+    if (!navigatedBack) {
       attemptCloseTabAfterRedirect = true;
+    }
   } catch (exception) {
-    console.log('Error calling executeScript', exception);
+    console.info('Error calling executeScript', exception);
   }
 
   let url = 'subscribe.html?' + encodeURIComponent(request.href);
@@ -90,9 +91,9 @@ async function handleFeedDocument(request, sender) {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-  if (request.msg == 'feedIcon') {
+  if (request.msg === 'feedIcon') {
     handlePrepareFeedIcon(request, sender);
-  } else if (request.msg == 'feedDocument') {
+  } else if (request.msg === 'feedDocument') {
     handleFeedDocument(request, sender);
   }
 });

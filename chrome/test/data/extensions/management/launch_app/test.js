@@ -15,7 +15,7 @@ const kChromeAppErrorSuffix = 'is deprecated on Window, Mac, and Linux. ' +
 chrome.management.getAll(function(items) {
   for (const i in items) {
     const item = items[i];
-    if (item.name == 'packaged_app') {
+    if (item.name === 'packaged_app') {
       chrome.management.launchApp(item.id, function() {
         const lastError = chrome.runtime.lastError;
         if (lastError && lastError.message.startsWith(kChromeAppErrorPrefix) &&
@@ -24,12 +24,12 @@ chrome.management.getAll(function(items) {
         }
       });
     }
-    if (item.name == 'simple_extension') {
+    if (item.name === 'simple_extension') {
       // Try launching a non-app extension, which should fail.
-      var expected_error = 'Extension ' + item.id + ' is not an App.';
+      const expected_error = 'Extension ' + item.id + ' is not an App.';
       chrome.management.launchApp(item.id, function() {
         if (chrome.runtime.lastError &&
-            chrome.runtime.lastError.message == expected_error) {
+            chrome.runtime.lastError.message === expected_error) {
           chrome.test.sendMessage('got_expected_error');
         }
       });

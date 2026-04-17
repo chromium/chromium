@@ -114,7 +114,7 @@ export async function getFramesInTab(tabId) {
  */
 export function findFrameWithHostname(frames, hostname) {
   const frame = frames.find(frame => {
-    return (new URL(frame.url)).hostname == hostname;
+    return (new URL(frame.url)).hostname === hostname;
   });
   chrome.test.assertTrue(!!frame, 'No frame with hostname: ' + hostname);
   return frame;

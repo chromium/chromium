@@ -28,7 +28,7 @@
 // Otherwise, it will cause a deadlock: see http://crbug.com/107148.
 // It should therefore not slow down testing.
 
-var _gaq = _gaq || [];
+const _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-12026369-1']);
 _gaq.push(['_trackPageview']);
 
