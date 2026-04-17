@@ -145,7 +145,6 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
       net::HttpRequestHeaders* modified_cors_exempt_request_headers);
 
   // Called when the response headers and meta data are available.
-  // TODO(776312): Migrate this URL to URLResponseHead.
   virtual void WillProcessResponse(
       const GURL& response_url,
       network::mojom::URLResponseHead* response_head,
@@ -201,7 +200,7 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
  protected:
   URLLoaderThrottle();
 
-  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace blink
