@@ -32,8 +32,6 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info.mojom.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals.mojom.h"
-#include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals_ui.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
@@ -279,10 +277,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      browser::accessibility_annotator_internals::mojom::PageHandlerFactory,
-      AccessibilityAnnotatorInternalsUI>(map);
 
   if (user_education::features::GetNtpBrowserPromoType() !=
       user_education::features::NtpBrowserPromoType::kNone) {
