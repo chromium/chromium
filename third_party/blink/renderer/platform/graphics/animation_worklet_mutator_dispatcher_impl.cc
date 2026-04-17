@@ -8,12 +8,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/default_tick_clock.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
@@ -58,16 +54,13 @@ class AnimationWorkletMutatorDispatcherImpl::OutputVectorRef
 };
 
 struct AnimationWorkletMutatorDispatcherImpl::AsyncMutationRequest {
-  base::TimeTicks request_time;
   std::unique_ptr<AnimationWorkletDispatcherInput> input_state;
   AsyncMutationCompleteCallback done_callback;
 
   AsyncMutationRequest(
-      base::TimeTicks request_time,
       std::unique_ptr<AnimationWorkletDispatcherInput> input_state,
       AsyncMutationCompleteCallback done_callback)
-      : request_time(request_time),
-        input_state(std::move(input_state)),
+      : input_state(std::move(input_state)),
         done_callback(std::move(done_callback)) {}
 
   ~AsyncMutationRequest() = default;
@@ -78,7 +71,6 @@ AnimationWorkletMutatorDispatcherImpl::AnimationWorkletMutatorDispatcherImpl(
     : host_queue_(task_runner),
       client_(nullptr),
       outputs_(OutputVectorRef::Create()) {
-  tick_clock_ = std::make_unique<base::DefaultTickClock>();
 }
 
 AnimationWorkletMutatorDispatcherImpl::
@@ -121,7 +113,6 @@ void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
   TRACE_EVENT0("cc", "AnimationWorkletMutatorDispatcherImpl::mutate");
   if (mutator_map_.empty() || !mutator_input)
     return;
-  base::ElapsedTimer timer;
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
   DCHECK(mutator_input_map_.empty());
@@ -138,15 +129,6 @@ void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
   event.Wait();
 
   ApplyMutationsOnHostThread();
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Animation.AnimationWorklet.Dispatcher.SynchronousMutateDuration",
-      timer.Elapsed(), base::Microseconds(1), base::Milliseconds(100), 50);
-}
-
-base::TimeTicks AnimationWorkletMutatorDispatcherImpl::NowTicks() const {
-  DCHECK(tick_clock_);
-  return tick_clock_->NowTicks();
 }
 
 bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
@@ -158,7 +140,6 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
   if (mutator_map_.empty() || !mutator_input)
     return false;
 
-  base::TimeTicks request_time = NowTicks();
   if (!mutator_input_map_.empty()) {
     // Still running mutations from a previous frame.
     switch (queuing_strategy) {
@@ -170,18 +151,17 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
         // Can only have one priority request in-flight.
         DCHECK(!queued_priority_request.get());
         queued_priority_request = std::make_unique<AsyncMutationRequest>(
-            request_time, std::move(mutator_input), std::move(done_callback));
+            std::move(mutator_input), std::move(done_callback));
         return true;
 
       case MutateQueuingStrategy::kQueueAndReplaceNormalPriority:
         if (queued_replaceable_request.get()) {
           // Cancel previously queued request.
-          request_time = queued_replaceable_request->request_time;
           std::move(queued_replaceable_request->done_callback)
               .Run(MutateStatus::kCanceled);
         }
         queued_replaceable_request = std::make_unique<AsyncMutationRequest>(
-            request_time, std::move(mutator_input), std::move(done_callback));
+            std::move(mutator_input), std::move(done_callback));
         return true;
     }
   }
@@ -190,12 +170,11 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
   if (mutator_input_map_.empty())
     return false;
 
-  MutateAsynchronouslyInternal(request_time, std::move(done_callback));
+  MutateAsynchronouslyInternal(std::move(done_callback));
   return true;
 }
 
 void AnimationWorkletMutatorDispatcherImpl::MutateAsynchronouslyInternal(
-    base::TimeTicks request_time,
     AsyncMutationCompleteCallback done_callback) {
   DCHECK(host_queue_->BelongsToCurrentThread());
   on_async_mutation_complete_ = std::move(done_callback);
@@ -206,22 +185,20 @@ void AnimationWorkletMutatorDispatcherImpl::MutateAsynchronouslyInternal(
   CrossThreadOnceClosure on_done = CrossThreadBindOnce(
       [](scoped_refptr<base::SingleThreadTaskRunner> host_queue,
          base::WeakPtr<AnimationWorkletMutatorDispatcherImpl> dispatcher,
-         int next_async_mutation_id, base::TimeTicks request_time) {
+         int next_async_mutation_id) {
         PostCrossThreadTask(
             *host_queue, FROM_HERE,
             CrossThreadBindOnce(
                 &AnimationWorkletMutatorDispatcherImpl::AsyncMutationsDone,
-                dispatcher, next_async_mutation_id, request_time));
+                dispatcher, next_async_mutation_id));
       },
-      host_queue_, weak_factory_.GetWeakPtr(), next_async_mutation_id,
-      request_time);
+      host_queue_, weak_factory_.GetWeakPtr(), next_async_mutation_id);
 
   RequestMutations(std::move(on_done));
 }
 
 void AnimationWorkletMutatorDispatcherImpl::AsyncMutationsDone(
-    int async_mutation_id,
-    base::TimeTicks request_time) {
+    int async_mutation_id) {
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
   bool update_applied = ApplyMutationsOnHostThread();
@@ -234,19 +211,12 @@ void AnimationWorkletMutatorDispatcherImpl::AsyncMutationsDone(
   }
   if (queued_request.get()) {
     mutator_input_map_ = CreateInputMap(*queued_request->input_state);
-    MutateAsynchronouslyInternal(queued_request->request_time,
-                                 std::move(queued_request->done_callback));
+    MutateAsynchronouslyInternal(std::move(queued_request->done_callback));
   }
   // The trace event deos not include queuing time. It covers the interval
   // between dispatching the request and retrieving the results.
   TRACE_EVENT_END("cc", /*AnimationWorkletMutatorDispatcherImpl::MutateAsync*/
                   perfetto::Track(async_mutation_id));
-  // The Async mutation duration is the total time between request and
-  // completion, and thus includes queuing time.
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Animation.AnimationWorklet.Dispatcher.AsynchronousMutateDuration",
-      NowTicks() - request_time, base::Microseconds(1), base::Milliseconds(100),
-      50);
 
   std::move(done_callback)
       .Run(update_applied ? MutateStatus::kCompletedWithUpdate

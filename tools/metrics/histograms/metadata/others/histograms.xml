@@ -2542,44 +2542,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Animation.AnimationWorklet.Dispatcher.AsynchronousMutateDuration"
-    units="microseconds" expires_after="2021-01-01">
-  <owner>majidvp@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
-  <summary>
-    The time it takes the WorkletMutatorDispatcher to complete an asynchronous
-    mutation request of animation worklet. The measured time is the total
-    elapsed time from when a request is queued until the results are received.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram
-    name="Animation.AnimationWorklet.Dispatcher.SynchronousMutateDuration"
-    units="microseconds" expires_after="2021-01-01">
-  <owner>majidvp@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
-  <summary>
-    The time it takes the WorkletMutatorDispatcher to dispatch to and mutate all
-    animation worklet mutators synchronously. This includes the time that it
-    takes each AnimationWorkletGlobalScope to produce its output (which includes
-    V8 script execution) and also any queuing cost associated with posting
-    mutation tasks and receiving responses.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="BlueZ.PerProfile.{BlueZPerProfileResult}ConnectionResult"
     enum="BlueZResultOfPerProfileConnection" expires_after="2023-06-11">
   <owner>mmandlik@google.com</owner>
