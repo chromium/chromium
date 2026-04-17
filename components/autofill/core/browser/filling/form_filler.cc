@@ -625,11 +625,11 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // is empty and its initial value (= cached value) was empty as well. A
   // similar check is done in ForEachMatchingFormFieldCommon(), which
   // frequently has false negatives.
-  add_if(
-      (field.properties_mask() & kUserTyped) &&
-          !(field.value().empty() && autofill_field.initial_value().empty()) &&
-          !is_trigger_field,
-      FieldFillingSkipReason::kUserFilledFields);
+  add_if((autofill_field.properties_mask() & kUserTyped) &&
+             !(autofill_field.value().empty() &&
+               autofill_field.initial_value().empty()) &&
+             !is_trigger_field,
+         FieldFillingSkipReason::kUserFilledFields);
 
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill or for credit card fields, when
