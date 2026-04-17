@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
@@ -320,6 +321,11 @@ namespace {
 
 // How long we wait before updating the browser chrome while loading a page.
 constexpr base::TimeDelta kUIUpdateCoalescingTime = base::Milliseconds(200);
+
+// Kill switch for merge safety for a fix for https://crbug.com/489205993
+// TODO(crbug.com/489205993): Remove in M150 or later.
+BASE_FEATURE(kBackgroundActorTaskPopupsOpenInBackground,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const extensions::Extension* GetExtensionForOrigin(
     Profile* profile,
@@ -2121,6 +2127,18 @@ content::WebContents* Browser::AddNewContents(
     fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
         base::IgnoreResult(std::move(web_contents_creation_callback))));
     return nullptr;
+  }
+
+  // If a backgrounded actor task triggered a new tab/popup, don't interrupt the
+  // user.
+  if (base::FeatureList::IsEnabled(
+          kBackgroundActorTaskPopupsOpenInBackground) &&
+      source && actor::IsRunningBackgroundActorTask(*source)) {
+    if (disposition == WindowOpenDisposition::NEW_POPUP) {
+      window_action = NavigateParams::WindowAction::kShowWindowInactive;
+    } else if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+      disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    }
   }
 
   return chrome::AddWebContents(this, source, std::move(new_contents),

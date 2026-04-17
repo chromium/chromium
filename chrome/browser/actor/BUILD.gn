@@ -436,6 +436,10 @@ source_set("browser_tests") {
     deps += [ "//chrome/test:test_support_ui" ]
   }
 
+  if (is_linux) {
+    deps += [ "//ui/ozone" ]
+  }
+
   # TODO(crbug.com/482145079): Migrate over history_tool, media_control_tool, and
   # attempt_form_filling_tool tests once flakiness is resolved.
   if (!skip_android_unmigrated_actor_files) {
