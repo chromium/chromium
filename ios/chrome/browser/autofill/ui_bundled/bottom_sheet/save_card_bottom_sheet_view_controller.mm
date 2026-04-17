@@ -329,13 +329,14 @@ CGFloat const kChromeLogoHeight = 22;
     configuration.trailingConfiguration = trailingImageConfiguration;
 
     if (_cardAccessibilityLabel.length) {
-      configuration.customAccessibilityLabel = [NSString
-          stringWithFormat:@"%@, %@", _cardAccessibilityLabel,
-                           l10n_util::GetNSString(
-                               IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)];
-    } else {
       configuration.customAccessibilityLabel =
-          l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
+          [NSString stringWithFormat:
+                        @"%@, %@", _cardAccessibilityLabel,
+                        l10n_util::GetNSString(
+                            IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)];
+    } else {
+      configuration.customAccessibilityLabel = l10n_util::GetNSString(
+          IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME);
     }
   }
 #endif
