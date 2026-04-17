@@ -173,6 +173,27 @@ public class GlicToolbarButtonControllerTest {
     }
 
     @Test
+    public void testTaskState_PausedByUser() {
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker, () -> null);
+
+        controller.get(mTab);
+        verify(mActorService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+        when(mActorService.getCurrentActiveTask()).thenReturn(task);
+
+        actorObserver.onTaskStateChanged(1, ActorTaskState.PAUSED_BY_USER);
+
+        ButtonData buttonData = controller.get(mTab);
+        Assert.assertFalse(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
+        Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
     public void testTaskState_Done_Persists() {
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(

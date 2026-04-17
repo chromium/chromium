@@ -288,11 +288,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 return ButtonState.DONE;
             case ActorTaskState.ACTING:
             case ActorTaskState.REFLECTING:
-            case ActorTaskState.PAUSED_BY_USER:
-            case ActorTaskState.PAUSED_BY_ACTOR:
                 return ButtonState.WORKING;
             case ActorTaskState.CANCELLED:
             case ActorTaskState.CREATED:
+            case ActorTaskState.PAUSED_BY_USER:
+            case ActorTaskState.PAUSED_BY_ACTOR:
                 return ButtonState.DEFAULT;
             default:
                 throw new AssertionError("Unexpected task state: " + taskState);
