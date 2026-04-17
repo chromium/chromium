@@ -321,15 +321,15 @@ try_.builder(
         "tests": [
             {
                 "step_name": "Run all tests in a directory",
-                "args": "base/strings",
+                "args": ["base/strings"],
             },
             {
                 "step_name": "Run a specific file",
-                "args": "base/pickle_unittest.cc",
+                "args": ["base/pickle_unittest.cc"],
             },
             {
                 "step_name": "Run by test name",
-                "args": "StringUtilTest.IsStringUTF8",
+                "args": ["StringUtilTest.IsStringUTF8"],
             },
         ],
     },
@@ -363,15 +363,15 @@ try_.builder(
         "tests": [
             {
                 "step_name": "Run all tests in a directory",
-                "args": "base/strings",
+                "args": ["base/strings"],
             },
             {
                 "step_name": "Run a specific file",
-                "args": "base/pickle_unittest.cc",
+                "args": ["base/pickle_unittest.cc"],
             },
             {
                 "step_name": "Run by test name",
-                "args": "StringUtilTest.IsStringUTF8",
+                "args": ["StringUtilTest.IsStringUTF8"],
             },
         ],
     },
@@ -406,15 +406,15 @@ try_.builder(
         "tests": [
             {
                 "step_name": "Run all tests in a directory",
-                "args": "base/strings",
+                "args": ["base/strings"],
             },
             {
                 "step_name": "Run a specific file",
-                "args": "base/pickle_unittest.cc",
+                "args": ["base/pickle_unittest.cc"],
             },
             {
                 "step_name": "Run by test name",
-                "args": "StringUtilTest.IsStringUTF8",
+                "args": ["StringUtilTest.IsStringUTF8"],
             },
         ],
     },
