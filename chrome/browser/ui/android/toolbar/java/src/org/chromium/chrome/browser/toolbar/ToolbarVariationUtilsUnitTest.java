@@ -78,4 +78,21 @@ public class ToolbarVariationUtilsUnitTest {
     public void testIsNewToolbarUiEnabled_Disabled() {
         assertFalse(ToolbarVariationUtils.isNewToolbarUiEnabled());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testShouldModifyToolbarButtons_FlagDisabled() {
+        // Flag disabled: return true on both.
+        assertTrue(ToolbarVariationUtils.shouldModifyToolbarButtons(true));
+        assertTrue(ToolbarVariationUtils.shouldModifyToolbarButtons(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
+    public void testShouldModifyToolbarButtons_FlagEnabled() {
+        // Flag enabled: return false on NTP.
+        assertFalse(ToolbarVariationUtils.shouldModifyToolbarButtons(true));
+        // Return true on non-NTP.
+        assertTrue(ToolbarVariationUtils.shouldModifyToolbarButtons(false));
+    }
 }

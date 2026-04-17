@@ -20,6 +20,7 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -51,8 +52,9 @@ import java.util.function.Supplier;
 public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public static final ViewSpec<UrlBar> URL_BAR = viewSpec(UrlBar.class, withId(R.id.url_bar));
     public final OptionalViewElement<View> homeButtonElement;
-    public final ViewElement<ToolbarControlContainer> toolbarElement;
-    public final ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
+    // TODO(crbug.com/477035792): Temporarily nullable while the toolbar is being migrated.
+    public final @Nullable ViewElement<ToolbarControlContainer> toolbarElement;
+    public final @Nullable ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
     public final ViewElement<ImageButton> menuButtonElement;
 
     /** Prefer the CtaPageStation's subclass |newBuilder()|. */
@@ -76,14 +78,25 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                         ToolbarControlContainer.class,
                         withId(R.id.control_container),
                         ViewElement.unscopedOption());
-        tabSwitcherButtonElement =
-                declareView(
-                        ToggleTabStackButton.class,
-                        withId(R.id.tab_switcher_button),
-                        ViewElement.unscopedOption());
-        menuButtonElement =
-                declareView(
-                        ImageButton.class, withId(R.id.menu_button), ViewElement.unscopedOption());
+        // TODO(crbug.com/477035792): These elements are currently being migrated to a new location
+        // and do not appear when the flag is enabled. Update this once the migration is complete as
+        // they will appear again in a different location. This flag is only enabled in very few
+        // tests currently and none require the buttons to exist.
+        if (ChromeFeatureList.sAndroidBottomBar.isEnabled()) {
+            tabSwitcherButtonElement = null;
+            menuButtonElement = null;
+        } else {
+            tabSwitcherButtonElement =
+                    declareView(
+                            ToggleTabStackButton.class,
+                            withId(R.id.tab_switcher_button),
+                            ViewElement.unscopedOption());
+            menuButtonElement =
+                    declareView(
+                            ImageButton.class,
+                            withId(R.id.menu_button),
+                            ViewElement.unscopedOption());
+        }
 
         // The home button may not appear in tablets if the available screen size is too small.
         homeButtonElement =

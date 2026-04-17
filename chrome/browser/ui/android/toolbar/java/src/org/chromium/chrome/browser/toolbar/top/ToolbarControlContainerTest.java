@@ -10,7 +10,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -74,6 +76,8 @@ import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
@@ -126,6 +130,7 @@ public class ToolbarControlContainerTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
+    @Mock private OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
 
@@ -953,5 +958,34 @@ public class ToolbarControlContainerTest {
         verify(spyContainer).layout(anyInt(), anyInt(), anyInt(), anyInt());
         verify(mockAdapter).invalidate(null);
         verify(mockAdapter).triggerBitmapCapture();
+    }
+
+    @Test
+    public void testUpdateButtonVisibility_TransitionsNtp() {
+        initControlContainer(R.layout.toolbar_phone);
+        ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
+
+        // Transition away from NTP.
+        doReturn(JUnitTestGURLs.RED_1).when(mToolbarDataProvider).getCurrentGurl();
+        toolbarPhone.updateButtonVisibility();
+        verify(mMenuButtonCoordinator).setVisibility(true);
+
+        // Transition to regular NTP.
+        doReturn(JUnitTestGURLs.NTP_URL).when(mToolbarDataProvider).getCurrentGurl();
+        toolbarPhone.updateButtonVisibility();
+        // Since isNtp becomes true, typical outcomes apply.
+    }
+
+    @Test
+    public void testUpdateOptionalButton_TransitionsNtp() {
+        initControlContainer(R.layout.toolbar_phone);
+        ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
+
+        ButtonData buttonData = mock(ButtonData.class);
+        toolbarPhone.updateOptionalButton(buttonData);
+
+        verify(mOptionalButtonCoordinator).updateButton(eq(buttonData), anyBoolean());
     }
 }

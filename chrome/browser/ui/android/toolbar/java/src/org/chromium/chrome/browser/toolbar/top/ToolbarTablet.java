@@ -543,6 +543,11 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     @Override
+    public void updateMenuButtonVisibility() {
+        mMenuButtonCoordinator.setVisibility(true);
+    }
+
+    @Override
     protected void updateOptionalButton(ButtonData buttonData) {
         if (mOptionalButton == null) {
             ViewStub viewStub = findViewById(R.id.optional_button_stub);

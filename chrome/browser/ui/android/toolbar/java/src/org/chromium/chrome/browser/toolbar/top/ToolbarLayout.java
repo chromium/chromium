@@ -326,6 +326,9 @@ public abstract class ToolbarLayout extends FrameLayout
     @CallSuper
     protected void onMenuButtonDisabled() {}
 
+    /** Update the visibility of the menu button. */
+    public void updateMenuButtonVisibility() {}
+
     /**
      * Set hover tooltip text for buttons shared between phones and tablets. @TODO: Remove and use
      * the method in UiUtils.java instead once JaCoCo issue is resolved.

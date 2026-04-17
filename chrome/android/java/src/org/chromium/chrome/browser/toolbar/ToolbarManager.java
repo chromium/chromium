@@ -3267,7 +3267,7 @@ public class ToolbarManager
         onBackPressStateChanged();
         updateReloadState(tabCrashed);
         updateBookmarkButtonStatus();
-        mMenuButtonCoordinator.setVisibility(true);
+        mToolbarLayout.updateMenuButtonVisibility();
     }
 
     private void updateBookmarkButtonStatus() {

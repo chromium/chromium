@@ -34,6 +34,21 @@ public final class ToolbarVariationUtils {
         return ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
     }
 
+    /**
+     * Whether the app menu button, home button, optional button, and tab switcher button should
+     * have their visibility and/or position changed in the {@code ToolbarPhone} and {@code
+     * LocationBar} based on the current configuration and whether the current tab is a regular NTP.
+     *
+     * @param isNtp Whether the current tab is a regular NTP.
+     * @return Whether the toolbar buttons should be modified.
+     */
+    public static boolean shouldModifyToolbarButtons(boolean isNtp) {
+        if (isNtp && ChromeFeatureList.sAndroidBottomBarDisableOnNtp.getValue()) {
+            return false;
+        }
+        return isNewToolbarUiEnabled();
+    }
+
     /** Whether the new toolbar variation UI is enabled. */
     public static boolean isNewToolbarUiEnabled() {
         return ChromeFeatureList.sAndroidBottomBar.isEnabled();
