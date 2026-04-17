@@ -183,8 +183,9 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
       };
   StartCoordinator();
   // Simulate cancel from the user.
-  OCMExpect([base_view_controller_mock_ dismissViewControllerAnimated:YES
-                                                           completion:nil]);
+  OCMExpect([base_view_controller_mock_
+      dismissViewControllerAnimated:YES
+                         completion:[OCMArg invokeBlock]]);
   // Expect the navigation controller delegates to be reset.
   OCMExpect([consistency_sheet_navigation_controller_mock_ setDelegate:nil]);
   OCMExpect([consistency_sheet_navigation_controller_mock_
