@@ -722,8 +722,11 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
 
   std::string_view lookup_name =
       name_override.empty() ? histogram->histogram_name() : name_override;
+  uint64_t name_hash = name_override.empty() ? histogram->name_hash()
+                                             : HashMetricName(lookup_name);
 
-  HistogramBase* existing = StatisticsRecorder::FindHistogram(lookup_name);
+  HistogramBase* existing =
+      StatisticsRecorder::FindHistogram(name_hash, lookup_name);
   if (existing) {
     return existing;
   }
