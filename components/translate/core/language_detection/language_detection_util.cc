@@ -147,12 +147,9 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
                                   bool* is_model_reliable,
                                   float& model_reliability_score) {
   // Make a prediction.
-  base::TimeTicks lang_id_start = base::TimeTicks::Now();
   chrome_lang_id::NNetLanguageIdentifier lang_id;
   const chrome_lang_id::NNetLanguageIdentifier::Result lang_id_result =
       lang_id.FindTopNMostFreqLangs(utf8_text, /*num_langs=*/1).at(0);
-  base::UmaHistogramTimes("Translate.CLD3.TopLanguageEvaluationDuration",
-                          base::TimeTicks::Now() - lang_id_start);
   const bool is_detection_reliable = lang_id_result.is_reliable;
   const float model_probability = lang_id_result.probability;
   const std::string& detected_language = lang_id_result.language;

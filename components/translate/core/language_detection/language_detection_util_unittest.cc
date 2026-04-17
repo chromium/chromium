@@ -113,8 +113,6 @@ TEST(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
   EXPECT_GT(model_reliability_score, 0.5);
-  histogram_tester.ExpectTotalCount(
-      "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
 
 // Tests that the language meta tag providing "en-US" style information is
@@ -136,8 +134,6 @@ TEST(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
   EXPECT_GT(model_reliability_score, 0.5);
-  histogram_tester.ExpectTotalCount(
-      "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
 
 // Tests that the language meta tag providing wrong information is ignored and
@@ -160,8 +156,6 @@ TEST(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
   EXPECT_GT(model_reliability_score, 0.5);
-  histogram_tester.ExpectTotalCount(
-      "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
 
 // Tests that the language meta tag providing wrong information is ignored
@@ -183,8 +177,6 @@ TEST(LanguageDetectionUtilTest, AdoptHtmlLang) {
   EXPECT_EQ("en", model_detected_language);
   EXPECT_TRUE(is_model_reliable);
   EXPECT_GT(model_reliability_score, 0.5);
-  histogram_tester.ExpectTotalCount(
-      "Translate.CLD3.TopLanguageEvaluationDuration", 1);
 }
 
 // Tests that languages that often have the wrong server configuration are

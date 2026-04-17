@@ -270,8 +270,6 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester, "Translate.CLD3.TopLanguageEvaluationDuration", 1);
   histogram_tester.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 0);
 }

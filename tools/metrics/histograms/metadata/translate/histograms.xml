@@ -166,16 +166,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.CLD3.TopLanguageEvaluationDuration" units="ms"
-    expires_after="2022-06-30">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The time to evaluate the CLD3 language detection model for the top language.
-    This information is logged on every request.
-  </summary>
-</histogram>
-
 <histogram name="Translate.CompactInfobar.Event" enum="TranslateCompactUIEvent"
     expires_after="2026-09-06">
   <owner>megjablon@google.com</owner>
