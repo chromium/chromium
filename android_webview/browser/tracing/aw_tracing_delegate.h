@@ -31,8 +31,6 @@ class AwTracingDelegate : public content::TracingDelegate {
   std::string RecordSerializedSystemProfileMetrics() const override;
   tracing::MetadataDataSource::BundleRecorder
   CreateSystemProfileMetadataRecorder() const override;
-  tracing::MetadataDataSource::ChromeMetadataRecorder
-  CreateChromeMetadataPacketRecorder() const override;
 };
 
 }  // namespace android_webview

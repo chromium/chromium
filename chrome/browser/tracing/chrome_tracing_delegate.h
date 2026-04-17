@@ -63,8 +63,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   std::string RecordSerializedSystemProfileMetrics() const override;
   tracing::MetadataDataSource::BundleRecorder
   CreateSystemProfileMetadataRecorder() const override;
-  tracing::MetadataDataSource::ChromeMetadataRecorder
-  CreateChromeMetadataPacketRecorder() const override;
 
 #if BUILDFLAG(IS_WIN)
   void GetSystemTracingState(

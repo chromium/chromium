@@ -177,8 +177,7 @@ void TracingControllerImpl::InitializeDataSources() {
       base::SequencedTaskRunner::GetCurrentDefault(),
       {tracing_delegate()->CreateSystemProfileMetadataRecorder(),
        base::BindRepeating(&TracingControllerImpl::RecorderMetadataToBundle)},
-      {base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket)},
-      tracing_delegate()->CreateChromeMetadataPacketRecorder());
+      {base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket)});
 
 #if BUILDFLAG(IS_CHROMEOS)
   RegisterCrOSTracingDataSource();

@@ -39,11 +39,6 @@ TracingDelegate::CreateSystemProfileMetadataRecorder() const {
       &tracing::MetadataDataSource::RecordDefaultBundleMetadata);
 }
 
-tracing::MetadataDataSource::ChromeMetadataRecorder
-TracingDelegate::CreateChromeMetadataPacketRecorder() const {
-  return {};
-}
-
 #if BUILDFLAG(IS_WIN)
 void TracingDelegate::GetSystemTracingState(
     base::OnceCallback<void(bool service_supported, bool service_enabled)>

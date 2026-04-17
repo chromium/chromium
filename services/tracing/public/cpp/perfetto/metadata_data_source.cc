@@ -22,6 +22,10 @@
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/apk_info.h"
+#endif
+
 namespace tracing {
 namespace {
 
@@ -70,24 +74,21 @@ struct MetadataDataSourceTlsState {
 void MetadataDataSource::Register(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<BundleRecorder> bundle_recorders,
-    std::vector<PacketRecorder> packet_recorders,
-    ChromeMetadataRecorder chrome_metadata_recorder) {
+    std::vector<PacketRecorder> packet_recorders) {
   perfetto::DataSourceDescriptor desc;
   desc.set_name(kMetaData2SourceName);
   perfetto::DataSource<MetadataDataSource, MetadataDataSourceTraits>::Register(
       desc, std::move(task_runner), std::move(bundle_recorders),
-      std::move(packet_recorders), std::move(chrome_metadata_recorder));
+      std::move(packet_recorders));
 }
 
 MetadataDataSource::MetadataDataSource(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<BundleRecorder> bundle_recorders,
-    std::vector<PacketRecorder> packet_recorders,
-    ChromeMetadataRecorder chrome_metadata_recorder)
+    std::vector<PacketRecorder> packet_recorders)
     : task_runner_(std::move(task_runner)),
       bundle_recorders_(std::move(bundle_recorders)),
-      packet_recorders_(std::move(packet_recorders)),
-      chrome_metadata_recorder_(std::move(chrome_metadata_recorder)) {}
+      packet_recorders_(std::move(packet_recorders)) {}
 
 MetadataDataSource::~MetadataDataSource() = default;
 
@@ -98,12 +99,11 @@ void MetadataDataSource::OnSetup(const SetupArgs& args) {
 }
 
 void MetadataDataSource::OnStart(const StartArgs&) {
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MetadataDataSource::WriteMetadata,
-                     reinterpret_cast<uintptr_t>(this),
-                     std::move(bundle_recorders_), std::move(packet_recorders_),
-                     std::move(chrome_metadata_recorder_)));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&MetadataDataSource::WriteMetadata,
+                                        reinterpret_cast<uintptr_t>(this),
+                                        std::move(bundle_recorders_),
+                                        std::move(packet_recorders_)));
 }
 
 void MetadataDataSource::OnFlush(const FlushArgs&) {}
@@ -113,8 +113,7 @@ void MetadataDataSource::OnStop(const StopArgs&) {}
 void MetadataDataSource::WriteMetadata(
     uintptr_t instance,
     std::vector<BundleRecorder> bundle_recorders,
-    std::vector<PacketRecorder> packet_recorders,
-    ChromeMetadataRecorder chrome_metadata_recorder) {
+    std::vector<PacketRecorder> packet_recorders) {
   MetadataDataSource::Trace([&](TraceContext ctx) {
     if (instance != ctx.GetCustomTlsState()->instance) {
       return;
@@ -166,9 +165,25 @@ void MetadataDataSource::WriteMetadata(
     packet->set_timestamp(now);
     packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
     auto* chrome_metadata = packet->set_chrome_metadata();
-    if (chrome_metadata_recorder) {
-      chrome_metadata_recorder.Run(chrome_metadata);
+
+#if BUILDFLAG(IS_ANDROID)
+    const std::string& host_package_name =
+        base::android::apk_info::host_package_name();
+    if (!host_package_name.empty()) {
+      chrome_metadata->set_app_package_name(host_package_name);
     }
+#if defined(OFFICIAL_BUILD)
+    // Version code is only set for official builds on Android.
+    const std::string& version_code_str =
+        base::android::apk_info::package_version_code();
+    if (!version_code_str.empty()) {
+      int version_code = 0;
+      bool res = base::StringToInt(version_code_str, &version_code);
+      DCHECK(res);
+      chrome_metadata->set_chrome_version_code(version_code);
+    }
+#endif  // defined(OFFICIAL_BUILD)
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Do not include low anonymity field trials, to prevent them from being
     // included in chrometto reports.
@@ -216,8 +231,12 @@ void MetadataDataSource::AddMetadataToBundle(
 
 void MetadataDataSource::RecordDefaultBundleMetadata(
     perfetto::protos::pbzero::ChromeEventBundle* bundle) {
+#if BUILDFLAG(IS_CHROMEOS)
+  MetadataDataSource::AddMetadataToBundle(kOSNameMetadataKey, "CrOS", bundle);
+#else
   MetadataDataSource::AddMetadataToBundle(
       kOSNameMetadataKey, base::SysInfo::OperatingSystemName(), bundle);
+#endif
   MetadataDataSource::AddMetadataToBundle(
       kOSVersionMetadataKey, base::SysInfo::OperatingSystemVersion(), bundle);
 

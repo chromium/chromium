@@ -8,14 +8,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/trace_time.h"
-#include "components/metrics/version_utils.h"
 #include "components/tracing/common/background_tracing_metrics_provider.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/apk_info.h"
-#endif
-
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/perfetto/protos/perfetto/common/data_source_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
@@ -30,6 +24,7 @@ inline constexpr char kAccessibilityEnabledModesMetadataKey[] =
     "accessibility-enabled-modes";
 inline constexpr char kAntivirusProductMetadataPrefix[] = "antivirus-product-";
 inline constexpr char kAppLocaleMetadataKey[] = "app-locale";
+inline constexpr char kChannelMetadataKey[] = "channel";
 inline constexpr char kCpuCoresMetadataKey[] = "cpu-num-cores";
 inline constexpr char kCpuEfficientCoresMetadataKey[] =
     "cpu-num-efficient-cores";
@@ -53,12 +48,17 @@ inline constexpr char kNetworkMinEffectiveConnectionTypeMetadataKey[] =
 inline constexpr char kOSArchMetadataKey[] = "os-arch";
 inline constexpr char kOSBuildFingerprintMetadataKey[] = "os-build-fingerprint";
 inline constexpr char kOSKernelVersionMetadataKey[] = "os-kernel-version";
+inline constexpr char kOSNameMetadataKey[] = "os-name";
 inline constexpr char kOSVersionMetadataKey[] = "os-version";
+inline constexpr char kPackageNameMetadataKey[] = "package-name";
 inline constexpr char kPhysicalMemoryMetadataKey[] = "physical-memory";
 inline constexpr char kProcessOsArchMetadataKey[] = "process-os-arch";
+inline constexpr char kProductVersionMetadataKey[] = "product-version";
 
 void AddMetadataToBundle(const metrics::SystemProfileProto& system_profile,
                          perfetto::protos::pbzero::ChromeEventBundle* bundle) {
+  MetadataDataSource::AddMetadataToBundle(kOSNameMetadataKey,
+                                          system_profile.os().name(), bundle);
   MetadataDataSource::AddMetadataToBundle(
       kOSVersionMetadataKey, system_profile.os().version(), bundle);
   MetadataDataSource::AddMetadataToBundle(kOSKernelVersionMetadataKey,
@@ -68,8 +68,18 @@ void AddMetadataToBundle(const metrics::SystemProfileProto& system_profile,
       kOSBuildFingerprintMetadataKey, system_profile.os().build_fingerprint(),
       bundle);
 
+  MetadataDataSource::AddMetadataToBundle(kProductVersionMetadataKey,
+                                          system_profile.app_version(), bundle);
+  MetadataDataSource::AddMetadataToBundle(
+      kChannelMetadataKey,
+      metrics::SystemProfileProto::Channel_Name(system_profile.channel()),
+      bundle);
   MetadataDataSource::AddMetadataToBundle(
       kAppLocaleMetadataKey, system_profile.application_locale(), bundle);
+  if (system_profile.has_app_package_name()) {
+    MetadataDataSource::AddMetadataToBundle(
+        kPackageNameMetadataKey, system_profile.app_package_name(), bundle);
+  }
 
   MetadataDataSource::AddMetadataToBundle(
       kOSArchMetadataKey, system_profile.hardware().cpu_architecture(), bundle);
@@ -180,34 +190,6 @@ void RecordSystemProfileMetadata(
   }
   recorder.Run(system_profile);
   AddMetadataToBundle(system_profile, bundle);
-}
-
-void FillChromeMetadataPacket(
-    version_info::Channel channel,
-    perfetto::protos::pbzero::ChromeMetadataPacket* packet) {
-  packet->set_app_version(metrics::GetVersionString());
-  packet->set_channel(
-      static_cast<uint32_t>(metrics::AsProtobufChannel(channel)));
-  packet->set_os_name(metrics::GetOperatingSystemName());
-
-#if BUILDFLAG(IS_ANDROID)
-  const std::string& host_package_name =
-      base::android::apk_info::host_package_name();
-  if (!host_package_name.empty()) {
-    packet->set_app_package_name(host_package_name);
-  }
-#if defined(OFFICIAL_BUILD)
-  // Version code is only set for official builds on Android.
-  const std::string& version_code_str =
-      base::android::apk_info::package_version_code();
-  if (!version_code_str.empty()) {
-    int version_code = 0;
-    bool res = base::StringToInt(version_code_str, &version_code);
-    DCHECK(res);
-    packet->set_chrome_version_code(version_code);
-  }
-#endif  // defined(OFFICIAL_BUILD)
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace tracing

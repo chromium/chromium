@@ -44,10 +44,6 @@ class CONTENT_EXPORT TracingDelegate {
   virtual tracing::MetadataDataSource::BundleRecorder
   CreateSystemProfileMetadataRecorder() const;
 
-  // Returns a callback to fill a ChromeMetadataPacket with system metrics.
-  virtual tracing::MetadataDataSource::ChromeMetadataRecorder
-  CreateChromeMetadataPacketRecorder() const;
-
 #if BUILDFLAG(IS_WIN)
   // Runs `on_tracing_state` (asynchronously) with the current state of the
   // Windows system tracing service for the running browser:
