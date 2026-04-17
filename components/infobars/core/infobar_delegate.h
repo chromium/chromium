@@ -16,9 +16,6 @@
 class ConfirmInfoBarDelegate;
 class ThemeInstalledInfoBarDelegate;
 
-namespace blocked_content {
-class PopupBlockedInfoBarDelegate;
-}
 
 namespace translate {
 class TranslateInfoBarDelegate;
@@ -320,8 +317,6 @@ class InfoBarDelegate {
   // Type-checking downcast routines:
   virtual ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate();
   virtual const ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() const;
-  virtual blocked_content::PopupBlockedInfoBarDelegate*
-  AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
 #if BUILDFLAG(IS_IOS)
   virtual translate::TranslateInfoBarDelegate* AsTranslateInfoBarDelegate();

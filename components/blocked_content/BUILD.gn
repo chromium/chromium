@@ -42,8 +42,6 @@ source_set("blocked_content") {
     sources += [
       "android/popup_blocked_helper.cc",
       "android/popup_blocked_helper.h",
-      "android/popup_blocked_infobar_delegate.cc",
-      "android/popup_blocked_infobar_delegate.h",
       "android/popup_blocked_message_delegate.cc",
       "android/popup_blocked_message_delegate.h",
     ]
@@ -99,10 +97,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (is_android) {
-    sources += [
-      "android/popup_blocked_infobar_delegate_unittest.cc",
-      "android/popup_blocked_message_delegate_unittest.cc",
-    ]
+    sources += [ "android/popup_blocked_message_delegate_unittest.cc" ]
     deps += [
       "//components/infobars/content",
       "//components/messages/android:test_support",

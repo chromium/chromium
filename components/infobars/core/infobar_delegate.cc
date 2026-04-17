@@ -106,11 +106,6 @@ const ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate()
   return nullptr;
 }
 
-blocked_content::PopupBlockedInfoBarDelegate*
-InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
-  return nullptr;
-}
-
 ThemeInstalledInfoBarDelegate*
 InfoBarDelegate::AsThemePreviewInfobarDelegate() {
   return nullptr;
