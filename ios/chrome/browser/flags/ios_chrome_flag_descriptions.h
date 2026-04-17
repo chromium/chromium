@@ -77,6 +77,9 @@ extern const char kAutofillAiCreateEntityDataManagerDescription[];
 extern const char kAutofillAiDedupeEntitiesName[];
 extern const char kAutofillAiDedupeEntitiesDescription[];
 
+extern const char kAutofillAiNoFillingIconsExperimentName[];
+extern const char kAutofillAiNoFillingIconsExperimentDescription[];
+
 extern const char kAutofillAiReauthRequiredName[];
 extern const char kAutofillAiReauthRequiredDescription[];
 
