@@ -26,9 +26,6 @@ namespace network {
 
 namespace {
 
-const mojom::TrustTokenProtocolVersion kProtocolVersion =
-    mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf;
-
 // Choose this number to be > 1 but fairly small: setting it to 10
 // led to the test running for 2.5 sec on a debug build.
 constexpr size_t kNumTokensToRequest = 3;
@@ -95,8 +92,7 @@ void RedeemSingleToken(const TestTrustTokenIssuer& issuer,
   const url::Origin kRedeemingOrigin =
       url::Origin::Create(GURL("https://topframe.example"));
 
-  ASSERT_TRUE(redemption_cryptographer.Initialize(kProtocolVersion,
-                                                  kNumTokensToRequest));
+  ASSERT_TRUE(redemption_cryptographer.Initialize(kNumTokensToRequest));
 
   std::optional<std::string> maybe_base64_encoded_redemption_request =
       redemption_cryptographer.BeginRedemption(token_to_redeem,

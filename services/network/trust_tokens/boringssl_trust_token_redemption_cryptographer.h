@@ -26,8 +26,7 @@ class BoringsslTrustTokenRedemptionCryptographer
   ~BoringsslTrustTokenRedemptionCryptographer() override;
 
   // TrustTokenRequestRedemptionHelper::Cryptographer implementation:
-  bool Initialize(mojom::TrustTokenProtocolVersion issuer_configured_version,
-                  int issuer_configured_batch_size) override;
+  bool Initialize(int issuer_configured_batch_size) override;
   std::optional<std::string> BeginRedemption(
       TrustToken token,
       const url::Origin& top_level_origin) override;

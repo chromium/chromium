@@ -155,9 +155,15 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     return;
   }
 
+  if (commitment_result->protocol_version !=
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf) {
+    std::move(done).Run(std::nullopt,
+                        mojom::TrustTokenOperationStatus::kInvalidArgument);
+    return;
+  }
+
   if (!commitment_result->batch_size ||
-      !cryptographer_->Initialize(commitment_result->protocol_version,
-                                  commitment_result->batch_size)) {
+      !cryptographer_->Initialize(commitment_result->batch_size)) {
     LogOutcome(net_log_, kBegin,
                "Internal error initializing BoringSSL redemption state "
                "(possibly due to bad batch size)");

@@ -25,10 +25,10 @@ BoringsslTrustTokenRedemptionCryptographer::
     ~BoringsslTrustTokenRedemptionCryptographer() = default;
 
 bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
-    mojom::TrustTokenProtocolVersion issuer_configured_version,
     int issuer_configured_batch_size) {
-  state_ = BoringsslTrustTokenState::Create(issuer_configured_version,
-                                            issuer_configured_batch_size);
+  state_ = BoringsslTrustTokenState::Create(
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf,
+      issuer_configured_batch_size);
   return !!state_;
 }
 

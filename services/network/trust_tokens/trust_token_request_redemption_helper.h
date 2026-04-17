@@ -61,16 +61,13 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
    public:
     virtual ~Cryptographer() = default;
 
-    // Initializes the delegate. |issuer_configured_version| and
-    // |issuer_configured_batch_size| must be the "protocol_version" and
-    // "batchsize" values, from an issuer-provided key commitment result.
+    // Initializes the delegate. |issuer_configured_batch_size| must be
+    // "batchsize" value, from an issuer-provided key commitment result.
     //
     // Returns true on success and false if the batch size or key is
     // unacceptable or an internal error occurred in the underlying
     // cryptographic library.
-    virtual bool Initialize(
-        mojom::TrustTokenProtocolVersion issuer_configured_version,
-        int issuer_configured_batch_size) = 0;
+    virtual bool Initialize(int issuer_configured_batch_size) = 0;
 
     // Given a trust token to redeem and parameters to encode in the redemption
     // request, returns a base64-encoded string suitable for attachment in the
