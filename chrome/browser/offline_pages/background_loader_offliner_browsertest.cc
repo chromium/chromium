@@ -65,6 +65,16 @@ class BackgroundLoaderOfflinerBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  void TearDownOnMainThread() override {
+    // Flush pending tasks to avoid use-after-free during test teardown.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
+    PlatformBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   std::unique_ptr<BackgroundLoaderOffliner> CreateOffliner() {
     // Obtain dependencies from the current browser profile.
