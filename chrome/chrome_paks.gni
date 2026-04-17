@@ -493,19 +493,6 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (is_win || is_mac || is_linux) {
-      sources += [ "$root_gen_dir/chrome/app_home_resources.pak" ]
-      deps += [ "//chrome/browser/resources/app_home:resources" ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      sources += [
-        "$root_gen_dir/chrome/app_settings_resources.pak",
-        "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
-      ]
-      deps += [ "//chrome/browser/resources/app_settings:resources" ]
-    }
-
     if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
       sources += [
         "$root_gen_dir/chrome/discards_resources.pak",
@@ -526,11 +513,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/ai_overlay_dialog:resources",
         "//chrome/browser/resources/skills:resources",
       ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      sources += [ "$root_gen_dir/chrome/browser_switch_resources.pak" ]
-      deps += [ "//chrome/browser/resources/browser_switch:resources" ]
     }
 
     if (!is_android) {
@@ -563,6 +545,7 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/pdf_resources.pak" ]
       deps += [ "//chrome/browser/resources/pdf:resources" ]
     }
+
     if (enable_print_preview) {
       sources += [ "$root_gen_dir/chrome/print_preview_resources.pak" ]
       if (is_chromeos) {
@@ -571,6 +554,7 @@ template("chrome_extra_paks") {
         deps += [ "//chrome/browser/resources/print_preview:resources" ]
       }
     }
+
     if (enable_webui_tab_strip) {
       sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
       deps += [ "//chrome/browser/resources/tab_strip:resources" ]
@@ -580,6 +564,7 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/certificate_viewer_resources.pak" ]
       deps += [ "//chrome/browser/resources/certificate_viewer:resources" ]
     }
+
     if (enable_compose) {
       sources += [ "$root_gen_dir/chrome/compose_resources.pak" ]
       deps += [ "//chrome/browser/resources/compose:resources" ]
@@ -591,10 +576,21 @@ template("chrome_extra_paks") {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources +=
-          [ "$root_gen_dir/chrome/signin_history_sync_optin_resources.pak" ]
-      deps +=
-          [ "//chrome/browser/resources/signin/history_sync_optin:resources" ]
+      sources += [
+        "$root_gen_dir/chrome/app_home_resources.pak",
+        "$root_gen_dir/chrome/app_settings_resources.pak",
+        "$root_gen_dir/chrome/browser_switch_resources.pak",
+        "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
+        "$root_gen_dir/chrome/signin_history_sync_optin_resources.pak",
+        "$root_gen_dir/chrome/updater_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/app_home:resources",
+        "//chrome/browser/resources/app_settings:resources",
+        "//chrome/browser/resources/browser_switch:resources",
+        "//chrome/browser/resources/signin/history_sync_optin:resources",
+        "//chrome/browser/resources/updater:resources",
+      ]
     }
 
     if (enable_dice_support) {
@@ -624,11 +620,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources:code_cache_resources",
         "//ui/webui/resources:code_cache_resources",
       ]
-    }
-
-    if (is_mac || is_win || is_linux) {
-      sources += [ "$root_gen_dir/chrome/updater_resources.pak" ]
-      deps += [ "//chrome/browser/resources/updater:resources" ]
     }
 
     if (is_mac) {
