@@ -390,6 +390,8 @@ AutofillAnnotationsProviderImpl::GetAutofillFieldData(
     } else if (form_types.contains(FormType::kCreditCardForm) ||
                form_types.contains(FormType::kStandaloneCvcForm)) {
       return proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD;
+    } else if (form_types.contains(FormType::kOneTimePasswordForm)) {
+      return proto::COARSE_AUTOFILL_FIELD_TYPE_OTP;
     }
     return proto::COARSE_AUTOFILL_FIELD_TYPE_UNSUPPORTED;
   }();

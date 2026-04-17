@@ -119,6 +119,34 @@ TEST_F(AutofillAnnotationsProviderImplTest,
             optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_ADDRESS);
 }
 
+TEST_F(AutofillAnnotationsProviderImplTest,
+       GetAutofillFieldData_Otp) {
+  // Register a form to the Autofill Manager.
+  FormDescription form_description = {
+      .fields = {
+          {.server_type = autofill::ONE_TIME_CODE,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"otp",
+           .name = u"otp"},
+      }};
+  FormData form = autofill::test::GetFormData(form_description);
+  autofill_manager()->AddSeenForm(
+      form, autofill::test::GetHeuristicTypes(form_description),
+      autofill::test::GetServerTypes(form_description));
+
+  ConvertAIPageContentToProtoSession session;
+  std::optional<AutofillFieldMetadata> metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[0].renderer_id().GetUnsafeValue(), session);
+
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->section_id, 0u);
+  EXPECT_EQ(metadata->coarse_field_type,
+            optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_OTP);
+}
+
 TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData_Redaction) {
   // Keep this test deterministic across platforms by making feature state
   // explicit instead of relying on defaults.
