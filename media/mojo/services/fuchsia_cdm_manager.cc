@@ -304,6 +304,11 @@ FuchsiaCdmManager::FuchsiaCdmManager(
 
   DCHECK(!g_fuchsia_cdm_manager_instance);
   g_fuchsia_cdm_manager_instance = this;
+  if (base::FeatureList::IsEnabled(kFuchsiaCdmStoragePathMigration)) {
+    DLOG(WARNING) << "Fuchsia CDM storage path migration is ENABLED.";
+  } else {
+    DLOG(WARNING) << "Fuchsia CDM storage path migration is DISABLED.";
+  }
 }
 
 FuchsiaCdmManager::~FuchsiaCdmManager() {
