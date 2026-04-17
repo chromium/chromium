@@ -59,6 +59,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/favicon_size.h"
@@ -535,7 +536,7 @@ void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
 void VerticalTabView::PaintTabBackgroundWithImages(
     gfx::Canvas* canvas,
     std::optional<int> active_tab_fill_id,
-    std::optional<int> inactive_tab_fill_id) const {
+    std::optional<int> inactive_tab_fill_id) {
   const TabStyle::TabSelectionState current_state = GetSelectionState();
 
   if (current_state == TabStyle::TabSelectionState::kActive) {
@@ -575,7 +576,7 @@ void VerticalTabView::PaintTabBackgroundFill(
     gfx::Canvas* canvas,
     TabStyle::TabSelectionState selection_state,
     bool hovered,
-    std::optional<int> fill_id) const {
+    std::optional<int> fill_id) {
   if (ShouldPaintTabBackgroundColor(selection_state, fill_id.has_value(),
                                     hovered)) {
     cc::PaintFlags flags;
@@ -835,7 +836,7 @@ bool VerticalTabView::IsApparentlyActive() const {
   if (active_) {
     return true;
   }
-  if (hovered_) {
+  if (!features::IsGlassFrameEnabled() && hovered_) {
     return GetHoverOpacity() > 0.5f;
   }
   return selected_;
@@ -1043,8 +1044,10 @@ void VerticalTabView::UpdateThemeColors() {
 
   active_tab_fill_id_ = active_tab_fill_id;
   inactive_tab_fill_id_ = inactive_tab_fill_id;
-  should_fill_background_tab_color_ = theme_provider->GetDisplayProperty(
-      ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
+  if (!features::IsGlassFrameEnabled()) {
+    should_fill_background_tab_color_ = theme_provider->GetDisplayProperty(
+        ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
+  }
 }
 
 void VerticalTabView::UpdateColors() {

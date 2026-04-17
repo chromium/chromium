@@ -8,12 +8,15 @@
 #include <variant>
 
 #include "base/i18n/rtl.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/layout_provider.h"
@@ -218,7 +221,20 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   if (has_stroke) {
     cc::PaintFlags flags;
     flags.setStrokeWidth(kStrokeSize * 2);
-    flags.setColor(GetColorProvider()->GetColor(*stroke_color_));
+    SkColor stroke_color = GetColorProvider()->GetColor(*stroke_color_);
+    if (features::IsGlassFrameEnabled() &&
+        std::holds_alternative<FrameTheme>(color_)) {
+      const SkAlpha frame_alpha =
+          color_utils::IsDark(
+              GetView().GetColorProvider()->GetColor(ui::kColorFrameActive))
+              ? kBrowserFrameAlphaDark
+              : kBrowserFrameAlphaLight;
+      stroke_color = SkColorSetA(
+          stroke_color, std::clamp(static_cast<int>(SkColorGetA(stroke_color) *
+                                                    (frame_alpha / 255.0f)),
+                                   0, 255));
+    }
+    flags.setColor(stroke_color);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 

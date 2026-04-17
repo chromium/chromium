@@ -37,6 +37,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -196,6 +197,10 @@ void BrowserWidget::InitBrowserWidget() {
             parsed_command_line.GetSwitchValueASCII(switches::kWindowWorkspace);
       }
     }
+  }
+
+  if (features::IsGlassFrameEnabled()) {
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   }
 
   Init(std::move(params));

@@ -77,6 +77,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
       const remote_cocoa::mojom::CreateWindowParams* params) override;
   remote_cocoa::ApplicationHost* GetRemoteCocoaApplicationHost() override;
   void OnWindowInitialized() override;
+  void OnWidgetInitDone() override;
   void OnWindowDestroying(gfx::NativeWindow window) override;
 
   // Overridden from CommandObserver:

@@ -1437,6 +1437,10 @@ inline constexpr char kContextualCueingName[] = "Contextual cueing";
 inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";
 
+inline constexpr char kGlassFrameName[] = "Glass Frame";
+inline constexpr char kGlassFrameDescription[] =
+    "Enables a glass effect on the browser frame.";
+
 inline constexpr char kGlassToolbarName[] = "Glass Toolbar";
 inline constexpr char kGlassToolbarDescription[] =
     "Enables a glass effect on the toolbar.";

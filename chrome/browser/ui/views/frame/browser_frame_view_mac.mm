@@ -22,6 +22,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/cocoa/fullscreen/fullscreen_menubar_tracker.h"
 #include "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -46,13 +47,16 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_types.h"
@@ -103,6 +107,11 @@ BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
       caption_button_placeholder_container_ =
           AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     }
+  }
+
+  if (features::IsGlassFrameEnabled()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
   }
 }
 
@@ -463,12 +472,19 @@ void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
   }
 
   SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
-  canvas->DrawColor(frame_color);
+  if (features::IsGlassFrameEnabled()) {
+    const SkAlpha frame_alpha = color_utils::IsDark(frame_color)
+                                    ? kBrowserFrameAlphaDark
+                                    : kBrowserFrameAlphaLight;
+    canvas->DrawColor(SkColorSetA(frame_color, frame_alpha));
+  } else {
+    canvas->DrawColor(frame_color);
 
-  auto* theme_service = ThemeServiceFactory::GetForProfile(
-      GetBrowserView()->browser()->profile());
-  if (!theme_service->UsingSystemTheme()) {
-    PaintThemedFrame(canvas);
+    auto* theme_service = ThemeServiceFactory::GetForProfile(
+        GetBrowserView()->browser()->profile());
+    if (!theme_service->UsingSystemTheme()) {
+      PaintThemedFrame(canvas);
+    }
   }
 }
 
@@ -539,7 +555,9 @@ void BrowserFrameViewMac::UpdateCaptionButtonPlaceholderContainerBackground() {
   if (caption_button_placeholder_container_) {
     caption_button_placeholder_container_->SetBackground(
         views::CreateSolidBackground(
-            GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
+            features::IsGlassFrameEnabled()
+                ? SK_ColorTRANSPARENT
+                : GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
   }
 }
 

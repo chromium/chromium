@@ -41,6 +41,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/font_list.h"
@@ -608,7 +609,7 @@ bool TabStyleViewsImpl::IsApparentlyActive() const {
   if (selection_state == TabStyle::TabSelectionState::kActive) {
     return true;
   }
-  if (IsHovering()) {
+  if (!features::IsGlassFrameEnabled() && IsHovering()) {
     return GetHoverOpacity() > 0.5f;
   }
   return selection_state == TabStyle::TabSelectionState::kSelected;
@@ -859,6 +860,11 @@ int TabStyleViewsImpl::GetStrokeThickness(bool should_paint_as_active) const {
 bool TabStyleViewsImpl::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
     bool has_custom_background) const {
+  if (features::IsGlassFrameEnabled()) {
+    return selection_state == TabStyle::TabSelectionState::kActive ||
+           GetHoverAnimationValue() > 0.0;
+  }
+
   // In the active case, always paint the tab background. The fill image may be
   // transparent.
   if (selection_state == TabStyle::TabSelectionState::kActive) {
@@ -893,6 +899,16 @@ SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
   const bool frame_active =
       tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true;
   const ui::ColorProvider* color_provider = tab()->GetColorProvider();
+
+  if (features::IsGlassFrameEnabled() &&
+      selection_state != TabStyle::TabSelectionState::kActive) {
+    const SkColor color = tab_style()->GetTabBackgroundColor(
+        selection_state, true, frame_active, color_provider);
+    return color_utils::AlphaBlend(
+        color, SK_ColorTRANSPARENT,
+        static_cast<float>(GetHoverAnimationValue()));
+  }
+
   return tab_style()->GetCurrentTabBackgroundColor(
       selection_state, hovered, GetHoverAnimationValue(), frame_active,
       color_provider);
@@ -964,7 +980,9 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
                      flags);
   }
 
-  if (fill_id.has_value()) {
+  if (fill_id.has_value() &&
+      (!features::IsGlassFrameEnabled() ||
+       selection_state == TabStyle::TabSelectionState::kActive)) {
     gfx::ScopedCanvas scale_scoper(canvas);
     canvas->sk_canvas()->scale(scale, scale);
     gfx::ImageSkia* image =
@@ -975,7 +993,8 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
         image);
   }
 
-  if (hovered) {
+  if (hovered &&
+      (!features::IsGlassFrameEnabled() || GetHoverAnimationValue() > 0.0)) {
     PaintBackgroundHover(canvas, scale);
   }
 }

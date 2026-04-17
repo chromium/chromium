@@ -26,6 +26,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace {
@@ -851,6 +852,13 @@ struct NSEdgeAndCornerThicknesses {
 // regardless of their window style, so override that behavior here.
 - (BOOL)_canMiniaturize {
   return ![self immersiveFullscreen];
+}
+
+- (BOOL)isOpaque {
+  if (features::IsGlassFrameEnabled()) {
+    return NO;
+  }
+  return [super isOpaque];
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {

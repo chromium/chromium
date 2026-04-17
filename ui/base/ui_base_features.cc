@@ -466,4 +466,14 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kSplitViewLinkOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlassFrame, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGlassFrameEnabled() {
+#if BUILDFLAG(IS_MAC)
+  return base::FeatureList::IsEnabled(kGlassFrame);
+#else
+  return false;
+#endif
+}
+
 }  // namespace features

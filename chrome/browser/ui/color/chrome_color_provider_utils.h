@@ -7,12 +7,15 @@
 
 #include <string>
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_utils.h"
 
 inline constexpr SkAlpha kToolbarInkDropHighlightVisibleAlpha = 0x14;
+inline constexpr SkAlpha kBrowserFrameAlphaLight = 95;
+inline constexpr SkAlpha kBrowserFrameAlphaDark = 180;
 
 // Converts ColorId if |color_id| is in CHROME_COLOR_IDS.
 std::string ChromeColorIdName(ui::ColorId color_id);

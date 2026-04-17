@@ -9034,6 +9034,7 @@ from previous Chrome versions.
   <int value="-1677531841" label="AccessibilityExtraLargeCursor:disabled"/>
   <int value="-1677516670" label="PageInfoAboutThisSiteEn:enabled"/>
   <int value="-1677087930" label="ClipboardHistoryUrlTitles:disabled"/>
+  <int value="-1677075392" label="GlassFrame:enabled"/>
   <int value="-1676256979"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:enabled"/>
   <int value="-1675747412"
@@ -13455,6 +13456,7 @@ from previous Chrome versions.
   <int value="-207858780" label="EnableAIPromptAPI:disabled"/>
   <int value="-206393363" label="enable-scroll-prediction"/>
   <int value="-205975637" label="WebUIDarkMode:enabled"/>
+  <int value="-205828856" label="GlassFrame:disabled"/>
   <int value="-205401012" label="webrtc-hw-encoding:disabled"/>
   <int value="-204978485" label="WallpaperFullScreenPreview:enabled"/>
   <int value="-204355195" label="secondary-ui-md"/>

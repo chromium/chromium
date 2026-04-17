@@ -8,16 +8,19 @@
 
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -178,8 +181,22 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     cc::PaintFlags stroke_flags;
     stroke_flags.setStrokeWidth(views::Separator::kThickness);
     SkColor color = GetView().GetColorProvider()->GetColor(outline.color);
-    color = SkColorSetA(color,
-                        base::ClampRound(SkColorGetA(color) * outline.opacity));
+    if (features::IsGlassFrameEnabled() &&
+        std::holds_alternative<FrameTheme>(primary_color_)) {
+      const SkAlpha frame_alpha =
+          color_utils::IsDark(
+              GetView().GetColorProvider()->GetColor(ui::kColorFrameActive))
+              ? kBrowserFrameAlphaDark
+              : kBrowserFrameAlphaLight;
+      color = SkColorSetA(
+          color,
+          std::clamp(static_cast<int>(SkColorGetA(color) * outline.opacity *
+                                      (frame_alpha / 255.0f)),
+                     0, 255));
+    } else {
+      color = SkColorSetA(
+          color, base::ClampRound(SkColorGetA(color) * outline.opacity));
+    }
     stroke_flags.setColor(color);
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
     stroke_flags.setAntiAlias(true);

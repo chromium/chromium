@@ -104,15 +104,14 @@ class VerticalTabView : public views::View,
   void OnThemeChanged() override;
 
   // Tab Painting Helpers
-  void PaintTabBackgroundWithImages(
-      gfx::Canvas* canvas,
-      std::optional<int> active_tab_fill_id,
-      std::optional<int> inactive_tab_fill_id) const;
+  void PaintTabBackgroundWithImages(gfx::Canvas* canvas,
+                                    std::optional<int> active_tab_fill_id,
+                                    std::optional<int> inactive_tab_fill_id);
   float GetCurrentActiveOpacity() const;
   void PaintTabBackgroundFill(gfx::Canvas* canvas,
                               TabStyle::TabSelectionState selection_state,
                               bool hovered,
-                              std::optional<int> fill_id) const;
+                              std::optional<int> fill_id);
   bool ShouldPaintTabBackgroundColor(
       TabStyle::TabSelectionState selection_state,
       bool has_custom_background,

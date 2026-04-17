@@ -53,6 +53,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/ui_base_features.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -508,6 +509,10 @@ NativeWidgetMacNSWindow* BrowserNativeWidgetMac::CreateNSWindow(
     const remote_cocoa::mojom::CreateWindowParams* params) {
   CHECK(browser_view_);
   NativeWidgetMacNSWindow* ns_window = NativeWidgetMac::CreateNSWindow(params);
+  if (features::IsGlassFrameEnabled()) {
+    [ns_window setBackgroundColor:[NSColor clearColor]];
+    [ns_window setOpaque:NO];
+  }
   touch_bar_delegate_ = [[BrowserWindowTouchBarViewsDelegate alloc]
       initWithBrowser:browser_view_->browser()
                window:ns_window];
@@ -532,6 +537,27 @@ void BrowserNativeWidgetMac::OnWindowInitialized() {
     if (auto* host = GetHostForBrowser(browser_view_)) {
       host->GetAppShim()->CreateCommandDispatcherForWidget(
           GetNSWindowHost()->bridged_native_widget_id());
+    }
+  }
+}
+
+void BrowserNativeWidgetMac::OnWidgetInitDone() {
+  NativeWidgetMac::OnWidgetInitDone();
+
+  if (features::IsGlassFrameEnabled()) {
+    NSWindow* ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+    if (ns_window) {
+      NSView* content_view = [ns_window contentView];
+      CHECK(content_view);
+      NSVisualEffectView* effect_view =
+          [[NSVisualEffectView alloc] initWithFrame:content_view.bounds];
+      effect_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+      effect_view.material = NSVisualEffectMaterialUnderWindowBackground;
+      effect_view.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+      effect_view.state = NSVisualEffectStateActive;
+      [content_view addSubview:effect_view
+                    positioned:NSWindowBelow
+                    relativeTo:nil];
     }
   }
 }
