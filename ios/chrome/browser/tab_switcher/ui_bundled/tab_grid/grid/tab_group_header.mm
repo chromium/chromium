@@ -212,7 +212,7 @@ CGFloat GetVerticalInsetForConstraints() {
   titleButton.accessibilityIdentifier =
       kTabGroupTitleButtonToEditGroupIdentifier;
   titleButton.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_EDITGROUP);
+      l10n_util::GetNSString(IDS_IOS_TAB_GROUP_EDITION_ACCESSIBILITY_HINT);
   titleButton.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   [titleButton addTarget:self
