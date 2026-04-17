@@ -3479,6 +3479,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabStateStore.LoadWarning" enum="StorageLoadWarningCode"
+    expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records warnings that occur during TabStateStore tab state data
+    loads. This is logged when there is an error during data loading, and
+    contains context about the error. Recorded when loading the tab state data
+    from the service.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.LoadWarningCount" units="count"
+    expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the number of warnings that occur when loading
+    TabStateStore tab state data. Recorded after tab state data has been loaded.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabStateStore.ShadowStoreCaughtUp" enum="Boolean"
     expires_after="2026-10-28">
   <owner>mfiaz@google.com</owner>

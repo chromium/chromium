@@ -573,6 +573,8 @@ public class TabStateStore implements TabPersistentStore {
         assertOtrOperationSafe(incognito);
 
         StorageLoadWarning[] warnings = data.getWarnings();
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabStateStore.LoadWarningCount", warnings.length);
         if (!mIsAuthoritative && warnings.length > 0) {
             mTabStateStorageService.clearUnusedNodesForWindow(
                     mWindowTag, incognito, /* tabStripCollection= */ null);

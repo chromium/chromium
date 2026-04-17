@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
+
 namespace tabs {
 
 StorageLoadingContext::StorageLoadingContext() = default;
@@ -18,6 +20,8 @@ StorageLoadingContext& StorageLoadingContext::operator=(
 
 void StorageLoadingContext::AddWarning(StorageLoadWarningCode status,
                                        std::string message) {
+  UMA_HISTOGRAM_ENUMERATION("Tabs.TabStateStore.LoadWarning", status,
+                            StorageLoadWarningCode::kMaxValue);
   warnings_.push_back({status, std::move(message)});
 }
 

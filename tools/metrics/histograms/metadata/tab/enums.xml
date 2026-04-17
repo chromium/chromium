@@ -362,6 +362,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_menu_model.h:SplitViewMenuEntry) -->
 
+<!-- LINT.IfChange(StorageLoadWarningCode) -->
+
+<enum name="StorageLoadWarningCode">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Parse error"/>
+  <int value="2" label="Multiple unique nodes error"/>
+  <int value="3" label="Tree too deep error"/>
+  <int value="4" label="Unknown collection type error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/tab/tab_storage_type.h:StorageLoadWarningCode) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>
