@@ -3519,7 +3519,6 @@ static_library("ui") {
       "views/device_signals_consent/consent_dialog_coordinator.h",
     ]
   }
-
   if (enable_webui_certificate_viewer) {
     sources += [
       "certificate_dialogs.cc",
@@ -3580,6 +3579,8 @@ static_library("ui") {
       "views/autofill/address_bubble_base_view.cc",
       "views/autofill/address_editor_view.cc",
       "views/autofill/address_editor_view.h",
+      "views/autofill/at_memory_promo_bubble_view.cc",
+      "views/autofill/at_memory_promo_bubble_view.h",
       "views/autofill/autofill_ai/autofill_ai_bubble_utils.cc",
       "views/autofill/autofill_ai/autofill_ai_bubble_utils.h",
       "views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.cc",
