@@ -80,7 +80,6 @@ suite('AiPage', function() {
       showHistorySearchControl: false,
       showComposeControl: true,
       showPasswordChangeControl: false,
-      enableAiModeSearchSetting: false,
     });
     resetRouterForTesting();
     await createPage();
@@ -99,8 +98,6 @@ suite('AiPage', function() {
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.PasswordChange', false);
 
-    assertFalse(isChildVisible(page, '#aiModeSearchRow'));
-
     metricsBrowserProxy.resetResolver('recordBooleanHistogram');
 
     // No new metrics should get recorded on next AI page navigation.
@@ -112,7 +109,6 @@ suite('AiPage', function() {
       showHistorySearchControl: true,
       showComposeControl: false,
       showPasswordChangeControl: true,
-      enableAiModeSearchSetting: true,
     });
     resetRouterForTesting();
     await createPage();
@@ -129,8 +125,6 @@ suite('AiPage', function() {
     assertTrue(isChildVisible(page, '#passwordChangeRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.PasswordChange', true);
-
-    assertTrue(isChildVisible(page, '#aiModeSearchRow'));
 
     metricsBrowserProxy.resetResolver('recordBooleanHistogram');
 
@@ -232,25 +226,5 @@ suite('AiPage', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#passwordChangeRowV2');
     assertTrue(!!passwordChangeRow);
     assertFalse(isVisible(passwordChangeRow));
-  });
-
-  test('aiModeSearchRow', async () => {
-    loadTimeData.overrideValues({
-      enableAiModeSearchSetting: true,
-    });
-    resetRouterForTesting();
-    await createPage();
-
-    const aiModeSearchRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>('#aiModeSearchRow');
-
-    assertTrue(!!aiModeSearchRow);
-    assertTrue(isVisible(aiModeSearchRow));
-
-    aiModeSearchRow.click();
-
-    const currentRoute = Router.getInstance().getCurrentRoute();
-    assertEquals(routes.AI_MODE_SEARCH, currentRoute);
-    assertEquals(routes.AI, currentRoute.parent);
   });
 });

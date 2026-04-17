@@ -49,6 +49,7 @@ suite('AiPageIndex', function() {
   test('Routing', async function() {
     const defaultViews = [
       'aiInfoCard',
+      'aiModeSearch',
       'glic',
       'parent',
     ];
@@ -63,10 +64,6 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.HISTORY_SEARCH);
     await microtasksFinished();
     assertActiveViews(['historySearch']);
-
-    Router.getInstance().navigateTo(routes.AI_MODE_SEARCH);
-    await microtasksFinished();
-    assertActiveViews(['aiModeSearch']);
 
     Router.getInstance().navigateTo(routes.OFFER_WRITING_HELP);
     await microtasksFinished();
@@ -93,6 +90,19 @@ suite('AiPageIndex', function() {
     assertFalse(!!index.$.viewManager.querySelector('#parent[slot=view]'));
   });
 
+  test('aiModeSearchSectionVisibility', async function() {
+    assertTrue(!!index.$.viewManager.querySelector('#aiModeSearch[slot=view]'));
+
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      enableAiModeSearchSetting: false,
+    });
+    resetRouterForTesting();
+    await createAiPageIndex();
+    assertFalse(
+        !!index.$.viewManager.querySelector('#aiModeSearch[slot=view]'));
+  });
+
   test('glicSectionVisibility', async function() {
     assertTrue(!!index.$.viewManager.querySelector('#glic[slot=view]'));
 
@@ -110,7 +120,6 @@ suite('AiPageIndex', function() {
     const childViewsId = [
       'historySearch',
       'compose',
-      'aiModeSearch',
     ];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(

@@ -1,4 +1,4 @@
-<style include="settings-shared settings-columned-section">
+<style include="settings-shared">
   .separator {
     margin: 0 4px;
   }
@@ -10,9 +10,13 @@
   cr-icon {
     flex-shrink: 0;
   }
+
+  .cr-padded-text {
+    flex: 1;
+  }
 </style>
 
-<settings-subpage page-title="$i18n{stsSettingsEntrypointGoogleSearchAiMode}">
+<settings-section page-title="$i18n{stsSettingsEntrypointGoogleSearchAiMode}">
   <div class="settings-row first">
     <cr-link-row label="$i18n{stsSettingsOption1ShareOpenTabsForEveryThreadV2}"
         on-click="onLearnMoreRowClick_" external>
@@ -33,44 +37,10 @@
         pref="{{prefs.contextual_tasks.share_open_tabs_every_thread}}">
     </settings-toggle-button>
   </div>
-
-  <div class="settings-columned-section">
-    <div class="column">
-      <h2 class="description-header">$i18n{stsSettingsOption1WhenOn}</h2>
-      <ul class="icon-bulleted-list">
-        <li>
-          <cr-icon icon="settings20:auto-summarize"
-              aria-hidden="true"></cr-icon>
-          <div class="secondary">
-            $i18n{stsSettingsOption1YouCanEasilyAskQuestions}
-          </div>
-        </li>
-        <li>
-          <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
-          <div class="secondary">
-            $i18n{stsSettingsOption1RelevantOpenTabsAreUsedToPersonalize}
-          </div>
-        </li>
-      </ul>
-    </div>
-  <div class="column">
-      <h2 class=
-          "description-header">$i18n{stsSettingsOption1ThingsToConsider}</h2>
-      <ul class="icon-bulleted-list">
-        <li>
-          <cr-icon icon="settings20:auto-tab-group"
-              aria-hidden="true"></cr-icon>
-          <div class="secondary">
-            $i18n{stsSettingsOption1SendsYourOpenTabs}
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="cr-row first">
-    <div class="flex cr-padded-text">
-      <h2>$i18n{stsSettingsOption1SiteExclusions}</h2>
+  <div class="hr"></div>
+  <div class="cr-row continuation">
+    <div class="cr-padded-text">
+      $i18n{stsSettingsOption1NeverShareTheseSites}
       <div class="secondary">
         $i18n{stsSettingsOption1SitesAddedHereWontBeReferencedV2}
       </div>
@@ -121,10 +91,4 @@
         on-add-site="onAddSite_" site="[[siteToEdit_]]">
     </ai-site-add-dialog>
   </template>
-
-  <cr-link-row class="hr"
-      label="$i18n{stsSettingsOption1MyGoogleSearchHistory}"
-      sub-label="$i18n{stsSettingsOption1ReviewAndManage}"
-      on-click="onGoogleSearchHistoryClick_" external>
-  </cr-link-row>
-</settings-subpage>
+</settings-section>

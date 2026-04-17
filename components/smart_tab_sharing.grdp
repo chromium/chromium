@@ -113,17 +113,14 @@
   <message name="IDS_STS_SETTINGS_OPTION_1_SITE_EXCLUSIONS" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Site exclusions
   </message>
+  <message name="IDS_STS_SETTINGS_OPTION_1_NEVER_SHARE_THESE_SITES" desc="Header for the exclusion list for smart tab sharing. Sites added here will not be referenced for responses.">
+    Never share these sites
+  </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Sites added here won't be referenced for responses, even if the tabs are open.
   </message>
   <message name="IDS_STS_SETTINGS_OPTION_1_SITES_ADDED_HERE_WONT_BE_REFERENCED_V2" desc="This string is a subheading of a label for how a user can exclude certain sites from being shared with Google Search AI Mode when 'Share relevant tabs in every thread' is on.">
     Sites you add here won't be referenced for responses, even if the tab is open.
-  </message>
-  <message name="IDS_STS_SETTINGS_OPTION_1_MY_GOOGLE_SEARCH_HISTORY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    My Google Search History
-  </message>
-  <message name="IDS_STS_SETTINGS_OPTION_1_REVIEW_AND_MANAGE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    Review and manage
   </message>
 
   <!-- Settings: Option 2: Toggles -->
@@ -153,12 +150,6 @@
   </message>
   <message name="IDS_STS_OPTION_2_SITES_ADDED_HERE_WONT_BE_REFERENCED" desc="This string is a subheading of a label for how a user can exclude certain sites from being shared with Google Search AI Mode when 'Share relevant tabs in every thread' is on.">
     Sites added here won't be referenced for responses, even if the tabs are open.
-  </message>
-  <message name="IDS_STS_OPTION_2_MY_GOOGLE_SEARCH_HISTORY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    My Google Search History
-  </message>
-  <message name="IDS_STS_OPTION_2_REVIEW_AND_MANAGE" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    Review and manage
   </message>
 
   <!-- Settings entrypoint -->

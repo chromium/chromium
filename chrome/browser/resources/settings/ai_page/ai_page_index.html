@@ -15,6 +15,12 @@
     show-all$="[[shouldShowAll]]">
   <settings-ai-info-card slot="view" id="aiInfoCard"></settings-ai-info-card>
 
+  <template is="dom-if" if="[[enableAiModeSearchSetting_]]">
+    <settings-ai-mode-search-page slot="view" id="aiModeSearch"
+        prefs="{{prefs}}">
+    </settings-ai-mode-search-page>
+  </template>
+
   <template is="dom-if" if="[[showGlicSettings_]]">
     <settings-glic-page slot="view" id="glic" prefs="{{prefs}}">
     </settings-glic-page>
@@ -44,13 +50,6 @@
         data-parent-view-id="parent" prefs="{{prefs}}"
         route-path$="[[routes_.HISTORY_SEARCH.path]]">
     </settings-history-search-page>
-  </template>
-
-  <template is="dom-if" if="[[enableAiModeSearchSetting_]]">
-    <settings-ai-mode-search-page slot="view" id="aiModeSearch"
-        data-parent-view-id="parent" prefs="{{prefs}}"
-        route-path$="[[routes_.AI_MODE_SEARCH.path]]">
-    </settings-ai-mode-search-page>
   </template>
 
   <template is="dom-if" if="[[showComposeControl_]]">

@@ -645,13 +645,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     html_source->AddBoolean(name, visible || show_ai_settings_for_testing);
     show_ai_features_section |= visible;
   }
-  show_ai_features_section |= enable_ai_mode_search;
 
   // Within the AI subpage are separate sections for Glic and for all other AI
   // features, the visibility of these are separately controlled but we want to
   // show the subpage if any of the AI features or Glic are enabled.
-  html_source->AddBoolean("showAiPage",
-                          show_glic_section || show_ai_features_section);
+  html_source->AddBoolean("showAiPage", show_glic_section ||
+                                            show_ai_features_section ||
+                                            enable_ai_mode_search);
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 

@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_columned_section.css.js';
-import '../settings_page/settings_subpage.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './ai_site_add_dialog.js';
 
@@ -130,10 +130,6 @@ export class SettingsAiModeSearchPageElement extends
 
   private onLearnMoreClick_(event: Event) {
     event.stopPropagation();
-  }
-
-  private onGoogleSearchHistoryClick_() {
-    window.open('https://myactivity.google.com/product/search');
   }
 }
 

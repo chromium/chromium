@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import '/shared/settings/prefs/prefs.js';
 import './ai_info_card.js';
+import './ai_mode_search_page.js';
 import './ai_page.js';
 import '../glic_page/glic_page.js';
 import '../glic_page/glic_subpage.js';
@@ -105,6 +106,10 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       defaultViews.push('parent');
     }
 
+    if (this.enableAiModeSearchSetting_) {
+      defaultViews.push('aiModeSearch');
+    }
+
     if (this.showGlicSettings_) {
       defaultViews.push('glic');
     }
@@ -132,11 +137,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           // Switch back to the default view in case they are part of search
           // results.
           this.showDefaultViews_();
-          break;
-        case routes.AI_MODE_SEARCH:
-          assert(this.enableAiModeSearchSetting_);
-          this.$.viewManager.switchView(
-              'aiModeSearch', 'no-animation', 'no-animation');
           break;
         case routes.HISTORY_SEARCH:
           assert(this.showHistorySearchControl_);
