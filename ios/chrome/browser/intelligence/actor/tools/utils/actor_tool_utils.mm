@@ -63,9 +63,9 @@ std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
     case Action::kAttemptOtpFilling:
       return "AttemptOtpFillingTool";
     case Action::ACTION_NOT_SET:
+    default:
       return std::nullopt;
   }
-  return std::nullopt;
 }
 
 }  // namespace actor
