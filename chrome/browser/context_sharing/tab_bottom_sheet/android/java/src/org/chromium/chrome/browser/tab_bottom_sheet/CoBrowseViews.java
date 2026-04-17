@@ -33,6 +33,7 @@ import org.chromium.content_public.browser.WebContents;
 public class CoBrowseViews {
     private final @Nullable TabBottomSheetWebUi mWebUi;
     private final @Nullable ContextualTasksFusebox mFusebox;
+    private final @ColorInt int mBackgroundColor;
     private final View mView;
     private @Nullable View mPeekView;
 
@@ -42,14 +43,22 @@ public class CoBrowseViews {
      * @param context The context for the view.
      * @param webUi The web UI for the view.
      * @param fusebox The fusebox for the view.
+     * @param backgroundColor The background color for the view.
      */
     public CoBrowseViews(
             Context context,
             @Nullable TabBottomSheetWebUi webUi,
-            @Nullable ContextualTasksFusebox fusebox) {
+            @Nullable ContextualTasksFusebox fusebox,
+            @ColorInt int backgroundColor) {
         mWebUi = webUi;
         mFusebox = fusebox;
+        mBackgroundColor = backgroundColor;
         mView = buildView(context);
+    }
+
+    /** Returns the background color for the co-browse view. */
+    public @ColorInt int getBackgroundColor() {
+        return mBackgroundColor;
     }
 
     /** Sets the touch handler for the Web UI container. */
@@ -152,13 +161,6 @@ public class CoBrowseViews {
         if (sheetContentParams.height != height) {
             sheetContentParams.height = height;
             sheetContent.setLayoutParams(sheetContentParams);
-        }
-    }
-
-    /** Sets the background color for the resizing placeholder. */
-    public void setPlaceholderBackgroundColor(@ColorInt int color) {
-        if (mWebUi != null) {
-            mWebUi.setPlaceholderBackgroundColor(color);
         }
     }
 

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 
+import android.graphics.Color;
+
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -84,7 +86,7 @@ public class TabBottomSheetManagerTest {
                             (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
                     mBottomSheetController = tabbedRootUiCoordinator.getBottomSheetController();
                     var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
-                    mCoBrowseViews = new CoBrowseViews(mActivity, null, null);
+                    mCoBrowseViews = new CoBrowseViews(mActivity, null, null, Color.WHITE);
                     mManager = tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
                 });
     }

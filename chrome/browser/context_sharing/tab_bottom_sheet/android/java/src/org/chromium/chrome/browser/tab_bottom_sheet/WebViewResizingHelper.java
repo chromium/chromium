@@ -20,7 +20,6 @@ import androidx.annotation.ColorInt;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.animation.AnimationHandler;
 
@@ -39,7 +38,7 @@ public class WebViewResizingHelper {
     /**
      * @param context The context for the view.
      */
-    public WebViewResizingHelper(Context context) {
+    public WebViewResizingHelper(Context context, @ColorInt int backgroundColor) {
         mContext = context;
 
         mResizingContainer = new FrameLayout(mContext);
@@ -50,14 +49,7 @@ public class WebViewResizingHelper {
         mResizingPlaceholder.setVisibility(View.GONE);
 
         ColorDrawable border = new ColorDrawable();
-        border.setColor(SemanticColorUtils.getSheetBgColor(mContext));
-        mResizingPlaceholder.setBackground(border);
-    }
-
-    /** Sets the background color for the placeholder. */
-    public void setPlaceholderBackgroundColor(@ColorInt int color) {
-        ColorDrawable border = new ColorDrawable();
-        border.setColor(color);
+        border.setColor(backgroundColor);
         mResizingPlaceholder.setBackground(border);
     }
 

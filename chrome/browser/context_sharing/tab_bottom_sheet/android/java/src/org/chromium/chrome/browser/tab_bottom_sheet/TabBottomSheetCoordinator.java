@@ -195,7 +195,9 @@ public class TabBottomSheetCoordinator {
             return false;
         }
         mContentView = mCoBrowseViews.getView();
-        mSheetContent = new TabBottomSheetContent(mContentView, getDefaultHeightRatio());
+        mSheetContent =
+                new TabBottomSheetContent(
+                        mContentView, getDefaultHeightRatio(), mCoBrowseViews.getBackgroundColor());
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
@@ -391,7 +393,6 @@ public class TabBottomSheetCoordinator {
                 }
                 if (newContent == mSheetContent) {
                     mIsShowingTabBottomSheet = true;
-                    updatePlaceholderBackgroundColor();
                 } else {
                     if (mIsShowingTabBottomSheet) {
                         mMediator.onSheetStateChanged(
@@ -435,12 +436,6 @@ public class TabBottomSheetCoordinator {
                 defaultHeightRatio,
                 mBottomSheetController.getCurrentOffset(),
                 mBottomSheetController.getMaxOffset());
-    }
-
-    private void updatePlaceholderBackgroundColor() {
-        Integer sheetBackgroundColor = mBottomSheetController.getSheetBackgroundColor();
-        assert sheetBackgroundColor != null;
-        mMediator.setPlaceholderBackgroundColor(sheetBackgroundColor);
     }
 
     private float getDefaultHeightRatio() {

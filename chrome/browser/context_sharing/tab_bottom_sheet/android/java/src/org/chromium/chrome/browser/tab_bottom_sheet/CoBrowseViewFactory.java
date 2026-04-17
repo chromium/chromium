@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.app.Activity;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -15,6 +16,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
@@ -80,11 +82,14 @@ public class CoBrowseViewFactory {
      *
      * @param webContents The {@link WebContents} to be displayed in the thin web view.
      * @param showFusebox Whether to show the fusebox. Currently only used by contextual tasks.
+     * @param backgroundColor The background color for the content.
      * @return The {@link CoBrowseViews} instance.
      */
-    CoBrowseViews buildCoBrowseViews(@Nullable WebContents webContents, boolean showFusebox) {
+    CoBrowseViews buildCoBrowseViews(
+            @Nullable WebContents webContents, boolean showFusebox, @ColorInt int backgroundColor) {
         TabBottomSheetWebUi webUi =
-                new TabBottomSheetWebUi(mActivity, mWindowAndroid, mContextMenuPopulatorFactory);
+                new TabBottomSheetWebUi(
+                        mActivity, mWindowAndroid, mContextMenuPopulatorFactory, backgroundColor);
         ContextualTasksFusebox fusebox = null;
         if (showFusebox) {
             // TaskState retrieval from Manager.
@@ -110,7 +115,7 @@ public class CoBrowseViewFactory {
 
         webUi.setWebContents(webContents);
 
-        return new CoBrowseViews(mActivity, webUi, fusebox);
+        return new CoBrowseViews(mActivity, webUi, fusebox, backgroundColor);
     }
 
     @CalledByNative
@@ -123,6 +128,9 @@ public class CoBrowseViewFactory {
         if (factory == null) {
             return null;
         }
-        return factory.buildCoBrowseViews(webContents, showFusebox);
+
+        // TODO(crbug.com/502611927): This may need to be different for AIM.
+        @ColorInt int backgroundColor = factory.mActivity.getColor(R.color.tab_bottom_sheet_bg);
+        return factory.buildCoBrowseViews(webContents, showFusebox, backgroundColor);
     }
 }

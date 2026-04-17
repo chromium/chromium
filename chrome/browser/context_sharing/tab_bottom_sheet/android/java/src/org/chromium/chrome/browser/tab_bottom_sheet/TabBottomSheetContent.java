@@ -24,16 +24,20 @@ public class TabBottomSheetContent implements BottomSheetContent {
     private final float mFullHeightRatio;
     private final GlowSpec mGlowSpec;
     private final int mPeekViewHeight;
+    private final @ColorInt int mBackgroundColor;
 
     /**
      * Constructor.
      *
      * @param contentView The inflated view for the bottom sheet.
      * @param fullHeightRatio The full height ratio for the bottom sheet.
+     * @param backgroundColor The background color for the bottom sheet.
      */
-    public TabBottomSheetContent(View contentView, float fullHeightRatio) {
+    public TabBottomSheetContent(
+            View contentView, float fullHeightRatio, @ColorInt int backgroundColor) {
         mContentView = contentView;
         mFullHeightRatio = fullHeightRatio;
+        mBackgroundColor = backgroundColor;
         // TODO(crbug.com/502611927): Remove or tweak this for AIM.
         mGlowSpec =
                 new GlowSpec(
@@ -87,8 +91,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public @ColorInt int getSheetBackgroundColorOverride() {
-        // TODO(crbug.com/502611927): This may need to be different for AIM.
-        return mContentView.getContext().getColor(R.color.tab_bottom_sheet_bg);
+        return mBackgroundColor;
     }
 
     @Override

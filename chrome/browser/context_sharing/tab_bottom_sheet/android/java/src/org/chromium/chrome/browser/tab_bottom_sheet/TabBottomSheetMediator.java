@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
@@ -130,11 +129,6 @@ public class TabBottomSheetMediator extends GestureStateListener {
             v.dispatchTouchEvent(e);
             return true;
         }
-    }
-
-    /** Sets the background color for the sheet's placeholder. */
-    public void setPlaceholderBackgroundColor(@ColorInt int color) {
-        mModel.set(TabBottomSheetProperties.PLACEHOLDER_BACKGROUND_COLOR, color);
     }
 
     /** Sets whether the sheet is resizing. */

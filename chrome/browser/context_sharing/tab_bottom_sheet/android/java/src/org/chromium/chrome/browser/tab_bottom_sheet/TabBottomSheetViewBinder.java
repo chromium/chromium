@@ -36,12 +36,6 @@ public class TabBottomSheetViewBinder {
             if (coBrowseViews != null && resizingState != null) {
                 coBrowseViews.setIsResizing(model.get(TabBottomSheetProperties.IS_RESIZING));
             }
-        } else if (propertyKey == TabBottomSheetProperties.PLACEHOLDER_BACKGROUND_COLOR) {
-            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
-            if (coBrowseViews != null) {
-                coBrowseViews.setPlaceholderBackgroundColor(
-                        model.get(TabBottomSheetProperties.PLACEHOLDER_BACKGROUND_COLOR));
-            }
         } else if (PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA == propertyKey) {
             View peekContainer = view.findViewById(R.id.actor_control_container);
             peekContainer.setAlpha(model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA));

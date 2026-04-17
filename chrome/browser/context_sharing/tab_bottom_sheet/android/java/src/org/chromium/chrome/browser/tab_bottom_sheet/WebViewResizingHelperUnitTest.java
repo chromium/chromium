@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
@@ -50,7 +51,7 @@ public class WebViewResizingHelperUnitTest {
         mView = new View(mContext);
         when(mMockThinWebView.getView()).thenReturn(mView);
 
-        mHelper = new WebViewResizingHelper(mContext);
+        mHelper = new WebViewResizingHelper(mContext, Color.WHITE);
     }
 
     @Test
