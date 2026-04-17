@@ -724,7 +724,8 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
 
 bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
                                  SyncWaitCondition wait_condition,
-                                 SyncTestAccount account) {
+                                 SyncTestAccount account,
+                                 bool enable_history_sync_in_transport_mode) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
@@ -752,7 +753,8 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
     if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
       if (!client->SignInPrimaryAccount(account) ||
           !client->AwaitEngineInitialization() ||
-          !client->EnableHistorySyncNoWaitForCompletion()) {
+          (enable_history_sync_in_transport_mode &&
+           !client->EnableHistorySyncNoWaitForCompletion())) {
         ADD_FAILURE() << "SetupSync() failed.";
         return false;
       }
@@ -815,6 +817,24 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
               << "cache guid: " << GetCacheGuid(client_index);
   }
 
+  // Because clients may modify sync data as part of startup (for example
+  // local session-related data is rewritten), we need to ensure all
+  // startup-based changes have propagated between the clients.
+  //
+  // Tests that don't use self-notifications or are allowlisted to run in E2E
+  // mode can't await quiescence. They'll have to find their own way of waiting
+  // for an initial state if they really need such guarantees.
+  if (wait_condition != NO_WAITING && TestUsesSelfNotifications() &&
+      !sync_integration_test_util::IsCurrentTestAllowlistedForE2EMode()) {
+    // Bypass E2E check because all tests are calling SetupSync(), and in this
+    // call site it's also verified that it's not called in E2E tests
+    // (implicitly via TestUsesSelfNotifications()).
+    if (!SyncServiceImplHarness::AwaitQuiescence(GetSyncClients())) {
+      ADD_FAILURE() << "AwaitQuiescence() failed.";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -839,26 +859,9 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  if (!SetupSyncInternal(setup_mode, wait_condition, account)) {
+  if (!SetupSyncInternal(setup_mode, wait_condition, account,
+                         /*enable_history_sync_in_transport_mode=*/true)) {
     return false;
-  }
-
-  // Because clients may modify sync data as part of startup (for example
-  // local session-related data is rewritten), we need to ensure all
-  // startup-based changes have propagated between the clients.
-  //
-  // Tests that don't use self-notifications or are allowlisted to run in E2E
-  // mode can't await quiescence. They'll have to find their own way of waiting
-  // for an initial state if they really need such guarantees.
-  if (wait_condition != NO_WAITING && TestUsesSelfNotifications() &&
-      !sync_integration_test_util::IsCurrentTestAllowlistedForE2EMode()) {
-    // Bypass E2E check because all tests are calling SetupSync(), and in this
-    // call site it's also verified that it's not called in E2E tests
-    // (implicitly via TestUsesSelfNotifications()).
-    if (!SyncServiceImplHarness::AwaitQuiescence(GetSyncClients())) {
-      ADD_FAILURE() << "AwaitQuiescence() failed.";
-      return false;
-    }
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -881,8 +884,23 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
 }
 
 bool SyncTest::SignIn(SyncTestAccount account) {
-  return SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly,
-                           WAIT_FOR_COMMITS_TO_COMPLETE, account);
+#if BUILDFLAG(IS_ANDROID)
+  // For Android, currently the framework only supports one client.
+  // The client uses the default profile.
+  CHECK(num_clients_ == 1)
+      << "For Android, currently it only supports one client.";
+#endif
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  if (!SetupSyncInternal(SetupSyncMode::kSyncTransportOnly,
+                         WAIT_FOR_COMMITS_TO_COMPLETE, account,
+                         /*enable_history_sync_in_transport_mode=*/false)) {
+    return false;
+  }
+
+  DLOG(INFO) << "SyncTest::SignIn() completed.";
+  return true;
 }
 
 void SyncTest::SetUpOnMainThread() {

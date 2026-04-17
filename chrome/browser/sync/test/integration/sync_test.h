@@ -239,16 +239,21 @@ class SyncTest : public PlatformBrowserTest,
   [[nodiscard]] bool SetupSync(
       SyncTestAccount account,
       SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
-  // Should only be used if SetupSync() doesn't work, i.e. `setup_mode` needs to
-  // be changed during the test.
-  [[nodiscard]] bool SetupSyncWithMode(
-      SetupSyncMode setup_mode,
-      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
-      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // Signs in to a primary and enables sync transport, without enabling
   // sync-the-feature.
   [[nodiscard]] bool SignIn(
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
+
+  // Should only be used if SetupSync() and SignIn() aren't sufficient, i.e.
+  // `setup_mode` is only known during runtime (usually parameterized tests).
+  //
+  // Note that, for kSyncTransportOnly, history sync
+  // is enabled, to make the behavior more similar to the SyncTheFeature case,
+  // for convenience of parameterized tests.
+  [[nodiscard]] bool SetupSyncWithMode(
+      SetupSyncMode setup_mode,
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
       SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // This is similar to click the reset button on chrome.google.com/data.
@@ -374,9 +379,11 @@ class SyncTest : public PlatformBrowserTest,
   void InitializeProfile(int index, Profile* profile);
 
   // Internal routine for setting up sync.
-  [[nodiscard]] bool SetupSyncInternal(SetupSyncMode setup_mode,
-                                       SyncWaitCondition wait_condition,
-                                       SyncTestAccount account);
+  [[nodiscard]] bool SetupSyncInternal(
+      SetupSyncMode setup_mode,
+      SyncWaitCondition wait_condition,
+      SyncTestAccount account,
+      bool enable_history_sync_in_transport_mode);
 
   // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
   // is applicable on ChromeOS-Ash platform only.
