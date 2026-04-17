@@ -705,6 +705,7 @@ test("components_unittests") {
       "//components/media_router/browser/android:test_support_java",
       "//components/messages/android:java",
       "//components/messages/android:unit_tests",
+      "//components/messages/android/test:test_support_java",
       "//components/metrics:metrics_java",
       "//components/offline_items_collection/core:native_java_unittests_java",
       "//components/one_time_tokens/android/backend/sms:java",

@@ -115,11 +115,18 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "message_dispatcher_bridge_unittest.cc" ]
+  sources = [
+    "message_dispatcher_bridge_unittest.cc",
+    "message_wrapper_unittest.cc",
+  ]
 
   deps = [
     ":android",
+    ":jni_headers",
+    ":test_support",
     "//base",
+    "//base/test:test_support",
+    "//components/messages/android/test:test_support_cpp",
     "//testing/gtest",
   ]
 }

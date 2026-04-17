@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -138,11 +139,17 @@ public class MessagesTestHelper {
         return messageStates.get(index).handler.getMessageIdentifier();
     }
 
+    @CalledByNativeForTesting
+    public static long getNativePtr(MessageWrapper messageWrapper) {
+        return messageWrapper.getNativePtrForTesting();
+    }
+
     /**
      * Get the property model of a message.
+     *
      * @param messageStateHandler The {@link MessageStateHandler} of an active message.
      * @return The {@link PropertyModel} of a message if applicable. Currently supported
-     *         implementations include {@link SingleActionMessage}.
+     *     implementations include {@link SingleActionMessage}.
      */
     public static PropertyModel getCurrentMessage(MessageStateHandler messageStateHandler) {
         assert messageStateHandler != null;

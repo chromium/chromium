@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
 #include "ui/android/window_android.h"
 
@@ -24,6 +25,7 @@ class MessagesTestHelper {
 
   int GetMessageCount(ui::WindowAndroid* window_android);
   int GetMessageIdentifier(ui::WindowAndroid* window_android, int index);
+  int64_t GetNativePtr(const base::android::JavaRef<jobject>& message_wrapper);
 
   // Attach a test-only simplified message dispatcher to the window android.
   // This is required to listen to events like message enqueued.

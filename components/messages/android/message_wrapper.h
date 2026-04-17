@@ -116,6 +116,8 @@ class MessageWrapper {
     return java_window_android_;
   }
 
+  bool is_in_queue() const { return is_in_queue_; }
+
   const SkBitmap GetIconBitmap();
 
  private:
@@ -125,7 +127,7 @@ class MessageWrapper {
   SecondaryMenuItemSelectedCallback secondary_menu_item_selected_callback_;
   DismissCallback dismiss_callback_;
   // True if message is in queue.
-  bool message_enqueued_;
+  bool is_in_queue_;
   base::android::ScopedJavaGlobalRef<jobject> java_window_android_;
 
   SecondaryMenuMaxSize secondary_menu_max_size_ = SecondaryMenuMaxSize::SMALL;

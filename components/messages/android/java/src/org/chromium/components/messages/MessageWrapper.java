@@ -231,6 +231,10 @@ public final class MessageWrapper implements ListMenu.Delegate {
         mNativeMessageWrapper = 0;
     }
 
+    long getNativePtrForTesting() {
+        return mNativeMessageWrapper;
+    }
+
     @CalledByNative
     Bitmap getIconBitmap() {
         Drawable drawable = mMessageProperties.get(MessageBannerProperties.ICON);
