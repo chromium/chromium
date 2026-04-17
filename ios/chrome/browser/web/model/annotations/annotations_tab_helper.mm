@@ -170,10 +170,6 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
     return;
   }
   NSTextCheckingResult* match = match_cache_.at(data);
-  auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
-  if (manager) {
-    manager->RemoveHighlight();
-  }
 
   NSString* ns_text = base::SysUTF8ToNSString(text);
   const BOOL success = ios::provider::HandleIntentTypesForOneTap(

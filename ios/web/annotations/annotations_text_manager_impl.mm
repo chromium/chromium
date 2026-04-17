@@ -62,10 +62,6 @@ void AnnotationsTextManagerImpl::RemoveDecorationsWithType(
       web_state_, type);
 }
 
-void AnnotationsTextManagerImpl::RemoveHighlight() {
-  AnnotationsJavaScriptFeature::GetInstance()->RemoveHighlight(web_state_);
-}
-
 void AnnotationsTextManagerImpl::StartExtractingText() {
   DCHECK(web_state_);
   const GURL& url = web_state_->GetVisibleURL();

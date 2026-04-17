@@ -95,16 +95,6 @@ void AnnotationsJavaScriptFeature::RemoveDecorationsWithType(
                          parameters);
 }
 
-void AnnotationsJavaScriptFeature::RemoveHighlight(WebState* web_state) {
-  DCHECK(web_state);
-  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
-  if (!frame) {
-    return;
-  }
-
-  CallJavaScriptFunction(frame, "annotations.removeHighlight", {});
-}
-
 void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {

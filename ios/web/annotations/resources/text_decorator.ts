@@ -7,8 +7,8 @@
  */
 
 import type {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
-import {annotationUniqueId, createChromeAnnotation, createSpace, originalNodeDecorationId, replacementNodeDecorationId, TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
-import type {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {createChromeAnnotation, createSpace, originalNodeDecorationId, replacementNodeDecorationId, TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
+import type {NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {annotationCanBeCrossElement} from '//ios/web/annotations/resources/text_dom_utils.js';
 import type {TextChunk} from '//ios/web/annotations/resources/text_extractor.js';
 import type {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
@@ -23,10 +23,6 @@ class AnnotationsReplacement {
       public text: string, public type: string, public fullText: string,
       public data: string, public needsPrecedingSpace: boolean) {}
 }
-
-// Highlighting styles.
-const HIGHLIGHT_TEXT_COLOR = '#000';
-const HIGHLIGHT_BACKGROUND_COLOR = 'rgba(20,111,225,0.25)';
 
 // One important thing to remember is: A textNode can include a part of, the
 // whole of or many annotations. Reversely, an annotation can cover a part of,
@@ -299,35 +295,6 @@ export class TextDecorator {
       // The decoration is of mixed type. Just replace CHROME_ANNOTATIONs
       // of `type` by a text node with same text content.
       decoration.removeReplacementsOfType(type);
-    });
-  }
-
-  // Highlights all elements related to the annotation of which `annotation` is
-  // part of. Using webkit edit selection kills a second tapping on the
-  // element and also causes a merge with the edit menu in some circumstance.
-  // Using custom highlight instead.
-  highlightAnnotation(annotation: HTMLElementWithSymbolIndex): void {
-    const annotationId = annotation[annotationUniqueId];
-    this.decorations.forEach((decoration) => {
-      for (const replacement of decoration.replacements) {
-        if (replacement instanceof HTMLElement &&
-            replacement[annotationUniqueId] === annotationId) {
-          replacement.style.color = HIGHLIGHT_TEXT_COLOR;
-          replacement.style.background = HIGHLIGHT_BACKGROUND_COLOR;
-        }
-      }
-    });
-  }
-
-  // Removes any highlight on all annotations.
-  removeHighlight(): void {
-    this.decorations.forEach((decoration) => {
-      for (const replacement of decoration.replacements) {
-        if (replacement instanceof HTMLElement) {
-          replacement.style.color = '';
-          replacement.style.background = '';
-        }
-      }
     });
   }
 }

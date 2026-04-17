@@ -95,7 +95,6 @@ function decorateChunk(
 // Consumer of taps on annotations. Forwards to the browser side.
 function tapConsumer(
     annotation: HTMLElementWithSymbolIndex, cancel: boolean): void {
-  decorator?.highlightAnnotation(annotation);
   sendWebKitMessage('annotations', {
     command: 'annotations.onClick',
     cancel: cancel,
@@ -171,10 +170,6 @@ function removeDecorationsWithType(type: string): void {
   decorator?.removeDecorationsOfType(type);
 }
 
-function removeHighlight(): void {
-  decorator?.removeHighlight();
-}
-
 const annotations = new CrWebApi('annotations');
 
 annotations.addFunction('start', start);
@@ -182,6 +177,5 @@ annotations.addFunction('stop', stop);
 annotations.addFunction('decorateAnnotations', decorateAnnotations);
 annotations.addFunction('removeDecorations', removeDecorations);
 annotations.addFunction('removeDecorationsWithType', removeDecorationsWithType);
-annotations.addFunction('removeHighlight', removeHighlight);
 
 gCrWeb.registerApi(annotations);

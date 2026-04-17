@@ -55,9 +55,6 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager> {
   // request).
   virtual void RemoveDecorationsWithType(const std::string& type) = 0;
 
-  // Removes any highlight added by a tap.
-  virtual void RemoveHighlight() = 0;
-
   // Sets the supported typed for the annotation extraction.
   virtual void SetSupportedTypes(NSTextCheckingType supported_types) = 0;
 

@@ -36,7 +36,6 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
                            int seq_id) override;
   void RemoveDecorations() override;
   void RemoveDecorationsWithType(const std::string& type) override;
-  void RemoveHighlight() override;
   void SetSupportedTypes(NSTextCheckingType supported_types) override;
 
   // JS callback methods.

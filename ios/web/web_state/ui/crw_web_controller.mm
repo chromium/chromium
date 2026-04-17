@@ -1145,18 +1145,6 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
             : [self currentURL];
     _userInteractionState.SetLastUserInteraction(
         std::make_unique<web::UserInteractionEvent>(mainDocumentURL));
-    [self hideAnnotationsHighlight];
-  }
-}
-
-#pragma mark - Context Menu
-
-// Hides annotations highlights triggered by context menu.
-- (void)hideAnnotationsHighlight {
-  web::AnnotationsTextManager* manager =
-      web::AnnotationsTextManager::FromWebState(_webStateImpl);
-  if (manager) {
-    manager->RemoveHighlight();
   }
 }
 
