@@ -303,7 +303,7 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
       if (tab_interface) {
         auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
             web_contents->GetBrowserContext());
-        if (glic_service && glic_service->sharing_manager().IsTabPinned(
+        if (glic_service && glic_service->IsTabPinnedToAnyInstance(
                                 tab_interface->GetHandle())) {
           add_reason_and_update_result(CannotDiscardReason::kGlicShared,
                                        CanDiscardResult::kProtected);

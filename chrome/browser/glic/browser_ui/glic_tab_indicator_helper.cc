@@ -33,16 +33,17 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
           tab_->GetBrowserWindowInterface()->GetProfile())),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   subscriptions_.push_back(
-      glic_keyed_service_->sharing_manager().AddFocusedTabChangedCallback(
-          base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
-                              base::Unretained(this))));
+      glic_keyed_service_->active_instance_sharing_manager()
+          .AddFocusedTabChangedCallback(
+              base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
+                                  base::Unretained(this))));
   subscriptions_.push_back(
       glic_keyed_service_->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,
                               base::Unretained(this))));
   subscriptions_.push_back(
-      glic_keyed_service_->sharing_manager().AddTabPinningStatusChangedCallback(
-          base::BindRepeating(
+      glic_keyed_service_->active_instance_sharing_manager()
+          .AddTabPinningStatusChangedCallback(base::BindRepeating(
               &GlicTabIndicatorHelper::OnTabPinningStatusChanged,
               base::Unretained(this))));
 
@@ -74,7 +75,8 @@ void GlicTabIndicatorHelper::UpdateTab() {
   }
 
   const bool is_glic_sharing =
-      glic_keyed_service_->sharing_manager().IsTabPinned(tab_->GetHandle());
+      glic_keyed_service_->active_instance_sharing_manager().IsTabPinned(
+          tab_->GetHandle());
   const bool is_glic_accessing =
       glic_keyed_service_->IsContextAccessIndicatorShown(tab_->GetContents());
 
@@ -116,7 +118,8 @@ void GlicTabIndicatorHelper::OnFocusedTabChanged(
 
 void GlicTabIndicatorHelper::OnIndicatorStatusChanged(bool enabled) {
   bool is_pinned =
-      glic_keyed_service_->sharing_manager().IsTabPinned(tab_->GetHandle());
+      glic_keyed_service_->active_instance_sharing_manager().IsTabPinned(
+          tab_->GetHandle());
   if (tab_is_focused_ || is_pinned) {
     UpdateTab();
   }

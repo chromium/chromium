@@ -432,7 +432,7 @@ class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
 
   glic::GlicSharingManager& sharing_manager() {
     return glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())
-        ->sharing_manager();
+        ->active_instance_sharing_manager();
   }
 
   tabs::TabHandle TabHandleAtIndex(int index) {

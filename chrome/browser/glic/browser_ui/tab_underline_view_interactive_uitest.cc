@@ -265,7 +265,7 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
   glic::GlicSharingManager& sharing_manager() {
     return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
                browser()->GetProfile())
-        ->sharing_manager();
+        ->active_instance_sharing_manager();
   }
 
   tabs::TabHandle TabHandleAtIndex(int index, Browser* browser = nullptr) {
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, AttachPinnedTabToNewWindow) {
   ASSERT_TRUE(handle2.Get());
 
   // Set up glic multi-instance sharing manager.
-  auto& manager = glic_service()->sharing_manager();
+  auto& manager = glic_service()->active_instance_sharing_manager();
   EXPECT_TRUE(manager.GetPinnedTabs().empty());
   // Toggle Glic on second browser window to create an instance. Because the
   // second browser is active, the main sharing manager will delegate to this

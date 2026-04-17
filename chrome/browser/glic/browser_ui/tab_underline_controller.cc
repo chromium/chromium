@@ -40,7 +40,8 @@ void TabUnderlineController::Initialize(
     glic_service_ = GlicKeyedServiceFactory::GetGlicKeyedService(
         browser_window_interface_->GetProfile());
 
-    GlicSharingManager& sharing_manager = glic_service_->sharing_manager();
+    GlicSharingManager& sharing_manager =
+        glic_service_->active_instance_sharing_manager();
 
     // Subscribe to changes in the set of pinned tabs.
     pinned_tabs_change_subscription_ =
@@ -80,7 +81,8 @@ void TabUnderlineController::OnUiReady() {
   // changes in pinned state before the underline view is reconstructed. Check
   // consistency with pinned state post-construction to ensure the UI state of
   // the underline is correct.
-  OnPinnedTabsChanged(glic_service_->sharing_manager().GetPinnedTabs());
+  OnPinnedTabsChanged(
+      glic_service_->active_instance_sharing_manager().GetPinnedTabs());
 }
 
 void TabUnderlineController::OnFocusedTabChanged(
@@ -200,8 +202,9 @@ tabs::TabInterface* TabUnderlineController::GetTabInterface() {
 
 bool TabUnderlineController::IsUnderlineTabPinned() {
   if (auto* tab_interface = GetTabInterface()) {
-    return glic_service_ && glic_service_->sharing_manager().IsTabPinned(
-                                tab_interface->GetHandle());
+    return glic_service_ &&
+           glic_service_->active_instance_sharing_manager().IsTabPinned(
+               tab_interface->GetHandle());
   }
   return false;
 }
@@ -212,8 +215,9 @@ bool TabUnderlineController::IsUnderlineTabSharedThroughActiveFollow() {
   }
 
   if (auto* tab_interface = GetTabInterface()) {
-    return (glic_service_->sharing_manager().GetFocusedTabData().focus() ==
-            tab_interface) &&
+    return (glic_service_->active_instance_sharing_manager()
+                .GetFocusedTabData()
+                .focus() == tab_interface) &&
            context_access_indicator_enabled_;
   }
   return false;

@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
-  auto& manager = service->sharing_manager();
+  auto& manager = service->active_instance_sharing_manager();
 
   // 2. Open a tab.
   std::vector<tabs::TabInterface*> tabs = SetupTabs(1);
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
-  auto& manager = service->sharing_manager();
+  auto& manager = service->active_instance_sharing_manager();
 
   std::vector<tabs::TabInterface*> tabs = SetupTabs(2);
   ASSERT_EQ(tabs.size(), 2u);
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
-  auto& manager = service->sharing_manager();
+  auto& manager = service->active_instance_sharing_manager();
 
   // Open two tabs.
   std::vector<tabs::TabInterface*> tabs = SetupTabs(2);

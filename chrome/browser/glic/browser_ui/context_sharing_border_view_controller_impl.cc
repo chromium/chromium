@@ -48,8 +48,8 @@ void ContextSharingBorderViewControllerImpl::Initialize(
 
   // Subscribe to changes in the focus tab.
   focus_change_subscription_ =
-      glic_service_->sharing_manager().AddFocusedTabChangedCallback(
-          base::BindRepeating(
+      glic_service_->active_instance_sharing_manager()
+          .AddFocusedTabChangedCallback(base::BindRepeating(
               &ContextSharingBorderViewControllerImpl::OnFocusedTabChanged,
               base::Unretained(this)));
 

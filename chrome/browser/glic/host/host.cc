@@ -322,9 +322,7 @@ GlicKeyedService& Host::glic_service() {
 }
 
 GlicSharingManager& Host::sharing_manager() {
-  return sharing_manager_provider_
-             ? sharing_manager_provider_->sharing_manager()
-             : glic_service().sharing_manager();
+  return sharing_manager_provider_->sharing_manager();
 }
 
 GlicSkillsManager& Host::skills_manager() {

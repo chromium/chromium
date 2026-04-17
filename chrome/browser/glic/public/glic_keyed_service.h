@@ -17,7 +17,6 @@
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
-#include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -76,7 +75,6 @@ enum class GlicPrewarmingChecksResult;
 // since pieces of this service are the ones that monitor this runtime
 // preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService,
-                         public GlicSharingManagerProvider,
                          public base::SupportsUserData {
  public:
   explicit GlicKeyedService(Profile* profile,
@@ -142,7 +140,11 @@ class GlicKeyedService : public KeyedService,
   virtual GlicFreController& fre_controller();
   virtual GlicInstanceCoordinator& instance_coordinator() const;
 
-  GlicSharingManager& sharing_manager() override;
+  // Return a `GlicActiveInstanceSharingManager` which tracks the sharing state
+  // for whichever instance is active. Please prefer to use the sharing manager
+  // on the `GlicInstance` if you don't need one that automatically tracks the
+  // active instance.
+  GlicSharingManager& active_instance_sharing_manager();
 
   bool IsTabPinnedToAnyInstance(const tabs::TabHandle& tab_handle) const;
 

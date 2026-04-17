@@ -73,9 +73,11 @@ void GlicRegionCaptureController::CaptureRegion(
         GlicKeyedServiceFactory::GetGlicKeyedService(
             web_contents->GetBrowserContext());
     CHECK(glic_service);
+    // TODO(b/503444957): On a quick inspection, i think the global sharing
+    // manager isn't right here.
     std::optional<GlicGetContextError> eligibility_error =
-        glic_service->sharing_manager().CheckContextSharingEligibility(
-            tab->GetHandle());
+        glic_service->active_instance_sharing_manager()
+            .CheckContextSharingEligibility(tab->GetHandle());
     if (eligibility_error.has_value()) {
       mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),

@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
-  auto& manager = service->sharing_manager();
+  auto& manager = service->active_instance_sharing_manager();
   EXPECT_TRUE(manager.GetPinnedTabs().empty());
 
   // 2. Open a tab.
@@ -111,8 +111,10 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   // Verify delegation to instance2: tab2 pinned, tab1 NOT pinned.
   // Use RunUntil to handle potential window activation delays on Linux.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return service->sharing_manager().IsTabPinned(tab2->GetHandle()) &&
-           !service->sharing_manager().IsTabPinned(tab->GetHandle());
+    return service->active_instance_sharing_manager().IsTabPinned(
+               tab2->GetHandle()) &&
+           !service->active_instance_sharing_manager().IsTabPinned(
+               tab->GetHandle());
   }));
 
   // Switch back to browser1.
@@ -120,8 +122,10 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
 
   // Verify delegation to instance1: tab1 pinned, tab2 NOT pinned.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return service->sharing_manager().IsTabPinned(tab->GetHandle()) &&
-           !service->sharing_manager().IsTabPinned(tab2->GetHandle());
+    return service->active_instance_sharing_manager().IsTabPinned(
+               tab->GetHandle()) &&
+           !service->active_instance_sharing_manager().IsTabPinned(
+               tab2->GetHandle());
   }));
 }
 #endif
@@ -155,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerProfileStateTest,
   service->ToggleUI(browser(), false,
                     mojom::InvocationSource::kTopChromeButton);
 
-  auto& manager = service->sharing_manager();
+  auto& manager = service->active_instance_sharing_manager();
 
   // Instance should be created (showing FRE).
   auto* instance = service->GetInstanceForActiveTab(browser());

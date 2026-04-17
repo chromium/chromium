@@ -126,12 +126,11 @@ std::unique_ptr<GlicInstanceCoordinator> CreateWindowController(
 
 std::unique_ptr<GlicSharingManager> CreateSharingManager(
     Profile* profile,
-    GlicInstanceCoordinator* window_controller,
-    GlicMetrics* metrics,
+    GlicInstanceCoordinator* instance_coordinator,
     GlicEnabling* glic_enabling) {
   return std::make_unique<GlicActiveInstanceSharingManager>(
       profile, glic_enabling,
-      static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
+      static_cast<GlicInstanceCoordinatorImpl*>(instance_coordinator));
 }
 
 void WriteGuestUrlPresetToPrefs(const char* switch_name,
@@ -182,7 +181,6 @@ GlicKeyedService::GlicKeyedService(
                                                 contextual_cueing_service)),
       sharing_manager_(CreateSharingManager(profile,
                                             &instance_coordinator(),
-                                            metrics_.get(),
                                             enabling_.get())),
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion
       region_capture_controller_(
@@ -412,7 +410,7 @@ GlicFreController& GlicKeyedService::fre_controller() {
   return *fre_controller_.get();
 }
 
-GlicSharingManager& GlicKeyedService::sharing_manager() {
+GlicSharingManager& GlicKeyedService::active_instance_sharing_manager() {
   return *sharing_manager_.get();
 }
 
