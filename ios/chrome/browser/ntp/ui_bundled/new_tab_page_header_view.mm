@@ -585,6 +585,143 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return percent;
 }
 
+// Animate the leading view from its fakebox position to its scrolled omnibox
+// position linearly. When percent is 0, the fakebox is displayed in the
+// middle of the screen; when it's 1, the fakebox is fully scrolled up.
+- (void)updateLogoAnimationWithProgress:(CGFloat)progress {
+  self.leadingViewConstraint.constant = Interpolate(
+      [self fakeboxLeadingSpace], [self omniboxLeadingSpace], progress);
+}
+
+// Updates the background color and opacity of the fakebox based on progress.
+- (void)updateFakeboxBackgroundWithProgress:(CGFloat)progress {
+  // Update the opacity of the header background color as the user scrolls so
+  // that content does not appear beneath it. Since the NTP background might be
+  // a gradient, the opacity must be 0 by default.
+  self.backgroundColor =
+      [HeaderBackgroundColor(self) colorWithAlphaComponent:progress];
+
+  [self setFakeboxColorsWithProgress:progress];
+}
+
+// Animates the hint label position and scale between fakebox and omnibox based
+// on progress.
+- (void)updateHintLabelAnimationWithProgress:(CGFloat)progress {
+  [self scaleHintLabelForPercent:progress];
+  CGFloat hintLabelScalingExtraOffset =
+      (_currentHintLabelScale - 1) *
+      self.searchHintLabel.intrinsicContentSize.width * 0.5;
+
+  // If MIA animation view is shown then add an aditional spacing to avoid any
+  // overlap with the label.
+  self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset -
+                                              kHintLabelFakeboxTrailingSpace;
+
+  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
+    self.hintLabelLeadingConstraint.constant =
+        self.hintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
+  } else {
+    self.hintLabelLeadingConstraint.constant =
+        hintLabelScalingExtraOffset +
+        Interpolate(self.hintLabelFakeboxLeadingSpace,
+                    self.hintLabelOmniboxLeadingSpace, progress);
+  }
+}
+
+// Updates constraints for the pinned layout where the search field is
+// collapsed.
+- (void)updatePinnedLayoutWithProgress:(CGFloat)progress
+                searchFieldNormalWidth:(CGFloat)searchFieldNormalWidth
+                       widthConstraint:(NSLayoutConstraint*)widthConstraint {
+  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
+
+  // When Voiceover is running, if the header's alpha is set to 0, voiceover
+  // can't scroll back to it, and it will never come back into view. To
+  // prevent that, set the alpha to non-zero when the header is fully
+  // offscreen. It will still not be seen, but it will be accessible to
+  // Voiceover.
+  self.alpha = std::max(1 - progress, 0.01);
+
+  widthConstraint.constant = searchFieldNormalWidth;
+  self.fakeLocationBarHeightConstraint.constant =
+      fakeOmniboxHeight - kFakeLocationBarHeightMargin;
+  self.fakeLocationBar.layer.cornerRadius =
+      self.fakeLocationBarHeightConstraint.constant / 2;
+
+  self.fakeLocationBarLeadingConstraint.constant = 0;
+  self.fakeLocationBarTrailingConstraint.constant = 0;
+  self.fakeLocationBarTopConstraint.constant = 0;
+
+  self.separator.alpha = 0;
+
+  _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      0, 0, 0, [self endButtonFakeboxTrailingSpace]);
+}
+
+// Updates constraints for the expanding layout where the search field grows to
+// fill the width.
+- (void)updateExpandingLayoutWithProgress:(CGFloat)progress
+                           safeAreaInsets:(UIEdgeInsets)safeAreaInsets
+                   searchFieldNormalWidth:(CGFloat)searchFieldNormalWidth
+                          widthConstraint:(NSLayoutConstraint*)widthConstraint
+                         heightConstraint:(NSLayoutConstraint*)heightConstraint
+                      topMarginConstraint:
+                          (NSLayoutConstraint*)topMarginConstraint {
+  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
+  CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
+
+  self.alpha = 1;
+  self.separator.alpha = progress;
+
+  CGFloat maxWidth = self.bounds.size.width;
+  widthConstraint.constant =
+      Interpolate(searchFieldNormalWidth, maxWidth, progress);
+  CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
+                             kAdaptiveLocationBarVerticalMargin;
+  topMarginConstraint.constant =
+      -content_suggestions::SearchFieldTopMargin(self.logoState) -
+      maxTopMarginDiff * progress;
+  heightConstraint.constant =
+      ntp_header::kFakeLocationBarTopConstraint -
+      content_suggestions::HeaderSeparatorHeight() +
+      Interpolate(fakeOmniboxHeight,
+                  locationBarHeight + kAdaptiveLocationBarVerticalMargin,
+                  progress);
+
+  // Calculate the amount to shrink the width and height of background so that
+  // it's where the focused adapative toolbar focuses.
+  self.fakeLocationBarLeadingConstraint.constant = Interpolate(
+      0, safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, progress);
+  self.fakeLocationBarTrailingConstraint.constant = -Interpolate(
+      0, safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, progress);
+
+  self.fakeLocationBarTopConstraint.constant =
+      ntp_header::kFakeLocationBarTopConstraint * progress;
+  self.fakeLocationBarHeightConstraint.constant =
+      Interpolate(fakeOmniboxHeight, locationBarHeight, progress);
+  self.fakeLocationBar.layer.cornerRadius =
+      self.fakeLocationBarHeightConstraint.constant / 2;
+
+  // Adjust the position of the search field's subviews.
+  CGFloat endButtonInset =
+      Interpolate([self endButtonFakeboxTrailingSpace],
+                  kEndButtonOmniboxTrailingSpace, progress);
+  _buttonStack.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0, 0, 0, endButtonInset);
+
+  // Fade in badge treatment when scrolled.
+  if (_useNewBadgeForLensButton && !_lensButtonWithNewBadgeTapped &&
+      self.lensButton) {
+    content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(self.lensButton,
+                                                              1 - progress);
+    // Hide divider when N badge is shown.
+    self.voiceAndLensDivider.alpha = progress;
+    self.miaAndVoiceDivider.alpha = progress;
+  }
+}
+
+// Calculates progress and calls appropriate helper methods to update the header
+// layout based on scroll offset.
 - (void)updateSearchFieldWidth:(NSLayoutConstraint*)widthConstraint
                         height:(NSLayoutConstraint*)heightConstraint
                      topMargin:(NSLayoutConstraint*)topMarginConstraint
@@ -602,123 +739,25 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
 
+  [self updateFakeboxBackgroundWithProgress:percent];
+
   [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
 
-  // Update the opacity of the header background color as the user scrolls so
-  // that content does not appear beneath it. Since the NTP background might be
-  // a gradient, the opacity must be 0 by default.
-  self.backgroundColor =
-      [HeaderBackgroundColor(self) colorWithAlphaComponent:percent];
+  [self updateHintLabelAnimationWithProgress:percent];
 
-  [self setFakeboxColorsWithProgress:percent];
-
-  // Offset the hint label constraints with half of the change in width
-  // from the original scale, since constraints are calculated before
-  // transformations are applied. This prevents the label from overlapping
-  // with other UI elements.
-  [self scaleHintLabelForPercent:percent];
-  CGFloat hintLabelScalingExtraOffset =
-      (_currentHintLabelScale - 1) *
-      self.searchHintLabel.intrinsicContentSize.width * 0.5;
-
-  // If MIA animation view is shown then add an aditional spacing to avoid any
-  // overlap with the label.
-  self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset -
-                                              kHintLabelFakeboxTrailingSpace;
-
-  // Animate the leading view from its fakebox position to its scrolled omnibox
-  // position linearly. When `percent` is 0, the fakebox is displayed in the
-  // middle of the screen; when it's 1, the fakebox is fully scrolled up.
-  self.leadingViewConstraint.constant =
-      [self fakeboxLeadingSpace] * (1 - percent) +
-      [self omniboxLeadingSpace] * percent;
-
-  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
-  CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
+  [self updateLogoAnimationWithProgress:percent];
 
   if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
-    // When Voiceover is running, if the header's alpha is set to 0, voiceover
-    // can't scroll back to it, and it will never come back into view. To
-    // prevent that, set the alpha to non-zero when the header is fully
-    // offscreen. It will still not be seen, but it will be accessible to
-    // Voiceover.
-    self.alpha = std::max(1 - percent, 0.01);
-
-    widthConstraint.constant = searchFieldNormalWidth;
-    self.fakeLocationBarHeightConstraint.constant =
-        fakeOmniboxHeight - kFakeLocationBarHeightMargin;
-    self.fakeLocationBar.layer.cornerRadius =
-        self.fakeLocationBarHeightConstraint.constant / 2;
-
-    self.fakeLocationBarLeadingConstraint.constant = 0;
-    self.fakeLocationBarTrailingConstraint.constant = 0;
-    self.fakeLocationBarTopConstraint.constant = 0;
-
-    // Reset the view horizontal constraints.
-    self.hintLabelLeadingConstraint.constant =
-        self.hintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
-
-    self.separator.alpha = 0;
-
-    _buttonStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-        0, 0, 0, [self endButtonFakeboxTrailingSpace]);
-
-    _lastAnimationPercent = percent;
-    return;
-  }
-
-  self.alpha = 1;
-  self.separator.alpha = percent;
-
-  // Calculate the amount to grow the width and height of searchField so that
-  // its frame covers the entire toolbar area.
-  CGFloat maxWidth = self.bounds.size.width;
-  widthConstraint.constant =
-      Interpolate(searchFieldNormalWidth, maxWidth, percent);
-  CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
-                             kAdaptiveLocationBarVerticalMargin;
-  topMarginConstraint.constant =
-      -content_suggestions::SearchFieldTopMargin(self.logoState) -
-      maxTopMarginDiff * percent;
-  heightConstraint.constant =
-      ntp_header::kFakeLocationBarTopConstraint -
-      content_suggestions::HeaderSeparatorHeight() +
-      Interpolate(fakeOmniboxHeight,
-                  locationBarHeight + kAdaptiveLocationBarVerticalMargin,
-                  percent);
-
-  // Calculate the amount to shrink the width and height of background so that
-  // it's where the focused adapative toolbar focuses.
-  self.fakeLocationBarLeadingConstraint.constant = Interpolate(
-      0, safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
-  self.fakeLocationBarTrailingConstraint.constant = -Interpolate(
-      0, safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, percent);
-
-  self.fakeLocationBarTopConstraint.constant =
-      ntp_header::kFakeLocationBarTopConstraint * percent;
-  self.fakeLocationBarHeightConstraint.constant =
-      Interpolate(fakeOmniboxHeight, locationBarHeight, percent);
-  self.fakeLocationBar.layer.cornerRadius =
-      self.fakeLocationBarHeightConstraint.constant / 2;
-
-  // Adjust the position of the search field's subviews.
-  CGFloat endButtonInset = Interpolate([self endButtonFakeboxTrailingSpace],
-                                       kEndButtonOmniboxTrailingSpace, percent);
-  _buttonStack.directionalLayoutMargins =
-      NSDirectionalEdgeInsetsMake(0, 0, 0, endButtonInset);
-  self.hintLabelLeadingConstraint.constant =
-      hintLabelScalingExtraOffset +
-      Interpolate(self.hintLabelFakeboxLeadingSpace,
-                  self.hintLabelOmniboxLeadingSpace, percent);
-
-  // Fade N badge treatment when scrolled.
-  if (_useNewBadgeForLensButton && !_lensButtonWithNewBadgeTapped &&
-      self.lensButton) {
-    content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(self.lensButton,
-                                                              1 - percent);
-    // Hide divider when N badge is shown.
-    self.voiceAndLensDivider.alpha = percent;
-    self.miaAndVoiceDivider.alpha = percent;
+    [self updatePinnedLayoutWithProgress:percent
+                  searchFieldNormalWidth:searchFieldNormalWidth
+                         widthConstraint:widthConstraint];
+  } else {
+    [self updateExpandingLayoutWithProgress:percent
+                             safeAreaInsets:safeAreaInsets
+                     searchFieldNormalWidth:searchFieldNormalWidth
+                            widthConstraint:widthConstraint
+                           heightConstraint:heightConstraint
+                        topMarginConstraint:topMarginConstraint];
   }
 
   _lastAnimationPercent = percent;
