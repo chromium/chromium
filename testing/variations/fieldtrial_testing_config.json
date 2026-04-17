@@ -11010,7 +11010,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GliGlicCaptureRegion"
+                        "GlicCaptureRegion"
                     ]
                 }
             ]
