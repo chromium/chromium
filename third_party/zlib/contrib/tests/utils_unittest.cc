@@ -1166,6 +1166,79 @@ TEST(ZlibTest, DeflateBound) {
   deflateEnd(&stream);
 }
 
+TEST(ZlibTest, InflateCopySIGILLReproduction) {
+  z_stream c_stream;
+  c_stream.zalloc = Z_NULL;
+  c_stream.zfree = Z_NULL;
+  c_stream.opaque = Z_NULL;
+
+  // 1. Start with Z_FIXED to set distcode to distfix.
+  EXPECT_EQ(Z_OK, deflateInit2(&c_stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 15,
+                               8, Z_FIXED));
+
+  std::string data1 =
+      "Some data for a fixed block. This ensures distcode "
+      "points to distfix.";
+  c_stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(data1.data()));
+  c_stream.avail_in = data1.size();
+
+  std::vector<Bytef> compressed(4096);
+  c_stream.next_out = compressed.data();
+  c_stream.avail_out = compressed.size();
+
+  EXPECT_EQ(Z_OK, deflate(&c_stream, Z_SYNC_FLUSH));
+
+  // 2. Switch to Z_DEFAULT_STRATEGY to trigger dynamic trees in the next block.
+  EXPECT_EQ(Z_OK, deflateParams(&c_stream, Z_DEFAULT_COMPRESSION,
+                                Z_DEFAULT_STRATEGY));
+
+  // Feed enough data to ensure a dynamic block is created.
+  std::string data2;
+  for (int j = 0; j < 100; ++j) {
+    data2 += "Much more data that should definitely trigger a dynamic block. " +
+             std::to_string(j) + " ";
+    data2 += "Repeated data: abcdefghijklmnopqrstuvwxyz 0123456789. ";
+  }
+  c_stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(data2.data()));
+  c_stream.avail_in = data2.size();
+
+  EXPECT_EQ(Z_STREAM_END, deflate(&c_stream, Z_FINISH));
+  compressed.resize(c_stream.total_out);
+  EXPECT_EQ(Z_OK, deflateEnd(&c_stream));
+
+  // 3. Decompress and call inflateCopy at every byte boundary.
+  for (size_t i = 1; i <= compressed.size(); ++i) {
+    z_stream d_stream;
+    d_stream.zalloc = Z_NULL;
+    d_stream.zfree = Z_NULL;
+    d_stream.opaque = Z_NULL;
+    d_stream.next_in = compressed.data();
+    d_stream.avail_in = i;
+
+    EXPECT_EQ(Z_OK, inflateInit(&d_stream));
+
+    std::vector<Bytef> out(1024 * 1024);
+    d_stream.next_out = out.data();
+    d_stream.avail_out = out.size();
+
+    int ret = inflate(&d_stream, Z_NO_FLUSH);
+    EXPECT_TRUE(ret == Z_OK || ret == Z_STREAM_END || ret == Z_BUF_ERROR);
+
+    z_stream copy_stream;
+    copy_stream.zalloc = Z_NULL;
+    copy_stream.zfree = Z_NULL;
+    copy_stream.opaque = Z_NULL;
+
+    // This is where the SIGILL crash should happen.
+    int copy_ret = inflateCopy(&copy_stream, &d_stream);
+    if (copy_ret == Z_OK) {
+      inflateEnd(&copy_stream);
+    }
+
+    inflateEnd(&d_stream);
+  }
+}
+
 // TODO(gustavoa): make these tests run standalone.
 #ifndef CMAKE_STANDALONE_UNITTESTS
 
