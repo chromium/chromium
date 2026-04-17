@@ -10484,6 +10484,13 @@ test("unit_tests") {
       "../common/channel_info_unittest.cc",
     ]
 
+    deps += [
+      # Remove this when
+      # chrome_browser_cloud_management_register_watcher_unittest.cc is
+      # modularized.
+      "//chrome/browser/policy:impl",
+    ]
+
     if (is_linux || is_win || is_mac) {
       sources += [
         "../browser/ui/views/media_preview/active_devices_media_coordinator_unittest.cc",
@@ -10507,6 +10514,7 @@ test("unit_tests") {
     }
 
     deps += [
+      "//chrome/browser/policy",
       "//chrome/browser/sharing/click_to_call",
       "//chrome/browser/sharing/sms",
       "//components/enterprise:test_support",

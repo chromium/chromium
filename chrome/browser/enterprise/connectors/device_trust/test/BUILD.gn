@@ -6,30 +6,34 @@ source_set("test_support") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  public = [
-    "device_trust_browsertest_base.h",
-    "device_trust_management_mixin.h",
-    "test_constants.h",
-  ]
+  public = [ "test_constants.h" ]
 
-  sources = [
-    "device_trust_browsertest_base.cc",
-    "device_trust_management_mixin.cc",
-    "test_constants.cc",
-  ]
+  sources = [ "test_constants.cc" ]
 
-  public_deps = [
-    "//chrome/browser/enterprise/connectors/device_trust/common",
-    "//chrome/browser/enterprise/test:test_support",
-  ]
+  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
 
-  deps = [
-    "//chrome/browser/enterprise/connectors/device_trust:features",
-    "//chrome/browser/profiles:profile",
-    "//components/device_signals/core/browser",
-    "//components/policy:policy_code_generate",
-    "//components/prefs",
-  ]
+  deps = [ "//chrome/browser/enterprise/connectors/device_trust:features" ]
+
+  if (!is_android) {
+    public += [
+      "device_trust_browsertest_base.h",
+      "device_trust_management_mixin.h",
+    ]
+
+    sources += [
+      "device_trust_browsertest_base.cc",
+      "device_trust_management_mixin.cc",
+    ]
+
+    public_deps += [ "//chrome/browser/enterprise/test:test_support" ]
+
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/device_signals/core/browser",
+      "//components/policy:policy_code_generate",
+      "//components/prefs",
+    ]
+  }
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/ash/login/test:test_support" ]

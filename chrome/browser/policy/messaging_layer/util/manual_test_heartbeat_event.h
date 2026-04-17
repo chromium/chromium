@@ -11,7 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace reporting {

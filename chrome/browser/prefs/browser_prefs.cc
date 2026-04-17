@@ -311,7 +311,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
-#include "components/headless/policy/headless_mode_prefs.h"
+#include "components/headless/policy/headless_mode_prefs.h"  // nogncheck crbug.com/40147906
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
