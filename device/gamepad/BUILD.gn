@@ -79,6 +79,10 @@ component("gamepad") {
 
   if (is_win) {
     sources += [
+      "gameinput_data_fetcher.cc",
+      "gameinput_data_fetcher.h",
+      "gameinput_gamepad_device.cc",
+      "gameinput_gamepad_device.h",
       "gamepad_standard_mappings_win.cc",
       "hid_writer_win.cc",
       "hid_writer_win.h",
@@ -199,6 +203,14 @@ static_library("test_helpers") {
 
   if (is_win) {
     sources += [
+      "test_support/fake_gameinput_environment.cc",
+      "test_support/fake_gameinput_environment.h",
+      "test_support/fake_igameinput.cc",
+      "test_support/fake_igameinput.h",
+      "test_support/fake_igameinputdevice.cc",
+      "test_support/fake_igameinputdevice.h",
+      "test_support/fake_igameinputreading.cc",
+      "test_support/fake_igameinputreading.h",
       "test_support/fake_igamepad.cc",
       "test_support/fake_igamepad.h",
       "test_support/fake_igamepad_statics.cc",

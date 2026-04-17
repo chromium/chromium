@@ -42,7 +42,8 @@ enum class GamepadSource {
   kOpenxr,
   kWinWgi,
   kSimulated,
-  kMaxValue = kSimulated,
+  kWinGameInput,
+  kMaxValue = kWinGameInput,
 };
 
 struct PadState {

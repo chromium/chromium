@@ -51,6 +51,11 @@ BASE_FEATURE(kPlayStationUseGameControllerDataFetcherMac,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kEnableWindowsGameInputDataFetcher,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {
     return true;

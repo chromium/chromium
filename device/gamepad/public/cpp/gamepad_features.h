@@ -33,6 +33,11 @@ GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kPlayStationUseGameControllerDataFetcherMac);
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_WIN)
+GAMEPAD_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kEnableWindowsGameInputDataFetcher);
+#endif  // BUILDFLAG(IS_WIN)
+
 GAMEPAD_FEATURES_EXPORT bool IsGamepadMultitouchEnabled();
 
 }  // namespace features
