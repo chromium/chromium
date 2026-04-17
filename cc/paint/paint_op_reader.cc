@@ -793,26 +793,16 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     return;
   }
 
-  uint32_t sksl_entry_state_int = 0u;
-  ReadSimple(&sksl_entry_state_int);
-  if (sksl_entry_state_int >
-      static_cast<uint32_t>(PaintCacheEntryState::kLast)) {
-    valid_ = false;
-    return;
-  }
-
-  const PaintCacheEntryState sksl_entry_state =
-      static_cast<PaintCacheEntryState>(sksl_entry_state_int);
-  if (sksl_entry_state != PaintCacheEntryState::kEmpty &&
-      shader_type != PaintShader::Type::kSkSLCommand) {
-    // Reject any sksl caching/deserialization ops for non-sksl shaders.
+  uint32_t entry_state_int = 0u;
+  ReadSimple(&entry_state_int);
+  if (entry_state_int > static_cast<uint32_t>(PaintCacheEntryState::kLast)) {
     valid_ = false;
     return;
   }
 
   auto* cache = options_.paint_cache;
   CHECK(cache);
-  switch (sksl_entry_state) {
+  switch (static_cast<PaintCacheEntryState>(entry_state_int)) {
     case PaintCacheEntryState::kCached: {
       sk_sp<SkRuntimeEffect> cached_effect_shader = nullptr;
       if (!cache->GetEffect(ref.sk_runtime_effect_id_, &cached_effect_shader)) {
@@ -841,8 +831,10 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
       break;
     }
     case PaintCacheEntryState::kEmpty: {
-      if (ref.shader_type() == PaintShader::Type::kSkSLCommand ||
-          ref.sk_runtime_effect_id_ != 0u) {
+      if (ref.shader_type() != PaintShader::Type::kSkSLCommand &&
+          ref.sk_runtime_effect_id_ == 0u) {
+        // Deserializing a non-SkRuntimeEffect shader.
+      } else {
         // A compromised client could send garbage data. Invalidate it.
         valid_ = false;
         return;
