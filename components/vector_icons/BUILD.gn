@@ -72,6 +72,7 @@ if (current_toolchain == default_toolchain) {
       "cookie.icon",
       "cookie_chrome_refresh.icon",
       "cookie_off_chrome_refresh.icon",
+      "crop_free.icon",
       "dangerous.icon",
       "dangerous_chrome_refresh.icon",
       "database.icon",

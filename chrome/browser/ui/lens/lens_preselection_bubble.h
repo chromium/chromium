@@ -41,6 +41,7 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
                                   bool offline,
                                   bool show_cancel_button,
                                   ui::ColorId bubble_background_color,
+                                  const gfx::VectorIcon* icon,
                                   ExitClickedCallback exit_clicked_callback,
                                   base::OnceClosure on_cancel_callback);
   ~LensPreselectionBubble() override;
@@ -89,6 +90,8 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   bool offline_ = false;
   // Background color of the bubble.
   const ui::ColorId bubble_background_color_;
+  // The icon to display. Must be non-null.
+  const raw_ptr<const gfx::VectorIcon> icon_;
   // Callback for exit button which closes the lens overlay.
   ExitClickedCallback exit_clicked_callback_;
   // Model for the more info menu.

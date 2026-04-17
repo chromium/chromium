@@ -4,17 +4,20 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/common/chrome_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace glic {
@@ -421,6 +424,29 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
       WaitForShow(lens::LensPreselectionBubble::kCancelButtonElementId),
       PressButton(lens::LensPreselectionBubble::kCancelButtonElementId),
       WaitForHide(OverlayBaseController::kOverlayId));
+}
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      WaitForShow(kLensPreselectionBubbleElementId),
+      CheckView(kLensPreselectionBubbleElementId, [](views::View* view) {
+        auto* bubble = static_cast<views::BubbleDialogDelegateView*>(view);
+        for (views::View* child : bubble->children()) {
+          auto* image_view = views::AsViewClass<views::ImageView>(child);
+          if (image_view) {
+            const ui::ImageModel& model = image_view->GetImageModel();
+            if (model.IsVectorIcon()) {
+              return model.GetVectorIcon().vector_icon() ==
+                     &vector_icons::kCropFreeIcon;
+            }
+          }
+        }
+        return false;
+      }));
 }
 
 }  // namespace glic

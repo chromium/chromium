@@ -15,6 +15,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -356,7 +357,8 @@ SelectionOverlayController::GetPreselectionBubbleConfig() {
   return {
       .message_string_id = IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT,
       .show_cancel_button = true,
-      .bubble_background_color = kColorGlicSelectionOverlayToast};
+      .bubble_background_color = kColorGlicSelectionOverlayToast,
+      .icon = &vector_icons::kCropFreeIcon};
 }
 
 bool SelectionOverlayController::IsOverlayViewShared() const {
