@@ -13,8 +13,10 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace {
@@ -222,26 +224,24 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(CookieUseCounterBrowserTest,
                        PartitionedCookiePresentV3_CountOnce) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const net::CookiePartitionKey kPartitionKey =
+      net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/"));
+  const GURL kIframeBaseUrl = GetURL(kCookieHost, "/");
 
-  SetCookie(
-      GetURL(kCookieHost, "/"), "/set-cookie?p1=a;Secure;Partitioned",
-      net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
-  SetCookie(
-      GetURL(kCookieHost, "/"), "/set-cookie?p2=b;Secure;Partitioned",
-      net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
-
-  size_t entries_before =
-      ukm_recorder.GetEntriesByName("PartitionedCookiePresentV3").size();
+  SetCookie(kIframeBaseUrl, "p1=a;Secure;Partitioned", kPartitionKey);
+  SetCookie(kIframeBaseUrl, "p2=b;Secure;Partitioned", kPartitionKey);
 
   NavigateTo(kParentHost, "/iframe.html");
   NavigateIframeTo(kCookieHost, "/simple.html");
 
-  size_t entries_after =
-      ukm_recorder.GetEntriesByName("PartitionedCookiePresentV3").size();
-  size_t delta = entries_after - entries_before;
-
-  // The request contains 2 partitioned cookies.
-  EXPECT_EQ(delta, 1u);
+  // The iframe navigation request contains 2 partitioned cookies, but only
+  // records the event once (with a metric value of true).
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
+      ukm_recorder.GetEntriesByName("PartitionedCookiePresentV3");
+  ASSERT_EQ(entries.size(), 1);
+  ukm_recorder.ExpectEntryMetric(entries[0],
+                                 /*metric_name=*/"PartitionedCookiePresentV3",
+                                 /*expected_value=*/1);
 }
 
 }  // namespace
