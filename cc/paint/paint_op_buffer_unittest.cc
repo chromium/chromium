@@ -4764,4 +4764,45 @@ TEST(PaintOpBufferTest, ContentColorUsageFromFilter) {
             buffer2.content_color_usage());
 }
 
+TEST(PaintOpBufferTest, SkSLShaderPrivilegeEnforcement) {
+  static constexpr char kSkSLCommand[] =
+      "half4 main(float2 coord) { return half4(0.5); }";
+
+  PaintFlags flags;
+  flags.setShader(
+      PaintShader::MakeSkSLCommand(kSkSLCommand, {}, {}, {}, {}, nullptr));
+
+  PaintOpBuffer buffer;
+  buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
+
+  auto memory = AllocateSerializedBuffer();
+  TestOptionsProvider options_provider;
+  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+                                    options_provider.serialize_options());
+  serializer.Serialize(buffer);
+  ASSERT_TRUE(serializer.valid());
+
+  // Patch the buffer: change shader_type from kSkSLCommand to kColor.
+  base::span<uint8_t> raw_memory = memory.first(serializer.written());
+  bool found = false;
+  for (uint8_t& byte : raw_memory) {
+    if (byte == static_cast<uint8_t>(PaintShader::Type::kSkSLCommand)) {
+      byte = static_cast<uint8_t>(PaintShader::Type::kColor);
+      found = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(found);
+
+  PaintOp::DeserializeOptions d_options(options_provider.deserialize_options());
+  // Simulation of unprivileged renderer process.
+  d_options.is_privileged = false;
+
+  auto deserialized_buffer = PaintOpBuffer::MakeFromMemory(
+      memory.data(), serializer.written(), d_options);
+
+  // SkSL deserialization should always fail for unprivileged processes.
+  EXPECT_FALSE(deserialized_buffer);
+}
+
 }  // namespace cc
