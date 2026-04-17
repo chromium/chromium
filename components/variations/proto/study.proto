@@ -259,7 +259,7 @@ message Study {
   // that should only be enabled on a phone-sized or tablet-sized screen should
   // check the current UI mode in client Java or C++ code.
   enum FormFactor {
-    // Chrome Desktop on Windows, Mac, Linux, or Chrome OS.
+    // Chrome Desktop on Windows, Mac, Linux, or ChromeOS.
     DESKTOP = 0;
 
     // Phone-based mobile Chrome, e.g. an Android phone or iPhone.
@@ -268,10 +268,10 @@ message Study {
     // Tablet-based mobile Chrome, e.g. an Android tablet or iPad.
     TABLET = 2;  // beware of foldables; see comment by enum definition.
 
-    // Chrome OS running in single-app Kiosk mode.
+    // ChromeOS running in single-app Kiosk mode.
     KIOSK = 3;
 
-    // Chrome OS running on Meet Hardware devices e.g. Chromebox For Meetings.
+    // ChromeOS running on Meet Hardware devices e.g. Chromebox For Meetings.
     MEET_DEVICE = 4;
 
     // Chrome running on Android TV.
@@ -316,7 +316,7 @@ message Study {
   // Filtering criteria specifying whether this study is applicable to a given
   // Chrome instance.
   //
-  // Next tag: 24
+  // Next tag: 26
   message Filter {
     // The start date of the study in Unix time format. (Seconds since midnight
     // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
@@ -332,35 +332,40 @@ message Study {
     // be disabled, causing it to select its default group.
     int64 end_date = 13;
 
-    // The minimum Chrome version for this study, allowing a trailing '*'
-    // character for pattern matching. Inclusive. (To check for a match, iterate
-    // over each component checking >= until a * or end of string is reached.)
-    // Optional - if not specified, there is no minimum version.
+    // The minimum Chrome version for this study, allowing a trailing wildcard
+    // '.*' for pattern matching. Inclusive. (To check for a match, iterate over
+    // each component checking >= until '.*' or the end of the string is
+    // reached.)
     // Ex: "17.0.963.46", "17.0.963.*", "17.*"
+    //
+    // If not specified, there is no minimum Chrome version.
     string min_version = 2;
 
-    // The maximum Chrome version for this study; same formatting as
-    // |min_version| above. Inclusive. (To check for a match, iterate over each
-    // component checking <= until a * or end of string is reached.)
-    // Optional - if not specified, there is no maximum version.
-    // Ex: "19.*"
+    // The maximum Chrome version for this study. See |min_version| above for
+    // formatting and examples. Inclusive. (To check for a match, iterate over
+    // each component checking <= until '.*' or the end of the string is
+    // reached.)
+    //
+    // If not specified, there is no maximum Chrome version.
     string max_version = 3;
 
-    // The minimum OS version for this study, allowing a trailing '*' character
+    // The minimum OS version for this study, allowing a trailing wildcard '.*'
     // for pattern matching. Inclusive. (To check for a match, iterate over each
-    // component checking >= until a * or end of string is reached.) OS versions
-    // are sanitized into a list of digits separated by dots like so:
+    // component checking >= until '.*' or the end of the string is reached.) OS
+    // versions are sanitized into a list of digits separated by dots like so:
     //  Windows:  "6.2.7601 SP1"      --> "6.2.7601.1"
     //  Mac OS X: "10.11.2"           --> "10.11.2"
     //  Linux:    "4.13.0-32-generic" --> "4.13.0"
-    // Optional - if not specified, there is no minimum version.
+    //
+    // If not specified, there is no minimum OS version.
     string min_os_version = 16;
 
-    // The maximum OS version for this study, allowing a trailing '*' character
-    // for pattern matching. Inclusive. (To check for a match, iterate over each
-    // component checking <= until a * or end of string is reached.)
-    // Optional - if not specified, there is no minimum version.
-    // Ex: See |min_os_version| for details.
+    // The maximum OS version for this study. See |min_os_version| above for
+    // formatting and examples. Inclusive. (To check for a match, iterate over
+    // each component checking <= until '.*' or the end of the string is
+    // reached.)
+    //
+    // If not specified, there is no maximum OS version.
     string max_os_version = 17;
 
     // List of channels that will receive this study. If omitted, the study
@@ -401,15 +406,11 @@ message Study {
         [features.repeated_field_encoding = EXPANDED];
 
     // List of hardware classes that will receive this study.
-    // This supports Chrome OS and as of M77, Android.
+    // This supports ChromeOS and Android.
     //
-    // Starting with Chrome M67, this does a case insensitive match on the same
-    // hardware class field that is reported to UMA in the SystemProfileProto's
-    // |hardware.hardware_class| field.
-    //
-    // Older versions did a case sensitive substring comparison, which was
-    // problematic for short hardware classes like "eve" that existed as
-    // substrings of other longer ones.
+    // This does a case insensitive match on the same hardware class field that
+    // is reported to UMA in the SystemProfileProto's |hardware.hardware_class|
+    // field.
     //
     // If omitted, the study applies to all hardware classes unless
     // |exclude_hardware_class| is specified. Mutually exclusive with
@@ -418,15 +419,11 @@ message Study {
     repeated string hardware_class = 8;
 
     // List of hardware classes that will be excluded in this study.
-    // This supports Chrome OS and as of M77, Android.
+    // This supports ChromeOS and Android.
     //
-    // Starting with Chrome M67, this does a case insensitive match on the same
-    // hardware class field that is reported to UMA in the SystemProfileProto's
-    // |hardware.hardware_class| field.
-    //
-    // Older versions did a case sensitive substring comparison, which was
-    // problematic for short hardware classes like "eve" that existed as
-    // substrings of other longer ones.
+    // This does a case insensitive match on the same hardware class field that
+    // is reported to UMA in the SystemProfileProto's |hardware.hardware_class|
+    // field.
     //
     // If omitted, the study applies to all hardware classes unless
     // |hardware_class| is specified. Mutually exclusive with |hardware_class|.
@@ -454,7 +451,7 @@ message Study {
     // only. If omitted, the config applies to both groups.
     // - On windows and mac, machines on a domain network are considered
     //   enterprise.
-    // - On chromeOS, registered mode determines enterprise status.
+    // - On ChromeOS, registered mode determines enterprise status.
     // - Android, iOS, and linux consider all clients as non-enterprise.
     bool is_enterprise = 18;
 
@@ -482,6 +479,28 @@ message Study {
     // of the signed in users are a member of any of the specified groups.
     // The values are the gaia ID of the google group.
     repeated int64 exclude_google_group = 23;
+
+    // List of hardware manufacturers that will receive this study.
+    //
+    // This does a case insensitive match on the hardware manufacturer.
+    //
+    // If omitted, the study applies to all hardware manufacturers unless
+    // |exclude_hardware_manufacturer| is specified. Mutually exclusive with
+    // |exclude_hardware_manufacturer|.
+    // Ex: ["google", "lenovo"]
+    // TODO(b/204802666): This is not yet implemented from the client side. WIP
+    repeated string hardware_manufacturer = 24;
+
+    // List of hardware manufacturers that will be excluded from this study.
+    //
+    // This does a case insensitive match on the hardware manufacturer.
+    //
+    // If omitted, the study applies to all hardware manufacturers unless
+    // |hardware_manufacturer| is specified. Mutually exclusive with
+    // |hardware_manufacturer|.
+    // Ex: ["google", "lenovo"]
+    // TODO(b/204802666): This is not yet implemented from the client side. WIP
+    repeated string exclude_hardware_manufacturer = 25;
   }
 
   // Filtering criteria for this study. A study that is filtered out for a given

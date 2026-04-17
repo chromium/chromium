@@ -1,12 +1,22 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// This file was exported from google3, do not edit manually.
+// See README.chromium for details.
+
 edition = "2023";
 
-package metrics;
-
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
 
+option java_outer_classname = "MetricsNameMappingOuterClass";
+
+package metrics;  // This file is the source of truth and is exported to Chromium via
+// proto_export.py.
+
+// MetricsNameMappingConfiguration is used to specify metric filtering or
+// mapping rules for UMA metrics.
 message MetricsNameMappingConfiguration {
   // Ordered array of evaluation rules. Metrics from specified process types
   // not matching any rule are dropped if the mapping feature is enabled.

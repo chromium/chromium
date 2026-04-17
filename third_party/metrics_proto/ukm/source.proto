@@ -72,6 +72,7 @@ enum UrlScheme {
   APP = 7;
 }
 
+// Next tag: 10
 message UrlInfo {
   string url = 1;
 
@@ -81,6 +82,7 @@ message UrlInfo {
   int32 previous_url_count = 2;
 }
 
+// Next tag: 4
 message NavigationMetadata {
   // Whether this is the same origin as the previous document, cross-origin or
   // unset.
@@ -99,7 +101,7 @@ message NavigationMetadata {
   bool is_error_page = 3;
 }
 
-// Next tag: 20
+// Next tag: 19
 message Source {
   // An identifier for the source. This should be unique within a session.
   int64 id = 1;
