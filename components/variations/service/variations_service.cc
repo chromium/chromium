@@ -80,6 +80,9 @@ const uint32_t kServerPublicKeyVersion = 1;
 // For the HTTP date headers, the resolution of the server time is 1 second.
 const uint32_t kServerTimeResolutionInSeconds = 1;
 
+// Timeout for fetching the variations seed.
+const base::TimeDelta kVariationsSeedFetchTimeout = base::Seconds(60);
+
 // Whether the VariationsService should fetch the seed for testing.
 bool g_should_fetch_for_testing = false;
 
@@ -682,6 +685,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
       std::move(resource_request), traffic_annotation);
   // Ensure our callback is called even with "304 Not Modified" responses.
   pending_seed_request_->SetAllowHttpErrorResults(true);
+  pending_seed_request_->SetTimeoutDuration(kVariationsSeedFetchTimeout);
   pending_seed_request_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client_->GetURLLoaderFactory().get(),
       base::BindOnce(&VariationsService::OnSimpleLoaderComplete,
