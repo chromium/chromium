@@ -152,8 +152,6 @@ bool IsEligibleForThrottleMainFrameTo60Hz() {
 BASE_FEATURE(kViewTransitionCaptureAndDisplay,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kViewTransitionFloorTransform, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The feature is the enabled for the cc infrastructure to set the frame rate
 // throttles from the main thread.
 // The experiment will be controlled by the feature flag

@@ -683,9 +683,7 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
   render_surface_transform.PostTranslate(
       render_surface->render_target()->pixel_alignment_offset());
   if (effect_node->render_surface_reason !=
-          RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants &&
-      (base::FeatureList::IsEnabled(features::kViewTransitionFloorTransform) ||
-       !effect_node->view_transition_element_resource_id.IsValid())) {
+      RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants) {
     if (auto offset = draw_property_utils::PixelAlignmentOffset(
             render_surface->screen_space_transform(),
             render_surface_transform)) {
@@ -1140,6 +1138,22 @@ void AdjustLayerDrawPropertiesForPixelAlignmentOffset(
   gfx::Vector2dF offset = layer->render_target()->pixel_alignment_offset();
   if (offset.IsZero()) {
     return;
+  }
+
+  if (layer->GetLayerType() == mojom::LayerType::kViewTransitionContent &&
+      !layer->draw_properties().target_space_transform.HasPerspective()) {
+    // The view transition content layers get replaced in viz by either RPDQ or
+    // TextureDQ. Both RPDQ and TextureDQs would already account for the
+    // subpixel accumulation in their respective renderings. This means that for
+    // this content layer, we want to align it to the pixel boundary (similar to
+    // how we would align a render surface). Note that the math to round to a
+    // nearest 64th of a pixel is here to compensate for the fact that we lose
+    // transform precision in Blink (ViewTransitionStyleTracker) due to the fact
+    // that we have to round-trip our transform to a CSS transform, which is
+    // recorded at a different scale. Aligning to a 64th of a pixel is what the
+    // resolution of a Blink LayoutUnit is by default.
+    offset.set_x(std::floor(std::round(offset.x() * 64.f) / 64.f));
+    offset.set_y(std::floor(std::round(offset.y() * 64.f) / 64.f));
   }
 
   // Apply the pixel alignment offset to all draw properties that are relative

@@ -333,10 +333,10 @@ class ViewTransitionStyleTracker
     // pseudo. This also includes the border offset from the border box to the
     // content area.
     base::flat_map<CSSPropertyID, String> group_children_css_properties;
-    gfx::Vector2d border_offset;
+    gfx::Vector2dF border_offset;
 
     // Border offset as of capture time.
-    gfx::Vector2d cached_border_offset;
+    gfx::Vector2dF cached_border_offset;
 
     // This only contains properties that need to be animated, which is a
     // subset of `captured_css_properties`.

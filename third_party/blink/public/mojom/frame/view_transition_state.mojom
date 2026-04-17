@@ -63,7 +63,7 @@ struct ViewTransitionElement {
   map<ViewTransitionPropertyId, string> group_children_css_properties;
 
   // Offset of this element's content area relative to its border box.
-  gfx.mojom.Vector2d border_offset;
+  gfx.mojom.Vector2dF border_offset;
 
   // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
   // The class-list needs to be serialized between documents, because exit

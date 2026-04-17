@@ -181,11 +181,6 @@ CC_BASE_EXPORT void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible);
 // capture.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionCaptureAndDisplay);
 
-// When enabled, the view transition capture transform is floored instead of
-// rounded and we use the render surface pixel snapping to counteract the blurry
-// effect.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionFloorTransform);
-
 // Allow the main thread to throttle the main frame rate.
 // Note that the composited animations will not be affected.
 // Typically the throttle is triggered with the render-blocking API <link

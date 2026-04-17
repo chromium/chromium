@@ -51,7 +51,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
       captured_css_properties;
   base::flat_map<blink::mojom::ViewTransitionPropertyId, std::string>
       group_children_css_properties;
-  gfx::Vector2d border_offset;
+  gfx::Vector2dF border_offset;
 
   std::vector<std::string> class_list;
   std::string containing_group_name;

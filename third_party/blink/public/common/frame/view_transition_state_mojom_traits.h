@@ -88,7 +88,7 @@ struct BLINK_COMMON_EXPORT
     return r.group_children_css_properties;
   }
 
-  static const gfx::Vector2d& border_offset(
+  static const gfx::Vector2dF& border_offset(
       const blink::ViewTransitionElement& r) {
     return r.border_offset;
   }
