@@ -6,13 +6,13 @@
 
 #include <windows.h>
 
-#include <atlcomcli.h>
 #include <lm.h>
 #include <ntstatus.h>
 #include <sddl.h>
 
 #include "base/compiler_specific.h"
 #include "base/win/ntsecapi_shim.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -179,16 +179,16 @@ HRESULT OSGaiaUserManager::CreateGaiaUser(PSID* sid) {
     return hr;
   }
 
-  CComBSTR sid_bstr;
-  CComBSTR gaia_username_bstr;
+  base::win::ScopedBstr sid_bstr;
+  base::win::ScopedBstr gaia_username_bstr;
   // Keep trying to create the special Gaia account used to run the UI until
   // an unused username can be found or kMaxUsernameAttempts has been reached.
   hr = manager->CreateNewUser(
       kDefaultGaiaAccountName, password,
       GetStringResource(IDS_GAIA_ACCOUNT_FULLNAME_BASE).c_str(),
       GetStringResource(IDS_GAIA_ACCOUNT_COMMENT_BASE).c_str(),
-      /*add_to_users_group=*/false, kMaxUsernameAttempts, &gaia_username_bstr,
-      &sid_bstr);
+      /*add_to_users_group=*/false, kMaxUsernameAttempts,
+      gaia_username_bstr.Receive(), sid_bstr.Receive());
   if (FAILED(hr)) {
     SecurelyClearBuffer(password, std::size(password));
     LOGFN(ERROR) << "CreateNewUser hr=" << putHR(hr);
@@ -203,7 +203,7 @@ HRESULT OSGaiaUserManager::CreateGaiaUser(PSID* sid) {
   }
 
   // Save the gaia username in a machine secret area.
-  hr = policy->StorePrivateData(kLsaKeyGaiaUsername, gaia_username_bstr);
+  hr = policy->StorePrivateData(kLsaKeyGaiaUsername, gaia_username_bstr.Get());
   if (FAILED(hr)) {
     LOGFN(ERROR) << "StorePrivateData for gaia user name hr=" << putHR(hr);
     return hr;

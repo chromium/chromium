@@ -293,7 +293,6 @@ HRESULT WinHttpUrlFetcher::SetHttpRequestTimeout(const int timeout_in_millis) {
 }
 
 HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
-  USES_CONVERSION;
   DCHECK(response);
 
   response->clear();
@@ -307,8 +306,9 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   ScopedWinHttpHandle connect;
   {
     std::string host = url_.GetHost();
-    ScopedWinHttpHandle::Handle connect_tmp = ::WinHttpConnect(
-        session_.Get(), A2CW(host.c_str()), INTERNET_DEFAULT_PORT, 0);
+    ScopedWinHttpHandle::Handle connect_tmp =
+        ::WinHttpConnect(session_.Get(), base::UTF8ToWide(host).c_str(),
+                         INTERNET_DEFAULT_PORT, 0);
     if (!connect_tmp) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WinHttpConnect hr=" << putHR(hr);
@@ -334,10 +334,11 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
     bool use_post = !body_.empty();
     std::string path = url_.GetPath();
     std::string path_for_request = url_.PathForRequest();
+    std::wstring object_name =
+        base::UTF8ToWide(use_post ? path : path_for_request);
     ScopedWinHttpHandle::Handle request = ::WinHttpOpenRequest(
-        connect.Get(), use_post ? L"POST" : L"GET",
-        use_post ? A2CW(path.c_str()) : A2CW(path_for_request.c_str()), nullptr,
-        WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
+        connect.Get(), use_post ? L"POST" : L"GET", object_name.c_str(),
+        nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
         WINHTTP_FLAG_REFRESH | WINHTTP_FLAG_SECURE);
     if (!request) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
@@ -350,9 +351,8 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   // Add request headers.
 
   for (const auto& kv : request_headers_) {
-    const wchar_t* key = A2CW(kv.first.c_str());
-    const wchar_t* value = A2CW(kv.second.c_str());
-    std::wstring header = base::StrCat({key, L": ", value});
+    std::wstring header = base::StrCat(
+        {base::UTF8ToWide(kv.first), L": ", base::UTF8ToWide(kv.second)});
     if (!::WinHttpAddRequestHeaders(
             request_.Get(), header.c_str(), header.length(),
             WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {

@@ -11,8 +11,6 @@
 
 #include <windows.h>
 
-#include <atlcomcli.h>  // For CComBSTR
-#include <atlconv.h>
 #include <lm.h>
 #include <malloc.h>
 #include <memory.h>
@@ -31,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/win_util.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -296,7 +295,7 @@ HRESULT OSUserManager::AddUser(const wchar_t* username,
     const USER_INFO_4* user_info = reinterpret_cast<const USER_INFO_4*>(buffer);
     wchar_t* sidstr = nullptr;
     if (::ConvertSidToStringSid(user_info->usri4_user_sid, &sidstr)) {
-      *sid = SysAllocString(T2COLE(sidstr));
+      *sid = ::SysAllocString(sidstr);
       LOGFN(VERBOSE) << "sid=" << sidstr;
       ::LocalFree(sidstr);
     } else {
@@ -354,10 +353,10 @@ HRESULT OSUserManager::CreateNewUser(const wchar_t* base_username,
   // Keep trying to create the user account until an unused username can be
   // found or |max_attempts| has been reached.
   for (int i = 0; i < max_attempts; ++i) {
-    CComBSTR new_sid;
+    base::win::ScopedBstr new_sid;
     DWORD error;
     HRESULT hr = AddUser(new_username, password, fullname, comment,
-                         add_to_users_group, &new_sid, &error);
+                         add_to_users_group, new_sid.Receive(), &error);
     if (hr == HRESULT_FROM_WIN32(NERR_UserExists)) {
       std::wstring next_username = base_username;
       std::wstring next_username_suffix =
@@ -388,7 +387,7 @@ HRESULT OSUserManager::CreateNewUser(const wchar_t* base_username,
       return hr;
     }
 
-    *sid = ::SysAllocString(new_sid);
+    *sid = new_sid.Release();
     *final_username = ::SysAllocString(new_username);
     return S_OK;
   }

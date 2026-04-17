@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
@@ -85,16 +86,16 @@ HRESULT InitializeReauthCredential(
   if (FAILED(hr))
     email[0] = 0;
 
-  hr = reauth->SetOSUserInfo(CComBSTR(W2COLE(sid.c_str())),
-                             CComBSTR(W2COLE(domain.c_str())),
-                             CComBSTR(W2COLE(username.c_str())));
+  hr = reauth->SetOSUserInfo(base::win::ScopedBstr(sid.c_str()).Get(),
+                             base::win::ScopedBstr(domain.c_str()).Get(),
+                             base::win::ScopedBstr(username.c_str()).Get());
   if (FAILED(hr)) {
     LOGFN(ERROR) << "cred->SetOSUserInfo hr=" << putHR(hr);
     return hr;
   }
 
   if (email[0]) {
-    hr = reauth->SetEmailForReauth(CComBSTR(email));
+    hr = reauth->SetEmailForReauth(base::win::ScopedBstr(email).Get());
     if (FAILED(hr))
       LOGFN(ERROR) << "reauth->SetEmailForReauth hr=" << putHR(hr);
   } else {
@@ -512,7 +513,6 @@ void CGaiaCredentialProvider::AddCredentialAndCheckAutoLogon(
     const Microsoft::WRL::ComPtr<IGaiaCredential>& cred,
     const std::wstring& sid,
     GaiaCredentialComPtrStorage* auto_logon_credential) {
-  USES_CONVERSION;
   users_.emplace_back(cred);
 
   if (!auto_logon_credential)
@@ -600,7 +600,7 @@ HRESULT CGaiaCredentialProvider::OnUserAuthenticatedImpl(
       events_->CredentialsChanged(advise_context_);
   }
 
-  LOGFN(VERBOSE) << "Signing in authenticated sid=" << OLE2CW(sid);
+  LOGFN(VERBOSE) << "Signing in authenticated sid=" << sid;
   return S_OK;
 }
 
