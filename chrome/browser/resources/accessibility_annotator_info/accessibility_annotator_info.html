@@ -1,11 +1,14 @@
 <!doctype html>
-<html lang="en" dir="$i18n{textdirection}">
+<html lang="$i18n{language}" dir="$i18n{textdirection}">
 <head>
   <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
   <title>Accessibility annotator Info</title>
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
   <style>
     body {
+      background: var(--color-sys-surface, #fff);
       margin: 0;
       width: 448px;
       box-sizing: border-box;

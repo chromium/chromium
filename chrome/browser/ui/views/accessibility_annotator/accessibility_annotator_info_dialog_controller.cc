@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
@@ -82,7 +83,8 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
 
   if (web_contents) {
     dialog_view->SetModalType(ui::mojom::ModalType::kNone);
-    dialog_view->set_parent_window(web_contents->GetNativeView());
+    dialog_view->set_parent_window(platform_util::GetViewForWindow(
+        web_contents->GetTopLevelNativeWindow()));
     dialog_view->SetAnchorRect(web_contents->GetContainerBounds());
   } else {
     dialog_view->set_has_parent(false);

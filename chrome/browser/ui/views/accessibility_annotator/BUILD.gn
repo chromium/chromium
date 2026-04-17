@@ -12,6 +12,7 @@ source_set("accessibility_annotator") {
 
   deps = [
     "//base",
+    "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/bubble",

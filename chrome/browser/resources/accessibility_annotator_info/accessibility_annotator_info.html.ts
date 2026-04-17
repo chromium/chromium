@@ -15,16 +15,42 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
     <span id="email">${this.email_}</span>
   </div>
   <div class="canvasDiv">
-    <!-- TODO(crbug.com/488321731): Add illustration here. -->
+    <div class="logo-container">
+      <!-- TODO(crbug.com/488321731): Add illustration here. -->
+    </div>
   </div>
-    <!-- TODO(crbug.com/500663691): Update strings below. -->
+  <!-- TODO(crbug.com/500663691): Update strings below. -->
   <h1 class="title">$i18n{privacyPageTitle}</h1>
   <div class="description">
-    $i18n{privacyPageTitle}
+    <p>
+      $i18n{privacyPageTitle}
+    </p>
+    <div class="features-container">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <!-- TODO(crbug.com/488321731): Add icon here. -->
+        </div>
+        <div class="feature-text">
+          <span class="pill">@@</span> $i18n{privacyPageTitle}
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <!-- TODO(crbug.com/488321731): Add icon here. -->
+        </div>
+        <div class="feature-text">
+          $i18n{privacyPageTitle}
+        </div>
+      </div>
+    </div>
+    <p class="footer-text">
+      $i18n{privacyPageTitle}
+    </p>
   </div>
 
   <div class="actions">
-    <cr-button id="manageSettings" @click="${this.onManageSettingsClick_}">
+    <cr-button id="manageSettings" class="tonal-button"
+      @click="${this.onManageSettingsClick_}">
       $i18n{privacyPageTitle}
     </cr-button>
     <cr-button id="gotIt" class="action-button" @click="${this.onGotItClick_}">
