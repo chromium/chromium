@@ -43,7 +43,7 @@ public class TabGroupsPane extends PaneBase {
     private final LazyOneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
-    private final Supplier<@Nullable TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final MonotonicObservableSupplier<FullButtonData> mEmptyActionButtonDataSupplier =
             ObservableSuppliers.alwaysNull();
@@ -73,7 +73,7 @@ public class TabGroupsPane extends PaneBase {
             DoubleConsumer onToolbarAlphaChange,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Supplier<PaneManager> paneManagerSupplier,
-            Supplier<@Nullable TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             DataSharingTabManager dataSharingTabManager) {

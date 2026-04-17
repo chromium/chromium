@@ -237,7 +237,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             DoubleConsumer onToolbarAlphaChange,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            Supplier<@Nullable TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             DataSharingTabManager dataSharingTabManager) {
