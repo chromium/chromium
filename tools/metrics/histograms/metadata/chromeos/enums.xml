@@ -511,12 +511,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Throttled"/>
 </enum>
 
-<enum name="ChromeOSMachineIdReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Network"/>
-  <int value="2" label="Periodic"/>
-</enum>
-
 <enum name="ChromeOSMessageCenterScrollActionReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="By mouse wheel"/>
@@ -924,11 +918,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Click"/>
 </enum>
 
-<enum name="CrosSystemTrayToggleExpanded">
-  <int value="0" label="Toggled by button"/>
-  <int value="1" label="Toggled by gesture"/>
-</enum>
-
 <enum name="CustomizableButton">
   <int value="0" label="Left"/>
   <int value="1" label="Right"/>
@@ -984,12 +973,6 @@ chromium-metrics-reviews@google.com.
   <int value="1"
       label="Failed because DLC Service returned an error code (see separate
              DLC error code histogram)"/>
-</enum>
-
-<enum name="DpSuccessMetric">
-  <int value="0" label="Success with HotPlug Detect(HPD)"/>
-  <int value="1" label="Success without HotPlug Detect(HPD)"/>
-  <int value="2" label="Failure"/>
 </enum>
 
 <enum name="ExtendedFkeysModifier">
