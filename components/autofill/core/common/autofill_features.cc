@@ -210,6 +210,10 @@ BASE_FEATURE_PARAM(std::string,
 // both the previous and the new value of an updated entity attribute.
 BASE_FEATURE(kAutofillAiNewUpdatePrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Autofill AI filling suggestion do not have an icon.
+BASE_FEATURE(kAutofillAiNoFillingIconsExperiment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports order entities.
 BASE_FEATURE(kAutofillAiOrder, base::FEATURE_DISABLED_BY_DEFAULT);
 
