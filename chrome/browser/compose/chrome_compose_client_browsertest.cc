@@ -2340,3 +2340,118 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
                                 compose::ComposeRequestFeedback::kNoFeedback,
                                 2);
 }
+
+// Tests that session level UKM metrics are properly captured after closing the
+// dialog.
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, TestCancelUkmMetrics) {
+  ShowDialogAndBindMojo();
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  // Make sure the async call to CloseUI completes before navigating away.
+  client_page_handler().FlushForTesting();
+
+  // Navigate page away to upload UKM metrics to the collector.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kCanceledName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(session_ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ukm::builders::Compose_SessionProgress::kCanceledName, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeShowContextMenu) {
+  auto* rfh = browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_content_editable_for_autofill = true;
+  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
+
+  // Now show context menu twice on same page and verify that second UKM record
+  // reflects this.
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 2UL);
+
+  EXPECT_THAT(
+      ukm_entries[1].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        2),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeShowContextMenuAndDialog) {
+  auto* rfh = browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_content_editable_for_autofill = true;
+  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+
+  base::HistogramTester histograms;
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+  ShowDialogAndBindMojo();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
+
+  histograms.ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms.ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+}

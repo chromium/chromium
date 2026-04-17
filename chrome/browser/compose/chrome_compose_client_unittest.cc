@@ -553,90 +553,7 @@ TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
       compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
 }
 
-TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
-  auto* rfh =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
-  content::ContextMenuParams params;
-  params.is_content_editable_for_autofill = true;
-  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
 
-  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  auto ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
-
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-
-  EXPECT_THAT(
-      ukm_entries[0].metrics,
-      testing::UnorderedElementsAre(
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        1),
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
-
-  // Now show context menu twice on same page and verify that second UKM record
-  // reflects this.
-  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
-  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
-
-  EXPECT_EQ(ukm_entries.size(), 2UL);
-
-  EXPECT_THAT(
-      ukm_entries[1].metrics,
-      testing::UnorderedElementsAre(
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        2),
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
-}
-
-TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
-  auto* rfh =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
-  content::ContextMenuParams params;
-  params.is_content_editable_for_autofill = true;
-  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
-
-  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
-  ShowDialogAndBindMojo();
-
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  auto ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
-
-  EXPECT_EQ(ukm_entries.size(), 1UL);
-
-  EXPECT_THAT(
-      ukm_entries[0].metrics,
-      testing::UnorderedElementsAre(
-          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
-                        1),
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
-          testing::Pair(
-              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
-
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
-}
 
 
 
@@ -1044,28 +961,7 @@ TEST_F(ChromeComposeClientTest, TestCloseUI) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 }
 
-// Tests that session level UKM metrics are properly captured after closing the
-// dialog.
-TEST_F(ChromeComposeClientTest, TestCancelUkmMetrics) {
-  ShowDialogAndBindMojo();
-  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
-  // Make sure the async call to CloseUI completes before navigating away.
-  FlushMojo();
 
-  // Navigate page away to upload UKM metrics to the collector.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
-
-  // Check session level UKM metrics.
-  auto session_ukm_entries = ukm_recorder().GetEntries(
-      ukm::builders::Compose_SessionProgress::kEntryName,
-      {ukm::builders::Compose_SessionProgress::kCanceledName});
-
-  EXPECT_EQ(session_ukm_entries.size(), 1UL);
-
-  EXPECT_THAT(session_ukm_entries[0].metrics,
-              testing::UnorderedElementsAre(testing::Pair(
-                  ukm::builders::Compose_SessionProgress::kCanceledName, 1)));
-}
 
 // Tests that closing the session at chrome-untrusted://compose does not crash
 // the browser, even though there is no dialog shown at that URL.
