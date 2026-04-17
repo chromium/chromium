@@ -58,6 +58,7 @@
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -954,6 +955,11 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
   variations::UpdateCorsExemptHeaderForVariations(network_context_params);
   variations::UpdateCorsExemptHeaderForOmniboxAutofocus(network_context_params);
+  if (auto* variations_ids_provider =
+          variations::VariationsIdsProvider::GetInstance()) {
+    network_context_params->initial_variations_headers =
+        variations_ids_provider->GetClientDataHeaders(false);
+  }
   GoogleURLLoaderThrottle::UpdateCorsExemptHeader(network_context_params);
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
   request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::

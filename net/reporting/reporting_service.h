@@ -17,6 +17,7 @@
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
 #include "net/reporting/reporting_target_type.h"
+#include "net/reporting/reporting_uploader.h"
 
 class GURL;
 
@@ -51,7 +52,9 @@ class NET_EXPORT ReportingService {
   static std::unique_ptr<ReportingService> Create(
       const ReportingPolicy& policy,
       URLRequestContext* request_context,
-      ReportingCache::PersistentReportingStore* store);
+      ReportingCache::PersistentReportingStore* store,
+      ReportingUploader::PrepareUploadRequestCallback
+          prepare_upload_request_callback = base::DoNothing());
 
   // Creates a ReportingService for testing purposes using an
   // already-constructed ReportingContext. The ReportingService will take

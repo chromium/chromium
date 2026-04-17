@@ -17,6 +17,7 @@
 namespace net {
 struct NetworkTrafficAnnotationTag;
 struct RedirectInfo;
+class URLRequest;
 }  // namespace net
 
 namespace network {
@@ -87,6 +88,13 @@ bool AppendVariationsHeader(const GURL& url,
                             SignedIn signed_in,
                             network::ResourceRequest* request);
 
+// Adds Chrome experiment and metrics state as custom headers to |request|.
+// As above, but for net::URLRequest.
+bool AppendVariationsHeader(const GURL& url,
+                            InIncognito incognito,
+                            SignedIn signed_in,
+                            net::URLRequest* request);
+
 // Similar to AppendVariationsHeader, but takes multiple appropriate headers,
 // one of which may be appended. It also uses |owner|, which indicates whether
 // the request-initiating frame's top frame is a Google-owned web property.
@@ -95,9 +103,18 @@ bool AppendVariationsHeader(const GURL& url,
 bool AppendVariationsHeaderWithCustomValue(
     const GURL& url,
     InIncognito incognito,
-    variations::mojom::VariationsHeadersPtr variations_headers,
+    const variations::mojom::VariationsHeaders* variations_headers,
     Owner owner,
     network::ResourceRequest* request);
+
+// As above, but for net::URLRequest. The `owner` param is omitted, with
+// kUnknown being used internally, as this API is not meant to be used for
+// subframe-initiated requests.
+bool AppendVariationsHeaderWithCustomValue(
+    const GURL& url,
+    InIncognito incognito,
+    const variations::mojom::VariationsHeaders* variations_headers,
+    net::URLRequest* request);
 
 // Adds Chrome experiment and metrics state as a custom header to |request|
 // when the signed-in state is not known to the caller; See above for details.

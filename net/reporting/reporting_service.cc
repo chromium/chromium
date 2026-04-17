@@ -343,9 +343,11 @@ ReportingService::~ReportingService() = default;
 std::unique_ptr<ReportingService> ReportingService::Create(
     const ReportingPolicy& policy,
     URLRequestContext* request_context,
-    ReportingCache::PersistentReportingStore* store) {
-  return std::make_unique<ReportingServiceImpl>(
-      ReportingContext::Create(policy, request_context, store));
+    ReportingCache::PersistentReportingStore* store,
+    ReportingUploader::PrepareUploadRequestCallback
+        prepare_upload_request_callback) {
+  return std::make_unique<ReportingServiceImpl>(ReportingContext::Create(
+      policy, request_context, store, prepare_upload_request_callback));
 }
 
 // static

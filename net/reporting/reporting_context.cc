@@ -34,14 +34,18 @@ class ReportingContextImpl : public ReportingContext {
  public:
   ReportingContextImpl(const ReportingPolicy& policy,
                        URLRequestContext* request_context,
-                       ReportingCache::PersistentReportingStore* store)
-      : ReportingContext(policy,
-                         base::DefaultClock::GetInstance(),
-                         base::DefaultTickClock::GetInstance(),
-                         base::BindRepeating(&base::RandIntInclusive),
-                         ReportingUploader::Create(request_context),
-                         ReportingDelegate::Create(request_context),
-                         store) {}
+                       ReportingCache::PersistentReportingStore* store,
+                       ReportingUploader::PrepareUploadRequestCallback
+                           prepare_upload_request_callback)
+      : ReportingContext(
+            policy,
+            base::DefaultClock::GetInstance(),
+            base::DefaultTickClock::GetInstance(),
+            base::BindRepeating(&base::RandIntInclusive),
+            ReportingUploader::Create(request_context,
+                                      prepare_upload_request_callback),
+            ReportingDelegate::Create(request_context),
+            store) {}
 };
 
 }  // namespace
@@ -50,8 +54,11 @@ class ReportingContextImpl : public ReportingContext {
 std::unique_ptr<ReportingContext> ReportingContext::Create(
     const ReportingPolicy& policy,
     URLRequestContext* request_context,
-    ReportingCache::PersistentReportingStore* store) {
-  return std::make_unique<ReportingContextImpl>(policy, request_context, store);
+    ReportingCache::PersistentReportingStore* store,
+    ReportingUploader::PrepareUploadRequestCallback
+        prepare_upload_request_callback) {
+  return std::make_unique<ReportingContextImpl>(
+      policy, request_context, store, prepare_upload_request_callback);
 }
 
 ReportingContext::~ReportingContext() = default;

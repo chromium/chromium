@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -20,6 +21,7 @@ class Origin;
 namespace net {
 
 class IsolationInfo;
+class URLRequest;
 class URLRequestContext;
 
 // Uploads already-serialized reports and converts responses to one of the
@@ -29,6 +31,8 @@ class NET_EXPORT ReportingUploader {
   enum class Outcome { SUCCESS, REMOVE_ENDPOINT, FAILURE };
 
   using UploadCallback = base::OnceCallback<void(Outcome outcome)>;
+  using PrepareUploadRequestCallback =
+      base::RepeatingCallback<void(URLRequest*)>;
 
   virtual ~ReportingUploader();
 
@@ -51,7 +55,8 @@ class NET_EXPORT ReportingUploader {
   // Creates a real implementation of |ReportingUploader| that uploads reports
   // using |context|.
   static std::unique_ptr<ReportingUploader> Create(
-      const URLRequestContext* context);
+      const URLRequestContext* context,
+      PrepareUploadRequestCallback callback = base::DoNothing());
 
   virtual int GetPendingUploadCountForTesting() const = 0;
 };

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/backoff_entry.h"
@@ -14,6 +15,7 @@
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_policy.h"
+#include "net/reporting/reporting_uploader.h"
 
 namespace base {
 class Clock;
@@ -38,7 +40,9 @@ class NET_EXPORT ReportingContext {
   static std::unique_ptr<ReportingContext> Create(
       const ReportingPolicy& policy,
       URLRequestContext* request_context,
-      ReportingCache::PersistentReportingStore* store);
+      ReportingCache::PersistentReportingStore* store,
+      ReportingUploader::PrepareUploadRequestCallback
+          prepare_upload_request_callback = base::DoNothing());
 
   ReportingContext(const ReportingContext&) = delete;
   ReportingContext& operator=(const ReportingContext&) = delete;

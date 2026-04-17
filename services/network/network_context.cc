@@ -60,6 +60,7 @@
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "components/url_pattern/simple_url_pattern_matcher.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
@@ -630,6 +631,14 @@ void RecordHSTSPreconnectUpgradeReason(HSTSRedirectUpgradeReason reason) {
   }
 }
 
+bool IsIncognitoFromParams(const mojom::NetworkContextParams& params) {
+  // Checking both to see if there are any file paths at all, and if there is
+  // specifically an http_cache_directory filepath in order to avoid a
+  // potential nullptr dereference if we just checked that
+  // `params_->file_paths->http_cache_directory' existed.
+  return !params.file_paths || !params.file_paths->http_cache_directory;
+}
+
 }  // namespace
 
 constexpr uint32_t NetworkContext::kMaxOutstandingRequestsPerProcess;
@@ -704,7 +713,8 @@ NetworkContext::NetworkContext(
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
           features::kCorsNonWildcardRequestHeadersSupport)),
       prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
-                                        : nullptr) {
+                                        : nullptr),
+      variations_headers_(std::move(params_->initial_variations_headers)) {
 
   if (features::ShouldBindNetworkContextDirectReceiver()) {
     receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
@@ -1809,6 +1819,16 @@ void NetworkContext::OnReportingObserverDisconnect(
     is_observing_reporting_service_ = false;
   }
 }
+
+void NetworkContext::AddVariationsHeadersToReportingRequest(
+    net::URLRequest* request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  variations::AppendVariationsHeaderWithCustomValue(
+      request->url(),
+      IsIncognitoFromParams(*params_) ? variations::InIncognito::kYes
+                                      : variations::InIncognito::kNo,
+      variations_headers_.get(), request);
+}
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 void NetworkContext::ClearDomainReliability(
@@ -2897,11 +2917,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   } else {
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
     cache_params.max_size = params_->http_cache_max_size;
-    // Checking both to see if there are any file paths at all, and if there is
-    // specifically an http_cache_directory filepath in order to avoid a
-    // potential nullptr dereference if we just checked that
-    // `params_->file_paths->http_cache_directory' existed.
-    if (!params_->file_paths || !params_->file_paths->http_cache_directory) {
+    if (IsIncognitoFromParams(*params_)) {
       cache_params.type =
           net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
     } else {
@@ -3111,6 +3127,17 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.set_enable_shared_dictionary(true);
     builder.set_enable_shared_zstd(true);
   }
+
+#if BUILDFLAG(ENABLE_REPORTING)
+  if (base::FeatureList::IsEnabled(
+          features::kReportingApiEnableVariationsHeaders)) {
+    builder.set_prepare_upload_request_callback(base::BindRepeating(
+        &NetworkContext::AddVariationsHeadersToReportingRequest,
+        // `this` outlives the URLRequestContext that owns the ReportingService,
+        // which owns the ReportingUploader that calls this callback.
+        base::Unretained(this)));
+  }
+#endif
 
   builder.SetWrapHttpNetworkLayerCallback(
       base::BindOnce([](std::unique_ptr<net::HttpNetworkLayer> network_layer)
@@ -3931,6 +3958,12 @@ GURL NetworkContext::GetNetworkRestrictionResponseUrlForTesting(
     return GURL();
   }
   return it->second.response_url;
+}
+
+void NetworkContext::SetVariationsHeaders(
+    variations::mojom::VariationsHeadersPtr variations_headers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  variations_headers_ = std::move(variations_headers);
 }
 
 }  // namespace network

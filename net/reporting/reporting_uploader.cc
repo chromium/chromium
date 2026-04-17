@@ -109,8 +109,12 @@ struct PendingUpload {
 
 class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
  public:
-  explicit ReportingUploaderImpl(const URLRequestContext* context)
-      : context_(context) {
+  ReportingUploaderImpl(
+      const URLRequestContext* context,
+      PrepareUploadRequestCallback prepare_upload_request_callback)
+      : context_(context),
+        prepare_upload_request_callback_(
+            std::move(prepare_upload_request_callback)) {
     DCHECK(context_);
   }
 
@@ -172,6 +176,10 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // reports to the same origin can cause an infinite stack of reports about
     // reports.)
     upload->request->set_reporting_upload_depth(upload->max_depth + 1);
+
+    if (prepare_upload_request_callback_) {
+      prepare_upload_request_callback_.Run(upload->request.get());
+    }
 
     URLRequest* raw_request = upload->request.get();
     uploads_[raw_request] = std::move(upload);
@@ -265,6 +273,10 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // reports to the same origin can cause an infinite stack of reports about
     // reports.)
     upload->request->set_reporting_upload_depth(upload->max_depth + 1);
+
+    if (prepare_upload_request_callback_) {
+      prepare_upload_request_callback_.Run(upload->request.get());
+    }
 
     URLRequest* raw_request = upload->request.get();
     uploads_[raw_request] = std::move(upload);
@@ -375,6 +387,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
 
  private:
   raw_ptr<const URLRequestContext> context_;
+  PrepareUploadRequestCallback prepare_upload_request_callback_;
   std::map<const URLRequest*, std::unique_ptr<PendingUpload>> uploads_;
 };
 
@@ -384,8 +397,9 @@ ReportingUploader::~ReportingUploader() = default;
 
 // static
 std::unique_ptr<ReportingUploader> ReportingUploader::Create(
-    const URLRequestContext* context) {
-  return std::make_unique<ReportingUploaderImpl>(context);
+    const URLRequestContext* context,
+    PrepareUploadRequestCallback callback) {
+  return std::make_unique<ReportingUploaderImpl>(context, std::move(callback));
 }
 
 }  // namespace net

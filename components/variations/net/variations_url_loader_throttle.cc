@@ -66,12 +66,8 @@ void VariationsURLLoaderThrottle::WillStartRequest(
 
   // InIncognito::kNo is passed because this throttle is never created in
   // incognito mode.
-  //
-  // |variations_headers_| is moved rather than cloned because a
-  // VariationsURLLoaderThrottle is created for each request and
-  // WillStartRequest() is called only once—from ThrottlingURLLoader::Start().
   variations::AppendVariationsHeaderWithCustomValue(
-      request->url, InIncognito::kNo, std::move(variations_headers_), owner_,
+      request->url, InIncognito::kNo, variations_headers_.get(), owner_,
       request);
 }
 

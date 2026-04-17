@@ -96,6 +96,17 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
       "", "Not a valid HTTP response.");
 }
 
+void PrepareUploadRequest(int* count, URLRequest* request) {
+  ++(*count);
+  request->SetExtraRequestHeaderByName("Foo", "Bar", true);
+}
+
+void CheckExtraHeader(const test_server::HttpRequest& request) {
+  auto it = request.headers.find("Foo");
+  EXPECT_TRUE(it != request.headers.end());
+  EXPECT_EQ("Bar", it->second);
+}
+
 class TestUploadCallback {
  public:
   TestUploadCallback() = default;
@@ -815,6 +826,29 @@ TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
 
   callback3.WaitForCall();
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback3.outcome());
+}
+
+TEST_F(ReportingUploaderTest, PrepareUploadRequestCallback) {
+  server_.RegisterRequestMonitor(base::BindRepeating(&CheckExtraHeader));
+  server_.RegisterRequestHandler(base::BindRepeating(&AllowPreflight));
+  server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
+  ASSERT_TRUE(server_.Start());
+
+  int prepare_count = 0;
+  auto uploader = ReportingUploader::Create(
+      context_.get(),
+      base::BindRepeating(&PrepareUploadRequest, &prepare_count));
+
+  TestUploadCallback callback;
+  uploader->StartUpload(kOrigin, server_.GetURL("/"),
+                        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+                        kUploadBody, 0, false, callback.callback());
+  callback.WaitForCall();
+
+  // The callback should be invoked for both the preflight and the payload
+  // request.
+  EXPECT_EQ(2, prepare_count);
+  EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
 }
 
 }  // namespace

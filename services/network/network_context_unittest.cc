@@ -18,6 +18,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -62,6 +63,7 @@
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -99,6 +101,7 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/reporting/reporting_policy.h"
 #include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -183,6 +186,7 @@
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_utils.h"
 #include "services/network/test/udp_socket_test_util.h"
@@ -202,6 +206,8 @@
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
+#include "net/reporting/reporting_delivery_agent.h"
+#include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_service.h"
 #include "net/reporting/reporting_test_util.h"
@@ -567,6 +573,25 @@ class NetworkContextTest : public testing::Test {
       std::unique_ptr<net::ReportingService> reporting_service = nullptr
 #endif
   ) {
+    NetworkContext::OnURLRequestContextBuilderConfiguredCallback callback;
+#if BUILDFLAG(ENABLE_REPORTING)
+    if (reporting_service) {
+      callback = base::BindOnce(
+          [](std::unique_ptr<net::ReportingService> service,
+             net::URLRequestContextBuilder* builder) {
+            builder->set_reporting_service(std::move(service));
+          },
+          std::move(reporting_service));
+    }
+#endif
+    return CreateContextWithBuilderCallback(std::move(context_params),
+                                            std::move(callback));
+  }
+
+  std::unique_ptr<NetworkContext> CreateContextWithBuilderCallback(
+      mojom::NetworkContextParamsPtr context_params,
+      NetworkContext::OnURLRequestContextBuilderConfiguredCallback
+          on_url_request_context_builder_configured) {
     // Use a dummy CertVerifier that always passes cert verification, since
     // these unittests don't need to test CertVerifier behavior.
     DCHECK(!context_params->cert_verifier_params);
@@ -577,11 +602,7 @@ class NetworkContextTest : public testing::Test {
         network_service_.get(),
         network_context_remote_.BindNewPipeAndPassReceiver(),
         std::move(context_params),
-        base::BindLambdaForTesting([&](net::URLRequestContextBuilder* builder) {
-#if BUILDFLAG(ENABLE_REPORTING)
-          builder->set_reporting_service(std::move(reporting_service));
-#endif
-        }));
+        std::move(on_url_request_context_builder_configured));
   }
 
   // Searches through |backend|'s stats to discover its type. Only supports
@@ -1114,6 +1135,264 @@ TEST_F(NetworkContextTest, QueueEnterpriseReport) {
   EXPECT_EQ(kType_, reports[0]->type);
   EXPECT_EQ(net::ReportingTargetType::kEnterprise, reports[0]->target_type);
 }
+
+#if BUILDFLAG(ENABLE_REPORTING)
+TEST_F(NetworkContextTest, AddVariationsHeadersToReportingRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kReportingApiEnableVariationsHeaders);
+
+  auto variations_headers = variations::mojom::VariationsHeaders::New();
+  variations_headers->headers_map[variations::mojom::GoogleWebVisibility::ANY] =
+      "abc";
+  variations_headers
+      ->headers_map[variations::mojom::GoogleWebVisibility::FIRST_PARTY] =
+      "abc";
+
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->file_paths->http_cache_directory =
+      base::FilePath(FILE_PATH_LITERAL("cache"));
+  params->initial_variations_headers = std::move(variations_headers);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(params));
+
+  // The variations header is only added for Google origins.
+  GURL google_url("https://www.google.com");
+  auto request = network_context->url_request_context()->CreateRequest(
+      google_url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  network_context->AddVariationsHeadersToReportingRequest(request.get());
+
+  std::optional<std::string> value =
+      request->extra_request_headers().GetHeader("X-Client-Data");
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ("abc", *value);
+}
+
+TEST_F(NetworkContextTest, AddVariationsHeadersToReportingRequestIncognito) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kReportingApiEnableVariationsHeaders);
+
+  auto variations_headers = variations::mojom::VariationsHeaders::New();
+  variations_headers->headers_map[variations::mojom::GoogleWebVisibility::ANY] =
+      "abc";
+  variations_headers
+      ->headers_map[variations::mojom::GoogleWebVisibility::FIRST_PARTY] =
+      "abc";
+
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->initial_variations_headers = std::move(variations_headers);
+  // No http_cache_directory means incognito according to IsIncognitoFromParams.
+  params->file_paths = mojom::NetworkContextFilePaths::New();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(params));
+
+  GURL google_url("https://www.google.com");
+  auto request = network_context->url_request_context()->CreateRequest(
+      google_url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  network_context->AddVariationsHeadersToReportingRequest(request.get());
+
+  std::optional<std::string> value =
+      request->extra_request_headers().GetHeader("X-Client-Data");
+  // In incognito, the header should not be added.
+  EXPECT_FALSE(value.has_value());
+}
+
+class StubHttpTransaction : public net::HttpTransaction {
+ public:
+  explicit StubHttpTransaction(std::string* captured_headers,
+                               base::RepeatingClosure on_start_callback)
+      : captured_headers_(captured_headers),
+        on_start_callback_(std::move(on_start_callback)) {}
+  ~StubHttpTransaction() override = default;
+
+  int Start(const net::HttpRequestInfo* request_info,
+            net::CompletionOnceCallback callback,
+            const net::NetLogWithSource& net_log) override {
+    if (captured_headers_) {
+      *captured_headers_ = request_info->extra_headers.ToString();
+    }
+    if (on_start_callback_) {
+      on_start_callback_.Run();
+    }
+    return net::ERR_FAILED;
+  }
+  int RestartIgnoringLastError(net::CompletionOnceCallback callback) override {
+    return net::ERR_FAILED;
+  }
+  int RestartWithCertificate(
+      scoped_refptr<net::X509Certificate> client_cert,
+      scoped_refptr<net::SSLPrivateKey> client_private_key,
+      net::CompletionOnceCallback callback) override {
+    return net::ERR_FAILED;
+  }
+  int RestartWithAuth(const net::AuthCredentials& credentials,
+                      net::CompletionOnceCallback callback) override {
+    return net::ERR_FAILED;
+  }
+  bool IsReadyToRestartForAuth() override { return false; }
+  int Read(net::IOBuffer* buf,
+           int buf_len,
+           net::CompletionOnceCallback callback) override {
+    return net::ERR_FAILED;
+  }
+  void StopCaching() override {}
+  base::ByteSize GetTotalReceivedBytes() const override {
+    return base::ByteSize();
+  }
+  base::ByteSize GetTotalSentBytes() const override { return base::ByteSize(); }
+  base::ByteSize GetReceivedBodyBytes() const override {
+    return base::ByteSize();
+  }
+  void DoneReading() override {}
+  const net::HttpResponseInfo* GetResponseInfo() const override {
+    return nullptr;
+  }
+  net::LoadState GetLoadState() const override { return net::LOAD_STATE_IDLE; }
+  bool GetLoadTimingInfo(net::LoadTimingInfo* load_timing_info) const override {
+    return false;
+  }
+  void PopulateLoadTimingInternalInfo(
+      net::LoadTimingInternalInfo* load_timing_internal_info) const override {}
+  bool GetRemoteEndpoint(net::IPEndPoint* endpoint) const override {
+    return false;
+  }
+  void PopulateNetErrorDetails(net::NetErrorDetails* details) const override {}
+  void SetPriority(net::RequestPriority priority) override {}
+  void SetWebSocketHandshakeStreamCreateHelper(
+      net::WebSocketHandshakeStreamBase::CreateHelper* create_helper) override {
+  }
+  void SetConnectedCallback(const ConnectedCallback& callback) override {}
+  void SetRequestHeadersCallback(
+      net::RequestHeadersCallback callback) override {}
+  void SetResponseHeadersCallback(
+      net::ResponseHeadersCallback callback) override {}
+  void SetEarlyResponseHeadersCallback(
+      net::ResponseHeadersCallback callback) override {}
+  void SetModifyRequestHeadersCallback(
+      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
+      override {}
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback) override {}
+  net::ConnectionAttempts GetConnectionAttempts() const override { return {}; }
+  void CloseConnectionOnDestruction() override {}
+
+ private:
+  raw_ptr<std::string> captured_headers_;
+  base::RepeatingClosure on_start_callback_;
+};
+
+class StubHttpTransactionFactory : public net::HttpTransactionFactory {
+ public:
+  explicit StubHttpTransactionFactory(std::string* captured_headers,
+                                      net::HttpNetworkSession* session,
+                                      base::RepeatingClosure on_start_callback)
+      : captured_headers_(captured_headers),
+        session_(session),
+        on_start_callback_(std::move(on_start_callback)) {}
+  ~StubHttpTransactionFactory() override = default;
+
+  std::unique_ptr<net::HttpTransaction> CreateTransaction(
+      net::RequestPriority priority) override {
+    return std::make_unique<StubHttpTransaction>(captured_headers_,
+                                                 on_start_callback_);
+  }
+  net::HttpCache* GetCache() override { return nullptr; }
+  net::HttpNetworkSession* GetSession() override { return session_; }
+
+ private:
+  raw_ptr<std::string> captured_headers_;
+  raw_ptr<net::HttpNetworkSession> session_;
+  base::RepeatingClosure on_start_callback_;
+};
+
+TEST_F(NetworkContextTestWithMockTime,
+       ReportingUploadIncludesVariationsHeaderIntegration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kReporting, features::kReportingApiEnableVariationsHeaders,
+       net::features::kPartitionConnectionsByNetworkIsolationKey},
+      {});
+
+  auto variations_headers = variations::mojom::VariationsHeaders::New();
+  variations_headers->headers_map[variations::mojom::GoogleWebVisibility::ANY] =
+      "abc";
+  variations_headers
+      ->headers_map[variations::mojom::GoogleWebVisibility::FIRST_PARTY] =
+      "abc";
+
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->initial_variations_headers = std::move(variations_headers);
+  params->http_cache_enabled = false;
+  params->skip_reporting_send_permission_check = true;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  params->file_paths = mojom::NetworkContextFilePaths::New();
+  params->file_paths->http_cache_directory = temp_dir.GetPath();
+
+  std::string captured_headers;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithBuilderCallback(
+          std::move(params),
+          base::BindLambdaForTesting(
+              [&](net::URLRequestContextBuilder* builder) {
+                builder->SetWrapHttpNetworkLayerCallback(base::BindOnce(
+                    [](std::string* headers_ptr,
+                       base::RepeatingClosure callback,
+                       std::unique_ptr<net::HttpNetworkLayer> network_layer)
+                        -> std::unique_ptr<net::HttpTransactionFactory> {
+                      return std::make_unique<StubHttpTransactionFactory>(
+                          headers_ptr, network_layer->GetSession(),
+                          std::move(callback));
+                    },
+                    &captured_headers, run_loop.QuitClosure()));
+              }));
+
+  mojo::PendingRemote<mojom::NetworkContextClient> client_remote;
+  TestNetworkContextClient client(
+      client_remote.InitWithNewPipeAndPassReceiver());
+  network_context->SetClient(std::move(client_remote));
+
+  // Use a Google origin for the report to avoid cross-origin preflight.
+  GURL google_url("https://www.google.com");
+  url::Origin google_origin = url::Origin::Create(google_url);
+  GURL report_url("https://www.google.com/report");
+  base::UnguessableToken reporting_source = base::UnguessableToken::Create();
+  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, google_origin, google_origin,
+      net::SiteForCookies::FromOrigin(google_origin));
+  net::NetworkAnonymizationKey nak = isolation_info.network_anonymization_key();
+  if (!net::NetworkAnonymizationKey::IsPartitioningEnabled()) {
+    nak = net::NetworkAnonymizationKey();
+  }
+
+  base::flat_map<std::string, std::string> endpoints = {
+      {"default", report_url.spec()},
+  };
+  network_context->SetDocumentReportingEndpoints(
+      reporting_source, google_origin, isolation_info, endpoints);
+
+  network_context->QueueReport("test_type", "default", google_url,
+                               reporting_source, nak, base::DictValue());
+
+  network_context->url_request_context()
+      ->reporting_service()
+      ->SendReportsAndRemoveSource(reporting_source);
+
+  run_loop.Run();
+
+  EXPECT_NE(std::string::npos, captured_headers.find("X-Client-Data: abc"));
+}
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 TEST_F(NetworkContextTest, QueueReportAfterNetworkRevocation) {
   auto reporting_context = std::make_unique<net::TestReportingContext>(

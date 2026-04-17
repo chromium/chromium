@@ -15,6 +15,11 @@
 #include "components/variations/variations.mojom.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,7 +67,43 @@ void AppendVariationsHeader(const GURL& destination,
 
   AppendVariationsHeaderWithCustomValue(
       destination, InIncognito::kNo,
-      variations::mojom::VariationsHeaders::New(headers), owner, request);
+      variations::mojom::VariationsHeaders::New(headers).get(), owner, request);
+}
+
+// Returns a URLRequest created from the given values.
+std::unique_ptr<net::URLRequest> CreateURLRequest(
+    net::URLRequestContext* context,
+    const std::string& request_initiator_url,
+    const std::string& isolation_info_top_frame_origin_url,
+    const std::string& isolation_info_frame_origin_url) {
+  std::unique_ptr<net::URLRequest> request = context->CreateRequest(
+      GURL("https://foo.google.com"), net::DEFAULT_PRIORITY, nullptr,
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  if (!request_initiator_url.empty()) {
+    request->set_initiator(url::Origin::Create(GURL(request_initiator_url)));
+  }
+
+  if (!isolation_info_top_frame_origin_url.empty()) {
+    request->set_isolation_info(net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther,
+        url::Origin::Create(GURL(isolation_info_top_frame_origin_url)),
+        url::Origin::Create(GURL(isolation_info_frame_origin_url)),
+        net::SiteForCookies()));
+  }
+
+  return request;
+}
+
+// Wraps AppendVariationsHeaderWithCustomValue().
+void AppendVariationsHeader(const GURL& destination, net::URLRequest* request) {
+  base::flat_map<variations::mojom::GoogleWebVisibility, std::string> headers =
+      {{variations::mojom::GoogleWebVisibility::FIRST_PARTY, "abc123"},
+       {variations::mojom::GoogleWebVisibility::ANY, "xyz456"}};
+
+  AppendVariationsHeaderWithCustomValue(
+      destination, InIncognito::kNo,
+      variations::mojom::VariationsHeaders::New(headers).get(), request);
 }
 
 }  // namespace
@@ -333,6 +374,61 @@ TEST_P(PopulateRequestContextHistogramTest, PopulateRequestContextHistogram) {
       GURL("https://foo.google.com"),
       data.is_top_level_google_owned ? Owner::kGoogle : Owner::kNotGoogle,
       &request);
+
+  // Verify that the histogram has a single sample corresponding to the request
+  // context category.
+  const std::string histogram = "Variations.Headers.RequestContextCategory";
+  tester.ExpectUniqueSample(histogram, data.bucket, 1);
+}
+
+struct PopulateRequestContextHistogramURLRequestData {
+  const char* request_initiator_url;
+  const char* isolation_info_top_frame_origin_url;
+  const char* isolation_info_frame_origin_url;
+  int bucket;
+  const char* name;
+};
+
+class PopulateRequestContextHistogramURLRequestTest
+    : public testing::TestWithParam<
+          PopulateRequestContextHistogramURLRequestData> {
+ public:
+  static const PopulateRequestContextHistogramURLRequestData kCases[];
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+const PopulateRequestContextHistogramURLRequestData
+    PopulateRequestContextHistogramURLRequestTest::kCases[] = {
+        {"", "", "", 0, "kBrowserInitiated"},
+        {"chrome://newtab/", "", "", 1, "kInternalChromePageInitiated"},
+        {"https://docs.google.com/", "https://drive.google.com/",
+         "https://docs.google.com/", 3, "kGoogleSubFrameOnGooglePageInitiated"},
+        {"https://www.un.org/", "", "", 4, "kNonGooglePageInitiated"},
+        {"https://foo.google.com/", "", "", 6, "kNoIsolationInfo"},
+        {"https://foo.gstatic.com/", "https://www.lexico.com/", "", 7,
+         "kGoogleSubFrameOnNonGooglePageInitiated"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    VariationsHttpHeadersTest,
+    PopulateRequestContextHistogramURLRequestTest,
+    testing::ValuesIn(PopulateRequestContextHistogramURLRequestTest::kCases));
+
+TEST_P(PopulateRequestContextHistogramURLRequestTest,
+       PopulateRequestContextHistogram) {
+  PopulateRequestContextHistogramURLRequestData data = GetParam();
+  SCOPED_TRACE(data.name);
+
+  auto builder = net::CreateTestURLRequestContextBuilder();
+  auto context = builder->Build();
+  std::unique_ptr<net::URLRequest> request =
+      CreateURLRequest(context.get(), data.request_initiator_url,
+                       data.isolation_info_top_frame_origin_url,
+                       data.isolation_info_frame_origin_url);
+
+  base::HistogramTester tester;
+  AppendVariationsHeader(GURL("https://foo.google.com"), request.get());
 
   // Verify that the histogram has a single sample corresponding to the request
   // context category.

@@ -6,6 +6,7 @@ module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
 import "components/unexportable_keys/mojom/unexportable_key_service.mojom";
+import "components/variations/variations.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -635,6 +636,9 @@ struct NetworkContextParams {
   // Sessions and nothing else.
   pending_remote<unexportable_keys.mojom.UnexportableKeyService>?
       bound_sessions_unexportable_key_service;
+
+  // Initial variations headers to use.
+  variations.mojom.VariationsHeaders? initial_variations_headers;
 };
 
 struct NetworkConditions {
@@ -1827,4 +1831,7 @@ interface NetworkContext {
   // origins.
   AddQuicHints(array<url.mojom.SchemeHostPort> origins,
                NetworkAnonymizationKey network_anonymization_key);
+
+  // Updates the variations headers to be used for requests.
+  SetVariationsHeaders(variations.mojom.VariationsHeaders? variations_headers);
 };

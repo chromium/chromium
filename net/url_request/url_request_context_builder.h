@@ -46,6 +46,7 @@
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/reporting/reporting_uploader.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
@@ -332,6 +333,11 @@ class NET_EXPORT URLRequestContextBuilder {
       std::unique_ptr<ReportingService> reporting_service);
   void set_reporting_policy(std::unique_ptr<ReportingPolicy> reporting_policy);
 
+  void set_prepare_upload_request_callback(
+      ReportingUploader::PrepareUploadRequestCallback callback) {
+    prepare_upload_request_callback_ = std::move(callback);
+  }
+
   void set_network_error_logging_enabled(bool network_error_logging_enabled) {
     network_error_logging_enabled_ = network_error_logging_enabled;
   }
@@ -547,6 +553,8 @@ class NET_EXPORT URLRequestContextBuilder {
 #if BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<ReportingPolicy> reporting_policy_;
+  ReportingUploader::PrepareUploadRequestCallback
+      prepare_upload_request_callback_;
   bool network_error_logging_enabled_ = false;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
   std::unique_ptr<PersistentReportingAndNelStore>

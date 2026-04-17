@@ -17,6 +17,7 @@
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
+#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -138,7 +139,7 @@ bool ShouldAppendVariationsHeader(const GURL& url, InIncognito incognito) {
 // Returns non-empty `std::string` if `variations_headers` has a header value
 // to add for `is_first_party_context`, or returns `std::nullopt` otherwise.
 std::optional<std::string> GetHeaderValue(
-    variations::mojom::VariationsHeadersPtr variations_headers,
+    const variations::mojom::VariationsHeaders* variations_headers,
     bool is_first_party_context) {
   if (!variations_headers) {
     return std::nullopt;
@@ -155,17 +156,14 @@ std::optional<std::string> GetHeaderValue(
   return header;
 }
 
-}  // namespace
-
 // Returns true if the request is sent from a Google web property, i.e. from a
 // first-party context.
-//
-// The context is determined using |owner| and |resource_request|. |owner| is
-// used for subframe-initiated subresource requests from the renderer. Note that
-// for these kinds of requests, ResourceRequest::TrustedParams is not populated.
-bool IsFirstPartyContext(Owner owner,
-                         const network::ResourceRequest& resource_request) {
-  if (!resource_request.request_initiator) {
+bool IsFirstPartyContextImpl(
+    const std::optional<url::Origin>& request_initiator,
+    bool is_outermost_main_frame,
+    const net::IsolationInfo* isolation_info,
+    Owner owner) {
+  if (!request_initiator) {
     // The absence of |request_initiator| means that the request was initiated
     // by the browser, e.g. a request from the browser to Autofill upon form
     // detection.
@@ -173,8 +171,7 @@ bool IsFirstPartyContext(Owner owner,
     return true;
   }
 
-  const GURL request_initiator_url =
-      resource_request.request_initiator->GetURL();
+  const GURL request_initiator_url = request_initiator->GetURL();
   if (request_initiator_url.SchemeIs("chrome-search") ||
       request_initiator_url.SchemeIs("chrome")) {
     // A scheme matching the above patterns means that the request was
@@ -190,7 +187,7 @@ bool IsFirstPartyContext(Owner owner,
     LogRequestContextHistogram(kNonGooglePageInitiated);
     return false;
   }
-  if (resource_request.is_outermost_main_frame) {
+  if (is_outermost_main_frame) {
     // The request is from a Google-associated page--not a subframe--e.g. a
     // request from https://calendar.google.com/.
     LogRequestContextHistogram(kGooglePageInitiated);
@@ -203,10 +200,7 @@ bool IsFirstPartyContext(Owner owner,
   //
   // If TrustedParams is populated, then we can use it to determine the request
   // context. If not, e.g. for subresource requests, we use |owner|.
-  if (resource_request.trusted_params) {
-    const net::IsolationInfo* isolation_info =
-        &resource_request.trusted_params->isolation_info;
-
+  if (isolation_info) {
     if (isolation_info->IsEmpty()) {
       // TODO(crbug.com/40135370): If TrustedParams are present, it appears that
       // IsolationInfo is too. Maybe deprecate kNoIsolationInfo if this bucket
@@ -239,6 +233,37 @@ bool IsFirstPartyContext(Owner owner,
   return false;
 }
 
+}  // namespace
+
+// Returns true if the request is sent from a Google web property, i.e. from a
+// first-party context.
+//
+// The context is determined using |owner| and |resource_request|. |owner| is
+// used for subframe-initiated subresource requests from the renderer. Note that
+// for these kinds of requests, ResourceRequest::TrustedParams is not populated.
+bool IsFirstPartyContext(Owner owner,
+                         const network::ResourceRequest& resource_request) {
+  const net::IsolationInfo* isolation_info =
+      resource_request.trusted_params
+          ? &resource_request.trusted_params->isolation_info
+          : nullptr;
+  return IsFirstPartyContextImpl(resource_request.request_initiator,
+                                 resource_request.is_outermost_main_frame,
+                                 isolation_info, owner);
+}
+
+// Returns true if the request is sent from a Google web property, i.e. from a
+// first-party context.
+bool IsFirstPartyContext(const net::URLRequest* request) {
+  if (!request) {
+    return false;
+  }
+  return IsFirstPartyContextImpl(
+      request->initiator(),
+      /*is_outermost_main_frame=*/!request->initiator(),
+      &request->isolation_info(), Owner::kUnknown);
+}
+
 // If the signed-in status is unknown, SignedIn::kNo can be passed as it does
 // not affect transmission of experiments from the variations server.
 std::optional<std::string> GetVariationsHeaderValueToAppend(
@@ -254,10 +279,10 @@ std::optional<std::string> GetVariationsHeaderValueToAppend(
   //
   // Can be used only by code running in the browser process, which is where
   // the populated VariationsIdsProvider exists.
-  return GetHeaderValue(
-      VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
-          signed_in == SignedIn::kYes),
-      is_first_party_context);
+  return GetHeaderValue(VariationsIdsProvider::GetInstance()
+                            ->GetClientDataHeaders(signed_in == SignedIn::kYes)
+                            .get(),
+                        is_first_party_context);
 }
 
 bool AppendVariationsHeader(const GURL& url,
@@ -276,18 +301,49 @@ bool AppendVariationsHeader(const GURL& url,
   return false;
 }
 
+bool AppendVariationsHeader(const GURL& url,
+                            InIncognito incognito,
+                            SignedIn signed_in,
+                            net::URLRequest* request) {
+  if (auto header = GetVariationsHeaderValueToAppend(
+          url, incognito, signed_in, IsFirstPartyContext(request))) {
+    if (!request->extra_request_headers().HasHeader(kClientDataHeader)) {
+      request->SetExtraRequestHeaderByName(kClientDataHeader, *header, true);
+    }
+    return true;
+  }
+  return false;
+}
+
 bool AppendVariationsHeaderWithCustomValue(
     const GURL& url,
     InIncognito incognito,
-    variations::mojom::VariationsHeadersPtr variations_headers,
+    const variations::mojom::VariationsHeaders* variations_headers,
     Owner owner,
     network::ResourceRequest* request) {
-  if (ShouldAppendVariationsHeader(url, incognito)) {
-    if (std::optional<std::string> header_value =
-            GetHeaderValue(std::move(variations_headers),
-                           IsFirstPartyContext(owner, *request))) {
+  if (variations_headers && ShouldAppendVariationsHeader(url, incognito)) {
+    if (std::optional<std::string> header_value = GetHeaderValue(
+            variations_headers, IsFirstPartyContext(owner, *request))) {
       request->cors_exempt_headers.SetHeaderIfMissing(kClientDataHeader,
                                                       *header_value);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool AppendVariationsHeaderWithCustomValue(
+    const GURL& url,
+    InIncognito incognito,
+    const variations::mojom::VariationsHeaders* variations_headers,
+    net::URLRequest* request) {
+  if (variations_headers && ShouldAppendVariationsHeader(url, incognito)) {
+    if (std::optional<std::string> header_value =
+            GetHeaderValue(variations_headers, IsFirstPartyContext(request))) {
+      if (!request->extra_request_headers().HasHeader(kClientDataHeader)) {
+        request->SetExtraRequestHeaderByName(kClientDataHeader, *header_value,
+                                             true);
+      }
       return true;
     }
   }

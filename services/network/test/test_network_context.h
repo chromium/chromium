@@ -396,6 +396,8 @@ class TestNetworkContext : public mojom::NetworkContext {
   void AddQuicHints(
       const std::vector<url::SchemeHostPort>& origins,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}
+  void SetVariationsHeaders(
+      variations::mojom::VariationsHeadersPtr variations_headers) override {}
 };
 
 }  // namespace network

@@ -6,6 +6,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -22,6 +23,8 @@ class CertVerifierPoliciesTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment browser_task_environment_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<TestingProfile> profile_;
 };
 

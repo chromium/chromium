@@ -27,6 +27,7 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/variations/variations.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -592,6 +593,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::vector<url::SchemeHostPort>& origins,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
+  void SetVariationsHeaders(
+      variations::mojom::VariationsHeadersPtr variations_headers) override;
+
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override;
@@ -736,10 +740,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
       override;
   void OnReportAdded(const net::ReportingReport* service_report) override;
-  void OnReportUpdated(const net::ReportingReport* service_report) override;
-  void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
   void OnEndpointsUpdatedForOrigin(
       const std::vector<net::ReportingEndpoint>& endpoints) override;
+  void OnReportUpdated(const net::ReportingReport* service_report) override;
+  void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
+  void AddVariationsHeadersToReportingRequest(net::URLRequest* request);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   // Checks whether network access for the partition nonce `nonce` and url
@@ -1160,6 +1165,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // This needs to be ordered after cookie_manager_ as it maintains a reference
   // to the cookie settings object from cookie_manager_.
   std::unique_ptr<SharedResourceChecker> shared_resource_checker_;
+
+  // The variations headers to be used for the network context. These can be
+  // updated from those passed via the initial params.
+  variations::mojom::VariationsHeadersPtr variations_headers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

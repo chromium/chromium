@@ -485,7 +485,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   } else if (reporting_policy_) {
     context->set_reporting_service(
         ReportingService::Create(*reporting_policy_, context.get(),
-                                 persistent_reporting_and_nel_store_.get()));
+                                 persistent_reporting_and_nel_store_.get(),
+                                 std::move(prepare_upload_request_callback_)));
   }
 
   if (network_error_logging_enabled_) {

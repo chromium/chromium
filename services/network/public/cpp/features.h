@@ -426,6 +426,11 @@ BASE_DECLARE_FEATURE(kBypassRequestForbiddenHeadersCheck);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBlockOriginHeaderModificationOnRedirect);
 
+// If enabled, the variations headers for allowlisted domains will be included
+// in the Reporting API uploads.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kReportingApiEnableVariationsHeaders);
+
 // When enabled, NetworkContext, and all mojoms passed through it, will receive
 // IPCs directly without the intermediate I/O thread hop. This is relevant when
 // the NetworkService is run in the browser process (i.e. on Android).

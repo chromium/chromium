@@ -18,8 +18,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace content {
 
@@ -111,9 +114,27 @@ void FieldTrialSynchronizer::NotifyAllRenderersOfVariationsHeader() {
   // To iterate over RenderProcessHosts, or to send messages to the hosts, we
   // need to be on the UI thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  absl::flat_hash_set<BrowserContext*> browser_contexts;
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
-    UpdateRendererVariationsHeader(it.GetCurrentValue());
+    RenderProcessHost* host = it.GetCurrentValue();
+    UpdateRendererVariationsHeader(host);
+    if (auto* context = host->GetBrowserContext()) {
+      browser_contexts.insert(context);
+    }
+  }
+
+  // Also update the variations headers for all storage partitions, as this is
+  // needed for attaching the variations header in the reporting API requests.
+  for (BrowserContext* context : browser_contexts) {
+    variations::VariationsClient* client = context->GetVariationsClient();
+    if (!client || client->IsOffTheRecord()) {
+      continue;
+    }
+    context->ForEachLoadedStoragePartition([&](StoragePartition* partition) {
+      partition->GetNetworkContext()->SetVariationsHeaders(
+          client->GetVariationsHeaders());
+    });
   }
 }
 
