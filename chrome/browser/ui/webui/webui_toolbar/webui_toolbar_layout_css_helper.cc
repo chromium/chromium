@@ -140,14 +140,12 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--vertical-tab-min-width";
     case kVerticalTabPinnedBorderThickness:
       return "--vertical-tab-pinned-border-thickness";
-    case kVerticalTabStripUncollapsedPadding:
-      return "--vertical-tab-strip-uncollapsed-padding";
-    case kVerticalTabStripCollapsedHorizontalPadding:
-      return "--vertical-tab-strip-collapsed-horizontal-padding";
+    case kVerticalTabStripHorizontalPadding:
+      return "--vertical-tab-strip-horizontal-padding";
+    case kVerticalTabStripUncollapsedVerticalPadding:
+      return "--vertical-tab-strip-uncollapsed-vertical-padding";
     case kVerticalTabStripCollapsedVerticalPadding:
       return "--vertical-tab-strip-collapsed-vertical-padding";
-    case kVerticalTabStripCollapsedSeparatorPadding:
-      return "--vertical-tab-strip-collapsed-separator-padding";
     case kVerticalTabStripComboButtonIconSize:
       return "--vertical-tab-strip-combo-button-icon-size";
     case kVerticalTabStripButtonIconSize:

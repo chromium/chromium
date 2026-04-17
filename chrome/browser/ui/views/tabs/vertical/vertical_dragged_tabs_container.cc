@@ -189,12 +189,6 @@ void VerticalDraggedTabsContainer::InitializeDragState(
           &VerticalDraggedTabsContainer::ApplyUpdatesForDragPositionChange,
           base::Unretained(this)));
 
-  tab_strip_padding_ = GetLayoutConstant(
-      GetTabStripCollapseState() !=
-              tabs::VerticalTabStripCollapseState::kExpanded
-          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-          : LayoutConstant::kVerticalTabStripUncollapsedPadding);
-
   const auto& session_data = controller.GetSessionData();
   BuildDragLayout(session_data);
 
@@ -450,7 +444,9 @@ gfx::Rect VerticalDraggedTabsContainer::GetDraggingViewsBoundsAtPointClamped(
   CHECK(scroll_view);
   gfx::Rect clamping_bounds = views::View::ConvertRectToTarget(
       scroll_view, base::to_address(host_view_), scroll_view->GetLocalBounds());
-  clamping_bounds.set_width(clamping_bounds.width() - tab_strip_padding_);
+  clamping_bounds.set_width(
+      clamping_bounds.width() -
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding));
   bounding_box_for_point.AdjustToFit(clamping_bounds);
 
   return bounding_box_for_point;

@@ -115,10 +115,8 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
 
   // Apply horizontal padding immediately at start of collapse animation by
   // including collapsing state.
-  const int horizontal_padding = GetLayoutConstant(
-      collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
-          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-          : LayoutConstant::kVerticalTabStripUncollapsedPadding);
+  const int horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
   const std::vector<views::View*> children =
       collection_node_ ? collection_node_->GetDirectChildren()
                        : std::vector<views::View*>();

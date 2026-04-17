@@ -117,6 +117,9 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   // Because corners may be transparent, this must be set to false.
   layer()->SetFillsBoundsOpaquely(false);
 
+  const int region_horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
@@ -125,13 +128,24 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
           views::FlexSpecification(views::LayoutOrientation::kVertical,
                                    views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
+  flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
+      0, 0,
+      GetLayoutConstant(
+          LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding),
+      0));
 
   // Create child views.
   top_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripTopContainer>(
           state_controller_, root_action_item, browser_view->browser()));
+  top_button_container_->SetProperty(
+      views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
 
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
+  // The TopContainer handles the padding distance to the separator so that we
+  // can control how far it is in the various states.
+  top_button_separator_->SetProperty(
+      views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
@@ -143,6 +157,12 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded));
+  bottom_button_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(
+          GetLayoutConstant(
+              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
+          region_horizontal_padding, 0, region_horizontal_padding));
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
 
@@ -963,37 +983,7 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
                            !state_controller_->IsExpandOnHoverEnabled() ||
                            resize_area_->is_resizing());
 
-  // Immediately apply the padding at the start of the collapsing animation.
-  const int padding = GetLayoutConstant(
-      collapsed ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-                : LayoutConstant::kVerticalTabStripUncollapsedPadding);
-
-  // The TopContainer handles the padding distance to the separator so that we
-  // can control how far it is in the various states.
-  const int separator_padding =
-      collapsed
-          ? GetLayoutConstant(
-                LayoutConstant::kVerticalTabStripCollapsedSeparatorPadding)
-          : padding;
-  top_button_separator_->SetProperty(views::kMarginsKey,
-                                     gfx::Insets::VH(0, separator_padding));
-
-  top_button_container_->SetProperty(views::kMarginsKey,
-                                     gfx::Insets::VH(0, padding));
-
-  bottom_button_container_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(
-          GetLayoutConstant(
-              LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
-          padding, 0, padding));
-
   resize_area_width_ = collapsed ? kCollapsedResizeAreaWidth : kResizeAreaWidth;
-
-  flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
-      0, 0,
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripUncollapsedPadding),
-      0));
 
   if (tab_strip_view_) {
     tab_strip_view_->SetCollapsedState(collapsed);

@@ -140,14 +140,12 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 32;
     case LayoutConstant::kVerticalTabMinWidth:
       return 32;
-    case LayoutConstant::kVerticalTabStripUncollapsedPadding:
+    case LayoutConstant::kVerticalTabStripHorizontalPadding:
       return 12;
-    case LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding:
+    case LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding:
       return 12;
     case LayoutConstant::kVerticalTabStripCollapsedVerticalPadding:
       return 8;
-    case LayoutConstant::kVerticalTabStripCollapsedSeparatorPadding:
-      return 12;
     case LayoutConstant::kVerticalTabStripComboButtonIconSize:
       return 18;
     case LayoutConstant::kVerticalTabStripButtonIconSize:

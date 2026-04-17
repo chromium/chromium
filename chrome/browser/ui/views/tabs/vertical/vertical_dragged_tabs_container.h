@@ -221,7 +221,6 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   raw_ptr<TabCollectionNode> collection_node_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
-  int tab_strip_padding_;
 
   gfx::Point last_drag_point_in_screen_;
 

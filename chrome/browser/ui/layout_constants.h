@@ -217,21 +217,16 @@ enum class LayoutConstant {
   // The width of the border stroke around pinned tabs in a vertical tab strip.
   kVerticalTabPinnedBorderThickness,
 
-  // The padding between the sides/bottom of the vertical tab strip and its
-  // content when in the uncollapsed state.
-  kVerticalTabStripUncollapsedPadding,
+  // The padding between the sides of the vertical tab strip and its content.
+  kVerticalTabStripHorizontalPadding,
 
-  // The padding between the sides of the vertical tab strip and its
-  // content when in the collapsed state.
-  kVerticalTabStripCollapsedHorizontalPadding,
+  // The padding between the bottom of the vertical tab strip and its content
+  // when in the uncollapsed state.
+  kVerticalTabStripUncollapsedVerticalPadding,
 
   // The padding between the top/bottom of the vertical tab strip and its
   // content when in the collapsed state.
   kVerticalTabStripCollapsedVerticalPadding,
-
-  // The padding between the sides of the vertical tab strip and the separator
-  // in the vertical tab strip when collapsed.
-  kVerticalTabStripCollapsedSeparatorPadding,
 
   // The icon size of the combo buttons in the vertical tab strip.
   kVerticalTabStripComboButtonIconSize,

@@ -92,12 +92,9 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
 
     // Apply horizontal padding immediately at start of collapse animation by
     // including collapsing state.
-    const int region_horizontal_padding = GetLayoutConstant(
-        collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
-            ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-            : LayoutConstant::kVerticalTabStripUncollapsedPadding);
     int available_width =
-        size_bounds.width().value() - region_horizontal_padding;
+        size_bounds.width().value() -
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
 
     // When we are in collapsed state, only one child should be shown per row.
     // During collapse animation and other cases, fit as many as possible.

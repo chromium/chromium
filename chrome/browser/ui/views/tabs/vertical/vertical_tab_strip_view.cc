@@ -136,10 +136,8 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
     return layouts;
   }
 
-  const int region_horizontal_padding = GetLayoutConstant(
-      is_collapsed_
-          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-          : LayoutConstant::kVerticalTabStripUncollapsedPadding);
+  const int region_horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
 
   const int region_vertical_padding = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
@@ -207,13 +205,9 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
 
   // Place the tabs separator if visible.
   if (should_show_separator) {
-    const int separator_padding =
-        is_collapsed_
-            ? GetLayoutConstant(
-                  LayoutConstant::kVerticalTabStripCollapsedSeparatorPadding)
-            : region_horizontal_padding;
-    int separator_width = size_bounds.width().value() - 2 * separator_padding;
-    int separator_x = separator_padding;
+    int separator_width =
+        size_bounds.width().value() - 2 * region_horizontal_padding;
+    int separator_x = region_horizontal_padding;
     gfx::Rect tabs_separator_bounds(
         separator_x, y, separator_width,
         tabs_separator_->GetPreferredSize().height());

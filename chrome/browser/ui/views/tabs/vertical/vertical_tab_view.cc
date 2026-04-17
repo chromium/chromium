@@ -1156,7 +1156,7 @@ int VerticalTabView::UncollapsedMinWidth() {
   // tab strip is in the narrowest uncollapsed state.
   return (VerticalTabStripRegionView::kUncollapsedMinWidth -
           2 * GetLayoutConstant(
-                  LayoutConstant::kVerticalTabStripUncollapsedPadding) -
+                  LayoutConstant::kVerticalTabStripHorizontalPadding) -
           VerticalSplitTabView::kSplitViewGap -
           VerticalTabGroupView::kTabLeadingPadding) /
          2;
@@ -1166,7 +1166,7 @@ int VerticalTabView::UncollapsedMinWidth() {
 int VerticalTabView::CollapsedWidth() {
   return VerticalTabStripRegionView::kCollapsedWidth -
          2 * GetLayoutConstant(
-                 LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding);
+                 LayoutConstant::kVerticalTabStripHorizontalPadding);
 }
 
 bool VerticalTabView::IsInExpandOnHover(int width) const {
