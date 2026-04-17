@@ -28,6 +28,7 @@ ts_library("build_extra_ts") {
     "browser_tests/glic_api_interactive_uitest.ts",
     "browser_tests/glic_drag_and_drop_interactive_uitest.ts",
     "browser_tests/glic_focus_interactive_uitest.ts",
+    "browser_tests/minimal_client.ts",
     "api_boot.ts",
     "test_client/client.ts",
     "test_client/test_client.ts",
@@ -70,6 +71,7 @@ ts_library("build_extra_ts") {
 # Copy deps of the test client over to out_dir.
 preprocess_if_expr("move_html") {
   in_files = [
+    "browser_tests/minimal_client.html",
     "browser_tests/test.html",
     "test_client/fre.html",
     "test_client/index.html",
