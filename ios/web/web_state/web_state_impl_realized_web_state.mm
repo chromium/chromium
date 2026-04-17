@@ -296,7 +296,14 @@ void WebStateImpl::RealizedWebState::OnNavigationStarted(
 
 void WebStateImpl::RealizedWebState::OnNavigationRedirected(
     NavigationContextImpl* context) {
+  base::WeakPtr<NavigationContextImpl> weak_context = context->GetWeakPtr();
   for (auto& observer : observers()) {
+    // Observers might cancel this navigation, destroying the context. Guard
+    // against that by checking if the context is still alive.
+    if (!weak_context && base::FeatureList::IsEnabled(
+                             features::kDetectDestroyedNavigationContexts)) {
+      break;
+    }
     observer.DidRedirectNavigation(owner_, context);
   }
 }
@@ -309,12 +316,20 @@ void WebStateImpl::RealizedWebState::OnNavigationFinished(
     return;
   }
 
+  const bool same_document = context->IsSameDocument();
+  base::WeakPtr<NavigationContextImpl> weak_context = context->GetWeakPtr();
   for (auto& observer : observers()) {
+    // Observers might cancel this navigation, destroying the context. Guard
+    // against that by checking if the context is still alive.
+    if (!weak_context && base::FeatureList::IsEnabled(
+                             features::kDetectDestroyedNavigationContexts)) {
+      break;
+    }
     observer.DidFinishNavigation(owner_, context);
   }
 
   // Update cached_favicon_urls_.
-  if (!context->IsSameDocument()) {
+  if (!same_document) {
     // Favicons are not valid after document change. Favicon URLs will be
     // refetched by CRWWebController and passed to OnFaviconUrlUpdated.
     cached_favicon_urls_.clear();
