@@ -129,14 +129,6 @@ found in the LICENSE file.
             android:layout="@layout/bottom_control_container" />
 
         <ViewStub
-            android:id="@+id/bottom_app_bar_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:inflatedId="@+id/bottom_app_bar_container"
-            android:layout="@layout/bottom_control_container" />
-
-        <ViewStub
             android:id="@+id/control_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -150,6 +142,14 @@ found in the LICENSE file.
             android:layout_gravity="center"
             app:layout_anchor="@id/control_container"
             app:layout_anchorGravity="bottom"/>
+
+        <ViewStub
+            android:id="@+id/bottom_app_bar_container_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:inflatedId="@+id/bottom_app_bar_container"
+            android:layout="@layout/bottom_control_container" />
 
         <ViewStub
             android:id="@+id/contextual_tasks_fusebox_stub"
