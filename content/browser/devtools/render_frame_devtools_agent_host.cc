@@ -1014,7 +1014,6 @@ void RenderFrameDevToolsAgentHost::MainThreadDebuggerPaused() {
   url::Origin our_origin =
       url::Origin::Create(GetWebContents()->GetLastCommittedURL());
 
-  bool is_same_origin_debugger_attached_in_another_renderer = false;
   bool is_same_origin_debugger_paused_in_another_renderer = false;
   for (const auto& entry : GetAgentHostInstances()) {
     RenderFrameDevToolsAgentHost* agent_host = entry.second;
@@ -1030,17 +1029,11 @@ void RenderFrameDevToolsAgentHost::MainThreadDebuggerPaused() {
       continue;
     }
 
-    if (agent_host->IsAttached()) {
-      is_same_origin_debugger_attached_in_another_renderer = true;
-    }
     if (agent_host->is_debugger_paused_) {
       is_same_origin_debugger_paused_in_another_renderer = true;
     }
   }
 
-  base::UmaHistogramBoolean(
-      "DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer",
-      is_same_origin_debugger_attached_in_another_renderer);
   base::UmaHistogramBoolean(
       "DevTools.IsSameOriginDebuggerPausedInAnotherRenderer",
       is_same_origin_debugger_paused_in_another_renderer);

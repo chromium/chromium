@@ -286,17 +286,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer"
-    enum="Boolean" expires_after="2025-04-13">
-  <owner>bashi@google.com</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records whether a DevTools debugger is already attached in another outermost
-    renderer. Recorded at the first pause of a DevTools debugger after the
-    debugger is associated with a particular renderer channel.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.IsSameOriginDebuggerPausedInAnotherRenderer"
     enum="Boolean" expires_after="2025-04-13">
   <owner>bashi@google.com</owner>
