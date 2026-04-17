@@ -3543,6 +3543,8 @@ static_library("ui") {
   }
 
   if (toolkit_views) {
+    deps += [ "//chrome/browser/accessibility" ]
+
     sources += [
       "bubble_anchor_util.h",
       "toolbar_controller_util.cc",

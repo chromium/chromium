@@ -202,12 +202,6 @@ source_set("shell_integration") {
 static_library("browser") {
   sources = [
     "about_flags.cc",
-    "accessibility/accessibility_labels_service.cc",
-    "accessibility/accessibility_labels_service.h",
-    "accessibility/accessibility_labels_service_factory.cc",
-    "accessibility/accessibility_labels_service_factory.h",
-    "accessibility/prefers_default_scrollbar_styles_prefs.cc",
-    "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
     "bad_message.cc",
@@ -567,15 +561,6 @@ static_library("browser") {
     "webauthn/webauthn_switches.cc",
   ]
 
-  if (!is_android) {
-    sources += [
-      "accessibility/page_colors_controller.cc",
-      "accessibility/page_colors_controller.h",
-      "accessibility/page_colors_controller_factory.cc",
-      "accessibility/page_colors_controller_factory.h",
-    ]
-  }
-
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
@@ -593,6 +578,7 @@ static_library("browser") {
   # "browser_public_dependencies".
   allow_circular_includes_from = [
     "//chrome/browser/browsing_data:impl",
+    "//chrome/browser/accessibility:impl",
 
     # enterprise:impl includes headers from //chrome/browser that can't be
     # split out yet.
@@ -822,8 +808,6 @@ static_library("browser") {
 
     # TODO(crbug.com/353332589): Remove this circular dependency once
     # renderer_context_menu no longer depends on the following browser code:
-    # c/b/accessibility/accessibility_labels_service.h
-    # c/b/accessibility/accessibility_labels_service_factory.h
     # c/b/download/download_prefs.h
     # c/b/enterprise/data_protection/data_protection_clipboard_utils.h
     # c/b/language/language_model_manager_factory.h
@@ -928,7 +912,7 @@ static_library("browser") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
-    "//chrome/browser/accessibility:utils",
+    "//chrome/browser/accessibility:impl",
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/accessibility_annotator:impl",
     "//chrome/browser/accessibility_annotator/first_run",
@@ -2792,21 +2776,10 @@ static_library("browser") {
     allow_circular_includes_from += [ "//chrome/browser/payments:impl" ]
 
     sources += [
-      "accessibility/ax_main_node_annotator_controller.cc",
-      "accessibility/ax_main_node_annotator_controller.h",
-      "accessibility/ax_main_node_annotator_controller_factory.cc",
-      "accessibility/ax_main_node_annotator_controller_factory.h",
-      "accessibility/caption_bubble_context_browser.h",
-      "accessibility/embedded_a11y_extension_loader.cc",
-      "accessibility/embedded_a11y_extension_loader.h",
-      "accessibility/invert_bubble_prefs.cc",
-      "accessibility/invert_bubble_prefs.h",
       "accessibility/live_caption/live_caption_controller_factory.cc",
       "accessibility/live_caption/live_caption_controller_factory.h",
       "accessibility/live_caption/live_caption_speech_recognition_host.cc",
       "accessibility/live_caption/live_caption_speech_recognition_host.h",
-      "accessibility/live_translate_controller_factory.cc",
-      "accessibility/live_translate_controller_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
       "certificate_viewer.h",
@@ -3514,8 +3487,6 @@ static_library("browser") {
     #!is_android
     if (!is_chromeos) {
       sources += [
-        "accessibility/soda_installer_impl.cc",
-        "accessibility/soda_installer_impl.h",
         "download/bubble/download_bubble_accessible_alerts_map.cc",
         "download/bubble/download_bubble_accessible_alerts_map.h",
         "download/bubble/download_bubble_display_info.cc",
@@ -4792,8 +4763,6 @@ static_library("browser") {
       "comsuppw.lib",
     ]
     sources += [
-      "accessibility/caption_settings_dialog.h",
-      "accessibility/caption_settings_dialog_win.cc",
       "accessibility/live_caption/live_caption_unavailability_notifier.cc",
       "accessibility/live_caption/live_caption_unavailability_notifier.h",
       "chrome_browser_main_win.cc",
@@ -4922,11 +4891,8 @@ static_library("browser") {
       ]
     }
   }
-
   if (is_mac) {
     sources += [
-      "accessibility/caption_settings_dialog.h",
-      "accessibility/caption_settings_dialog_mac.cc",
       "app_controller_mac.h",
       "app_controller_mac.mm",
       "browser_process_platform_part_mac.h",
@@ -5564,8 +5530,10 @@ static_library("browser") {
 
   if (enable_extensions) {
     sources += [
-      "accessibility/animation_policy_prefs.cc",
-      "accessibility/animation_policy_prefs.h",
+      "policy/value_provider/extension_install_policies_value_provider.cc",
+      "policy/value_provider/extension_install_policies_value_provider.h",
+      "policy/value_provider/extension_policies_value_provider.cc",
+      "policy/value_provider/extension_policies_value_provider.h",
     ]
     public_deps += [
       "//chrome/browser/apps/platform_apps",
@@ -5638,8 +5606,6 @@ static_library("browser") {
 
     if (is_chromeos) {
       sources += [
-        "accessibility/accessibility_extension_api_ash.cc",
-        "accessibility/accessibility_extension_api_ash.h",
         "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",
         "supervised_user/chromeos/parent_access_extension_approvals_manager.h",
       ]

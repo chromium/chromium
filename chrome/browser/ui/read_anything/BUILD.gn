@@ -71,6 +71,7 @@ source_set("read_anything") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/accessibility",
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",
     "//chrome/browser/language",

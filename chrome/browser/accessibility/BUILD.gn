@@ -2,6 +2,250 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("accessibility") {
+  public = [
+    "accessibility_labels_service.h",
+    "accessibility_labels_service_factory.h",
+    "pdf_ocr_metrics.h",
+    "prefers_default_scrollbar_styles_prefs.h",
+  ]
+
+  if (!is_android) {
+    public += [
+      "ax_main_node_annotator_controller.h",
+      "ax_main_node_annotator_controller_factory.h",
+      "caption_bubble_context_browser.h",
+      "caption_settings_dialog.h",
+      "embedded_a11y_extension_loader.h",
+      "invert_bubble_prefs.h",
+      "live_translate_controller_factory.h",
+      "page_colors_controller.h",
+      "page_colors_controller_factory.h",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    public += [ "soda_installer_impl.h" ]
+  }
+
+  if (enable_extensions) {
+    public += [ "animation_policy_prefs.h" ]
+  }
+
+  if (enable_extensions && is_chromeos) {
+    public += [ "accessibility_extension_api_ash.h" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/image_annotation/public/mojom",
+  ]
+
+  if (!is_android && !is_chromeos) {
+    public_deps += [
+      "//components/component_updater",
+      "//components/soda",
+    ]
+  }
+
+  if (!is_android) {
+    public_deps += [
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//components/live_caption",
+      "//components/pref_registry",
+      "//ui/accessibility/platform",
+      "//ui/native_theme",
+    ]
+  }
+
+  if (is_chromeos) {
+    public_deps += [
+      "//chrome/common/extensions/api",
+      "//content/public/browser",
+      "//extensions/browser",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "accessibility_labels_service.cc",
+    "accessibility_labels_service_factory.cc",
+    "pdf_ocr_metrics.cc",
+    "prefers_default_scrollbar_styles_prefs.cc",
+  ]
+
+  deps = [ "//chrome/browser/language" ]
+
+  if (!is_android) {
+    sources += [
+      "ax_main_node_annotator_controller.cc",
+      "ax_main_node_annotator_controller_factory.cc",
+      "embedded_a11y_extension_loader.cc",
+      "invert_bubble_prefs.cc",
+      "live_translate_controller_factory.cc",
+      "page_colors_controller.cc",
+      "page_colors_controller_factory.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/on_device_translation",
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//components/live_caption:live_translate",
+      "//components/on_device_translation",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "soda_installer_impl.cc" ]
+    deps += [
+      "//chrome/browser/component_updater",
+      "//components/soda",
+      "//components/soda:constants",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "caption_settings_dialog_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "caption_settings_dialog_win.cc" ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "animation_policy_prefs.cc" ]
+  }
+
+  if (enable_extensions && is_chromeos) {
+    sources += [ "accessibility_extension_api_ash.cc" ]
+  }
+
+  public_deps = [
+    ":accessibility",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps += [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/manta",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tab_contents",
+    "//components/language/core/browser",
+    "//components/live_caption:constants",
+    "//components/manta",
+    "//components/pref_registry",
+    "//components/sync_preferences",
+    "//components/update_client",
+    "//content/public/browser",
+    "//services/image_annotation:service",
+    "//ui/accessibility",
+    "//ui/accessibility/platform",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/image_descriptions:jni_headers" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/arc/accessibility",
+      "//chrome/browser/extensions",
+      "//components/infobars/content",
+    ]
+  }
+
+  allow_circular_includes_from =
+      [ "//chrome/browser:browser_public_dependencies" ]
+  if (is_chromeos) {
+    allow_circular_includes_from += [ "//chrome/browser/ash/accessibility" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  if (is_linux || is_mac || is_win) {
+    sources += [ "soda_installer_impl_unittest.cc" ]
+  }
+  deps = [
+    ":accessibility",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+  if (is_linux || is_mac || is_win) {
+    deps += [
+      "//chrome/browser/component_updater",
+      "//components/live_caption:constants",
+      "//components/soda",
+      "//components/soda:constants",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    sources = [
+      "accessibility_labels_service_browsertest.cc",
+      "ax_main_node_annotator_controller_browsertest.cc",
+      "image_annotation_browsertest.cc",
+      "interstitial_accessibility_browsertest.cc",
+      "live_translate_controller_browsertest.cc",
+      "page_colors_controller_browsertest.cc",
+    ]
+
+    if (enable_extensions) {
+      sources += [ "embedded_a11y_extension_loader_browsertest.cc" ]
+    }
+
+    deps = [
+      ":accessibility",
+      ":impl",
+      ":test_support",
+      "//chrome/test:test_support",
+      "//components/live_caption:constants",
+      "//components/live_caption:live_translate",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//services/image_annotation/public/cpp",
+    ]
+
+    if (is_win) {
+      sources += [
+        "aria_notify_uia_browsertest_win.cc",
+        "leaked_node_detection_browsertest.cc",
+      ]
+      deps += [ "//chrome/test:uia_test_support" ]
+    }
+
+    deps += [
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//services/screen_ai/public/cpp:utilities",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ash/accessibility:test_support" ]
+    }
+  }
+}
+
 if (!is_android) {
   source_set("test_support") {
     testonly = true
@@ -15,6 +259,7 @@ if (!is_android) {
     ]
     deps = [
       "//chrome/browser:browser_process",
+      "//chrome/browser/accessibility",
       "//chrome/browser/ui",
       "//components/live_caption:constants",
       "//components/soda",
@@ -37,21 +282,5 @@ if (!is_android) {
         "//ui/accessibility",
       ]
     }
-  }
-}
-
-source_set("utils") {
-  sources = [
-    "pdf_ocr_metrics.cc",
-    "pdf_ocr_metrics.h",
-  ]
-
-  deps = [
-    "//base",
-    "//ui/accessibility/platform",
-  ]
-
-  if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/accessibility" ]
   }
 }

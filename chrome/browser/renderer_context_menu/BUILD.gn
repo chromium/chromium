@@ -94,6 +94,7 @@ source_set("impl") {
       "//chrome/browser:browser_features",
       "//chrome/browser:browser_process",
       "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/accessibility",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/autocomplete",

@@ -2581,6 +2581,8 @@ if (!is_android) {
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:primitives",
       "//chrome/browser:shell_integration",
+      "//chrome/browser/accessibility",
+      "//chrome/browser/accessibility:browser_tests",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility/phrase_segmentation:browser_tests",
       "//chrome/browser/actor:browser_tests",
@@ -3464,12 +3466,6 @@ if (!is_android) {
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
-      "../browser/accessibility/accessibility_labels_service_browsertest.cc",
-      "../browser/accessibility/ax_main_node_annotator_controller_browsertest.cc",
-      "../browser/accessibility/image_annotation_browsertest.cc",
-      "../browser/accessibility/interstitial_accessibility_browsertest.cc",
-      "../browser/accessibility/live_translate_controller_browsertest.cc",
-      "../browser/accessibility/page_colors_controller_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
       "../browser/battery/battery_metrics_browsertest.cc",
       "../browser/browser_encoding_browsertest.cc",
@@ -4654,7 +4650,6 @@ if (!is_android) {
       sources += [
         "../../apps/app_restore_service_browsertest.cc",
         "../../apps/load_and_launch_browsertest.cc",
-        "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
         "../browser/apps/guest_view/app_view_browsertest.cc",
         "../browser/apps/guest_view/web_view_browsertest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
@@ -6977,6 +6972,7 @@ test("unit_tests") {
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser:primitives",
+    "//chrome/browser/accessibility:unit_tests",
     "//chrome/browser/accessibility_annotator:unit_tests",
     "//chrome/browser/actor:unit_tests",
     "//chrome/browser/actor/ui:unit_tests",
@@ -10274,7 +10270,6 @@ test("unit_tests") {
 
   if (is_linux || is_mac || is_win) {
     sources += [
-      "../browser/accessibility/soda_installer_impl_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/device_attester_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/profile_attester_unittest.cc",
@@ -10783,6 +10778,7 @@ test("unit_tests") {
     }
     if (is_linux || is_win || is_mac) {
       sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc" ]
+      deps += [ "//chrome/browser/accessibility" ]
     }
     if (use_aura) {
       sources += [
@@ -11365,6 +11361,22 @@ if (!is_android) {
         ]
       }
     }
+  }
+}
+
+# Windows-only test support for UIA accessibility events.
+if (is_win) {
+  source_set("uia_test_support") {
+    testonly = true
+    sources = [
+      "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
+      "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
+    ]
+    deps = [
+      "//base",
+      "//ui/accessibility",
+      "//ui/views",
+    ]
   }
 }
 
@@ -12214,7 +12226,6 @@ if (!is_android && !is_chromeos_device) {
       }
       if (is_win) {
         sources += [
-          "../browser/accessibility/leaked_node_detection_browsertest.cc",
           "../browser/ui/views/accessibility/post_install_announcement_browsertest.cc",
           "../browser/ui/views/frame/browser_window_property_manager_browsertest_win.cc",
           "../browser/ui/views/status_icons/status_tray_state_changer_interactive_uitest_win.cc",
@@ -12281,21 +12292,17 @@ if (!is_android && !is_chromeos_device) {
         "../browser/notifications/win/fake_itoastnotifier.h",
         "../browser/ui/send_mouse_move_uitest_win.cc",
         "../browser/ui/views/accessibility/navigation_accessibility_uitest_win.cc",
-        "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
-        "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
         "//ui/base/clipboard/clipboard_win_unittest.cc",
         "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
       ]
 
       if (use_aura) {
-        sources += [
-          "../browser/accessibility/aria_notify_uia_browsertest_win.cc",
-          "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc",
-        ]
+        sources += [ "../browser/ui/views/autofill/autofill_accessibility_win_browsertest.cc" ]
       }
 
       deps += [
+        ":uia_test_support",
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
         "//chrome/browser/os_crypt",

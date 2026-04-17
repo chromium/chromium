@@ -62,6 +62,7 @@ source_set("impl") {
     ":util",
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
+    "//chrome/browser/accessibility",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/background/glic",
     "//chrome/browser/component_updater",
@@ -447,6 +448,7 @@ source_set("util_impl") {
   deps = [
     ":util",
     "//base",
+    "//chrome/browser/accessibility",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/startup:startup_tab",

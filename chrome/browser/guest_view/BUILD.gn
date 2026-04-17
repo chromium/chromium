@@ -61,7 +61,7 @@ source_set("impl") {
   deps = [
     ":guest_view",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/accessibility:utils",
+    "//chrome/browser/accessibility:impl",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/renderer_context_menu",

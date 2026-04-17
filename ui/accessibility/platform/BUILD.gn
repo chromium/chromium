@@ -32,7 +32,7 @@ component("platform") {
   defines = [ "IS_AX_PLATFORM_IMPL" ]
 
   visibility = [
-    "//chrome/browser/accessibility:utils",
+    "//chrome/browser/accessibility:*",
     "//chrome/browser/ui/webui/accessibility",
     "//ui/accessibility",
     "//ui/views",
