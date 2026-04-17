@@ -7,7 +7,6 @@
 
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
 #include "components/viz/service/viz_service_export.h"
-#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,10 +47,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojoMac
   void NeedsBeginFrameWithId(int64_t display_id, bool needs_begin_frames);
 
  private:
-  using Receiver = mojo::Receiver<mojom::ExternalBeginFrameController>;
-  using DirectReceiver =
-      mojo::DirectReceiver<mojom::ExternalBeginFrameController>;
-  std::variant<Receiver, DirectReceiver> receiver_;
+  mojo::Receiver<mojom::ExternalBeginFrameController> receiver_;
 
   mojo::Remote<mojom::ExternalBeginFrameControllerClient> remote_client_;
 

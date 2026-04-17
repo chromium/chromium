@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/display/mac/vsync_provider_mac.h"
 
 namespace viz {
@@ -20,19 +18,12 @@ ExternalBeginFrameSourceMojoMac::ExternalBeginFrameSourceMojoMac(
     mojo::PendingRemote<mojom::ExternalBeginFrameControllerClient>
         controller_remote_client,
     base::RepeatingClosure update_vsync_displays_cb)
-    : receiver_(std::in_place_type<Receiver>, this),
+    : receiver_(this),
       remote_client_(std::move(controller_remote_client)),
       update_vsync_displays_cb_(std::move(update_vsync_displays_cb)) {
   CHECK(remote_client_);
 
-  if (mojo::IsDirectReceiverSupported() &&
-      features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled()) {
-    receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
-  }
-
-  std::visit(
-      [&](auto& receiver) { receiver.Bind(std::move(controller_receiver)); },
-      receiver_);
+  receiver_.Bind(std::move(controller_receiver));
 
   ui::NeedsBeginFrameCB callback = base::BindRepeating(
       &ExternalBeginFrameSourceMojoMac::NeedsBeginFrameWithId,
