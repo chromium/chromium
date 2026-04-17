@@ -33,7 +33,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -48,33 +48,25 @@ class PLATFORM_EXPORT AudioChannel final {
   // Memory can be externally referenced, or can be internally allocated with an
   // AudioFloatArray.
 
-  // Reference an external buffer.
-  AudioChannel(float* storage, uint32_t length)
-      : length_(length), raw_pointer_(storage), silent_(false) {}
-
   // Manage storage for us.
-  explicit AudioChannel(uint32_t length)
-      : length_(0), raw_pointer_(nullptr), silent_(true) {
+  explicit AudioChannel(uint32_t length) : silent_(true) {
     CHECK(TryAllocate(length));
   }
 
   // A "blank" audio channel -- must call Set() before it's useful...
-  AudioChannel() : length_(0), raw_pointer_(nullptr), silent_(true) {}
+  AudioChannel() : silent_(true) {}
 
   // Methods for internal allocation.
   bool TryAllocate(uint32_t length);
 
-  // Redefine the memory for this channel. |storage| represents external memory
-  // not managed by this object.
-  void Set(float* storage, uint32_t length) {
+  void Set(base::span<float> storage, uint32_t length) {
     mem_buffer_.reset();  // cleanup managed storage
-    raw_pointer_ = storage;
-    length_ = length;
+    data_span_ = storage.first(length);
     silent_ = false;
   }
 
   // How many sample-frames do we contain?
-  uint32_t length() const { return length_; }
+  uint32_t length() const { return data_span_.size(); }
 
   // ResizeSmaller() can only be called with a new length <= the current length.
   // The data stored in the bus will remain undisturbed.
@@ -83,31 +75,17 @@ class PLATFORM_EXPORT AudioChannel final {
   // Direct access to PCM sample data. Non-const accessor clears silent flag.
   float* MutableData() {
     ClearSilentFlag();
-    return raw_pointer_ ? raw_pointer_.get() : mem_buffer_->Data();
+    return data_span_.data();
   }
 
-  const float* Data() const {
-    return raw_pointer_ ? raw_pointer_.get() : mem_buffer_->Data();
-  }
+  const float* Data() const { return data_span_.data(); }
 
-  // Span-based access to PCM sample data. Non-const accessor clears silent
-  // flag.
   base::span<float> MutableSpan() {
     ClearSilentFlag();
-    if (mem_buffer_) {
-      return mem_buffer_->as_span();
-    }
-    // TODO(crbug.com/375449662): Spanify `raw_pointer_`.
-    return UNSAFE_TODO(base::span<float>(raw_pointer_.get(), length_));
+    return data_span_;
   }
 
-  base::span<const float> Span() const {
-    if (mem_buffer_) {
-      return mem_buffer_->as_span();
-    }
-    // TODO(crbug.com/375449662): Spanify `raw_pointer_`.
-    return UNSAFE_TODO(base::span<const float>(raw_pointer_.get(), length_));
-  }
+  base::span<const float> Span() const { return data_span_; }
 
   // Zeroes out all sample values in buffer.
   void Zero() {
@@ -142,10 +120,8 @@ class PLATFORM_EXPORT AudioChannel final {
   float MaxAbsValue() const;
 
  private:
-  uint32_t length_;
-
-  raw_ptr<float> raw_pointer_;
   std::unique_ptr<AudioFloatArray> mem_buffer_;
+  base::raw_span<float> data_span_;
   bool silent_;
 };
 

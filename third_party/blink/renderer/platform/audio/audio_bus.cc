@@ -92,7 +92,7 @@ AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
     if (allocate) {
       channels_.emplace_back(length);
     } else {
-      channels_.emplace_back(nullptr, length);
+      channels_.emplace_back();
     }
   }
 
@@ -103,8 +103,16 @@ void AudioBus::SetChannelMemory(unsigned channel_index,
                                 float* storage,
                                 uint32_t length) {
   if (channel_index < channels_.size()) {
+    SetChannelMemory(channel_index,
+                     UNSAFE_TODO(base::span<float>(storage, length)), length);
+  }
+}
+
+void AudioBus::SetChannelMemory(unsigned channel_index,
+                                base::span<float> storage,
+                                uint32_t length) {
+  if (channel_index < channels_.size()) {
     Channel(channel_index)->Set(storage, length);
-    // FIXME: verify that this length matches all the other channel lengths
     length_ = length;
   }
 }

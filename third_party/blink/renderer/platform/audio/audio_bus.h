@@ -86,8 +86,13 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   AudioBus& operator=(const AudioBus&) = delete;
 
   // Tells the given channel to use an externally allocated buffer.
+  // Note: SetChannelMemory must be called on all channels in the bus with the
+  // new length if the length is to be changed.
   void SetChannelMemory(unsigned channel_index,
                         float* storage,
+                        uint32_t length);
+  void SetChannelMemory(unsigned channel_index,
+                        base::span<float> storage,
                         uint32_t length);
 
   // Channels

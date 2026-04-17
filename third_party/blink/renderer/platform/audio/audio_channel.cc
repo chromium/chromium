@@ -41,17 +41,17 @@ bool AudioChannel::TryAllocate(uint32_t length) {
     mem_buffer_ = std::make_unique<AudioFloatArray>();
   }
   if (!mem_buffer_->TryAllocate(length)) {
-    length_ = 0;
+    data_span_ = base::span<float>();
     return false;
   }
-  length_ = length;
+  data_span_ = mem_buffer_->as_span();
   silent_ = true;
   return true;
 }
 
 void AudioChannel::ResizeSmaller(uint32_t new_length) {
-  DCHECK_LE(new_length, length_);
-  length_ = new_length;
+  DCHECK_LE(new_length, data_span_.size());
+  data_span_ = data_span_.first(new_length);
 }
 
 void AudioChannel::Scale(float scale) {
