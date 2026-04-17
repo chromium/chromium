@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.util.MotionEventUtils;
 
 /** Helper class to handle the custom drag and drop interaction logic for toolbar actions. */
@@ -78,7 +79,8 @@ public class ExtensionActionDragHelper implements View.OnAttachStateChangeListen
 
             return true;
         } else if (action == MotionEvent.ACTION_MOVE) {
-            if (mIsLongPressTriggered) {
+            if (!MotionEventUtils.isPointerEvent(event) && !mIsLongPressTriggered) {
+                // We require longpress to start drag with touch.
                 return false;
             }
 
@@ -87,6 +89,10 @@ public class ExtensionActionDragHelper implements View.OnAttachStateChangeListen
 
             if (deltaX > mTouchSlop || deltaY > mTouchSlop) {
                 cleanupTimer();
+
+                // If the user starts moving the finger, the context menu that was opened with the
+                // initial longpress should be dismissed.
+                ((ListMenuButton) v).dismiss();
                 v.setPressed(false);
                 mItemTouchHelper.startDrag(mViewHolder);
             }

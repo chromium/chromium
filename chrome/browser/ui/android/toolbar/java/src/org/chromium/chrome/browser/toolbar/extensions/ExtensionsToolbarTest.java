@@ -23,9 +23,11 @@ import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
+import android.app.Instrumentation;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
@@ -732,6 +734,49 @@ public class ExtensionsToolbarTest {
                 .check(matches(isDisplayed()));
     }
 
+    /**
+     * Util method to simulate drag on an action.
+     *
+     * @param iconView The View of the action.
+     * @param offset How much the action should be dragged horizontally. Positive value indicates
+     *     rightward drag.
+     * @param longpress Whether the drag should start with a longpress.
+     */
+    private void performDrag(View iconView, int offset, boolean longpress) {
+        int width = iconView.getWidth();
+        int height = iconView.getHeight();
+
+        // We need to drag a bit further than our intended final position for the items to swap.
+        int dragOverrun = (offset == 0) ? 0 : (width / 3 * (offset < 0 ? -1 : 1));
+
+        int fromX = width / 2;
+        int fromY = height / 2;
+        int toX = width / 2 + offset + dragOverrun;
+        int toY = height / 2;
+
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+
+        int[] fromLocation = TestTouchUtils.getAbsoluteLocationFromRelative(iconView, fromX, fromY);
+        int[] toLocation = TestTouchUtils.getAbsoluteLocationFromRelative(iconView, toX, toY);
+
+        long downTime = TestTouchUtils.dragStart(instrumentation, fromLocation[0], fromLocation[1]);
+
+        if (longpress) {
+            SystemClock.sleep((long) (ViewConfiguration.getLongPressTimeout() * 1.5));
+        }
+
+        TestTouchUtils.dragTo(
+                instrumentation,
+                fromLocation[0],
+                toLocation[0],
+                fromLocation[1],
+                toLocation[1],
+                /* stepCount= */ 5,
+                downTime);
+
+        TestTouchUtils.dragEnd(instrumentation, toLocation[0], toLocation[1], downTime);
+    }
+
     @Test
     @LargeTest
     public void testDragReorderExtensions() throws IOException {
@@ -777,21 +822,8 @@ public class ExtensionsToolbarTest {
                 new String[] {alphaId, betaId, gammaId},
                 ExtensionTestUtils.getPinnedActionIds(mProfile));
 
-        int iconWidth = alphaIcon.getWidth();
-        int iconHeight = alphaIcon.getHeight();
-
-        // We need to drag a bit further than our intended final position for the items to swap.
-        int dragOverrun = iconWidth / 3;
-
         // Drag [A] to the position of [B].
-        TestTouchUtils.dragCompleteView(
-                InstrumentationRegistry.getInstrumentation(),
-                alphaIcon,
-                iconWidth / 2,
-                iconWidth / 2 + (int) (betaIcon.getX() - alphaIcon.getX()) + dragOverrun,
-                iconHeight / 2,
-                iconHeight / 2,
-                /* stepCount= */ 5);
+        performDrag(alphaIcon, (int) (betaIcon.getX() - alphaIcon.getX()), /* longpress= */ true);
 
         // The order now should be [B] [A] [G].
         onView(withContentDescription("Beta Action"))
@@ -804,14 +836,7 @@ public class ExtensionsToolbarTest {
                 ExtensionTestUtils.getPinnedActionIds(mProfile));
 
         // Drag [G] to the position of [B].
-        TestTouchUtils.dragCompleteView(
-                InstrumentationRegistry.getInstrumentation(),
-                gammaIcon,
-                iconWidth / 2,
-                iconWidth / 2 - (int) (gammaIcon.getX() - betaIcon.getX()) - dragOverrun,
-                iconHeight / 2,
-                iconHeight / 2,
-                /* stepCount= */ 5);
+        performDrag(gammaIcon, (int) (betaIcon.getX() - gammaIcon.getX()), /* longpress= */ true);
 
         // The order now should be [G] [B] [A].
         onView(withContentDescription("Gamma Action"))
@@ -821,6 +846,54 @@ public class ExtensionsToolbarTest {
         assertArrayEquals(
                 "The data order should match Views.",
                 new String[] {gammaId, betaId, alphaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+    }
+
+    @Test
+    @LargeTest
+    public void testInstantDragWithTouchDoesNotReorder() throws IOException {
+        String alphaId = loadBasicExtension("alpha", "Alpha Extension", "Alpha Action");
+        String betaId = loadBasicExtension("beta", "Beta Extension", "Beta Action");
+
+        // Pin both extensions.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
+                .check(matches(isDisplayed()));
+
+        View root =
+                mActivityTestRule
+                        .getActivity()
+                        .getWindow()
+                        .getDecorView()
+                        .findViewById(android.R.id.content);
+
+        View alphaIcon =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> findViewWithContentDescription(root, "Alpha Action"));
+        View betaIcon =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> findViewWithContentDescription(root, "Beta Action"));
+
+        // The order should be [A] [B].
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Beta Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {alphaId, betaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+
+        // Try to drag [A] to the position of [B] but without longpress.
+        performDrag(alphaIcon, (int) (betaIcon.getX() - alphaIcon.getX()), /* longpress= */ false);
+
+        // Confirm that the order has not changed.
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Beta Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {alphaId, betaId},
                 ExtensionTestUtils.getPinnedActionIds(mProfile));
     }
 
