@@ -203,7 +203,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   UniqueFontSelector* GetFontSelector() override;
 
-  bool ShouldBeDirectComposited() const;
+  bool ShouldSkipPaintInvalidation() const;
 
   const AtomicString ImageSourceURL() const override;
 

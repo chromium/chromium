@@ -99,7 +99,7 @@ void LayoutHTMLCanvas::InvalidatePaint(
   auto* element = To<HTMLCanvasElement>(GetNode());
   if (element->IsDirty()) {
     if (element->DoDeferredPaintInvalidation() &&
-        !element->ShouldBeDirectComposited()) {
+        !element->ShouldSkipPaintInvalidation()) {
       GetMutableForPainting().SetShouldDoFullPaintInvalidation(
           PaintInvalidationReason::kLayout);
     }

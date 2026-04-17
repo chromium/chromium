@@ -693,7 +693,11 @@ void HTMLCanvasElement::configureHighDynamicRange(
   }
 }
 
-bool HTMLCanvasElement::ShouldBeDirectComposited() const {
+bool HTMLCanvasElement::ShouldSkipPaintInvalidation() const {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
+      IsInCanvasSubtree()) {
+    return false;
+  }
   return (context_ && context_->IsComposited()) || (!!surface_layer_bridge_);
 }
 
