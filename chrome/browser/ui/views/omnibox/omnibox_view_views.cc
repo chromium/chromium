@@ -621,6 +621,13 @@ IconLabelBubbleView* OmniboxViewViews::GetAiModePageActionIconView() const {
 }
 
 void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
+  // Early exit to prevent redundant invalidations (e.g., SchedulePaint).
+  // BrowserView::OnWidgetMove() unconditionally attempts to close the omnibox
+  // popup during window drags, which calls this method repeatedly.
+  if (aim_page_action_icon_has_fake_focus_ == force_focus) {
+    return;
+  }
+
   IconLabelBubbleView* icon_view = GetAiModePageActionIconView();
   if (!icon_view) {
     return;
