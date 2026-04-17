@@ -13,4 +13,4 @@ settings preference entry. -->
     android:layout_width="24dp"
     android:layout_height="24dp"
     app:srcCompat="@drawable/google_wallet_24dp"
-    android:contentDescription="@string/settings_remote_wallet_passes_link_label" />
+    android:contentDescription="@string/autofill_ai_entity_stored_in_google_wallet_accessibility_label" />

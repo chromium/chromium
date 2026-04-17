@@ -1419,6 +1419,9 @@
     <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL" desc="The confirmation button text of the dialog shown when an entity (like passport, driver's license, etc) fails to be saved to Google Wallet." formatter_data="android_java">
       Got it
     </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_STORED_IN_GOOGLE_WALLET_ACCESSIBILITY_LABEL" desc="The accessibility label used for entities listed in settings that are stored in Google Wallet." formatter_data="android_java">
+      Stored in Google Wallet
+    </message>
   </if>
 
   <!-- Entity editor strings used on Android -->
@@ -1501,10 +1504,6 @@
       Chromium can autofill difficult fields that standard autofill might miss
     </message>
   </if>
-  <!-- TODO: crbug.com/499300722 - Move the string back to /chrome/app/settings_strings.grdp after Android-specific string is added. -->
-  <message name="IDS_SETTINGS_REMOTE_WALLET_PASSES_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in Chrome settings that opens the payment methods settings on https://wallet.google.com/wallet/passes or the Google Wallet icon used for entities stored in Google Wallet in Android settings. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb." formatter_data="android_java">
-    Your Google Wallet passes
-  </message>
 
   <message name="IDS_AUTOFILL_WALLET_DATA_SHARING_PROMO_TITLE" desc="Title of the promo that encourages users to allow Wallet to share data with Chrome." formatter_data="android_java">
     Allow Wallet to share data
