@@ -2688,7 +2688,8 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   ASSERT_TRUE(restore_key_callback);
   // Call the callback, and the test should not crash even though the request
   // was cleaned up.
-  std::move(restore_key_callback).Run(unexportable_keys::UnexportableKeyId());
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
 }
 
 TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {

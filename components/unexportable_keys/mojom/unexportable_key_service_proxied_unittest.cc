@@ -273,15 +273,15 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateKeyCollision) {
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeySuccess) {
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
   std::vector<uint8_t> wrapped_key = {0x11, 0x22, 0x33};
 
   proxied_service_.FromWrappedSigningKeySlowlyAsync(
       wrapped_key, BackgroundTaskPriority::kUserVisible, future.GetCallback());
 
-  const ServiceErrorOr<UnexportableKeyId>& result = future.Get();
+  const ServiceErrorOr<UnexportableSigningKeyId>& result = future.Get();
   ASSERT_TRUE(result.has_value());
-  UnexportableKeyId key_id = result.value();
+  UnexportableSigningKeyId key_id = result.value();
 
   EXPECT_THAT(proxied_service_.GetSubjectPublicKeyInfo(key_id),
               ValueIs(ElementsAreArray(kTestSubjectPublicKeyInfo)));
@@ -323,7 +323,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyAlreadyCached) {
 
   fake_service_.SetFromWrappedResponse(std::move(new_key_data));
 
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> from_wrapped_future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+      from_wrapped_future;
   std::vector<uint8_t> wrapped_key = {0xaa, 0xbb};
   proxied_service_.FromWrappedSigningKeySlowlyAsync(
       wrapped_key, BackgroundTaskPriority::kUserVisible,
@@ -343,7 +344,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyError) {
   fake_service_.SetFromWrappedResponse(
       base::unexpected(ServiceError::kKeyNotFound));
 
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
   std::vector<uint8_t> wrapped_key = {0x11, 0x22, 0x33};
   proxied_service_.FromWrappedSigningKeySlowlyAsync(
       wrapped_key, BackgroundTaskPriority::kUserVisible, future.GetCallback());
@@ -562,7 +563,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyCancelled) {
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyCancelled) {
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
   std::vector<uint8_t> wrapped_key = {0x11, 0x22, 0x33};
 
   proxied_service_.FromWrappedSigningKeySlowlyAsync(

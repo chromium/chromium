@@ -15,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "base/types/expected.h"
-#include "base/unguessable_token.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
@@ -252,9 +251,7 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeySuccess) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const base::UnguessableToken unguessable_token =
-      base::UnguessableToken::Create();
-  UnexportableKeyId key_id(unguessable_token);
+  UnexportableSigningKeyId key_id;
 
   const std::vector<uint8_t> test_wrapped_key = {0xAA, 0xBB, 0xCC};
   const crypto::SignatureVerifier::SignatureAlgorithm algo =
@@ -295,9 +292,7 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyGetAlgorithmError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const base::UnguessableToken unguessable_token =
-      base::UnguessableToken::Create();
-  UnexportableKeyId key_id(unguessable_token);
+  UnexportableSigningKeyId key_id;
   const std::vector<uint8_t> test_wrapped_key = {0x01, 0x02};
 
   EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync)
@@ -328,9 +323,7 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyGetWrappedKeyError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const base::UnguessableToken unguessable_token =
-      base::UnguessableToken::Create();
-  UnexportableKeyId key_id(unguessable_token);
+  UnexportableSigningKeyId key_id;
   const std::vector<uint8_t> test_wrapped_key = {0x01, 0x02};
 
   EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync)
@@ -364,9 +357,7 @@ TEST(UnexportableKeyServiceProxyTest,
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const base::UnguessableToken unguessable_token =
-      base::UnguessableToken::Create();
-  UnexportableKeyId key_id(unguessable_token);
+  UnexportableSigningKeyId key_id;
   const std::vector<uint8_t> test_wrapped_key = {0x01, 0x02};
 
   EXPECT_CALL(mock_uks, FromWrappedSigningKeySlowlyAsync)

@@ -321,14 +321,14 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const SchemefulSite& site,
       SessionParams params,
       base::OnceCallback<void(SessionError::ErrorType)> callback,
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_or_error);
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableSigningKeyId> key_or_error);
 
   base::expected<std::unique_ptr<Session>, SessionError::ErrorType>
   CreateSessionFromUnexportableKey(
       SessionParams params,
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_or_error);
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableSigningKeyId> key_or_error);
 
   // If `minimum_cookie_lifetime` is small enough and there are no
   // pending refreshes for `session_key`, start a proactive refresh.

@@ -337,8 +337,8 @@ void SessionStoreImpl::RestoreSessionBindingKey(
 
 void SessionStoreImpl::OnSessionBindingKeyRestored(
     const SessionKey& session_key,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        key_or_error) {
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId> key_or_error) {
   auto it = restore_callbacks_.find(session_key);
   if (it == restore_callbacks_.end()) {
     return;

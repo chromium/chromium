@@ -892,8 +892,8 @@ void SessionServiceImpl::SetLatestSignedRefreshChallenge(
 base::expected<std::unique_ptr<Session>, SessionError::ErrorType>
 SessionServiceImpl::CreateSessionFromUnexportableKey(
     SessionParams params,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        key_or_error) {
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId> key_or_error) {
   if (!key_or_error.has_value()) {
     return base::unexpected(SessionError::kFailedToUnwrapKey);
   }
@@ -912,8 +912,8 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
     const SchemefulSite& site,
     SessionParams params,
     base::OnceCallback<void(SessionError::ErrorType)> callback,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        key_or_error) {
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId> key_or_error) {
   base::expected<std::unique_ptr<Session>, SessionError::ErrorType>
       session_or_error = CreateSessionFromUnexportableKey(
           std::move(params), std::move(key_or_error));

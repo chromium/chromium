@@ -78,17 +78,8 @@ void UnexportableKeyLoader::LoadFromWrappedKey(
   state_ = State::kLoading;
   unexportable_key_service.FromWrappedSigningKeySlowlyAsync(
       wrapped_key, priority,
-      // TODO(b/501307307): Simplify this once FromWrappedSigningKey also
-      // returns the more specific key id.
-      base::BindOnce(
-          [](base::WeakPtr<UnexportableKeyLoader> loader,
-             ServiceErrorOr<UnexportableKeyId> result) {
-            if (loader) {
-              loader->OnKeyLoaded(
-                  ServiceErrorOr<UnexportableSigningKeyId>(result));
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&UnexportableKeyLoader::OnKeyLoaded,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 void UnexportableKeyLoader::GenerateNewKey(
     UnexportableKeyService& unexportable_key_service,

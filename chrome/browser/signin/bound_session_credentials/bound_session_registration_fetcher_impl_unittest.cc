@@ -270,7 +270,8 @@ TEST_F(BoundSessionRegistrationFetcherImplTest, ValidInput) {
 
   // Verify the wrapped key.
   std::string wrapped_key = future.Get<>()->wrapped_key();
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>
+  base::test::TestFuture<
+      ServiceErrorOr<unexportable_keys::UnexportableSigningKeyId>>
       wrapped_key_to_key_id;
   unexportable_key_service().FromWrappedSigningKeySlowlyAsync(
       base::as_byte_span(wrapped_key),

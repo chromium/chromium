@@ -107,20 +107,21 @@ void UnexportableKeyServiceProxied::OnSigningKeyGenerated(
 void UnexportableKeyServiceProxied::FromWrappedSigningKeySlowlyAsync(
     base::span<const uint8_t> wrapped_key,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
+    base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
+        callback) {
   remote_->FromWrappedSigningKey(
       base::ToVector(wrapped_key), priority,
       // remote_ will not call any pending callbacks after it is destroyed.
       // Since we own remote_, it is guaranteed that this will be alive when a
       // callback is called.
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&UnexportableKeyServiceProxied::OnKeyLoaded,
+          base::BindOnce(&UnexportableKeyServiceProxied::OnSigningKeyLoaded,
                          base::Unretained(this), std::move(callback)),
           base::unexpected(ServiceError::kOperationCancelled)));
 }
 
-void UnexportableKeyServiceProxied::OnKeyLoaded(
-    base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)>
+void UnexportableKeyServiceProxied::OnSigningKeyLoaded(
+    base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
         original_callback,
     ServiceErrorOr<mojom::NewKeyDataPtr> result) {
   if (!result.has_value()) {
@@ -132,7 +133,7 @@ void UnexportableKeyServiceProxied::OnKeyLoaded(
   UnexportableKeyId key_id(new_key_data->key_id);
 
   key_cache_.try_emplace(key_id, new_key_data);
-  std::move(original_callback).Run(key_id);
+  std::move(original_callback).Run(UnexportableSigningKeyId(key_id));
 }
 
 void UnexportableKeyServiceProxied::SignSlowlyAsync(
