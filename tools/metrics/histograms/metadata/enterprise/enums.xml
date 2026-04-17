@@ -26,6 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidEntraSsoFailureReason">
+  <int value="0" label="Unexpected error"/>
+  <int value="1" label="Signature verification failed"/>
+  <int value="2" label="Invalid bundle format"/>
+  <int value="3" label="No bundle result"/>
+  <int value="4" label="Bundle result contains entra-specific error"/>
+  <int value="5" label="Bundle result contains os-specific error"/>
+  <int value="6" label="Unexpected package provider"/>
+  <int value="7" label="Debug package provider without commandline flag"/>
+  <int value="8" label="Timeout when requesting bundle"/>
+  <int value="9" label="JSON parsing failed"/>
+  <int value="10" label="All headers were skipped"/>
+</enum>
+
+<enum name="AndroidEntraSsoResult">
+  <int value="0" label="Success with auth headers attached"/>
+  <int value="1" label="Success without auth headers"/>
+  <int value="2" label="No auth broker found"/>
+  <int value="3" label="Failure"/>
+</enum>
+
 <enum name="BooleanWarned">
   <int value="0" label="Not Warned"/>
   <int value="1" label="Warned"/>

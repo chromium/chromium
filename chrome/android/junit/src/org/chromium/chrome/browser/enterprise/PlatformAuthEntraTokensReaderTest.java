@@ -40,7 +40,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android.TokenReadResult;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android.Status;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -124,7 +126,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.NO_BROKER_REGISTERED), anyString());
+        verify(mCallback).onResult(eq(Status.NO_BROKER_REGISTERED), anyString());
     }
 
     @Test
@@ -133,7 +135,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.UNEXPECTED_PACKAGE_PROVIDER), anyString());
+        verify(mCallback).onResult(eq(Status.UNEXPECTED_PACKAGE_PROVIDER), anyString());
     }
 
     @Test
@@ -142,7 +144,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.SIGNATURE_VERIFICATION_FAILED), anyString());
+        verify(mCallback).onResult(eq(Status.SIGNATURE_VERIFICATION_FAILED), anyString());
     }
 
     @Test
@@ -153,7 +155,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.UNEXPECTED_ERROR), anyString());
+        verify(mCallback).onResult(eq(Status.UNEXPECTED_ERROR), anyString());
     }
 
     @Test
@@ -173,7 +175,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(TokenReadResult.OK, TEST_HEADERS);
+        verify(mCallback).onResult(eq(Status.OK), eq(TEST_HEADERS));
     }
 
     @Test
@@ -190,7 +192,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.NO_BUNDLE_RESULT), anyString());
+        verify(mCallback).onResult(eq(Status.NO_BUNDLE_RESULT), anyString());
     }
 
     @Test
@@ -208,7 +210,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.INVALID_BUNDLE_FORMAT), anyString());
+        verify(mCallback).onResult(eq(Status.INVALID_BUNDLE_FORMAT), anyString());
     }
 
     @Test
@@ -226,7 +228,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.UNEXPECTED_ERROR), anyString());
+        verify(mCallback).onResult(eq(Status.UNEXPECTED_ERROR), anyString());
     }
 
     @Test
@@ -247,8 +249,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback)
-                .onResult(eq(TokenReadResult.BUNDLE_RESULT_CONTAINS_ENTRA_ERROR), anyString());
+        verify(mCallback).onResult(eq(Status.BUNDLE_RESULT_CONTAINS_ENTRA_ERROR), anyString());
     }
 
     @Test
@@ -269,8 +270,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback)
-                .onResult(eq(TokenReadResult.BUNDLE_RESULT_CONTAINS_OS_ERROR), anyString());
+        verify(mCallback).onResult(eq(Status.BUNDLE_RESULT_CONTAINS_OS_ERROR), anyString());
     }
 
     @Test
@@ -288,7 +288,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.UNEXPECTED_ERROR), anyString());
+        verify(mCallback).onResult(eq(Status.UNEXPECTED_ERROR), anyString());
     }
 
     @Test
@@ -306,7 +306,45 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.UNEXPECTED_ERROR), anyString());
+        verify(mCallback).onResult(eq(Status.TIMEOUT), anyString());
+    }
+
+    @Test
+    public void testReadTokens_debugProvider_withoutFlag_blocked() throws Exception {
+        // Setup a debug-only package (exists in DEBUG_PROVIDERS, but not TRUSTED_PROVIDERS)
+        setupBroker("com.microsoft.mockauthapp");
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        // Without the CLI flag, expectedSignature is null, but we recognize the package
+        // as a debug provider, so it gets explicitly blocked.
+        verify(mCallback).onResult(eq(Status.DISALLOWED_DEBUG_PACKAGE_PROVIDER), anyString());
+    }
+
+    @Test
+    @CommandLineFlags.Add(ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS)
+    public void testReadTokens_debugProvider_withFlag_success() throws Exception {
+        // Setup a debug-only package
+        setupBroker("com.microsoft.mockauthapp");
+
+        // Setup a successful token read. Because the flag is present, getPackageSignature
+        // will return the debug signature, avoiding the null check.
+        Bundle resultBundle = new Bundle();
+        resultBundle.putString(BUNDLE_RESULT_KEY, TEST_HEADERS);
+        when(mMockFuture.getResult(anyLong(), any(TimeUnit.class))).thenReturn(resultBundle);
+
+        when(mAccountManager.getAuthToken(
+                        any(Account.class),
+                        eq("sso_header"),
+                        any(Bundle.class),
+                        anyBoolean(),
+                        any(),
+                        any()))
+                .thenReturn(mMockFuture);
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        verify(mCallback).onResult(eq(Status.OK), eq(TEST_HEADERS));
     }
 
     private void setupBroker(String packageName) {

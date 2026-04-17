@@ -67,7 +67,7 @@ std::string MakeJsonFromTokens(const T& header_map) {
 class JavaTokensReaderResultScopedOverride {
  public:
   JavaTokensReaderResultScopedOverride(
-      enterprise_auth::EntraProviderAndroid::TokenReadResult result_code,
+      enterprise_auth::EntraProviderAndroid::Status result_code,
       const std::string& result) {
     JNIEnv* env = base::android::AttachCurrentThread();
     enterprise_auth::
@@ -179,9 +179,8 @@ class EntraSsoAndroidBrowsertest : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
                        AttachesAuthHeadersForLoginWebsite) {
-  results_override_.emplace(
-      enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
-      MakeJsonFromTokens(kAuthTokens));
+  results_override_.emplace(enterprise_auth::EntraProviderAndroid::Status::kOk,
+                            MakeJsonFromTokens(kAuthTokens));
 
   ASSERT_TRUE(NavigateTo(kInterceptedOrigin));
 
@@ -195,9 +194,8 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
   const auto headers_result =
       base::flat_map<std::string_view, std::string_view>(
           {{"x-ms-header-1", "header-value"}});
-  results_override_.emplace(
-      enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
-      MakeJsonFromTokens(headers_result));
+  results_override_.emplace(enterprise_auth::EntraProviderAndroid::Status::kOk,
+                            MakeJsonFromTokens(headers_result));
 
   redirect_callback_ = base::BindOnce(
       [](std::optional<JavaTokensReaderResultScopedOverride>*
@@ -207,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
             base::flat_map<std::string_view, std::string_view>(
                 {{"x-ms-header-2", "header-value"}});
         results_override->emplace(
-            enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
+            enterprise_auth::EntraProviderAndroid::Status::kOk,
             MakeJsonFromTokens(fresh_headers_result));
       },
       &results_override_);
@@ -225,9 +223,9 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest, GivesUpAfterFailure) {
-  results_override_.emplace(enterprise_auth::EntraProviderAndroid::
-                                TokenReadResult::kNoBrokerRegistered,
-                            MakeJsonFromTokens(kAuthTokens));
+  results_override_.emplace(
+      enterprise_auth::EntraProviderAndroid::Status::kNoBrokerRegistered,
+      MakeJsonFromTokens(kAuthTokens));
 
   ASSERT_TRUE(NavigateTo(kInterceptedOrigin));
 
@@ -236,9 +234,8 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest, GivesUpAfterFailure) {
   ExpectTokensAttached(kAuthTokens, headers, false);
 
   results_override_.reset();
-  results_override_.emplace(
-      enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
-      MakeJsonFromTokens(kAuthTokens));
+  results_override_.emplace(enterprise_auth::EntraProviderAndroid::Status::kOk,
+                            MakeJsonFromTokens(kAuthTokens));
 
   ASSERT_TRUE(NavigateTo(kInterceptedOrigin));
 
@@ -249,16 +246,16 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest, GivesUpAfterFailure) {
 
 IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
                        GivesUpAfterFailureWithRedirect) {
-  results_override_.emplace(enterprise_auth::EntraProviderAndroid::
-                                TokenReadResult::kNoBrokerRegistered,
-                            MakeJsonFromTokens(kAuthTokens));
+  results_override_.emplace(
+      enterprise_auth::EntraProviderAndroid::Status::kNoBrokerRegistered,
+      MakeJsonFromTokens(kAuthTokens));
 
   redirect_callback_ = base::BindOnce(
       [](std::optional<JavaTokensReaderResultScopedOverride>*
              results_override) {
         results_override->reset();
         results_override->emplace(
-            enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
+            enterprise_auth::EntraProviderAndroid::Status::kOk,
             MakeJsonFromTokens(kAuthTokens));
       },
       &results_override_);
@@ -276,9 +273,8 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
 IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest, PolicyDisabled) {
   SetAndroidEntraSsoEnabledPolicy(0);
 
-  results_override_.emplace(
-      enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
-      MakeJsonFromTokens(kAuthTokens));
+  results_override_.emplace(enterprise_auth::EntraProviderAndroid::Status::kOk,
+                            MakeJsonFromTokens(kAuthTokens));
 
   ASSERT_TRUE(NavigateTo(kInterceptedOrigin));
   ASSERT_EQ(collected_headers_.size(), 1u);

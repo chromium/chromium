@@ -33,7 +33,7 @@ import org.chromium.base.JniOnceCallback2;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android.TokenReadResult;
+import org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android.Status;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.io.IOException;
@@ -77,7 +77,7 @@ public class PlatformAuthEntraTokensReader {
             @JniType("base::OnceCallback<void(int, std::string)>&&")
                     JniOnceCallback2<Integer, String> callback) {
         if (sReadTokensOverride != null) {
-            callback.onResult(sReadTokensOverride.resultCode, sReadTokensOverride.result);
+            callback.onResult(sReadTokensOverride.status, sReadTokensOverride.result);
             return;
         }
 
@@ -90,22 +90,31 @@ public class PlatformAuthEntraTokensReader {
 
             final String providerPackageName = getProviderPackageName(accountManager);
             if (providerPackageName == null) {
-                callback.onResult(TokenReadResult.NO_BROKER_REGISTERED, "");
+                callback.onResult(Status.NO_BROKER_REGISTERED, "");
                 return;
             }
 
             final byte @Nullable [] expectedSignature = getPackageSignature(providerPackageName);
             if (expectedSignature == null) {
-                callback.onResult(
-                        TokenReadResult.UNEXPECTED_PACKAGE_PROVIDER,
-                        providerPackageName
-                                + " is not a trusted provider for the authentication headers.");
+                if (!debugProvidersEnabled() && DEBUG_PROVIDERS.containsKey(providerPackageName)) {
+                    callback.onResult(
+                            Status.DISALLOWED_DEBUG_PACKAGE_PROVIDER,
+                            "attempt to get authentication headers from a non-production"
+                                    + " authentication broker blocked because --"
+                                    + ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS
+                                    + " was not enabled");
+                } else {
+                    callback.onResult(
+                            Status.UNEXPECTED_PACKAGE_PROVIDER,
+                            providerPackageName
+                                    + " is not a trusted provider for the authentication headers.");
+                }
                 return;
             }
 
             if (!verifyPackageSignature(providerPackageName, context, expectedSignature)) {
                 callback.onResult(
-                        TokenReadResult.SIGNATURE_VERIFICATION_FAILED,
+                        Status.SIGNATURE_VERIFICATION_FAILED,
                         "could not verify signature of " + providerPackageName);
                 return;
             }
@@ -127,7 +136,7 @@ public class PlatformAuthEntraTokensReader {
             Bundle bundleResult = future.getResult(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if (bundleResult == null) {
-                callback.onResult(TokenReadResult.NO_BUNDLE_RESULT, "null bundle result");
+                callback.onResult(Status.NO_BUNDLE_RESULT, "null bundle result");
                 return;
             }
 
@@ -152,7 +161,7 @@ public class PlatformAuthEntraTokensReader {
                 String errorCode = bundleResult.getString("error_code");
                 String errorMessage = bundleResult.getString("error_message", "Unknown error");
                 callback.onResult(
-                        TokenReadResult.BUNDLE_RESULT_CONTAINS_ENTRA_ERROR,
+                        Status.BUNDLE_RESULT_CONTAINS_ENTRA_ERROR,
                         "Returned bundle result reported " + errorCode + ": " + errorMessage);
                 return;
             }
@@ -162,7 +171,7 @@ public class PlatformAuthEntraTokensReader {
                 String standardErrorMsg = bundleResult.getString(AccountManager.KEY_ERROR_MESSAGE);
 
                 callback.onResult(
-                        TokenReadResult.BUNDLE_RESULT_CONTAINS_OS_ERROR,
+                        Status.BUNDLE_RESULT_CONTAINS_OS_ERROR,
                         "Returned bundle result did not report errors but contains"
                                 + " AccountManager.KEY_ERROR_CODE "
                                 + standardErrorCode
@@ -173,17 +182,18 @@ public class PlatformAuthEntraTokensReader {
 
             String stringResult = bundleResult.getString(BUNDLE_RESULT_KEY);
             if (stringResult == null) {
-                callback.onResult(TokenReadResult.INVALID_BUNDLE_FORMAT, "null headers entry");
+                callback.onResult(Status.INVALID_BUNDLE_FORMAT, "null headers entry");
                 return;
             }
 
-            callback.onResult(TokenReadResult.OK, stringResult);
+            callback.onResult(Status.OK, stringResult);
         } catch (AuthenticatorException
-                | OperationCanceledException
                 | IOException
                 | PackageManager.NameNotFoundException
                 | NoSuchAlgorithmException e) {
-            callback.onResult(TokenReadResult.UNEXPECTED_ERROR, e.toString());
+            callback.onResult(Status.UNEXPECTED_ERROR, e.toString());
+        } catch (OperationCanceledException e) {
+            callback.onResult(Status.TIMEOUT, e.toString());
         }
     }
 
@@ -200,17 +210,22 @@ public class PlatformAuthEntraTokensReader {
     }
 
     private static byte @Nullable [] getPackageSignature(String providerPackageName) {
+        // Certain packages have both a production and a debug signature.
+        // If the switch is enabled the debug signature will take priority.
+        if (debugProvidersEnabled() && DEBUG_PROVIDERS.containsKey(providerPackageName)) {
+            return DEBUG_PROVIDERS.get(providerPackageName);
+        }
+
         if (TRUSTED_PROVIDERS.containsKey(providerPackageName)) {
             return TRUSTED_PROVIDERS.get(providerPackageName);
         }
 
-        if (CommandLine.getInstance()
-                        .hasSwitch(ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS)
-                && DEBUG_PROVIDERS.containsKey(providerPackageName)) {
-            return DEBUG_PROVIDERS.get(providerPackageName);
-        }
-
         return null;
+    }
+
+    private static boolean debugProvidersEnabled() {
+        return CommandLine.getInstance()
+                .hasSwitch(ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS);
     }
 
     private static boolean verifyPackageSignature(
@@ -307,22 +322,22 @@ public class PlatformAuthEntraTokensReader {
     }
 
     private static class ResultOverride {
-        ResultOverride(Integer resultCode, String result) {
-            this.resultCode = resultCode;
+        ResultOverride(Integer status, String result) {
+            this.status = status;
             this.result = result;
         }
 
-        public final Integer resultCode;
+        public final Integer status;
         public final String result;
     }
 
     @CalledByNativeForTesting
     public static void setResultOverrideForTesting( // IN-TEST
-            @JniType("int") Integer resultCode, @JniType("std::string") String result) {
+            @JniType("int") Integer status, @JniType("std::string") String result) {
         Preconditions.checkState(
                 PlatformAuthEntraTokensReader.sReadTokensOverride == null,
                 "Token override already set");
-        PlatformAuthEntraTokensReader.sReadTokensOverride = new ResultOverride(resultCode, result);
+        PlatformAuthEntraTokensReader.sReadTokensOverride = new ResultOverride(status, result);
     }
 
     @CalledByNativeForTesting

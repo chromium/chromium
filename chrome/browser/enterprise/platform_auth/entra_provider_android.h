@@ -9,6 +9,10 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace enterprise_auth {
 
 class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
@@ -17,29 +21,65 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
 
   ~EntraProviderAndroid() override;
 
+  static constexpr char kAuthenticationResultHistogram[] =
+      "Enterprise.AndroidEntraSso.Result";
+  static constexpr char kDurationSuccessHistogram[] =
+      "Enterprise.AndroidEntraSso.Duration.Success";
+  static constexpr char kDurationFailureHistogram[] =
+      "Enterprise.AndroidEntraSso.Duration.Failure";
+  static constexpr char kDurationNoBrokerHistogram[] =
+      "Enterprise.AndroidEntraSso.Duration.NoBroker";
+  static constexpr char kFailureReasonHistogram[] =
+      "Enterprise.AndroidEntraSso.FailureReason";
+
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  //
+  // LINT.IfChange(AuthenticationResult)
+  enum class AuthenticationResult {
+    kSuccessWithHeaders = 0,
+    kSuccessWithNoHeaders = 1,
+    kNoBrokerRegistered = 2,
+    kFailure = 3,
+    kMaxValue = kFailure
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:AndroidEntraSsoResult)
+
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  //
+  // LINT.IfChange(Status)
+  //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: (
   // org.chromium.chrome.browser.enterprise.platform_auth.entra_provider_android)
-  enum class TokenReadResult {
-    kOk = 0,
-    kUnexpectedError,
-    kNoBrokerRegistered,
-    kSignatureVerificationFailed,
-    kInvalidBundleFormat,
-    kNoBundleResult,
-    kBundleResultContainsEntraError,
-    kBundleResultContainsOsError,
-    kUnexpectedPackageProvider,
-    kMax = kUnexpectedPackageProvider
-  };
+  enum class Status {
+    kUnexpectedError = 0,
+    kSignatureVerificationFailed = 1,
+    kInvalidBundleFormat = 2,
+    kNoBundleResult = 3,
+    kBundleResultContainsEntraError = 4,
+    kBundleResultContainsOsError = 5,
+    kUnexpectedPackageProvider = 6,
+    kDisallowedDebugPackageProvider = 7,
+    kTimeout = 8,
+    kJsonParsingFailed = 9,
+    kAllHeadersSkipped = 10,
+    kMaxFailureReason = kAllHeadersSkipped,
 
-  using OnJavaReadTokensCallback = base::OnceCallback<void(
-      enterprise_auth::EntraProviderAndroid::TokenReadResult,
-      std::string)>;
+    // The values below this line are not used by the histogram.
+    kOk = 11,
+    kNoBrokerRegistered = 12,
+
+    kMaxValue = kNoBrokerRegistered,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:FailureReason)
+
+  using OnJavaReadTokensCallback =
+      base::OnceCallback<void(Status, std::string)>;
 
   inline void SetMockJavaReadTokensForTesting(
-      base::RepeatingCallback<void(
-          base::OnceCallback<void(TokenReadResult, std::string)>)> callback) {
+      base::RepeatingCallback<void(OnJavaReadTokensCallback)> callback) {
     mock_java_read_tokens_ = std::move(callback);
   }
 
@@ -54,11 +94,13 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
   // On success `result` contains the JSON with the authentication headers.
   // On failure `result` contains a debug message about the error.
   void OnJavaHeadersRead(PlatformAuthProviderManager::GetDataCallback callback,
-                         TokenReadResult result_code,
+                         base::TimeTicks start_time,
+                         Status status,
                          std::string result);
 
   void ParseJsonHeaders(PlatformAuthProviderManager::GetDataCallback callback,
-                        std::string_view headers_raw_json);
+                        std::string_view headers_raw_json,
+                        base::TimeTicks start_time);
 
   SEQUENCE_CHECKER(sequence_checker);
   bool sso_disabled_ = false;

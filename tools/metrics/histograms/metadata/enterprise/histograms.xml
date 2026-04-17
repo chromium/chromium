@@ -262,6 +262,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.AndroidEntraSso.Duration.{Result}" units="ms"
+    expires_after="2027-03-30">
+  <owner>ssolarewicz@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the duration of the Entra SSO authentication event on Android which
+    finished {Result}. Time is measured from the moment the navigation is
+    defered. This metric is emitted by enterprise_auth::EntraProviderAndroid
+    just before the navigation is resumed.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="unsuccessfully"/>
+    <variant name="NoBroker"
+        summary="by discovering that SSO is not supported on the given device"/>
+    <variant name="Success" summary="successfully"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.AndroidEntraSso.FailureReason"
+    enum="AndroidEntraSsoFailureReason" expires_after="2027-03-30">
+  <owner>ssolarewicz@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the reason of a failed authentication event for Entra SSO on
+    Android. This metric is emitted by enterprise_auth::EntraProviderAndroid
+    just before the navigation is resumed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AndroidEntraSso.Result"
+    enum="AndroidEntraSsoResult" expires_after="2027-03-30">
+  <owner>ssolarewicz@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the outcome of the Entra SSO authentication event on Android. This
+    metric is emitted by enterprise_auth::EntraProviderAndroid just before the
+    navigation is resumed.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.AttributesTPMConsistency"
     enum="EnterpriseAttributesTPMConsistencyType" expires_after="never">
 <!-- expires-never: Needed for health check. -->
