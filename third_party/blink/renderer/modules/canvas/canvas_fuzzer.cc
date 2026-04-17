@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -21,7 +22,7 @@ namespace blink {
 
 class PageHelper {
  public:
-  PageHelper(test::TaskEnvironment& task_environment)
+  explicit PageHelper(test::TaskEnvironment* task_environment)
       : task_environment_(task_environment) {}
   ~PageHelper() = default;
 
@@ -66,11 +67,11 @@ class PageHelper {
         ScopedTestingPlatformSupport<TestingPlatformSupport>>();
   }
   const base::TickClock* GetTickClock() {
-    return task_environment_.GetMockTickClock();
+    return task_environment_->GetMockTickClock();
   }
 
  private:
-  test::TaskEnvironment& task_environment_;
+  raw_ptr<test::TaskEnvironment> task_environment_;
   // The order is important: |platform_| must be destroyed after
   // |dummy_page_holder_| is destroyed.
   std::unique_ptr<ScopedTestingPlatformSupport<TestingPlatformSupport>>
@@ -89,7 +90,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 
-  PageHelper page(task_environment);
+  PageHelper page(&task_environment);
   page.SetUp();
   page.SetBodyContentFromFuzzer(data, size);
   page.UpdateAllLifecyclePhasesForTest();
