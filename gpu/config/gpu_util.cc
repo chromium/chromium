@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "build/build_config.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -290,7 +291,7 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences) {
   if (blocklisted_features.count(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
-    return kGpuFeatureStatusDisabled;
+    return kGpuFeatureStatusBlocklisted;
   }
 #if BUILDFLAG(SKIA_USE_DAWN)
   if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {

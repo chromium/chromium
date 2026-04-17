@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/android/android_info.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -741,6 +742,24 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     ResumeGpuWatchdog(watchdog_thread_.get());
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
+      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          kGpuFeatureStatusBlocklisted &&
+      base::android::android_info::brand() == "google") {
+    // On Pixel hardware we want to always use Vulkan. If the SkiaGraphite
+    // feature is enabled but then blocklisted it would normally fall back to
+    // Ganesh/GL. This isn't desirable so force it to fall back to
+    // Ganesh/Vulkan.
+    // TODO(crbug.com/496616828): Once Graphite works on Imagination GPUs remove
+    // this workaround.
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
+        kGpuFeatureStatusEnabled;
+    gpu_preferences_.gr_context_type = GrContextType::kVulkan;
+    gpu_preferences_.use_vulkan = VulkanImplementationName::kNative;
+  }
+#endif
 
 #if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
 #if BUILDFLAG(IS_OZONE)

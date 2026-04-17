@@ -1228,7 +1228,15 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
              gpu_feature_info_
                      .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
                  gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    FallBackToNextGpuMode();
+    if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] ==
+        gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
+      // TODO(crbug.com/496616828): For Pixel devices Graphite can silently be
+      // replaced with Ganesh/Vulkan. Remove this once Graphite works on
+      // Imagination GPUs.
+      gpu_mode_ = gpu::GpuMode::HARDWARE_VULKAN;
+    } else {
+      FallBackToNextGpuMode();
+    }
   }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
   if (!gpu_feature_info_for_hardware_gpu_.IsInitialized()) {
