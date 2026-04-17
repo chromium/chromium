@@ -51,6 +51,7 @@ class ConsolidatedConsentScreen
   // These values are logged to UMA
   // ("OOBE.ConsolidatedConsentScreen.RecoveryOptInResult"). Entries should not
   // be renumbered and numeric values should never be reused.
+  // LINT.IfChange(RecoveryOptInResult)
   enum class RecoveryOptInResult {
     kNotSupported = 0,
     kUserOptIn = 1,
@@ -59,6 +60,7 @@ class ConsolidatedConsentScreen
     kPolicyOptOut = 4,
     kMaxValue = kPolicyOptOut,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/enums.xml:RecoveryOptInResult)
 
   class Observer : public base::CheckedObserver {
    public:

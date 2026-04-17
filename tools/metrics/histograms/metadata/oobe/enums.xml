@@ -224,6 +224,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Error"/>
 </enum>
 
+<!-- LINT.IfChange(RecoveryOptInResult) -->
+
 <enum name="RecoveryOptInResult">
   <summary>
     The result of the cryptohome recovery opt-in. For managed users the policy
@@ -238,6 +240,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Policy Opt In"/>
   <int value="4" label="Policy Opt Out"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/login/screens/consolidated_consent_screen.h:RecoveryOptInResult) -->
 
 <enum name="SelectedTheme">
   <int value="0" label="Auto Mode"/>
