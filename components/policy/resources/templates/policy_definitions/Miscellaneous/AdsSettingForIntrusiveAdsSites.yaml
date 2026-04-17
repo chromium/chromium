@@ -28,5 +28,6 @@ schema:
 supported_on:
 - chrome.*:65-
 - chrome_os:65-
+- android:149-
 tags: []
 type: int-enum

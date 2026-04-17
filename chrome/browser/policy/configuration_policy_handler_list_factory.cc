@@ -286,6 +286,9 @@ using ::ash::MagnifierType;
 // clang-format off
 const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 // Policies for all platforms - Start
+  { key::kAdsSettingForIntrusiveAdsSites,
+    prefs::kManagedDefaultAdsSetting,
+    base::Value::Type::INTEGER },
   { key::kAutoplayAllowed,
     prefs::kAutoplayAllowed,
     base::Value::Type::BOOLEAN },
@@ -531,9 +534,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAccessibilityImageLabelsEnabled,
     prefs::kAccessibilityImageLabelsEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kAdsSettingForIntrusiveAdsSites,
-    prefs::kManagedDefaultAdsSetting,
-    base::Value::Type::INTEGER },
   { key::kAdvancedProtectionAllowed,
     prefs::kAdvancedProtectionAllowed,
     base::Value::Type::BOOLEAN },
