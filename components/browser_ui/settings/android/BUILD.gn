@@ -74,16 +74,12 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
-    "java/res/drawable-hdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable-hdpi/ic_business_small.png",
-    "java/res/drawable-mdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable-mdpi/ic_business_small.png",
-    "java/res/drawable-xhdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable-xhdpi/ic_business_small.png",
-    "java/res/drawable-xxhdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable-xxhdpi/ic_business_small.png",
-    "java/res/drawable-xxxhdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable/enterprise_icon.xml",
+    "java/res/drawable/ic_account_child_36dp.xml",
     "java/res/drawable/ic_business_small_with_bg.xml",
     "java/res/drawable/list_divider.xml",
     "java/res/layout-sw360dp/preference_spinner_single_line.xml",

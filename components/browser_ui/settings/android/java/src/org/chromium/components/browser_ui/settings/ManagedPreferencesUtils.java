@@ -105,9 +105,11 @@ public class ManagedPreferencesUtils {
         return R.drawable.ic_business_small;
     }
 
-    /** @return The resource ID for the Managed by Custodian icon. */
+    /**
+     * @return The resource ID for the Managed by Custodian icon.
+     */
     public static @DrawableRes int getManagedByCustodianIconId() {
-        return R.drawable.ic_account_child_grey600_36dp;
+        return R.drawable.ic_account_child_36dp;
     }
 
     /**
