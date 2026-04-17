@@ -451,6 +451,13 @@ using base::UserMetricsAction;
     return;
   }
 
+  if (_omniboxPresentationContext == OmniboxPresentationContext::kLensOverlay) {
+    if (_omniboxClient->GetPageClassification(/*is_prefetch=*/false) ==
+        metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX) {
+      return;
+    }
+  }
+
   // Early exit if a query is already in progress or the popup is already open
   // This is what allows this method to be called multiple times in multiple
   // code locations without harm. Exept if the event is user triggered by
