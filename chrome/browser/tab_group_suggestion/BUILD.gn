@@ -6,6 +6,20 @@ if (is_android) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 
+  source_set("tab_group_suggestion") {
+    public = []
+
+    sources = [ "group_suggestion_service_factory_android.cc" ]
+
+    deps = [
+      ":jni_headers",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/visited_url_ranking",
+      "//components/visited_url_ranking/public",
+    ]
+  }
+
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
