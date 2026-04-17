@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
@@ -74,6 +75,13 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     base::RepeatingClosure hybrid_closure,
     base::RepeatingCallback<void(webauthn::NonCredentialReturnReason)>
         non_credential_callback) {
+  if (non_credential_callback_) {
+    LOG(ERROR) << "A WebAuthn Get request was made while another was still "
+                  "pending on the same page.";
+    std::move(non_credential_callback)
+        .Run(webauthn::NonCredentialReturnReason::kError);
+    return;
+  }
   passkey_callback_ = std::move(passkey_callback);
   password_callback_ = std::move(password_callback);
   hybrid_closure_ = std::move(hybrid_closure);
@@ -114,15 +122,14 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     }
     case webauthn::AssertionMediationType::kImmediateWithPasswords: {
       // Only valid for the main frame.
-      if (frame_host->IsInPrimaryMainFrame()) {
-        password_fetcher_ = PasswordCredentialFetcher::Create(frame_host);
-        password_fetcher_->FetchPasswords(
-            frame_host->GetLastCommittedURL(),
-            base::BindOnce(
-                &WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet,
-                weak_ptr_factory_.GetWeakPtr(), frame_host->GetGlobalId(),
-                /*is_immediate=*/true, std::move(passkey_credentials)));
-      }
+      CHECK(frame_host->IsInPrimaryMainFrame());
+      password_fetcher_ = PasswordCredentialFetcher::Create(frame_host);
+      password_fetcher_->FetchPasswords(
+          frame_host->GetLastCommittedURL(),
+          base::BindOnce(
+              &WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet,
+              weak_ptr_factory_.GetWeakPtr(), frame_host->GetGlobalId(),
+              /*is_immediate=*/true, std::move(passkey_credentials)));
       return;
     }
     case webauthn::AssertionMediationType::kImmediatePasskeysOnly:
