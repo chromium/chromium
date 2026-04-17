@@ -134,10 +134,6 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
         return false;
     }
 
-    protected boolean openInAppOrChromeFromCct(GURL gurl) {
-        return false;
-    }
-
     /** Called when WebContents reports a change to the non-draggable regions in header content. */
     protected void nonDraggableRegionsChanged(List<Rect> regions) {}
 
