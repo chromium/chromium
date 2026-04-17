@@ -32,8 +32,6 @@ void ExportedCanvasResource::OnPlaceholderReleasedResource(
     return;
   }
 
-  CHECK(exported_resource->HasOneRef());
-
   if (exported_resource->resource_->is_cross_thread()) {
     auto& owning_thread_task_runner =
         exported_resource->resource_->owning_thread_task_runner_;
