@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/get_metadata.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -204,6 +205,26 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Missing `size`.
   {
     EntryMetadata metadata;
+    EXPECT_FALSE(ValidateIDLEntryMetadata(
+        metadata, ProvidedFileSystemInterface::METADATA_FIELD_SIZE,
+        /*root_entry=*/false));
+  }
+
+  // `size` max - due to double precision, we need subtract quite a lot from
+  // int64_t's max to get a value that converts back to below int64_t's max.
+  {
+    EntryMetadata metadata;
+    metadata.size.emplace(double(std::numeric_limits<int64_t>::max()) - 513);
+    EXPECT_TRUE(ValidateIDLEntryMetadata(
+        metadata, ProvidedFileSystemInterface::METADATA_FIELD_SIZE,
+        /*root_entry=*/false));
+  }
+
+  // `size` too large - due to double precision, even `max()` converts to a
+  // value that is out of range.
+  {
+    EntryMetadata metadata;
+    metadata.size.emplace(double(std::numeric_limits<int64_t>::max()));
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_SIZE,
         /*root_entry=*/false));
