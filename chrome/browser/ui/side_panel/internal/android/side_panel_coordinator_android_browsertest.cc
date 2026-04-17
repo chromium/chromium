@@ -726,6 +726,88 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_BothTabsHaveActiveEntries_BothTabsAlsoCallShowOnActiveTabChange_ReplacesSidePanelContent) {
+  // Arrange: Open 2 tabs.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  // Arrange: Create and register SidePanelEntries for both tabs.
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  auto* second_registry = SidePanelRegistry::From(second_tab);
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+
+  auto first_entry = CreateSidePanelEntry(first_entry_key, browser);
+  TestSidePanelEntryObserver first_entry_observer;
+  first_entry->AddObserver(&first_entry_observer);
+  first_registry->Register(std::move(first_entry));
+
+  auto second_entry = CreateSidePanelEntry(second_entry_key, browser);
+  TestSidePanelEntryObserver second_entry_observer;
+  second_entry->AddObserver(&second_entry_observer);
+  second_registry->Register(std::move(second_entry));
+
+  // Arrange: Register tab activation callbacks that call
+  // `SidePanelCoordinatorAndroid::Show`.
+  // This simulates features like GLiC, which observes tab activation by
+  // themselves (see `GlicInstanceImpl::OnBoundTabActivated()`).
+  auto first_tab_activation_subscription =
+      first_tab->RegisterDidActivate(base::BindRepeating(
+          [](SidePanelCoordinatorAndroid* coordinator, SidePanelEntryKey key,
+             tabs::TabInterface* tab) {
+            coordinator->SidePanelUIBase::Show(key, std::nullopt,
+                                               /*suppress_animations=*/true);
+          },
+          coordinator, first_entry_key));
+  auto second_tab_activation_subscription =
+      second_tab->RegisterDidActivate(base::BindRepeating(
+          [](SidePanelCoordinatorAndroid* coordinator, SidePanelEntryKey key,
+             tabs::TabInterface* tab) {
+            coordinator->SidePanelUIBase::Show(key, std::nullopt,
+                                               /*suppress_animations=*/true);
+          },
+          coordinator, second_entry_key));
+
+  // Arrange: Show the SidePanelEntry for the 2nd tab.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+
+  // Arrange: Switch to the first tab.
+  tab_list->ActivateTab(first_tab->GetHandle());
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // Act: Switch back to second tab.
+  tab_list->ActivateTab(second_tab->GetHandle());
+
+  // Assert: Side panel should show second tab's entry.
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+
+  // Assert: The first entry should be notified of "hidden" events.
+  EXPECT_EQ(SidePanelEntryHideReason::kBackgrounded,
+            first_entry_observer.reason_for_last_entry_will_hide_.value());
+  EXPECT_EQ(first_entry_key.id(),
+            first_entry_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(
+      SidePanelEntryHideReason::kBackgrounded,
+      first_entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
     MaybeShowEntryOnTabStripModelChanged_CloseTab_NewActiveTabHasNoEntry_ClosesSidePanel) {
   // Arrange: Open 2 tabs.
   BrowserWindowInterface* browser = GetBrowserWindow();

@@ -311,17 +311,29 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   // Note: when we replace the side panel's UI contents, no animation should be
   // played. However, we can't CHECK(suppress_animations) as the side panel
   // feature calling Show() may not be aware of the current side panel state.
-  std::optional<UniqueKey> key = current_key(entry->type());
-  CHECK(key) << "Current key should exist when side panel is showing.";
+  std::optional<UniqueKey> previous_entry_key = current_key(entry->type());
+  CHECK(previous_entry_key)
+      << "Current key should exist when side panel is showing.";
 
-  SidePanelEntry* previous_entry = GetEntryForUniqueKey(*key);
+  SidePanelEntry* previous_entry = GetEntryForUniqueKey(*previous_entry_key);
   CHECK(previous_entry)
       << "SidePanelEntry should exist when side panel is showing.";
 
-  auto previous_entry_hide_reason =
-      (open_trigger && *open_trigger == SidePanelOpenTrigger::kTabChanged)
-          ? SidePanelEntryHideReason::kBackgrounded
-          : SidePanelEntryHideReason::kReplaced;
+  auto previous_entry_hide_reason = SidePanelEntryHideReason::kReplaced;
+  if (open_trigger && *open_trigger == SidePanelOpenTrigger::kTabChanged) {
+    previous_entry_hide_reason = SidePanelEntryHideReason::kBackgrounded;
+  } else if (!open_trigger && previous_entry_key->tab_handle &&
+             unique_key.tab_handle &&
+             previous_entry_key->tab_handle != unique_key.tab_handle) {
+    // Some side panel features observe active tab changes on their own and call
+    // `SidePanelCoordinatorAndroid::Show` without an `open_trigger`. In such
+    // cases, we use the entry keys' `tab_handle`s as a heuristic to
+    // determine if `SidePanelEntryHideReason` should be `kBackgrounded`.
+    //
+    // TODO(crbug.com/503719405): Investigate whether we should always require
+    // `open_trigger` for `SidePanelCoordinatorAndroid::Show`.
+    previous_entry_hide_reason = SidePanelEntryHideReason::kBackgrounded;
+  }
 
   previous_entry->OnEntryWillHide(previous_entry_hide_reason);
   Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
