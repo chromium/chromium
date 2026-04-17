@@ -4,12 +4,14 @@
 
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -103,8 +105,8 @@ void QueryScheduler::StartRepeatingQuery(
   }
   if (passive_observer_callback) {
     auto [_, inserted] = passive_observer_queries_.emplace(
-        query_id.value(), std::make_pair(query_params->Clone(),
-                                         std::move(passive_observer_callback)));
+        query_id.value(),
+        PassiveObserver(*query_params, std::move(passive_observer_callback)));
     CHECK(inserted);
   }
 }
@@ -244,6 +246,14 @@ void QueryScheduler::OnResultsReceived(
     base::OnceCallback<void(const QueryResultMap&)> callback,
     std::vector<QueryResultMap> all_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if DCHECK_IS_ON()
+  for (const auto& [other_query_id, passive_observer] :
+       passive_observer_queries_) {
+    DCHECK(passive_observer.observed_results().empty());
+  }
+#endif
+
   QueryResultMap merged_results;
   {
     base::ScopedUmaHistogramTimer histogram_timer(
@@ -253,10 +263,8 @@ void QueryScheduler::OnResultsReceived(
     for (auto& result_map : all_results) {
       for (auto& [context, result] : result_map) {
         // Notify any other query that's observing this context and result type.
-        for (const auto& [other_query_id, params_and_callback] :
+        for (auto& [other_query_id, passive_observer] :
              passive_observer_queries_) {
-          const auto& [other_query_params, other_callback] =
-              params_and_callback;
           if (query_id.has_value() && query_id.value() == other_query_id) {
             // This query triggered the measurement and is already being
             // notified.
@@ -266,11 +274,12 @@ void QueryScheduler::OnResultsReceived(
           // Check if the other query wants any resource types that were
           // measured.
           const CPUTimeResult* observed_cpu_time = nullptr;
-          if (other_query_params->resource_types.Has(ResourceType::kCPUTime)) {
+          if (passive_observer.params().resource_types.Has(
+                  ResourceType::kCPUTime)) {
             observed_cpu_time = base::OptionalToPtr(result.cpu_time_result);
           }
           const MemorySummaryResult* observed_memory_summary = nullptr;
-          if (other_query_params->resource_types.Has(
+          if (passive_observer.params().resource_types.Has(
                   ResourceType::kMemorySummary)) {
             observed_memory_summary =
                 base::OptionalToPtr(result.memory_summary_result);
@@ -280,23 +289,18 @@ void QueryScheduler::OnResultsReceived(
           }
 
           // Check if the other query wants this context.
-          if (!other_query_params->contexts.ContainsContext(context)) {
+          if (!passive_observer.params().contexts.ContainsContext(context)) {
             continue;
           }
 
-          // Notify the other query with this partial result. Each query may be
-          // notified many times. This makes no attempt to coalesce results
-          // because that would add extra complexity.
-          QueryResults observed_results;
+          QueryResults& observed_results =
+              passive_observer.observed_results()[context];
           if (observed_cpu_time) {
             observed_results.cpu_time_result = *observed_cpu_time;
           }
           if (observed_memory_summary) {
             observed_results.memory_summary_result = *observed_memory_summary;
           }
-          QueryResultMap single_result_map;
-          single_result_map.emplace(context, std::move(observed_results));
-          other_callback.Run(std::move(single_result_map));
         }
 
         // Merge this context and result type into the results for the
@@ -325,6 +329,36 @@ void QueryScheduler::OnResultsReceived(
   request_timer.reset();
 
   std::move(callback).Run(merged_results);
+
+  for (auto& [other_query_id, passive_observer] : passive_observer_queries_) {
+    passive_observer.SendObservedResults();
+  }
+
+#if DCHECK_IS_ON()
+  // All results in the scratch space should be consumed.
+  for (const auto& [other_query_id, passive_observer] :
+       passive_observer_queries_) {
+    DCHECK(passive_observer.observed_results().empty());
+  }
+#endif
+}
+
+QueryScheduler::PassiveObserver::PassiveObserver(
+    const QueryParams& params,
+    base::RepeatingCallback<void(const QueryResultMap&)> callback)
+    : params_(params.Clone()), callback_(std::move(callback)) {}
+
+QueryScheduler::PassiveObserver::~PassiveObserver() = default;
+
+QueryScheduler::PassiveObserver::PassiveObserver(PassiveObserver&&) = default;
+
+QueryScheduler::PassiveObserver& QueryScheduler::PassiveObserver::operator=(
+    PassiveObserver&&) = default;
+
+void QueryScheduler::PassiveObserver::SendObservedResults() {
+  if (!observed_results_.empty()) {
+    callback_.Run(std::exchange(observed_results_, {}));
+  }
 }
 
 }  // namespace resource_attribution::internal

@@ -121,12 +121,41 @@ class QueryScheduler
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Copy of a query that's observing all results.
+  class PassiveObserver {
+   public:
+    PassiveObserver(
+        const QueryParams& params,
+        base::RepeatingCallback<void(const QueryResultMap&)> callback);
+    ~PassiveObserver();
+
+    // Move-only.
+    PassiveObserver(PassiveObserver&&);
+    PassiveObserver& operator=(PassiveObserver&&);
+    PassiveObserver(const PassiveObserver&) = delete;
+    PassiveObserver& operator=(const PassiveObserver&) = delete;
+
+    // Returns the query params.
+    const QueryParams& params() const { return *params_; }
+
+    // Returns a reference to the observed results that are being accumulated.
+    QueryResultMap& observed_results() { return observed_results_; }
+    const QueryResultMap& observed_results() const { return observed_results_; }
+
+    // Consumes the observed results by sending them to the callback.
+    void SendObservedResults();
+
+   private:
+    std::unique_ptr<QueryParams> params_;
+    base::RepeatingCallback<void(const QueryResultMap&)> callback_;
+
+    // Scratch space to store observed results before passing to `callback`.
+    QueryResultMap observed_results_;
+  };
+
   // Copies of the queries that are observing all results.
-  absl::flat_hash_map<
-      QueryId,
-      std::pair<std::unique_ptr<QueryParams>,
-                base::RepeatingCallback<void(const QueryResultMap&)>>>
-      passive_observer_queries_ GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_map<QueryId, PassiveObserver> passive_observer_queries_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU measurement machinery.
   CPUMeasurementMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);
