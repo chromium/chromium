@@ -19,7 +19,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -48,7 +48,7 @@ public class PopupMultiwindowPTTest {
     @Before
     public void setUp() {
         mEntryPage = mCtaTestRule.startOnBlankPage();
-        PopupCreator.setSetMovableTaskRequiredForPopupsForTesting(false);
+        PopupCreatorImpl.setSetMovableTaskRequiredForPopupsForTesting(false);
     }
 
     @Test

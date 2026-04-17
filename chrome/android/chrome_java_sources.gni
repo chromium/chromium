@@ -105,7 +105,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
   "java/src/org/chromium/chrome/browser/app/serial/SerialNotificationServiceImpl.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroid.java",
-  "java/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreator.java",
+  "java/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImpl.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTabGroupTask.java",
   "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTabsTask.java",

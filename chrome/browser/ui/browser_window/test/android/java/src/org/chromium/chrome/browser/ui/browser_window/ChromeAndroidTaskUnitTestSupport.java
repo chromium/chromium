@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -18,7 +17,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
@@ -45,8 +43,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
-import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
+import org.chromium.chrome.browser.customtabs.PopupCreator;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -455,21 +453,10 @@ public final class ChromeAndroidTaskUnitTestSupport {
         return mockAndroidBrowserWindowNatives;
     }
 
-    /** Mocks {@link PopupIntentCreator}. */
-    private static void mockPopupIntentCreator() {
-        PopupIntentCreator mockCreator = mock(PopupIntentCreator.class);
-        when(mockCreator.createPopupIntent(any(), anyBoolean()))
-                .thenAnswer(
-                        invocation -> {
-                            Intent intent = new Intent();
-                            // Prevents crashing in IntentUtils#addTrustedIntentExtras().
-                            intent.setPackage(
-                                    ContextUtils.getApplicationContext().getPackageName());
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            return intent;
-                        });
-        PopupIntentCreatorProvider.setInstance(mockCreator);
-        ResettersForTesting.register(() -> PopupIntentCreatorProvider.resetInstanceForTesting());
+    /** Mocks {@link PopupCreator}. */
+    private static void mockPopupCreator() {
+        PopupCreator mockCreator = mock(PopupCreator.class);
+        PopupCreatorFactory.setInstanceForTesting(mockCreator);
     }
 
     static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo() {
@@ -531,7 +518,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockParams.getProfile()).thenReturn(profile);
         when(mockParams.getInitialBoundsInDp()).thenReturn(launchBounds);
         when(mockParams.getInitialShowState()).thenReturn(showState);
-        mockPopupIntentCreator();
+        mockPopupCreator();
 
         return mockParams;
     }

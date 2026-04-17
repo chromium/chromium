@@ -38,6 +38,8 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.customtabs.PopupCreator;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -144,6 +146,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock DisplayAndroid mDisplayAndroid;
     @Mock DisplayAndroidManager mDisplayAndroidManager;
     @Mock AppTask mAppTask;
+    @Mock PopupCreator mPopupCreator;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
@@ -157,6 +160,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Before
     public void setup() {
+        PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
                         mTab, mActivity, mTabCreatorManager, mTabGroupModelFilter);
@@ -260,7 +264,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testAddNewContentsDoesNotAddToTabModelWhenMovingTabToPopupIsSuccessful() {
-        PopupCreator.setMoveTabToNewPopupResultForTesting(true);
+        when(mPopupCreator.moveTabToNewPopup(any(), any())).thenReturn(true);
         WebContents newWebContents = mock(WebContents.class);
         Tab newTab = mock(Tab.class);
         doReturn(newTab)
@@ -293,7 +297,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testAddNewContentsAddToTabModelWhenMovingTabToPopupIsUnsuccessful() {
-        PopupCreator.setMoveTabToNewPopupResultForTesting(false);
+        when(mPopupCreator.moveTabToNewPopup(any(), any())).thenReturn(false);
         WebContents newWebContents = mock(WebContents.class);
         Tab newTab = mock(Tab.class);
         doReturn(newTab)
@@ -346,7 +350,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @EnableFeatures(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
     public void testAddNewContents_DocumentPictureInPicture_Enabled() {
         mTabWebContentsDelegateAndroid.setIsDocumentPictureInPictureEnabled(true);
-        PopupCreator.setMoveToNewDocumentPiPWindowResultForTesting(true);
+        when(mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(any(), any(), any()))
+                .thenReturn(true);
 
         WebContents newWebContents = mock(WebContents.class);
         PictureInPictureWindowOptions options =
@@ -391,7 +396,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @EnableFeatures(ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API)
     public void testAddNewContents_DocumentPictureInPicture_Enabled_LaunchFailed() {
         mTabWebContentsDelegateAndroid.setIsDocumentPictureInPictureEnabled(true);
-        PopupCreator.setMoveToNewDocumentPiPWindowResultForTesting(false);
+        when(mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(any(), any(), any()))
+                .thenReturn(false);
 
         WebContents newWebContents = mock(WebContents.class);
         PictureInPictureWindowOptions options =

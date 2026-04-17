@@ -4,26 +4,23 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.ArrayMap;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
@@ -375,22 +372,22 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     private static void createPopupBrowserWindow(
             int pendingId, AndroidBrowserWindowCreateParams createParams) {
         var context = ContextUtils.getApplicationContext();
-        var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
         Rect bounds = createParams.getInitialBoundsInDp();
         WindowFeatures features =
                 new WindowFeatures(bounds.left, bounds.top, bounds.width(), bounds.height());
-        Intent intent =
-                popupIntentCreator.createPopupIntent(
-                        features, createParams.getProfile().isIncognitoBranded());
-        IntentUtils.addTrustedIntentExtras(intent);
-        intent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
+
+        Bundle extrasBundle = new Bundle();
+        extrasBundle.putInt(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
 
         ActivityOptions options = getStartActivityOptions(context, bounds);
-        if (options == null) {
-            context.startActivity(intent);
-            return;
-        }
-        context.startActivity(intent, options.toBundle());
+
+        PopupCreatorFactory.getInstance()
+                .createPopupWindow(
+                        context,
+                        createParams.getProfile().isIncognitoBranded(),
+                        features,
+                        extrasBundle,
+                        options != null ? options.toBundle() : null);
     }
 
     private static @Nullable ActivityOptions getStartActivityOptions(

@@ -46,7 +46,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics;
@@ -285,7 +285,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 && getSavedInstanceState() == null
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN)) {
-            PopupCreator.adjustWindowBoundsToRequested(
+            PopupCreatorImpl.adjustWindowBoundsToRequested(
                     this, getIntentDataProvider().getRequestedWindowFeatures());
         }
     }

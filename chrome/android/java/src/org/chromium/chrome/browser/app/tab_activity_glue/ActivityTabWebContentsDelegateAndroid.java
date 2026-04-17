@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -257,8 +258,9 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 return false;
             }
 
-            return PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
-                    mActivity, webContents, pictureInPictureWindowOptions);
+            return PopupCreatorFactory.getInstance()
+                    .moveWebContentsToNewDocumentPictureInPictureWindow(
+                            mActivity, webContents, pictureInPictureWindowOptions);
         }
 
         final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<Boolean>();
@@ -275,7 +277,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             final boolean launchedMovablePopup =
                     ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-                            && PopupCreator.moveTabToNewPopup(tab, windowFeatures);
+                            && PopupCreatorFactory.getInstance()
+                                    .moveTabToNewPopup(tab, windowFeatures);
             addTabToModel.complete(!launchedMovablePopup);
             RecordHistogram.recordBooleanHistogram(
                     "Android.MultiWindowMode.PopupOpensInNewWindow", launchedMovablePopup);

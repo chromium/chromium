@@ -1,10 +1,11 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -12,18 +13,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES;
+import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
 
 import android.app.Activity;
+import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AndroidRuntimeException;
 import android.view.Display;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -37,6 +42,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
@@ -44,31 +50,35 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.insets.InsetObserver;
 
-/** Unit test for {@link PopupCreator}. */
+/** Unit test for {@link PopupCreatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
-public class PopupCreatorUnitTest {
+public class PopupCreatorImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock Activity mActivity;
     @Mock Tab mTab;
-    @Mock WindowAndroid mWindow;
+    @Mock ActivityWindowAndroid mWindow;
     @Mock DisplayAndroid mDisplay;
     @Mock DisplayAndroid mExternalDisplay;
     @Mock DisplayAndroidManager mDisplayAndroidManager;
@@ -79,6 +89,11 @@ public class PopupCreatorUnitTest {
     @Mock InsetObserver mInsetObserver;
     @Mock WindowInsetsCompat mWindowInsetsCompat;
     @Mock WebContents mWebContents;
+    @Mock ChromeActivity mChromeActivity;
+    @Mock BrowserControlsManager mBrowserControlsManager;
+    @Mock WindowManager mWindowManager;
+    @Mock WindowMetrics mWindowMetrics;
+    @Mock AppTask mAppTask;
 
     private static final int DISPLAY_ID = 73;
     private static final float DENSITY = 1.0f;
@@ -96,13 +111,16 @@ public class PopupCreatorUnitTest {
     private static final int CUSTOM_TABS_POPUP_TITLE_BAR_MIN_HEIGHT = 62;
     private static final int CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT = 75;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private PopupCreatorImpl mPopupCreator;
+
     @Before
     public void setup() {
+        mPopupCreator = new PopupCreatorImpl();
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
 
-        PopupCreator.setReparentingTaskForTesting(mReparentingTask);
-        PopupCreator.setInsetsForecastForTesting(Insets.NONE);
-        PopupCreator.initializePopupIntentCreator();
+        PopupCreatorImpl.setReparentingTaskForTesting(mReparentingTask);
+        PopupCreatorImpl.setInsetsForecastForTesting(Insets.NONE);
 
         doReturn(DISPLAY_ID).when(mDisplay).getDisplayId();
         doReturn(DENSITY).when(mDisplay).getDipScale();
@@ -153,7 +171,7 @@ public class PopupCreatorUnitTest {
     @Test
     public void testIntentParams() {
         final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
@@ -182,7 +200,7 @@ public class PopupCreatorUnitTest {
     public void testIntentParams_incognitoOpener() {
         final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
         doReturn(true).when(mTab).isIncognitoBranded();
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
@@ -227,7 +245,7 @@ public class PopupCreatorUnitTest {
 
         doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Assert.assertEquals(
@@ -244,7 +262,7 @@ public class PopupCreatorUnitTest {
     public void testActivityOptionsWhenWindowFeaturesDegenerated() {
         WindowFeatures windowFeatures = new WindowFeatures(null, null, null, 100);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Assert.assertEquals(
@@ -265,7 +283,7 @@ public class PopupCreatorUnitTest {
 
         Assert.assertFalse(
                 "moveTabToNewPopup should have returned false",
-                PopupCreator.moveTabToNewPopup(mTab, windowFeatures));
+                mPopupCreator.moveTabToNewPopup(mTab, windowFeatures));
         verify(mReparentingTask, never()).begin(any(), any(), any(), any());
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
     }
@@ -279,7 +297,7 @@ public class PopupCreatorUnitTest {
 
         doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Rect launchBounds = activityOptions.getLaunchBounds();
@@ -307,7 +325,7 @@ public class PopupCreatorUnitTest {
 
         doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
 
         Assert.assertTrue(
@@ -325,7 +343,7 @@ public class PopupCreatorUnitTest {
 
         doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
 
         Assert.assertTrue(
@@ -336,7 +354,7 @@ public class PopupCreatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
     public void testInsetsForecastNotUsedForNewPopups_flagDisabled() {
-        PopupCreator.setInsetsForecastForTesting(
+        PopupCreatorImpl.setInsetsForecastForTesting(
                 Insets.of(-12, -34, -56, -78)); // left, top, right, bottom
         WindowFeatures windowFeatures =
                 new WindowFeatures(100, 200, 300, 400); // left, top, width, height
@@ -344,7 +362,7 @@ public class PopupCreatorUnitTest {
 
         doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Rect launchBounds = activityOptions.getLaunchBounds();
@@ -364,8 +382,8 @@ public class PopupCreatorUnitTest {
 
         doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.setInsetsForecastForTesting(insets);
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        PopupCreatorImpl.setInsetsForecastForTesting(insets);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
         ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
         Rect launchBounds = activityOptions.getLaunchBounds();
@@ -382,7 +400,7 @@ public class PopupCreatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValues_standardUiMode() {
-        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
 
         /* Insets.of(
          *     0,
@@ -392,13 +410,13 @@ public class PopupCreatorUnitTest {
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mDisplay));
+                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_standardUiMode() {
-        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
 
         /* Pixel values of insets are scaled by the density quotient between displays.
          * Insets.of(
@@ -409,13 +427,13 @@ public class PopupCreatorUnitTest {
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mExternalDisplay));
+                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValues_E2EUiMode() {
-        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
 
         /* Insets.of(
          *     0,
@@ -425,13 +443,13 @@ public class PopupCreatorUnitTest {
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(75 + 20 + 9 + 78)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mDisplay));
+                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode() {
-        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
 
         /* Pixel values of insets are scaled by the density quotient between displays.
          * Insets.of(
@@ -442,7 +460,7 @@ public class PopupCreatorUnitTest {
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(75 + 20 + 9 + 156)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mExternalDisplay));
+                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
     }
 
     /**
@@ -452,7 +470,7 @@ public class PopupCreatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValues_E2EUiMode_smallHeader() {
-        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
         doReturn(10)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
@@ -468,7 +486,7 @@ public class PopupCreatorUnitTest {
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mDisplay));
+                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
     }
 
     /**
@@ -478,7 +496,7 @@ public class PopupCreatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode_smallHeader() {
-        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
         doReturn(10)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
@@ -495,7 +513,7 @@ public class PopupCreatorUnitTest {
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
-                PopupCreator.getPopupInsetsForecast(mWindow, mExternalDisplay));
+                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
     }
 
     @Test
@@ -507,8 +525,8 @@ public class PopupCreatorUnitTest {
 
         doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.setInsetsForecastForTesting(null);
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         final ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
@@ -537,8 +555,8 @@ public class PopupCreatorUnitTest {
 
         doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
 
-        PopupCreator.setInsetsForecastForTesting(null);
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        PopupCreatorImpl.setInsetsForecastForTesting(null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         final ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
 
@@ -563,7 +581,7 @@ public class PopupCreatorUnitTest {
         ContextUtils.initApplicationContextForTests(mContext);
         final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
 
-        PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+        mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
                 null, mWebContents, windowOptions);
 
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
@@ -579,7 +597,7 @@ public class PopupCreatorUnitTest {
 
         Assert.assertFalse(
                 "moveWebContentsToNewDocumentPictureInPictureWindow should have returned false",
-                PopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
                         null, mWebContents, windowOptions));
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
         verify(mContext, never()).startActivity(any(), any());
@@ -592,7 +610,7 @@ public class PopupCreatorUnitTest {
 
         Assert.assertTrue(
                 "tryStartActivity should have returned true due to success",
-                PopupCreator.tryStartActivity(mContext, intent, ao));
+                mPopupCreator.tryStartActivity(mContext, intent, ao));
         verify(mContext).startActivity(intent, ao);
     }
 
@@ -604,7 +622,7 @@ public class PopupCreatorUnitTest {
 
         Assert.assertFalse(
                 "tryStartActivity should have returned false due to an exception being thrown",
-                PopupCreator.tryStartActivity(mContext, intent, ao));
+                mPopupCreator.tryStartActivity(mContext, intent, ao));
         verify(mContext).startActivity(intent, ao);
     }
 
@@ -618,7 +636,7 @@ public class PopupCreatorUnitTest {
 
         Assert.assertFalse(
                 "tryStartActivity should have returned false due to an exception being thrown",
-                PopupCreator.tryStartActivity(mContext, intent, ao));
+                mPopupCreator.tryStartActivity(mContext, intent, ao));
         verify(mContext).startActivity(intent, ao);
         verify(mFlaggedApiDelegate).isInfeasibleActivityOptionsException(e);
     }
@@ -634,7 +652,7 @@ public class PopupCreatorUnitTest {
         final AndroidRuntimeException thrown =
                 Assert.assertThrows(
                         AndroidRuntimeException.class,
-                        () -> PopupCreator.tryStartActivity(mContext, intent, ao));
+                        () -> mPopupCreator.tryStartActivity(mContext, intent, ao));
         Assert.assertEquals(e, thrown);
         verify(mContext).startActivity(intent, ao);
     }
@@ -649,7 +667,7 @@ public class PopupCreatorUnitTest {
         final RuntimeException thrown =
                 Assert.assertThrows(
                         RuntimeException.class,
-                        () -> PopupCreator.tryStartActivity(mContext, intent, ao));
+                        () -> mPopupCreator.tryStartActivity(mContext, intent, ao));
         Assert.assertEquals(e, thrown);
         verify(mContext).startActivity(intent, ao);
     }
@@ -662,7 +680,7 @@ public class PopupCreatorUnitTest {
     @Test
     public void testNewActivityHasCorrectSource() {
         final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
-        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
 
         ArgumentCaptor<Context> captor = ArgumentCaptor.forClass(Context.class);
         verify(mReparentingTask).begin(captor.capture(), any(), any(), any());
@@ -671,5 +689,68 @@ public class PopupCreatorUnitTest {
         Assert.assertTrue(
                 "The Context passed to ReparentingTask#begin should be an Activity",
                 sentContext instanceof Activity);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void testAdjustWindowBounds_nullFeatures_bailsOut() {
+        PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, null);
+        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void testAdjustWindowBounds_perfectMatch_noOp() {
+        setupMocksForAdjustWindowBounds(200, 300, new Rect(10, 20, 210, 320));
+
+        // Request features matching the current viewport size (200x300)
+        WindowFeatures windowFeatures = new WindowFeatures(null, null, 200, 300);
+
+        PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, windowFeatures);
+        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void testAdjustWindowBounds_callsMoveTaskTo() {
+        setupMocksForAdjustWindowBounds(200, 300, new Rect(10, 20, 210, 320));
+
+        // Request features larger than the current viewport
+        WindowFeatures windowFeatures = new WindowFeatures(null, null, 400, 500);
+
+        PopupCreatorImpl.adjustWindowBoundsToRequested(mChromeActivity, windowFeatures);
+
+        ArgumentCaptor<Rect> captor = ArgumentCaptor.forClass(Rect.class);
+        verify(mFlaggedApiDelegate).moveTaskTo(any(), anyInt(), captor.capture());
+
+        Rect targetBounds = captor.getValue();
+        // Width difference: 400 - 200 = 200dp
+        // Height difference: 500 - 300 = 200dp
+        // Assuming density = 1.0f from setup() -> 200px diffs
+        // New right = 210 + 200 = 410
+        // New bottom = 320 + 200 = 520
+        Assert.assertEquals(new Rect(10, 20, 410, 520), targetBounds);
+    }
+
+    private void setupMocksForAdjustWindowBounds(
+            int viewportWidthDp, int viewportHeightDp, Rect windowBoundsPx) {
+        mActivityTabProvider.setForTesting(mTab);
+        doReturn(mActivityTabProvider).when(mChromeActivity).getActivityTabProvider();
+        doReturn(mWebContents).when(mTab).getWebContents();
+
+        doReturn(viewportWidthDp).when(mWebContents).getWidth();
+        doReturn(viewportHeightDp).when(mWebContents).getHeight();
+
+        doReturn(mWindowManager).when(mChromeActivity).getWindowManager();
+        doReturn(mWindowMetrics).when(mWindowManager).getCurrentWindowMetrics();
+        doReturn(windowBoundsPx).when(mWindowMetrics).getBounds();
+
+        doReturn(mWindow).when(mChromeActivity).getWindowAndroid();
+        doReturn(mDisplay).when(mWindow).getDisplay();
+        doReturn(1.0f).when(mDisplay).getDipScale();
+        doReturn(mBrowserControlsManager).when(mChromeActivity).getBrowserControlsManager();
+
+        doReturn(123).when(mChromeActivity).getTaskId();
+        AndroidTaskUtils.setAppTaskForTesting(mAppTask);
     }
 }

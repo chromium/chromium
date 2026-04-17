@@ -40,6 +40,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -78,6 +79,7 @@ public class ReparentingTaskUnitTest {
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.getUrl()).thenReturn(TAB_URL);
         ReparentingTaskJni.setInstanceForTesting(mReparentingTaskNatives);
+        PopupCreatorFactory.setInstanceForTesting(new PopupCreatorImpl());
     }
 
     @After

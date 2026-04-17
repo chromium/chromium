@@ -6,12 +6,14 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/customtabs/PopupIntentCreator.java",
-    "java/src/org/chromium/chrome/browser/customtabs/PopupIntentCreatorProvider.java",
+    "java/src/org/chromium/chrome/browser/customtabs/PopupCreator.java",
+    "java/src/org/chromium/chrome/browser/customtabs/PopupCreatorFactory.java",
   ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/util:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

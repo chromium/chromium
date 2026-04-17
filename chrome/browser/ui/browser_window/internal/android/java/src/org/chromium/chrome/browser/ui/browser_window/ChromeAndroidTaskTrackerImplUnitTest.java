@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -26,7 +27,6 @@ import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTra
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +50,7 @@ import org.chromium.base.JniOnceCallback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
@@ -155,11 +156,16 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertNull(task.getId());
         assertEquals(mockParams.getWindowType(), pendingTaskInfo.mCreateParams.getWindowType());
 
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mContext).startActivity(intentCaptor.capture());
-        Intent intent = intentCaptor.getValue();
-        assertNotNull(intent);
-        assertTrue(intent.hasExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+        var extrasCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(PopupCreatorFactory.getInstance())
+                .createPopupWindow(any(), anyBoolean(), any(), extrasCaptor.capture(), any());
+
+        Bundle extras = extrasCaptor.getValue();
+        assertNotNull(extras);
+        assertTrue(extras.containsKey(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+        assertEquals(
+                pendingTaskInfo.mPendingTaskId,
+                extras.getInt(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
     }
 
     @Test
