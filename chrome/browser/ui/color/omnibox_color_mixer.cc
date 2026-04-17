@@ -146,6 +146,9 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
 
   // Composebox-specific colors.
   mixer[kColorOmniboxComposeboxChipBackground] = {ui::kColorSysSurface3};
+  // Set to RGBA alpha channel color so hover does not block the glow animation.
+  mixer[kColorOmniboxComposeboxResultsBackgroundHovered] = {
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorOmniboxComposeboxDivider] = {ui::kColorSysDivider};
   mixer[kColorOmniboxComposeboxFaviconBackground] = {ui::kColorSysSurface};
   mixer[kColorOmniboxComposeboxFileThumbnailOverlay] = {
