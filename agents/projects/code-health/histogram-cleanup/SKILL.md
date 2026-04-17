@@ -66,6 +66,12 @@ supersedes the autonomous loops in `edit-code`.
 
 ## Workflow
 
+### Workspace Preparation
+
+1. **Clean & Update:** Follow the **Workspace Preparation** section in
+   `../hub/references/shared_workflows.md` to ensure a clean and updated
+   environment.
+
 ### Discovery & Candidate Selection (Delegated)
 
 1. **AI-Led Discovery & Analysis:** Delegate to the **`generalist`** sub-agent
@@ -76,15 +82,15 @@ supersedes the autonomous loops in `edit-code`.
    > `scripts/` folder:
    >
    > ```bash
-   > # Note: This path is relative to the repository root
-   > python3 agents/projects/code-health/histogram-cleanup/scripts/find_expired.py --count 1
+   > python3 scripts/find_expired.py --count 1
    > ```
    >
    > **Return ONLY the details returned by the script for this candidate**
    > (Name, Owners, Expiry, and Summary)."
 
-2. **Present Candidate:** Announce the candidate to the user with exactly this
-   message format (replace the bracketed details with the findings): "I've
+2. **Present Candidate:** You MUST output the candidate details to the user.
+   Announce the candidate with exactly this message format (replace the
+   bracketed details with the findings) before moving to the next step: "I've
    identified an expired histogram for cleanup today:
 
    - **Name:** [Name]
@@ -105,10 +111,10 @@ supersedes the autonomous loops in `edit-code`.
 2. **Present Findings & Evaluate Confidence:** Evaluate the Confidence Score
    returned by the `generalist`.
 
-   - **If Confidence >= 9:** Inform the user: "Confidence is high ([X]/10).
-     Proceeding with cleanup based on this plan: [Removal Plan Summary]."
-     Proceed directly to the **Workspace Preparation** phase. Do NOT ask for
-     permission.
+   - **If Confidence >= 9:** You MUST inform the user: "Confidence is high
+     ([X]/10). Proceeding with cleanup based on this plan: \[Removal Plan
+     Summary\]." Output this message, then proceed directly to the **Branch
+     Creation** phase. Do NOT ask for permission.
    - **If Confidence is between 1 and 8:** Present the findings and prompt the
      user using `ask_user` (`type='choice'`):
      - `header`: "Confidence Check"
@@ -120,7 +126,7 @@ supersedes the autonomous loops in `edit-code`.
          cleanup changes"
        - `label`: "Discard", `description`: "Discard this candidate and stop."
      - **Action based on selection:**
-       - If "Proceed with Diff": Proceed to the **Workspace Preparation** phase.
+       - If "Proceed with Diff": Proceed to the **Branch Creation** phase.
        - If "Discard": Stop the workflow.
    - **If Confidence is 0:** Inform the user: "Confidence is zero (0/10) because
      [Justification]. I will find an alternate expired histogram for you."
@@ -128,22 +134,11 @@ supersedes the autonomous loops in `edit-code`.
      Selection** phase to identify a different candidate. Ensure you do not
      select the same histogram again in this session.
 
-### Workspace Preparation
+### Branch Creation
 
-Before making any modifications, ensure a clean and isolated environment. Inform
-the user: "Preparing workspace: cleaning up local changes and creating a new
-branch..."
+Inform the user: "Preparing workspace: creating a new branch..."
 
-1. **Handle Local Changes:** Run `git status --porcelain -uno`. If there is any
-   output, run `git stash` and inform the user: "I noticed uncommitted changes;
-   I've stashed them (`git stash`) to ensure a clean environment for the
-   cleanup."
-2. **Switch and Update:** Always start fresh from `main`:
-   `git checkout main && git pull origin main --rebase && gclient sync -D`
-3. **Check for unmerged local commits:** Run `git log origin/main..HEAD`. If
-   there is any output, stop and inform the user, as we do not want to carry
-   these over to the new branch.
-4. **Branch Creation:** Run `git new-branch cleanup-<HistogramName>` to create a
+1. **Branch Creation:** Run `git new-branch cleanup-<HistogramName>` to create a
    new branch for this specific cleanup, ensuring it doesn't chain with previous
    commits.
 
@@ -153,7 +148,8 @@ branch..."
    code modifications for the candidate histogram. When removing recording
    calls, carefully check if the string literal spans multiple lines and ensure
    the entire multi-line statement is cleanly removed. Search for dot-less
-   versions of the name to ensure related constants are also removed. For each
+   versions of the name to ensure related constants are also removed. Check for
+   and update any references to the histogram in code comments as well. For each
    removal, ensure no orphaned references (e.g., unused variables or methods)
    remain in the codebase. Each individual change must have a corresponding
    'What & Why' explanation provided to the user.
@@ -168,11 +164,10 @@ branch..."
    - **Code Formatting:** Execute `git cl format` to format the modified source
      code. Address any errors that are reported.
 
-2. **Mandatory Final Review:** Follow the **Automated Review** section in
-   `../hub/references/shared_workflows.md` for the removal: `<HistogramName>`.
-   Do NOT skip this step. If feedback is provided, address the issues and re-run
-   the review. Do NOT proceed to the Submission phase until the review returns
-   PASS.
+2. **Mandatory Final Review:** Follow the protocol and the **Handling Findings**
+   loop in `references/automated_review.md` for the removal: `<HistogramName>`.
+   Do NOT skip this step. Do NOT proceed to the Submission phase until the
+   review returns `PASS`.
 
 ### Submission
 
@@ -195,9 +190,9 @@ branch..."
      Bug: <BugID>
      ```
    - **Execution:** Display the drafted commit message to the user. Then,
-     autonomously execute the following to commit the changes:
+     autonomously stage ONLY the specific files modified during this task using
+     `git add` and execute the commit:
      ```bash
-     git add -u
      git commit -m "<drafted message>"
      ```
 
@@ -207,12 +202,9 @@ branch..."
 4. **Workspace Reset:** Immediately switch back to `main` to start fresh for the
    next cleanup: `git checkout main`.
 
-5. **Congratulations & Summary:** After the task is complete, congratulate the
-   user for their contribution to the Chromium project's code health and display
-   a brief summary of the cleanup that was performed. The summary MUST include:
+5. **Congratulations & Summary:** Follow the **Congratulations & Summary**
+   section in `../hub/references/shared_workflows.md`. For this skill, the
+   **[Specific Cleanup Details]** are:
 
-   - **Gerrit CL:** The URL of the uploaded changelist.
-   - **Bug:** The Bug ID (or "None").
    - **Removed Histogram:** The name of the removed histogram and its expiry
      year.
-   - **Modified Files:** A list of all files changed.
