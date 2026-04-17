@@ -1,4 +1,0 @@
-OSCrypt gives access to simple encryption and decryption of strings.
-
-On systems where available (currently Linux and Mac), this uses system
-services to perform the encryption/decryption.
