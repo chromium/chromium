@@ -1231,6 +1231,12 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // see above.
   static Counts ResetCountsForTesting();
 
+  // Returns the size of the process-global alert targets set.
+  static size_t GetAlertTargetCountForTesting();
+
+  // Test-only wrapper around AddAlertTarget().
+  void AddAlertTargetForTesting();
+
   bool IsUIAControl() const;
 
  protected:
