@@ -8564,6 +8564,21 @@
             ]
         }
     ],
+    "DisableU18FeedbackIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260403",
+                    "enable_features": [
+                        "DisableU18FeedbackIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableUrgentPageDiscarding": [
         {
             "platforms": [
