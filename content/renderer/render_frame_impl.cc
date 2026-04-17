@@ -166,6 +166,7 @@
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/tracing_support.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
@@ -1136,7 +1137,8 @@ void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
 
 void LogCommitHistograms(base::TimeTicks commit_sent,
                          bool is_main_frame,
-                         const GURL& new_page_url) {
+                         const GURL& new_page_url,
+                         const blink::LocalFrameToken& frame_token) {
   if (!base::TimeTicks::IsConsistentAcrossProcesses())
     return;
 
@@ -1171,18 +1173,19 @@ void LogCommitHistograms(base::TimeTicks commit_sent,
     is_first_commit = false;
     if (run_loop_start_time <= now && new_page_url.is_valid() &&
         new_page_url.SchemeIsHTTPOrHTTPS()) {
+      const auto track = perfetto::NamedTrack(
+          "Navigation: RendererRunLoopStartToFirstCommitNavigation", 0,
+          blink::GetLocalFrameTracingTrack(frame_token, is_main_frame));
+      TRACE_EVENT_BEGIN("navigation",
+                        "RendererRunLoopStartToFirstCommitNavigation", track,
+                        run_loop_start_time, "url", new_page_url);
+      TRACE_EVENT_END("navigation", track, now);
       const char* const name =
           is_main_frame
               ? "Navigation.RendererRunLoopStartToFirstCommitNavigation2."
                 "MainFrame"
               : "Navigation.RendererRunLoopStartToFirstCommitNavigation2."
                 "Subframe";
-      const auto trace_id = perfetto::NamedTrack(
-          perfetto::StaticString(name),
-          reinterpret_cast<uintptr_t>(RenderThreadImpl::current()));
-      TRACE_EVENT_BEGIN("navigation", perfetto::StaticString(name), trace_id,
-                        run_loop_start_time, "url", new_page_url);
-      TRACE_EVENT_END("navigation", trace_id, now);
       base::UmaHistogramLongTimes(name, now - run_loop_start_time);
     }
   }
@@ -2615,7 +2618,7 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
-                      common_params->url);
+                      common_params->url, frame_token_);
 
   // Clear the `redirects` array to ensure it is not accidentally used somewhere
   // downstream of this code.
@@ -5249,7 +5252,8 @@ void RenderFrameImpl::DidCommitNavigationInternal(
       navigation_state->commit_params().navigation_metrics_token,
       navigation_state->common_params().url,
       navigation_state->common_params().actual_navigation_start,
-      navigation_state->commit_params().commit_sent, IsMainFrame());
+      navigation_state->commit_params().commit_sent, IsMainFrame(),
+      frame_token_);
   // Add any new code above the ProcessNavigationCommit call.
 }
 

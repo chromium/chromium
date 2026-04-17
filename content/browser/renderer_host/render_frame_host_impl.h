@@ -42,6 +42,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
@@ -338,6 +339,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public network::mojom::SharedDictionaryAccessObserver,
       public network::mojom::DeviceBoundSessionAccessObserver,
       public LockManager<storage::BucketId>::Observer,
+      public base::trace_event::TraceSessionObserver,
       public BucketContext,
       public base::PassiveMemoryConsumer {
  public:
@@ -477,6 +479,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const blink::StorageKey& GetStorageKey() const override;
   int GetRoutingID() const override;
   const blink::LocalFrameToken& GetFrameToken() const override;
+  const perfetto::NamedTrack& GetTracingTrack() const override;
   const base::UnguessableToken& GetReportingSource() override;
 
   ui::AXTreeID GetAXTreeID() override;
@@ -2818,6 +2821,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void NotifyCookiesAccessed(
       std::vector<network::mojom::CookieAccessDetailsPtr> details_vector,
       CookieAccessDetails::Source source);
+
+  // base::trace_event::TraceSessionObserver:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
   // network::mojom::TrustTokenAccessObserver:
   void OnTrustTokensAccessed(
@@ -5625,7 +5631,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   base::OnceClosure on_process_before_unload_completed_for_testing_;
 
   // Tracing track used to emit async event related to lifecycle.
-  const perfetto::NamedTrack tracing_track_;
+  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
+      tracing_track_;
 
   base::MemoryConsumerRegistration memory_consumer_registration_;
 

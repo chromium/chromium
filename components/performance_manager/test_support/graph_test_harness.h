@@ -126,6 +126,8 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node,
         outer_document_for_fenced_frame, render_frame_id, frame_token,
+        perfetto::NamedTrack("Frame",
+                             base::PersistentHash(frame_token->AsBytes())),
         browsing_instance_id, site_instance_group_id, is_current, is_active);
   }
 };

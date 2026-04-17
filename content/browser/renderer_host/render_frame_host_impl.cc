@@ -1493,6 +1493,7 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 // frame. Thus, we don't need to record separate main-frame-only metrics for
 // UKMs.
 void RecordNavigationTraceEventsAndMetrics(
+    const perfetto::NamedTrack& track,
     const NavigationRequest::Timeline& timeline,
     const GURL& url,
     bool is_primary_main_frame,
@@ -1500,14 +1501,9 @@ void RecordNavigationTraceEventsAndMetrics(
     std::optional<ukm::builders::NavigationTimeline>& ukm_builder) {
   CHECK(!timeline.start.is_null());
 
-  // Record these trace events in a global "Navigations" track, so that it can
-  // be found under "Global Track Events". Since this contains events from
-  // both the browser and renderer processes, this is preferable to nesting
-  // the track under a particular process.
-  constexpr uint64_t kGlobalInstantTrackId = 0;
-  static const perfetto::NamedTrack track1(
-      "Navigation: Timelines", base::trace_event::GetNextGlobalTraceId(),
-      perfetto::Track::Global(kGlobalInstantTrackId));
+  const perfetto::NamedTrack track1("Navigation: Timelines (Browser)",
+                                    base::trace_event::GetNextGlobalTraceId(),
+                                    track);
 
   // Convenient alias for `ukm::builders::NavigationTimeline` member functions.
   using UkmBuilderMethod = ukm::builders::NavigationTimeline& (
@@ -1767,10 +1763,10 @@ void RecordNavigationTraceEventsAndMetrics(
 
   // Create a second track (with the same name but a different ID) for showing
   // non-nested events about the duration of the navigation, with beforeunload
-  // time removed. Note that the track names are not visible in the Perfetto UI.
-  static const perfetto::NamedTrack track2(
-      "Navigation: Durations", base::trace_event::GetNextGlobalTraceId(),
-      perfetto::Track::Global(kGlobalInstantTrackId));
+  // time removed.
+  const perfetto::NamedTrack track2("Navigation: Timelines (Browser)",
+                                    base::trace_event::GetNextGlobalTraceId(),
+                                    track);
 
   base::TimeDelta beforeunload_dialog_total_duration;
   if (!timeline.beforeunload_phase1_dialog_opened.is_null() &&
@@ -2667,13 +2663,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       fenced_frame_status_(fenced_frame_status),
       devtools_frame_token_(devtools_frame_token),
       base_auction_nonce_(base::Uuid::GenerateRandomV4()),
-      tracing_track_(perfetto::NamedTrack::FromPointer(
-          "RenderFrameHostImpl",
-          this,
-          GetLocalFrameTracingTrack(
-              frame_token_,
-              is_main_frame(),
-              agent_scheduling_group_->GetProcess()->GetID()))),
+      tracing_track_(GetLocalFrameTracingTrack(
+          frame_token_,
+          is_main_frame(),
+          agent_scheduling_group_->GetProcess()->GetID())),
       memory_consumer_registration_(
           /*consumer_name=*/"RenderFrameHostImpl",
           /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
@@ -2682,15 +2675,14 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::RenderFrameHostImpl",
               perfetto::Flow::FromPointer(this));
-  TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl", tracing_track_,
-                    "render_frame_host_when_created", this);
+  base::trace_event::TraceSessionObserverList::AddObserver(this);
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.RenderFrameHostConstructor");
   // Update lifecycle state on track of RenderFrameHostImpl.
   TRACE_EVENT_BEGIN(
       "navigation",
       perfetto::StaticString{LifecycleStateImplToString(lifecycle_state_)},
-      tracing_track_);
+      *tracing_track_);
 
   CHECK_NE(routing_id_, IPC::mojom::kRoutingIdNone);
   CHECK(delegate_);
@@ -2849,6 +2841,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 }
 
 RenderFrameHostImpl::~RenderFrameHostImpl() {
+  base::trace_event::TraceSessionObserverList::RemoveObserver(this);
   TRACE_EVENT("navigation", "RenderFrameHostImpl::~RenderFrameHostImpl",
               perfetto::TerminatingFlow::FromPointer(this));
   SCOPED_CRASH_KEY_STRING256("Bug1407526", "lifecycle",
@@ -3122,11 +3115,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // Deleting the children would have deleted any guests.
   CHECK(guest_pages_.empty());
 
-  // Matches the pair of TRACE_EVENT_BEGINS in the constructor: one for
-  // "RenderFrameHostImpl" slice itself, one for the slice with the lifecycle
-  // state name.
-  TRACE_EVENT_END("navigation", tracing_track_);
-  TRACE_EVENT_END("navigation", tracing_track_);
+  // Matches the slice with the lifecycle state name.
+  TRACE_EVENT_END("navigation", *tracing_track_);
 }
 
 const blink::StorageKey& RenderFrameHostImpl::GetStorageKey() const {
@@ -3139,6 +3129,10 @@ int RenderFrameHostImpl::GetRoutingID() const {
 
 const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() const {
   return frame_token_;
+}
+
+const perfetto::NamedTrack& RenderFrameHostImpl::GetTracingTrack() const {
+  return *tracing_track_;
 }
 
 const base::UnguessableToken& RenderFrameHostImpl::GetReportingSource() {
@@ -6768,10 +6762,6 @@ RenderFrameHostImpl::GetNavigationOrDocumentHandle() {
 }
 
 void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
-  // The end of this event is in OnUnloadACK when the RenderFrame has completed
-  // the operation and sends back an IPC message.
-  TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl::Unload", tracing_track_,
-                    "render_frame_host", this);
   base::ScopedUmaHistogramTimer histogram_timer("Navigation.Unload");
 
   // If this RenderFrameHost is already pending deletion, it must have already
@@ -6915,8 +6905,6 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
     BeforeUnloadExecutionMode execution_mode) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::ProcessBeforeUnloadCompleted",
               perfetto::Flow::FromPointer(this));
-  // Corresponds to the "RenderFrameHostImpl BeforeUnload" event.
-  TRACE_EVENT_END("navigation", tracing_track_, "render_frame_host", this);
   // If this renderer navigated while the beforeunload request was in flight, we
   // may have cleared this state in DidCommitProvisionalLoad, in which case we
   // can ignore this message.
@@ -7211,8 +7199,6 @@ void RenderFrameHostImpl::OnNavigationUnloadTimeout() {
 void RenderFrameHostImpl::OnUnloaded() {
   CHECK(is_waiting_for_unload_ack_);
 
-  // Corresponds to the "RenderFrameHostImpl::Unload" event.
-  TRACE_EVENT_END("navigation", tracing_track_);
   if (unload_event_monitor_timeout_) {
     unload_event_monitor_timeout_->Stop();
   }
@@ -12245,8 +12231,6 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
                        /*proceed=*/true));
     return;
   }
-  TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl BeforeUnload",
-                    tracing_track_, "render_frame_host", this);
 
   // This may be called more than once (if the user clicks the tab close button
   // several times, or if they click the tab close button then the browser close
@@ -16497,8 +16481,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // Record navigation trace events and annotate them with the committed URL,
   // rather than the initial URL.
   RecordNavigationTraceEventsAndMetrics(
-      navigation_timeline, GetLastCommittedURL(), IsInPrimaryMainFrame(),
-      is_same_document_navigation, navigation_ukm_builder);
+      *tracing_track_, navigation_timeline, GetLastCommittedURL(),
+      IsInPrimaryMainFrame(), is_same_document_navigation,
+      navigation_ukm_builder);
 
   return true;
 }
@@ -19033,11 +19018,11 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
                LifecycleStateImplToString(new_state));
   // Finish the slice corresponding to the old lifecycle state and begin a new
   // slice for the lifecycle state we are transitioning to.
-  TRACE_EVENT_END("navigation", tracing_track_);
+  TRACE_EVENT_END("navigation", *tracing_track_);
   TRACE_EVENT_BEGIN(
       "navigation",
       perfetto::StaticString{LifecycleStateImplToString(new_state)},
-      tracing_track_);
+      *tracing_track_);
 // TODO(crbug.com/40200417): Consider associating expectations with each
 // transitions.
 #if DCHECK_IS_ON()
@@ -19406,6 +19391,15 @@ void RenderFrameHostImpl::NotifyCookiesAccessed(
         "Browser.CookieAccessObserver.RenderFrameHost.Duration.Subsampled",
         timer->Elapsed(), base::Microseconds(1), base::Seconds(1), 100);
   }
+}
+
+void RenderFrameHostImpl::OnStart(const perfetto::DataSourceBase::StartArgs&) {
+  // Re-emit `lifecycle_state_` event.
+  TRACE_EVENT_END("navigation", *tracing_track_);
+  TRACE_EVENT_BEGIN(
+      "navigation",
+      perfetto::StaticString{LifecycleStateImplToString(lifecycle_state_)},
+      *tracing_track_);
 }
 
 void RenderFrameHostImpl::OnTrustTokensAccessed(

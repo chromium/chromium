@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "content/renderer/render_thread_impl.h"
+#include "third_party/blink/public/common/tracing_support.h"
 
 namespace content {
 
@@ -212,7 +213,8 @@ void RendererNavigationMetricsManager::MarkCommitStart(
 
 void RendererNavigationMetricsManager::RecordTraceEventsAndMetrics(
     const RendererNavigationMetricsManager::Timeline& timeline,
-    const GURL& url) {
+    const GURL& url,
+    const blink::LocalFrameToken& frame_token) {
   CHECK(!timeline.navigation_start.is_null())
       << "Navigation start time not found for " << url;
 
@@ -222,14 +224,11 @@ void RendererNavigationMetricsManager::RecordTraceEventsAndMetrics(
     return;
   }
 
-  // Record these trace events in a global "Navigations" track, so that it can
-  // be found under "Global Track Events". This complements events logged
-  // from the browser process into the same track.
-  constexpr uint64_t kGlobalInstantTrackId = 0;
-  static perfetto::NamedTrack track(
+  // Record these trace events in a child track of the frame track.
+  perfetto::NamedTrack track(
       "Navigation: Timelines (Renderer)",
       base::trace_event::GetNextGlobalTraceId(),
-      perfetto::Track::Global(kGlobalInstantTrackId));
+      blink::GetLocalFrameTracingTrack(frame_token, timeline.is_main_frame));
 
   // Define a helper to log both a trace event slice and a corresponding metric
   // for one stage of a navigation.
@@ -375,7 +374,8 @@ void RendererNavigationMetricsManager::ProcessNavigationCommit(
     const GURL& url,
     const base::TimeTicks& navigation_start_time,
     const base::TimeTicks& commit_sent_time,
-    bool is_main_frame) {
+    bool is_main_frame,
+    const blink::LocalFrameToken& frame_token) {
   if (!base::FeatureList::IsEnabled(kEnableRendererNavigationTimeline)) {
     return;
   }
@@ -393,7 +393,7 @@ void RendererNavigationMetricsManager::ProcessNavigationCommit(
   timeline.commit_sent = commit_sent_time;
   timeline.commit_end = base::TimeTicks().Now();
   timeline.is_main_frame = is_main_frame;
-  RecordTraceEventsAndMetrics(timeline, url);
+  RecordTraceEventsAndMetrics(timeline, url, frame_token);
 
   // Remove the timeline from the map and cancel the cleanup timer.
   timeline.lazy_cleanup_timer_.Stop();

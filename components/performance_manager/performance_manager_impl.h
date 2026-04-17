@@ -65,6 +65,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       FrameNodeImpl* outer_document_for_fenced_frame,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
+      const perfetto::NamedTrack& tracing_track,
       content::BrowsingInstanceId browsing_instance_id,
       content::SiteInstanceGroupId site_instance_group_id,
       bool is_current,

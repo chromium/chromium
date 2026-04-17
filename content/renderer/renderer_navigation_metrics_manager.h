@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -181,7 +182,8 @@ class CONTENT_EXPORT RendererNavigationMetricsManager {
       const GURL& url,
       const base::TimeTicks& navigation_start_time,
       const base::TimeTicks& commit_sent_time,
-      bool is_main_frame);
+      bool is_main_frame,
+      const blink::LocalFrameToken& frame_token);
 
  private:
   ~RendererNavigationMetricsManager();
@@ -194,7 +196,8 @@ class CONTENT_EXPORT RendererNavigationMetricsManager {
   // that contains the navigation's final URL for convenience.
   void RecordTraceEventsAndMetrics(
       const RendererNavigationMetricsManager::Timeline& timeline,
-      const GURL& url);
+      const GURL& url,
+      const blink::LocalFrameToken& frame_token);
 
   // A map of navigation metrics tokens to corresponding Timeline objects.
   std::map<base::UnguessableToken, Timeline> timelines_;

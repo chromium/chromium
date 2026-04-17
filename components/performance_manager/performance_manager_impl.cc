@@ -95,6 +95,7 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     FrameNodeImpl* outer_document_for_fenced_frame,
     int render_frame_id,
     const blink::LocalFrameToken& frame_token,
+    const perfetto::NamedTrack& tracing_track,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
     bool is_current,
@@ -102,7 +103,8 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
   return CreateNodeImpl<FrameNodeImpl>(
       process_node, page_node, parent_frame_node,
       outer_document_for_fenced_frame, render_frame_id, frame_token,
-      browsing_instance_id, site_instance_group_id, is_current, is_active);
+      tracing_track, browsing_instance_id, site_instance_group_id, is_current,
+      is_active);
 }
 
 // static

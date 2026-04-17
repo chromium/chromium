@@ -73,8 +73,9 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-          blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceGroupId(0), /*is_current=*/true,
+          blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+          content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+          /*is_current=*/true,
           /*is_active=*/true);
   EXPECT_NE(nullptr, frame_node.get());
 
@@ -118,30 +119,34 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-          blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceGroupId(0), /*is_current*/ true,
+          blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+          content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+          /*is_current*/ true,
           /*is_active=*/true);
   std::unique_ptr<FrameNodeImpl> parent2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-          blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceGroupId(0), /*is_current*/ true,
+          blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+          content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+          /*is_current*/ true,
           /*is_active=*/true);
 
   std::unique_ptr<FrameNodeImpl> child1_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent1_frame.get(),
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-          blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceGroupId(0), /*is_current*/ true,
+          blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+          content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+          /*is_current*/ true,
           /*is_active=*/true);
   std::unique_ptr<FrameNodeImpl> child2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent2_frame.get(),
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-          blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceGroupId(0), /*is_current*/ true,
+          blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+          content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+          /*is_current*/ true,
           /*is_active=*/true);
 
   std::vector<std::unique_ptr<NodeBase>> nodes;
@@ -149,14 +154,16 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
     nodes.push_back(PerformanceManagerImpl::CreateFrameNode(
         process_node.get(), page_node.get(), child1_frame.get(),
         /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-        blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-        content::SiteInstanceGroupId(0), /*is_current*/ true,
+        blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+        content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+        /*is_current*/ true,
         /*is_active=*/true));
     nodes.push_back(PerformanceManagerImpl::CreateFrameNode(
         process_node.get(), page_node.get(), child1_frame.get(),
         /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
-        blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-        content::SiteInstanceGroupId(0), /*is_current*/ true,
+        blink::LocalFrameToken(), perfetto::NamedTrack("Frame"),
+        content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
+        /*is_current*/ true,
         /*is_active=*/true));
   }
 
