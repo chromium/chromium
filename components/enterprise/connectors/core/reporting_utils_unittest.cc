@@ -22,6 +22,19 @@ constexpr char kPasswordTrigger[] = "PASSWORD_ENTRY";
 
 }  // namespace
 
+TEST(ReportingUtilsTest, EventResultToString) {
+  EXPECT_EQ("EVENT_RESULT_UNKNOWN", EventResultToString(EventResult::UNKNOWN));
+  EXPECT_EQ("EVENT_RESULT_ALLOWED", EventResultToString(EventResult::ALLOWED));
+  EXPECT_EQ("EVENT_RESULT_WARNED", EventResultToString(EventResult::WARNED));
+  EXPECT_EQ("EVENT_RESULT_BLOCKED", EventResultToString(EventResult::BLOCKED));
+  EXPECT_EQ("EVENT_RESULT_BYPASSED",
+            EventResultToString(EventResult::BYPASSED));
+  EXPECT_EQ("EVENT_RESULT_FORCED_SAVE_TO_CLOUD",
+            EventResultToString(EventResult::FORCED_SAVE_TO_CLOUD));
+  EXPECT_EQ("EVENT_RESULT_CANCELLED",
+            EventResultToString(EventResult::CANCELLED));
+}
+
 TEST(ReportingUtilsTest, GetPasswordBreachEventReturnsValidEvent) {
   std::vector<std::pair<GURL, std::u16string>> identities = {
       {GURL("https://google.com/"), u"username"}};
@@ -268,10 +281,12 @@ TEST(ReportingUtilsTest, GetUnscannedFileEventUserCancelled) {
       /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username", /*content_size=*/-1,
-      /*event_result=*/EventResult::ALLOWED);
+      /*event_result=*/EventResult::CANCELLED);
 
   ASSERT_EQ(event.unscanned_reason(),
             chrome::cros::reporting::proto::UnscannedFileEvent::USER_CANCELLED);
+  ASSERT_EQ(event.event_result(), chrome::cros::reporting::proto::EventResult::
+                                      EVENT_RESULT_CANCELLED_BY_USER);
 }
 
 TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {

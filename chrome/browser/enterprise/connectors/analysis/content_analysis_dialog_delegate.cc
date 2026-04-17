@@ -258,6 +258,7 @@ void ContentAnalysisDialogDelegate::UpdateStateFromFinalResult(
     case FinalContentAnalysisResult::LARGE_FILES:
     case FinalContentAnalysisResult::FAIL_CLOSED:
     case FinalContentAnalysisResult::FAILURE:
+    case FinalContentAnalysisResult::CANCELLED:
       dialog_state_ = State::FAILURE;
       break;
     case FinalContentAnalysisResult::SUCCESS:

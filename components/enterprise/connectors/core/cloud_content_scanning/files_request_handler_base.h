@@ -111,6 +111,13 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
 
     // Sets the handler for this delegate.
     virtual void SetHandler(FilesRequestHandlerBase* handler) = 0;
+
+    // Cancels any pending file requests and reports the cancellation for any
+    // files that have not been reported yet.
+    virtual void MaybeCancelAndReport() = 0;
+
+    // Marks the file at the given index as reported.
+    virtual void MarkFileAsReported(size_t index) = 0;
   };
 
   // `content_analysis_info` and `upload_service` are used to manage the deep
@@ -140,6 +147,9 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   // Prepares an upload request for the file at `index`.
   FileAnalysisRequestBase* PrepareFileRequest(size_t index);
 
+  // Reports a user cancellation for the file at `index`.
+  void ReportCanceledFile(size_t index);
+
  protected:
   // Initiates scanning for all files managed by the delegate.
   bool UploadDataImpl() override;
@@ -150,6 +160,8 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
                            OnGotFileInfo_EmptyFile);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, FileRequestCallback);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
+                           Destructor_ReportsCancellation);
 
   void OnGotFileInfo(std::unique_ptr<BinaryUploadRequest> request,
                      size_t index,

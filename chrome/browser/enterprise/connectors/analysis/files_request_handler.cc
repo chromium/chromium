@@ -23,6 +23,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -106,6 +107,9 @@ FilesRequestHandler::FilesRequestHandler(
   results_.resize(paths_.size());
   file_info_.resize(paths_.size());
   start_times_.resize(paths_.size(), base::TimeTicks::Min());
+  for (size_t i = 0; i < paths_.size(); ++i) {
+    unreported_files_.insert(i);
+  }
 }
 
 // static
@@ -145,7 +149,32 @@ void FilesRequestHandler::ResetFactoryForTesting() {
     GetFactoryStorage()->Reset();
 }
 
-FilesRequestHandler::~FilesRequestHandler() = default;
+FilesRequestHandler::~FilesRequestHandler() {
+  // If all files have been reported, then we can return early without
+  // reporting a cancellation.
+  if (file_result_count_ >= paths_.size()) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
+    return;
+  }
+
+  // Report a user cancellation for each file that has not been reported yet.
+  std::ranges::for_each(unreported_files_, [this](size_t index) {
+    MaybeReportDeepScanningVerdict(
+        ReportingEventRouterFactory::GetForBrowserContext(profile_),
+        content_analysis_info_.get(), source_, destination_,
+        paths_[index].AsUTF8Unsafe(), file_info_[index].sha256_or_cb,
+        file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
+        content_transfer_method_,
+        content_analysis_info_->GetContentAreaAccountEmail(),
+        file_info_[index].size, ScanRequestUploadResult::kUserCancelled,
+        enterprise_connectors::ContentAnalysisResponse(),
+        EventResult::CANCELLED);
+  });
+}
 
 void FilesRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
@@ -384,6 +413,7 @@ void FilesRequestHandler::FileRequestCallback(
       file_info_[index].size, upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning));
+  unreported_files_.erase(index);
 
   DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS);
 

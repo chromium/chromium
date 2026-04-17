@@ -4208,6 +4208,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Local" summary="Local"/>
   </token>
   <token key="FinalResult">
+    <variant name="Cancelled"/>
     <variant name="EncryptedFiles"/>
     <variant name="FailClosed"/>
     <variant name="Failure"/>

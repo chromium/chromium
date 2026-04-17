@@ -365,12 +365,12 @@ bool ResultIsFailClosed(ScanRequestUploadResult result) {
     case ScanRequestUploadResult::kTooManyRequests:
     case ScanRequestUploadResult::kUnknown:
     case ScanRequestUploadResult::kIncompleteResponse:
-    case ScanRequestUploadResult::kUserCancelled:
       return true;
     case ScanRequestUploadResult::kSuccess:
     case ScanRequestUploadResult::kFileTooLarge:
     case ScanRequestUploadResult::kUnauthorized:
     case ScanRequestUploadResult::kFileEncrypted:
+    case ScanRequestUploadResult::kUserCancelled:
       return false;
   }
 }
@@ -449,6 +449,8 @@ RequestHandlerResult CalculateRequestHandlerResult(
     result.final_result = FinalContentAnalysisResult::LARGE_FILES;
   } else if (upload_result == ScanRequestUploadResult::kFileEncrypted) {
     result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
+  } else if (upload_result == ScanRequestUploadResult::kUserCancelled) {
+    result.final_result = FinalContentAnalysisResult::CANCELLED;
   } else {
     result.final_result = FinalContentAnalysisResult::FAILURE;
   }

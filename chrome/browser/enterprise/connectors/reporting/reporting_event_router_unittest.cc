@@ -821,6 +821,49 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Allowed) {
   run_loop.Run();
 }
 
+TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Cancelled) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyUnscannedFileEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
+
+  expected_event.set_url("about:blank");
+  expected_event.set_tab_url("tab:about:blank");
+  expected_event.set_source("exampleSource");
+  expected_event.set_destination("exampleDestination");
+  expected_event.set_file_name("encrypted.zip");
+  expected_event.set_download_digest_sha_256("DEADBEEF");
+  expected_event.set_content_type("application/zip");
+  expected_event.set_content_size(12345);
+  expected_event.set_scan_id("123");
+
+  expected_event.set_unscanned_reason(
+      chrome::cros::reporting::proto::UnscannedFileEvent::
+          FILE_PASSWORD_PROTECTED);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  expected_event.set_event_result(chrome::cros::reporting::proto::EventResult::
+                                      EVENT_RESULT_CANCELLED_BY_USER);
+  expected_event.set_clicked_through(false);
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+  validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+  reporting_event_router_->OnUnscannedFileEvent(
+      GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
+      "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
+      "application/zip", "FILE_DOWNLOAD", "123", "FILE_PASSWORD_PROTECTED", "",
+      12345, EventResult::CANCELLED);
+  RunUntilHashObtained();
+  run_loop.Run();
+}
+
 TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Blocked) {
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,

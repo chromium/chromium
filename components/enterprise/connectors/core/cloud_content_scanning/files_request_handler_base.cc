@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
@@ -87,7 +88,31 @@ FilesRequestHandlerBase::FilesRequestHandlerBase(
   }
 }
 
-FilesRequestHandlerBase::~FilesRequestHandlerBase() = default;
+FilesRequestHandlerBase::~FilesRequestHandlerBase() {
+  if (!delegate_) {
+    return;
+  }
+
+  delegate_->MaybeCancelAndReport();
+}
+
+void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
+    return;
+  }
+
+  const FileInfo& file_info = delegate_->GetFileInfo(index);
+  MaybeReportDeepScanningVerdict(
+      delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
+      delegate_->GetSource(), delegate_->GetDestination(),
+      delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
+      file_info.mime_type, AccessPointToTriggerString(access_point_),
+      content_transfer_method_,
+      content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
+      ScanRequestUploadResult::kUserCancelled,
+      enterprise_connectors::ContentAnalysisResponse(), EventResult::CANCELLED);
+}
 
 void FilesRequestHandlerBase::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
@@ -257,6 +282,7 @@ void FilesRequestHandlerBase::FileRequestCallback(
       upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning));
+  delegate_->MarkFileAsReported(index);
 
   DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS);
 

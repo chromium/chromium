@@ -61,6 +61,8 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
   std::string GetSource() override;
   std::string GetDestination() override;
   void SetHandler(FilesRequestHandlerBase* handler) override;
+  void MaybeCancelAndReport() override;
+  void MarkFileAsReported(size_t index) override;
 
  private:
   raw_ptr<FilesRequestHandlerBase> handler_;
@@ -73,6 +75,7 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
 
   RequestHandlerResult result_;
   ContentAnalysisResponse response_;
+  bool was_reported_ = false;
 
   base::WeakPtrFactory<FilesRequestHandlerIOS> weak_ptr_factory_{this};
 };

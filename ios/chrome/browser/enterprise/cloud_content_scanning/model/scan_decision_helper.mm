@@ -141,6 +141,7 @@ void HandleScanDecision(base::WeakPtr<web::WebState> web_state,
     case FinalContentAnalysisResult::LARGE_FILES:
     case FinalContentAnalysisResult::FAILURE:
     case FinalContentAnalysisResult::FAIL_CLOSED:
+    case FinalContentAnalysisResult::CANCELLED:
       DispatchSnackbarCommands(web_state.get(), trigger_type);
 
       // Block the download even if we fail to show the snackbar message to

@@ -172,6 +172,13 @@ class FilesRequestHandler : public RequestHandlerBase {
 
   std::vector<base::TimeTicks> start_times_;
 
+  // Set of file indices that have not yet been reported. This is used to
+  // determine which files to report if cancellation detected during the
+  // destruction of this object. Usually (99% of the time) this will be empty or
+  // contain few elements. In rare cases (e.g., user by mistake triggers
+  // uploading of thousands of files) this set will contain many elements.
+  std::unordered_set<size_t> unreported_files_;
+
   std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
 
   base::WeakPtrFactory<FilesRequestHandler> weak_ptr_factory_{this};

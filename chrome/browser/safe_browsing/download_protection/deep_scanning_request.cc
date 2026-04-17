@@ -217,6 +217,7 @@ GetFinalAction(enterprise_connectors::EventResult event_result) {
     // BLOCKED behaviour.
     case enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD:
     case enterprise_connectors::EventResult::BLOCKED:
+    case enterprise_connectors::EventResult::CANCELLED:
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;
       break;

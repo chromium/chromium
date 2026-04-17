@@ -188,7 +188,7 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
 
 // Tests request result should not be allowed a data use if user cancelled.
 TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUserCancelled) {
-  EXPECT_TRUE(ResultIsFailClosed(ScanRequestUploadResult::kUserCancelled));
+  EXPECT_FALSE(ResultIsFailClosed(ScanRequestUploadResult::kUserCancelled));
   EXPECT_EQ("UserCancelled",
             BinaryUploadServiceResultToString(
                 ScanRequestUploadResult::kUserCancelled, false));
@@ -366,8 +366,9 @@ TEST_F(CalculateRequestHandlerResultTest, UserCancelled) {
       ScanRequestUploadResult::kUserCancelled, response);
 
   EXPECT_FALSE(handler_result.complies);
-  EXPECT_EQ(FinalContentAnalysisResult::FAIL_CLOSED,
-            handler_result.final_result);
+  EXPECT_EQ(FinalContentAnalysisResult::CANCELLED, handler_result.final_result);
+  EXPECT_EQ("Cancelled",
+            FinalContentAnalysisResultToString(handler_result.final_result));
 }
 
 }  // namespace enterprise_connectors

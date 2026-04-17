@@ -198,15 +198,31 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
             EXPECT_TRUE(expected_mimetypes->contains(
                 unscanned_file_event.content_type()));
-            EXPECT_EQ(filenames_and_hashes.at(unscanned_file_event.file_name()),
+
+            std::string filename = unscanned_file_event.file_name();
+#if BUILDFLAG(IS_CHROMEOS)
+            // TODO(crbug.com/40941444): To fix the tests for ChromeOS.
+            // If filename is not found as expected, try the filename without
+            // path.
+            if (!filenames_and_hashes.contains(filename)) {
+              for (const auto& fh : filenames_and_hashes) {
+                if (base::FilePath(fh.first).BaseName().AsUTF8Unsafe() ==
+                    filename) {
+                  filename = fh.first;  // filename has full path now.
+                  break;
+                }
+              }
+            }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+            EXPECT_EQ(filenames_and_hashes.at(filename),
                       unscanned_file_event.download_digest_sha_256());
             if (expected_unscanned_file_event.unscanned_reason() ==
                     proto::UnscannedFileEvent::TOO_MANY_REQUESTS &&
                 unscanned_file_event.scan_id().empty()) {
-              scan_ids_.erase(unscanned_file_event.file_name());
+              scan_ids_.erase(filename);
             } else {
-              EXPECT_EQ(scan_ids_.at(unscanned_file_event.file_name()),
-                        unscanned_file_event.scan_id());
+              EXPECT_EQ(scan_ids_.at(filename), unscanned_file_event.scan_id());
             }
 
             // Clear the validated fields, so that the captured proto can match

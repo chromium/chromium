@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
 
 #import "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
+#import "components/enterprise/connectors/core/reporting_constants.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_content_analysis_request.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
@@ -120,6 +121,18 @@ ReportingEventRouter* FilesRequestHandlerIOS::GetReportingEventRouter() {
 void FilesRequestHandlerIOS::MaybeCompleteScanRequest() {
   DCHECK(!callback_.is_null());
   std::move(callback_).Run(std::move(result_));
+}
+
+void FilesRequestHandlerIOS::MaybeCancelAndReport() {
+  if (was_reported_ || path_.empty() || !handler_) {
+    return;
+  }
+
+  handler_->ReportCanceledFile(/*index=*/0);
+}
+
+void FilesRequestHandlerIOS::MarkFileAsReported(size_t index) {
+  was_reported_ = true;
 }
 
 std::string FilesRequestHandlerIOS::GetSource() {
