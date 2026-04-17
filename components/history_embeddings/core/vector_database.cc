@@ -257,7 +257,7 @@ SearchInfo VectorDatabase::FindNearest(
   }
 
   // Dimensions are always equal.
-  DCHECK_EQ(query_embedding.Dimensions(), GetEmbeddingDimensions());
+  DCHECK_EQ(query_embedding.GetData().size(), GetEmbeddingDimensions());
 
   // Magnitudes are also assumed equal; they are provided normalized by design.
   CHECK_LT(std::abs(query_embedding.Magnitude() - kUnitLength), kEpsilon);
@@ -363,7 +363,7 @@ size_t VectorDatabaseInMemory::GetEmbeddingDimensions() const {
   return data_.empty() || data_[0].passage_embeddings.empty() ||
                  !data_[0].passage_embeddings[0].has_value()
              ? 0
-             : data_[0].passage_embeddings[0]->embedding.Dimensions();
+             : data_[0].passage_embeddings[0]->embedding.GetData().size();
 }
 
 bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
@@ -376,7 +376,7 @@ bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
         continue;
       }
       // All embeddings in the database must have equal dimensions.
-      CHECK_EQ(passage_embedding->embedding.Dimensions(),
+      CHECK_EQ(passage_embedding->embedding.GetData().size(),
                GetEmbeddingDimensions());
       // All embeddings in the database are expected to be normalized.
       CHECK_LT(std::abs(passage_embedding->embedding.Magnitude() - kUnitLength),

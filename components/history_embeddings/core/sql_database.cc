@@ -755,7 +755,7 @@ bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
        url_embeddings.passage_embeddings) {
     CHECK(passage_embedding.has_value());
     CHECK_EQ(GetEmbeddingDimensions(),
-             passage_embedding->embedding.Dimensions());
+             passage_embedding->embedding.GetData().size());
     proto::EmbeddingVector* vector = value.add_vectors();
     for (float f : passage_embedding->embedding.GetData()) {
       vector->add_floats(f);

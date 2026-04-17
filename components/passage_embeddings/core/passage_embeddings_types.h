@@ -130,9 +130,6 @@ class Embedding {
   Embedding(Embedding&&);
   Embedding& operator=(Embedding&&);
 
-  // The number of elements in the data vector.
-  size_t Dimensions() const;
-
   // The length of the vector.
   float Magnitude() const;
 

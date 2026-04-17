@@ -182,10 +182,10 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
   // as the AIv4 model expects only one vector as input. We do this by
   // computing the mathematical mean of the embedding vectors.
   // This matches how the model is trained by the AI researchers.
-  std::vector<float> averaged_data(embeddings[0].Dimensions(), 0.0f);
+  std::vector<float> averaged_data(embeddings[0].GetData().size(), 0.0f);
   for (const auto& embedding : embeddings) {
-    DCHECK_EQ(embedding.Dimensions(), averaged_data.size());
     const auto& data = embedding.GetData();
+    DCHECK_EQ(data.size(), averaged_data.size());
     for (size_t i = 0; i < averaged_data.size(); ++i) {
       averaged_data[i] += data[i];
     }

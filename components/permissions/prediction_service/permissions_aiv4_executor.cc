@@ -48,10 +48,11 @@ bool PermissionsAiv4Executor::Preprocess(
   }
 
   const auto& embedding = input.inner_text_embedding;
-  if (static_cast<int>(embedding.Dimensions()) != expected_input_size) {
+  if (static_cast<int>(embedding.GetData().size()) != expected_input_size) {
     VLOG(1)
         << "[PermissionsAiv4Executor]: Input Size does not match expectations: "
-        << embedding.Dimensions() << " vs (expected) " << expected_input_size;
+        << embedding.GetData().size() << " vs (expected) "
+        << expected_input_size;
     return false;
   }
   if (!PopulateTensor<float>(embedding.GetData().data(), expected_input_size,

@@ -1216,13 +1216,13 @@ TEST_F(HistoryEmbeddingsServiceTest, RebuildAbsentEmbeddings) {
   ASSERT_EQ(url_data.passages.passages_size(), 4);
   ASSERT_EQ(url_data.passage_embeddings.size(), 4u);
   ASSERT_EQ(url_data.passages.passages(0), "test passage 1");
-  ASSERT_EQ(url_data.passage_embeddings[0]->embedding.Dimensions(), 768u);
+  ASSERT_EQ(url_data.passage_embeddings[0]->embedding.GetData().size(), 768u);
   ASSERT_EQ(url_data.passages.passages(1), "test passage ßßß");
-  ASSERT_EQ(url_data.passage_embeddings[1]->embedding.Dimensions(), 768u);
+  ASSERT_EQ(url_data.passage_embeddings[1]->embedding.GetData().size(), 768u);
   ASSERT_EQ(url_data.passages.passages(2), "ßßß");
-  ASSERT_EQ(url_data.passage_embeddings[2]->embedding.Dimensions(), 768u);
+  ASSERT_EQ(url_data.passage_embeddings[2]->embedding.GetData().size(), 768u);
   ASSERT_EQ(url_data.passages.passages(3), "");
-  ASSERT_EQ(url_data.passage_embeddings[3]->embedding.Dimensions(), 768u);
+  ASSERT_EQ(url_data.passage_embeddings[3]->embedding.GetData().size(), 768u);
 }
 
 }  // namespace history_embeddings
