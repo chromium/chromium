@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
@@ -347,7 +347,7 @@ void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
   state_.saving_browser_state_->avatar_override_clear_callback_ =
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider()
-          ->GetAvatarToolbarButton()
+          ->GetAvatarToolbarButtonInterface()
           ->SetExplicitButtonState(
               l10n_util::GetStringUTF16(
                   IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT),

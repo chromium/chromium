@@ -1758,10 +1758,6 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
   }
 }
 
-AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
-  return avatar_;
-}
-
 AvatarToolbarButtonInterface* ToolbarView::GetAvatarToolbarButtonInterface() {
   return avatar_;
 }

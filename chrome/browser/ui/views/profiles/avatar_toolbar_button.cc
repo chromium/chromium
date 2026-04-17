@@ -772,6 +772,10 @@ bool AvatarToolbarButton::HasFocus() const {
   return views::View::HasFocus();
 }
 
+views::DialogDelegate* AvatarToolbarButton::GetDialogDelegate() {
+  return GetProperty(views::kAnchoredDialogKey);
+}
+
 void AvatarToolbarButton::UpdateLayoutInsets() {
   SetLayoutInsets(::GetLayoutInsets(
       IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));

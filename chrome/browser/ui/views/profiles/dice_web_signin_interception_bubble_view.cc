@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
@@ -61,7 +60,7 @@ constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
 constexpr int kInterceptionChromeSigninBubbleWidth = 320;
 
-AvatarToolbarButton* GetAvatarToolbarButton(
+AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface(
     const BrowserWindowInterface& browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(&browser);
   // WebUI Browser does not use BrowserView.
@@ -70,7 +69,8 @@ AvatarToolbarButton* GetAvatarToolbarButton(
     return nullptr;
   }
 
-  return browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+  return browser_view->toolbar_button_provider()
+      ->GetAvatarToolbarButtonInterface();
 }
 
 std::u16string InterceptionTypeToIdentityPillText(
@@ -463,7 +463,8 @@ bool DiceWebSigninInterceptionBubbleView::IsChromeSignin() const {
 }
 
 void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
-  AvatarToolbarButton* button = GetAvatarToolbarButton(*browser_);
+  AvatarToolbarButtonInterface* adapter =
+      GetAvatarToolbarButtonInterface(*browser_);
 
   std::optional<base::RepeatingCallback<void(bool)>>
       explicit_avatar_button_action = base::IgnoreArgs<
@@ -475,7 +476,7 @@ void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
   // Adapt the identity pill, show the appropriate intercept text,
   // highlight the button as long as the text is shown and override the
   // button action (if needed).
-  clear_avatar_button_effects_callback_ = button->SetExplicitButtonState(
+  clear_avatar_button_effects_callback_ = adapter->SetExplicitButtonState(
       InterceptionTypeToIdentityPillText(bubble_parameters_.interception_type),
       InteractionTypeToIdentityPillAccessibilityLabel(
           bubble_parameters_.interception_type),
@@ -490,7 +491,7 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupportedInternal(
   // Some browsers, such as web apps, don't have an avatar toolbar button to
   // anchor the bubble. Even if a web app has an avatar toolbar button, we
   // still don't support signin interception.
-  return GetAvatarToolbarButton(browser) != nullptr &&
+  return GetAvatarToolbarButtonInterface(browser) != nullptr &&
          !web_app::AppBrowserController::IsWebApp(&browser);
 }
 

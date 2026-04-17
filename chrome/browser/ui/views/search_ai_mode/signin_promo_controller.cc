@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/branded_strings.h"
@@ -49,8 +48,9 @@ bool SearchAIModeSignInPromoController::MaybeShowPromo(
     return false;
   }
 
-  AvatarToolbarButton* avatar_button =
-      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface();
   CHECK(avatar_button);
 
   avatar_pill_closure_runner_ = avatar_button->SetExplicitButtonState(

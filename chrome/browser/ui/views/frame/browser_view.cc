@@ -184,7 +184,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
@@ -2868,9 +2867,15 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
     }
 
     if (!bubble) {
+      if (auto* avatar =
+              toolbar_button_provider_->GetAvatarToolbarButtonInterface()) {
+        auto* dialog = avatar->GetDialogDelegate();
+        if (dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
+          bubble = dialog;
+        }
+      }
       for (auto* view : std::initializer_list<views::View*>{
                GetLocationBarView(),
-               toolbar_button_provider_->GetAvatarToolbarButton(),
                toolbar_button_provider_->GetDownloadButton(), top_container_}) {
         if (view) {
           if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
@@ -5482,9 +5487,9 @@ bool BrowserView::ShouldShowAvatarToolbarIPH() {
   if (GetGuestSession() || GetIncognito()) {
     return false;
   }
-  AvatarToolbarButton* avatar_button =
+  AvatarToolbarButtonInterface* avatar_button =
       toolbar_button_provider_
-          ? toolbar_button_provider_->GetAvatarToolbarButton()
+          ? toolbar_button_provider_->GetAvatarToolbarButtonInterface()
           : nullptr;
   return avatar_button != nullptr;
 }
@@ -5973,9 +5978,9 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
   // be more precise -- about being the same as button being pressed instead of
   // just showing the avatar bubble since the action can be modified within the
   // button itself, like dismissing some other bubbles.
-  if (AvatarToolbarButton* avatar_button =
+  if (AvatarToolbarButtonInterface* avatar_button =
           toolbar_button_provider_
-              ? toolbar_button_provider_->GetAvatarToolbarButton()
+              ? toolbar_button_provider_->GetAvatarToolbarButtonInterface()
               : nullptr) {
     avatar_button->ButtonPressed(is_source_accelerator);
     return;
@@ -5990,7 +5995,7 @@ void BrowserView::MaybeShowProfileSwitchIPH() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  toolbar_button_provider_->GetAvatarToolbarButton()
+  toolbar_button_provider_->GetAvatarToolbarButtonInterface()
       ->MaybeShowProfileSwitchIPH();
 }
 
@@ -5999,7 +6004,7 @@ void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  toolbar_button_provider_->GetAvatarToolbarButton()
+  toolbar_button_provider_->GetAvatarToolbarButtonInterface()
       ->MaybeShowSupervisedUserSignInIPH();
 #endif
 }
@@ -6009,7 +6014,7 @@ void BrowserView::MaybeShowSignInBenefitsIPH() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  toolbar_button_provider_->GetAvatarToolbarButton()
+  toolbar_button_provider_->GetAvatarToolbarButtonInterface()
       ->MaybeShowSignInBenefitsIPH();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }

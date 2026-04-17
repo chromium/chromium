@@ -99,6 +99,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/toolbar:test_support",
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//components/signin/public/base",
