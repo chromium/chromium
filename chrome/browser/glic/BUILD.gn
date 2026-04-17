@@ -214,7 +214,6 @@ source_set("impl") {
     "glic_net_log.cc",
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
-    "glic_settings_util.cc",
     "glic_tab_restore_data.cc",
     "glic_tab_restore_helper.cc",
     "glic_user_status_fetcher.cc",
@@ -316,6 +315,7 @@ source_set("impl") {
       "glic_occlusion_notifier.cc",
       "glic_occlusion_notifier.h",
       "glic_selection_observer.cc",
+      "glic_settings_util_desktop.cc",
       "host/context/glic_focused_browser_manager_impl.cc",
       "host/context/glic_focused_browser_manager_impl.h",
       "host/context/glic_focused_tab_manager.cc",
@@ -344,6 +344,7 @@ source_set("impl") {
     ]
   } else {  # is_android
     sources += [
+      "glic_settings_util_android.cc",
       "widget/glic_floating_ui_android.cc",
       "widget/glic_floating_ui_android.h",
       "widget/glic_inactive_floating_ui_android.cc",

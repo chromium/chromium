@@ -9,6 +9,7 @@ generate_jni("jni_headers") {
   sources = [
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSettingsNavigation.java",
   ]
 }
 
@@ -36,6 +37,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSettingsNavigation.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
   ]
   resources_package = "org.chromium.chrome.browser.glic"
@@ -100,6 +102,8 @@ source_set("android") {
     "glic_keyed_service_android.cc",
     "glic_keyed_service_android.h",
     "glic_keyed_service_factory_android.cc",
+    "glic_settings_navigation_android.cc",
+    "glic_settings_navigation_android.h",
   ]
   public_deps = [ ":jni_headers" ]
   deps = [
@@ -110,6 +114,7 @@ source_set("android") {
     "//chrome/browser/ui",
     "//skia",
     "//third_party/jni_zero",
+    "//ui/android",
   ]
 }
 

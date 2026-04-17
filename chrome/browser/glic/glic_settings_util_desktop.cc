@@ -1,37 +1,37 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_settings_util.h"
+#include <memory>
+#include <utility>
 
-#include "base/notimplemented.h"
-#include "build/build_config.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/user_education/show_promo_in_page.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "components/user_education/common/help_bubble/help_bubble_params.h"
-#endif
+#include "url/gurl.h"
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: implement settings
 void OpenGlicSettingsPageWithPromo(Profile* profile,
                                    const base::Feature& feature,
                                    ShowPromoInPage::Params promo_params) {
@@ -56,24 +56,20 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
     glic::OpenGlicSettingsPage(profile);
   }
 }
-#endif
 
 }  // namespace
 
 namespace glic {
 
 void OpenGlicSettingsPage(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)  /// NEEDS_ANDROID_IMPL: implement settings
   auto params = std::make_unique<NavigateParams>(
       profile, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params->disposition = WindowOpenDisposition::SINGLETON_TAB;
   glic::Navigate(std::move(params));
-#endif
 }
 
 void OpenGlicOsToggleSetting(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: implement settings
   ShowPromoInPage::Params params;
   params.bubble_anchor_id = kGlicOsToggleElementId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
@@ -81,13 +77,9 @@ void OpenGlicOsToggleSetting(Profile* profile) {
       l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
 
   OpenGlicSettingsPageWithPromo(profile, features::kGlic, std::move(params));
-#else
-  OpenGlicSettingsPage(profile);
-#endif
 }
 
 void OpenGlicKeyboardShortcutSetting(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: implement settings
   ShowPromoInPage::Params params;
   params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
@@ -95,13 +87,9 @@ void OpenGlicKeyboardShortcutSetting(Profile* profile) {
       IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
   OpenGlicSettingsPageWithPromo(
       profile, features::kGlicKeyboardShortcutNewBadge, std::move(params));
-#else
-  OpenGlicSettingsPage(profile);
-#endif
 }
 
 void OpenPasswordManagerSettingsPage(Profile* profile) {
-#if !BUILDFLAG(IS_ANDROID)  /// NEEDS_ANDROID_IMPL: implement settings
   const GURL settings_url =
       base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)
           ? chrome::GetSettingsUrl(chrome::kGlicLoginSettingsSubpage)
@@ -110,9 +98,6 @@ void OpenPasswordManagerSettingsPage(Profile* profile) {
       profile, settings_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params->disposition = WindowOpenDisposition::SINGLETON_TAB;
   glic::Navigate(std::move(params));
-#else
-  NOTIMPLEMENTED();
-#endif
 }
 
 }  // namespace glic
