@@ -594,6 +594,7 @@ source_set("unit_tests") {
     "//chrome/browser/background/glic",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
   ]
   if (!is_android) {
     deps += [
