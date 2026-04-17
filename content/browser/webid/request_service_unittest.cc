@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -2032,6 +2033,26 @@ TEST_F(RequestServiceTest, OnFedCmFederatedLoginFailure) {
   configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
 
   RunAuthTest(kDefaultRequestParameters, error_request, configuration);
+}
+
+// Test that the FederatedEmbedderLoginRequest is notified when the FedCM flow
+// completes.
+TEST_F(RequestServiceTest, NotifiesFederatedEmbedderLoginRequest) {
+  GURL idp_url(kProviderUrlFull);
+  url::Origin idp_origin = url::Origin::Create(idp_url);
+  std::string account_id = "account_id123";
+
+  base::MockCallback<base::OnceCallback<void(webid::FederatedLoginResult)>>
+      result_callback;
+  // We expect kSuccess because kExpectationSuccess results in kSuccess.
+  EXPECT_CALL(result_callback, Run(webid::FederatedLoginResult::kSuccess))
+      .Times(1);
+
+  content::webid::FederatedEmbedderLoginRequest::Set(
+      web_contents(), idp_origin, account_id, result_callback.Get());
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
 }
 
 // Test successful well-known fetching.

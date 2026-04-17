@@ -172,6 +172,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
@@ -2188,6 +2189,18 @@ void WebContentsImpl::OnFedCmFederatedLogin(
     webid::FederatedLoginResult result) {
   observers_.NotifyObservers(&WebContentsObserver::OnFedCmFederatedLogin,
                              result == webid::FederatedLoginResult::kSuccess);
+
+  // OnFedCmFederatedLogin() may be invoked while the WebContents is being
+  // destroyed, so be careful when trying to access the Page.
+  if (IsBeingDestroyed()) {
+    return;
+  }
+
+  webid::FederatedEmbedderLoginRequest* embedder_login_request =
+      webid::FederatedEmbedderLoginRequest::Get(this);
+  if (embedder_login_request) {
+    embedder_login_request->OnFederatedResultReceived(result);
+  }
 }
 
 void WebContentsImpl::ResetAccessibility() {

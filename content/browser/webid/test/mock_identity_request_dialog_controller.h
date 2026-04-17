@@ -88,10 +88,6 @@ class MockIdentityRequestDialogController
                ShownModalAsyncCallback),
               (override));
   MOCK_METHOD(void, CloseModalDialog, (), (override));
-  MOCK_METHOD(void,
-              OnFlowCompleted,
-              (content::webid::FederatedLoginResult),
-              (override));
   MOCK_METHOD(void, NotifyAutofillSourceReadyForTesting, (), (override));
 
   // Request the IdP Registration permission.

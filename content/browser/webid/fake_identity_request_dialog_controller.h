@@ -94,8 +94,6 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   void CloseModalDialog() override;
 
-  void OnFlowCompleted(content::webid::FederatedLoginResult result) override;
-
   void WebContentsDestroyed() override;
 
   void RequestIdPRegistrationPermision(

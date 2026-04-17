@@ -857,174 +857,6 @@ TEST_F(IdentityDialogControllerTest,
   }
 }
 
-struct FederatedLoginResultTestParam {
-  content::webid::FederatedLoginResult login_result;
-  std::string test_name;
-};
-
-class IdentityDialogControllerOnFlowCompletedTest
-    : public IdentityDialogControllerTest,
-      public testing::WithParamInterface<FederatedLoginResultTestParam> {};
-
-TEST_P(IdentityDialogControllerOnFlowCompletedTest, OnFlowCompleted) {
-  std::unique_ptr<IdentityDialogController> controller =
-      std::make_unique<IdentityDialogController>(web_contents());
-
-  GURL idp_url("https://idp.example");
-  url::Origin idp_origin = url::Origin::Create(idp_url);
-  std::string account_id = "account_id123";
-
-  base::MockCallback<
-      base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
-      result_callback;
-  EXPECT_CALL(result_callback, Run(GetParam().login_result)).Times(1);
-
-  content::webid::FederatedEmbedderLoginRequest::Set(
-      web_contents(), idp_origin, account_id, result_callback.Get());
-
-  controller->OnFlowCompleted(GetParam().login_result);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    IdentityDialogControllerOnFlowCompletedTest,
-    testing::Values(
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kSuccess, "Success"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kContinuation,
-            "Continuation"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kAccountNotLoggedIn,
-            "AccountNotLoggedIn"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kAccountIsSignUp,
-            "AccountIsSignUp"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kAccountNotAvailable,
-            "AccountNotAvailable"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kIdpReturnedError,
-            "IdpReturnedError"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kIdpNetworkError,
-            "IdpNetworkError"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kTokenRequestAborted,
-            "TokenRequestAborted"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kFrameNotActive,
-            "FrameNotActive"},
-        FederatedLoginResultTestParam{
-            content::webid::FederatedLoginResult::kExpectedAccountNotPresent,
-            "ExpectedAccountNotPresent"}),
-    [](const testing::TestParamInfo<
-        IdentityDialogControllerOnFlowCompletedTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_F(IdentityDialogControllerTest, OnFlowCompletedNoActorLoginRequest) {
-  std::unique_ptr<IdentityDialogController> controller =
-      std::make_unique<IdentityDialogController>(web_contents());
-
-  // Test that it does not crash if there is no actor login request.
-  controller->OnFlowCompleted(content::webid::FederatedLoginResult::kSuccess);
-}
-
-TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndSuccess) {
-  std::unique_ptr<IdentityDialogController> controller =
-      std::make_unique<IdentityDialogController>(web_contents());
-  controller->SetAccountSelectionViewForTesting(
-      std::make_unique<MockAccountSelectionView>());
-
-  GURL idp_url("https://idp.example");
-  url::Origin idp_origin = url::Origin::Create(idp_url);
-  std::string account_id = "account_id123";
-
-  // Test that showing modal dialog results in kContinuation.
-  {
-    base::MockCallback<
-        base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
-        result_callback;
-    EXPECT_CALL(result_callback,
-                Run(content::webid::FederatedLoginResult::kContinuation))
-        .Times(1);
-
-    content::webid::FederatedEmbedderLoginRequest::Set(
-        web_contents(), idp_origin, account_id, result_callback.Get());
-
-    controller->ShowModalDialog(GURL("https://idp.example/login"),
-                                blink::mojom::RpMode::kActive,
-                                base::DoNothing(), base::DoNothing());
-  }
-
-  // Test Continuation -> Success.
-  {
-    base::MockCallback<
-        base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
-        result_callback;
-    EXPECT_CALL(result_callback,
-                Run(content::webid::FederatedLoginResult::kSuccess))
-        .Times(1);
-
-    // After a continuation, the callback has been consumed. For the test, we
-    // set a new request to verify that the flow can complete.
-    content::webid::FederatedEmbedderLoginRequest::Set(
-        web_contents(), idp_origin, account_id, result_callback.Get());
-
-    controller->OnFlowCompleted(content::webid::FederatedLoginResult::kSuccess);
-  }
-}
-
-TEST_F(IdentityDialogControllerTest, ActorLoginContinuationAndFailure) {
-  std::unique_ptr<IdentityDialogController> controller =
-      std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view = std::make_unique<MockAccountSelectionView>();
-  MockAccountSelectionView* mock_view_ptr = mock_view.get();
-  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
-
-  GURL idp_url("https://idp.example");
-  url::Origin idp_origin = url::Origin::Create(idp_url);
-  std::string account_id = "account_id123";
-
-  // Test that showing modal dialog results in kContinuation.
-  {
-    base::MockCallback<
-        base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
-        result_callback;
-    EXPECT_CALL(result_callback,
-                Run(content::webid::FederatedLoginResult::kContinuation))
-        .Times(1);
-
-    content::webid::FederatedEmbedderLoginRequest::Set(
-        web_contents(), idp_origin, account_id, result_callback.Get());
-
-    // Should STILL show UI.
-    EXPECT_CALL(*mock_view_ptr, ShowModalDialog)
-        .WillOnce(testing::Return(nullptr));
-
-    controller->ShowModalDialog(GURL("https://idp.example/login"),
-                                blink::mojom::RpMode::kActive,
-                                base::DoNothing(), base::DoNothing());
-  }
-
-  // Test Continuation -> Failure.
-  {
-    base::MockCallback<
-        base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
-        result_callback;
-    EXPECT_CALL(result_callback,
-                Run(content::webid::FederatedLoginResult::kIdpNetworkError))
-        .Times(1);
-
-    content::webid::FederatedEmbedderLoginRequest::Set(
-        web_contents(), idp_origin, account_id, result_callback.Get());
-
-    controller->OnFlowCompleted(
-        content::webid::FederatedLoginResult::kIdpNetworkError);
-  }
-}
-
 TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents());
@@ -1119,6 +951,32 @@ TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
         accounts_[0], content::IdentityRequestAccount::SignInMode::kExplicit,
         blink::mojom::RpMode::kActive, base::DoNothing());
   }
+}
+
+TEST_F(IdentityDialogControllerTest, ActorLoginContinuation) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+  controller->SetAccountSelectionViewForTesting(
+      std::make_unique<MockAccountSelectionView>());
+
+  GURL idp_url("https://idp.example");
+  url::Origin idp_origin = url::Origin::Create(idp_url);
+  std::string account_id = "account_id123";
+
+  // Test that showing modal dialog results in kContinuation.
+  base::MockCallback<
+      base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
+      result_callback;
+  EXPECT_CALL(result_callback,
+              Run(content::webid::FederatedLoginResult::kContinuation))
+      .Times(1);
+
+  content::webid::FederatedEmbedderLoginRequest::Set(
+      web_contents(), idp_origin, account_id, result_callback.Get());
+
+  controller->ShowModalDialog(GURL("https://idp.example/login"),
+                              blink::mojom::RpMode::kActive, base::DoNothing(),
+                              base::DoNothing());
 }
 
 class IdentityDialogControllerTestWithOptimizationDisabled

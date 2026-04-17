@@ -141,7 +141,6 @@ class IdentityDialogController
       content::IdentityRequestDialogController::ShownModalAsyncCallback
           on_shown_async) override;
   void CloseModalDialog() override;
-  void OnFlowCompleted(content::webid::FederatedLoginResult result) override;
   content::WebContents* GetRpWebContents() override;
   void RequestIdPRegistrationPermision(
       const url::Origin& origin,

@@ -174,9 +174,6 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
 
 void IdentityRequestDialogController::CloseModalDialog() {}
 
-void IdentityRequestDialogController::OnFlowCompleted(
-    content::webid::FederatedLoginResult result) {}
-
 WebContents* IdentityRequestDialogController::GetRpWebContents() {
   return nullptr;
 }
