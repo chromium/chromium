@@ -160,15 +160,15 @@ void FedCmHandler::DidShowDialog() {
 
 void FedCmHandler::DidCloseDialog() {
   CHECK(frontend_);
-  if (!enabled_) {
-    return;
+  if (enabled_) {
+    frontend_->DialogClosed(dialog_id_);
   }
-  frontend_->DialogClosed(dialog_id_);
+  dialog_id_.clear();
 }
 
 DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
                                              int in_accountIndex) {
-  if (in_dialogId != dialog_id_) {
+  if (dialog_id_.empty() || in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
   }
@@ -194,7 +194,7 @@ DispatchResponse FedCmHandler::OpenUrl(
     const String& in_dialogId,
     int in_accountIndex,
     const FedCm::AccountUrlType& in_accountUrlType) {
-  if (in_dialogId != dialog_id_) {
+  if (dialog_id_.empty() || in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
   }
@@ -234,7 +234,7 @@ DispatchResponse FedCmHandler::OpenUrl(
 DispatchResponse FedCmHandler::ClickDialogButton(
     const String& in_dialogId,
     const FedCm::DialogButton& in_dialogButton) {
-  if (in_dialogId != dialog_id_) {
+  if (dialog_id_.empty() || in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
   }
@@ -298,7 +298,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
 DispatchResponse FedCmHandler::DismissDialog(
     const String& in_dialogId,
     std::optional<bool> in_triggerCooldown) {
-  if (in_dialogId != dialog_id_) {
+  if (dialog_id_.empty() || in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
   }

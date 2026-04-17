@@ -1,0 +1,7 @@
+Check that FedCm methods fail after dialog close
+selectAccount response error: Dialog ID does not match current dialog
+openUrl response error: Dialog ID does not match current dialog
+clickDialogButton response error: Dialog ID does not match current dialog
+dismissDialog response error: Dialog ID does not match current dialog
+NetworkError: Error retrieving a token.
+
