@@ -188,7 +188,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   // they are accessible here.
   auto sandbox_flags = execution_context_->GetSandboxFlags();
 
-  if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled() &&
+  if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled(
+          execution_context_) &&
       frame.Tree().Parent() &&
       (sandbox_flags & network::mojom::blink::WebSandboxFlags::kNavigation) !=
           network::mojom::blink::WebSandboxFlags::kNone) {

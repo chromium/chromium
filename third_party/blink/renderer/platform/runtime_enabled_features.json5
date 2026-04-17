@@ -892,6 +892,7 @@
     {
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
+      origin_trial_feature_name: "BlockingFocusWithoutUserActivation",
     },
     {
       // Prevents the popup document for the select element from being opened

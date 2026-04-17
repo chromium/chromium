@@ -8117,7 +8117,8 @@ void Element::focusForBindings(const FocusOptions* options) {
   // focus-without-user-activation policy against the correct setter when the
   // target element is in a different document (e.g.
   // iframeC.contentDocument.getElementById('x').focus() called from frame B).
-  if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled()) {
+  if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled(
+          GetDocument().GetExecutionContext())) {
     v8::Isolate* isolate = GetDocument().GetAgent().isolate();
     if (LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate)) {
       params.initiator_frame = incumbent_window->GetFrame();

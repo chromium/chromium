@@ -9574,8 +9574,10 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
   }
   CountUse(uma_type);
 
-  if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
+  if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled(
+          GetExecutionContext())) {
     return true;
+  }
 
   if (trigger == FocusTrigger::kUserGesture) {
     return true;
