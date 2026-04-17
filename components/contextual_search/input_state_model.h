@@ -40,7 +40,8 @@ class InputStateModel {
       contextual_search::ContextualSearchSessionHandle& session_handle,
       const SearchboxConfig& config,
       const GURL& active_url,
-      bool is_off_the_record);
+      bool is_off_the_record,
+      bool is_signed_in);
   InputStateModel(
       const InputStateModel& other,
       contextual_search::ContextualSearchSessionHandle& new_session_handle);
@@ -123,6 +124,7 @@ class InputStateModel {
 
   raw_ptr<const PrefService> pref_service_ = nullptr;
   const bool is_off_the_record_;
+  const bool is_signed_in_;
 
   // Stores tools that are permanently disabled by an external trigger and must
   // persist through state updates. Persists after Initialize() is called.

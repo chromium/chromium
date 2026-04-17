@@ -646,11 +646,17 @@ void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
   if (OmniboxFieldTrial::kOmniboxShowModelPicker.Get()) {
     AimEligibilityService* aim_service =
         AimEligibilityServiceFactory::GetForProfile(profile_);
+    const signin::IdentityManager* identity_manager =
+        profile_ ? IdentityManagerFactory::GetForProfile(profile_) : nullptr;
+    bool has_primary_account =
+        identity_manager &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
     const omnibox::SearchboxConfig* config_ptr =
         aim_service->GetSearchboxConfig();
     input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
         *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
-        GURL(), profile_ ? profile_->IsOffTheRecord() : false);
+        GURL(), profile_ ? profile_->IsOffTheRecord() : false,
+        has_primary_account);
     input_state_subscription_ =
         input_state_model_->subscribe(base::BindRepeating(
             &ComposeboxQueryControllerBridge::OnInputStateChanged,

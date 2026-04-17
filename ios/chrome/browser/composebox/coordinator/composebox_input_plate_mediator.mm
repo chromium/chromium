@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -943,8 +944,14 @@ class QueryContextualizerDelegateBridge
 
   contextual_search::ContextualSearchSessionHandle* sessionHandle =
       _contextualSearchSession.get();
+  const signin::IdentityManager* identity_manager =
+      _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
+  BOOL has_primary_account =
+      identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
-      *sessionHandle, *searchboxConfig, GURL(), _isIncognito);
+      *sessionHandle, *searchboxConfig, GURL(), _isIncognito,
+      has_primary_account);
 
   if (needPreselection) {
     // Try maintaining the same options if there was no change in their
@@ -2791,8 +2798,13 @@ class QueryContextualizerDelegateBridge
       _aimEligibilityService->GetSearchboxConfig();
   contextual_search::ContextualSearchSessionHandle* sessionHandle =
       _contextualSearchSession.get();
+  const signin::IdentityManager* identity_manager =
+      _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
+  BOOL has_primary_account =
+      identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
-      *sessionHandle, *config, GURL(), _isIncognito);
+      *sessionHandle, *config, GURL(), _isIncognito, has_primary_account);
 }
 
 - (void)preselectPreferencesIfAvailable:

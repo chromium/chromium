@@ -202,14 +202,16 @@ InputStateModel::InputStateModel(
     contextual_search::ContextualSearchSessionHandle& session_handle,
     const SearchboxConfig& config,
     const GURL& active_url,
-    bool is_off_the_record)
+    bool is_off_the_record,
+    bool is_signed_in)
     : session_handle_(session_handle.AsWeakPtr()),
-      is_off_the_record_(is_off_the_record) {
+      is_off_the_record_(is_off_the_record),
+      is_signed_in_(is_signed_in) {
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kComposeboxDriveContextMenuOption)) {
+  if (is_signed_in_ && base::FeatureList::IsEnabled(
+                           omnibox::kComposeboxDriveContextMenuOption)) {
     MaybePopulateDriveInputTypeRule(&mutable_config);
   }
 
@@ -288,7 +290,7 @@ InputStateModel::InputStateModel(
 
   // Only add drive if it does not already exist and the drive flag is
   // enabled.
-  if (!contains(omnibox::INPUT_TYPE_DRIVE) &&
+  if (!contains(omnibox::INPUT_TYPE_DRIVE) && is_signed_in_ &&
       base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
     state_.allowed_input_types.push_back(omnibox::InputType::INPUT_TYPE_DRIVE);
@@ -313,7 +315,8 @@ InputStateModel::InputStateModel(
     const InputStateModel& new_input_state_model,
     contextual_search::ContextualSearchSessionHandle& new_session_handle)
     : session_handle_(new_session_handle.AsWeakPtr()),
-      is_off_the_record_(new_input_state_model.is_off_the_record_) {
+      is_off_the_record_(new_input_state_model.is_off_the_record_),
+      is_signed_in_(new_input_state_model.is_signed_in_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   pref_service_ = new_input_state_model.pref_service_;
