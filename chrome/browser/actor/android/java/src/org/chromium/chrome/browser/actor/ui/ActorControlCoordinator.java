@@ -280,7 +280,7 @@ public class ActorControlCoordinator
     /** Called when the close button is clicked. */
     /* package */ void onCloseClicked() {
         assert mTabBottomSheetManager.isSheetInitialized();
-        mTabBottomSheetManager.tryToCloseBottomSheet();
+        mTabBottomSheetManager.tryToCloseBottomSheet(/* animate= */ true);
     }
 
     /** Called when the peek view is clicked. */

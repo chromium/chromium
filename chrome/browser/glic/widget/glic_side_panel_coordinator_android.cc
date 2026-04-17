@@ -88,7 +88,7 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
-  bridge_->Close();
+  bridge_->Close(/* animate= */ false);
 }
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
@@ -138,7 +138,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
   }
   SetState(State::kBackgrounded);
 
-  bridge_->Close();
+  bridge_->Close(/* animate= */ false);
 }
 
 void GlicSidePanelCoordinatorAndroid::OnClosed() {

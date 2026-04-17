@@ -51,10 +51,10 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
     }
 
     @CalledByNative
-    public void close() {
+    public void close(boolean animate) {
         TabBottomSheetManager tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null) {
-            tabBottomSheetManager.tryToCloseBottomSheet();
+            tabBottomSheetManager.tryToCloseBottomSheet(animate);
         }
     }
 

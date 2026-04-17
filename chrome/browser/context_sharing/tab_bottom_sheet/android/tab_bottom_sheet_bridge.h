@@ -66,7 +66,7 @@ class TabBottomSheetBridge {
   bool Show(bool animate, bool starts_expanded);
 
   // Triggers the bottom sheet to hide and clears the web contents.
-  void Close();
+  void Close(bool animate);
 
   // Called by Java when the bottom sheet is closed.
   void OnClosed(JNIEnv* env);

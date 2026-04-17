@@ -171,7 +171,7 @@ public class TabBottomSheetManager implements Destroyable {
             boolean animate,
             boolean startsExpanded) {
         // Close any existing bottom sheet before showing a new one.
-        tryToCloseBottomSheet();
+        tryToCloseBottomSheet(/* animate= */ false);
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
@@ -205,7 +205,7 @@ public class TabBottomSheetManager implements Destroyable {
     }
 
     /** Attempts to close the Tab BottomSheet. */
-    public void tryToCloseBottomSheet() {
+    public void tryToCloseBottomSheet(boolean animate) {
         if (mTabBottomSheetCoordinator != null) {
             if (!mTabBottomSheetCoordinator.isSheetShowing()) {
                 // The bottom sheet is already closed. just send a onClose event back to native.
@@ -213,7 +213,7 @@ public class TabBottomSheetManager implements Destroyable {
             } else {
                 // The bottom sheet is showing. Close it and send a onClose event back to native.
                 mIsCloseFromNative = true;
-                mTabBottomSheetCoordinator.closeBottomSheet();
+                mTabBottomSheetCoordinator.closeBottomSheet(animate);
             }
         }
     }
@@ -343,7 +343,7 @@ public class TabBottomSheetManager implements Destroyable {
 
     private void maybeCloseBottomSheet() {
         if (mTabBottomSheetCoordinator != null && mNativeInterfaceDelegate != null) {
-            mTabBottomSheetCoordinator.closeBottomSheet();
+            mTabBottomSheetCoordinator.closeBottomSheet(/* animate= */ false);
         }
     }
 

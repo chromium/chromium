@@ -521,7 +521,7 @@ public class ActorControlCoordinatorTest {
 
         performCloseClick();
 
-        verify(mTabBottomSheetManager).tryToCloseBottomSheet();
+        verify(mTabBottomSheetManager).tryToCloseBottomSheet(/* animate= */ true);
     }
 
     @Test

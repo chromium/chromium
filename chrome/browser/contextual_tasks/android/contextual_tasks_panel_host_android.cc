@@ -51,7 +51,7 @@ void ContextualTasksPanelHostAndroid::Close(AnimationStyle animation_style) {
     return;
   }
   if (auto* bridge = GetOrCreateBridge()) {
-    bridge->Close();
+    bridge->Close(/* animate= */ true);
   }
 }
 

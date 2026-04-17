@@ -95,11 +95,12 @@ bool TabBottomSheetBridge::Show(bool animate, bool starts_expanded) {
                                                  animate, starts_expanded);
 }
 
-void TabBottomSheetBridge::Close() {
+void TabBottomSheetBridge::Close(bool animate) {
   if (co_browse_views_) {
     SetWebContents(nullptr);
   }
-  Java_TabBottomSheetNativeInterface_close(AttachCurrentThread(), java_bridge_);
+  Java_TabBottomSheetNativeInterface_close(AttachCurrentThread(), java_bridge_,
+                                           animate);
 }
 
 void TabBottomSheetBridge::OnClosed(JNIEnv* env) {

@@ -104,7 +104,8 @@ public class TabBottomSheetManagerTest {
     @After
     public void tearDown() {
         if (mManager != null) {
-            ThreadUtils.runOnUiThreadBlocking(() -> mManager.tryToCloseBottomSheet());
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> mManager.tryToCloseBottomSheet(/* animate= */ true));
         }
     }
 

@@ -294,11 +294,11 @@ public class TabBottomSheetCoordinator {
         return true;
     }
 
-    void closeBottomSheet() {
+    void closeBottomSheet(boolean animate) {
         if (!mIsShowingTabBottomSheet) {
             return;
         }
-        mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
+        mBottomSheetController.hideContent(mSheetContent, animate, StateChangeReason.NONE);
     }
 
     boolean isSheetShowing() {
