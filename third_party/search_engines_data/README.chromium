@@ -18,3 +18,10 @@ etc.
 
 The contents of this repository are populated by an automated process.
 Do not modify the content directly.
+
+For search provider data, please see:
+- the schema for engines definitions, which gives more info on the supported
+  fields and possible values: `prepopulated_engines_schema.json`
+- https://crbug.com/new?component=1710335&template=2222632 which is the bug
+  template to propose any changes (additions, updates, or removals). Chrome
+  engineers will review, verify, and apply the proposed changes.
