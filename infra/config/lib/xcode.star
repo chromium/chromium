@@ -10,5 +10,5 @@ xcode = struct(
     xcode_default = _xcode.for_ios("17a400"),
 
     # Xcode beta version used on beta bots.
-    xcode_beta = _xcode.for_ios("17f5012f"),
+    xcode_beta = _xcode.for_ios("17f5022i"),
 )
