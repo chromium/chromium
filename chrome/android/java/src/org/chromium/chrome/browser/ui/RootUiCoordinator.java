@@ -385,7 +385,7 @@ public class RootUiCoordinator
     protected final NonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final AppMenuBlocker mAppMenuBlocker;
     private final BooleanSupplier mSupportsAppMenuSupplier;
-    protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
+    protected final MonotonicObservableSupplier<TabCreatorManager> mTabCreatorManagerSupplier;
     protected final FullscreenManager mFullscreenManager;
     protected final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected StatusBarColorController mStatusBarColorController;
@@ -515,7 +515,7 @@ public class RootUiCoordinator
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             AppMenuBlocker appMenuBlocker,
             BooleanSupplier supportsAppMenuSupplier,
-            Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            MonotonicObservableSupplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<TabContentManager> tabContentManagerSupplier,
@@ -1229,6 +1229,7 @@ public class RootUiCoordinator
             Supplier<TabCreator> tabCreator =
                     () ->
                             mTabCreatorManagerSupplier
+                                    .asNonNull()
                                     .get()
                                     .getTabCreator(tabModelSelector.isIncognitoSelected());
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
@@ -1414,7 +1415,10 @@ public class RootUiCoordinator
         if (currentTab == null) return;
 
         TabCreator tabCreator =
-                mTabCreatorManagerSupplier.get().getTabCreator(currentTab.isIncognito());
+                mTabCreatorManagerSupplier
+                        .asNonNull()
+                        .get()
+                        .getTabCreator(currentTab.isIncognito());
         if (tabCreator == null) return;
 
         tabCreator.createNewTab(
@@ -2008,7 +2012,7 @@ public class RootUiCoordinator
                             assertNonNull(getBottomSheetController()),
                             getDataSharingTabManager(),
                             mTabContentManagerSupplier.get(),
-                            mTabCreatorManagerSupplier.get(),
+                            mTabCreatorManagerSupplier.asNonNull().get(),
                             getMerchantTrustSignalsCoordinatorSupplier(),
                             omniboxActionDelegate,
                             mEphemeralTabCoordinatorSupplier,
@@ -2672,7 +2676,7 @@ public class RootUiCoordinator
         mRestoreTabsFeatureHelper.maybeShowPromo(
                 mActivity,
                 mProfileSupplier.get(),
-                mTabCreatorManagerSupplier.get(),
+                mTabCreatorManagerSupplier.asNonNull().get(),
                 assertNonNull(getBottomSheetController()),
                 gtsTabListModelSizeSupplier,
                 scrollGTSToRestoredTabsCallback,

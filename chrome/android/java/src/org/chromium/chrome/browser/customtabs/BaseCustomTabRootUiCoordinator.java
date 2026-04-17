@@ -220,7 +220,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull AppMenuBlocker appMenuBlocker,
             @NonNull BooleanSupplier supportsAppMenuSupplier,
-            @NonNull Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            @NonNull MonotonicObservableSupplier<TabCreatorManager> tabCreatorManagerSupplier,
             @NonNull FullscreenManager fullscreenManager,
             @NonNull MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,

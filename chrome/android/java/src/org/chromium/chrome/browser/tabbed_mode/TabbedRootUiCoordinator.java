@@ -495,7 +495,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             AppMenuBlocker appMenuBlocker,
             BooleanSupplier supportsAppMenuSupplier,
-            Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            MonotonicObservableSupplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<TabContentManager> tabContentManagerSupplier,
@@ -1542,6 +1542,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mToolbarManager.getMenuButtonView(),
                             () -> {
                                 mTabCreatorManagerSupplier
+                                        .asNonNull()
                                         .get()
                                         .getTabCreator(/* incognito= */ false)
                                         .launchUrl(
