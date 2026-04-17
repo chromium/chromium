@@ -2875,7 +2875,7 @@ void NavigationRequest::BeginNavigationImpl() {
       // actually be failing: crbug.com/408969974. This dump is useful for
       // debugging it.
       std::string prerender_type = GeneratePrerenderHistogramSuffix(
-          GetPrerenderTriggerType(), GetPrerenderEmbedderHistogramSuffix());
+          GetPrerenderTriggerType(), GetPrerenderHistogramSuffix());
       SCOPED_CRASH_KEY_STRING64("Bug411566699", "prerender_type",
                                 prerender_type);
       base::debug::DumpWithoutCrashing();
@@ -5392,7 +5392,7 @@ void NavigationRequest::OnRequestFailedInternal(
     // be failing: crbug.com/411566699, crbug.com/408969974. This dump is useful
     // for debugging it.
     std::string prerender_type = GeneratePrerenderHistogramSuffix(
-        GetPrerenderTriggerType(), GetPrerenderEmbedderHistogramSuffix());
+        GetPrerenderTriggerType(), GetPrerenderHistogramSuffix());
     SCOPED_CRASH_KEY_STRING64("Bug411566699", "prerender_type", prerender_type);
     base::debug::DumpWithoutCrashing();
   }
@@ -11557,9 +11557,9 @@ PreloadingTriggerType NavigationRequest::GetPrerenderTriggerType() {
   return reserved_prerender_host_info_->trigger_type;
 }
 
-std::string NavigationRequest::GetPrerenderEmbedderHistogramSuffix() {
+std::string NavigationRequest::GetPrerenderHistogramSuffix() {
   CHECK(reserved_prerender_host_info_.has_value());
-  return reserved_prerender_host_info_->embedder_histogram_suffix;
+  return reserved_prerender_host_info_->histogram_suffix;
 }
 
 bool NavigationRequest::IsPrerenderHostReused() {

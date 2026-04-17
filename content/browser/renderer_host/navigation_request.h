@@ -494,7 +494,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) override;
   void GetResponseBody(ResponseBodyCallback callback) override;
   PreloadingTriggerType GetPrerenderTriggerType() override;
-  std::string GetPrerenderEmbedderHistogramSuffix() override;
+  std::string GetPrerenderHistogramSuffix() override;
   bool IsPrerenderHostReused() override;
 #if BUILDFLAG(IS_ANDROID)
   const base::android::JavaRef<jobject>& GetJavaNavigationHandle() override;

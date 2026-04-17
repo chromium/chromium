@@ -73,7 +73,7 @@ class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
   // runner's execution.
   [[nodiscard]] std::unique_ptr<PrePrefetchHandle> StartPrePrefetchRequest(
       const GURL& url,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       bool javascript_enabled,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       std::optional<PrefetchPriority> priority,

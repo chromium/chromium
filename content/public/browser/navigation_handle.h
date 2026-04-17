@@ -793,7 +793,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Prerender2:
   // Used for metrics.
   virtual PreloadingTriggerType GetPrerenderTriggerType() = 0;
-  virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
+  virtual std::string GetPrerenderHistogramSuffix() = 0;
   virtual bool IsPrerenderHostReused() = 0;
 
   // Returns a SafeRef to this handle.

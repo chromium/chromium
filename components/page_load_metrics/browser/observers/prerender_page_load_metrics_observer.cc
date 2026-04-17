@@ -141,8 +141,7 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
   // be lost after NavigationRequest is destroyed.
   DCHECK(!trigger_type_.has_value());
   trigger_type_ = navigation_handle->GetPrerenderTriggerType();
-  embedder_histogram_suffix_ =
-      navigation_handle->GetPrerenderEmbedderHistogramSuffix();
+  histogram_suffix_ = navigation_handle->GetPrerenderHistogramSuffix();
 
   const net::HttpResponseHeaders* response_headers =
       navigation_handle->GetResponseHeaders();
@@ -496,18 +495,18 @@ std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
   DCHECK(trigger_type_.has_value());
   switch (trigger_type_.value()) {
     case content::PreloadingTriggerType::kSpeculationRule:
-      DCHECK(embedder_histogram_suffix_.empty());
+      DCHECK(histogram_suffix_.empty());
       return histogram_name + ".SpeculationRule";
     case content::PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
-      DCHECK(embedder_histogram_suffix_.empty());
+      DCHECK(histogram_suffix_.empty());
       return histogram_name + ".SpeculationRuleFromIsolatedWorld";
     case content::PreloadingTriggerType::
         kSpeculationRuleFromAutoSpeculationRules:
-      DCHECK(embedder_histogram_suffix_.empty());
+      DCHECK(histogram_suffix_.empty());
       return histogram_name + ".SpeculationRuleFromAutoSpeculationRules";
     case content::PreloadingTriggerType::kEmbedder:
-      DCHECK(!embedder_histogram_suffix_.empty());
-      return histogram_name + ".Embedder_" + embedder_histogram_suffix_;
+      DCHECK(!histogram_suffix_.empty());
+      return histogram_name + ".Embedder_" + histogram_suffix_;
   }
   NOTREACHED();
 }

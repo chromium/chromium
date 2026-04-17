@@ -101,14 +101,14 @@ CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
     bool is_nav_prerender);
 
 // Gets the histogram suffix for the given `prefetch_type` and
-// `embedder_histogram_suffix`.
-// `embedder_histogram_suffix` will be utilized directly to generate the
+// `histogram_suffix`.
+// `histogram_suffix` will be utilized directly to generate the
 // histogram names. `TriggerTypeAndEagerness` in
 // //tools/metrics/histograms/metadata/prefetch/histograms.xml should be updated
 // if we start using a new one.
 CONTENT_EXPORT std::string GetMetricsSuffixTriggerTypeAndEagerness(
     const PrefetchType prefetch_type,
-    const std::optional<std::string>& embedder_histogram_suffix);
+    const std::optional<std::string>& histogram_suffix);
 
 // The max number of immediate prefetches allowed.
 inline constexpr size_t kMaxNumberOfImmediatePrefetchesPerPage = 50;

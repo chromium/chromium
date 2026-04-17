@@ -220,7 +220,7 @@ PrePrefetchServiceImpl::PreCalculatePrePrefetchHeadersOnUI(
           browser_context, key.origin.GetURL(),
           PrefetchType(PreloadingTriggerType::kEmbedder,
                        /*use_prefetch_proxy=*/true),
-          /*embedder_histogram_suffix=*/"Tentative", blink::mojom::Referrer(),
+          /*histogram_suffix=*/"Tentative", blink::mojom::Referrer(),
           key.javascript_enabled,
           /*referring_origin=*/std::nullopt,
           /*no_vary_search_hint=*/std::nullopt,
@@ -258,7 +258,7 @@ PrePrefetchServiceImpl::~PrePrefetchServiceImpl() {
 std::unique_ptr<PrePrefetchHandle>
 PrePrefetchServiceImpl::StartPrePrefetchRequest(
     const GURL& url,
-    const std::string& embedder_histogram_suffix,
+    const std::string& histogram_suffix,
     bool javascript_enabled,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     std::optional<PrefetchPriority> priority,
@@ -277,8 +277,7 @@ PrePrefetchServiceImpl::StartPrePrefetchRequest(
           browser_context_weak_on_ui_thread_, url,
           PrefetchType(PreloadingTriggerType::kEmbedder,
                        /*use_prefetch_proxy=*/true),
-          embedder_histogram_suffix, blink::mojom::Referrer(),
-          javascript_enabled,
+          histogram_suffix, blink::mojom::Referrer(), javascript_enabled,
           /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
           priority,
           /*attempt=*/nullptr, additional_headers,

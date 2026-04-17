@@ -66,9 +66,9 @@ int32_t HeaderMismatchHasher(const std::string& header,
 
 std::string GenerateHistogramName(const std::string& histogram_base_name,
                                   PreloadingTriggerType trigger_type,
-                                  const std::string& embedder_suffix) {
+                                  const std::string& histogram_suffix) {
   return histogram_base_name +
-         GeneratePrerenderHistogramSuffix(trigger_type, embedder_suffix);
+         GeneratePrerenderHistogramSuffix(trigger_type, histogram_suffix);
 }
 
 void ReportHeaderMismatch(const std::string& key,
@@ -120,13 +120,12 @@ void RecordPrerenderCancelledInterface(const std::string& interface_name,
   }
 }
 
-void RecordPrerenderFinalStatusUma(
-    PrerenderFinalStatus final_status,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
+void RecordPrerenderFinalStatusUma(PrerenderFinalStatus final_status,
+                                   PreloadingTriggerType trigger_type,
+                                   const std::string& histogram_suffix) {
   base::UmaHistogramEnumeration(
       GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
-                            trigger_type, embedder_histogram_suffix),
+                            trigger_type, histogram_suffix),
       final_status);
 }
 
@@ -268,8 +267,8 @@ PrerenderMismatchedHeaders& PrerenderMismatchedHeaders::operator=(
 
 std::string GeneratePrerenderHistogramSuffix(
     PreloadingTriggerType trigger_type,
-    const std::string& embedder_suffix) {
-  CHECK(embedder_suffix.empty() ||
+    const std::string& histogram_suffix) {
+  CHECK(histogram_suffix.empty() ||
         trigger_type == PreloadingTriggerType::kEmbedder);
   switch (trigger_type) {
     case PreloadingTriggerType::kSpeculationRule:
@@ -279,7 +278,7 @@ std::string GeneratePrerenderHistogramSuffix(
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       return ".SpeculationRuleFromAutoSpeculationRules";
     case PreloadingTriggerType::kEmbedder:
-      return ".Embedder_" + embedder_suffix;
+      return ".Embedder_" + histogram_suffix;
   }
   NOTREACHED();
 }
@@ -289,13 +288,12 @@ void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
       ukm::UkmRecorder::Get());
 }
 
-void RecordPrerenderActivationTime(
-    base::TimeDelta delta,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
+void RecordPrerenderActivationTime(base::TimeDelta delta,
+                                   PreloadingTriggerType trigger_type,
+                                   const std::string& histogram_suffix) {
   base::UmaHistogramTimes(
       GenerateHistogramName("Navigation.TimeToActivatePrerender", trigger_type,
-                            embedder_histogram_suffix),
+                            histogram_suffix),
       delta);
 }
 
@@ -306,7 +304,7 @@ void RecordFailedPrerenderFinalStatus(
            PrerenderFinalStatus::kActivated);
   RecordPrerenderFinalStatusUma(cancellation_reason.final_status(),
                                 attributes.trigger_type,
-                                attributes.embedder_histogram_suffix);
+                                attributes.histogram_suffix);
 
   if (cancellation_reason.final_status() ==
       PrerenderFinalStatus::kPrerenderFailedDuringPrefetch) {
@@ -317,7 +315,7 @@ void RecordFailedPrerenderFinalStatus(
           GenerateHistogramName("Prerender.Experimental."
                                 "PrefetchAheadOfPrerenderFailed.PrefetchStatus",
                                 attributes.trigger_type,
-                                attributes.embedder_histogram_suffix),
+                                attributes.histogram_suffix),
           prefetch_status.value());
     }
   }
@@ -335,7 +333,7 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
                              ukm::SourceId prerendered_ukm_id) {
   RecordPrerenderFinalStatusUma(PrerenderFinalStatus::kActivated,
                                 attributes.trigger_type,
-                                attributes.embedder_histogram_suffix);
+                                attributes.histogram_suffix);
   if (attributes.initiator_ukm_id != ukm::kInvalidSourceId) {
     // `initiator_ukm_id` must be valid only for the speculation rules.
     CHECK(IsSpeculationRuleType(attributes.trigger_type));
@@ -421,10 +419,10 @@ void RecordPrerenderBackNavigationEligibility(
 void RecordPrerenderActivationCommitDeferTime(
     base::TimeDelta time_delta,
     PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
+    const std::string& histogram_suffix) {
   base::UmaHistogramTimes(
       GenerateHistogramName("Navigation.Prerender.ActivationCommitDeferTime",
-                            trigger_type, embedder_histogram_suffix),
+                            trigger_type, histogram_suffix),
       time_delta);
 }
 

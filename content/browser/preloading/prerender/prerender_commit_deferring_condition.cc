@@ -78,9 +78,9 @@ PrerenderCommitDeferringCondition::WillCommitNavigation(
   if (!prerender_frame_tree_node->HasNavigation()) {
     // Record the defer waiting time for PrerenderCommitDeferringCondition as no
     // delay.
-    RecordPrerenderActivationCommitDeferTime(
-        base::TimeDelta(), prerender_host.trigger_type(),
-        prerender_host.embedder_histogram_suffix());
+    RecordPrerenderActivationCommitDeferTime(base::TimeDelta(),
+                                             prerender_host.trigger_type(),
+                                             prerender_host.histogram_suffix());
     return Result::kProceed;
   }
 
@@ -136,9 +136,9 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
     base::TimeDelta delta = base::TimeTicks::Now() - defer_start_time_;
     PrerenderHost& prerender_host =
         PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
-    RecordPrerenderActivationCommitDeferTime(
-        delta, prerender_host.trigger_type(),
-        prerender_host.embedder_histogram_suffix());
+    RecordPrerenderActivationCommitDeferTime(delta,
+                                             prerender_host.trigger_type(),
+                                             prerender_host.histogram_suffix());
   }
 }
 

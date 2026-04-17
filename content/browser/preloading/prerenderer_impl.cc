@@ -413,7 +413,7 @@ bool PrerendererImpl::MaybePrerender(
       candidate->url,
       PreloadingTriggerTypeFromSpeculationInjectionType(
           candidate->injection_type),
-      /*embedder_histogram_suffix=*/"",
+      /*histogram_suffix=*/"",
       SpeculationRulesParams(candidate->target_browsing_context_name_hint,
                              candidate->eagerness,
                              SpeculationRulesTags(candidate->tags)),

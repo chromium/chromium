@@ -1706,13 +1706,12 @@ void PrefetchContainer::NotifyPrefetchRequestComplete(
 }
 
 std::string PrefetchContainer::GetMetricsSuffix() const {
-  std::optional<std::string> embedder_histogram_suffix;
+  std::optional<std::string> histogram_suffix;
   if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
-    embedder_histogram_suffix =
-        browser_initiator_info->embedder_histogram_suffix();
+    histogram_suffix = browser_initiator_info->histogram_suffix();
   }
   return GetMetricsSuffixTriggerTypeAndEagerness(request().prefetch_type(),
-                                                 embedder_histogram_suffix);
+                                                 histogram_suffix);
 }
 
 bool PrefetchContainer::HasPreloadPipelineInfoForMetrics(
