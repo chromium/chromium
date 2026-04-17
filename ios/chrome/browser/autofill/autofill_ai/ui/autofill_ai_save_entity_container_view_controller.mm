@@ -103,7 +103,8 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   // Layout: Table view on top, button stack pinned to the bottom safe area.
   [NSLayoutConstraint activateConstraints:@[
     [tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [tableView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [tableView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [tableView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
 
     // Pin bottom of the table view to the top of the button stack.
