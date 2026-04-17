@@ -312,17 +312,6 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
         source, params, std::move(navigation_handle_callback));
   }
 
-  if (base::FeatureList::IsEnabled(
-          external_intents::kNavigationCaptureRefactorAndroid)) {
-    if (IsCustomTab() &&
-        disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-      if (OpenInAppOrChromeFromCct(params.url)) {
-        // Navigation handled, stop here. Otherwise proceed normally.
-        return nullptr;
-      }
-    }
-  }
-
   Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
   NavigateParams nav_params(profile, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
@@ -642,18 +631,6 @@ bool TabWebContentsDelegateAndroid::IsDynamicSafeAreaInsetsEnabled() const {
   }
   return Java_TabWebContentsDelegateAndroidImpl_isDynamicSafeAreaInsetsEnabled(
       env, obj);
-}
-
-bool TabWebContentsDelegateAndroid::OpenInAppOrChromeFromCct(GURL url) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null()) {
-    return false;
-  }
-  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
-
-  return Java_TabWebContentsDelegateAndroidImpl_openInAppOrChromeFromCct(
-      env, obj, jurl);
 }
 
 content::KeyboardEventProcessingResult
