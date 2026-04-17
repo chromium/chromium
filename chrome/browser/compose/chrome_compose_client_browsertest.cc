@@ -413,6 +413,12 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
     return field;
   }
 
+  void FlushPageHandler() { page_handler_.FlushForTesting(); }
+
+  ComposeSession* GetSessionForActiveComposeField() {
+    return client().GetSessionForActiveComposeField();
+  }
+
   compose::mojom::ComposeSessionUntrustedPageHandler* page_handler() {
     return page_handler_.get();
   }
@@ -1840,10 +1846,10 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   config.proactive_nudge_segmentation = true;
   config.proactive_nudge_always_collect_training_data = true;
 
-  // Mock segmentation platform to allow proactive nudge!
+  // Mock segmentation platform to allow proactive nudge.
   SetupMockSegmentationResult();
 
-  // Focus the field in the DOM to make it the active element!
+  // Focus the field in the DOM to make it the active element.
   FocusField();
 
   autofill::FormFieldData field = field_data();
@@ -1913,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = true;
 
-  // Focus the field in the DOM to make it the active element!
+  // Focus the field in the DOM to make it the active element.
   FocusField();
 
   autofill::FormFieldData field = field_data();
@@ -1971,7 +1977,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
           testing::Pair(
               ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
 
-  // Now call ShouldTriggerPopup again with delayed source and expect false!
+  // Now call ShouldTriggerPopup again with delayed source and expect false.
   const autofill::AutofillSuggestionTriggerSource delayed_trigger_source =
       autofill::AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge;
 
@@ -1995,7 +2001,7 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
 
-  // Focus the field in the DOM to make it the active element!
+  // Focus the field in the DOM to make it the active element.
   FocusField();
 
   autofill::FormFieldData field = field_data();
@@ -2077,4 +2083,260 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, TestComposeNoParsedAny) {
   // Check that no request duration OK metric was emitted.
   histograms.ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualityOnlyOneLogEntryAbandonedOnClose) {
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution(2);
+
+  // Wait for two log uploads.
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+
+  EXPECT_TRUE(compose_future.Wait());  // Reset future for second compose call.
+  compose_future.Clear();
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+
+  EXPECT_TRUE(compose_future.Wait());
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
+            uploaded_logs()[0]->compose().quality().final_status());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            uploaded_logs()[1]->compose().quality().final_status());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualityNewSessionWithSelectedText) {
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution(2);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
+
+  // Start a new session with selected text.
+  autofill::FormFieldData field = field_data();
+  field.set_value(u"user selected text");
+  field.set_selected_text(u"selected text");
+  ShowDialogAndBindMojoWithFieldData(field);
+
+  // Get quality result from the abandoned session.
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
+            uploaded_logs()[0]->compose().quality().final_status());
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Take());
+
+  // Close UI to submit remaining quality logs.
+  log_uploaded_signal.Clear();
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
+            uploaded_logs()[1]->compose().quality().final_status());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualityFinishedWithoutInsert) {
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution();
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
+
+  // Navigate to a new page.
+  GURL next_page("http://example.com/a.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), next_page));
+
+  // Get quality result from the abandoned session.
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  EXPECT_EQ(
+      optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT,
+      uploaded_logs()[0]->compose().quality().final_status());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualityFeedbackPositive) {
+  base::HistogramTester histograms;
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution();
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  ShowDialogAndBindMojo();
+  GetSessionForActiveComposeField()->SetSkipFeedbackUiForTesting(true);
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Take());
+
+  page_handler()->SetUserFeedback(
+      compose::mojom::UserFeedback::kUserFeedbackPositive);
+  // Flush Mojo pipe to ensure feedback is recorded before closing UI.
+  FlushPageHandler();
+
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Get quality logs sent for the Compose Request.
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
+            uploaded_logs()[0]->compose().quality().user_feedback());
+
+  // Check that the histogram was sent for request feedback.
+  histograms.ExpectUniqueSample(
+      "Compose.Server.Request.Feedback",
+      compose::ComposeRequestFeedback::kPositiveFeedback, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualityFeedbackNegative) {
+  base::HistogramTester histograms;
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution();
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+
+  ShowDialogAndBindMojo();
+  GetSessionForActiveComposeField()->SetSkipFeedbackUiForTesting(true);
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+  EXPECT_TRUE(compose_future.Take());
+
+  page_handler()->SetUserFeedback(
+      compose::mojom::UserFeedback::kUserFeedbackNegative);
+  // Flush Mojo pipe to ensure feedback is recorded before checking state or
+  // closing UI.
+  FlushPageHandler();
+
+  // Also verify that the feedback state is correctly preserved in the session
+  // state (this is an added check not present in the original unit test).
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> initial_state_future;
+  page_handler()->RequestInitialState(initial_state_future.GetCallback());
+  auto open_metadata = initial_state_future.Take();
+  EXPECT_EQ(compose::mojom::UserFeedback::kUserFeedbackNegative,
+            open_metadata->compose_state->feedback);
+
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Get quality logs sent for the Compose Request.
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(1u, uploaded_logs().size());
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
+            uploaded_logs()[0]->compose().quality().user_feedback());
+
+  EXPECT_EQ(
+      optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_FAILURE,
+      uploaded_logs()[0]->compose().quality().final_model_status());
+
+  // Check that the histogram was sent for request feedback.
+  histograms.ExpectUniqueSample(
+      "Compose.Server.Request.Feedback",
+      compose::ComposeRequestFeedback::kNegativeFeedback, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestComposeQualityWasEdited) {
+  base::HistogramTester histograms;
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  SetupMockModelExecution(2);
+
+  // Wait for two log uploads.
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader().WaitForLogUpload(
+      log_uploaded_signal.GetCallback().Then(base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(log_uploaded_signal.WaitAndClear());
+        logs_uploader().WaitForLogUpload(log_uploaded_signal.GetCallback());
+      })));
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+
+  EXPECT_TRUE(compose_future.Wait());  // Reset future for second compose call.
+  compose_future.Clear();
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, true);
+
+  EXPECT_TRUE(compose_future.Wait());
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  EXPECT_TRUE(log_uploaded_signal.Wait());
+  ASSERT_EQ(2u, uploaded_logs().size());
+  EXPECT_TRUE(uploaded_logs()[0]->compose().quality().was_generated_via_edit());
+  EXPECT_FALSE(
+      uploaded_logs()[1]->compose().quality().was_generated_via_edit());
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            uploaded_logs()[1]->compose().quality().final_status());
+
+  histograms.ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kFirstRequestPolishMode, 1);
+  histograms.ExpectBucketCount(
+      "Compose.Server.Request.Reason",
+      compose::ComposeRequestReason::kFirstRequestPolishMode, 1);
+  histograms.ExpectBucketCount(compose::kComposeRequestReason,
+                               compose::ComposeRequestReason::kUpdateRequest,
+                               1);
+  histograms.ExpectBucketCount("Compose.Server.Request.Reason",
+                               compose::ComposeRequestReason::kUpdateRequest,
+                               1);
+
+  // Check that the histogram was sent for request feedback.
+  histograms.ExpectUniqueSample("Compose.Server.Request.Feedback",
+                                compose::ComposeRequestFeedback::kNoFeedback,
+                                2);
 }
