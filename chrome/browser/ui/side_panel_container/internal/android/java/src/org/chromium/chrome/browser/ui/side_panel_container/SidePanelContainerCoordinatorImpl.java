@@ -92,11 +92,10 @@ final class SidePanelContainerCoordinatorImpl
             Callback<@Nullable Void> onAnimationFinishedCallback, boolean suppressAnimations) {
         log(TAG, "removeContentAndClose", mPanelType, suppressAnimations);
         ThreadUtils.assertOnUiThread();
-        mContainerView.removeAllViews();
         mSideUiCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0));
-
-        mCurrentContent = null;
+        // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
+        //  finished.
         onAnimationFinishedCallback.onResult(null);
     }
 
@@ -159,6 +158,12 @@ final class SidePanelContainerCoordinatorImpl
         if (layoutParams.width != width) {
             layoutParams.width = width;
             mContainerView.setLayoutParams(layoutParams);
+        }
+
+        // Remove the content if setting the width the 0 (i.e. hiding the panel).
+        if (width == 0) {
+            mContainerView.removeAllViews();
+            mCurrentContent = null;
         }
 
         // TODO(http://crbug.com/488047364): Notify the SidePanelContent View of the width change.
