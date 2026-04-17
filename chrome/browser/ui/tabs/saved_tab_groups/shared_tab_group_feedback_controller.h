@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -40,6 +41,9 @@ class SharedTabGroupFeedbackController : public TabStripModelObserver,
   void TearDown();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SharedTabGroupFeedbackControllerBrowserTest,
+                           UpdateFeedbackButtonVisibility);
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

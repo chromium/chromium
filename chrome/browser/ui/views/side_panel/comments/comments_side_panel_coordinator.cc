@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
@@ -143,10 +144,6 @@ void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
 
   controller->ShowActionEphemerallyInToolbar(kActionSidePanelShowComments,
                                              should_show_comments_action);
-
-  CHECK_EQ(PinnedToolbarActions::GetElementIdentifierForAction(
-               kActionSidePanelShowComments),
-           kSharedTabGroupCommentsActionElementId);
 }
 
 void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(

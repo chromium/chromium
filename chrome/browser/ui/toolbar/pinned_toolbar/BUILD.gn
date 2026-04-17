@@ -8,6 +8,7 @@ source_set("pinned_toolbar") {
 
   if (!is_android) {
     sources += [
+      "pinned_toolbar_actions_ids.h",
       "pinned_toolbar_actions_model.h",
       "pinned_toolbar_actions_model_factory.h",
       "pinned_translate_action_listener.h",
@@ -33,6 +34,7 @@ source_set("impl") {
 
   if (!is_android) {
     sources += [
+      "pinned_toolbar_actions_ids.cc",
       "pinned_toolbar_actions_model.cc",
       "pinned_toolbar_actions_model_factory.cc",
       "pinned_translate_action_listener.cc",
@@ -41,6 +43,7 @@ source_set("impl") {
     deps = [
       "//chrome/browser:primitives",
       "//chrome/browser/translate",
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",

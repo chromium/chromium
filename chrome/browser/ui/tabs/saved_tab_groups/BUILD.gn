@@ -215,6 +215,7 @@ source_set("browser_tests") {
     "collaboration_messaging_observer_browsertest.cc",
     "collaboration_messaging_page_action_controller_browsertest.cc",
     "saved_tab_group_web_contents_listener_browsertest.cc",
+    "shared_tab_group_feedback_controller_browsertest.cc",
     "tab_group_sync_delegate_browsertest.cc",
     "tab_group_sync_navigation_browser_test.cc",
   ]

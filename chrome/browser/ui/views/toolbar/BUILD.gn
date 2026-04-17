@@ -120,7 +120,6 @@ source_set("impl") {
     "overflow_button.cc",
     "pinned_action_toolbar_button.cc",
     "pinned_action_toolbar_button_menu_model.cc",
-    "pinned_toolbar_actions.cc",
     "pinned_toolbar_actions_container.cc",
     "pinned_toolbar_actions_container_layout.cc",
     "pinned_toolbar_button_status_indicator.cc",

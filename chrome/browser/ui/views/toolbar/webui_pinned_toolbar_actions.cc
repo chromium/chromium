@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 
@@ -226,7 +227,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();
     if (auto element_id =
-            PinnedToolbarActions::GetElementIdentifierForAction(id)) {
+            pinned_toolbar_actions::GetElementIdentifierForAction(id)) {
       state->element_id = element_id.GetName();
     }
     states.push_back(std::move(state));

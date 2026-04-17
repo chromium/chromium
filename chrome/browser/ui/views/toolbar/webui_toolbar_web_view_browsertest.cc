@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -2642,7 +2643,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 
   for (const auto& [action_id, mojom_action] : kActionMappings) {
     ui::ElementIdentifier id =
-        PinnedToolbarActions::GetElementIdentifierForAction(action_id);
+        pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
     if (id) {
       EXPECT_FALSE(BrowserElements::From(browser())->GetElement(id));
     }

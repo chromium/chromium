@@ -47,13 +47,6 @@ class PinnedToolbarActions : public ToolbarController::PinnedActionsDelegate {
 
   // Set |id|'s pinned state to |pin| and announce it.
   virtual void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) = 0;
-
-  // Returns the ElementIdentifier for an action. GetBubbleAnchor() should
-  // generally be used for anchoring to pinned toolbar action buttons, but if
-  // you want an action to have a specific ElementIdentifier, feel free to add
-  // it to this method.
-  static ui::ElementIdentifier GetElementIdentifierForAction(
-      actions::ActionId id);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_TOOLBAR_ACTIONS_H_

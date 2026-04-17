@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
@@ -80,7 +81,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
       action_id_(action_id),
       container_(container) {
   if (auto element_id =
-          PinnedToolbarActions::GetElementIdentifierForAction(action_id)) {
+          pinned_toolbar_actions::GetElementIdentifierForAction(action_id)) {
     SetProperty(views::kElementIdentifierKey, element_id);
   }
   ConfigureInkDropForToolbar(this);

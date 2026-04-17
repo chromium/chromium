@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
@@ -69,11 +70,6 @@ void SharedTabGroupFeedbackController::UpdateFeedbackButtonVisibility(
 
   controller->ShowActionEphemerallyInToolbar(kActionSendSharedTabGroupFeedback,
                                              should_show_button);
-
-  // Verify ElementIdentifier is set so the IPH system can find the button.
-  CHECK_EQ(PinnedToolbarActions::GetElementIdentifierForAction(
-               kActionSendSharedTabGroupFeedback),
-           kSharedTabGroupFeedbackElementId);
 }
 
 void SharedTabGroupFeedbackController::MaybeShowFeedbackActionInToolbar() {
