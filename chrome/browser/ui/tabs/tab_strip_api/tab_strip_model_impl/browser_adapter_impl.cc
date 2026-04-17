@@ -15,6 +15,11 @@ namespace tabs_api {
 // Magic number to signal new tab should be appended.
 constexpr int kAppendNewTab = -1;
 
+BrowserAdapterImpl::BrowserAdapterImpl(BrowserWindowInterface* browser)
+    : browser_(browser) {}
+
+BrowserAdapterImpl::~BrowserAdapterImpl() = default;
+
 std::vector<std::unique_ptr<TabStripModelAdapter>>
 BrowserAdapterImpl::CreateAllTabStripModelAdaptersForProfile() {
   std::vector<std::unique_ptr<TabStripModelAdapter>> results;

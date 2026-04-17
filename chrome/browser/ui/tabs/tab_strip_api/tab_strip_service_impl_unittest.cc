@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
@@ -38,7 +39,7 @@ class TabStripServiceImplTest : public ::testing::Test {
   void SetUp() override {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
     service_ = std::make_unique<TabStripServiceImpl>(
-        std::make_unique<testing::Injector>(*tab_strip_));
+        std::make_unique<testing::Injector>(*tab_strip_), nullptr);
   }
 
  protected:

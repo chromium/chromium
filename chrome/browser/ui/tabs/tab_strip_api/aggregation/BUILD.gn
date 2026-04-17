@@ -23,6 +23,7 @@ source_set("unit_tests") {
     ":aggregation",
     "//base/test:test_support",
     "//chrome/browser/ui/tabs/tab_strip_api:impl",
+    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
     "//chrome/browser/ui/tabs/tab_strip_api/events",
     "//chrome/browser/ui/tabs/tab_strip_api/observation",
     "//chrome/browser/ui/tabs/tab_strip_api/testing",

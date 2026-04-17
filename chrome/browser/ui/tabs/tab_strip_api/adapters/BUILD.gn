@@ -11,6 +11,8 @@
 source_set("adapters") {
   sources = [
     "browser_adapter.h",
+    "context_menu_adapter.h",
+    "experimental_platform_adapters_provider.h",
     "platform_adapters_provider.h",
     "tab_strip_model_adapter.h",
     "translation_adapter.h",

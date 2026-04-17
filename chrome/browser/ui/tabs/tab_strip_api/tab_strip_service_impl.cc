@@ -12,6 +12,7 @@
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
@@ -72,8 +73,12 @@ class SessionControllerImpl : public TabStripServiceImpl::SessionController {
 };
 
 TabStripServiceImpl::TabStripServiceImpl(
-    std::unique_ptr<PlatformAdaptersProvider> adapters_provider)
-    : adapters_provider_(std::move(adapters_provider)) {
+    std::unique_ptr<PlatformAdaptersProvider> adapters_provider,
+    std::unique_ptr<ExperimentalPlatformAdaptersProvider>
+        experimental_adapters_provider)
+    : adapters_provider_(std::move(adapters_provider)),
+      experimental_adapters_provider_(
+          std::move(experimental_adapters_provider)) {
   recorder_ = std::make_unique<tabs_api::events::TabStripEventRecorder>(
       base::BindRepeating(&TabStripServiceImpl::BroadcastEvents,
                           base::Unretained(this)));
@@ -99,6 +104,12 @@ TranslationAdapter& TabStripServiceImpl::translation_adapter() {
 
 BrowserAdapter& TabStripServiceImpl::browser_adapter() {
   return adapters_provider_->browser_adapter();
+}
+
+ContextMenuAdapter* TabStripServiceImpl::context_menu_adapter() {
+  return experimental_adapters_provider_
+             ? &experimental_adapters_provider_->context_menu_adapter()
+             : nullptr;
 }
 
 void TabStripServiceImpl::BroadcastEvents(
@@ -387,16 +398,20 @@ TabStripServiceImpl::ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                                         const gfx::Point& location) {
   auto session = session_controller_->CreateSession();
 
-  ASSIGN_OR_RETURN(auto handle_id, utils::GetContentNativeTabId(tab_id));
-
-  auto maybe_idx =
-      tab_strip_model_adapter().GetIndexForHandle(tabs::TabHandle(handle_id));
-  if (!maybe_idx.has_value()) {
+  std::optional<tabs::TabHandle> tab_handle = tab_id.ToTabHandle();
+  if (!tab_handle.has_value()) {
     return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kNotFound, "tab not found"));
+        mojo_base::mojom::Code::kInvalidArgument, "invalid tab id"));
   }
 
-  // TODO(crbug.com/470136275): Implement context menu logic.
+  ContextMenuAdapter* adapter = context_menu_adapter();
+  if (!adapter) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kUnimplemented, "Context menu not supported"));
+  }
+
+  RETURN_IF_ERROR(adapter->ShowTabContextMenu(tab_handle.value(), location));
+
   return std::monostate();
 }
 

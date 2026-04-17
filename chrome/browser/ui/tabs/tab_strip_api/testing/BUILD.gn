@@ -6,8 +6,12 @@ source_set("testing") {
   testonly = true
 
   sources = [
+    "experimental_injector.cc",
+    "experimental_injector.h",
     "injector.cc",
     "injector.h",
+    "toy_tab_context_menu_adapter.cc",
+    "toy_tab_context_menu_adapter.h",
     "toy_tab_strip.cc",
     "toy_tab_strip.h",
     "toy_tab_strip_browser_adapter.cc",

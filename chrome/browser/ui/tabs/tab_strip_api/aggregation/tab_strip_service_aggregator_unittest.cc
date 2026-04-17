@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
@@ -30,7 +31,8 @@ class ManagedTabStripService {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
     auto injector = std::make_unique<testing::Injector>(*tab_strip_);
     event_bridge_ = &injector->event_bridge();
-    service_ = std::make_unique<TabStripServiceImpl>(std::move(injector));
+    service_ =
+        std::make_unique<TabStripServiceImpl>(std::move(injector), nullptr);
   }
 
   ~ManagedTabStripService() {

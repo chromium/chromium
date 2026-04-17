@@ -15,22 +15,20 @@ namespace tabs_api {
 // It should *only* forward requests to the browser window.
 class BrowserAdapterImpl : public BrowserAdapter {
  public:
-  explicit BrowserAdapterImpl(BrowserWindowInterface* browser)
-      : browser_(browser) {}
+  explicit BrowserAdapterImpl(BrowserWindowInterface* browser);
   BrowserAdapterImpl(const BrowserAdapterImpl&) = delete;
   BrowserAdapterImpl operator=(const BrowserAdapterImpl&) = delete;
-  ~BrowserAdapterImpl() override = default;
+  ~BrowserAdapterImpl() override;
 
   std::vector<std::unique_ptr<TabStripModelAdapter>>
   CreateAllTabStripModelAdaptersForProfile() override;
-
   tabs::TabHandle AddTabAt(const GURL& url,
                            std::optional<int> index,
                            std::optional<tab_groups::TabGroupId> group,
                            bool pinned) override;
 
  private:
-  raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 };
 
 }  // namespace tabs_api

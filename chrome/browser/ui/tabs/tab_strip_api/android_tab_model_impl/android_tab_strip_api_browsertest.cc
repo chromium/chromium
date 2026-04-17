@@ -4,6 +4,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/testing/utils.h"
@@ -31,7 +32,7 @@ class AndroidTabStripApiBrowserTest : public AndroidBrowserTest {
     auto android_injector =
         std::make_unique<tabs_api::AndroidTabStripApiInjector>(model_);
     service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
-        std::move(android_injector));
+        std::move(android_injector), nullptr);
   }
 
   void TearDownOnMainThread() override {

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/experimental_platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_adapter_impl.h"
@@ -143,7 +144,10 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     tab_strip_service_ = std::make_unique<tabs_api::TabStripServiceImpl>(
         std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
-            browser(), browser()->tab_strip_model()));
+            browser(), browser()->tab_strip_model()),
+        std::make_unique<
+            tabs_api::tab_strip_model::TabStripModelExperimentalInjector>(
+            browser()));
   }
 
   void TearDownOnMainThread() override {
@@ -910,8 +914,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
       created_id, gfx::Point(100, 100),
       base::BindLambdaForTesting(
           [&](TabStripExperimentService::ShowTabContextMenuResult result) {
-            ASSERT_TRUE(result.has_value())
-                << "ShowTabContextMenu failed: " << result.error()->message;
+            ASSERT_FALSE(result.has_value());
+            ASSERT_EQ(result.error()->code,
+                      mojo_base::mojom::Code::kUnimplemented);
             run_loop.Quit();
           }));
   run_loop.Run();

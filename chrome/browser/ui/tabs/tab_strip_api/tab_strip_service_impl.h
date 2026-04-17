@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/context_menu_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/translation_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
@@ -25,6 +26,7 @@ class TabStripEventRecorder;
 }  // namespace events
 
 class PlatformAdaptersProvider;
+class ExperimentalPlatformAdaptersProvider;
 
 // To prevent re-entrancy, we use a session recorder to queue up all events
 // received during a subroutine. Once subroutine completes, we notify all
@@ -36,7 +38,9 @@ class TabStripServiceImpl
       public tabs_api::observation::TabStripApiBatchedObserver {
  public:
   TabStripServiceImpl(
-      std::unique_ptr<PlatformAdaptersProvider> adapters_provider);
+      std::unique_ptr<PlatformAdaptersProvider> adapters_provider,
+      std::unique_ptr<ExperimentalPlatformAdaptersProvider>
+          experimental_adapters_provider);
   TabStripServiceImpl(const TabStripServiceImpl&) = delete;
   TabStripServiceImpl operator=(const TabStripServiceImpl&&) = delete;
   ~TabStripServiceImpl() override;
@@ -113,6 +117,7 @@ class TabStripServiceImpl
   TabStripModelAdapter& tab_strip_model_adapter();
   TranslationAdapter& translation_adapter();
   BrowserAdapter& browser_adapter();
+  ContextMenuAdapter* context_menu_adapter();
 
   void BroadcastEvents(
       const std::vector<tabs_api::events::Event>& events) const;
@@ -126,6 +131,8 @@ class TabStripServiceImpl
       const std::optional<std::vector<std::string>>& update_mask);
 
   std::unique_ptr<PlatformAdaptersProvider> adapters_provider_;
+  std::unique_ptr<ExperimentalPlatformAdaptersProvider>
+      experimental_adapters_provider_;
   std::unique_ptr<events::TabStripEventRecorder> recorder_;
 
   std::unique_ptr<SessionController> session_controller_;

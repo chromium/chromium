@@ -389,7 +389,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_strip_service_feature_ = std::make_unique<TabStripServiceFeature>(
       std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
-          browser, tab_strip_model_));
+          browser, tab_strip_model_),
+      std::make_unique<
+          tabs_api::tab_strip_model::TabStripModelExperimentalInjector>(
+          browser));
 
   memory_saver_bubble_controller_ =
       std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
