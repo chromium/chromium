@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">分享密码</translation>
 <translation id="1554043146674176775">关闭 AI 模式</translation>
 <translation id="1554477036522844996">打开新的窗口</translation>
+<translation id="1554605811306591212">须遵守 Google 的《<ph name="TERMS" />》《<ph name="KOREAN_LOCATION_TERMS" />》和《<ph name="PRIVACY_NOTICE" />》。Gemini 是一款 AI 工具，可能会犯错（包括与人相关的信息）。</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="1565371473877914088">打开新的无痕式标签页</translation>
 <translation id="1567960978791353852">显示阅读模式</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">使用键盘</translation>
 <translation id="4415276339145661267">管理您的 Google 账号</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
+<translation id="441868831736628555">隐私权声明</translation>
 <translation id="4420409367264901497">修改书签</translation>
 <translation id="4425365312778464779">此账号处于受管理状态</translation>
 <translation id="4430277756566635951">目前选择的是：<ph name="EMAIL" />。请选择一个账号。</translation>
@@ -1788,6 +1790,7 @@
 <translation id="7261217796641151584">共享分组</translation>
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
+<translation id="7275307913765547631">韩国位置信息条款</translation>
 <translation id="728025568708172005">开始导览</translation>
 <translation id="7280980607183752256">无法导入此文件</translation>
 <translation id="7281202269687163394">您的隐私权与 Gemini。</translation>
@@ -2002,6 +2005,7 @@
 <translation id="7996239959906074962">设置…</translation>
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>
 <translation id="8005666035647241369">保存到此设备上的 Google 密码管理工具中</translation>
+<translation id="8006265839264939135">条款</translation>
 <translation id="8010488806779226127">探索提升浏览体验的实用功能</translation>
 <translation id="8011489434346330032">网页检查器</translation>
 <translation id="8014007212279733632">先验证身份，再自动填充敏感信息</translation>

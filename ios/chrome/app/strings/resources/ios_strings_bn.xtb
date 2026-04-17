@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">পাসওয়ার্ড শেয়ার করুন</translation>
 <translation id="1554043146674176775">AI মোড বন্ধ করুন</translation>
 <translation id="1554477036522844996">নতুন উইন্ডো</translation>
+<translation id="1554605811306591212">আমাদের <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> ও <ph name="PRIVACY_NOTICE" /> প্রযোজ্য। Gemini হল AI এবং এটি ভুল করতে পারে, এমনকি লোকজন সম্পর্কেও ভুল তথ্য দিতে পারে।</translation>
 <translation id="1558391695376153246">ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="1565371473877914088">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1567960978791353852">রিডিং মোড দেখুন</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">কীবোর্ড ব্যবহার করুন</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4416582610654027550">একটি সঠিক URL লিখুন</translation>
+<translation id="441868831736628555">গোপনীয়তা বিজ্ঞপ্তি</translation>
 <translation id="4420409367264901497">বুকমার্ক এডিট করুন</translation>
 <translation id="4425365312778464779">এটি একটি ম্যানেজ করা অ্যাকাউন্ট</translation>
 <translation id="4430277756566635951">বর্তমানে <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
@@ -1789,6 +1791,7 @@
 <translation id="7261217796641151584">গ্রুপ শেয়ার করুন</translation>
 <translation id="7266578100016339897">এটি আপনাকে সব কিছু গুছিয়ে রাখতে সাহায্য করে। যেকোনও সময় সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
+<translation id="7275307913765547631">Korean লোকেশনের শর্তাবলী</translation>
 <translation id="728025568708172005">আমাকে দেখাও</translation>
 <translation id="7280980607183752256">এই ফাইল ইমপোর্ট করা যাবে না</translation>
 <translation id="7281202269687163394">আপনার গোপনীয়তা ও Gemini</translation>
@@ -2003,6 +2006,7 @@
 <translation id="7996239959906074962">সেট-আপ করুন…</translation>
 <translation id="800361585186029508">Google Chrome-এ ইনপুট করা ইউআরএলগুলি খোলে।</translation>
 <translation id="8005666035647241369">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
+<translation id="8006265839264939135">শর্তাবলী</translation>
 <translation id="8010488806779226127">ব্রাউজ করার সময় আপনাকে আরও অনেক কিছু করতে সাহায্য করে এমন ফিচার এক্সপ্লোর করুন</translation>
 <translation id="8011489434346330032">ওয়েব ইন্সপেক্টর</translation>
 <translation id="8014007212279733632">সংবেদনশীল তথ্য অটোফিল করতে, আপনার পরিচয় যাচাই করান</translation>

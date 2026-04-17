@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Comparte contraseñas</translation>
 <translation id="1554043146674176775">Desactivar Modo IA</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
+<translation id="1554605811306591212">Se aplican nuestros <ph name="TERMS" />, los <ph name="KOREAN_LOCATION_TERMS" /> y la <ph name="PRIVACY_NOTICE" />. Gemini es una IA y puede cometer errores, incluso sobre personas.</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1565371473877914088">Nueva pestaña de Incógnito</translation>
 <translation id="1567960978791353852">Mostrar modo Lectura</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Usar teclado</translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4416582610654027550">Escribe una URL válida</translation>
+<translation id="441868831736628555">Aviso de privacidad</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4425365312778464779">Esta es una cuenta gestionada</translation>
 <translation id="4430277756566635951">Se ha seleccionado <ph name="EMAIL" />. Elige una cuenta.</translation>
@@ -1788,6 +1790,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Esto te ayuda a mantener el orden. Puedes cambiarlo en los ajustes en cualquier momento.</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
+<translation id="7275307913765547631">Términos del Servicio de Ubicación de Corea</translation>
 <translation id="728025568708172005">Ver ahora</translation>
 <translation id="7280980607183752256">Este archivo no se puede importar</translation>
 <translation id="7281202269687163394">Tu privacidad y Gemini.</translation>
@@ -2002,6 +2005,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre las URL introducidas en Google Chrome.</translation>
 <translation id="8005666035647241369">En el Gestor de contraseñas de Google de este dispositivo</translation>
+<translation id="8006265839264939135">Términos</translation>
 <translation id="8010488806779226127">Descubre funciones que pueden ayudarte a hacer más cosas mientras navegas</translation>
 <translation id="8011489434346330032">Inspector web</translation>
 <translation id="8014007212279733632">Verificar que eres tú para autocompletar información sensible</translation>

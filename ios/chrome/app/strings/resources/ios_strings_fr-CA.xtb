@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Partagez des mots de passe</translation>
 <translation id="1554043146674176775">Désactiver le mode IA</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
+<translation id="1554605811306591212">Nos <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> et <ph name="PRIVACY_NOTICE" /> s'appliquent. Gemini est une IA et peut se tromper, même à propos de personnes.</translation>
 <translation id="1558391695376153246">Fermer onglets navig. privée</translation>
 <translation id="1565371473877914088">Nouvel onglet de navigation privée</translation>
 <translation id="1567960978791353852">Afficher le mode Lecture</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Utiliser le clavier</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4416582610654027550">Entrez une URL valide</translation>
+<translation id="441868831736628555">Avis de confidentialité</translation>
 <translation id="4420409367264901497">Modifier le favori</translation>
 <translation id="4425365312778464779">Ce compte est géré</translation>
 <translation id="4430277756566635951">Actuellement sélectionné : <ph name="EMAIL" />. Sélectionnez un compte.</translation>
@@ -1788,6 +1790,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7261217796641151584">Partager le groupe</translation>
 <translation id="7266578100016339897">Cela vous aide à rester organisé. Vous pouvez modifier cette option dans les paramètres en tout temps.</translation>
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
+<translation id="7275307913765547631">conditions du service de localisation coréen</translation>
 <translation id="728025568708172005">Commencer la visite guidée</translation>
 <translation id="7280980607183752256">Impossible d'importer ce fichier</translation>
 <translation id="7281202269687163394">Gemini et votre confidentialité</translation>
@@ -2002,6 +2005,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7996239959906074962">Configurer…</translation>
 <translation id="800361585186029508">Ouvre les URL entrées dans Google Chrome.</translation>
 <translation id="8005666035647241369">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
+<translation id="8006265839264939135">conditions d'utilisation</translation>
 <translation id="8010488806779226127">Découvrez des fonctionnalités qui peuvent vous aider à en faire plus lorsque vous naviguez</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
 <translation id="8014007212279733632">Confirmer qu'il s'agit bien de vous pour remplir automatiquement les infos sensibles</translation>

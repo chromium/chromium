@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">പാസ്‍വേഡുകൾ പങ്കിടുക</translation>
 <translation id="1554043146674176775">AI മോഡ് ഓഫാക്കുക</translation>
 <translation id="1554477036522844996">പുതിയ വിന്‍ഡോ</translation>
+<translation id="1554605811306591212">ഞങ്ങളുടെ <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" />, <ph name="PRIVACY_NOTICE" /> എന്നിവ ബാധകമാണ്. Gemini AI ആണ്, ആളുകളെ കുറിച്ചുള്ള കാര്യങ്ങളിൽ ഉൾപ്പെടെ അതിന് തെറ്റുകൾ സംഭവിക്കാം.</translation>
 <translation id="1558391695376153246">അദൃശ്യ ടാബുകൾ അടയ്‌ക്കുക</translation>
 <translation id="1565371473877914088">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="1567960978791353852">റീഡിംഗ് മോഡ് കാണിക്കുക</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">കീബോർഡ് ഉപയോഗിക്കുക</translation>
 <translation id="4415276339145661267">നിങ്ങളുടെ Google Account മാനേജ് ചെയ്യുക</translation>
 <translation id="4416582610654027550">സാധുതയുള്ള URL ടൈപ്പ് ചെയ്യുക</translation>
+<translation id="441868831736628555">സ്വകാര്യത അറിയിപ്പ്</translation>
 <translation id="4420409367264901497">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="4425365312778464779">ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യപ്പെടുന്നു</translation>
 <translation id="4430277756566635951">നിലവിൽ <ph name="EMAIL" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
@@ -1788,6 +1790,7 @@
 <translation id="7261217796641151584">ഗ്രൂപ്പ് പങ്കിടുക</translation>
 <translation id="7266578100016339897">ഓർഗനൈസ് ചെ‌യ്‌ത് തുടരാൻ ഇത് നിങ്ങളെ സഹായിക്കും. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് ഏത് സമയത്തും മാറ്റാനാകും.</translation>
 <translation id="7272437679830969316">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കാനാകില്ല. പാസ്‍വേഡ് പകർത്തിയില്ല.</translation>
+<translation id="7275307913765547631">കൊറിയൻ ലൊക്കേഷൻ നിബന്ധനകൾ</translation>
 <translation id="728025568708172005">എന്നെ കാണിക്കൂ</translation>
 <translation id="7280980607183752256">ഈ ഫയൽ ഇമ്പോർട്ട് ചെയ്യാനാകില്ല</translation>
 <translation id="7281202269687163394">നിങ്ങളുടെ സ്വകാര്യതയും Gemini-യും.</translation>
@@ -2002,6 +2005,7 @@
 <translation id="7996239959906074962">സജ്ജീകരിക്കുക…</translation>
 <translation id="800361585186029508">Google Chrome-ൽ നൽകിയിട്ടുള്ള URL-കൾ തുറക്കുന്നു.</translation>
 <translation id="8005666035647241369">ഈ ഉപകരണത്തിലെ Google പാസ്‌വേഡ് മാനേജരിലേക്ക്</translation>
+<translation id="8006265839264939135">നിബന്ധനകൾ</translation>
 <translation id="8010488806779226127">നിങ്ങൾ ബ്രൗസ് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ തന്നെ കൂടുതൽ കാര്യങ്ങൾ ചെയ്യാൻ സഹായിക്കുന്ന ഫീച്ചറുകൾ അടുത്തറിയുക</translation>
 <translation id="8011489434346330032">വെബ് ഇൻസ്‌പെക്‌ടർ</translation>
 <translation id="8014007212279733632">സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ സ്വയമേവ പൂരിപ്പിക്കുന്നതിന് ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>

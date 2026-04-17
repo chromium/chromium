@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Կիսվեք գաղտնաբառերով</translation>
 <translation id="1554043146674176775">Անջատել ԱԲ ռեժիմը</translation>
 <translation id="1554477036522844996">Նոր պատուհան</translation>
+<translation id="1554605811306591212">Կիրառվում են մեր <ph name="TERMS" />ը, <ph name="KOREAN_LOCATION_TERMS" />ը և <ph name="PRIVACY_NOTICE" />ը։ Gemini-ը արհեստական բանականություն է և կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին։</translation>
 <translation id="1558391695376153246">Փակել ինկոգնիտո ներդիրները</translation>
 <translation id="1565371473877914088">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="1567960978791353852">Բացել ընթերցման ռեժիմը</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Օգտագործել ստեղնաշարը</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4416582610654027550">Մուտքագրեք վավեր URL</translation>
+<translation id="441868831736628555">Գաղտնիության ծանուցագիր</translation>
 <translation id="4420409367264901497">Փոփոխել էջանիշը</translation>
 <translation id="4425365312778464779">Սա կառավարվող հաշիվ է</translation>
 <translation id="4430277756566635951">Ներկայումս ընտրված է <ph name="EMAIL" /> հաշիվը։ Ընտրեք հաշիվ։</translation>
@@ -1788,6 +1790,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7261217796641151584">Կիսվել խմբով</translation>
 <translation id="7266578100016339897">Այս պարամետրը կօգնի ձեզ ամեն ինչ կազմակերպված պահել։ Այն ցանկացած ժամանակ կարող եք փոխել կարգավորումներում։</translation>
 <translation id="7272437679830969316">Չհաջողվեց հաստատել ձեր ինքնությունը: Գաղտնաբառը չի պատճենվել:</translation>
+<translation id="7275307913765547631">Կորեայում տեղադրության մասին տվյալների օգտագործման պայմաններ</translation>
 <translation id="728025568708172005">Ցույց տալ շրջակայքը</translation>
 <translation id="7280980607183752256">Այս ֆայլը հնարավոր չէ ներմուծել</translation>
 <translation id="7281202269687163394">Ձեր գաղտնիությունը և Gemini-ը։</translation>
@@ -2002,6 +2005,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7996239959906074962">Կարգավորել…</translation>
 <translation id="800361585186029508">Մուտքագրված URL-ները բացվում են Google Chrome-ում։</translation>
 <translation id="8005666035647241369">Այս սարքի Google Գաղտնաբառերի կառավարիչում</translation>
+<translation id="8006265839264939135">Պայմաններ</translation>
 <translation id="8010488806779226127">Բացահայտեք այն գործառույթները, որոնք կարող են օգնել ձեզ ավելին անել դիտարկումների ժամանակ</translation>
 <translation id="8011489434346330032">Վեբ զննիչ</translation>
 <translation id="8014007212279733632">Հաստատեք ձեր ինքնությունը՝ զգայուն տեղեկություններն ավտոմատ լրացնելու համար</translation>

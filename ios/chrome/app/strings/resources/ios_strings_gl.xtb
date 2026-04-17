@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Comparte contrasinais</translation>
 <translation id="1554043146674176775">Desactivar o modo IA</translation>
 <translation id="1554477036522844996">Nova ventá</translation>
+<translation id="1554605811306591212">Aplícanse as nosas <ph name="TERMS" />, as <ph name="KOREAN_LOCATION_TERMS" /> e a <ph name="PRIVACY_NOTICE" />. Gemini é unha IA e pode cometer erros (mesmo no referente á información sobre persoas).</translation>
 <translation id="1558391695376153246">Pechar pestanas incógnito</translation>
 <translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
 <translation id="1567960978791353852">Mostrar modo de lectura</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Utilizar teclado</translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4416582610654027550">Escribe un URL válido</translation>
+<translation id="441868831736628555">Aviso de privacidade</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4425365312778464779">Esta conta está xestionada</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Escolle unha conta.</translation>
@@ -1788,6 +1790,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Axudarache a ter todo organizado. Podes cambialo cando queiras en Configuración.</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
+<translation id="7275307913765547631">Condicións de localización de Corea</translation>
 <translation id="728025568708172005">Iniciar introdución</translation>
 <translation id="7280980607183752256">Este ficheiro non se pode importar</translation>
 <translation id="7281202269687163394">A túa privacidade e Gemini.</translation>
@@ -2002,6 +2005,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre os URL introducidos en Google Chrome.</translation>
 <translation id="8005666035647241369">No xestor de contrasinais de Google neste dispositivo</translation>
+<translation id="8006265839264939135">Condicións</translation>
 <translation id="8010488806779226127">Explora funcións que che poden axudar a facer máis cousas mentres navegas</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verifica a túa identidade para autocompletar a información confidencial</translation>

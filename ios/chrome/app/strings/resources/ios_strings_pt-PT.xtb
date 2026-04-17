@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Partilhe palavras-passe</translation>
 <translation id="1554043146674176775">Desativar Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1554605811306591212">Aplicam-se os nossos <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> e <ph name="PRIVACY_NOTICE" />. O Gemini é IA e pode cometer erros, inclusive sobre pessoas.</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1565371473877914088">Novo separador de navegação anónima</translation>
 <translation id="1567960978791353852">Mostrar modo de leitura</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Usar teclado</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4416582610654027550">Introduza um URL válido.</translation>
+<translation id="441868831736628555">Aviso de Privacidade</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4425365312778464779">Esta conta é gerida</translation>
 <translation id="4430277756566635951">Seleção atual: <ph name="EMAIL" />. Selecione uma conta.</translation>
@@ -1788,6 +1790,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7261217796641151584">Partilhar grupo</translation>
 <translation id="7266578100016339897">Isto ajuda a manter a organização. Pode alterar esta opção nas definições em qualquer altura.</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
+<translation id="7275307913765547631">Termos de Utilização da Localização Coreanos</translation>
 <translation id="728025568708172005">Iniciar visita guiada</translation>
 <translation id="7280980607183752256">Não é possível importar este ficheiro</translation>
 <translation id="7281202269687163394">A sua privacidade e o Gemini.</translation>
@@ -2002,6 +2005,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre os URLs introduzidos no Google Chrome.</translation>
 <translation id="8005666035647241369">No Gestor de Palavras-passe da Google neste dispositivo</translation>
+<translation id="8006265839264939135">Termos</translation>
 <translation id="8010488806779226127">Explore funcionalidades que podem ajudar a fazer mais enquanto navega</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Validar a sua identidade para preencher automaticamente informações confidenciais</translation>

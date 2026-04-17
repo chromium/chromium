@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Parolları paylaşın</translation>
 <translation id="1554043146674176775">Sİ rejimini deaktiv edin</translation>
 <translation id="1554477036522844996">Yeni Pəncərə</translation>
+<translation id="1554605811306591212"><ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> və <ph name="PRIVACY_NOTICE" /> tətbiq olunur. Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər.</translation>
 <translation id="1558391695376153246">Anonim tabları qapadın</translation>
 <translation id="1565371473877914088">Yeni Anonim Tab</translation>
 <translation id="1567960978791353852">Oxu rejimini göstərin</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Klaviatura istifadə edin</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4416582610654027550">Düzgün link daxil edin</translation>
+<translation id="441868831736628555">Məxfilik Bildirişi</translation>
 <translation id="4420409367264901497">Əlfəcinə düzəliş edin</translation>
 <translation id="4425365312778464779">Bu hesab idarə edilir</translation>
 <translation id="4430277756566635951">Seçilib: <ph name="EMAIL" />. Hesab seçin.</translation>
@@ -1788,6 +1790,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7261217796641151584">Qrupu paylaşın</translation>
 <translation id="7266578100016339897">Bu, səliqəli olmağınızı təmin edir. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
+<translation id="7275307913765547631">Koreya Məkan Şərtləri</translation>
 <translation id="728025568708172005">Mənə ətrafı göstərin</translation>
 <translation id="7280980607183752256">Bu fayl import edilə bilməz</translation>
 <translation id="7281202269687163394">Məxfiliyiniz və Gemini.</translation>
@@ -2002,6 +2005,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7996239959906074962">Ayarlayın…</translation>
 <translation id="800361585186029508">Google Chrome'da daxil edilən keçidləri açır.</translation>
 <translation id="8005666035647241369">Bu cihazda Google Parol Menecerinə</translation>
+<translation id="8006265839264939135">Şərtlər</translation>
 <translation id="8010488806779226127">Axtarış etdiyiniz zaman daha çox iş görməyinizə kömək edə biləcək funksiyaları araşdırın</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Həssas məlumatların avtomatik doldurulması üçün kimliyinizi doğrulayın</translation>

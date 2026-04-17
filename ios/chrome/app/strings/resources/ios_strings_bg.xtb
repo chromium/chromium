@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Споделяне на пароли</translation>
 <translation id="1554043146674176775">Изключване на режима с AI</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
+<translation id="1554605811306591212">Прилагат се нашите <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> и <ph name="PRIVACY_NOTICE" />. Gemini е AI и може да допуска грешки, включително и за хора.</translation>
 <translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
 <translation id="1565371473877914088">Нов раздел в режим „инкогнито“</translation>
 <translation id="1567960978791353852">Показване на режима на четене</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Ползване на клавиатурата</translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4416582610654027550">Въведете валиден URL адрес</translation>
+<translation id="441868831736628555">Съобщение за поверителност</translation>
 <translation id="4420409367264901497">Редактиране на отметката</translation>
 <translation id="4425365312778464779">Този профил е управляван</translation>
 <translation id="4430277756566635951">Понастоящем сте избрали: <ph name="EMAIL" />. Изберете профил.</translation>
@@ -1788,6 +1790,7 @@
 <translation id="7261217796641151584">Споделяне на групата</translation>
 <translation id="7266578100016339897">Тази функция ви помага с организирането. По всяко време можете да промените това в настройките.</translation>
 <translation id="7272437679830969316">Паролата не бе копирана поради неуспешно удостоверяване.</translation>
+<translation id="7275307913765547631">Общи условия за местоположението за Корея</translation>
 <translation id="728025568708172005">Начало на обиколката</translation>
 <translation id="7280980607183752256">Този файл не може да се импортира</translation>
 <translation id="7281202269687163394">Вашата поверителност и Gemini.</translation>
@@ -2002,6 +2005,7 @@
 <translation id="7996239959906074962">Настройване…</translation>
 <translation id="800361585186029508">Въведените URL адреси се отварят в Google Chrome.</translation>
 <translation id="8005666035647241369">Към мениджъра на паролите в Google на това устройство</translation>
+<translation id="8006265839264939135">Условия</translation>
 <translation id="8010488806779226127">Разгледайте функции, които могат да ви помогнат да сърфирате по-пълноценно</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Потвърдете, че това сте вие, за да се попълва автоматично поверителната информация</translation>

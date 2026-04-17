@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Κοινή χρήση κωδικών πρόσβασης</translation>
 <translation id="1554043146674176775">Απενεργοποίηση της Λειτουργίας AI</translation>
 <translation id="1554477036522844996">Νέο παράθυρο</translation>
+<translation id="1554605811306591212">Ισχύουν οι <ph name="TERMS" />, οι <ph name="KOREAN_LOCATION_TERMS" /> και η <ph name="PRIVACY_NOTICE" />. Το Gemini είναι AI και μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα.</translation>
 <translation id="1558391695376153246">Κλείσιμο ανών. περιήγησης</translation>
 <translation id="1565371473877914088">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="1567960978791353852">Εμφάνιση λειτουργίας Ανάγνωσης</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Χρήση πληκτρολογίου</translation>
 <translation id="4415276339145661267">Διαχείριση Λογαριασμού Google</translation>
 <translation id="4416582610654027550">Πληκτρολογήστε ένα έγκυρο URL</translation>
+<translation id="441868831736628555">Σημείωση απορρήτου</translation>
 <translation id="4420409367264901497">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="4425365312778464779">Αυτός ο λογαριασμός είναι διαχειριζόμενος</translation>
 <translation id="4430277756566635951">Τρέχουσα επιλογή: <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
@@ -1789,6 +1791,7 @@
 <translation id="7261217796641151584">Κοινοποίηση ομάδας</translation>
 <translation id="7266578100016339897">Αυτό θα σας βοηθήσει να παραμείνετε οργανωμένοι. Μπορείτε να αλλάξετε αυτή την επιλογή ανά πάσα στιγμή από τις ρυθμίσεις.</translation>
 <translation id="7272437679830969316">Δεν είναι δυνατή η επαλήθευση της ταυτότητας σας. Ο κωδικός πρόσβασης δεν αντιγράφηκε.</translation>
+<translation id="7275307913765547631">Όροι τοποθεσίας Κορέας</translation>
 <translation id="728025568708172005">Ξενάγηση</translation>
 <translation id="7280980607183752256">Δεν είναι δυνατή η εισαγωγή αυτού του αρχείου</translation>
 <translation id="7281202269687163394">Το απόρρητό σας και το Gemini.</translation>
@@ -2003,6 +2006,7 @@
 <translation id="7996239959906074962">Ρύθμιση…</translation>
 <translation id="800361585186029508">Άνοιγμα των εισαγόμενων URL στο Google Chrome.</translation>
 <translation id="8005666035647241369">Στον Διαχειριστή κωδικών πρόσβασης της Google σε αυτήν τη συσκευή</translation>
+<translation id="8006265839264939135">Όροι</translation>
 <translation id="8010488806779226127">Εξερευνήστε λειτουργίες που μπορούν να σας βοηθήσουν να κάνετε περισσότερα καθώς περιηγείστε</translation>
 <translation id="8011489434346330032">Επιθεωρητής Ιστού</translation>
 <translation id="8014007212279733632">Επαλήθευση της ταυτότητάς σας για αυτόματη συμπλήρωση ευαίσθητων πληροφοριών</translation>

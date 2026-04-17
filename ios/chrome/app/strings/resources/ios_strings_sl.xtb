@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Deljenje gesel</translation>
 <translation id="1554043146674176775">Izklop načina umetne inteligence</translation>
 <translation id="1554477036522844996">Novo okno</translation>
+<translation id="1554605811306591212">Veljajo naši <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> in <ph name="PRIVACY_NOTICE" />. Gemini je umetna inteligenca in se lahko kdaj zmoti, tudi o ljudeh.</translation>
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
 <translation id="1565371473877914088">Nov anonimni zavihek</translation>
 <translation id="1567960978791353852">Prikaz načina za branje</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Uporaba tipkovnice</translation>
 <translation id="4415276339145661267">Upravljanje računa Google</translation>
 <translation id="4416582610654027550">Vnesite veljaven URL</translation>
+<translation id="441868831736628555">Obvestilo o zasebnosti</translation>
 <translation id="4420409367264901497">Urejanje zaznamka</translation>
 <translation id="4425365312778464779">Ta račun je upravljan</translation>
 <translation id="4430277756566635951">Trenutno izbrano: <ph name="EMAIL" />. Izberite račun.</translation>
@@ -1788,6 +1790,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7261217796641151584">Deli skupino</translation>
 <translation id="7266578100016339897">Tako ostanete organizirani. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
+<translation id="7275307913765547631">Pogoji za lokacijo za Korejo</translation>
 <translation id="728025568708172005">Predstavi mi</translation>
 <translation id="7280980607183752256">Te datoteke ni mogoče uvoziti</translation>
 <translation id="7281202269687163394">Vaša zasebnost in Gemini.</translation>
@@ -2002,6 +2005,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7996239959906074962">Nastavitev …</translation>
 <translation id="800361585186029508">Odpre vnesene URL-je v Google Chromu.</translation>
 <translation id="8005666035647241369">V Googlov upravitelj gesel v tej napravi</translation>
+<translation id="8006265839264939135">Pogoji</translation>
 <translation id="8010488806779226127">Raziščite funkcije, ki vam lahko pomagajo pri večjemu številu opravil med brskanjem</translation>
 <translation id="8011489434346330032">Spletni pregledovalnik</translation>
 <translation id="8014007212279733632">Za samodejno izpolnjevanje občutljivih podatkov potrdite, da ste to vi</translation>

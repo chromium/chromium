@@ -165,6 +165,7 @@
 <translation id="1547610699249301703">Del adgangskoder</translation>
 <translation id="1554043146674176775">Deaktiver AI-tilstand</translation>
 <translation id="1554477036522844996">Nyt vindue</translation>
+<translation id="1554605811306591212">Vores <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> og <ph name="PRIVACY_NOTICE" /> er gældende. Gemini er en AI-assistent og kan begå fejl, herunder om personer.</translation>
 <translation id="1558391695376153246">Luk inkognitofaner</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1567960978791353852">Vis Læsetilstand</translation>
@@ -951,6 +952,7 @@
 <translation id="441218095371040430">Brug tastatur</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4416582610654027550">Angiv en gyldig webadresse</translation>
+<translation id="441868831736628555">Erklæring om privatliv</translation>
 <translation id="4420409367264901497">Rediger bogmærke</translation>
 <translation id="4425365312778464779">Dette er en administreret konto</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
@@ -1788,6 +1790,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjælper dig med at bevare overblikket. Du kan til enhver tid ændre dette i indstillingerne.</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke verificeres. Adgangskoden blev ikke kopieret.</translation>
+<translation id="7275307913765547631">Koreanske servicevilkår for lokation</translation>
 <translation id="728025568708172005">Vis mig rundt</translation>
 <translation id="7280980607183752256">Denne fil kan ikke importeres</translation>
 <translation id="7281202269687163394">Dit privatliv og Gemini.</translation>
@@ -2002,6 +2005,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7996239959906074962">Indstil…</translation>
 <translation id="800361585186029508">Åbner de angivne webadresser i Google Chrome.</translation>
 <translation id="8005666035647241369">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
+<translation id="8006265839264939135">Vilkår</translation>
 <translation id="8010488806779226127">Prøv funktioner, der kan hjælpe dig med at gøre mere, mens du browser</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Verificer din identitet for at bruge autofyld til følsomme oplysninger</translation>

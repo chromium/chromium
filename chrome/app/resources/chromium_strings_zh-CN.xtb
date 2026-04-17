@@ -226,7 +226,6 @@
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
 <translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3316771292331273802">关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
-<translation id="3322413454779348750">您的默认搜索引擎已在 Chromium 外部更改。为保护您的安全，Chromium 已将其重置。</translation>
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">您账号中的 Chromium 数据</translation>
 <translation id="3369405342922656244">使用图片搜索功能搜索此页面</translation>
@@ -474,6 +473,7 @@
 <translation id="6241367896540709610">Chromium 需要获得存储空间使用权限才能下载文件</translation>
 <translation id="6245734527075554892">将网址与存储在 Chromium 中的不安全网站列表进行比对</translation>
 <translation id="6248213926982192922">将 Chromium 设置为默认浏览器</translation>
+<translation id="6248988683584659830">搜索设置</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="6270547683008298381">这些标签页正在使用额外的资源。为了提升性能，请让 Chromium 将它们设为非活跃状态。</translation>
 <translation id="6281746429495226318">自定义您的 Chromium 个人资料</translation>
@@ -633,6 +633,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7810005234485217901">您可以固定图片搜索功能以方便访问</translation>
 <translation id="7828947555739565424">此设备上已有一份使用该账号创建的 Chromium 个人资料</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="7847673590271334840">搜索引擎已被 Chromium 之外的其他应用更改。为保护您的安全，Chromium 已将其重置为原始默认设置。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">自定义 Chromium，让界面焕然一新</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="7867198900892795913">Chromium 无法更新至最新版本，因此您未能获得最新的功能和安全修复程序。</translation>
