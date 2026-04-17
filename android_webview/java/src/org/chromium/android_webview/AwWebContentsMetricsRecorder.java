@@ -52,16 +52,10 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
         int nightMode = DarkModeHelper.getNightMode(context);
         int lightTheme = DarkModeHelper.getLightTheme(context);
         boolean isForceDarkApplied = awSettings.isForceDarkApplied();
-        int forceDarkMode = awSettings.getForceDarkMode();
         int forceDarkBehavior = awSettings.getForceDarkBehavior();
         int textLuminance = DarkModeHelper.getPrimaryTextLuminace(context);
         recordDarkModeMetrics(
-                nightMode,
-                lightTheme,
-                isForceDarkApplied,
-                forceDarkMode,
-                forceDarkBehavior,
-                textLuminance);
+                nightMode, lightTheme, isForceDarkApplied, forceDarkBehavior, textLuminance);
     }
 
     @VisibleForTesting
@@ -69,17 +63,12 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
             int nightMode,
             int lightTheme,
             boolean isForceDarkApplied,
-            int forceDarkMode,
             int forceDarkBehavior,
             int textLuminance) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.DarkMode.ForceDarkBehavior",
                 forceDarkBehavior,
                 AwSettings.FORCE_DARK_STRATEGY_COUNT);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.DarkMode.ForceDarkMode",
-                forceDarkMode,
-                AwSettings.FORCE_DARK_MODES_COUNT);
         RecordHistogram.recordBooleanHistogram(
                 "Android.WebView.DarkMode.InDarkMode", isForceDarkApplied);
         // Refer to WebViewInDarkModeVsLightTheme in enums.xml.
@@ -123,7 +112,6 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
         int value =
                 DarkModeHelper.getNightMode(context) * AwSettings.FORCE_DARK_MODES_COUNT
                         + forceDarkMode;
-        System.out.println("recordForce value " + value);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.ForceDarkMode",
                 value,

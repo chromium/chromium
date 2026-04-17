@@ -7341,16 +7341,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.DarkMode.ForceDarkMode"
-    enum="WebViewForceDarkMode2" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records WebView force dark mode settings on each main frame navigation entry
-    committed.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.DarkMode.InDarkMode" enum="Boolean"
     expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>

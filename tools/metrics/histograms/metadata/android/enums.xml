@@ -2637,12 +2637,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="OS yes, WebView on"/>
 </enum>
 
-<enum name="WebViewForceDarkMode2">
-  <int value="0" label="off"/>
-  <int value="1" label="auto"/>
-  <int value="2" label="on"/>
-</enum>
-
 <enum name="WebViewInDarkModeVsLightTheme">
   <int value="0" label="WebView dark, light theme undefined"/>
   <int value="1" label="WebView dark, light theme no"/>
