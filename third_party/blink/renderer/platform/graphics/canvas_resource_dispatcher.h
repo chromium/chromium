@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_DISPATCHER_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
@@ -118,10 +116,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
  private:
   friend class OffscreenCanvasPlaceholderTest;
   friend class CanvasResourceDispatcherTest;
-  struct ExportedResource;
 
   using ExportedResourceMap =
-      HashMap<viz::ResourceId, std::unique_ptr<ExportedResource>>;
+      HashMap<viz::ResourceId, scoped_refptr<ExportedCanvasResource>>;
 
   bool PrepareFrame(scoped_refptr<CanvasResource>&&,
                     const gfx::Rect& damage_rect,

@@ -39,33 +39,6 @@ constexpr base::TimeDelta kSyntheticFrameDelay = base::Hertz(60);
 
 namespace blink {
 
-// Holds the ref and release callback for a CanvasResource that has been
-// exported to the compositor, to be released when either (a) the compositor
-// notifies CanvasResourceDispatcher that it no longer requires this resource,
-// or (b) the CanvasResourceDispatcher is torn down (e.g., because its owning
-// thread was torn down).
-struct CanvasResourceDispatcher::ExportedResource {
- public:
-  explicit ExportedResource(scoped_refptr<ExportedCanvasResource> resource)
-      : resource_(std::move(resource)) {
-    CHECK(resource_);
-  }
-
-  void ReleaseResource(gpu::SharedImageExportResult shared_image_export_result,
-                       bool is_lost) {
-    CHECK(resource_);
-    resource_->EndDisplayCompositorAccess(std::move(shared_image_export_result),
-                                          is_lost);
-  }
-
-  ~ExportedResource() {
-    CHECK(resource_);
-    resource_.reset();
-  }
-
-  scoped_refptr<ExportedCanvasResource> resource_;
-};
-
 CanvasResourceDispatcher::CanvasResourceDispatcher(
     CanvasResourceDispatcherClient* client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -278,10 +251,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // duration of the compositor's usage (we'll drop our ref when the compositor
   // notifies us that it is no longer using the resource via
   // `ReclaimResources()`).
-  exported_resources_.insert(resource_id,
-                             std::make_unique<ExportedResource>(
-                                 base::MakeRefCounted<ExportedCanvasResource>(
-                                     std::move(canvas_resource))));
+  exported_resources_.insert(
+      resource_id,
+      base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource)));
 
   frame->resource_list.push_back(std::move(resource));
 
@@ -427,8 +399,8 @@ void CanvasResourceDispatcher::ReclaimResources(
       continue;
     }
 
-    it->value->ReleaseResource(resource.shared_image_export_result,
-                               resource.lost);
+    it->value->EndDisplayCompositorAccess(
+        std::move(resource.shared_image_export_result), resource.lost);
     exported_resources_.erase(it);
   }
 }
