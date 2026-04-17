@@ -16,6 +16,8 @@
 
 @implementation CWVPreferences {
   PrefService* _prefService;
+  // In-memory only.
+  BOOL _triggerNonFatalCheck;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -135,6 +137,18 @@
 
 - (BOOL)isRiskBasedAuthenticationEnabled {
   return ios_web_view::IsRiskBasedAuthenticationEnabled(_prefService);
+}
+
+- (void)setTriggerNonFatalCheck:(BOOL)enabled {
+  // TODO(crbug.com/503005390): Remove after release integration testing in
+  // stable.
+  _triggerNonFatalCheck = enabled;
+}
+
+- (BOOL)isTriggerNonFatalCheckEnabled {
+  // TODO(crbug.com/503005390): Remove after release integration testing in
+  // stable.
+  return _triggerNonFatalCheck;
 }
 
 - (void)commitPendingWrite:(void (^)(void))completionHandler {

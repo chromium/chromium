@@ -9,6 +9,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/json/json_writer.h"
@@ -66,6 +67,7 @@
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_state_policy_decider.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
+#import "ios/web_view/public/cwv_preferences.h"
 #import "ios/web_view/public/cwv_preview_element_info.h"
 #import "ios/web_view/public/cwv_ui_delegate.h"
 #import "ios/web_view/public/cwv_web_view_configuration.h"
@@ -282,6 +284,10 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   if ((self = [super init])) {
     DCHECK(configuration.browserState);
     _browserState = configuration.browserState;
+    if (configuration.preferences.isTriggerNonFatalCheckEnabled) {
+      // TODO(crbug.com/503005390): Remove after release integration testing.
+      CHECK(false, base::NotFatalUntil::M235);
+    }
   }
   return self;
 }
