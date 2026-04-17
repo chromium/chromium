@@ -157,6 +157,10 @@ void WebSettingsImpl::SetAutoZoomFocusedEditableToLegibleScale(
       auto_zoom_focused_editable_to_legible_scale;
 }
 
+void WebSettingsImpl::SetTextSizeAdjustEnabled(bool enabled) {
+  settings_->SetTextSizeAdjustEnabled(enabled);
+}
+
 // TODO(pdr): Rename this OSTextScaleFactor.
 void WebSettingsImpl::SetAccessibilityFontScaleFactor(float font_scale_factor) {
   dev_tools_emulator_->SetAccessibilityFontScaleFactor(font_scale_factor);

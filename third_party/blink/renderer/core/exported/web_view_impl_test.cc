@@ -110,6 +110,7 @@ TEST_F(WebViewImplTest, DynamicMetaTagTextZoom) {
 
   // Simulate Android WebView where the user has a 2x OS-level font scale.
   web_view->GetSettings()->SetScaleAllFontsIfNoMetaTextScaleTag(true);
+  web_view->GetSettings()->SetTextSizeAdjustEnabled(true);
   web_view->GetSettings()->SetAccessibilityFontScaleFactor(2.0f);
   web_view->MainFrameImpl()->GetFrame()->SetTextZoomFactor(2.0f);
 

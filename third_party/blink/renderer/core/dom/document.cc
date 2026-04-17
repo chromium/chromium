@@ -8291,8 +8291,7 @@ void Document::SetTextScaleMetaTagPresent(bool present) {
       // No matter if the page just added or just removed meta,
       // SetTextZoomFactor will do the right thing if we give it the original
       // font scale factor here.
-      if (settings->GetScaleAllFontsIfNoMetaTextScaleTag() &&
-          !settings->GetTextSizeAdjustEnabled()) {
+      if (settings->GetScaleAllFontsIfNoMetaTextScaleTag()) {
         frame->SetTextZoomFactor(settings->GetAccessibilityFontScaleFactor());
       }
     }
