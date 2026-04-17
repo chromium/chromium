@@ -59,10 +59,11 @@ struct PrePrefetchPreCalculatedHeadersKey {
 // simultaneously, otherwise this will lead a data race for `core_`.
 class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
  public:
-  PrePrefetchServiceImpl(BrowserContext* browser_context,
-                         std::optional<url::Origin> initial_origin_hint,
-                         bool initial_javascript_enabled_hint,
-                         bool initial_should_append_variations_header_hint);
+  PrePrefetchServiceImpl(
+      BrowserContext* browser_context,
+      std::optional<url::Origin> initial_origin_hint,
+      std::optional<bool> initial_javascript_enabled_hint,
+      std::optional<bool> initial_should_append_variations_header_hint);
   ~PrePrefetchServiceImpl() override;
 
   // Starts PrePrefetch for the given `url`, for embedder triggers.

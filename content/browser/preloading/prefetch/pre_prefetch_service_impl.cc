@@ -138,8 +138,8 @@ class PrePrefetchServiceCore {
 std::unique_ptr<PrePrefetchService> PrePrefetchService::Create(
     BrowserContext* browser_context,
     std::optional<url::Origin> initial_origin_hint,
-    bool initial_javascript_enabled_hint,
-    bool initial_should_append_variations_header_hint) {
+    std::optional<bool> initial_javascript_enabled_hint,
+    std::optional<bool> initial_should_append_variations_header_hint) {
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return std::make_unique<PrePrefetchServiceImpl>(
@@ -150,8 +150,8 @@ std::unique_ptr<PrePrefetchService> PrePrefetchService::Create(
 PrePrefetchServiceImpl::PrePrefetchServiceImpl(
     BrowserContext* browser_context,
     std::optional<url::Origin> initial_origin_hint,
-    bool initial_javascript_enabled_hint,
-    bool initial_should_append_variations_header_hint)
+    std::optional<bool> initial_javascript_enabled_hint,
+    std::optional<bool> initial_should_append_variations_header_hint)
     : browser_context_weak_on_ui_thread_(browser_context->GetWeakPtr()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "PrePrefetchServiceImpl::PrePrefetchServiceImpl");
@@ -185,12 +185,14 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
   // thread.
   std::map<PrePrefetchPreCalculatedHeadersKey, PrefetchUpdateHeadersParams>
       ui_thread_pre_calculated_headers_map;
-  if (initial_origin_hint.has_value()) {
+  if (initial_origin_hint.has_value() &&
+      initial_javascript_enabled_hint.has_value() &&
+      initial_should_append_variations_header_hint.has_value()) {
     PrePrefetchPreCalculatedHeadersKey key;
     key.origin = initial_origin_hint.value();
-    key.javascript_enabled = initial_javascript_enabled_hint;
+    key.javascript_enabled = initial_javascript_enabled_hint.value();
     key.should_append_variations_header =
-        initial_should_append_variations_header_hint;
+        initial_should_append_variations_header_hint.value();
     ui_thread_pre_calculated_headers_map[key] =
         PreCalculatePrePrefetchHeadersOnUI(browser_context, key);
   }

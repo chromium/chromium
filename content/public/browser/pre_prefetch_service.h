@@ -34,8 +34,9 @@ class CONTENT_EXPORT PrePrefetchService {
   static std::unique_ptr<PrePrefetchService> Create(
       BrowserContext* browser_context,
       std::optional<url::Origin> initial_origin_hint = std::nullopt,
-      bool initial_javascript_enabled_hint = true,
-      bool initial_should_append_variations_header_hint = true);
+      std::optional<bool> initial_javascript_enabled_hint = std::nullopt,
+      std::optional<bool> initial_should_append_variations_header_hint =
+          std::nullopt);
 
   // Starts PrePrefetch for the given `url`, for embedder triggers.
   // Expected to be called from a non-UI thread. On UI thread, we can simply
