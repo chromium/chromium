@@ -35,12 +35,9 @@ void SetAnimationState(
 }  // unnamed namespace
 
 OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
+  CanvasResource::OnPlaceholderReleasedResource(std::move(placeholder_frame_));
   UnregisterPlaceholderCanvas();
 }
-
-namespace {
-
-}  // unnamed namespace
 
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
     scoped_refptr<CanvasResource>&& new_frame) {
