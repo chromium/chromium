@@ -27,7 +27,6 @@
 #include "base/win/pdh_shim.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_pdh_query.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/common/channel_info.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -258,20 +257,16 @@ SystemPdhMetricsProvider::SystemPdhMetricsProvider() = default;
 SystemPdhMetricsProvider::~SystemPdhMetricsProvider() = default;
 
 void SystemPdhMetricsProvider::OnRecordingEnabled() {
-  // Process V2 metrics are only guaranteed to be supported on Win11.
-  if (base::win::GetVersion() >= base::win::Version::WIN11) {
-    // The task runner is BEST_EFFORT because they can be delayed without much
-    // consequence, MUST_USE_FOREGROUND to avoid priority inversions with the
-    // DLL loader lock, and CONTINUE_ON_SHUTDOWN to avoid blocking shutdown if
-    // they hang.
-    query_handler_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::ThreadPolicy::MUST_USE_FOREGROUND,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
+  // The task runner is BEST_EFFORT because they can be delayed without much
+  // consequence, MUST_USE_FOREGROUND to avoid priority inversions with the
+  // DLL loader lock, and CONTINUE_ON_SHUTDOWN to avoid blocking shutdown if
+  // they hang.
+  query_handler_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::ThreadPolicy::MUST_USE_FOREGROUND,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 
-    process_observer_ =
-        std::make_unique<ProcessMetricsObserver>(query_handler_);
-  }
+  process_observer_ = std::make_unique<ProcessMetricsObserver>(query_handler_);
 }
 
 void SystemPdhMetricsProvider::OnRecordingDisabled() {

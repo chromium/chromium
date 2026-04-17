@@ -151,6 +151,9 @@ chromium-metrics-reviews@google.com.
     processes, and once every five seconds for every 1/20th process on
     Canary/Dev/Beta, and once every five seconds for every 1/100th process on
     Stable.
+
+    Only supported on Windows 11. Not recorded on Windows Server 2022 or other
+    earlier platforms.
   </summary>
   <token key="Counter">
     <variant name="HandleCount" summary="Handle Count"/>

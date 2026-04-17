@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #elif BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "chrome/browser/metrics/system_pdh_metrics_provider_win.h"
 #endif
 
@@ -242,9 +243,14 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
 #if BUILDFLAG(IS_WIN)
   // GoogleUpdateMetricsProviderWin, AntiVirusMetricsProvider,
-  // TPMMetricsProvider, SystemMemoryListMetricsProvider, and
-  // SystemPdhMetricsProvider.
-  expected_providers += 5;
+  // TPMMetricsProvider, SystemMemoryListMetricsProvider.
+  expected_providers += 4;
+
+  // SystemPdhMetricsProvider is only supported on Win11.
+  if (base::win::GetVersion() >= base::win::Version::WIN11 &&
+      base::FeatureList::IsEnabled(features::kSystemPdhMetrics)) {
+    ++expected_providers;
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
