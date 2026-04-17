@@ -369,6 +369,41 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
   CloseBrowserSynchronously(browser());
 }
 
+// Regression test for crbug.com/502882736
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
+                       ProfileMenuDoubleOpenBeforeBatchUploadResults) {
+  batch_upload_test_helper().SetReturnDescriptionOnRequest(true);
+  batch_upload_test_helper().SetReturnDescriptions(syncer::DataType::PASSWORDS,
+                                                   /*item_count=*/5);
+
+  AvatarToolbarButton* avatar_button =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar_button_provider()
+          ->GetAvatarToolbarButton();
+  views::test::WidgetVisibleWaiter(avatar_button->GetWidget()).Wait();
+
+  // Simulates triggering opening the Profile Menu - blocks on first local data
+  // request.
+  Click(avatar_button);
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  // Menu is not shown yet since the data is not returned.
+  ASSERT_FALSE(coordinator->IsShowing());
+  // Simulates re-triggering opening the Profile Menu before the first request
+  // is completed - blocks on second local data request.
+  Click(avatar_button);
+
+  // Fire first local data return.
+  batch_upload_test_helper().FireReturnDescriptionRequest();
+  // Profile Menu should show on the result of the first request.
+  ASSERT_NO_FATAL_FAILURE(WaitForMenuToBeActive(profile_menu_view()));
+  ASSERT_TRUE(coordinator->IsShowing());
+
+  // Fire second local data return - this should be a no-op.
+  batch_upload_test_helper().FireReturnDescriptionRequest();
+  // Profile menu should still be shown.
+  EXPECT_TRUE(coordinator->IsShowing());
+}
+
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
                                       public InteractiveFeaturePromoTestMixin<
                                           extensions::ExtensionBrowserTest> {

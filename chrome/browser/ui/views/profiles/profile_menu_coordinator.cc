@@ -69,6 +69,13 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
     signin::ProfileMenuAvatarButtonPromoInfo promo_info
 #endif
 ) {
+  // Results are asynchronous, which can cause the menu to be already shown
+  // before receiving them. If this happens, ignore the second request as the
+  // menu is already shown.
+  if (IsShowing()) {
+    return;
+  }
+
   signin_ui_util::RecordProfileMenuViewShown(GetProfile());
   // Close any existing IPH bubble for the profile menu.
   BrowserUserEducationInterface::From(GetBrowser())

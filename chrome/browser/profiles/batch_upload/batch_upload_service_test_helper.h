@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_TEST_HELPER_H_
 #define CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_TEST_HELPER_H_
 
+#include "base/containers/queue.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "components/prefs/testing_pref_service.h"
@@ -75,6 +76,9 @@ class BatchUploadServiceTestHelper {
   // Returns the expected return description for `type`.
   syncer::LocalDataDescription& GetReturnDescription(syncer::DataType type);
 
+  void SetReturnDescriptionOnRequest(bool return_description_on_request);
+  void FireReturnDescriptionRequest();
+
   syncer::MockSyncService* GetSyncServiceMock() { return &mock_sync_service_; }
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
@@ -86,8 +90,14 @@ class BatchUploadServiceTestHelper {
 
   testing::NiceMock<syncer::MockSyncService> mock_sync_service_;
   TestingPrefServiceSimple pref_service_;
+
   std::map<syncer::DataType, syncer::LocalDataDescription>
       returned_descriptions_;
+
+  bool return_description_on_request_ = false;
+  base::queue<base::OnceCallback<void(
+      std::map<syncer::DataType, syncer::LocalDataDescription>)>>
+      request_callback_queue_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_TEST_HELPER_H_
