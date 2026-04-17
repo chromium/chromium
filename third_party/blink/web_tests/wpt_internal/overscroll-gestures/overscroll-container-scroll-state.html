@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>Overscroll area: regression test for snapped container query on overscroll-area</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #menu {
+    left: -80%;
+    width: 80%;
+    height: 100%;
+  }
+  #p2r {
+    bottom: 100%;
+    container-type: scroll-state;
+
+    & > h1 {
+      @container scroll-state(snapped: y) {
+        color: green;
+      }
+    }
+  }
+  #outer {
+    width: 300px;
+    height: 350px;
+    border: 2px solid black;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+  }
+  #inner {
+    border: 2px solid blue;
+    flex: 1;
+  }
+</style>
+<div id="outer" overscrollcontainer>
+  <div id="menu" overscrollarea><h1>Menu</h1></div>
+  <div id="header"><h1>Header</h1></div>
+  <div id="inner" overscrollcontainer>
+    <div id="p2r" overscrollarea><h1>Pull to refresh</h1></div>
+    <div id="content">Content</div>
+  </div>
+</div>
+<script>
+function raf() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+promise_test(async () => {
+  p2r.scrollIntoView();
+  await raf();
+  await raf();
+  assert_equals(getComputedStyle(p2r.querySelector('h1')).color, 'rgb(0, 128, 0)', 'snapped state should apply');
+  assert_equals(p2r.getBoundingClientRect().bottom,
+                content.getBoundingClientRect().top, 'the area should still be above the content');
+}, "snapped container query style recalc doesn't change overscrollcontainer");
+
+
+</script>

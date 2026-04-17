@@ -44,7 +44,7 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
         result.has_anchored_container =
             style->IsContainerForAnchoredContainerQueries();
       }
-      if (style->IsInternalOverscrollArea()) {
+      if (!result.overscroll_container && style->IsInternalOverscrollArea()) {
         result.overscroll_container = element;
       }
     }
