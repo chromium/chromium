@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/suggestions/nudge_cap_tracker.h"
+#include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
 
-namespace glic {
+namespace contextual_cueing {
 NudgeCapTracker::NudgeCapTracker(size_t cap_count, base::TimeDelta duration)
     : cap_count_(cap_count), duration_(duration) {}
 
@@ -43,4 +43,4 @@ std::optional<base::TimeTicks> NudgeCapTracker::GetMostRecentNudgeTime() const {
   return recent_nudge_timestamps_.back();
 }
 
-}  // namespace glic
+}  // namespace contextual_cueing

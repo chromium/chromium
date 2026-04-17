@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
-#include "chrome/browser/glic/suggestions/nudge_cap_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -149,7 +149,7 @@ class ContextualCueingService
       std::vector<std::string> suggestions);
 
   // Tracker to limit the number of nudges shown over a certain duration.
-  NudgeCapTracker recent_nudge_tracker_;
+  contextual_cueing::NudgeCapTracker recent_nudge_tracker_;
 
   // Number of times the cueing nudge has been dismissed (i.e. closed by the
   // user). This count resets to 0 if nudge is clicked on by the user.
@@ -167,7 +167,8 @@ class ContextualCueingService
   size_t remaining_quiet_loads_ = 0;
 
   // Maintains the recently visited origins along with their nudge cap tracking.
-  base::LRUCache<url::Origin, NudgeCapTracker> recent_visited_origins_;
+  base::LRUCache<url::Origin, contextual_cueing::NudgeCapTracker>
+      recent_visited_origins_;
 
   // Holds the latest pinned tabs zero state suggestions request.
   std::unique_ptr<ZeroStateSuggestionsRequest>

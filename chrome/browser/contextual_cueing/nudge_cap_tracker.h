@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_NUDGE_CAP_TRACKER_H_
-#define CHROME_BROWSER_GLIC_SUGGESTIONS_NUDGE_CAP_TRACKER_H_
+#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
+#define CHROME_BROWSER_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
 
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 
-namespace glic {
+namespace contextual_cueing {
 
 // Keeps track of timestamps of recent nudges for the sake of capping nudge
 // count over a period of time. (i.e. x nudges per y hours). This queue is
@@ -42,6 +42,6 @@ class NudgeCapTracker {
   const base::TimeDelta duration_;
 };
 
-}  // namespace glic
+}  // namespace contextual_cueing
 
-#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_NUDGE_CAP_TRACKER_H_
+#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_

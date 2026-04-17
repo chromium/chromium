@@ -190,8 +190,9 @@ void ContextualCueingService::CueingNudgeShown(const GURL& url) {
   auto iter = recent_visited_origins_.Get(origin);
   if (iter == recent_visited_origins_.end()) {
     iter = recent_visited_origins_.Put(
-        origin, NudgeCapTracker(kNudgeCapCountPerDomain.Get(),
-                                kNudgeCapTimePerDomain.Get()));
+        origin,
+        ::contextual_cueing::NudgeCapTracker(kNudgeCapCountPerDomain.Get(),
+                                             kNudgeCapTimePerDomain.Get()));
   }
   iter->second.CueingNudgeShown();
 }

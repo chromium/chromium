@@ -8426,6 +8426,7 @@ test("unit_tests") {
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/autofill/actor:unit_tests",
       "//chrome/browser/bluetooth",
+      "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/contextual_search",
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/device_api:unit_tests",
