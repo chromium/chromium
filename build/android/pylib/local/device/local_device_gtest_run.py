@@ -729,8 +729,12 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                     gtest_test_instance.ParseGTestListTestsJSON(f.read()))
             except (device_errors.CommandFailedError,
                     device_errors.CommandTimeoutError):
-              logging.exception(
-                  'Failed to pull gtest list tests JSON from device.')
+              logging.critical(
+                  'Failed to pull gtest list tests JSON from device. '
+                  'This file maps tests to source files for accurate bug '
+                  ' filing on dashboards. Test execution will continue via '
+                  'stdout fallback, but results will lack source file '
+                  'locations.')
       return tests
 
     # Query all devices in case one fails.
