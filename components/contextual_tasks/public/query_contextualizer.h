@@ -49,6 +49,7 @@ class QueryContextualizer {
     TabId id = 0;
     bool is_recontextualization = false;
     bool is_smart_selection = false;
+    bool is_auto_suggested = false;
   };
 
   // Delegate interface that allows clients to provide platform-specific
@@ -157,6 +158,7 @@ class QueryContextualizer {
       TabId tab_id,
       bool is_recontextualization,
       bool is_smart_selection,
+      bool is_auto_suggested,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
       scoped_refptr<UploadTracker> upload_tracker,
