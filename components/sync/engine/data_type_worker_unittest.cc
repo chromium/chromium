@@ -2206,6 +2206,46 @@ TEST_F(DataTypeWorkerPasswordsTest, ReceiveDecryptablePasswordEntities) {
                            .password_value());
 }
 
+// Verifies that if an incoming (encrypted) password entity has
+// `client_only_encrypted_data` already set on the wire, the wire value is
+// ignored and only the properly decrypted data is forwarded to the processor.
+TEST_F(DataTypeWorkerPasswordsTest,
+       ReceiveDecryptablePasswordWithClientOnlyEncryptedDataOnWire) {
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  sync_pb::PasswordSpecificsData unencrypted_password;
+  unencrypted_password.set_password_value(kPassword);
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
+
+  // Simulate a malicious/buggy server setting `client_only_encrypted_data` on
+  // the wire. This field should never be set in network communications.
+  encrypted_specifics.mutable_password()
+      ->mutable_client_only_encrypted_data()
+      ->set_password_value("BadPlaintextPassword");
+
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // The update should have been decrypted and forwarded to the processor,
+  // containing the properly decrypted password (not the bogus wire value).
+  ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
+  const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
+  ASSERT_TRUE(
+      update.entity.specifics.password().has_client_only_encrypted_data());
+  EXPECT_EQ(kPassword, update.entity.specifics.password()
+                           .client_only_encrypted_data()
+                           .password_value());
+}
+
 // Similar to ReceiveDecryptableEntities but for PASSWORDS, which have a custom
 // encryption mechanism.
 TEST_F(DataTypeWorkerPasswordsTest,
@@ -2317,6 +2357,39 @@ TEST_F(DataTypeWorkerPasswordsTest, ReceiveCorruptedPasswordEntities) {
   // blocked for encryption anymore.
   EXPECT_FALSE(processor()->HasUpdateResponse(kHash1));
   EXPECT_FALSE(worker()->BlockForEncryption());
+}
+
+// Verifies that if an incoming password entity contains
+// `client_only_encrypted_data` but no `encrypted` field (an unusual but
+// possible malformed server response), the `client_only_encrypted_data` is
+// stripped and does not reach the processor.
+TEST_F(DataTypeWorkerPasswordsTest,
+       ReceivePasswordWithClientOnlyEncryptedDataButNoEncryptedField) {
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  // Build specifics with only `client_only_encrypted_data` and no `encrypted`.
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_password()
+      ->mutable_client_only_encrypted_data()
+      ->set_password_value("PlaintextOnWire");
+
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // The update should reach the processor, but `client_only_encrypted_data`
+  // must have been cleared since it was set on the wire.
+  ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
+  const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
+  EXPECT_FALSE(
+      update.entity.specifics.password().has_client_only_encrypted_data());
 }
 
 // Analogous test fixture but uses BOOKMARKS instead of PREFERENCES, in order

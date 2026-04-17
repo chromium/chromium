@@ -687,6 +687,11 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
   } else {
     // No encryption.
     data.specifics = specifics;
+    // `client_only_encrypted_data` must never be set on the wire; it contains
+    // unencrypted material. Clear it in case the server provided it.
+    if (data.specifics.password().has_client_only_encrypted_data()) {
+      data.specifics.mutable_password()->clear_client_only_encrypted_data();
+    }
   }
 
   response_data->response_version = update_entity.version();
