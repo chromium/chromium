@@ -10,14 +10,14 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "content/public/browser/web_contents_observer.h"
 
 // A per-tab class that handles the logic for showing or hiding the omnibox
 // entry point for Reading mode.
-class ReadAnythingOmniboxController : public content::WebContentsObserver,
+class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
                                       public page_actions::PageActionObserver,
                                       public ReadAnythingLifecycleObserver {
  public:
@@ -42,6 +42,11 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
   void SetDwellTimeForTesting(base::TimeTicks test_time) {
     candidate_check_triggered_time_ms_ = test_time;
   }
+
+  // tabs::ContentsObservingTabFeature:
+  void OnDiscardContents(tabs::TabInterface* tab,
+                         content::WebContents* old_contents,
+                         content::WebContents* new_contents) override;
 
  protected:
   // Runs a heuristic to check if the current tab's contents are a good

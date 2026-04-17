@@ -223,7 +223,8 @@ IN_PROC_BROWSER_TEST_P(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   RegisterPageActionObserver();
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      true, browser()->GetActiveTabInterface());
 
   ASSERT_FALSE(GetCurrentPageActionState().showing);
 }
@@ -306,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser(), future.GetCallback());
+      true, browser()->GetActiveTabInterface(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
@@ -332,12 +333,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(true);
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
-                                                               browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      false, browser()->GetActiveTabInterface());
   VerifyPageActionIsShowing(false);
   VerifyChipIsShowing(false);
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      true, browser()->GetActiveTabInterface());
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(true);
 }
@@ -358,12 +360,13 @@ IN_PROC_BROWSER_TEST_P(
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(false);
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
-                                                               browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      false, browser()->GetActiveTabInterface());
   VerifyPageActionIsShowing(false);
   VerifyChipIsShowing(false);
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(true, browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      true, browser()->GetActiveTabInterface());
   VerifyPageActionIsShowing(true);
   VerifyChipIsShowing(false);
 }
@@ -373,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   base::test::TestFuture<user_education::FeaturePromoResult> future;
 
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser(), future.GetCallback());
+      true, browser()->GetActiveTabInterface(), future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), user_education::FeaturePromoResult::Success());
@@ -385,13 +388,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
   base::test::TestFuture<user_education::FeaturePromoResult> future;
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser(), future.GetCallback());
+      true, browser()->GetActiveTabInterface(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
-                                                               browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      false, browser()->GetActiveTabInterface());
 
   EXPECT_FALSE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
@@ -409,7 +412,7 @@ IN_PROC_BROWSER_TEST_P(
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
   auto* const user_ed = BrowserUserEducationInterface::From(browser());
   ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      true, browser(), future.GetCallback());
+      true, browser()->GetActiveTabInterface(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
@@ -423,8 +426,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(user_ed->IsFeaturePromoActive(
       feature_engagement::kIPHReadingModePageActionLabelFeature));
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
-                                                               browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      false, browser()->GetActiveTabInterface());
   histogram_tester.ExpectBucketCount(
       "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",
       user_education::FeaturePromoClosedReason::kAbortedByFeature, 0);
@@ -437,8 +440,8 @@ IN_PROC_BROWSER_TEST_P(
   actions::ActionInvocationContext context;
   context.SetProperty(page_actions::kPageActionTriggerKey, 1);
 
-  ReadAnythingEntryPointController::UpdatePageActionVisibility(false,
-                                                               browser());
+  ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      false, browser()->GetActiveTabInterface());
 
   histogram_tester.ExpectBucketCount(
       "UserEducation.MessageAction.IPH_ReadingModePageActionLabel",

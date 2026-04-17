@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/actions/actions.h"
 
@@ -38,7 +39,7 @@ class ReadAnythingEntryPointController {
   // show_promo_callback is called with the result of whether the IPH was shown.
   static void UpdatePageActionVisibility(
       bool should_show_page_action,
-      BrowserWindowInterface* bwi,
+      tabs::TabInterface* tab,
       base::OnceCallback<void(user_education::FeaturePromoResult promo_result)>
           show_promo_callback = {});
 

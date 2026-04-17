@@ -20,7 +20,7 @@
 
 ReadAnythingOmniboxController::ReadAnythingOmniboxController(
     tabs::TabInterface* tab)
-    : content::WebContentsObserver(tab->GetContents()),
+    : tabs::ContentsObservingTabFeature(*tab),
       PageActionObserver(kActionSidePanelShowReadAnything),
       tab_(tab) {
   // This class should only be instantiated if the omnibox entrypoint is
@@ -96,14 +96,14 @@ void ReadAnythingOmniboxController::Activate(
     }
     // Hide the omnibox entrypoint now that RM is already showing.
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-        /*should_show_page_action=*/false, tab_->GetBrowserWindowInterface());
+        /*should_show_page_action=*/false, tab_);
   } else if (!features::IsImmersiveReadAnythingEnabled() &&
              tab_->IsActivated()) {
     // Show the entrypoint again once RM is closed. In immersive mode, do this
     // in OnReadingModePresenterChanged instead since the presentation state
     // does not change right away.
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-        /*should_show_page_action=*/true, tab_->GetBrowserWindowInterface());
+        /*should_show_page_action=*/true, tab_);
   }
 }
 
@@ -120,7 +120,7 @@ void ReadAnythingOmniboxController::OnReadingModePresenterChanged() {
       last_close_reason_.has_value() &&
       last_close_reason_ == ReadAnythingCloseReason::kClosedByUser) {
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-        /*should_show_page_action=*/true, tab_->GetBrowserWindowInterface());
+        /*should_show_page_action=*/true, tab_);
   }
 }
 
@@ -137,6 +137,20 @@ void ReadAnythingOmniboxController::OnWillClose(
     ReadAnythingCloseReason reason) {
   CHECK(features::IsImmersiveReadAnythingEnabled());
   last_close_reason_ = reason;
+}
+
+void ReadAnythingOmniboxController::OnDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  tabs::ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
+                                                       new_contents);
+  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      /*should_show_page_action=*/false, tab_);
+  StopTimers();
+  was_last_checked_page_distillable_ = false;
+  was_page_checked_ = false;
+  candidate_check_triggered_time_ms_ = base::TimeTicks();
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
@@ -208,7 +222,7 @@ void ReadAnythingOmniboxController::UpdateVisibility(bool should_show) {
   }
 
   read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
-      should_show, tab_->GetBrowserWindowInterface(),
+      should_show, tab_,
       base::BindOnce(&ReadAnythingOmniboxController::OnShowPromoResult,
                      weak_factory_.GetWeakPtr()));
 }

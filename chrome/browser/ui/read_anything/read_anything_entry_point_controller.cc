@@ -335,17 +335,28 @@ bool ReadAnythingEntryPointController::IsUIShowing(
 // static
 void ReadAnythingEntryPointController::UpdatePageActionVisibility(
     bool should_show_page_action,
-    BrowserWindowInterface* bwi,
+    tabs::TabInterface* tab,
     base::OnceCallback<void(user_education::FeaturePromoResult promo_result)>
         show_promo_callback) {
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration) ||
-      !features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+      !features::IsReadAnythingOmniboxChipEnabled() || !tab) {
     return;
   }
 
+  BrowserWindowInterface* bwi = tab->GetBrowserWindowInterface();
+  if (!bwi) {
+    return;
+  }
+
+  if (!tab->IsActivated()) {
+    DUMP_WILL_BE_CHECK(!should_show_page_action)
+        << "should_show_page_action should not be set for inactive tabs.";
+  }
+
   page_actions::PageActionController* page_action_controller =
-      bwi->GetActiveTabInterface()->GetTabFeatures()->page_action_controller();
+      tab->GetTabFeatures()->page_action_controller();
   auto* const user_ed = BrowserUserEducationInterface::From(bwi);
+
   // No need to show the button if reading mode is already open.
   if (should_show_page_action && !IsUIShowing(bwi)) {
     page_action_controller->Show(kActionSidePanelShowReadAnything);
@@ -359,11 +370,18 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
       params.show_promo_result_callback = std::move(show_promo_callback);
     }
     user_ed->MaybeShowFeaturePromo(std::move(params));
-  } else {
+    return;
+  }
+
+  // We are hiding or not showing omnibox chip. If this tab is currently
+  // active, we should abort any active feature promo for this action.
+  // We skip this for background tabs because feature promo is a window-level
+  // operation and could accidentally interrupt a promo for the active tab.
+  if (tab->IsActivated()) {
     user_ed->AbortFeaturePromo(
         feature_engagement::kIPHReadingModePageActionLabelFeature);
-    page_action_controller->Hide(kActionSidePanelShowReadAnything);
   }
+  page_action_controller->Hide(kActionSidePanelShowReadAnything);
 }
 
 // static
