@@ -103,6 +103,11 @@ if (use_clang_modules) {
         }
         public_deps += [ ":std" ]
       }
+
+      if (is_apple && target_name == "libunwind") {
+        # Apple's libunwind.h #includes ptrauth.h.
+        public_deps += [ ":ptrauth" ]
+      }
     }
   }
 

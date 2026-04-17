@@ -27,18 +27,28 @@
 #      % rsync --archive ${METAL_DIR}/usr/bin/{air-lld,metal,metallib} \
 #        build/xcode_binaries/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 #
-#   3. Create the package and upload it to CIPD:
 #
+#   3. (Optional) Look up the Xcode and SDK version/build versions:
+#
+#      % xcodebuild -version
+#      % xcrun --show-sdk-version
+#      % xcrun --show-sdk-build-version
+#
+#   4. Create the package and upload it to CIPD:
+#
+#      If you looked up the versions above, substitute them in here:
 #      % cipd create --pkg-def build/xcode_binaries.yaml \
 #            -ref ${xcode_version} -ref ${xcode_build_version} \
 #            -ref sdk_${sdk_version} -ref sdk_${sdk_build_version}
 #
-#      ${xcode_version} and ${xcode_build_version} can be found in "About
-#      Xcode", or by running `xcodebuild -version`. ${sdk_version} can be found
-#      by running `xcrun --show-sdk-version`. ${sdk_build_version} can be found
-#      by running `xcrun --show-sdk-build-version`.
+#      Otherwise, this should do it for you (but may break if formats change):
+#      % cipd create --pkg-def build/xcode_binaries.yaml                   \
+#            -ref $(xcodebuild -version | awk 'NR==1 {print tolower($2)}') \
+#            -ref $(xcodebuild -version | awk 'NR==2 {print tolower($3)}') \
+#            -ref sdk_$(xcrun --show-sdk-version        | tr 'A-Z' 'a-z')  \
+#            -ref sdk_$(xcrun --show-sdk-build-version  | tr 'A-Z' 'a-z')
 #
-#   4. Optional: clean up.
+#   5. Optional: clean up.
 #
 #      % rm -rf build/xcode_binaries
 #
