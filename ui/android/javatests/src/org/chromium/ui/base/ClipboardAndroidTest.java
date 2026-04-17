@@ -251,6 +251,7 @@ public class ClipboardAndroidTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/503833445")
     public void testStaleCustomDataCleanup() throws TimeoutException {
         java.util.Map<String, String> data = new java.util.HashMap<>();
         data.put(android.content.ClipDescription.MIMETYPE_TEXT_PLAIN, "text");
