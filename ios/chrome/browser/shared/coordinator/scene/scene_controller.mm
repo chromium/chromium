@@ -1265,6 +1265,11 @@ void InjectNTP(Browser* browser) {
     return NO;
   }
 
+  if ([SigninAccountCapabilitiesSceneAgent agentFromScene:self.sceneState]
+          .isSignoutInProgress) {
+    return NO;
+  }
+
   if (IsSigninForcedByPolicy()) {
     if (self.mainCoordinator.isSigninInProgress) {
       // Return NO because intents cannot be handled when a sign-in is in

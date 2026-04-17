@@ -15,6 +15,10 @@
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider;
 
+// Returns YES if a sign-out is in progress or if the Age Mismatch prompt is
+// being shown.
+@property(nonatomic, readonly) BOOL isSignoutInProgress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_COORDINATOR_SIGNIN_ACCOUNT_CAPABILITIES_SCENE_AGENT_H_

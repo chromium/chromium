@@ -97,6 +97,10 @@
   return self;
 }
 
+- (BOOL)isSignoutInProgress {
+  return _isAgeMismatchSignoutInProgress || _ageMismatchSignoutCoordinator;
+}
+
 #pragma mark - ObservingSceneAgent
 
 - (void)setSceneState:(SceneState*)sceneState {

@@ -341,3 +341,28 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
                                                         run_loop.QuitClosure());
   run_loop.Run();
 }
+
+// Tests that isSignoutInProgress returns YES during sign-out and while the
+// coordinator is running.
+TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIsSignoutInProgress) {
+  EXPECT_FALSE(agent_.isSignoutInProgress);
+
+  // Set sign-out in progress.
+  [agent_ setValue:@YES forKey:@"isAgeMismatchSignoutInProgress"];
+  EXPECT_TRUE(agent_.isSignoutInProgress);
+
+  // Set coordinator running.
+  id coordinator_mock = OCMClassMock([AgeMismatchSignoutCoordinator class]);
+  [agent_ setValue:coordinator_mock forKey:@"ageMismatchSignoutCoordinator"];
+  [agent_ setValue:@NO forKey:@"isAgeMismatchSignoutInProgress"];
+  EXPECT_TRUE(agent_.isSignoutInProgress);
+
+  // Set both.
+  [agent_ setValue:@YES forKey:@"isAgeMismatchSignoutInProgress"];
+  EXPECT_TRUE(agent_.isSignoutInProgress);
+
+  // Clean up.
+  [agent_ setValue:@NO forKey:@"isAgeMismatchSignoutInProgress"];
+  [agent_ setValue:nil forKey:@"ageMismatchSignoutCoordinator"];
+  EXPECT_FALSE(agent_.isSignoutInProgress);
+}
