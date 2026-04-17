@@ -1917,6 +1917,105 @@ TEST_P(LayerTreeHostImplTest, ScrollUpdateReturnsCorrectValue) {
           .did_scroll);
 }
 
+// TODO(crbug.com/487287578): Re-enable on Android once it's non-flaky.
+#if BUILDFLAG(IS_ANDROID)
+#define DISABLED_ON_ANDROID(test_name) DISABLED_##test_name
+#else
+#define DISABLED_ON_ANDROID(test_name) test_name
+#endif
+
+TEST_P(LayerTreeHostImplTest,
+       DISABLED_ON_ANDROID(
+           ScrollEndMainThreadRepaintFastPathScrollFeatureDisabled)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kScrollEndRepaintFollowsScrollUpdate);
+
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
+  DrawFrame();
+
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
+      MainThreadScrollingReason::kNotScrollingOnMain;
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+  EXPECT_FALSE(GetInputHandler()
+                   .ScrollEnd(/*should_snap=*/false,
+                              /*compensated_scroll_delta=*/std::nullopt)
+                   .updates_need_main_thread_repaint);
+}
+
+TEST_P(LayerTreeHostImplTest,
+       DISABLED_ON_ANDROID(
+           ScrollEndMainThreadRepaintFastPathScrollFeatureEnabled)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kScrollEndRepaintFollowsScrollUpdate);
+
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
+  DrawFrame();
+
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
+      MainThreadScrollingReason::kNotScrollingOnMain;
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+  EXPECT_FALSE(GetInputHandler()
+                   .ScrollEnd(/*should_snap=*/false,
+                              /*compensated_scroll_delta=*/std::nullopt)
+                   .updates_need_main_thread_repaint);
+}
+
+TEST_P(LayerTreeHostImplTest,
+       DISABLED_ON_ANDROID(
+           ScrollEndMainThreadRepaintSlowPathScrollFeatureDisabled)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kScrollEndRepaintFollowsScrollUpdate);
+
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
+  DrawFrame();
+
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
+      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+  EXPECT_FALSE(GetInputHandler()
+                   .ScrollEnd(/*should_snap=*/false,
+                              /*compensated_scroll_delta=*/std::nullopt)
+                   .updates_need_main_thread_repaint);
+}
+
+TEST_P(LayerTreeHostImplTest,
+       DISABLED_ON_ANDROID(
+           ScrollEndMainThreadRepaintSlowPathScrollFeatureEnabled)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kScrollEndRepaintFollowsScrollUpdate);
+
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
+  DrawFrame();
+
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
+      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+
+  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
+                                           ui::ScrollInputType::kTouchscreen)
+                                    .get(),
+                                ui::ScrollInputType::kTouchscreen);
+  EXPECT_TRUE(GetInputHandler()
+                  .ScrollEnd(/*should_snap=*/false,
+                             /*compensated_scroll_delta=*/std::nullopt)
+                  .updates_need_main_thread_repaint);
+}
+
 // TODO(sunyunjia): Move scroll snap tests to a separate file.
 // https://crbug.com/851690
 TEST_P(LayerTreeHostImplTest, ScrollSnapOnX) {
@@ -17074,7 +17173,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     return GetInputHandler().ScrollUpdate(scroll_state);
   }
 
-  void ScrollEnd() {
+  InputHandlerScrollEndResult ScrollEnd() {
     return GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
 

@@ -571,17 +571,26 @@ void InputHandler::InsertPendingScrollendContainer(
   }
 }
 
-void InputHandler::ScrollEnd(
+InputHandlerScrollEndResult InputHandler::ScrollEnd(
     bool should_snap,
     std::optional<ScrollVector> compensated_scroll_delta) {
-  ScrollEnd(nullptr, should_snap, compensated_scroll_delta);
+  return ScrollEnd(nullptr, should_snap, compensated_scroll_delta);
 }
 
-void InputHandler::ScrollEnd(
+InputHandlerScrollEndResult InputHandler::ScrollEnd(
     ScrollNode* scroll_node,
     bool should_snap,
     std::optional<ScrollVector> compensated_scroll_delta) {
   ScrollNode* latched_node = CurrentlyScrollingNode();
+
+  InputHandlerScrollEndResult result;
+  if (base::FeatureList::IsEnabled(
+          ::features::kScrollEndRepaintFollowsScrollUpdate)) {
+    if (auto* node_for_repaint = scroll_node ? scroll_node : latched_node) {
+      result.updates_need_main_thread_repaint =
+          GetScrollTree().ShouldRealizeScrollsOnMain(*node_for_repaint);
+    }
+  }
 
   auto end_of_scroll_cleanup = [&](const ScrollNode& cleanup_node) {
     gfx::Vector2dF compensated_scroll_delta_pixels;
@@ -624,7 +633,7 @@ void InputHandler::ScrollEnd(
     if (GetAnimatingNodeForCurrentScrollingNode()) {
       DCHECK(!deferred_scroll_ends_.contains(latched_node->element_id));
       deferred_scroll_ends_.insert(latched_node->element_id);
-      return;
+      return result;
     }
 
     // ScrollEnd event will be deferred if the scrolling node has an active
@@ -642,7 +651,7 @@ void InputHandler::ScrollEnd(
              .IsZero();
     if (overscroll_node) {
       deferred_scroll_ends_.insert(latched_node->element_id);
-      return;
+      return result;
     }
 
     // ScrollEnd event is deferred if a Snap is needed. This allows us to
@@ -650,7 +659,7 @@ void InputHandler::ScrollEnd(
     // event is delivered.
     if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
       deferred_scroll_ends_.insert(latched_node->element_id);
-      return;
+      return result;
     }
 
     DCHECK(latched_scroll_type_.has_value());
@@ -666,10 +675,11 @@ void InputHandler::ScrollEnd(
     ClearCurrentlyScrollingNode();
   } else {
     scrollbar_controller_->ResetState();
-    return;
+    return result;
   }
 
   SetNeedsCommit();
+  return result;
 }
 
 void InputHandler::RecordScrollBegin(

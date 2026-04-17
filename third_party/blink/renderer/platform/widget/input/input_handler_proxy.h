@@ -301,7 +301,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       const blink::WebGestureEvent& event,
       cc::EventMetrics* metrics,
       int64_t trace_id);
-  EventDisposition HandleGestureScrollEnd(const blink::WebGestureEvent& event);
+  EventDisposition HandleGestureScrollEnd(const blink::WebGestureEvent& event,
+                                          cc::EventMetrics* metrics);
   EventDisposition HandleTouchStart(EventWithCallback* event_with_callback);
   EventDisposition HandleTouchMove(EventWithCallback* event_with_callback);
   EventDisposition HandleTouchEnd(EventWithCallback* event_with_callback);
@@ -317,7 +318,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       EventWithCallback* event_with_callback,
       const gfx::PointF& position);
 
-  void InputHandlerScrollEnd(
+  cc::InputHandlerScrollEndResult InputHandlerScrollEnd(
       std::optional<cc::InputHandler::ScrollVector> scroll_state);
 
   // Request a frame of animation from the InputHandler or

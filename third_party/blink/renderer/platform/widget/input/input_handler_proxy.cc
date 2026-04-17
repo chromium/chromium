@@ -881,7 +881,8 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
           event_with_callback->latency_info().trace_id());
 
     case WebInputEvent::Type::kGestureScrollEnd:
-      return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event));
+      return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event),
+                                    event_with_callback->metrics());
 
     case WebInputEvent::Type::kGesturePinchBegin: {
       DCHECK(!gesture_pinch_in_progress_);
@@ -1339,7 +1340,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
 // we call RecordScrollEnd and InputHandlerScrollEnd synchronously. Ideally, we
 // should end the scroll when the GSB is being handled).
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
-    const WebGestureEvent& gesture_event) {
+    const WebGestureEvent& gesture_event,
+    cc::EventMetrics* metrics) {
   TRACE_EVENT0("input", "InputHandlerProxy::HandleGestureScrollEnd");
 
   const cc::ElementId latched_element_id =
@@ -1369,24 +1371,32 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
                          -gesture_event.data.scroll_end.delta_y_compensated),
       .granularity = gesture_event.data.scroll_end.delta_units,
   };
-  InputHandlerScrollEnd(scroll_delta_vector);
+  cc::InputHandlerScrollEndResult result =
+      InputHandlerScrollEnd(scroll_delta_vector);
 
   if (elastic_overscroll_controller_) {
     HandleScrollElasticityOverscroll(
         gesture_event, cc::InputHandlerScrollResult(), latched_element_id);
   }
 
+  if (metrics && result.updates_need_main_thread_repaint) {
+    metrics->set_requires_main_thread_update();
+  }
+
   return DID_HANDLE;
 }
 
-void InputHandlerProxy::InputHandlerScrollEnd(
+cc::InputHandlerScrollEndResult InputHandlerProxy::InputHandlerScrollEnd(
     std::optional<cc::InputHandler::ScrollVector> scroll_state) {
-  input_handler_->ScrollEnd(/*should_snap=*/true, scroll_state);
+  cc::InputHandlerScrollEndResult result =
+      input_handler_->ScrollEnd(/*should_snap=*/true, scroll_state);
   handling_gesture_on_impl_thread_ = false;
 
   DCHECK(!gesture_pinch_in_progress_);
   currently_active_gesture_device_ = std::nullopt;
   currently_active_gesture_scroll_modifiers_ = std::nullopt;
+
+  return result;
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(

@@ -65,6 +65,11 @@ CC_BASE_EXPORT extern const base::FeatureParam<double>
 // image map.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreserveDiscardableImageMapQuality);
 
+// When enabled, the scroll jank v4 metric handles slow-path scrolls more
+// reliably. Specifically, we send GSEs to the main thread if the corresponding
+// GSUs were also routed to the main thread.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollEndRepaintFollowsScrollUpdate);
+
 // Kill switch for a bunch of optimizations for cc-slimming project.
 // Please see crbug.com/335450599 for more details.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kCCSlimming);

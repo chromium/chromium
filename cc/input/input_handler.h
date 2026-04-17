@@ -116,6 +116,14 @@ struct CC_EXPORT InputHandlerScrollResult {
   bool needs_main_thread_repaint = false;
 };
 
+struct CC_EXPORT InputHandlerScrollEndResult {
+  // Used only in scroll unification. Tells the caller that scroll updates are
+  // performed on the compositor thread, but we need a main thread lifecycle
+  // update + commit before the user will see the new pixels. See
+  // `InputHandlerScrollResult::needs_main_thread_repaint`.
+  bool updates_need_main_thread_repaint = false;
+};
+
 class CC_EXPORT InputHandlerClient {
  public:
   enum class ScrollEventDispatchMode {
@@ -333,8 +341,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // returned SCROLL_STARTED. No-op if ScrollBegin wasn't called or didn't
   // result in a successful scroll latch. Snap to a snap position if
   // |should_snap| is true.
-  virtual void ScrollEnd(bool should_snap,
-                         std::optional<ScrollVector> compensated_scroll_delta);
+  virtual InputHandlerScrollEndResult ScrollEnd(
+      bool should_snap,
+      std::optional<ScrollVector> compensated_scroll_delta);
 
   // Called to notify every time scroll-begin/end is attempted by an input
   // event.
@@ -756,9 +765,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // |scroll_node| is not null, we assume it is the ScrollNode for which the
   // scroll has ended. Otherwise, we assume the scroll has ended for
   // |CurrentlyScrollingNode()|.
-  void ScrollEnd(ScrollNode* scroll_node,
-                 bool should_snap = false,
-                 std::optional<ScrollVector> scroll_state = std::nullopt);
+  InputHandlerScrollEndResult ScrollEnd(
+      ScrollNode* scroll_node,
+      bool should_snap = false,
+      std::optional<ScrollVector> scroll_state = std::nullopt);
 
   void LimitDeltaToScrollerSize(const ScrollState& scroll_state,
                                 const ScrollNode& scroll_node,
