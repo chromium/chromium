@@ -1252,4 +1252,24 @@ TEST_F(ViewAccessibilityTest, LiveRegionOffDoesNotFireEvents) {
   EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kLiveRegionChanged));
 }
 
+TEST_F(ViewAccessibilityTest, SetIsEnabled_FiresEnabledChangedEvent) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* contents = widget->SetContentsView(std::make_unique<TestView>());
+
+  std::vector<ax::mojom::Event> fired_events;
+  CollectEvents(contents, &fired_events);
+
+  contents->GetViewAccessibility().SetIsEnabled(false);
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kEnabledChanged));
+
+  fired_events.clear();
+  contents->GetViewAccessibility().SetIsEnabled(true);
+  EXPECT_TRUE(HasEvent(fired_events, ax::mojom::Event::kEnabledChanged));
+
+  // Setting the same value should not fire again.
+  fired_events.clear();
+  contents->GetViewAccessibility().SetIsEnabled(true);
+  EXPECT_FALSE(HasEvent(fired_events, ax::mojom::Event::kEnabledChanged));
+}
+
 }  // namespace views::test

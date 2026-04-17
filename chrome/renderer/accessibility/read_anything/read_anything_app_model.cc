@@ -1009,6 +1009,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kAutocorrectionOccured:
       case ax::mojom::Event::kClicked:
       case ax::mojom::Event::kControlsChanged:
+      case ax::mojom::Event::kEnabledChanged:
       case ax::mojom::Event::kEndOfTest:
       case ax::mojom::Event::kFocus:
       case ax::mojom::Event::kFocusAfterMenuClose:

@@ -5376,6 +5376,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kAutocorrectionOccured:
     case ax::mojom::blink::Event::kChildrenChanged:
     case ax::mojom::blink::Event::kControlsChanged:
+    case ax::mojom::blink::Event::kEnabledChanged:
     case ax::mojom::blink::Event::kEndOfTest:
     case ax::mojom::blink::Event::kFocusAfterMenuClose:
     case ax::mojom::blink::Event::kFocusContext:

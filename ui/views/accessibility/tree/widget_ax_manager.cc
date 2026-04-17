@@ -86,6 +86,7 @@ bool ShouldSerializeEvent(Event event_type) {
   switch (event_type) {
     case Event::kFocusAfterMenuClose:
     case Event::kFocusContext:
+    case Event::kEnabledChanged:
     case Event::kMenuEnd:
     case Event::kMenuPopupEnd:
     case Event::kMenuPopupStart:

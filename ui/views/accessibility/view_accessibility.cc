@@ -806,10 +806,7 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   OnIntAttributeChanged(ax::mojom::IntAttribute::kRestriction,
                         static_cast<int32_t>(data_.GetRestriction()));
 
-  // TODO(crbug.com/40896388): We need a specific enabled-changed event for
-  // this. Some platforms have specific state-changed events and this generic
-  // event does not suggest what changed.
-  NotifyEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyEvent(ax::mojom::Event::kEnabledChanged, true);
   NotifyDataChanged();
 }
 

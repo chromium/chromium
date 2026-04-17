@@ -1598,11 +1598,11 @@ TEST_F(ViewTest, OnStateChangedFiresA11yEvent) {
 
   v->last_a11y_event_ = ax::mojom::Event::kNone;
   v->SetEnabled(false);
-  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kStateChanged);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kEnabledChanged);
 
   v->last_a11y_event_ = ax::mojom::Event::kNone;
   v->SetEnabled(true);
-  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kStateChanged);
+  EXPECT_EQ(v->last_a11y_event_, ax::mojom::Event::kEnabledChanged);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

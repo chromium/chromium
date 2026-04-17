@@ -4146,6 +4146,9 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       // state. Because we don't know what state changed, we deliberately do
       // nothing here.
       break;
+    case ax::mojom::Event::kEnabledChanged:
+      OnEnabledChanged();
+      break;
     case ax::mojom::Event::kTextChanged:
       OnNameChanged();
       break;

@@ -8135,6 +8135,7 @@ std::optional<DWORD> AXPlatformNodeWin::MojoEventToMSAAEvent(
     case ax::mojom::Event::kActiveDescendantChanged:
       return IA2_EVENT_ACTIVE_DESCENDANT_CHANGED;
     case ax::mojom::Event::kCheckedStateChanged:
+    case ax::mojom::Event::kEnabledChanged:
     case ax::mojom::Event::kExpandedChanged:
     case ax::mojom::Event::kStateChanged:
       return EVENT_OBJECT_STATECHANGE;
@@ -8226,6 +8227,8 @@ std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
       return UIA_ControllerForPropertyId;
     case ax::mojom::Event::kCheckedStateChanged:
       return UIA_ToggleToggleStatePropertyId;
+    case ax::mojom::Event::kEnabledChanged:
+      return UIA_IsEnabledPropertyId;
     case ax::mojom::Event::kExpandedChanged:
       return UIA_ExpandCollapseExpandCollapseStatePropertyId;
     case ax::mojom::Event::kSelection:

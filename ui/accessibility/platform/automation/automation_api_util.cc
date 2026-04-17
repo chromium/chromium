@@ -28,6 +28,7 @@ bool ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type) {
     case ax::mojom::Event::kChildrenChanged:
     case ax::mojom::Event::kDocumentSelectionChanged:
     case ax::mojom::Event::kDocumentTitleChanged:
+    case ax::mojom::Event::kEnabledChanged:
     case ax::mojom::Event::kExpandedChanged:
     case ax::mojom::Event::kRowCollapsed:
     case ax::mojom::Event::kRowCountChanged:

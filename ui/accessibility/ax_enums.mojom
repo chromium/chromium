@@ -48,6 +48,7 @@ enum Event {
   kDocumentSelectionChanged = 10,
   kDocumentTitleChanged = 11,
   kEndOfTest = 12,        // Sentinel value indicating the end of a test
+  [MinVersion=1] kEnabledChanged = 59,   // Native
   kExpandedChanged = 13,  // Web
   kFocus = 14,
   kFocusAfterMenuClose = 15,

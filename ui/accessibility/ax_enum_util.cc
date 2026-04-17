@@ -36,6 +36,8 @@ const char* ToString(ax::mojom::Event event) {
       return "documentTitleChanged";
     case ax::mojom::Event::kEndOfTest:
       return "endOfTest";
+    case ax::mojom::Event::kEnabledChanged:
+      return "enabledChanged";
     case ax::mojom::Event::kExpandedChanged:
       return "expandedChanged";
     case ax::mojom::Event::kFocus:
