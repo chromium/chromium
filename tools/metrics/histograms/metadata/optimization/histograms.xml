@@ -2229,20 +2229,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit.{OptimizationTarget}"
-    units="ms" expires_after="2025-01-26">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records the time duration it took for the feature to register with the
-    optimization guide for {OptimizationTarget} from the time the optimization
-    guide service was initialized. Recorded once when the feature registers with
-    the service.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
-<histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency.{OptimizationTarget}"
     units="ms" expires_after="2027-04-14">
   <owner>holte@chromium.org</owner>

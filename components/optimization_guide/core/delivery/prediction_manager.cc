@@ -129,12 +129,6 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
 
   registry_.AddObserverForOptimizationTargetModel(
       optimization_target, model_metadata, model_task_runner, observer);
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"OptimizationGuide.PredictionManager."
-                    "RegistrationTimeSinceServiceInit.",
-                    GetStringNameForOptimizationTarget(optimization_target)}),
-      !init_time_.is_null() ? base::TimeTicks::Now() - init_time_
-                            : base::TimeDelta());
 
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
