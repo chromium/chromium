@@ -2741,11 +2741,11 @@ crbug.com/501209160 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure 
 crbug.com/503010262 external/wpt/webgl/compressed-tex-sub-image-2d-without-base-image.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
-external/wpt/webdriver/tests/bidi/network/get_data/request.py [ Failure ]
-external/wpt/webdriver/tests/bidi/script/get_realms/type.py [ Failure ]
-[ Win ] external/wpt/webtransport/datagram-bad-chunk.https.any.html [ Pass Timeout ]
-virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-127.html [ Failure ]
+crbug.com/503526631 external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
+crbug.com/503526631 external/wpt/webdriver/tests/bidi/network/get_data/request.py [ Failure ]
+crbug.com/503526631 external/wpt/webdriver/tests/bidi/script/get_realms/type.py [ Failure ]
+crbug.com/503528461 [ Win ] external/wpt/webtransport/datagram-bad-chunk.https.any.html [ Pass Timeout ]
+crbug.com/503528146 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-127.html [ Failure ]
 crbug.com/503018958 external/wpt/css/css-backgrounds/background-clip/clip-text-background-table-cell.html [ Failure ]
 crbug.com/503018957 [ Win ] external/wpt/fetch/api/response/response-form-data.html [ Pass Timeout ]
 crbug.com/503016332 external/wpt/webdriver/tests/classic/get_element_tag_name/user_prompts.py [ Failure ]
