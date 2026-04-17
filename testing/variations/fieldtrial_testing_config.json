@@ -4321,24 +4321,6 @@
             ]
         }
     ],
-    "BrowserWidgetCacheThemeService": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowserWidgetCacheThemeService"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowsingDataModelAndroid": [
         {
             "platforms": [
