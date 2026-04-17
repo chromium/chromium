@@ -3475,21 +3475,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.Messages.TimeToAction.Dismiss{MessageIdentifier}"
-    units="ms" expires_after="2025-01-05">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the time interval the message was displayed on the screen before the
-    user dismissed it with a gesture. The metric is NOT recorded when the user
-    presses primary or secondary button or when the message is auto-dismissed
-    based on timer. The interval includes both enter and exit animation. The
-    metric can be used to analyze the time threshold for the user to give up
-    waiting for autodismiss timer and dismiss the message explicitly.
-  </summary>
-  <token key="MessageIdentifier" variants="MessageIdentifiers"/>
-</histogram>
-
 <histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"
     expires_after="2026-09-27">
   <owner>lazzzis@chromium.org</owner>

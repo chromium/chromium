@@ -192,9 +192,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                 || dismissReason == DismissReason.GESTURE) {
             // Only record time to dismiss when the user explicitly dismissed the message.
             MessagesMetrics.recordTimeToAction(
-                    getMessageIdentifier(),
-                    dismissReason == DismissReason.GESTURE,
-                    MessagesMetrics.now() - mMessageShownTime);
+                    getMessageIdentifier(), MessagesMetrics.now() - mMessageShownTime);
         }
         if (mAreExtraHistogramsEnabled && !mFullyVisibleBefore) {
             MessagesMetrics.recordDismissedWithoutFullyVisible(getMessageIdentifier());

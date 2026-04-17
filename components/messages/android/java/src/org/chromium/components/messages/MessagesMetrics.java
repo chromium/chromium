@@ -36,8 +36,6 @@ public class MessagesMetrics {
             "Android.Messages.DismissedWithoutFullyVisible";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
     private static final String TIME_TO_ACTION_HISTOGRAM_PREFIX = "Android.Messages.TimeToAction.";
-    private static final String TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX =
-            "Android.Messages.TimeToAction.Dismiss.";
     static final String STACKING_HISTOGRAM_NAME = "Android.Messages.Stacking";
     static final String STACKING_HIDDEN_NAME = "Android.Messages.Stacking.Hidden";
     static final String STACKING_HIDING_NAME = "Android.Messages.Stacking.Hiding";
@@ -141,17 +139,10 @@ public class MessagesMetrics {
      * Records metrics with duration of time a message was visible before it was dismissed by a user
      * action.
      */
-    static void recordTimeToAction(
-            @MessageIdentifier int messageIdentifier,
-            boolean messageDismissedByGesture,
-            long durationMs) {
+    static void recordTimeToAction(@MessageIdentifier int messageIdentifier, long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
         RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 TIME_TO_ACTION_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
-        if (messageDismissedByGesture) {
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
-        }
     }
 
     /**

@@ -201,13 +201,6 @@ broken down by message identifier.
 Records the reason why this message is dismissed, such as primary action, timer,
 gesture and so on.
 
-**Android.Messages.TimeToAction.Dismiss.{MessageIdentifier}**
-
-Records the time interval the message was displayed on the screen before the
-user dismissed it with a gesture. The metric is NOT recorded when the user
-presses primary or secondary button or when the message is auto-dismissed based
-on timer.
-
 **Android.Messages.TimeToAction.{MessageIdentifier}**
 
 Records the time interval the message was displayed on the screen before the
