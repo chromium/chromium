@@ -424,7 +424,6 @@ class LocationBarMediator
         // Intercept back press if it has focus.
         mBackPressStateSupplier.set(mUrlHasFocus);
         updateButtonVisibility();
-        onSearchBoxHintTextChanged();
         updateShouldAnimateIconChanges();
         onPrimaryColorChanged();
 
@@ -1176,7 +1175,11 @@ class LocationBarMediator
         mStatusCoordinator.setSiteSearchDataSupplier(null);
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null) state.deactivate();
+
         mCurrentInput = null;
+        // The hint text depends on mCurrentInput, nulling it may change the outcome.
+        onSearchBoxHintTextChanged();
+
         setAttachmentModelList(null);
     }
 

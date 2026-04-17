@@ -2254,6 +2254,33 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testEndInputResetsHint() {
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        String searchHint = "search or something";
+        doReturn(searchHint)
+                .when(mSearchEngineUtils)
+                .getOmniboxHintText(eq(AutocompleteRequestType.SEARCH), any());
+        String aiHint = "ai or something";
+        doReturn(aiHint)
+                .when(mSearchEngineUtils)
+                .getOmniboxHintText(eq(AutocompleteRequestType.AI_MODE), any());
+
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+        FuseboxSessionState state = getSession();
+        clearInvocations(mUrlCoordinator);
+
+        state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        verify(mUrlCoordinator).setUrlBarHintText(eq(aiHint));
+
+        clearInvocations(mUrlCoordinator);
+        mMediator.onUrlFocusChange(/* hasFocus= */ false);
+        verify(mUrlCoordinator).setUrlBarHintText(eq(searchHint));
+    }
+
+    @Test
     public void testLoadUrl_chromeExtensionScheme() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
