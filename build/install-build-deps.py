@@ -172,7 +172,7 @@ def check_distro(options):
   distro_id = subprocess.check_output(["lsb_release", "--id",
                                        "--short"]).decode().strip()
 
-  supported_codenames = ["focal", "jammy", "noble"]
+  supported_codenames = ["focal", "jammy", "noble", "resolute"]
   supported_ids = ["Debian"]
 
   if (distro_codename() not in supported_codenames
@@ -187,6 +187,7 @@ def check_distro(options):
          "\tUbuntu 20.04 LTS (focal with EoS April 2025)\n"
          "\tUbuntu 22.04 LTS (jammy with EoS June 2027)\n"
          "\tUbuntu 24.04 LTS (noble with EoS June 2029)\n"
+         "\tUbuntu 26.04 LTS (resolute with EoS May 2031)\n"
          "\tDebian 11 (bullseye) or later"))
     sys.exit(1)
 
