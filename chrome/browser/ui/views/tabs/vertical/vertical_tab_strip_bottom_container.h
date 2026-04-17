@@ -9,6 +9,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 class BrowserWindowInterface;
+class ExpandOnHoverLock;
 class NewTabButtonMenuModel;
 class TabStripFlatEdgeButton;
 
@@ -47,6 +48,8 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView,
       ui::mojom::MenuSourceType source_type) override;
 
  private:
+  void OnNewTabButtonContextMenuClosed();
+
   void UpdateButtonStyles(bool collapsed);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
@@ -58,6 +61,7 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView,
   std::unique_ptr<NewTabButtonMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_BOTTOM_CONTAINER_H_

@@ -1050,6 +1050,19 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> ho
     return;
   }
 
+  // If a bubble or menu is open, then we don't want to change the state. If
+  // expanded, stay expanded. If collapsed, stay collapsed.
+  if (keep_expanded_lock_count_ > 0) {
+    if (expand_on_hover_timer_.IsRunning()) {
+      expand_on_hover_timer_.Stop();
+      if (tabs::IsExpandOnHoverClickDelayEnabled()) {
+        RemovePreTargetHandler(&click_handler_);
+      }
+      hover_card_animation_lock_.reset();
+    }
+    return;
+  }
+
   // On Linux, `GetCursorScreenPoint()` can be buggy because it doesn't return
   // values outside the browser window. To work around that, force a value of
   // false when `OnMouseExited` is called. See

@@ -14,6 +14,7 @@
 class TabStripComboButton;
 class TabStripFlatEdgeButton;
 class BrowserWindowInterface;
+class ExpandOnHoverLock;
 
 namespace gfx {
 class Point;
@@ -81,6 +82,8 @@ class VerticalTabStripTopContainer : public views::View,
   void SetCaptionButtonWidthForLayout(int caption_button_width);
 
  private:
+  void OnCollapseButtonContextMenuClosed();
+
   // Calculates the width of the visible buttons and returns the sum along with
   // the padding between them.
   int GetPreferredWidth() const;
@@ -100,6 +103,7 @@ class VerticalTabStripTopContainer : public views::View,
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 
   // This represents the toolbar (element containing toolbar buttons, omnibox,
   // app menu, etc) height.

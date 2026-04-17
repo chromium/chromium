@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -535,10 +537,16 @@ bool VerticalTabGroupView::IsFocusInTabStrip() {
 
 std::unique_ptr<ExpandOnHoverLock>
 VerticalTabGroupView::AcquireExpandOnHoverLock() {
-  if (!collection_node_) {
+  if (!collection_node_ || !collection_node_->GetController()) {
     return nullptr;
   }
-  return collection_node_->GetController()->AcquireExpandOnHoverLock();
+
+  BrowserView* browser_view =
+      collection_node_->GetController()->GetBrowserView();
+  CHECK(browser_view);
+  CHECK(browser_view->tab_strip_view());
+  return browser_view->tab_strip_view()->GetExpandOnHoverLock(
+      ExpandOnHoverLockType::kKeepExpanded);
 }
 
 void VerticalTabGroupView::ShiftGroupUp() {

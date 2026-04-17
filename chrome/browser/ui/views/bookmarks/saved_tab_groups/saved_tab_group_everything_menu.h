@@ -22,6 +22,8 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
+class ExpandOnHoverLock;
+
 namespace tab_groups {
 
 class STGTabsMenuModel;
@@ -77,6 +79,7 @@ class STGEverythingMenu : public views::MenuDelegate,
                        ui::mojom::MenuSourceType source_type) override;
   bool GetAccelerator(int id, ui::Accelerator* accelerator) const override;
   void WillShowMenu(views::MenuItemView* menu) override;
+  void OnMenuClosed(views::MenuItemView* menu) override;
 
  private:
   class AppMenuSubMenuModelDelegate;
@@ -137,6 +140,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   raw_ptr<views::Widget> const widget_;
 
   MenuContext menu_context_;
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 };
 
 }  // namespace tab_groups

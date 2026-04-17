@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -88,6 +90,13 @@ bool VerticalTabStripBottomContainer::IsPositionInWindowCaption(
   return true;
 }
 
+void VerticalTabStripBottomContainer::OnCollapseStateChanged(
+    tabs::VerticalTabStripCollapseState state) {
+  // Updating the styles immediately at start of the animation by including
+  // collapsing state.
+  UpdateButtonStyles(state != tabs::VerticalTabStripCollapseState::kExpanded);
+}
+
 void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
@@ -98,8 +107,22 @@ void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
     int32_t menu_runner_flags =
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
 
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    CHECK(browser_view);
+    CHECK(browser_view->tab_strip_view());
+    expand_on_hover_lock_ =
+        browser_view->tab_strip_view()->GetExpandOnHoverLock(
+            ExpandOnHoverLockType::kKeepExpanded);
+
+    // `base::Unretained(this)` is safe because `context_menu_runner_` is owned
+    // by `this`, ensuring the callback cannot outlive `this`.
+    auto on_menu_closed = base::BindRepeating(
+        &VerticalTabStripBottomContainer::OnNewTabButtonContextMenuClosed,
+        base::Unretained(this));
+
     context_menu_runner_ = std::make_unique<views::MenuRunner>(
-        context_menu_model_.get(), menu_runner_flags);
+        context_menu_model_.get(), menu_runner_flags,
+        std::move(on_menu_closed));
 
     context_menu_runner_->RunMenuAt(
         source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
@@ -107,11 +130,8 @@ void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
   }
 }
 
-void VerticalTabStripBottomContainer::OnCollapseStateChanged(
-    tabs::VerticalTabStripCollapseState state) {
-  // Updating the styles immediately at start of the animation by including
-  // collapsing state.
-  UpdateButtonStyles(state != tabs::VerticalTabStripCollapseState::kExpanded);
+void VerticalTabStripBottomContainer::OnNewTabButtonContextMenuClosed() {
+  expand_on_hover_lock_.reset();
 }
 
 void VerticalTabStripBottomContainer::UpdateButtonStyles(bool collapsed) {

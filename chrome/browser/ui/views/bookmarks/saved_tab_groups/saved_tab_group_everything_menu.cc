@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -285,6 +286,13 @@ void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
 void STGEverythingMenu::RunMenu() {
   auto root = std::make_unique<views::MenuItemView>(this);
   PopulateMenu(root.get());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  CHECK(browser_view);
+  CHECK(browser_view->tab_strip_view());
+  expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
+      ExpandOnHoverLockType::kKeepExpanded);
+
   menu_runner_ = std::make_unique<views::MenuRunner>(
       std::move(root), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(
@@ -413,6 +421,10 @@ void STGEverythingMenu::WillShowMenu(views::MenuItemView* menu) {
       menu->GetCommand() >= kMinCommandId) {
     PopulateTabGroupSubMenu(menu);
   }
+}
+
+void STGEverythingMenu::OnMenuClosed(views::MenuItemView* menu) {
+  expand_on_hover_lock_.reset();
 }
 
 STGEverythingMenu::~STGEverythingMenu() = default;
