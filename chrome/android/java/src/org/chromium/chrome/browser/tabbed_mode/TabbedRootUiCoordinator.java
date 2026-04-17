@@ -912,6 +912,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
 
+        var bottomSheetController = getBottomSheetController();
+        assert bottomSheetController != null;
         mSystemUiCoordinator =
                 new TabbedSystemUiCoordinator(
                         mActivity.getWindow(),
@@ -922,7 +924,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBottomControlsStacker,
                         mBrowserControlsManager,
                         mContextualSearchManagerSupplier,
-                        getBottomSheetController(),
+                        bottomSheetController,
                         mToolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
                         mManualFillingComponentSupplier.get(),
                         mOverviewColorSupplier,
@@ -1002,15 +1004,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!mNavigationSheet.startAndExpand(/* forward= */ false, /* animate= */ true)) {
             mNavigationSheet = null;
         } else {
-            getBottomSheetController()
-                    .addObserver(
-                            new EmptyBottomSheetObserver() {
-                                @Override
-                                public void onSheetClosed(int reason) {
-                                    getBottomSheetController().removeObserver(this);
-                                    mNavigationSheet = null;
-                                }
-                            });
+            var controller = getBottomSheetController();
+            assert controller != null;
+            controller.addObserver(
+                    new EmptyBottomSheetObserver() {
+                        @Override
+                        public void onSheetClosed(int reason) {
+                            var bottomSheetController = getBottomSheetController();
+                            assumeNonNull(bottomSheetController);
+                            bottomSheetController.removeObserver(this);
+                            mNavigationSheet = null;
+                        }
+                    });
         }
     }
 
@@ -1604,8 +1609,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     || mActivity.isDestroyed()) {
                                 return;
                             }
+                            var bottomSheetController = getBottomSheetController();
+                            assert bottomSheetController != null;
                             mTipsOptInCoordinator =
-                                    new TipsOptInCoordinator(mActivity, getBottomSheetController());
+                                    new TipsOptInCoordinator(mActivity, bottomSheetController);
                             mTipsOptInCoordinator.showBottomSheet();
                         }
                     });
@@ -1647,9 +1654,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         tracker.dismissed(featureName);
                     };
 
+            var bottomSheetController = getBottomSheetController();
+            assert bottomSheetController != null;
             mGlicPromoCoordinator =
                     new GlicPromoCoordinator(
-                            mActivity, getBottomSheetController(), onAccepted, onDismissed);
+                            mActivity, bottomSheetController, onAccepted, onDismissed);
             mGlicPromoCoordinator.showBottomSheet();
             return;
         }
@@ -1878,7 +1887,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new TabBottomSheetManager(
                             mActivity,
                             mWindowAndroid,
-                            getBottomSheetController(),
+                            assertNonNull(getBottomSheetController()),
                             mLayoutStateProviderOneShotSupplier,
                             assertNonNull(mCompositorViewHolderSupplier.get()));
             mTabBottomSheetReadAloudControllerCallback =

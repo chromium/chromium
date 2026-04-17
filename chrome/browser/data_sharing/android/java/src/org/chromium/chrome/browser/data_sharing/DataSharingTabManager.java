@@ -100,7 +100,7 @@ public class DataSharingTabManager {
 
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
-    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private final Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
     private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
     private final Resources mResources;
@@ -131,7 +131,7 @@ public class DataSharingTabManager {
     public DataSharingTabManager(
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             DataSharingTabGroupsDelegate tabGroupsDelegate,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier,
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Resources resources,
@@ -679,7 +679,7 @@ public class DataSharingTabManager {
             String collaborationId,
             @Nullable String sessionId,
             GURL url,
-            Bitmap preview,
+            @Nullable Bitmap preview,
             @Nullable Callback<Boolean> onShareSheetShown) {
         DataSharingMetrics.recordShareActionFlowState(
                 DataSharingMetrics.ShareActionStateAndroid.SHARE_SHEET_SHOWN);
@@ -917,11 +917,13 @@ public class DataSharingTabManager {
                     mDataSharingTabGroupsDelegate.openUrlInChromeCustomTab(
                             activity, new GURL(ACTIVITY_LOGS_URL));
                 };
+        var bottomSheetController = mBottomSheetControllerSupplier.get();
+        assert bottomSheetController != null;
         RecentActivityListCoordinator recentActivityListCoordinator =
                 new RecentActivityListCoordinator(
                         collaborationId,
                         activity,
-                        mBottomSheetControllerSupplier.get(),
+                        bottomSheetController,
                         mMessagingBackendService,
                         tabGroupSyncService,
                         new DataSharingFaviconProvider(activity, mProfile, mBulkFaviconUtil),
