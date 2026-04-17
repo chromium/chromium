@@ -405,17 +405,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     Delegate*);
   ~CanvasResourceProviderSharedImage() override;
 
-  void ClearUnusedResources() {
-    if (image_pool_) {
-      image_pool_->Clear();
-    }
-  }
+  virtual void ClearUnusedResources() = 0;
 
-  bool unused_resources_reclaim_timer_is_running_for_testing() const {
-    return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
-  }
+  virtual bool unused_resources_reclaim_timer_is_running_for_testing()
+      const = 0;
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
-  bool HasUnusedResourcesForTesting() const;
+  virtual bool HasUnusedResourcesForTesting() const = 0;
 
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -433,14 +428,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // queue, thus reducing latency, but with the possible side effects of tearing
   // (in cases where the resource is scanned out directly) and irregular frame
   // rate.
-  bool IsSingleBuffered() const;
+  virtual bool IsSingleBuffered() const = 0;
 
  protected:
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  gpu::SharedImagePool<CanvasResourceSharedImage>* ImagePool() {
-    return image_pool_.get();
   }
   gpu::raster::RasterInterface* RasterInterface() const;
   virtual void EnsureWriteAccess() = 0;
@@ -546,6 +538,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       WebGraphicsSharedImageInterfaceProvider*,
                                       Delegate*);
   ~Canvas2DResourceProviderSharedImage() override;
+
+  void ClearUnusedResources() override;
+  bool unused_resources_reclaim_timer_is_running_for_testing() const override;
+  bool HasUnusedResourcesForTesting() const override;
+  bool IsSingleBuffered() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -685,6 +682,11 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       WebGraphicsSharedImageInterfaceProvider*,
       Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override;
+
+  void ClearUnusedResources() override;
+  bool unused_resources_reclaim_timer_is_running_for_testing() const override;
+  bool HasUnusedResourcesForTesting() const override;
+  bool IsSingleBuffered() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;

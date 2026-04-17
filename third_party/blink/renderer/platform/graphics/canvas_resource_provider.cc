@@ -377,9 +377,7 @@ void CanvasResourceProviderSharedImage::OnContextLost() {
   if (notified_context_lost_) {
     return;
   }
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
+  ClearUnusedResources();
   // Notify the owner of this resource provider that the GPU context was
   // lost. The call is done in a separate task, so that the owner can delete
   // this resource provider if needed.
@@ -392,9 +390,7 @@ void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
   if (notified_context_lost_) {
     return;
   }
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
+  ClearUnusedResources();
   // Notify the owner of this resource provider that the GPU context was
   // lost. The call is done in a separate task, so that the owner can delete
   // this resource provider if needed.
@@ -475,17 +471,17 @@ scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
     GetBackingClientSharedImageForTransferToWebGPU(
         gpu::SyncToken& internal_access_sync_token,
         bool& was_copy_performed) {
-  if (!ImagePool()) {
+  if (!image_pool_) {
     return nullptr;
   }
   // This may cause the current resource and all cached resources to become
   // unusable. WillDrawInternal() will detect this case, drop all cached
   // resources, and copy the current resource to a newly-created resource
   // which will by definition be usable.
-  auto image_info = ImagePool()->GetImageInfo();
+  auto image_info = image_pool_->GetImageInfo();
   image_info.usage.PutAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-  ImagePool()->Reconfigure(image_info);
+  image_pool_->Reconfigure(image_info);
 
   DCHECK(is_accelerated_);
 
@@ -989,14 +985,6 @@ bool CanvasNon2DResourceProviderSharedImage::IsValid() const {
   }
 
   return !IsGpuContextLost();
-}
-
-bool CanvasResourceProviderSharedImage::IsSingleBuffered() const {
-  return image_pool_->GetImageInfo().usage.Has(
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-}
-bool CanvasResourceProviderSharedImage::HasUnusedResourcesForTesting() const {
-  return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
 }
 
 void Canvas2DResourceProviderSharedImage::TransferBackFromWebGPU(
@@ -2235,6 +2223,26 @@ Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
                              max_inflight_resources_, 20);
 }
 
+void Canvas2DResourceProviderSharedImage::ClearUnusedResources() {
+  if (image_pool_) {
+    image_pool_->Clear();
+  }
+}
+
+bool Canvas2DResourceProviderSharedImage::
+    unused_resources_reclaim_timer_is_running_for_testing() const {
+  return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
+}
+
+bool Canvas2DResourceProviderSharedImage::IsSingleBuffered() const {
+  return image_pool_ && image_pool_->GetImageInfo().usage.Has(
+                            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+}
+
+bool Canvas2DResourceProviderSharedImage::HasUnusedResourcesForTesting() const {
+  return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
+}
+
 CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -2294,6 +2302,27 @@ CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() {
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
+}
+
+void CanvasNon2DResourceProviderSharedImage::ClearUnusedResources() {
+  if (image_pool_) {
+    image_pool_->Clear();
+  }
+}
+
+bool CanvasNon2DResourceProviderSharedImage::
+    unused_resources_reclaim_timer_is_running_for_testing() const {
+  return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
+}
+
+bool CanvasNon2DResourceProviderSharedImage::IsSingleBuffered() const {
+  return image_pool_ && image_pool_->GetImageInfo().usage.Has(
+                            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+}
+
+bool CanvasNon2DResourceProviderSharedImage::HasUnusedResourcesForTesting()
+    const {
+  return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
 }
 
 void CanvasNon2DResourceProviderSharedImage::OnResourceRefReturned(
