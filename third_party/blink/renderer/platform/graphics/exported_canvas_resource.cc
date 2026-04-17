@@ -18,6 +18,19 @@ ExportedCanvasResource::ExportedCanvasResource(
 ExportedCanvasResource::~ExportedCanvasResource() = default;
 
 // static
+void ExportedCanvasResource::DropRefOnOwningThread(
+    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
+  CHECK(exported_resource);
+  CHECK(exported_resource->HasOneRef());
+
+  scoped_refptr<CanvasResource> canvas_resource =
+      std::move(exported_resource->resource_);
+
+  CHECK(!canvas_resource->is_cross_thread());
+  CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
+}
+
+// static
 void ExportedCanvasResource::OnPlaceholderReleasedResource(
     scoped_refptr<ExportedCanvasResource>&& exported_resource) {
   if (!exported_resource) {
@@ -26,17 +39,14 @@ void ExportedCanvasResource::OnPlaceholderReleasedResource(
 
   CHECK(exported_resource->HasOneRef());
 
-  scoped_refptr<CanvasResource> canvas_resource =
-      std::move(exported_resource->resource_);
-
-  if (canvas_resource->is_cross_thread()) {
+  if (exported_resource->resource_->is_cross_thread()) {
     auto& owning_thread_task_runner =
-        canvas_resource->owning_thread_task_runner_;
+        exported_resource->resource_->owning_thread_task_runner_;
     owning_thread_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&CanvasResource::DropRefOnOwningThread,
-                                  std::move(canvas_resource)));
+        FROM_HERE,
+        base::BindOnce(&DropRefOnOwningThread, std::move(exported_resource)));
   } else {
-    CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
+    DropRefOnOwningThread(std::move(exported_resource));
   }
 }
 
