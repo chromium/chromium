@@ -832,8 +832,9 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
 
 TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
-  std::unique_ptr<aura::Window> w2(CreateTestWindow(
-      gfx::Rect(0, 0, 400, 400), aura::client::WINDOW_TYPE_POPUP));
+  std::unique_ptr<aura::Window> w2 =
+      CreateTestWindowInShell({.bounds = gfx::Rect(400, 400),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
   std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(

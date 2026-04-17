@@ -240,10 +240,12 @@ TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
 // transforms or opacities altered.
 TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto child = CreateTestWindow(gfx::Rect(100, 190, 100, 10),
-                                aura::client::WINDOW_TYPE_POPUP);
-  auto child2 = CreateTestWindow(gfx::Rect(0, 190, 100, 10),
-                                 aura::client::WINDOW_TYPE_POPUP);
+  auto child =
+      CreateTestWindowInShell({.bounds = gfx::Rect(100, 190, 100, 10),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
+  auto child2 =
+      CreateTestWindowInShell({.bounds = gfx::Rect(0, 190, 100, 10),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
   ::wm::AddTransientChild(window.get(), child.get());
   ::wm::AddTransientChild(window.get(), child2.get());
 
@@ -276,8 +278,9 @@ TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
 TEST_F(ScopedOverviewTransformWindowTest,
        InvisibleTransientsPropertyChangeAfterInit) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto child = CreateTestWindow(gfx::Rect(100, 190, 100, 10),
-                                aura::client::WINDOW_TYPE_POPUP);
+  auto child =
+      CreateTestWindowInShell({.bounds = gfx::Rect(100, 190, 100, 10),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
   ::wm::AddTransientChild(window.get(), child.get());
 
   ScopedOverviewTransformWindow scoped_window(nullptr, window.get());
@@ -305,10 +308,12 @@ TEST_F(ScopedOverviewTransformWindowTest,
 // ScopedOverviewTransformWindow.
 TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransientsAddedAfterInit) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto child = CreateTestWindow(gfx::Rect(100, 190, 100, 10),
-                                aura::client::WINDOW_TYPE_POPUP);
-  auto child2 = CreateTestWindow(gfx::Rect(0, 190, 100, 10),
-                                 aura::client::WINDOW_TYPE_POPUP);
+  auto child =
+      CreateTestWindowInShell({.bounds = gfx::Rect(100, 190, 100, 10),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
+  auto child2 =
+      CreateTestWindowInShell({.bounds = gfx::Rect(0, 190, 100, 10),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
   child2->SetProperty(kHideInOverviewKey, true);
 
   ScopedOverviewTransformWindow scoped_window(nullptr, window.get());

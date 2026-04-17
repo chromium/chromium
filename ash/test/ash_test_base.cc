@@ -373,11 +373,7 @@ std::unique_ptr<aura::Window> AshTestBase::CreateTestWindow(
     const gfx::Rect& bounds_in_screen,
     aura::client::WindowType type,
     int shell_window_id) {
-  if (type != aura::client::WINDOW_TYPE_NORMAL) {
-    return CreateTestWindowInShell({.bounds = bounds_in_screen,
-                                    .window_type = type,
-                                    .window_id = shell_window_id});
-  }
+  CHECK_EQ(type, aura::client::WINDOW_TYPE_NORMAL);
   return CreateAppWindow(bounds_in_screen, chromeos::AppType::NON_APP,
                          shell_window_id);
 }

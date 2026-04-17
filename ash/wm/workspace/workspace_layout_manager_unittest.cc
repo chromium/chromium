@@ -247,8 +247,9 @@ TEST_F(WorkspaceLayoutManagerTest, NoMinimumVisibilityForPopupWindows) {
 
   // Create a popup window out of display boundaries and make sure it is not
   // moved to have minimum visibility.
-  std::unique_ptr<aura::Window> window(CreateTestWindow(
-      gfx::Rect(400, 100, 50, 50), aura::client::WINDOW_TYPE_POPUP));
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindowInShell({.bounds = gfx::Rect(400, 100, 50, 50),
+                               .window_type = aura::client::WINDOW_TYPE_POPUP});
   EXPECT_EQ("400,100 50x50", window->GetBoundsInScreen().ToString());
 }
 

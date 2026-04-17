@@ -61,8 +61,9 @@ TEST_F(GameDashboardControllerTest, IsGame) {
 
 // Verifies a non-normal window type is not a game and not being observed.
 TEST_F(GameDashboardControllerTest, IsGameWindowProperty_NonNormalWindowType) {
-  auto non_normal_window = CreateTestWindow(
-      gfx::Rect(5, 5, 20, 20), aura::client::WindowType::WINDOW_TYPE_MENU);
+  auto non_normal_window = CreateTestWindowInShell(
+      {.bounds = gfx::Rect(5, 5, 20, 20),
+       .window_type = aura::client::WindowType::WINDOW_TYPE_MENU});
   const auto observer =
       std::make_unique<IsGameWindowPropertyObserver>(non_normal_window.get());
   EXPECT_FALSE(observer->received_on_property_change());
