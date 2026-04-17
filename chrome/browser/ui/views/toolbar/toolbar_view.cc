@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -762,14 +763,20 @@ void ToolbarView::OnGlicButtonClicked() {
     glic_nudge_controller->ClearPromptSuggestion();
   }
 
+  glic::mojom::InvocationSource source;
+  if (button_controller_) {
+    source = button_controller_->GetInvocationSource(
+        glic_button_->GetIsShowingNudge());
+  } else {
+    source = glic_button_->GetIsShowingNudge()
+                 ? glic::mojom::InvocationSource::kNudge
+                 : glic::mojom::InvocationSource::kTopChromeButton;
+  }
+
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       browser_view_->GetProfile())
       ->ToggleUI(browser_view_->browser(),
-                 /*prevent_close=*/false,
-                 glic_button_->GetIsShowingNudge()
-                     ? glic::mojom::InvocationSource::kNudge
-                     : glic::mojom::InvocationSource::kTopChromeButton,
-                 prompt_suggestion);
+                 /*prevent_close=*/false, source, prompt_suggestion);
 
   if (glic_button_->GetIsShowingNudge()) {
     glic_nudge_controller->OnNudgeActivity(
@@ -1080,6 +1087,10 @@ void ToolbarView::UpdateGlicButtonVisibility() {
 void ToolbarView::SetGlicActorShowState(bool show) {
   should_show_glic_actor_ = show;
   UpdateGlicActorVisibility();
+}
+
+void ToolbarView::SetButtonController(glic::GlicButtonController* controller) {
+  button_controller_ = controller;
 }
 
 void ToolbarView::SetGlicShowState(bool show) {

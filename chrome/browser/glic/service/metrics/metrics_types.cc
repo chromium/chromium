@@ -89,6 +89,8 @@ GlicEntrypoint GetEntrypointFromInvocationSource(
       return GlicEntrypoint::kTextSelectionNudge;
     case glic::mojom::InvocationSource::kTextSelectionWidget:
       return GlicEntrypoint::kTextSelectionWidget;
+    case glic::mojom::InvocationSource::kZeroStateAutoSummarize:
+      return GlicEntrypoint::kZeroStateAutoSummarize;
     case glic::mojom::InvocationSource::kFre:
     case glic::mojom::InvocationSource::kProfilePicker:
     case glic::mojom::InvocationSource::kUnsupported:
@@ -109,6 +111,8 @@ std::string GetEntrypointString(GlicEntrypoint entrypoint) {
       return "AutoOpenedForPdf";
     case GlicEntrypoint::kWebContentsContextMenu:
       return "WebContentsContextMenu";
+    case GlicEntrypoint::kZeroStateAutoSummarize:
+      return "ZeroStateAutoSummarize";
     case GlicEntrypoint::kIph:
       return "Iph";
     case GlicEntrypoint::kNavigationCapture:

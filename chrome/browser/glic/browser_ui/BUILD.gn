@@ -68,6 +68,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/glic",
+      "//components/pdf/common:constants",
     ]
   }
 

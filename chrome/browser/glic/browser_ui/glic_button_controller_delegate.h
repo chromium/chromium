@@ -7,11 +7,16 @@
 
 namespace glic {
 
+class GlicButtonController;
+
 // Delegate class for the glic button controller to update
 // the properties of the button like visibility, icon.
 class GlicButtonControllerDelegate {
  public:
   virtual ~GlicButtonControllerDelegate() = default;
+
+  // Sets the button controller.
+  virtual void SetButtonController(GlicButtonController* controller) = 0;
 
   // Set the show state of the button
   virtual void SetGlicShowState(bool show) = 0;

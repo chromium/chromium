@@ -135,13 +135,18 @@ class MockGlicButtonControllerDelegate
   void SetGlicPanelIsOpen(bool panel_open) override {
     panel_open_ = panel_open;
   }
+  void SetButtonController(GlicButtonController* controller) override {
+    controller_ = controller;
+  }
 
   bool show_state() const { return show_state_; }
   bool panel_open() const { return panel_open_; }
+  GlicButtonController* controller() const { return controller_; }
 
  private:
   bool show_state_ = false;
   bool panel_open_ = false;
+  raw_ptr<GlicButtonController> controller_ = nullptr;
 };
 
 }  // namespace

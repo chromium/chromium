@@ -126,6 +126,7 @@ class TabStripActionContainer : public views::View,
   bool GetIsShowingGlicNudge() override;
 
   // GlicButtonControllerDelegate:
+  void SetButtonController(glic::GlicButtonController* controller) override;
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
 
@@ -210,6 +211,7 @@ class TabStripActionContainer : public views::View,
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
   raw_ptr<glic::GlicNudgeController> glic_nudge_controller_ = nullptr;
+  raw_ptr<glic::GlicButtonController> button_controller_ = nullptr;
 
   raw_ptr<views::Separator> separator_ = nullptr;
 

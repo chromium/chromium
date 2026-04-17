@@ -197,6 +197,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Context menu"/>
   <int value="16" label="Text selection nudge"/>
   <int value="17" label="Text selection widget"/>
+  <int value="18" label="Zero-state Auto-summarize"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
@@ -519,6 +520,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Context menu"/>
   <int value="24" label="Text selection nudge"/>
   <int value="25" label="Text selection widget"/>
+  <int value="26" label="Zero-state Auto-summarize"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -750,6 +752,10 @@ chromium-metrics-reviews@google.com.
   <int value="102" label="Text selection widget, attached, audio mode."/>
   <int value="103" label="Text selection widget, detached, text mode."/>
   <int value="104" label="Text selection widget, detached, audio mode."/>
+  <int value="105" label="Zero-state Auto-summarize, attached, text mode."/>
+  <int value="106" label="Zero-state Auto-summarize, attached, audio mode."/>
+  <int value="107" label="Zero-state Auto-summarize, detached, text mode."/>
+  <int value="108" label="Zero-state Auto-summarize, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
