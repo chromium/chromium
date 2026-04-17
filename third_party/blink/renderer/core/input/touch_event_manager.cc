@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 
-#include <algorithm>
 #include <array>
 #include <memory>
 
@@ -12,6 +11,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -671,6 +671,16 @@ void TouchEventManager::AllTouchesReleasedCleanup() {
   // (https://crbug.com/345372).
   delayed_effective_touch_action_ = std::nullopt;
   should_enforce_vertical_scroll_ = false;
+}
+
+void TouchEventManager::HandlePseudoElementRemoval(PseudoElement& pseudo) {
+  Element* parent = pseudo.ParentOrShadowHostElement();
+  for (auto& entry : touch_attribute_map_) {
+    if (entry.value->target_ && entry.value->target_->IsPseudoElement() &&
+        pseudo.IsShadowIncludingInclusiveAncestorOf(*entry.value->target_)) {
+      entry.value->target_ = parent;
+    }
+  }
 }
 
 bool TouchEventManager::IsAnyTouchActive() const {

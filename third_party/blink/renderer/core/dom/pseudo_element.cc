@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -486,6 +487,9 @@ void PseudoElement::Dispose() {
 
   DetachLayoutTree();
   Element* parent = ParentOrShadowHostElement();
+  if (LocalFrame* frame = GetDocument().GetFrame()) {
+    frame->GetEventHandler().HandlePseudoElementRemoval(*this);
+  }
   GetDocument().AdoptIfNeeded(*this);
   SetParentNode(nullptr);
   RemovedFrom(*parent);

@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -812,6 +813,31 @@ PointerEventFactory::PointerTarget* PointerEventFactory::GetPointerUpTarget(
     return attributes->pointer_up_target;
   }
   return nullptr;
+}
+
+void PointerEventFactory::HandlePseudoElementRemoved(PseudoElement& pseudo) {
+  Element* originating_element = pseudo.ParentOrShadowHostElement();
+  if (!originating_element) {
+    return;
+  }
+  for (auto& entry : pointer_id_to_attributes_) {
+    PointerAttributes* attributes = entry.value;
+    if (attributes->pointer_down_target &&
+        attributes->pointer_down_target->node) {
+      Node* target = attributes->pointer_down_target->node;
+      if (target->IsPseudoElement() &&
+          pseudo.IsShadowIncludingInclusiveAncestorOf(*target)) {
+        attributes->pointer_down_target->node = originating_element;
+      }
+    }
+    if (attributes->pointer_up_target && attributes->pointer_up_target->node) {
+      Node* target = attributes->pointer_up_target->node;
+      if (target->IsPseudoElement() &&
+          pseudo.IsShadowIncludingInclusiveAncestorOf(*target)) {
+        attributes->pointer_up_target->node = originating_element;
+      }
+    }
+  }
 }
 
 PointerEventFactory::PointerAttributes*

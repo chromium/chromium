@@ -45,6 +45,7 @@ class CORE_EXPORT TouchEventManager final
 
   // Resets the internal state of this object.
   void Clear();
+  void HandlePseudoElementRemoval(PseudoElement&);
 
   // Returns whether there is any touch on the screen.
   bool IsAnyTouchActive() const;
