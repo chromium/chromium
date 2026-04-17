@@ -35,6 +35,20 @@ android_library("java") {
   ]
 }
 
+android_library("tabswitcher_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProperties.java",
+  ]
+
+  deps = [
+    ":java",
+    "//build/android:build_java",
+    "//chrome/browser/tab_ui/android:java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.actions"
   sources = [
@@ -44,13 +58,19 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/actions/button/DelegateButtonDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/button/DrawableButtonDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/button/ResourceButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionPropertiesUnitTest.java",
   ]
 
   deps = [
     ":java",
+    ":tabswitcher_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/tab_ui/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java_resources",
