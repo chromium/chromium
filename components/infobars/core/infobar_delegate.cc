@@ -123,13 +123,6 @@ InfoBarDelegate::AsTranslateInfoBarDelegate() {
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-offline_pages::OfflinePageInfoBarDelegate*
-InfoBarDelegate::AsOfflinePageInfoBarDelegate() {
-  return nullptr;
-}
-#endif
-
 InfoBarDelegate::InfoBarDelegate() = default;
 
 }  // namespace infobars

@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID"/>
   <int value="70"
       label="GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
-  <int value="71" label="OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="71" label="OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="72"
       label="SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_ANDROID
              (Obsolete)"/>
