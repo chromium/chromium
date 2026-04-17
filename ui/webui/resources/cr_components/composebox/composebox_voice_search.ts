@@ -35,6 +35,12 @@ const IDLE_TIMEOUT_MS: number = 1500;
  */
 const QUERY_LENGTH_LIMIT: number = 120;
 
+/**
+ * Time in milliseconds to wait before automatically closing the UI after a
+ * NO_MATCH error occurs (when the error timer is enabled).
+ */
+const ERROR_TIMEOUT_MS: number = 24000;
+
 // The set of controller states.
 enum State {
   // Initial state before voice recognition has been set up.
@@ -165,6 +171,7 @@ export class ComposeboxVoiceSearchElement extends
       error_: {type: Number},
       detailsUrl_: {type: String},
       detailedError_: {type: Number},
+      hasErrorTimer: {type: Boolean},
     };
   }
 
@@ -187,6 +194,7 @@ export class ComposeboxVoiceSearchElement extends
   private timerId_: number|null = null;
   private searchboxHandler_: SearchboxPageHandlerRemote =
       ComposeboxProxyImpl.getInstance().searchboxHandler;
+  accessor hasErrorTimer: boolean = false;
 
   constructor() {
     super();
@@ -385,6 +393,18 @@ export class ComposeboxVoiceSearchElement extends
         VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_NON_CANCELING,
         VoiceSearchAction.MAX_VALUE + 1);
     this.fire('voice-search-error', /*canceled-by-error=*/ false);
+
+    // Auto-close after 24s only for NO_MATCH errors when the timer is enabled
+    // (NTP Searchbox Case).
+    if (this.hasErrorTimer && error === VoiceSearchError.NO_MATCH) {
+      this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
+        this.resetState_();
+        this.recordMetric_(
+            VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,
+            VoiceSearchAction.MAX_VALUE + 1);
+        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+      }, ERROR_TIMEOUT_MS);
+    }
   }
 
   private getErrorText_(error: VoiceSearchError): string {
