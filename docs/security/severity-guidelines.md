@@ -107,6 +107,11 @@ an arbitrary origin ([534923](https://crbug.com/534923)).
       ([917668](https://crbug.com/917668), [927849](https://crbug.com/927849)).
 * Complete control over the apparent origin in the omnibox ([76666](https://crbug.com/76666)).
 
+### Other
+
+* A bug in a standard install that allows a user to system privilege escalation
+  with no preconditions.
+
 ## Medium severity (S2) {#TOC-Medium-severity}
 
 Medium severity (S2) bugs allow attackers to read or modify limited amounts of
@@ -137,6 +142,11 @@ should be marked as medium severity.
   ([540949](https://crbug.com/540949)).
 * A bug that allows an attacker to reliably read or infer complete browsing history
   ([381808](https://crbug.com/381808)).
+
+### Other
+
+* A bug in a standard install that allows breaking the user/user boundary on an
+  OS where this is enforced, with no preconditions.
 
 ## Low severity (S3) {#TOC-Low-severity}
 
