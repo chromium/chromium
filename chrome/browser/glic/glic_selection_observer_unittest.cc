@@ -7,10 +7,15 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,8 +45,10 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     update_count_ = 0;
   }
 
-  // Expose OnInputEvent for testing.
+  // Expose methods for testing.
   using GlicSelectionObserver::OnInputEvent;
+  using GlicSelectionObserver::RenderFrameCreated;
+  using GlicSelectionObserver::RenderFrameDeleted;
 
  private:
   std::optional<std::u16string> last_processed_text_;
@@ -74,7 +81,42 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestGlicSelectionObserver> observer_;
 
   TestGlicSelectionObserver* GetObserver() { return observer_.get(); }
+
+  size_t GetRwhByFrameCount() const { return observer_->rwh_by_frame_.size(); }
 };
+
+TEST_F(GlicSelectionObserverTest, ObserverDeduplicatesRenderWidgetHosts) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  NavigateAndCommit(GURL("http://example.com"));
+  content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
+
+  // Create a child frame. It should share the RenderWidgetHost with the main
+  // frame.
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("child");
+  ASSERT_TRUE(child_rfh);
+  ASSERT_EQ(main_rfh->GetRenderWidgetHost(), child_rfh->GetRenderWidgetHost());
+
+  // Trigger RenderFrameCreated for both.
+  observer->RenderFrameCreated(main_rfh);
+  observer->RenderFrameCreated(child_rfh);
+
+  EXPECT_EQ(2u, GetRwhByFrameCount());
+
+  // Removing the child frame should remove it from the map, but not the main
+  // frame.
+  observer->RenderFrameDeleted(child_rfh);
+  EXPECT_EQ(1u, GetRwhByFrameCount());
+
+  // We can't directly check the internal observer list of RenderWidgetHost
+  // without exposing it in test headers, but we can verify our observer's map
+  // handles the duplicate RenderWidgetHost correctly.
+
+  observer->RenderFrameDeleted(main_rfh);
+  EXPECT_EQ(0u, GetRwhByFrameCount());
+}
 
 TEST_F(GlicSelectionObserverTest, SelectionUpdatesDebounced) {
   auto* observer = GetObserver();
