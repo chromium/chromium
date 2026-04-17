@@ -15,7 +15,7 @@
   const frameTree = (await dp.Page.getFrameTree()).result.frameTree;
 
   await dp.Target.setAutoAttach({
-    autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
+    autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
   testRunner.log('worker in main frame');
   session.evaluateAsync(`
@@ -26,6 +26,7 @@
   `);
   const event0 = await dp.Target.onceAttachedToTarget();
   testRunner.log('parentFrameId matches: ' + (event0.params.targetInfo.parentFrameId === frameTree.frame.id));
+  testRunner.log('parentId matches: ' + (event0.params.targetInfo.parentId === frameTree.frame.id));
 
   testRunner.log('worker in child frame');
   session.evaluateAsync(`
@@ -36,6 +37,7 @@
   `);
   const event1 = await dp.Target.onceAttachedToTarget();
   testRunner.log('parentFrameId matches: ' + (event1.params.targetInfo.parentFrameId === frameTree.childFrames[0].frame.id));
+  testRunner.log('parentId matches: ' + (event1.params.targetInfo.parentId === frameTree.frame.id));
 
   testRunner.log('worker in grand-child frame');
   session.evaluateAsync(`
@@ -46,6 +48,22 @@
   `);
   const event2 = await dp.Target.onceAttachedToTarget();
   testRunner.log('parentFrameId matches: ' + (event2.params.targetInfo.parentFrameId === frameTree.childFrames[0].childFrames[0].frame.id));
+  testRunner.log('parentId matches: ' + (event2.params.targetInfo.parentId === frameTree.frame.id));
+
+  testRunner.log('worker in worker');
+  const workerSession = session.createChild(event2.params.sessionId);
+  workerSession.protocol.Target.setAutoAttach({
+    autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
+  workerSession.protocol.Runtime.runIfWaitingForDebugger();
+  await workerSession.protocol.Inspector.onceWorkerScriptLoaded();
+  workerSession.evaluateAsync(`
+    {
+      self.worker = new self.Worker('${testRunner.url('../resources/worker-console-worker.js')}');
+    }
+  `);
+  const event3 = await workerSession.protocol.Target.onceAttachedToTarget();
+  testRunner.log('parentFrameId matches: ' + (event3.params.targetInfo.parentFrameId === frameTree.childFrames[0].childFrames[0].frame.id));
+  testRunner.log('parentId matches: ' + (event3.params.targetInfo.parentId === event2.params.targetInfo.targetId));
 
   testRunner.completeTest();
 })

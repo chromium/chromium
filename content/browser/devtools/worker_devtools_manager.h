@@ -33,6 +33,7 @@ class WorkerDevToolsManager {
       const DedicatedWorkerHost* host,
       int process_id,
       const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
+      const DedicatedWorkerHost* parent_worker_host,
       scoped_refptr<DevToolsThrottleHandle> throttle_handle);
   void WorkerDestroyed(const DedicatedWorkerHost* host);
   void AddAllAgentHosts(DevToolsAgentHost::List* result);

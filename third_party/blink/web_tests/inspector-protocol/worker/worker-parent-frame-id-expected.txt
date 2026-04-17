@@ -1,8 +1,14 @@
 TargetInfo.parentFrameId is set correctly for workers.
 worker in main frame
 parentFrameId matches: true
+parentId matches: true
 worker in child frame
 parentFrameId matches: true
+parentId matches: true
 worker in grand-child frame
 parentFrameId matches: true
+parentId matches: true
+worker in worker
+parentFrameId matches: true
+parentId matches: true
 

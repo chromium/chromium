@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -48,6 +49,7 @@ void WorkerDevToolsManager::WorkerCreated(
     const DedicatedWorkerHost* host,
     int process_id,
     const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
+    const DedicatedWorkerHost* parent_worker_host,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!hosts_.contains(host));
@@ -55,9 +57,20 @@ void WorkerDevToolsManager::WorkerCreated(
   auto* rfh = RenderFrameHostImpl::FromID(ancestor_render_frame_host_id);
   std::string parent_frame_id =
       rfh ? rfh->GetDevToolsFrameToken().ToString() : std::string();
+  std::string parent_id;
+  if (parent_worker_host) {
+    parent_id = parent_worker_host->GetToken().value().ToString();
+  } else {
+    auto* frame_devtools_host =
+        rfh ? RenderFrameDevToolsAgentHost::GetFor(rfh) : nullptr;
+    if (frame_devtools_host) {
+      parent_id = frame_devtools_host->GetId();
+    }
+  }
   hosts_[host] = base::MakeRefCounted<DedicatedWorkerDevToolsAgentHost>(
       process_id,
-      /*url=*/GURL(), /*name=*/"", host->GetToken().value(), parent_frame_id,
+      /*url=*/GURL(), /*name=*/"", host->GetToken().value(), parent_id,
+      parent_frame_id,
       /*destroyed_callback=*/base::DoNothing());
   base::UmaHistogramCounts1000("Worker.DevTools.AgentHost.Size", hosts_.size());
 

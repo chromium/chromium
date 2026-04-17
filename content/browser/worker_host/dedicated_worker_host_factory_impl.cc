@@ -195,12 +195,20 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
           std::move(blob_url_token), std::move(remote_client),
           storage_access_api_status));
 
+  const blink::DedicatedWorkerToken* const create_worker_token =
+      std::get_if<blink::DedicatedWorkerToken>(&creator_);
+  const DedicatedWorkerHost* creator_worker =
+      create_worker_token
+          ? service->GetDedicatedWorkerHostFromToken(*create_worker_token)
+          : nullptr;
+
   // We are about to start fetching from the browser process and we want
   // devtools to be able to instrument the URLLoaderFactory. This call will
   // create a DevtoolsAgentHost.
   WorkerDevToolsManager::GetInstance().WorkerCreated(
       host, worker_process_host->GetDeprecatedID(),
-      ancestor_render_frame_host_id_, std::move(devtools_throttle_handle));
+      ancestor_render_frame_host_id_, creator_worker,
+      std::move(devtools_throttle_handle));
   base::UmaHistogramTimes("Worker.BrowserProcess.StartScriptLoadTime",
                           base::TimeTicks::Now() - start_time);
   base::UmaHistogramTimes("Worker.BrowserProcess.DevToolsCreateTime",

@@ -4,6 +4,7 @@ Tests that getTargetInfo works on a worker target.
     browserContextId : <string>
     canAccessOpener : false
     parentFrameId : <string>
+    parentId : <string>
     targetId : <string>
     title : http://127.0.0.1:8000/inspector-protocol/fetch/resources/worker.js
     type : worker

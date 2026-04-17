@@ -5,6 +5,7 @@ Attached 2 sessions: [
         browserContextId : <string>
         canAccessOpener : false
         parentFrameId : <string>
+        parentId : <string>
         targetId : <string>
         title : http://127.0.0.1:8000/inspector-protocol/network/resources/worker.js
         type : worker
@@ -15,6 +16,7 @@ Attached 2 sessions: [
         browserContextId : <string>
         canAccessOpener : false
         parentFrameId : <string>
+        parentId : <string>
         targetId : <string>
         title : http://127.0.0.1:8000/inspector-protocol/network/resources/worker.js
         type : worker

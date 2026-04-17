@@ -5,6 +5,7 @@ type: frame [
         browserContextId : <string>
         canAccessOpener : false
         parentFrameId : <string>
+        parentId : <string>
         targetId : <string>
         title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
         type : iframe
@@ -28,6 +29,7 @@ type: frames and service workers [
         browserContextId : <string>
         canAccessOpener : false
         parentFrameId : <string>
+        parentId : <string>
         targetId : <string>
         title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
         type : iframe
@@ -105,6 +107,7 @@ default filter [
         browserContextId : <string>
         canAccessOpener : false
         parentFrameId : <string>
+        parentId : <string>
         targetId : <string>
         title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
         type : iframe
@@ -153,6 +156,7 @@ wildcard pattern [
         browserContextId : <string>
         canAccessOpener : false
         parentFrameId : <string>
+        parentId : <string>
         targetId : <string>
         title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
         type : iframe
@@ -234,6 +238,7 @@ Auto-attached targets with type = iframe [
             browserContextId : <string>
             canAccessOpener : false
             parentFrameId : <string>
+            parentId : <string>
             targetId : <string>
             title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
             type : iframe

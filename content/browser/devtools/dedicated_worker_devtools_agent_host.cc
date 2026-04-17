@@ -32,13 +32,14 @@ DedicatedWorkerDevToolsAgentHost::DedicatedWorkerDevToolsAgentHost(
     const GURL& url,
     const std::string& name,
     const base::UnguessableToken& devtools_worker_token,
+    const std::string& parent_id,
     const std::string& parent_frame_id,
     base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback)
     : WorkerOrWorkletDevToolsAgentHost(process_id,
                                        url,
                                        name,
                                        devtools_worker_token,
-                                       std::string(),
+                                       parent_id,
                                        std::move(destroyed_callback)),
       auto_attacher_(std::make_unique<protocol::RendererAutoAttacherBase>(
           GetRendererChannel())),

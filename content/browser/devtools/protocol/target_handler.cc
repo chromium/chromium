@@ -104,6 +104,9 @@ std::unique_ptr<Target::TargetInfo> BuildTargetInfo(
           .SetAttached(host->IsAttached())
           .SetCanAccessOpener(host->CanAccessOpener())
           .Build();
+  if (!host->GetParentId().empty()) {
+    target_info->SetParentId(host->GetParentId());
+  }
   if (!host->GetOpenerId().empty()) {
     target_info->SetOpenerId(host->GetOpenerId());
   }

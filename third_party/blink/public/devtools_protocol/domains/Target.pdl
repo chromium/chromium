@@ -21,6 +21,8 @@ domain Target
       string url
       # Whether the target has an attached client.
       boolean attached
+      # Id of the parent target, if any. For example, "iframe" target may have a "page" parent.
+      optional TargetID parentId
       # Opener target Id
       optional TargetID openerId
       # Whether the target has access to the originating window.
