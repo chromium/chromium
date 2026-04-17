@@ -1,6 +1,6 @@
 Name: Widevine Content Decryption Module
 Short Name: Widevine CDM
-URL: https://www.widevine.com
+URL: https://chrome-internal.googlesource.com/chrome/deps/widevine/scripts.git
 Version: N/A
 Revision: c96f53fde16f37b1a6cc2b6c468af3c4a364f426
 Update Mechanism: Manual
@@ -13,4 +13,4 @@ License Android Compatible: no
 Description:
 This directory contains build files for integrating Widevine CDM into Chrome.
 No third-party files are checked in here. If you are interested in integrating
-Widevine CDM into your product, please visit the URL above.
+Widevine CDM into your product, please visit https://www.widevine.com.
