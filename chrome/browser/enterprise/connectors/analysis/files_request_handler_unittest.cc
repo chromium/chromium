@@ -627,6 +627,11 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted_PolicyAllows) {
 }
 
 TEST_F(FilesRequestHandlerTest, FileIsLarge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadSizeLimit,
+      {{"max_file_size_mb", "250"}});
+
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
   enterprise_connectors::test::SetAnalysisConnector(
@@ -649,7 +654,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string contents(250 * 1024 * 1024 + 1, 'a');
   base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);
@@ -667,6 +672,11 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge) {
 // size.
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadSizeLimit,
+      {{"max_file_size_mb", "250"}});
+
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
   enterprise_connectors::test::SetAnalysisConnector(
@@ -678,7 +688,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string contents(250 * 1024 * 1024 + 1, 'a');
   base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);
@@ -693,6 +703,11 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadSizeLimit,
+      {{"max_file_size_mb", "250"}});
+
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
   enterprise_connectors::test::SetAnalysisConnector(
@@ -715,7 +730,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string contents(250 * 1024 * 1024 + 1, 'a');
   base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);

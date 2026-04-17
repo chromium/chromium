@@ -7,8 +7,10 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/callback_helpers.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#import "components/enterprise/connectors/core/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -157,10 +159,15 @@ TEST_F(IOSContentAnalysisRequestTest, CachesResults) {
 
 // Tests that a file larger than the limit returns a FileTooLarge result.
 TEST_F(IOSContentAnalysisRequestTest, FileTooLarge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadSizeLimit,
+      {{"max_file_size_mb", "250"}});
+
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path = temp_dir.GetPath().AppendASCII("too_large.txt");
-  std::string content(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string content(250 * 1024 * 1024 + 1, 'a');
   ASSERT_TRUE(base::WriteFile(path, content));
 
   auto request = MakeRequest(path, path.BaseName(), "text/plain",

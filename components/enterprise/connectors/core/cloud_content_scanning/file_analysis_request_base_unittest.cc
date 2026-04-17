@@ -236,32 +236,34 @@ class FileAnalysisRequestBaseHashInFinalInvariantTest
 
 TEST_P(FileAnalysisRequestBaseHashInFinalInvariantTest,
        LargeFileAlwaysHasHashWhenNotDelayOpen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kEnableNewUploadSizeLimit, {{"max_file_size_mb", "250"}});
+
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
 
-  std::string large_file_contents(BinaryUploadService::kMaxUploadSizeBytes + 1,
-                                  'a');
+  std::string large_file_contents(250 * 1024 * 1024 + 1, 'a');
   GetResultsForFileContents(large_file_contents, &result, &data);
   EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, large_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
-  // python3 -c "print('a' * (50 * 1024 * 1024 + 1), end='')" | sha256sum | tr
+  // python3 -c "print('a' * (250 * 1024 * 1024 + 1), end='')" | sha256sum | tr
   // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
-            "9EB56DB30C49E131459FE735BA6B9D38327376224EC8D5A1233F43A5B4A25942");
+            "1EAD1363BDB75A874D9730E97661672C5CDBAA2F3EBCE01611E06C835D12FE20");
   EXPECT_TRUE(IsDocMimeType(data.mime_type))
       << data.mime_type << " is not an expected mimetype";
 
-  std::string very_large_file_contents(
-      2 * BinaryUploadService::kMaxUploadSizeBytes, 'a');
+  std::string very_large_file_contents(500 * 1024 * 1024, 'a');
   GetResultsForFileContents(very_large_file_contents, &result, &data);
   EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, very_large_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
-  // python3 -c "print('a' * (100 * 1024 * 1024), end='')" | sha256sum | tr
+  // python3 -c "print('a' * (500 * 1024 * 1024), end='')" | sha256sum | tr
   // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
-            "CEE41E98D0A6AD65CC0EC77A2BA50BF26D64DC9007F7F1C7D7DF68B8B71291A6");
+            "D2FB707E70A804CF2EA770C9229295689831B4C88879C62BDB966E77E7336F18");
   EXPECT_TRUE(IsDocMimeType(data.mime_type))
       << data.mime_type << " is not an expected mimetype";
 }
@@ -273,28 +275,28 @@ TEST_F(FileAnalysisRequestBaseTest, NewFileLimitSet) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kEnableNewUploadSizeLimit, {{"max_file_size_mb", "100"}});
+      kEnableNewUploadSizeLimit, {{"max_file_size_mb", "250"}});
 
   ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
 
-  // Lower than the new limit of 100MB.
-  std::string small_file_contents(100 * 1024 * 1024 - 1, 'a');
+  // Lower than the new limit of 250MB.
+  std::string small_file_contents(250 * 1024 * 1024 - 1, 'a');
   GetResultsForFileContents(small_file_contents, &result, &data);
   EXPECT_EQ(result, ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, small_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
 
-  // Above the new limit of 100MB.
-  std::string large_file_contents(100 * 1024 * 1024 + 1, 'a');
+  // Above the new limit of 250MB.
+  std::string large_file_contents(250 * 1024 * 1024 + 1, 'a');
   GetResultsForFileContents(large_file_contents, &result, &data);
   EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, large_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
-  // python3 -c "print('a' * (100 * 1024 * 1024 + 1), end='')" | sha256sum | tr
+  // python3 -c "print('a' * (250 * 1024 * 1024 + 1), end='')" | sha256sum | tr
   // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
-            "700A2A19FF7AE59E77BAE4E504371B6E5FF0F1698F02CF50F99AF3F20B02A6FB");
+            "1EAD1363BDB75A874D9730E97661672C5CDBAA2F3EBCE01611E06C835D12FE20");
   EXPECT_TRUE(IsDocMimeType(data.mime_type))
       << data.mime_type << " is not an expected mimetype";
 }
@@ -477,11 +479,14 @@ TEST_F(FileAnalysisRequestBaseTest, ObfuscatedFile) {
 }
 
 TEST_F(FileAnalysisRequestBaseTest, FileHashComputesAsyncWhenEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      enterprise_connectors::kContentHashInFileUploadFinalCall);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{enterprise_connectors::kContentHashInFileUploadFinalCall, {}},
+       {enterprise_connectors::kEnableNewUploadSizeLimit,
+        {{"max_file_size_mb", "250"}}}},
+      {});
 
-  std::string large_file_contents(BinaryUploadService::kMaxUploadSizeBytes + 1,
-                                  'a');
+  std::string large_file_contents(250 * 1024 * 1024 + 1, 'a');
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("foo.doc");
@@ -503,11 +508,11 @@ TEST_F(FileAnalysisRequestBaseTest, FileHashComputesAsyncWhenEnabled) {
         EXPECT_TRUE(request->register_on_got_hash_callback_);
         request->register_on_got_hash_callback_.Run(
             false, base::BindLambdaForTesting([&run_loop](std::string hash) {
-              // python3 -c "print('a' * (50 * 1024 * 1024 + 1), end='')" |
+              // python3 -c "print('a' * (250 * 1024 * 1024 + 1), end='')" |
               // sha256sum | tr '[:lower:]' '[:upper:]'
               EXPECT_EQ(hash,
-                        "9EB56DB30C49E131459FE735BA6B9D38327376224EC8D5A1233F43"
-                        "A5B4A25942");
+                        "1EAD1363BDB75A874D9730E97661672C5CDBAA2F3EBCE01611E06C"
+                        "835D12FE20");
               run_loop.Quit();
             }));
 
