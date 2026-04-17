@@ -284,6 +284,12 @@ public class ClipboardAndroidTest {
 
         helper.waitForCallback("Clipboard did not change", 0);
 
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            Clipboard.getInstance().getCoercedText(), Matchers.is("text only"));
+                });
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
