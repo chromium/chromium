@@ -501,6 +501,47 @@ TEST_F(OtpManagerImplTest, OnOtpAvailable_LoggedEvenIfPhishGuardBlocks) {
                   .HasLoggedDataToFillAvailableForTesting());
 }
 
+// Tests that `OnOtpAvailable` is not logged if there is no pending callback
+// when the OTP arrives.
+TEST_F(OtpManagerImplTest, OnOtpAvailable_NotLoggedIfNoPendingCallback) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    kDefaultOtpValue, base::Time::Now());
+  base::OnceCallback<void(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError>)>
+      sms_backend_callback;
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(
+          [&](base::OnceCallback<void(
+                  base::expected<one_time_tokens::OneTimeToken,
+                                 one_time_tokens::OneTimeTokenRetrievalError>)>
+                  callback) { sms_backend_callback = std::move(callback); });
+
+  // Observing an OTP field triggers retrieval.
+  AddFormWithOtpField();
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(future.GetCallback());
+
+  // Simulate a focus on a form field. This should clear the pending callback.
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), FormGlobalId(),
+                                       FieldGlobalId());
+
+  EXPECT_FALSE(autofill_manager()
+                   .GetOtpFormEventLogger()
+                   .HasLoggedDataToFillAvailableForTesting());
+
+  // Receive the token. The metric should not be logged because the pending
+  // callback was cleared.
+  std::move(sms_backend_callback).Run(otp);
+
+  EXPECT_FALSE(autofill_manager()
+                   .GetOtpFormEventLogger()
+                   .HasLoggedDataToFillAvailableForTesting());
+}
+
 // Tests that `OnBeforeFocusOnFormField` clears the pending callback for
 // `GetOtpSuggestions`.
 TEST_F(OtpManagerImplTest, OnBeforeFocusOnFormField_ClearsPendingCallback) {
