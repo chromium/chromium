@@ -246,6 +246,8 @@ void PassthroughTouchEventQueue::FlushQueue() {
   base::AutoReset<bool> process_acks(&processing_acks_, true);
   drop_remaining_touches_in_sequence_ = true;
   client_->FlushDeferredGestureQueue();
+  base::WeakPtr<PassthroughTouchEventQueue> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   while (!outstanding_touches_.empty()) {
     auto iter = outstanding_touches_.begin();
     TouchEventWithLatencyInfoAndAckState event = *iter;
@@ -255,6 +257,9 @@ void PassthroughTouchEventQueue::FlushQueue() {
           blink::mojom::InputEventResultSource::kBrowser,
           blink::mojom::InputEventResultState::kNoConsumerExists);
     AckTouchEventToClient(event, event.ack_source(), event.ack_state());
+    if (!weak_this) {
+      return;  // Object was destroyed during the ACK, bail out safely.
+    }
   }
 }
 
