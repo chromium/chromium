@@ -38,6 +38,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Navigation restarted"/>
 </enum>
 
+<!-- LINT.IfChange(AccessCodeCastAddSinkResult) -->
+
 <enum name="AccessCodeCastAddSinkResult">
   <int value="0" label="UNKNOWN_ERROR"/>
   <int value="1" label="OK"/>
@@ -56,6 +58,10 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="14" label="INTERNAL_MEDIA_ROUTER_ERROR"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastAddSinkResult) -->
+
+<!-- LINT.IfChange(AccessCodeCastCastMode) -->
+
 <enum name="AccessCodeCastCastMode">
   <int value="0" label="Presentation"/>
   <int value="1" label="Tab mirroring"/>
@@ -63,17 +69,29 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Remote playback"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastCastMode) -->
+
+<!-- LINT.IfChange(AccessCodeCastDialogCloseReason) -->
+
 <enum name="AccessCodeCastDialogCloseReason">
   <int value="0" label="Dialog lost focus"/>
   <int value="1" label="Cancel action"/>
   <int value="2" label="Successfully began casting"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastDialogCloseReason) -->
+
+<!-- LINT.IfChange(AccessCodeCastDialogOpenLocation) -->
+
 <enum name="AccessCodeCastDialogOpenLocation">
   <int value="0" label="Browser cast menu"/>
   <int value="1" label="ChromeOS quick settings feature pod"/>
   <int value="2" label="ChromeOS quick settings cast menu"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastDialogOpenLocation) -->
+
+<!-- LINT.IfChange(AccessCodeCastDiscoveryTypeAndSource) -->
 
 <enum name="AccessCodeCastDiscoveryTypeAndSource">
   <int value="0" label="Unknown discovery type or source"/>
@@ -86,6 +104,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="7" label="New device and Desktop mirror source"/>
   <int value="8" label="New device and Remote playback source"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastDiscoveryTypeAndSource) -->
 
 <enum name="AccessibilityHighContrastColorScheme">
   <summary>Tracks the color scheme used when high contrast is enabled.</summary>
