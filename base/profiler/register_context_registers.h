@@ -158,7 +158,7 @@ inline uintptr_t RegisterContextFramePointer(mcontext_t* context) {
 #elif defined(ARCH_CPU_X86_64)
   return AsUintPtr(&context->gregs[REG_RBP]);
 #else
-  return *(reinterpret_cast<uintptr_t*>(context) + 1);
+  return *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 1));
 #endif
 }
 
@@ -174,7 +174,7 @@ inline void SetRegisterContextFramePointer(mcontext_t* context, uintptr_t val) {
 #elif defined(ARCH_CPU_X86_64)
   AsUintPtr(&context->gregs[REG_RBP]) = val;
 #else
-  *(reinterpret_cast<uintptr_t*>(context) + 1) = val;
+  *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 1)) = val;
 #endif
 }
 
@@ -188,7 +188,7 @@ inline uintptr_t RegisterContextInstructionPointer(mcontext_t* context) {
 #elif defined(ARCH_CPU_X86_64)
   return AsUintPtr(&context->gregs[REG_RIP]);
 #else
-  return *(reinterpret_cast<uintptr_t*>(context) + 2);
+  return *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 2));
 #endif
 }
 
@@ -203,7 +203,7 @@ inline void SetRegisterContextInstructionPointer(mcontext_t* context,
 #elif defined(ARCH_CPU_X86_64)
   AsUintPtr(&context->gregs[REG_RIP]) = val;
 #else
-  *(reinterpret_cast<uintptr_t*>(context) + 2) = val;
+  *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 2)) = val;
 #endif
 }
 
