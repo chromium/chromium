@@ -10,16 +10,18 @@ import type {ReadingListAppElement} from './reading_list_app.js';
 export function getHtml(this: ReadingListAppElement) {
   return html`<!--_html_template_start_-->
 <div id="content" ?hidden="${this.loadingContent_}">
-  <sp-empty-state
-      ?hidden="${!this.isReadingListEmpty_()}"
-      image-path="./images/read_later_empty.svg"
-      dark-image-path="./images/read_later_empty_dark.svg"
-      heading="$i18n{emptyStateHeader}"
-      body="${this.getEmptyStateSubheaderText_()}">
-  </sp-empty-state>
+  <div class="sp-scroller sp-scroller-top-of-page"
+      ?hidden="${!this.isReadingListEmpty_()}">
+    <sp-empty-state
+        image-path="./images/read_later_empty.svg"
+        dark-image-path="./images/read_later_empty_dark.svg"
+        heading="$i18n{emptyStateHeader}"
+        body="${this.getEmptyStateSubheaderText_()}">
+    </sp-empty-state>
+  </div>
 
-  <div class="sp-card" ?hidden="${!this.getAllItems_().length}">
-    <cr-lazy-list id="readingListList" class="sp-scroller"
+  <div class="sp-scroller sp-scroller-top-of-page" ?hidden="${!this.getAllItems_().length}">
+    <cr-lazy-list id="readingListList" class="sp-card"
         .items="${this.getAllItems_()}"
         .itemSize="${this.itemSize_}"
         .minViewportHeight="${this.minViewportHeight_}"

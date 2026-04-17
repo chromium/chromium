@@ -10,10 +10,6 @@
  * #include=cr-hidden-style-lit sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
-:host {
-  --sp-footer-height: 56px;
-}
-
 #content {
   display: flex;
   flex-direction: column;
@@ -25,11 +21,6 @@ cr-icon-button {
   --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);
 }
 
-cr-lazy-list {
-  flex: 1;
-  scrollbar-gutter: stable;
-}
-
 /* Transition required to ensure focus highlight after button press.
  * See crbug/1358900.
  */
@@ -38,27 +29,13 @@ reading-list-item:first-of-type:last-of-type {
 }
 
 #readingListList {
-  /* Display the scroll bar in the gutter outside the card. */
-  margin-right: -8px;
-  max-height: none;
-  overflow: auto;
-}
-
-.sp-card {
-  display: flex;
-  max-height: calc(100% - var(--sp-footer-height) - 4 * var(--sp-body-padding));
-  margin: var(--sp-body-padding);
+  margin-top: var(--sp-body-padding);
 }
 
 .sp-card sp-heading {
-  margin: 6px 0;
-  width: auto;
-}
+  margin-top: var(--sp-card-gap);
 
-sp-footer {
-  height: var(--sp-footer-height);
-}
-
-:host(.in-webui-browser) .sp-card {
-  flex: 1;
+  &:first-child {
+    margin-top: 0;
+  }
 }
