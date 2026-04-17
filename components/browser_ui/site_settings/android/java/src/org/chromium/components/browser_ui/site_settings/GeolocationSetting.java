@@ -44,4 +44,14 @@ public final class GeolocationSetting {
     public String toString() {
         return "GeolocationSetting{" + mApproximate + ", " + mPrecise + "}";
     }
+
+    @CalledByNative
+    public @ContentSetting int approximate() {
+        return mApproximate;
+    }
+
+    @CalledByNative
+    public @ContentSetting int precise() {
+        return mPrecise;
+    }
 }

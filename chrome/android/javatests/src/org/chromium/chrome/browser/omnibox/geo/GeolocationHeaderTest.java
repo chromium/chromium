@@ -39,12 +39,13 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
+import org.chromium.url.GURL;
 
 /** Tests for GeolocationHeader and GeolocationTracker. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -388,22 +389,22 @@ public class GeolocationHeaderTest {
     }
 
     private void setPermission(final @ContentSetting int setting) {
-        setPermission(setting, setting, SessionModel.DURABLE);
+        setPermission(setting, setting, /* isOneTime= */ false);
     }
 
     private void setPermission(
             final @ContentSetting int approximate, final @ContentSetting int precise) {
-        setPermission(approximate, precise, SessionModel.DURABLE);
+        setPermission(approximate, precise, /* isOneTime= */ false);
     }
 
     private void setOneTimeGrant() {
-        setPermission(ContentSetting.ALLOW, ContentSetting.ALLOW, SessionModel.ONE_TIME);
+        setPermission(ContentSetting.ALLOW, ContentSetting.ALLOW, /* isOneTime= */ true);
     }
 
     private void setPermission(
             final @ContentSetting int approximate,
             final @ContentSetting int precise,
-            @SessionModel.EnumType int sessionModel) {
+            boolean isOneTime) {
         final boolean approximateGelocationEnabled =
                 PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
@@ -414,17 +415,33 @@ public class GeolocationHeaderTest {
                                 : ContentSettingsType.GEOLOCATION,
                         SEARCH_URL_1,
                         /* embedder= */ null,
-                        /* isEmbargoed= */ false,
-                        sessionModel);
+                        /* isEmbargoed= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (approximateGelocationEnabled) {
-                        infoHttps.setGeolocationSetting(
-                                ProfileManager.getLastUsedRegularProfile(),
-                                new GeolocationSetting(approximate, precise));
+                    if (isOneTime) {
+                        if (approximateGelocationEnabled) {
+                            WebsitePreferenceBridgeJni.get()
+                                    .setGeolocationEphemeralGrantForTesting(
+                                            ProfileManager.getLastUsedRegularProfile(),
+                                            new GURL(SEARCH_URL_1),
+                                            new GeolocationSetting(approximate, precise));
+                        } else {
+                            WebsitePreferenceBridgeJni.get()
+                                    .setEphemeralGrantForTesting(
+                                            ProfileManager.getLastUsedRegularProfile(),
+                                            ContentSettingsType.GEOLOCATION,
+                                            new GURL(SEARCH_URL_1),
+                                            new GURL(SEARCH_URL_1));
+                        }
                     } else {
-                        infoHttps.setContentSetting(
-                                ProfileManager.getLastUsedRegularProfile(), precise);
+                        if (approximateGelocationEnabled) {
+                            infoHttps.setGeolocationSetting(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    new GeolocationSetting(approximate, precise));
+                        } else {
+                            infoHttps.setContentSetting(
+                                    ProfileManager.getLastUsedRegularProfile(), precise);
+                        }
                     }
                 });
 

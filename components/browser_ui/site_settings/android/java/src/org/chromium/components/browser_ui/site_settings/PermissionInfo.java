@@ -4,11 +4,12 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -22,14 +23,12 @@ public class PermissionInfo implements Serializable {
     private final @Nullable String mEmbedder;
     private final String mOrigin;
     private final @ContentSettingsType.EnumType int mContentSettingsType;
-    private final @SessionModel.EnumType int mSessionModel;
 
     public PermissionInfo(
             @ContentSettingsType.EnumType int type,
             String origin,
             @Nullable String embedder,
-            boolean isEmbargoed,
-            @SessionModel.EnumType int sessionModel) {
+            boolean isEmbargoed) {
         assert WebsitePermissionsFetcher.getPermissionsType(type)
                         == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO
                 : "invalid type: " + type;
@@ -37,7 +36,6 @@ public class PermissionInfo implements Serializable {
         mEmbedder = embedder;
         mContentSettingsType = type;
         mIsEmbargoed = isEmbargoed;
-        mSessionModel = sessionModel;
     }
 
     public @ContentSettingsType.EnumType int getContentSettingsType() {
@@ -60,10 +58,6 @@ public class PermissionInfo implements Serializable {
         return mIsEmbargoed;
     }
 
-    public @SessionModel.EnumType int getSessionModel() {
-        return mSessionModel;
-    }
-
     /** Returns the ContentSetting value using the minimal set of defining parameters. */
     public static @ContentSetting @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle,
@@ -72,7 +66,22 @@ public class PermissionInfo implements Serializable {
             @Nullable String embeddingOrigin) {
         assert contentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         return WebsitePreferenceBridgeJni.get()
-                .getPermissionSettingForOrigin(
+                .getPermissionSettingWithEmbargo(
+                        browserContextHandle,
+                        contentSettingsType,
+                        origin,
+                        embeddingOrigin != null ? embeddingOrigin : origin)
+                .getContentSetting();
+    }
+
+    /** Returns the ContentSetting value using the minimal set of defining parameters. */
+    public static PermissionSetting getPermissionSetting(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String origin,
+            @Nullable String embeddingOrigin) {
+        return WebsitePreferenceBridgeJni.get()
+                .getPermissionSettingWithEmbargo(
                         browserContextHandle,
                         contentSettingsType,
                         origin,
@@ -84,6 +93,12 @@ public class PermissionInfo implements Serializable {
             BrowserContextHandle browserContextHandle) {
         assert mContentSettingsType != ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         return PermissionInfo.getContentSetting(
+                browserContextHandle, mContentSettingsType, mOrigin, mEmbedder);
+    }
+
+    /** Returns the PermissionSetting value for this origin. */
+    public PermissionSetting getPermissionSetting(BrowserContextHandle browserContextHandle) {
+        return PermissionInfo.getPermissionSetting(
                 browserContextHandle, mContentSettingsType, mOrigin, mEmbedder);
     }
 
@@ -108,13 +123,13 @@ public class PermissionInfo implements Serializable {
 
         GeolocationSetting setting =
                 WebsitePreferenceBridgeJni.get()
-                        .getGeolocationSettingForOrigin(
+                        .getPermissionSettingWithEmbargo(
                                 browserContextHandle,
                                 mContentSettingsType,
                                 mOrigin,
-                                getEmbedderSafe());
-
-        return setting;
+                                getEmbedderSafe())
+                        .getGeolocationSetting();
+        return assertNonNull(setting);
     }
 
     /** Set the Geolocation permission value for this origin. */

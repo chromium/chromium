@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("site_settings_jni_headers") {
   sources = [
     "java/src/org/chromium/components/browser_ui/site_settings/GeolocationSetting.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/PermissionSetting.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
   ]
 }
@@ -85,6 +86,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/NfcCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/NotificationCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/PermissionInfo.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/PermissionSetting.java",
     "java/src/org/chromium/components/browser_ui/site_settings/RwsCookieInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SharedDictionaryInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java",

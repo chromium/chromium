@@ -14,13 +14,13 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
@@ -70,8 +70,7 @@ public class WebsitePreferenceBridge {
             ArrayList<PermissionInfo> list,
             String origin,
             String embedder,
-            boolean isEmbargoed,
-            @SessionModel.EnumType int sessionModel) {
+            boolean isEmbargoed) {
         if (type == ContentSettingsType.MEDIASTREAM_CAMERA
                 || type == ContentSettingsType.MEDIASTREAM_MIC) {
             for (PermissionInfo info : list) {
@@ -81,7 +80,7 @@ public class WebsitePreferenceBridge {
                 }
             }
         }
-        list.add(new PermissionInfo(type, origin, embedder, isEmbargoed, sessionModel));
+        list.add(new PermissionInfo(type, origin, embedder, isEmbargoed));
     }
 
     @CalledByNative
@@ -425,24 +424,41 @@ public class WebsitePreferenceBridge {
     }
 
     /** Returns the GeolocationSetting for a specific site. */
-    public static @Nullable GeolocationSetting getGeolocationSettingForOrigin(
-            BrowserContextHandle browserContextHandle,
-            @ContentSettingsType.EnumType int contentSettingsType,
-            String origin,
-            String embedder) {
-        return WebsitePreferenceBridgeJni.get()
-                .getGeolocationSettingForOrigin(
-                        browserContextHandle, contentSettingsType, origin, embedder);
+    public static GeolocationSetting getGeolocationSettingForOrigin(
+            BrowserContextHandle browserContextHandle, String origin, String embedder) {
+        assert PermissionsAndroidFeatureMap.isEnabled(
+                PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+        return assumeNonNull(
+                WebsitePreferenceBridgeJni.get()
+                        .getPermissionSettingWithEmbargo(
+                                browserContextHandle,
+                                ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                                origin,
+                                embedder)
+                        .getGeolocationSetting());
     }
 
-    /** Returns the permission setting for a specific site. */
-    public static @ContentSetting int getPermissionSettingForOrigin(
+    /** Returns the content setting for a specific site. */
+    public static @ContentSetting int getContentSettingWithEmbargo(
+            BrowserContextHandle browserContextHandle,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String origin,
+            String embedder) {
+        return assumeNonNull(
+                WebsitePreferenceBridgeJni.get()
+                        .getPermissionSettingWithEmbargo(
+                                browserContextHandle, contentSettingsType, origin, embedder)
+                        .getContentSetting());
+    }
+
+    /** Returns the content setting for a specific site. */
+    public static PermissionSetting getPermissionSettingWithEmbargo(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType.EnumType int contentSettingsType,
             String origin,
             String embedder) {
         return WebsitePreferenceBridgeJni.get()
-                .getPermissionSettingForOrigin(
+                .getPermissionSettingWithEmbargo(
                         browserContextHandle, contentSettingsType, origin, embedder);
     }
 
@@ -632,8 +648,7 @@ public class WebsitePreferenceBridge {
                 Object list,
                 boolean managedOnly);
 
-        @ContentSetting
-        int getPermissionSettingForOrigin(
+        PermissionSetting getPermissionSettingWithEmbargo(
                 BrowserContextHandle browserContextHandle,
                 @ContentSettingsType.EnumType int contentSettingsType,
                 String origin,
@@ -648,12 +663,6 @@ public class WebsitePreferenceBridge {
 
         boolean canAddExceptionsForJavascriptOptimizerSetting();
 
-        GeolocationSetting getGeolocationSettingForOrigin(
-                BrowserContextHandle browserContextHandle,
-                @ContentSettingsType.EnumType int contentSettingsType,
-                String origin,
-                String embedder);
-
         void setGeolocationSettingForOrigin(
                 BrowserContextHandle browserContextHandle,
                 @ContentSettingsType.EnumType int contentSettingsType,
@@ -667,6 +676,11 @@ public class WebsitePreferenceBridge {
                 @ContentSettingsType.EnumType int contentSettingsType,
                 GURL origin,
                 GURL embedder);
+
+        void setGeolocationEphemeralGrantForTesting( // IN-TEST
+                BrowserContextHandle browserContextHandle,
+                GURL origin,
+                @JniType("GeolocationSetting") GeolocationSetting geolocationSetting);
 
         boolean hasHeuristicDataForTesting( // IN-TEST
                 BrowserContextHandle browserContextHandle, String origin, int type);

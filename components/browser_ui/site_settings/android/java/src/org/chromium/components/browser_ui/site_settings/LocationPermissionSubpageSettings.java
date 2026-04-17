@@ -20,7 +20,6 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 
 import java.util.Collection;
 
@@ -76,11 +75,12 @@ public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
 
     private void setUpPreferences() {
         assumeNonNull(mSite);
-        PermissionInfo permissionInfo =
-                mSite.getPermissionInfo(ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
-        assert permissionInfo != null;
-        assert permissionInfo.getSessionModel() == SessionModel.DURABLE;
 
+        assert !assumeNonNull(
+                        mSite.getPermissionSetting(
+                                getSiteSettingsDelegate().getBrowserContextHandle(),
+                                ContentSettingsType.GEOLOCATION_WITH_OPTIONS))
+                .isOneTime();
         SettingsUtils.addPreferencesFromResource(this, R.xml.location_permission_settings);
 
         LocationPermissionOptionsPreference radioPreference =

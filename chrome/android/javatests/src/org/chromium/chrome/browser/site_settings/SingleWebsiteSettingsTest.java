@@ -70,10 +70,10 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.media.MediaFeatures;
@@ -198,7 +198,7 @@ public class SingleWebsiteSettingsTest {
             String allowedText,
             String blockedText) {
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.DURABLE);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ false);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -235,7 +235,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.ONE_TIME);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ true);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -267,7 +267,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.ONE_TIME);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ true);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -305,7 +305,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.DURABLE);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ false);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -346,7 +346,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.DURABLE);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ false);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -400,7 +400,8 @@ public class SingleWebsiteSettingsTest {
                 /* androidFineEnabled= */ false);
 
         Website website =
-                createWebsiteWithGeolocationPermission(ContentSetting.ALLOW, SessionModel.DURABLE);
+                createWebsiteWithGeolocationPermission(
+                        ContentSetting.ALLOW, /* isOneTime= */ false);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -433,7 +434,7 @@ public class SingleWebsiteSettingsTest {
         GeolocationSetting allowSetting =
                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.ONE_TIME);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ true);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -470,7 +471,7 @@ public class SingleWebsiteSettingsTest {
                 /* androidFineEnabled= */ false);
 
         Website website =
-                createWebsiteWithGeolocationPermission(ContentSetting.ALLOW, SessionModel.ONE_TIME);
+                createWebsiteWithGeolocationPermission(ContentSetting.ALLOW, /* isOneTime= */ true);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -507,7 +508,7 @@ public class SingleWebsiteSettingsTest {
                 new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
         Website website =
-                createWebsiteWithGeolocationPermission(allowSetting, SessionModel.DURABLE);
+                createWebsiteWithGeolocationPermission(allowSetting, /* isOneTime= */ false);
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -739,7 +740,7 @@ public class SingleWebsiteSettingsTest {
                 website =
                         createWebsiteWithGeolocationPermission(
                                 new GeolocationSetting(mContentSettingValue, mContentSettingValue),
-                                SessionModel.DURABLE);
+                                /* isOneTime= */ false);
             } else {
                 website =
                         createWebsiteWithContentSettingException(
@@ -788,7 +789,7 @@ public class SingleWebsiteSettingsTest {
     }
 
     private static Website createWebsiteWithGeolocationPermission(
-            GeolocationSetting setting, int sessionModel) {
+            GeolocationSetting setting, boolean isOneTime) {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
         PermissionInfo info =
@@ -796,19 +797,27 @@ public class SingleWebsiteSettingsTest {
                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                         website.getAddress().getOrigin(),
                         website.getAddress().getOrigin(),
-                        /* isEmbargoed= */ false,
-                        sessionModel);
+                        /* isEmbargoed= */ false);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
+                () -> {
+                    if (isOneTime) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationEphemeralGrantForTesting(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        new GURL(website.getAddress().getOrigin()),
+                                        setting);
+                    } else {
                         info.setGeolocationSetting(
-                                ProfileManager.getLastUsedRegularProfile(), setting));
+                                ProfileManager.getLastUsedRegularProfile(), setting);
+                    }
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         website.setPermissionInfo(info);
         return website;
     }
 
     private static Website createWebsiteWithGeolocationPermission(
-            @ContentSetting int setting, int sessionModel) {
+            @ContentSetting int setting, boolean isOneTime) {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
         PermissionInfo info =
@@ -816,10 +825,20 @@ public class SingleWebsiteSettingsTest {
                         ContentSettingsType.GEOLOCATION,
                         website.getAddress().getOrigin(),
                         website.getAddress().getOrigin(),
-                        /* isEmbargoed= */ false,
-                        sessionModel);
+                        /* isEmbargoed= */ false);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting));
+                () -> {
+                    if (isOneTime) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setEphemeralGrantForTesting(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        ContentSettingsType.GEOLOCATION,
+                                        new GURL(website.getAddress().getOrigin()),
+                                        new GURL(website.getAddress().getOrigin()));
+                    } else {
+                        info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting);
+                    }
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         website.setPermissionInfo(info);
         return website;

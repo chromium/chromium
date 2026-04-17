@@ -386,31 +386,25 @@ public class PageInfoViewTest {
                 () -> {
                     assertEquals(
                             expectBlock,
-                            WebsitePreferenceBridgeJni.get()
-                                    .getPermissionSettingForOrigin(
-                                            ProfileManager.getLastUsedRegularProfile(),
-                                            ContentSettingsType.NOTIFICATIONS,
-                                            url,
-                                            url));
+                            WebsitePreferenceBridge.getContentSettingWithEmbargo(
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    url,
+                                    url));
                     if (PermissionsAndroidFeatureMap.isEnabled(
                             PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
                         assertEquals(
                                 new GeolocationSetting(expectAllow, expectAllow),
-                                WebsitePreferenceBridgeJni.get()
-                                        .getGeolocationSettingForOrigin(
-                                                ProfileManager.getLastUsedRegularProfile(),
-                                                ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                                                url,
-                                                "*"));
+                                WebsitePreferenceBridge.getGeolocationSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(), url, "*"));
                     } else {
                         assertEquals(
                                 expectAllow,
-                                WebsitePreferenceBridgeJni.get()
-                                        .getPermissionSettingForOrigin(
-                                                ProfileManager.getLastUsedRegularProfile(),
-                                                ContentSettingsType.GEOLOCATION,
-                                                url,
-                                                "*"));
+                                WebsitePreferenceBridge.getContentSettingWithEmbargo(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        ContentSettingsType.GEOLOCATION,
+                                        url,
+                                        "*"));
                     }
                 });
     }
@@ -710,11 +704,12 @@ public class PageInfoViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridgeJni.get()
-                            .setEphemeralGrantForTesting(
+                            .setGeolocationEphemeralGrantForTesting(
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    getGeolocationType(),
                                     url,
-                                    url);
+                                    new GeolocationSetting(
+                                            /* approximate= */ ContentSetting.ALLOW,
+                                            /* precise= */ ContentSetting.ALLOW));
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.MEDIASTREAM_CAMERA,

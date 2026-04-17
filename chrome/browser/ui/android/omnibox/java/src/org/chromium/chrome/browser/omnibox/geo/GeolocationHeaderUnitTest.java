@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
+import org.chromium.components.browser_ui.site_settings.PermissionSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
@@ -340,12 +341,16 @@ public class GeolocationHeaderUnitTest {
 
     private void setSiteGeolocationPermissions(
             @ContentSetting int approximate, @ContentSetting int precise) {
-        when(mWebsitePreferenceBridgeJniMock.getGeolocationSettingForOrigin(
+        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingWithEmbargo(
                         any(BrowserContextHandle.class),
                         eq(ContentSettingsType.GEOLOCATION_WITH_OPTIONS),
                         anyString(),
                         anyString()))
-                .thenReturn(new GeolocationSetting(approximate, precise));
+                .thenReturn(
+                        new PermissionSetting(
+                                new GeolocationSetting(approximate, precise),
+                                null,
+                                /* isOneTime= */ false));
     }
 
     private void checkOldLocation(String expectedHeader) {

@@ -23,7 +23,6 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -63,8 +62,7 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                                     ContentSettingsType.NOTIFICATIONS,
                                     origin,
                                     "",
-                                    /* isEmbargoed= */ false,
-                                    SessionModel.DURABLE);
+                                    /* isEmbargoed= */ false);
                     notificationInfo.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile(), setting);
                 });

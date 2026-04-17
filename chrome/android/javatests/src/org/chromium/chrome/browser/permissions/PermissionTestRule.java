@@ -419,12 +419,12 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param contentSettingsType The ContentSettingsType to check.
      * @param pageUrl The origin URL of the page.
      */
-    public @ContentSetting int getPermissionSettingForOrigin(
+    public @ContentSetting int getPermissionSettingWithEmbargo(
             @ContentSettingsType.EnumType int contentSettingsType, String pageUrl) {
         String url = getURL(pageUrl);
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return WebsitePreferenceBridge.getPermissionSettingForOrigin(
+                    return WebsitePreferenceBridge.getContentSettingWithEmbargo(
                             /* browserContextHandle= */ ProfileManager.getLastUsedRegularProfile(),
                             /* contentSettingsType= */ contentSettingsType,
                             /* origin= */ url,
@@ -443,7 +443,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                 () -> {
                     return WebsitePreferenceBridge.getGeolocationSettingForOrigin(
                             /* browserContextHandle= */ ProfileManager.getLastUsedRegularProfile(),
-                            /* contentSettingsType= */ ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                             /* origin= */ url,
                             /* embedder= */ url);
                 });
@@ -465,7 +464,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                 () -> {
                     @ContentSetting
                     int currentSetting =
-                            getPermissionSettingForOrigin(contentSettingsType, pageUrl);
+                            getPermissionSettingWithEmbargo(contentSettingsType, pageUrl);
                     Assert.assertEquals(expectedSetting, currentSetting);
                 });
     }

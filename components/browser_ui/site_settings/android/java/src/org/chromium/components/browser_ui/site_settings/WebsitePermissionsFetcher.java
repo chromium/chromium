@@ -17,7 +17,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -598,8 +597,7 @@ public class WebsitePermissionsFetcher {
                                     ContentSettingsType.FILE_SYSTEM_WRITE_GUARD,
                                     origin,
                                     null,
-                                    /* isEmbargoed= */ false,
-                                    SessionModel.USER_SESSION));
+                                    /* isEmbargoed= */ false));
                     site.setFileEditingInfo(new FileEditingInfo(mSiteSettingsDelegate, origin));
                 }
             }

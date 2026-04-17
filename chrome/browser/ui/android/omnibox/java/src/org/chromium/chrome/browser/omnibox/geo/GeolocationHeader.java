@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -352,9 +351,7 @@ public class GeolocationHeader {
             Profile profile, String url) {
         if (PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
-            return WebsitePreferenceBridgeJni.get()
-                    .getGeolocationSettingForOrigin(
-                            profile, ContentSettingsType.GEOLOCATION_WITH_OPTIONS, url, url);
+            return WebsitePreferenceBridge.getGeolocationSettingForOrigin(profile, url, url);
         } else {
             @ContentSetting
             final Integer setting =

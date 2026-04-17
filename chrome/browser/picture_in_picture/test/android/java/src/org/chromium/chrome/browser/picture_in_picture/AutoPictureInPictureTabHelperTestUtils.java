@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -144,11 +143,7 @@ public class AutoPictureInPictureTabHelperTestUtils {
             @ContentSetting int value) {
         PermissionInfo info =
                 new PermissionInfo(
-                        contentSettingsType,
-                        url,
-                        /* embedder= */ null,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE);
+                        contentSettingsType, url, /* embedder= */ null, /* isEmbargoed= */ false);
         ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, value));
 
         // Wait for the setting to be updated.

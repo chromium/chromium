@@ -18,7 +18,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.ExtensionUrlUtil;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -258,6 +257,16 @@ public final class Website implements WebsiteEntry {
      */
     public @ContentSetting @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingsType.EnumType int type) {
+        @Nullable PermissionSetting permissionSetting =
+                getPermissionSetting(browserContextHandle, type);
+        return permissionSetting == null ? null : permissionSetting.getContentSetting();
+    }
+
+    /**
+     * @return PermissionSetting for specified ContentSettingsType. (Camera, Clipboard, etc.).
+     */
+    public @Nullable PermissionSetting getPermissionSetting(
+            BrowserContextHandle browserContextHandle, @ContentSettingsType.EnumType int type) {
         if (isEmbeddedPermission(type)) {
             var exceptions = getEmbeddedContentSettings(type);
             if (exceptions == null || exceptions.isEmpty()) return null;
@@ -265,11 +274,15 @@ public final class Website implements WebsiteEntry {
             // If multiple embedded permissions have been merged into one website like for
             // SingleWebsiteSettings, this function may only be used if all permission exceptions
             // have been grouped by content setting.
-            return getContentSetting(exceptions);
+            return new PermissionSetting(null, getContentSetting(exceptions), /* isOneTime= */ false);
         } else if (getPermissionInfo(type) != null) {
-            return assumeNonNull(getPermissionInfo(type)).getContentSetting(browserContextHandle);
+            return assumeNonNull(getPermissionInfo(type))
+                    .getPermissionSetting(browserContextHandle);
         } else if (getContentSettingException(type) != null) {
-            return assumeNonNull(getContentSettingException(type)).getContentSetting();
+            return new PermissionSetting(
+                    null,
+                    assumeNonNull(getContentSettingException(type)).getContentSetting(),
+                    false);
         }
 
         return null;
@@ -330,8 +343,7 @@ public final class Website implements WebsiteEntry {
                                 type,
                                 mOrigin.getOrigin(),
                                 /* embedder= */ null,
-                                /* isEmbargoed= */ false,
-                                SessionModel.DURABLE);
+                                /* isEmbargoed= */ false);
                 setPermissionInfo(permissionInfo);
             }
         }

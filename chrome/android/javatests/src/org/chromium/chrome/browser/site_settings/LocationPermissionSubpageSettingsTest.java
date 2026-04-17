@@ -40,7 +40,6 @@ import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 
 /** Tests for {@link LocationPermissionSubpageSettings}. */
@@ -161,8 +160,7 @@ public class LocationPermissionSubpageSettingsTest {
                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                         website.getAddress().getOrigin(),
                         website.getAddress().getOrigin(),
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE);
+                        /* isEmbargoed= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         info.setGeolocationSetting(

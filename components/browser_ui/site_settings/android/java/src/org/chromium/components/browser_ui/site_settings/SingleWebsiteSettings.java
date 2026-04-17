@@ -47,7 +47,6 @@ import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvide
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.ExtensionUrlUtil;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -657,38 +656,37 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         Preference permissionsHeaderPref = findPreference(PREF_PERMISSIONS_HEADER);
         mMaxPermissionOrder = permissionsHeaderPref.getOrder();
         for (@ContentSettingsType.EnumType int type : SiteSettingsUtil.SETTINGS_ORDER) {
-            Preference preference = getPermissionPreference(type);
+            @Nullable PermissionSetting setting =
+                    mSite.getPermissionSetting(getBrowserContextHandle(), type);
+            Preference preference =
+                    getPermissionPreference(type, setting == null ? false : setting.isOneTime());
             preference.setKey(getPreferenceKey(type));
 
             if (type == ContentSettingsType.ADS) {
-                setUpAdsPreference(preference);
+                setUpAdsPreference(preference, setting);
             } else if (type == ContentSettingsType.SOUND) {
-                setUpSoundPreference(preference);
+                setUpSoundPreference(preference, setting);
             } else if (type == ContentSettingsType.JAVASCRIPT) {
-                setUpJavascriptPreference(preference);
+                setUpJavascriptPreference(preference, setting);
             } else if (type == ContentSettingsType.GEOLOCATION) {
-                setUpLocationPreference(preference);
+                setUpLocationPreference(preference, setting);
             } else if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
-                setUpLocationWithOptionsPreference(preference);
+                setUpLocationWithOptionsPreference(preference, setting);
             } else if (type == ContentSettingsType.NOTIFICATIONS) {
                 setUpNotificationsPreference(preference, mSite.isEmbargoed(type));
             } else if (type == ContentSettingsType.AUTO_PICTURE_IN_PICTURE) {
                 // On Android, Auto-PiP does not have a prompt, so the UI treats the ASK
                 // state as ALLOW in regular mode and BLOCK in incognito. This logic should
                 // be removed when a prompt is implemented for parity with desktop.
-                setUpAutoPictureInPicturePreference(preference);
+                setUpAutoPictureInPicturePreference(preference, setting);
             } else {
-                setupContentSettingsPreference(
-                        preference,
-                        mSite.getContentSetting(getBrowserContextHandle(), type),
-                        mSite.isEmbargoed(type),
-                        isOneTime(type));
+                setupContentSettingsPreference(preference, setting, mSite.isEmbargoed(type));
             }
         }
     }
 
-    private Preference getPermissionPreference(@ContentSettingsType.EnumType int type) {
-        boolean isOneTime = isOneTime(type);
+    private Preference getPermissionPreference(
+            @ContentSettingsType.EnumType int type, boolean isOneTime) {
         if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS && !isOneTime) {
             return createTwoActionLocationSwitchPreference();
         }
@@ -866,7 +864,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             String overrideSummary =
                     getString(
                             ContentSettingsResources.getCategorySummary(
-                                    ContentSetting.BLOCK, isOneTime(notificationType)));
+                                    ContentSetting.BLOCK, /* isOneTime= */ false));
             ChromeButtonPreference buttonPreference =
                     replaceWithReadOnlyButtonPreference(
                             preference, overrideSummary, ContentSetting.BLOCK);
@@ -897,7 +895,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         ? getString(R.string.automatically_blocked)
                         : getString(
                                 ContentSettingsResources.getCategorySummary(
-                                        value, isOneTime(notificationType)));
+                                        value, /* isOneTime= */ false));
 
         // This preference is read-only, so we replace the existing pref with a
         // regular Preference that takes users to OS settings on click.
@@ -1331,8 +1329,18 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     @RequiresNonNull({"mSite"})
     private void setupContentSettingsPreference(
+            Preference preference, @Nullable PermissionSetting permission, boolean isEmbargoed) {
+        setupContentSettingsPreference(
+                preference,
+                permission == null ? null : permission.getContentSetting(),
+                isEmbargoed,
+                permission == null ? false : permission.isOneTime());
+    }
+
+    @RequiresNonNull({"mSite"})
+    private void setupContentSettingsPreference(
             Preference preference,
-            @ContentSetting @Nullable Integer value,
+            @Nullable @ContentSetting Integer value,
             boolean isEmbargoed,
             boolean isOneTime) {
         @ContentSettingsType.EnumType
@@ -1452,49 +1460,49 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     @RequiresNonNull({"mSite"})
-    private void setUpLocationPreference(Preference preference) {
+    private void setUpLocationPreference(
+            Preference preference, @Nullable PermissionSetting setting) {
+        if (setting == null) {
+            return;
+        }
         if (PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
             return;
         }
-        @ContentSetting
-        @Nullable Integer permission =
-                mSite.getContentSetting(getBrowserContextHandle(), ContentSettingsType.GEOLOCATION);
         if (setupAppDelegatePreference(
                 preference,
                 R.string.website_location_settings,
                 ContentSettingsType.GEOLOCATION,
-                permission)) {
+                assumeNonNull(setting.getContentSetting()))) {
             return;
         }
 
         setupContentSettingsPreference(
                 preference,
-                permission,
+                assumeNonNull(setting.getContentSetting()),
                 mSite.isEmbargoed(ContentSettingsType.GEOLOCATION),
-                isOneTime(ContentSettingsType.GEOLOCATION));
+                setting.isOneTime());
     }
 
     @RequiresNonNull({"mSite"})
-    private void setUpLocationWithOptionsPreference(Preference preference) {
+    private void setUpLocationWithOptionsPreference(
+            Preference preference, @Nullable PermissionSetting setting) {
+        if (setting == null) {
+            return;
+        }
         if (!PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
             return;
         }
-        var info = mSite.getPermissionInfo(ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
-        if (info == null) {
-            return;
-        }
-        GeolocationSetting permission = info.getGeolocationSetting(getBrowserContextHandle());
-
+        GeolocationSetting geoSetting = assumeNonNull(setting.getGeolocationSetting());
         mHasApproximateLocationGrant =
-                permission.mApproximate == ContentSetting.ALLOW
-                        && permission.mApproximate != permission.mPrecise;
+                geoSetting.mApproximate == ContentSetting.ALLOW
+                        && geoSetting.mApproximate != geoSetting.mPrecise;
 
         if (preference instanceof TwoActionSwitchPreference) {
             ((TwoActionSwitchPreference) preference)
                     .setPrimaryButtonClickListener(
-                            permission.mApproximate == ContentSetting.BLOCK
+                            geoSetting.mApproximate == ContentSetting.BLOCK
                                     ? null
                                     : (v) -> openLocationPermissionSubpage());
         }
@@ -1503,46 +1511,43 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 preference,
                 R.string.website_location_settings,
                 ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                permission.mApproximate)) {
+                geoSetting.mApproximate)) {
             return;
         }
 
         setupContentSettingsPreference(
                 preference,
-                permission.mApproximate,
+                geoSetting.mApproximate,
                 mSite.isEmbargoed(ContentSettingsType.GEOLOCATION_WITH_OPTIONS),
-                isOneTime(ContentSettingsType.GEOLOCATION_WITH_OPTIONS));
+                setting.isOneTime());
     }
 
     @RequiresNonNull({"mSite"})
-    private void setUpSoundPreference(Preference preference) {
+    private void setUpSoundPreference(Preference preference, @Nullable PermissionSetting setting) {
         if (!getArguments().getBoolean(EXTRA_SHOW_SOUND, true)) {
             return;
         }
 
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
-        @ContentSetting
-        @Nullable Integer currentValue =
-                mSite.getContentSetting(browserContextHandle, ContentSettingsType.SOUND);
         // In order to always show the sound permission, set it up with the default value if it
         // doesn't have a current value.
-        if (currentValue == null) {
-            currentValue =
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                                    browserContextHandle, ContentSettingsType.SOUND)
-                            ? ContentSetting.ALLOW
-                            : ContentSetting.BLOCK;
+        if (setting == null) {
+            setting =
+                    new PermissionSetting(
+                            null,
+                            WebsitePreferenceBridge.isCategoryEnabled(
+                                            browserContextHandle, ContentSettingsType.SOUND)
+                                    ? ContentSetting.ALLOW
+                                    : ContentSetting.BLOCK,
+                            /* isOneTime= */ false);
         }
         // Not possible to embargo SOUND.
-        setupContentSettingsPreference(
-                preference,
-                currentValue,
-                /* isEmbargoed= */ false,
-                isOneTime(ContentSettingsType.SOUND));
+        setupContentSettingsPreference(preference, setting, /* isEmbargoed= */ false);
     }
 
     @RequiresNonNull({"mSite"})
-    private void setUpAutoPictureInPicturePreference(Preference preference) {
+    private void setUpAutoPictureInPicturePreference(
+            Preference preference, @Nullable PermissionSetting setting) {
         if (!PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
             return;
@@ -1552,49 +1557,42 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
 
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
-        @ContentSetting
-        @Nullable Integer currentValue =
-                mSite.getContentSetting(
-                        browserContextHandle, ContentSettingsType.AUTO_PICTURE_IN_PICTURE);
         // In order to always show the auto-pip permission, set it up with the default value if it
         // doesn't have a current value. When the profile is incognito or the global content
         // setting is disabled, auto-pip is blocked by default.
-        if (currentValue == null) {
-            currentValue =
-                    getSiteSettingsDelegate().isIncognito()
-                                    || !WebsitePreferenceBridge.isCategoryEnabled(
-                                            browserContextHandle,
-                                            ContentSettingsType.AUTO_PICTURE_IN_PICTURE)
-                            ? ContentSetting.BLOCK
-                            : ContentSetting.ALLOW;
+        if (setting == null) {
+            setting =
+                    new PermissionSetting(
+                            null,
+                            getSiteSettingsDelegate().isIncognito()
+                                            || !WebsitePreferenceBridge.isCategoryEnabled(
+                                                    browserContextHandle,
+                                                    ContentSettingsType.AUTO_PICTURE_IN_PICTURE)
+                                    ? ContentSetting.BLOCK
+                                    : ContentSetting.ALLOW,
+                            /* isOneTime= */ false);
         }
 
         setupContentSettingsPreference(
                 preference,
-                currentValue,
+                assumeNonNull(setting.getContentSetting()),
                 mSite.isEmbargoed(ContentSettingsType.AUTO_PICTURE_IN_PICTURE),
-                isOneTime(ContentSettingsType.AUTO_PICTURE_IN_PICTURE));
+                setting.isOneTime());
     }
 
     @RequiresNonNull({"mSite"})
-    private void setUpJavascriptPreference(Preference preference) {
+    private void setUpJavascriptPreference(
+            Preference preference, @Nullable PermissionSetting setting) {
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
-        @ContentSetting
-        @Nullable Integer currentValue =
-                mSite.getContentSetting(browserContextHandle, ContentSettingsType.JAVASCRIPT);
         // If Javascript is blocked by default, then always show a Javascript permission.
         // To do this, set it to the default value (blocked).
-        if ((currentValue == null)
+        if ((setting == null)
                 && !WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.JAVASCRIPT)) {
-            currentValue = ContentSetting.BLOCK;
+            setting = new PermissionSetting(null, ContentSetting.BLOCK, /* isOneTime= */ false);
         }
         // Not possible to embargo JAVASCRIPT.
-        setupContentSettingsPreference(
-                preference,
-                currentValue,
-                /* isEmbargoed= */ false,
-                isOneTime(ContentSettingsType.JAVASCRIPT));
+        setupContentSettingsPreference(preference, setting, /* isEmbargoed= */ false);
     }
 
     /**
@@ -1604,12 +1602,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
      * string is custom.
      */
     @RequiresNonNull({"mSite"})
-    private void setUpAdsPreference(Preference preference) {
+    private void setUpAdsPreference(Preference preference, @Nullable PermissionSetting setting) {
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
         // Do not show the setting if the category is not enabled.
         if (!SiteSettingsCategory.adsCategoryEnabled()) {
-            setupContentSettingsPreference(
-                    preference, null, false, isOneTime(ContentSettingsType.ADS));
+            setupContentSettingsPreference(preference, null, false);
             return;
         }
         // If the ad blocker is activated, then this site will have ads blocked unless there is an
@@ -1617,34 +1614,33 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         boolean activated =
                 WebsitePreferenceBridge.getAdBlockingActivated(
                         browserContextHandle, mSite.getAddress().getOrigin());
-        @ContentSetting
-        @Nullable Integer permission =
-                mSite.getContentSetting(browserContextHandle, ContentSettingsType.ADS);
 
-        // If |permission| is null, there is no explicit (non-default) permission set for this site.
+        // If |setting| is null, there is no explicit (non-default) permission set for this site.
         // If the site is not considered a candidate for blocking, do the standard thing and remove
         // the preference.
-        if (permission == null && !activated) {
-            setupContentSettingsPreference(
-                    preference, null, false, isOneTime(ContentSettingsType.ADS));
+        if (setting == null && !activated) {
+            setupContentSettingsPreference(preference, null, false, /* isOneTime= */ false);
             return;
         }
 
         // However, if the blocking is activated, we still want to show the permission, even if it
         // is in the default state.
-        if (permission == null) {
-            permission =
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                                    browserContextHandle, ContentSettingsType.ADS)
-                            ? ContentSetting.ALLOW
-                            : ContentSetting.BLOCK;
+        if (setting == null) {
+            setting =
+                    new PermissionSetting(
+                            null,
+                            WebsitePreferenceBridge.isCategoryEnabled(
+                                            browserContextHandle, ContentSettingsType.ADS)
+                                    ? ContentSetting.ALLOW
+                                    : ContentSetting.BLOCK,
+                            /* isOneTime= */ false);
         }
         // Not possible to embargo ADS.
         setupContentSettingsPreference(
                 preference,
-                permission,
+                setting.getContentSetting(),
                 /* isEmbargoed= */ false,
-                isOneTime(ContentSettingsType.ADS));
+                setting.isOneTime());
     }
 
     public @ContentSettingsType.EnumType int getContentSettingsTypeFromPreferenceKey(
@@ -1814,11 +1810,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 }
             }
         }
-    }
-
-    public boolean isOneTime(@ContentSettingsType.EnumType int type) {
-        PermissionInfo permissionInfo = assumeNonNull(mSite).getPermissionInfo(type);
-        return permissionInfo != null && permissionInfo.getSessionModel() == SessionModel.ONE_TIME;
     }
 
     /**

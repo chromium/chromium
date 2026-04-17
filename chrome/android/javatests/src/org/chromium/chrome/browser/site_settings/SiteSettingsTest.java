@@ -2309,12 +2309,8 @@ public class SiteSettingsTest {
     GeolocationSetting getGeolocationSetting(String url) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        WebsitePreferenceBridgeJni.get()
-                                .getGeolocationSettingForOrigin(
-                                        getBrowserContextHandle(),
-                                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                                        url,
-                                        "https://example.com"));
+                        WebsitePreferenceBridge.getGeolocationSettingForOrigin(
+                                getBrowserContextHandle(), url, "https://example.com"));
     }
 
     @Test

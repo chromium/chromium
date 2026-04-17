@@ -65,7 +65,6 @@ import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
@@ -329,17 +328,6 @@ public class WebsitePermissionsFetcherTest {
             return Arrays.asList(
                     new ParameterSet().value(true).name("Embargoed"),
                     new ParameterSet().value(false).name("Normal"));
-        }
-    }
-
-    public static class EmbargoedAndOneTimeSessionParameters implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(false, false).name("NormalDurable"),
-                    new ParameterSet().value(true, false).name("EmbargoedDurable"),
-                    new ParameterSet().value(false, true).name("NormalOneTime"),
-                    new ParameterSet().value(true, true).name("EmbargoedOneTime"));
         }
     }
 
@@ -609,116 +597,88 @@ public class WebsitePermissionsFetcherTest {
 
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.AR,
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        ContentSettingsType.AR, ORIGIN, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.HAND_TRACKING,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.IDLE_DETECTION,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        getGeolocationType(),
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        getGeolocationType(), ORIGIN, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.MIDI_SYSEX,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.NFC,
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        ContentSettingsType.NFC, ORIGIN, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.NOTIFICATIONS,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.MEDIASTREAM_CAMERA,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.MEDIASTREAM_MIC,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.CLIPBOARD_READ_WRITE,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.SENSORS,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        ContentSettingsType.VR,
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        ContentSettingsType.VR, ORIGIN, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.LOCAL_NETWORK_ACCESS,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.LOCAL_NETWORK,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.LOOPBACK_NETWORK,
                         ORIGIN,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
 
         // Add content setting exception types.
         // If the ContentSettingsType.MAX_VALUE value changes *and* a new value has been exposed on
@@ -1046,18 +1006,13 @@ public class WebsitePermissionsFetcherTest {
 
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        getGeolocationType(),
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        getGeolocationType(), ORIGIN, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         getGeolocationType(),
                         chromiumOrigin,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
 
         Website expectedGoogleWebsite =
                 new Website(WebsiteAddress.create(ORIGIN), WebsiteAddress.create(null));
@@ -1092,8 +1047,7 @@ public class WebsitePermissionsFetcherTest {
                         getGeolocationType(),
                         exampleOrigin,
                         SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        /* isEmbargoed= */ false));
 
         Website expectedExampleWebsite =
                 new Website(WebsiteAddress.create(exampleOrigin), WebsiteAddress.create(null));
@@ -1137,9 +1091,8 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @UseMethodParameter(EmbargoedAndOneTimeSessionParameters.class)
-    public void testFetchPreferencesForCategoryPermissionInfoTypes(
-            boolean isEmbargoed, boolean isOneTime) {
+    @UseMethodParameter(EmbargoedParams.class)
+    public void testFetchPreferencesForCategoryPermissionInfoTypes(boolean isEmbargoed) {
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(mSiteSettingsDelegate);
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
@@ -1161,11 +1114,9 @@ public class WebsitePermissionsFetcherTest {
                                 ContentSettingsType.SENSORS,
                                 ContentSettingsType.VR));
 
-        @SessionModel.EnumType
-        int sessionModel = isOneTime ? SessionModel.ONE_TIME : SessionModel.DURABLE;
         for (@ContentSettingsType.EnumType int type : permissionInfoTypes) {
             PermissionInfo fakePermissionInfo =
-                    new PermissionInfo(type, ORIGIN, SITE_WILDCARD, isEmbargoed, sessionModel);
+                    new PermissionInfo(type, ORIGIN, SITE_WILDCARD, isEmbargoed);
             websitePreferenceBridge.addPermissionInfo(fakePermissionInfo);
 
             fetcher.fetchPreferencesForCategory(
@@ -1176,8 +1127,6 @@ public class WebsitePermissionsFetcherTest {
 
                         Website site = sites.iterator().next();
                         Assert.assertNotNull(site.getPermissionInfo(type));
-                        Assert.assertEquals(
-                                sessionModel, site.getPermissionInfo(type).getSessionModel());
                     });
         }
     }
@@ -1628,18 +1577,10 @@ public class WebsitePermissionsFetcherTest {
 
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        getGeolocationType(),
-                        ORIGIN,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        getGeolocationType(), ORIGIN, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
-                        getGeolocationType(),
-                        EMBEDDER,
-                        SITE_WILDCARD,
-                        /* isEmbargoed= */ false,
-                        SessionModel.DURABLE));
+                        getGeolocationType(), EMBEDDER, SITE_WILDCARD, /* isEmbargoed= */ false));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.STORAGE_ACCESS,

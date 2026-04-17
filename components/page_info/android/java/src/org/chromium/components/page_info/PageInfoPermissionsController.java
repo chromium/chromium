@@ -26,7 +26,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetche
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.components.permissions.AndroidPermissionRequester.RequestDelegate;
@@ -401,8 +400,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                                 ContentSettingsType.NOTIFICATIONS,
                                 /* origin= */ mPageUrl,
                                 /* embedder= */ mPageUrl,
-                                /* isEmbargoed= */ false,
-                                SessionModel.DURABLE);
+                                /* isEmbargoed= */ false);
 
                 mSubPage.getSite().setPermissionInfo(permissionInfo);
             }

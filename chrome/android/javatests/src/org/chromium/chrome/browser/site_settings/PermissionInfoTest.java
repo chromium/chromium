@@ -38,7 +38,6 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.concurrent.Callable;
@@ -115,9 +114,7 @@ public class PermissionInfoTest {
             @ContentSetting int setting,
             Profile profile,
             @ContentSetting int expectedSetting) {
-        PermissionInfo info =
-                new PermissionInfo(
-                        type, origin, embedder, /* isEmbargoed= */ false, SessionModel.DURABLE);
+        PermissionInfo info = new PermissionInfo(type, origin, embedder, /* isEmbargoed= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -296,8 +293,7 @@ public class PermissionInfoTest {
                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                         "https://example.com",
                         "https://example.com",
-                        false,
-                        SessionModel.DURABLE);
+                        false);
 
         var defaultSetting = new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
         var allowApproximate = new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
@@ -321,8 +317,7 @@ public class PermissionInfoTest {
                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                         "https://permission.site",
                         "https://permission.site",
-                        false,
-                        SessionModel.DURABLE);
+                        false);
 
         var defaultSetting = new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
