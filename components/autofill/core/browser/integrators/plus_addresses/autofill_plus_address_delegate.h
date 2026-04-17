@@ -24,7 +24,6 @@ class Origin;
 namespace autofill {
 
 class AutofillField;
-class PlusAddressSuggestionGenerator;
 struct Suggestion;
 
 // The interface for communication from //components/autofill to
@@ -94,8 +93,6 @@ class AutofillPlusAddressDelegate {
   // Returns the suggestions to show for the given list of `plus_addresses`.
   // Note that this method does not do any filtering and always returns
   // suggestions for all plus addresses in `plus_addresses`.
-  // Note that this method shouldn't be called from sources other than
-  // `PlusAddressSuggestionGenerator`.
   virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
       const std::vector<std::string>& plus_addresses) = 0;
 

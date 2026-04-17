@@ -25,8 +25,6 @@
 #include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
 #include "components/autofill/core/browser/suggestions/payments/save_and_fill_suggestion.h"
 #include "components/autofill/core/browser/suggestions/payments/virtual_card_suggestion_data.h"
-#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address.h"
-#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_for_address_suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 
@@ -43,10 +41,6 @@ namespace autofill {
 // 2. Every generator is called again with the data that was fetched for all
 //    `FillingProduct`s in step 1, and uses that to generate the suggestions
 //    for its specific `FillingProduct`.
-//
-// Note: Some product suggestions depend on the data from other products.
-// E.g. PlusAddresses and Address suggestions needs the data from both
-// products, before being able to generate suggestions.
 //
 // Because of the dependency for each suggestion generator to know about the
 // data from other FillingProducts, the generation is split into two phases. The
@@ -70,8 +64,6 @@ class SuggestionGenerator {
     kLoyaltyCard,
     kIdentityCredential,
     kPasskey,
-    kPlusAddress,
-    kPlusAddressForAddress,
     kCompose,
     kOneTimePassword,
     kAddressOnTyping,
@@ -89,7 +81,6 @@ class SuggestionGenerator {
           SuggestionDataSource::kSaveAndFillPromo,
           SuggestionDataSource::kOneTimePassword,
           SuggestionDataSource::kAddress,
-          SuggestionDataSource::kPlusAddress,
           SuggestionDataSource::kIdentityCredential,
           SuggestionDataSource::kLoyaltyCard,
           SuggestionDataSource::kCompose,
@@ -98,10 +89,6 @@ class SuggestionGenerator {
           SuggestionDataSource::kAutocomplete,
           SuggestionDataSource::kAddressOnTyping,
           SuggestionDataSource::kPasskey,
-          // kPlusAddressForAddress is a data patch for the Address data
-          // sources. It doesn't create its own suggestion popups, so it
-          // shouldn't outprioritize other data sources.
-          SuggestionDataSource::kPlusAddressForAddress,
       });
   // clang-format on
 
@@ -127,17 +114,8 @@ class SuggestionGenerator {
        // - Loyalty Cards: To extend email suggestions.
        // - Passkeys: Every SuggestionDataSource can be merged with passkeys.
        {SuggestionDataSource::kAddress,
-        {SuggestionDataSource::kPlusAddress,
-         SuggestionDataSource::kPlusAddressForAddress,
-         SuggestionDataSource::kIdentityCredential,
-         SuggestionDataSource::kLoyaltyCard, SuggestionDataSource::kPasskey}},
-       // Plus Addresses can merge with:
-       // - Verified Identity: To show verified details along plus addresses.
-       // - Autocomplete.
-       // - Passkeys: Every SuggestionDataSource can be merged with passkeys.
-       {SuggestionDataSource::kPlusAddress,
         {SuggestionDataSource::kIdentityCredential,
-         SuggestionDataSource::kAutocomplete, SuggestionDataSource::kPasskey}},
+         SuggestionDataSource::kLoyaltyCard, SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kIdentityCredential,
         {SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kLoyaltyCard, {SuggestionDataSource::kPasskey}},
@@ -147,7 +125,11 @@ class SuggestionGenerator {
        {SuggestionDataSource::kIban, {SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kAutocomplete, {SuggestionDataSource::kPasskey}},
        {SuggestionDataSource::kAddressOnTyping,
-        {SuggestionDataSource::kPasskey}}});
+        {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kPasskey, {}}});
+
+  static_assert(kSupportedMerges.size() ==
+                static_cast<size_t>(SuggestionDataSource::kMaxValue) + 1);
 
   SuggestionGenerator() = default;
   virtual ~SuggestionGenerator() = default;
@@ -168,8 +150,6 @@ class SuggestionGenerator {
                                       SaveAndFillAvailability,
                                       VirtualCardSuggestionData,
                                       OneTimePasswordSuggestionData,
-                                      PlusAddress,
-                                      PlusAddressForAddressSuggestion,
                                       AddressOnTypingSuggestionData,
                                       ComposeAvailability>;
 

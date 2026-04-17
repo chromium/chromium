@@ -578,31 +578,16 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     const FormFieldData& trigger_field,
-    std::optional<std::string> plus_address_email_override,
     const std::string& app_locale) {
   if (profiles.empty()) {
     return {};
   }
 
-  std::vector<Suggestion::AutofillProfilePayload> payloads;
-  payloads.reserve(profiles.size());
-  for (AutofillProfile& profile : profiles) {
-    CHECK(!profile.is_devtools_testing_profile());
-    std::u16string email_override;
-    // If the following conditions are met:
-    // - A plus address override is available
-    // - The profile's email address is the same as the user's Google Account
-    // email.
-    // Then the profile's email address will be replaced with the plus
-    // address in order to show the updated email on the suggestion label.
-    if (plus_address_email_override && profile.HasInfo(EMAIL_ADDRESS) &&
-        base::UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) == gaia_email) {
-      email_override = base::UTF8ToUTF16(*plus_address_email_override);
-      profile.SetRawInfo(EMAIL_ADDRESS, email_override);
-    }
-    payloads.emplace_back(Suggestion::Guid(profile.guid()),
-                          std::move(email_override));
-  }
+  std::vector<Suggestion::AutofillProfilePayload> payloads =
+      base::ToVector(profiles, [](const AutofillProfile& profile) {
+        return Suggestion::AutofillProfilePayload(
+            Suggestion::Guid(profile.guid()));
+      });
 
   std::vector<Suggestion> suggestions;
   std::vector<std::vector<Suggestion::Text>> labels = CreateSuggestionLabels(
@@ -633,9 +618,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           std::optional(trigger_field_type);
     }
     // We add an icon to the address (profile) suggestion if there is more than
-    // one profile related field in the form. For email fields,
-    // the email icon is used unconditionally to create consistency with plus
-    // address suggestions.
+    // one profile related field in the form. For email fields, the email icon
+    // is used unconditionally.
     if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {
       suggestion.icon = Suggestion::Icon::kEmail;
     } else {
@@ -826,39 +810,6 @@ std::vector<Suggestion> GenerateAddressOnTypingSuggestions(
   return suggestions;
 }
 
-// If `plus_address_email_override` exits it is returned. Otherwise tries to
-// find plus addresses in the `all_suggestion_data` and returns the first of
-// them. If `all_suggestion_data` doesn't contain any plus addresses, a
-// `std::nullopt` is returned.
-std::optional<std::string> GetPlusAddressEmailOverride(
-    const std::optional<std::string>& plus_address_email_override,
-    const base::flat_map<SuggestionGenerator::SuggestionDataSource,
-                         std::vector<SuggestionGenerator::SuggestionData>>&
-        all_suggestion_data) {
-  // TODO(crbug.com/409962888): Remove this early return once the new suggestion
-  // generation logic is launched.
-  if (plus_address_email_override) {
-    return *plus_address_email_override;
-  }
-
-  const std::vector<SuggestionGenerator::SuggestionData>* plus_address_data =
-      base::FindOrNull(all_suggestion_data,
-                       SuggestionGenerator::SuggestionDataSource::kPlusAddress);
-  if (!plus_address_data || plus_address_data->empty()) {
-    plus_address_data = base::FindOrNull(
-        all_suggestion_data,
-        SuggestionGenerator::SuggestionDataSource::kPlusAddressForAddress);
-  }
-  if (!plus_address_data || plus_address_data->empty()) {
-    return std::nullopt;
-  }
-
-  const std::string& plus_address =
-      std::get<PlusAddress>(plus_address_data->front()).value();
-  return !plus_address.empty() ? std::make_optional(plus_address)
-                               : std::nullopt;
-}
-
 }  // namespace
 
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
@@ -867,7 +818,6 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     const FormFieldData& trigger_field) {
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
-      /*plus_address_email_override=*/std::nullopt,
       /*log_manager=*/nullptr,
       // AddressOnTyping suggestions do not depend on the trigger source.
       /*trigger_source=*/
@@ -923,12 +873,10 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     FieldType trigger_field_type,
     const FormFieldData& trigger_field,
     const std::string& app_locale,
-    std::optional<std::string> plus_address_email_override,
     const std::string& gaia_email) {
-  return CreateSuggestionsFromProfiles(std::move(profiles), gaia_email,
-                                       field_types, suggestion_type,
-                                       trigger_field_type, trigger_field,
-                                       plus_address_email_override, app_locale);
+  return CreateSuggestionsFromProfiles(
+      std::move(profiles), gaia_email, field_types, suggestion_type,
+      trigger_field_type, trigger_field, app_locale);
 }
 
 bool ContainsProfileSuggestionWithRecordType(
@@ -950,12 +898,9 @@ bool ContainsProfileSuggestionWithRecordType(
 }
 
 AddressSuggestionGenerator::AddressSuggestionGenerator(
-    const std::optional<std::string>& plus_address_email_override,
     LogManager* log_manager,
     AutofillSuggestionTriggerSource trigger_source)
-    : plus_address_email_override_(plus_address_email_override),
-      log_manager_(log_manager),
-      trigger_source_(trigger_source) {}
+    : log_manager_(log_manager), trigger_source_(trigger_source) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
 
@@ -1049,11 +994,9 @@ void AddressSuggestionGenerator::GenerateSuggestions(
         });
 
     callback({FillingProduct::kAddress,
-              GenerateAddressSuggestions(
-                  form, trigger_field, form_structure, trigger_autofill_field,
-                  client, addresses_to_suggest,
-                  GetPlusAddressEmailOverride(plus_address_email_override_,
-                                              all_suggestion_data))});
+              GenerateAddressSuggestions(form, trigger_field, form_structure,
+                                         trigger_autofill_field, client,
+                                         addresses_to_suggest)});
     return;
   }
 
@@ -1162,8 +1105,7 @@ std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    std::vector<AutofillProfile>& profiles_to_suggest,
-    const std::optional<std::string>& plus_address_email_override) {
+    std::vector<AutofillProfile>& profiles_to_suggest) {
   if (!form_structure || !trigger_autofill_field ||
       !client.GetIdentityManager()) {
     return {};
@@ -1181,7 +1123,7 @@ std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
           .email,
       field_types_, GetSuggestionType(trigger_field),
       trigger_autofill_field->Type().GetAddressType(), trigger_field,
-      plus_address_email_override, client.GetAppLocale());
+      client.GetAppLocale());
 
   // Add devtools test addresses suggestion if it exists.
   if (std::optional<Suggestion> test_addresses_suggestion =

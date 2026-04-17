@@ -255,7 +255,6 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
       };
 
   AddressSuggestionGenerator generator(
-      /*plus_address_email_override=*/std::nullopt,
       /*log_manager=*/nullptr, mojom::AutofillSuggestionTriggerSource::kGlic);
   auto generate_suggestions =
       [&](std::pair<SuggestionGenerator::SuggestionDataSource,

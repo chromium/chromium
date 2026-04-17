@@ -25,6 +25,7 @@ enum class FillingProduct {
   kAutocomplete,
   kPassword,
   kCompose,
+  // TODO(crbug.com/503268023): Remove.
   kPlusAddresses,
   kAutofillAi,
   kLoyaltyCard,

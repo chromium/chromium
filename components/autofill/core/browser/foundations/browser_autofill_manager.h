@@ -39,7 +39,6 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
@@ -417,7 +416,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const AutofillField& trigger_autofill_field,
-      std::optional<std::string> plus_address_email_override,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of suggestions from the stored loyalty cards for the given
@@ -478,7 +476,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
-      std::optional<std::string> plus_address_email_override,
       const std::vector<std::string>& one_time_passwords,
       SuggestionsContext& context);
 
@@ -517,27 +514,14 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Merges suggestions with `FillingProduct::kPlusAddress` with the other
-  // suggestions whose products supports merging with plus address suggestions
-  // (see `kSupportedMerges` in `suggestion_generator.h` for more details).
-  std::vector<Suggestion> MergeWithPlusAddressSuggestions(
-      std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map);
-
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (Autofill AI, SingleFieldFiller(s), address
   // and credit card popups, OTP suggestions).
   // Suggestion flows that handle their own UI flow (e.g. TTF,
   // SingleFieldFiller) are triggered from within these functions.
   //
-  // This process is split into phases 1, 2, 3 to support asynchronous
-  // operations:
-  // - Between Phase 1 and 2, BAM may fetch plus addresses.
-  // - Between Phase 2 and 3, BAM may fetch OTPs.
-  //
-  // Phase 3 requires the list of `plus_addresses` as these can influence how
-  // address profile suggestions are shown. If `plus_addresses` is std::nullopt
-  // it means that plus addresses are irrelevant for the current suggestion
-  // context.
+  // This process is split into phases 1, 2 to support asynchronous operations:
+  // Between Phase 1 and 2, BAM may fetch OTPs.
   //
   // Other flows that rely on the `external_delegate_` to show their
   // suggestions, pass the suggestions list to the delegate via `GenerateFooter`
@@ -552,16 +536,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext context,
       base::TimeTicks suggestion_generator_start_time,
-      std::vector<std::string> plus_addresses);
-  void GenerateSuggestionsAndMaybeShowUIPhase3(
-      const FormData& form,
-      const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext context,
-      base::TimeTicks suggestion_generator_start_time,
-      std::vector<std::string> plus_addresses,
       std::vector<std::string> one_time_passwords);
   void GenerateFooter(const FormData& form,
                       const FormFieldData& field,
@@ -571,23 +546,14 @@ class BrowserAutofillManager : public AutofillManager {
                       bool show_suggestions,
                       std::vector<Suggestion> suggestions);
 
-  // Receives the lists of plus address and single field form fill suggestions
-  // and combines them. It gives priority to the plus address suggestions,
-  // ensuring they appear first in the final combined list that's sent to
-  // `OnGenerateSuggestionsCallback`.
-  void OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
-      AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
+  // Receives the lists of single field form fill suggestions. If empty, it
+  // tries generating address-on-typing suggestions. The final suggestion list
+  // is sent to `callback`.
+  void OnGeneratedSingleFieldFillSuggestions(
       const FormData& form,
       const FormFieldData& field,
       OnGenerateSuggestionsCallback callback,
-      std::vector<Suggestion> plus_address_suggestions,
       std::vector<Suggestion> single_field_suggestions);
-
-  // Triggered when the user undoes the filling of an address profile using an
-  // email override.
-  void OnEmailOverrideUndone(const std::u16string& original_email,
-                             const FormGlobalId& form_id,
-                             const FieldGlobalId& field_id);
 
   // The function receives a the list of `suggestions` from
   // `GenerateFooter` and displays them if `show_suggestions` is true (via the
@@ -614,31 +580,11 @@ class BrowserAutofillManager : public AutofillManager {
   std::optional<Suggestion> CreatePasskeySuggestionForMerge(
       const FormFieldData& field);
 
-  // Combines autocomplete suggestions and plus address suggestions into a
-  // single list, prioritizing plus address suggestions first.
-  // Note: out of all single field suggestions, only autocomplete suggestions
-  // are mergeable with plus address suggestions. Other (IBAN, Merchant codes)
-  // are incompatible with plus addresses.
-  void MergeAutocompleteAndPlusAddressSuggestions(
-      std::vector<Suggestion>& plus_address_suggestions,
-      std::vector<Suggestion> single_field_suggestions,
-      AutofillPlusAddressDelegate::SuggestionContext suggestions_context);
-
   // Combines identity credential suggestions and existing suggestions into a
   // single list, prioritizing identity credential suggestions first.
   void MergeIdentityCredentialsAndAddressSuggestions(
       std::vector<Suggestion>& suggestion,
       std::vector<Suggestion> identity_credential_suggestions);
-
-  // Combines plus address and address profile suggestions into a single list,
-  // prioritizing plus address suggestions first. Runs `callback` with the
-  // resulting list of suggestions.
-  void MergeAddressAndPlusAddressSuggestions(
-      std::vector<Suggestion>& plus_address_suggestions,
-      std::vector<Suggestion> suggestions,
-      AutofillSuggestionTriggerSource trigger_source,
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id);
 
   // Iterate through all the fields in the form to process the log events for
   // each field and record into FieldInfo UKM event.
@@ -667,13 +613,6 @@ class BrowserAutofillManager : public AutofillManager {
                                const AutofillProfile& filled_profile,
                                AutofillTriggerSource trigger_source,
                                bool is_refill);
-
-  // Checks if the user filled a form using a plus address email override and,
-  // if so, shows a notification to the user.
-  void MaybeShowPlusAddressEmailOverrideNotification(
-      base::span<const AutofillField* const> safe_filled_fields,
-      const AutofillProfile& filled_profile,
-      const FormGlobalId& form_id);
 
   // Updates Autofill Ai's model cache after server predictions were loaded.
   void HandleLoadedServerPredictionsForAutofillAi(

@@ -62,7 +62,6 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     FieldType trigger_field_type,
     const FormFieldData& trigger_field,
     const std::string& app_locale = "en-US",
-    std::optional<std::string> plus_address_email_override = std::nullopt,
     const std::string& gaia_email = "");
 
 // Returns true if a suggestion for an `AutofillProfile` with record type equal
@@ -76,13 +75,8 @@ bool ContainsProfileSuggestionWithRecordType(
 // suggestions should be done only through this class.
 class AddressSuggestionGenerator : public SuggestionGenerator {
  public:
-  // TODO(crbug.com/409962888): `plus_address_email_override`
-  // has to be removed once the plus address suggestion generator and
-  // suggestions merging are implemented.
-  AddressSuggestionGenerator(
-      const std::optional<std::string>& plus_address_email_override,
-      LogManager* log_manager,
-      AutofillSuggestionTriggerSource trigger_source);
+  AddressSuggestionGenerator(LogManager* log_manager,
+                             AutofillSuggestionTriggerSource trigger_source);
   ~AddressSuggestionGenerator() override;
 
   void FetchSuggestionData(
@@ -150,15 +144,7 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
-      std::vector<AutofillProfile>& profiles_to_suggest,
-      const std::optional<std::string>& plus_address_email_override);
-
-  // Used to change the emails matching the GAIA email in suggestions with
-  // the `plus_address_email_override_`.
-  // TODO(crbug.com/409962888): `plus_address_email_override_` has to be removed
-  // once the plus address suggestion generator and suggestions merging are
-  // implemented.
-  const std::optional<std::string> plus_address_email_override_;
+      std::vector<AutofillProfile>& profiles_to_suggest);
 
   raw_ptr<LogManager> log_manager_;
 

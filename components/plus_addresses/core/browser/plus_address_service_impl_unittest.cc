@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
@@ -84,9 +83,6 @@ namespace plus_addresses {
 namespace {
 
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
-using SuggestionDataSource =
-    autofill::PlusAddressSuggestionGenerator::SuggestionDataSource;
-using SuggestionData = autofill::PlusAddressSuggestionGenerator::SuggestionData;
 using affiliations::FacetURI;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
@@ -113,9 +109,6 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
-
-constexpr std::string_view kPlusAddressSuggestionMetric =
-    "PlusAddresses.Suggestion.Events";
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
@@ -151,64 +144,6 @@ class PlusAddressServiceTest : public ::testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     InitService();
-  }
-
-  std::vector<Suggestion> FetchPlusAddressSuggestions(
-      const url::Origin& origin,
-      const FormFieldData& focused_field,
-      autofill::AutofillSuggestionTriggerSource trigger_source) {
-    // Empty psl extension by default.
-    ON_CALL(affiliation_service(), GetPSLExtensions)
-        .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
-
-    affiliations::GroupedFacets group;
-    group.facets.emplace_back(
-        FacetURI::FromPotentiallyInvalidSpec(origin.Serialize()));
-    ON_CALL(affiliation_service(), GetGroupingInfo)
-        .WillByDefault(RunOnceCallbackRepeatedly<1>(
-            std::vector<affiliations::GroupedFacets>{group}));
-
-    base::MockCallback<base::OnceCallback<void(std::vector<std::string>)>>
-        callback;
-    std::vector<std::string> affiliated_plus_addresses;
-    base::RunLoop run_loop;
-    ON_CALL(callback, Run)
-        .WillByDefault([&](std::vector<std::string> plus_addresses) {
-          affiliated_plus_addresses = std::move(plus_addresses);
-          run_loop.Quit();
-        });
-    service().GetAffiliatedPlusAddresses(origin, callback.Get());
-    run_loop.Quit();
-
-    autofill::PlusAddressSuggestionGenerator suggestion_generator(
-        &service(), trigger_source ==
-                        autofill::mojom::AutofillSuggestionTriggerSource::
-                            kManualFallbackPlusAddresses);
-
-    TestFuture<std::pair<SuggestionDataSource, std::vector<SuggestionData>>>
-        fetch_future;
-
-    FormData form;
-    form.set_fields({focused_field});
-    autofill::FormStructure form_structure(form);
-    autofill::AutofillField trigger_autofill_field(focused_field);
-    trigger_autofill_field.SetTypeTo(
-        autofill::AutofillType(autofill::FieldType::EMAIL_ADDRESS),
-        autofill::AutofillPredictionSource::kServerOverride);
-    suggestion_generator.FetchSuggestionData(
-        form, focused_field, &form_structure, &trigger_autofill_field,
-        autofill::TestAutofillClient(), fetch_future.GetCallback());
-
-    std::pair<SuggestionDataSource, std::vector<SuggestionData>>
-        fetched_plus_addresses = fetch_future.Take();
-    TestFuture<std::pair<autofill::FillingProduct, std::vector<Suggestion>>>
-        generate_future;
-
-    suggestion_generator.GenerateSuggestions(
-        form, focused_field, &form_structure, &trigger_autofill_field,
-        autofill::TestAutofillClient(), {fetched_plus_addresses},
-        generate_future.GetCallback());
-    return generate_future.Take().second;
   }
 
  protected:
@@ -1124,95 +1059,6 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-// Tests that fill plus address suggestions are offered iff the value in the
-// focused field matches the prefix of an existing plus address.
-TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
-  base::HistogramTester histogram_tester;
-  base::UserActionTester user_action_tester;
-  const PlusProfile profile = test::CreatePlusProfile();
-  const url::Origin origin = OriginFromFacet(profile.facet);
-  service().SavePlusProfile(profile);
-
-  // We offer filling if the field is empty.
-  FormFieldData focused_field;
-  FormData form;
-  form.set_fields({focused_field});
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  histogram_tester.ExpectUniqueSample(
-      kPlusAddressSuggestionMetric,
-      SuggestionEvent::kExistingPlusAddressSuggested, 1);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.StandaloneFillSuggestionShown"),
-            1);
-  // If the user types a letter and it matches the plus address (after
-  // normalization), the plus address continues to be offered.
-  focused_field.set_value(u"P");
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  histogram_tester.ExpectUniqueSample(
-      kPlusAddressSuggestionMetric,
-      SuggestionEvent::kExistingPlusAddressSuggested, 2);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.StandaloneFillSuggestionShown"),
-            2);
-  // If the value does not match the prefix of the plus address, nothing is
-  // shown.
-  focused_field.set_value(u"pp");
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, focused_field,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsEmpty());
-  histogram_tester.ExpectUniqueSample(
-      kPlusAddressSuggestionMetric,
-      SuggestionEvent::kExistingPlusAddressSuggested, 2);
-}
-
-// Tests that fill plus address suggestions regardless of whether there is
-// already text in the field if the trigger source was manual fallback.
-TEST_F(PlusAddressSuggestionsTest,
-       SuggestionsForExistingPlusAddressWithManualFallback) {
-  base::HistogramTester histogram_tester;
-  base::UserActionTester user_action_tester;
-  const PlusProfile profile = test::CreatePlusProfile();
-  const url::Origin origin = OriginFromFacet(profile.facet);
-  service().SavePlusProfile(profile);
-
-  // We offer filling if the field is empty.
-  FormData form;
-  FormFieldData focused_field;
-  form.set_fields({focused_field});
-  EXPECT_THAT(
-      FetchPlusAddressSuggestions(
-          origin, focused_field,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-      IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  histogram_tester.ExpectUniqueSample(
-      kPlusAddressSuggestionMetric,
-      SuggestionEvent::kExistingPlusAddressSuggested, 1);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.StandaloneFillSuggestionShown"),
-            1);
-  // We also offer filling if the field is not empty and the prefix does not
-  // match the address.
-  focused_field.set_value(u"pp");
-  EXPECT_THAT(
-      FetchPlusAddressSuggestions(
-          origin, focused_field,
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-      IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  histogram_tester.ExpectUniqueSample(
-      kPlusAddressSuggestionMetric,
-      SuggestionEvent::kExistingPlusAddressSuggested, 2);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.StandaloneFillSuggestionShown"),
-            2);
-}
-
 // Tests that a user action is recorded when a plus address suggestion fill is
 // reported.
 TEST_F(PlusAddressSuggestionsTest, RecordExistingPlusAddressChosenUserAction) {
@@ -1222,43 +1068,6 @@ TEST_F(PlusAddressSuggestionsTest, RecordExistingPlusAddressChosenUserAction) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses.FillStandaloneSuggestionAccepted"),
             1);
-}
-
-// Tests that no suggestions are returned when plus address are disabled.
-TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPlusAddressesEnabled);
-
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  url::Origin::Create(GURL("https://foo.com")), FormFieldData(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsEmpty());
-}
-
-// Tests that for all password forms filling suggestions are offered.
-TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
-  const PlusProfile profile = test::CreatePlusProfile();
-  const url::Origin origin = OriginFromFacet(profile.facet);
-  auto get_suggestions_for_form_type =
-      [&](PasswordFormClassification::Type type) {
-        FormData form = autofill::test::CreateTestPasswordFormData();
-        return FetchPlusAddressSuggestions(
-            origin, form.fields()[0],
-            AutofillSuggestionTriggerSource::kFormControlElementClicked);
-      };
-
-  using enum PasswordFormClassification::Type;
-  service().SavePlusProfile(profile);
-  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
-  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
-              IsSingleFillPlusAddressSuggestion(*profile.plus_address));
 }
 
 // Tests the content of the "Manage plus addresses..." suggestion.
@@ -1474,38 +1283,6 @@ TEST_F(PlusAddressAffiliationsTest,
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   EXPECT_TRUE(ExpectServiceToReturnAffiliatedPlusProfiles(
       origin, UnorderedElementsAre(group_profile)));
-}
-
-// Verifies that no affiliated suggestions are returned when there are no
-// matches.
-TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
-  PlusProfile stored_profile1 = test::CreatePlusProfileWithFacet(
-      FacetURI::FromCanonicalSpec("https://foo.com"));
-  PlusProfile stored_profile2 = test::CreatePlusProfileWithFacet(
-      FacetURI::FromCanonicalSpec("https://bar.com"));
-
-  service().SavePlusProfile(stored_profile1);
-  service().SavePlusProfile(stored_profile2);
-  ASSERT_THAT(service().GetPlusProfiles(),
-              UnorderedElementsAre(stored_profile1, stored_profile2));
-
-  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
-      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
-
-  affiliations::GroupedFacets group;
-  group.facets.emplace_back(
-      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
-
-  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(
-          std::vector<affiliations::GroupedFacets>{group}));
-
-  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, FormFieldData(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              // There are no PLS, group or exact matches.
-              IsEmpty());
 }
 
 // Verifies that affiliated plus profiles are returned.

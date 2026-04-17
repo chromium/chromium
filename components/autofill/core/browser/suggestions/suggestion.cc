@@ -201,26 +201,6 @@ Suggestion::PasswordSuggestionDetails::operator=(PasswordSuggestionDetails&&) =
     default;
 Suggestion::PasswordSuggestionDetails::~PasswordSuggestionDetails() = default;
 
-Suggestion::PlusAddressPayload::PlusAddressPayload() = default;
-
-Suggestion::PlusAddressPayload::PlusAddressPayload(
-    std::optional<std::u16string> address)
-    : address(std::move(address)) {}
-
-Suggestion::PlusAddressPayload::PlusAddressPayload(const PlusAddressPayload&) =
-    default;
-
-Suggestion::PlusAddressPayload::PlusAddressPayload(PlusAddressPayload&&) =
-    default;
-
-Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
-    const PlusAddressPayload&) = default;
-
-Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
-    PlusAddressPayload&&) = default;
-
-Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
-
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(EntityInstance::EntityId guid,
@@ -242,11 +222,7 @@ Suggestion::AutofillAiPayload::~AutofillAiPayload() = default;
 
 Suggestion::AutofillProfilePayload::AutofillProfilePayload() = default;
 Suggestion::AutofillProfilePayload::AutofillProfilePayload(Guid guid)
-    : AutofillProfilePayload(std::move(guid), u"") {}
-Suggestion::AutofillProfilePayload::AutofillProfilePayload(
-    Guid guid,
-    std::u16string email_override)
-    : guid(std::move(guid)), email_override(std::move(email_override)) {}
+    : guid(std::move(guid)) {}
 
 Suggestion::AutofillProfilePayload::AutofillProfilePayload(
     const AutofillProfilePayload&) = default;

@@ -170,20 +170,11 @@ int AutofillExternalDelegate::shortcut_test_suggestion_index_ = -1;
 std::optional<AutofillProfile> GetProfileFromPayload(
     const AddressDataManager& adm,
     const Suggestion::AutofillProfilePayload& payload) {
-  auto GetProfileFromAddressDataManager =
-      [&adm](const std::string& guid) -> std::optional<AutofillProfile> {
-    if (const AutofillProfile* profile = adm.GetProfileByGUID(guid)) {
-      return *profile;
-    }
-    return std::nullopt;
-  };
-
-  std::optional<AutofillProfile> profile =
-      GetProfileFromAddressDataManager(payload.guid.value());
-  if (profile && !payload.email_override.empty()) {
-    profile->SetRawInfo(EMAIL_ADDRESS, payload.email_override);
+  if (const AutofillProfile* profile =
+          adm.GetProfileByGUID(payload.guid.value())) {
+    return *profile;
   }
-  return profile;
+  return std::nullopt;
 }
 
 AutofillExternalDelegate::AutofillExternalDelegate(

@@ -53,8 +53,6 @@
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/mock_otp_manager.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -93,7 +91,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -563,16 +560,6 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
                                 u"manage addresses")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kAddress);
-
-  // Show fill plus address suggestion in the popup.
-  OnSuggestionsReturned(
-      queried_field().global_id(),
-      {CreateAutofillSuggestion(SuggestionType::kFillExistingPlusAddress,
-                                u"fill existing plus address"),
-       CreateAutofillSuggestion(SuggestionType::kManagePlusAddress,
-                                u"manage address methods")});
-  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
-            FillingProduct::kPlusAddresses);
 
   // Show credit card suggestion in the popup.
   OnSuggestionsReturned(
@@ -2065,17 +2052,6 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
                         DefaultTriggerSource(), _));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
-
-  // Expect that `kManualFallbackPlusAddresses` translates to the manual
-  // fallback trigger source.
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile),
-                        AutofillTriggerSource::kManualFallback, _));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 1});
 }
 
 // Tests that on selecting and accepting a `kFillAutofillAi` suggestion with
@@ -2629,201 +2605,6 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_IOS)
-
-class AutofillExternalDelegatePlusAddressTest
-    : public AutofillExternalDelegateTest {
- public:
-  AutofillExternalDelegatePlusAddressTest() = default;
-
-  void SetUp() override {
-    AutofillExternalDelegateTest::SetUp();
-    autofill_client().set_plus_address_delegate(
-        std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
-  }
-
- protected:
-  MockAutofillPlusAddressDelegate& plus_address_delegate() {
-    return static_cast<MockAutofillPlusAddressDelegate&>(
-        *autofill_client().GetPlusAddressDelegate());
-  }
-};
-
-// Mock out an existing plus address autofill suggestion, and ensure that
-// choosing it results in the field being filled with its value (as opposed to
-// the mocked address used in the creation flow).
-TEST_F(AutofillExternalDelegatePlusAddressTest,
-       ExternalDelegateFillsExistingPlusAddress) {
-  // Trigger the popup on an email field.
-  IssueOnQuery(kDefaultSuggestionTriggerSource, EMAIL_ADDRESS, "email");
-
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(
-      autofill_client(),
-      ShowAutofillSuggestions(PopupOpenArgsAre(SuggestionVectorIdsAre(
-                                  SuggestionType::kFillExistingPlusAddress)),
-                              _));
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/plus_address,
-                           SuggestionType::kFillExistingPlusAddress);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-
-  EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                         mojom::FieldActionType::kReplaceAll,
-                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
-                         SuggestionType::kFillExistingPlusAddress,
-                         std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidSelectSuggestion(suggestions[0]);
-  EXPECT_CALL(
-      autofill_client(),
-      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(plus_address_delegate(),
-              RecordAutofillSuggestionEvent(
-                  MockAutofillPlusAddressDelegate::SuggestionEvent::
-                      kExistingPlusAddressChosen));
-  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
-  EXPECT_CALL(
-      autofill_client(),
-      TriggerPlusAddressUserPerceptionSurvey(
-          plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail));
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAll,
-                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
-                         SuggestionType::kFillExistingPlusAddress,
-                         std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
-}
-
-// Tests the scenario when the user chooses an email suggestion over the plus
-// address suggestion.
-TEST_F(AutofillExternalDelegatePlusAddressTest,
-       EmailSuggestionIsFilledWhenPlusAddressIsSuggested) {
-  // Trigger the popup on an email field.
-  IssueOnQuery(kDefaultSuggestionTriggerSource, EMAIL_ADDRESS, "email");
-
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(
-      autofill_client(),
-      ShowAutofillSuggestions(PopupOpenArgsAre(SuggestionVectorIdsAre(
-                                  SuggestionType::kAddressEntry,
-                                  SuggestionType::kFillExistingPlusAddress)),
-                              _));
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  const std::u16string email = u"example@gmail.com";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/email, SuggestionType::kAddressEntry);
-  suggestions[0].payload =
-      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
-  suggestions.emplace_back(/*main_text=*/u"test+plus@test.example",
-                           SuggestionType::kFillExistingPlusAddress);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-
-  EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
-  external_delegate().DidSelectSuggestion(suggestions[0]);
-  EXPECT_CALL(
-      autofill_client(),
-      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(plus_address_delegate(),
-              RecordAutofillSuggestionEvent(
-                  MockAutofillPlusAddressDelegate::SuggestionEvent::
-                      kExistingPlusAddressChosen))
-      .Times(0);
-  EXPECT_CALL(
-      autofill_client(),
-      TriggerPlusAddressUserPerceptionSurvey(
-          plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress));
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
-}
-
-// Tests the scenario when the user triggers plus address suggestions manually
-// from the context menu and no email suggestions are shown.
-TEST_F(AutofillExternalDelegatePlusAddressTest,
-       AcceptsManuallyTriggeredPlusAddressFillingSuggestion) {
-  // Trigger the popup on an email field.
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(
-      autofill_client(),
-      ShowAutofillSuggestions(
-          PopupOpenArgsAre(
-              SuggestionVectorIdsAre(SuggestionType::kFillExistingPlusAddress),
-              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
-          _));
-  const std::u16string plus_address = u"test+plus@test.example";
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/plus_address,
-                           SuggestionType::kFillExistingPlusAddress);
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-
-  EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                         mojom::FieldActionType::kReplaceAll,
-                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
-                         SuggestionType::kFillExistingPlusAddress,
-                         std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidSelectSuggestion(suggestions[0]);
-  EXPECT_CALL(
-      autofill_client(),
-      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(plus_address_delegate(),
-              RecordAutofillSuggestionEvent(
-                  MockAutofillPlusAddressDelegate::SuggestionEvent::
-                      kExistingPlusAddressChosen));
-  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
-                                     plus_addresses::hats::SurveyType::
-                                         kFilledPlusAddressViaManualFallack));
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAll,
-                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
-                         SuggestionType::kFillExistingPlusAddress,
-                         std::optional(EMAIL_ADDRESS)));
-  external_delegate().DidAcceptSuggestion(suggestions[0],
-                                          SuggestionPosition{.row = 0});
-}
-
-// Tests that displaying an address suggestion that contains a plus address
-// email override records the corresponding user action.
-TEST_F(AutofillExternalDelegatePlusAddressTest,
-       PlusAddressEmailOverrideUserAction) {
-  IssueOnQuery();
-  base::UserActionTester user_action_tester;
-  Suggestion suggestion(SuggestionType::kAddressEntry);
-  suggestion.payload = Suggestion::AutofillProfilePayload(
-      Suggestion::Guid("123"), u"test_override");
-
-  std::vector<Suggestion> suggestions = {suggestion};
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-
-  external_delegate().OnSuggestionsShown(suggestions);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.AddressFillSuggestionShown"),
-            1);
-}
 
 TEST_F(AutofillExternalDelegateTest,
        ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {
