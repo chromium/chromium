@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -186,4 +187,35 @@ TEST_F(OmniboxContextMenuControllerTest, GetIconForInputType_Drive) {
   EXPECT_EQ(
       controller()->GetIconForInputType(omnibox::InputType::INPUT_TYPE_DRIVE),
       expected_icon);
+}
+
+TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_DriveInputType) {
+  OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents_.get());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kAimUsePecApi);
+
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(omnibox::InputType::INPUT_TYPE_DRIVE);
+  controller()->OnGetInputState(state);
+  controller()->AddContextualInputItems();
+
+  // Find the command ID for DRIVE.
+  int drive_command_id = -1;
+  for (const auto& pair : controller()->input_type_for_command_id_) {
+    if (pair.second == omnibox::InputType::INPUT_TYPE_DRIVE) {
+      drive_command_id = pair.first;
+      break;
+    }
+  }
+  ASSERT_NE(drive_command_id, -1);
+
+  TestOmniboxPopupFileSelector* test_selector =
+      static_cast<TestOmniboxPopupFileSelector*>(file_selector_.get());
+  int initial_calls = test_selector->open_file_upload_dialog_calls();
+
+  // Execute command.
+  controller()->ExecuteCommand(drive_command_id, 0);
+
+  // Verify that OpenFileUploadDialog was NOT called.
+  EXPECT_EQ(test_selector->open_file_upload_dialog_calls(), initial_calls);
 }

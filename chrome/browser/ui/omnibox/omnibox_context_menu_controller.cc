@@ -912,6 +912,12 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     if (use_input_state_model) {
       if (auto it = input_type_for_command_id_.find(id);
           it != input_type_for_command_id_.end()) {
+        if (it->second == omnibox::InputType::INPUT_TYPE_DRIVE) {
+          // TODO: Invoke DriveHandler.<open_drive_picker>() here.
+          // Note: The first step in that method should be to check the
+          // disclaimer using go/fpop footprints.
+          return;
+        }
         file_selector_->OpenFileUploadDialog(
             web_contents_.get(),
             /*is_image=*/it->second ==
