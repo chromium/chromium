@@ -14,6 +14,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/handoff/handoff_utility.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -291,6 +292,17 @@ void OpenSettingsWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Runs the safety check.
+void RunSafetyCheckWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<SettingsCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+    [handler
+        showAndStartSafetyCheckForReferrer:
+            password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
+  }
+}
+
 // Navigates to the history UI.
 void OpenHistoryWithBrowser(base::WeakPtr<Browser> weak_browser) {
   if (Browser* browser = weak_browser.get()) {
@@ -531,7 +543,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kRunSafetyCheck:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &RunSafetyCheckWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kManagePasswords:
       completion = base::CallbackToBlock(base::BindRepeating(
