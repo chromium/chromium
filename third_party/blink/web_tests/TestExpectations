@@ -1623,9 +1623,6 @@ crbug.com/483653 accessibility/scroll-containers.html [ Crash Failure Pass Timeo
 # Temporarily disabled until document marker serialization is enabled for AXInlineTextBox
 crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
 
-# Temporarily disabled until we have time to investigate and fix.
-crbug.com/450439920 accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
-
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/international/arabic-justify.html [ Failure ]
