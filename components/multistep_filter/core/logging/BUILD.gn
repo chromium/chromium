@@ -7,22 +7,16 @@ source_set("logging") {
     "log_entry.cc",
     "log_entry.h",
     "multistep_filter_log_router.h",
-    "multistep_filter_log_router_impl.cc",
-    "multistep_filter_log_router_impl.h",
     "multistep_filter_logger.cc",
     "multistep_filter_logger.h",
   ]
-  deps = [
-    "//base",
-    "//components/keyed_service/core",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "log_entry_unittest.cc",
-    "multistep_filter_log_router_impl_unittest.cc",
     "multistep_filter_logger_unittest.cc",
   ]
   deps = [
