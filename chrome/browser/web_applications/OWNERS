@@ -2,12 +2,27 @@
 # /docs/webapps/owners_expectations.md, and general owners expectations at
 # /docs/code_reviews.md#expectations-of-owners
 
-# Primary
-dmurph@chromium.org
-phillis@chromium.org
-dibyapal@chromium.org
-alancutter@chromium.org
-mek@chromium.org
+# Note: Unless you want a specific reviewer's expertise, please send CLs to
+# chromium-webapps-reviews@google.com rather than to specific
+# individuals. These CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews. Googlers can read more about this at go/gwsq-gerrit.
+#
+# To join the rotation modify the OWNERS and gwsq files in
+# go/gwsq-gerrit-webapps. Add yourself in the ShadowedReviewers list first
+# before becoming the main reviewer if you're new to the team.
+#
+# If you are in the ShadowedReviewers list for go/gwsq-gerrit-webapps, please
+# assign to an owner from the names below after your LGTM, so that they
+# can allow the code to land.
+chromium-webapps-reviews@google.com
+
+# The find-owners plugin does not support groups, so the actual c/b/web_applications/
+# reviewers are listed below but tagged with {LAST_RESORT_SUGGESTION} so that
+# Gerrit will preferentially suggest the review alias above.
+dmurph@chromium.org    #{LAST_RESORT_SUGGESTION}
+dibyapal@chromium.org  #{LAST_RESORT_SUGGESTION}
+mek@chromium.org       #{LAST_RESORT_SUGGESTION}
 
 per-file web_app_default_offline*=finnur@chromium.org
 
