@@ -111,6 +111,10 @@
     z-index: 5; /* Position above words. */
   }
 
+  :host([multi-region-selection-enabled]) #selectionCorners {
+    filter: drop-shadow(0 0 8px rgba(8, 66, 160, 0.45));
+  }
+
   .corner-hit-box {
     height: 50%;
     max-height: var(--post-selection-corner-hitbox-max-size);
