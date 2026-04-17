@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kProfileSignalsReportingEnabled);
 BASE_DECLARE_FEATURE(kBrowserSignalsReportingEnabled);
 BASE_DECLARE_FEATURE(kDetectedAgentSignalCollectionEnabled);
 BASE_DECLARE_FEATURE(kPolicyDataCollectionEnabled);
+BASE_DECLARE_FEATURE(kContentBindingVersioningEnabled);
 
 // Signals reporting related feature parameters.
 extern const base::FeatureParam<bool> kTriggerOnCookieChange;
@@ -34,6 +35,8 @@ bool IsBrowserSignalsReportingEnabled();
 bool IsDetectedAgentSignalCollectionEnabled();
 // Returns true if policy collection feature has been enabled.
 bool IsPolicyDataCollectionEnabled();
+// Returns true if content binding versioning feature has been enabled.
+bool IsContentBindingVersioningEnabled();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
