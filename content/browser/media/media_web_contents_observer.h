@@ -293,8 +293,8 @@ class CONTENT_EXPORT MediaWebContentsObserver
   PlayerInfo* GetPlayerInfo(const MediaPlayerId& id) const;
 
   void OnMediaMetadataChanged(const MediaPlayerId& player_id,
-                              bool has_video,
                               bool has_audio,
+                              bool has_video,
                               media::MediaContentType media_content_type);
 
   void OnMediaEffectivelyFullscreenChanged(
