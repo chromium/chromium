@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -76,11 +77,19 @@ class FuseboxAttachmentViewBinder {
 
     static Drawable getThumbnailDrawable(
             PropertyModel model, FuseboxAttachment attachment, Context context) {
+
+        @BrandedColorScheme
+        int brandedColorScheme = model.get(FuseboxAttachmentProperties.COLOR_SCHEME);
+
         switch (attachment.type) {
             case FuseboxAttachmentType.ATTACHMENT_IMAGE:
             case FuseboxAttachmentType.ATTACHMENT_FILE:
                 if (attachment.thumbnail != null) {
                     return attachment.thumbnail;
+                }
+                if (MimeTypeUtils.PDF_MIME_TYPE.equalsIgnoreCase(attachment.mimeType)) {
+                    return OmniboxResourceProvider.getDrawable(
+                            context, R.drawable.ic_attach_pdf_24dp);
                 }
                 break;
             case FuseboxAttachmentType.ATTACHMENT_TAB:
@@ -96,15 +105,17 @@ class FuseboxAttachmentViewBinder {
                                                 R.dimen.fusebox_attachment_visible_height));
                 // Only the fallback needs to be tinted, website favicons should be unchanged.
                 if (favicon == null) {
-                    @BrandedColorScheme
-                    int brandedColorScheme = model.get(FuseboxAttachmentProperties.COLOR_SCHEME);
                     drawable.setTint(
                             OmniboxResourceProvider.getDefaultIconColor(
                                     context, brandedColorScheme));
                 }
                 return drawable;
         }
-        return OmniboxResourceProvider.getDrawable(context, R.drawable.ic_attach_pdf_24dp);
+
+        Drawable fallback =
+                OmniboxResourceProvider.getDrawable(context, R.drawable.ic_attach_file_24dp);
+        fallback.setTint(OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        return fallback;
     }
 
     private static void applyTitleAndDescriptionIfPresent(FuseboxAttachment attachment, View view) {

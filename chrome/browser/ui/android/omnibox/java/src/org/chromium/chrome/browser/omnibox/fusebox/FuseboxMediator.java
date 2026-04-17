@@ -794,10 +794,14 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE)) return;
 
+        String mimeType =
+                OmniboxFeatures.sEnableAllFileTypes.getValue()
+                        ? MimeTypeUtils.ALL_FILE_TYPES_MIME_TYPE
+                        : MimeTypeUtils.PDF_MIME_TYPE;
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType(MimeTypeUtils.PDF_MIME_TYPE)
+                        .setType(mimeType)
                         .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                         .addFlags(
                                 Intent.FLAG_GRANT_READ_URI_PERMISSION

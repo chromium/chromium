@@ -40,6 +40,7 @@
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -231,18 +232,19 @@ ComposeboxQueryControllerBridge::AddFile(
   base::UnguessableToken file_token = session_handle_->CreateContextToken();
 
   std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
-  if (file_type.find("pdf") != std::string::npos) {
-    AimEligibilityService* aim_service =
-        AimEligibilityServiceFactory::GetForProfile(profile_);
-    if (!aim_service->IsPdfUploadEligible()) {
-      return {};
-    }
-  } else if (file_type.find("image") != std::string::npos) {
+  if (file_type.find("image") != std::string::npos) {
     image_options = lens::ImageEncodingOptions{.enable_webp_encoding = false,
                                                .max_size = 1500000,
                                                .max_height = 1600,
                                                .max_width = 1600,
                                                .compression_quality = 40};
+  } else if (file_type.find("pdf") != std::string::npos ||
+             lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+    AimEligibilityService* aim_service =
+        AimEligibilityServiceFactory::GetForProfile(profile_);
+    if (!aim_service->IsPdfUploadEligible()) {
+      return {};
+    }
   } else {
     // Unsupported mime type.
     return {};

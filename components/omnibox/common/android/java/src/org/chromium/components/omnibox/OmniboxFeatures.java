@@ -150,6 +150,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sRedirectComposeplateButton =
             newBooleanParam(sOmniboxMultimodalInput, "redirect_composeplate_button", true);
 
+    public static final BooleanCachedFeatureParam sEnableAllFileTypes =
+            newBooleanParam(sOmniboxMultimodalInput, "all_file_types", false);
+
     /** A necessary but not sufficient condition to show the current tab button. */
     public static final BooleanCachedFeatureParam sAllowCurrentTab =
             newBooleanParam(sOmniboxMultimodalInput, "allow_current_tab", true);

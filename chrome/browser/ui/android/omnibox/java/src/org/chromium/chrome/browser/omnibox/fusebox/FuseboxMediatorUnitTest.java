@@ -704,10 +704,19 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onFilePickerClicked_setsMimeType() {
+    public void onFilePickerClicked_allFilesOff_setsCorrectMimeType() {
+        OmniboxFeatures.sEnableAllFileTypes.setForTesting(false);
         mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.PDF_MIME_TYPE, mIntentCaptor.getValue().getType());
+    }
+
+    @Test
+    public void onFilePickerClicked_allFilesOn_setsCorrectMimeType() {
+        OmniboxFeatures.sEnableAllFileTypes.setForTesting(true);
+        mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        assertEquals(MimeTypeUtils.ALL_FILE_TYPES_MIME_TYPE, mIntentCaptor.getValue().getType());
     }
 
     @Test
