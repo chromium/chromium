@@ -301,7 +301,7 @@ void NativeWindowOcclusionTrackerWin::MarkNonIconicWindowsOccluded() {
   // set them as hidden.
   for (const auto& root_window_hwnd_pair : hwnd_root_window_map_) {
     root_window_hwnd_pair.second->GetHost()->SetNativeWindowOcclusionState(
-        IsIconic(root_window_hwnd_pair.first)
+        ::IsIconic(root_window_hwnd_pair.first)
             ? Window::OcclusionState::HIDDEN
             : Window::OcclusionState::OCCLUDED,
         {});
@@ -441,7 +441,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     UpdateVisibleWindowProcessIds() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pids_for_location_change_hook_.clear();
-  EnumWindows(&UpdateVisibleWindowProcessIdsCallback, 0);
+  ::EnumWindows(&UpdateVisibleWindowProcessIdsCallback, 0);
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
@@ -453,12 +453,12 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   bool should_unregister_event_hooks = true;
 
   // Compute the SkRegion for the screen.
-  int screen_left = GetSystemMetrics(SM_XVIRTUALSCREEN);
-  int screen_top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+  int screen_left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
+  int screen_top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
   SkRegion screen_region = SkRegion(
       SkIRect::MakeLTRB(screen_left, screen_top,
-                        screen_left + GetSystemMetrics(SM_CXVIRTUALSCREEN),
-                        screen_top + GetSystemMetrics(SM_CYVIRTUALSCREEN)));
+                        screen_left + ::GetSystemMetrics(SM_CXVIRTUALSCREEN),
+                        screen_top + ::GetSystemMetrics(SM_CYVIRTUALSCREEN)));
   num_root_windows_with_unknown_occlusion_state_ = 0;
 
   for (auto& root_window_pair : root_window_hwnds_occlusion_state_) {
@@ -470,7 +470,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
         IsWindowOnCurrentVirtualDesktop(hwnd);
     // IsIconic() checks for a minimized window. Immediately set the state of
     // minimized windows to HIDDEN.
-    if (IsIconic(hwnd)) {
+    if (::IsIconic(hwnd)) {
       root_window_pair.second.occlusion_state = Window::OcclusionState::HIDDEN;
     } else if (root_window_pair.second.on_current_workspace == false) {
       // If window is not on the current virtual desktop, immediately
@@ -495,8 +495,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     // Calculate unoccluded region if there is a non-minimized native window.
     // Also compute |current_pids_with_visible_windows| as we enumerate
     // the windows.
-    EnumWindows(&ComputeNativeWindowOcclusionStatusCallback,
-                reinterpret_cast<LPARAM>(&current_pids_with_visible_windows));
+    ::EnumWindows(&ComputeNativeWindowOcclusionStatusCallback,
+                  reinterpret_cast<LPARAM>(&current_pids_with_visible_windows));
     // Check if |pids_for_location_change_hook_| has any pids of processes
     // currently without visible windows. If so, unhook the win event,
     // remove the pid from |pids_for_location_change_hook_| and remove
@@ -510,7 +510,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
         // unregister the event hook, a process that toggles between having
         // visible windows and not having visible windows could cause duplicate
         // event hooks to get registered for the process.
-        UnhookWinEvent(process_event_hooks_[loc_change_pid]);
+        ::UnhookWinEvent(process_event_hooks_[loc_change_pid]);
         process_event_hooks_.erase(loc_change_pid);
         pids_to_remove.insert(loc_change_pid);
       }
@@ -550,8 +550,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     RegisterGlobalEventHook(UINT event_min, UINT event_max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HWINEVENTHOOK event_hook =
-      SetWinEventHook(event_min, event_max, nullptr, &EventHookCallback, 0, 0,
-                      WINEVENT_OUTOFCONTEXT);
+      ::SetWinEventHook(event_min, event_max, nullptr, &EventHookCallback, 0, 0,
+                        WINEVENT_OUTOFCONTEXT);
 
   global_event_hooks_.push_back(event_hook);
 }
@@ -560,7 +560,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     RegisterEventHookForProcess(DWORD pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pids_for_location_change_hook_.insert(pid);
-  process_event_hooks_[pid] = SetWinEventHook(
+  process_event_hooks_[pid] = ::SetWinEventHook(
       EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_LOCATIONCHANGE, nullptr,
       &EventHookCallback, pid, 0, WINEVENT_OUTOFCONTEXT);
 }
@@ -615,11 +615,11 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   window_is_moving_ = false;
   for (HWINEVENTHOOK event_hook : global_event_hooks_)
-    UnhookWinEvent(event_hook);
+    ::UnhookWinEvent(event_hook);
   global_event_hooks_.clear();
 
   for (DWORD pid : pids_for_location_change_hook_)
-    UnhookWinEvent(process_event_hooks_[pid]);
+    ::UnhookWinEvent(process_event_hooks_[pid]);
   process_event_hooks_.clear();
 
   pids_for_location_change_hook_.clear();
@@ -638,7 +638,7 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     // Hook this window's process with EVENT_OBJECT_LOCATION_CHANGE, if we are
     // not already doing so.
     DWORD pid;
-    GetWindowThreadProcessId(hwnd, &pid);
+    ::GetWindowThreadProcessId(hwnd, &pid);
     current_pids_with_visible_windows->insert(pid);
     if (!process_event_hooks_.contains(pid))
       RegisterEventHookForProcess(pid);
@@ -810,7 +810,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   gfx::Rect window_rect;
   if (WindowCanOccludeOtherWindowsOnCurrentVirtualDesktop(hwnd, &window_rect)) {
     DWORD pid;
-    GetWindowThreadProcessId(hwnd, &pid);
+    ::GetWindowThreadProcessId(hwnd, &pid);
     pids_for_location_change_hook_.insert(pid);
   }
 }
