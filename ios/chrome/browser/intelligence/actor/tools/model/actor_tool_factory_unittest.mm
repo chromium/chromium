@@ -49,7 +49,8 @@ TEST_F(ActorToolFactoryTest, GetSupportedCapabilities) {
                                 optimization_guide::proto::Action::kType,
                                 optimization_guide::proto::Action::kWait,
                                 optimization_guide::proto::Action::kScroll,
-                                optimization_guide::proto::Action::kScrollTo));
+                                optimization_guide::proto::Action::kScrollTo,
+                                optimization_guide::proto::Action::kSelect));
 }
 
 // Tests that GetSupportedCapabilities filters out tools that are disabled via

@@ -17,6 +17,7 @@ source_set("actor_tool_factory") {
     ":navigate_tool",
     ":scroll_to_tool",
     ":scroll_tool",
+    ":select_tool",
     ":type_tool",
     ":wait_tool",
     "//base",
@@ -194,6 +195,25 @@ source_set("click_tool") {
   ]
 }
 
+source_set("select_tool") {
+  sources = [
+    "select_tool.h",
+    "select_tool.mm",
+  ]
+
+  deps = [
+    ":actor_interface",
+    ":java_script_features",
+    ":web_actor_interface",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
 source_set("type_tool") {
   sources = [
     "type_tool.h",
@@ -319,6 +339,7 @@ source_set("unit_tests") {
     "scroll_tool_unittest.mm",
     "select_tool_java_script_feature_unittest.mm",
     "select_tool_js_unittest.mm",
+    "select_tool_unittest.mm",
     "type_tool_java_script_feature_unittest.mm",
     "type_tool_js_unittest.mm",
     "type_tool_unittest.mm",
@@ -338,6 +359,7 @@ source_set("unit_tests") {
     ":scroll_to_tool",
     ":scroll_tool",
     ":scroll_tool_ts",
+    ":select_tool",
     ":select_tool_ts",
     ":type_tool",
     ":type_tool_ts",
