@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -1239,7 +1240,22 @@ class LangTest : public PageTestBase {
         <div id="empty" lang="">Empty language</div>
         <div id="no-lang">No language tag</div>
         <div id="und" lang="und">Undetermined language</div>
+
+        <!-- Test lang attribute inheritance and override. -->
+        <div lang="en_US"><div id="bad-inherit">inherits en_US</div></div>
+        <div lang="en"><div id="good-inherit">inherits en</div></div>
+        <div lang="en_US"><div id="override" lang="en">overrides en_US</div></div>
+
+        <!-- xml:lang is set programmatically below. -->
+        <div id="xml-bad-over-good" lang="en"></div>
+        <div id="xml-good-over-bad" lang="en_US"></div>
       )HTML");
+    GetDocument()
+        .getElementById(AtomicString("xml-bad-over-good"))
+        ->setAttribute(xml_names::kLangAttr, AtomicString("en_US"));
+    GetDocument()
+        .getElementById(AtomicString("xml-good-over-bad"))
+        ->setAttribute(xml_names::kLangAttr, AtomicString("en"));
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -1540,6 +1556,63 @@ TEST_F(LangTest, ListValidAndMalformedRangesMatching) {
     String selector = String(":lang(") + value + " , en)";
     EXPECT_TRUE(MatchesLang(selector, "en-GB"));
   }
+}
+
+// Any :lang() argument or lang attribute that cannot be parsed with the BCP-47
+// syntax causes :lang() selectors to not match. See
+// https://github.com/w3c/csswg-drafts/issues/8720.
+
+TEST_P(LangInvariantTest, MalformedLangAttributeNeverMatches) {
+  const char* malformed[] = {
+      "en-",          "-en",  "en--US",    "en123",  "ninechars",
+      "en-ninechars", "café", "es-España", "日本語", "en_US",
+  };
+  for (const char* value : malformed) {
+    SCOPED_TRACE(value);
+    EXPECT_FALSE(MatchesLangTagValue(":lang(en)", value));
+  }
+}
+
+TEST_F(LangTest, WildcardDoesNotMatchMalformedLangAttribute) {
+  ScopedCSSLangExtendedRangesForTest scoped_feature(true);
+
+  const char* malformed[] = {
+      "en_US", "en-", "en--US", "ninechars", "café", "日本語",
+  };
+  for (const char* value : malformed) {
+    SCOPED_TRACE(value);
+    EXPECT_FALSE(MatchesLangTagValue(":lang(\"*\")", value));
+    EXPECT_FALSE(MatchesLangTagValue(":lang(\"en-*\")", value));
+  }
+}
+
+TEST_P(LangInvariantTest, MalformedInheritedLangNeverMatches) {
+  EXPECT_FALSE(MatchesLang(":lang(en)", "bad-inherit"));
+  // Positive control: a valid ancestor lang reaches the child.
+  EXPECT_TRUE(MatchesLang(":lang(en)", "good-inherit"));
+}
+
+TEST_P(LangInvariantTest, DescendantWithValidLangOverridesMalformedAncestor) {
+  EXPECT_TRUE(MatchesLang(":lang(en)", "override"));
+}
+
+TEST_P(LangInvariantTest, MalformedXmlLangOverridesValidLang) {
+  // xml:lang takes precedence; if it's ill-formed, :lang() does not match.
+  EXPECT_FALSE(MatchesLang(":lang(en)", "xml-bad-over-good"));
+}
+
+TEST_P(LangInvariantTest, ValidXmlLangOverridesMalformedLang) {
+  EXPECT_TRUE(MatchesLang(":lang(en)", "xml-good-over-bad"));
+}
+
+TEST_P(LangInvariantTest, MalformedContentLanguageNeverMatches) {
+  // Content-Language is the last fallback in ComputeInheritedLanguage().
+  GetDocument().SetContentLanguage(AtomicString("en_US"));
+  EXPECT_FALSE(MatchesLang(":lang(en)", "no-lang"));
+
+  // Positive control: a valid Content-Language is consulted.
+  GetDocument().SetContentLanguage(AtomicString("en"));
+  EXPECT_TRUE(MatchesLang(":lang(en)", "no-lang"));
 }
 
 }  // namespace blink

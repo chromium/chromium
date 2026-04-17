@@ -173,21 +173,27 @@ static bool MatchesUniversalTagName(const Element& element,
          namespace_uri == element.namespaceURI();
 }
 
-// Validates a language range against RFC 4647 extended language range grammar:
+// Wildcards are valid subtags in extended language ranges (RFC 4647),
+// but not in language tags (RFC 5646).
+enum class WildcardSubtags { kAllow, kDisallow };
+
+// Validates a BCP-47 extended language range (RFC 4647) or tag (RFC 5646):
 // extended-language-range = (1*8ALPHA / "*") *("-" (1*8alphanum / "*"))
-static bool IsValidExtendedLanguageRange(const String& range) {
-  if (range.empty()) {
+// language-tag = 1*8ALPHA *("-" 1*8alphanum)
+static bool IsValidBCP47Value(const String& value,
+                              WildcardSubtags wildcard_policy) {
+  if (value.empty()) {
     return false;
   }
 
-  const wtf_size_t len = range.length();
+  const wtf_size_t len = value.length();
   wtf_size_t pos = 0;
   bool is_first_subtag = true;
 
   while (pos < len) {
     // Find the end of the current subtag (next hyphen or end of string).
     const wtf_size_t subtag_start = pos;
-    while (pos < len && range[pos] != '-') {
+    while (pos < len && value[pos] != '-') {
       ++pos;
     }
     const wtf_size_t subtag_len = pos - subtag_start;
@@ -197,10 +203,12 @@ static bool IsValidExtendedLanguageRange(const String& range) {
       return false;
     }
 
-    // Check if the subtag is a wildcard.
-    const bool is_wildcard = (subtag_len == 1 && range[subtag_start] == '*');
-
-    if (!is_wildcard) {
+    if (subtag_len == 1 && value[subtag_start] == '*') {
+      if (wildcard_policy == WildcardSubtags::kDisallow) {
+        // Wildcard subtags are not allowed inside language tags.
+        return false;
+      }
+    } else {
       // Each subtag is limited to 8 characters.
       if (subtag_len > 8) {
         return false;
@@ -208,8 +216,8 @@ static bool IsValidExtendedLanguageRange(const String& range) {
 
       // First subtag must be alphabetic, subsequent ones can be alphanumeric.
       for (wtf_size_t j = subtag_start; j < pos; ++j) {
-        const bool valid = is_first_subtag ? IsAsciiAlpha(range[j])
-                                           : IsAsciiAlphanumeric(range[j]);
+        const bool valid = is_first_subtag ? IsAsciiAlpha(value[j])
+                                           : IsAsciiAlphanumeric(value[j]);
         if (!valid) {
           return false;
         }
@@ -295,8 +303,8 @@ static bool MatchesLangPseudoClass(
       continue;
     }
 
-    // Malformed language ranges never match.
-    if (!IsValidExtendedLanguageRange(range.GetString())) {
+    // Malformed language ranges (RFC 4647) never match.
+    if (!IsValidBCP47Value(range.GetString(), WildcardSubtags::kAllow)) {
       continue;
     }
 
@@ -2874,6 +2882,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       auto* vtt_element = DynamicTo<VTTElement>(element);
       AtomicString value = vtt_element ? vtt_element->Language()
                                        : element.ComputeInheritedLanguage();
+      // Malformed language tag values (RFC 5646) never match.
+      if (!value.empty() &&
+          !IsValidBCP47Value(value.GetString(), WildcardSubtags::kDisallow)) {
+        break;
+      }
       if (!RuntimeEnabledFeatures::CSSLangExtendedRangesEnabled()) {
         DCHECK_EQ(selector.ArgumentList()->size(), 1u);
         const AtomicString& argument = (*selector.ArgumentList())[0];
