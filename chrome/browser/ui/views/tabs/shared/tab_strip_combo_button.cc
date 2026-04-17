@@ -341,6 +341,13 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
   menu_runner_ = std::make_unique<views::MenuRunner>(
       std::move(root),
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  CHECK(browser_view);
+  CHECK(browser_view->tab_strip_view());
+  expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(
+      ExpandOnHoverLockType::kKeepExpanded);
+
   menu_runner_->RunMenuAt(GetWidget(), nullptr,
                           source->GetAnchorBoundsInScreen(),
                           views::MenuAnchorPosition::kTopLeft, source_type);
@@ -548,6 +555,7 @@ gfx::Size TabStripComboButton::GetPreferredSizeForOrientation(
 }
 
 void TabStripComboButton::OnMenuClosed() {
+  expand_on_hover_lock_.reset();
   menu_runner_.reset();
   if (show_tab_search_ephemerally_) {
     hide_tab_search_timer_.Start(
