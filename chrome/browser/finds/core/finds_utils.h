@@ -34,6 +34,9 @@ void MarkThemeAsNotInterested(
 // Returns the model execution cooldown duration as a base::TimeDelta.
 base::TimeDelta GetModelExecutionCooldownDurationTimeDelta();
 
+// Returns true if the Chrome finds feature is allowed by enterprise policy.
+bool IsAllowedByEnterprisePolicy(PrefService* pref_service);
+
 }  // namespace finds
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_UTILS_H_

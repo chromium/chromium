@@ -11,9 +11,11 @@
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
+#include "chrome/browser/finds/core/finds_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -95,6 +97,10 @@ void FindsTabHelper::DidFinishNavigation(
   }
 
   if (!IsSupportedPlatform()) {
+    return;
+  }
+
+  if (pref_service_ && !IsAllowedByEnterprisePolicy(pref_service_)) {
     return;
   }
 

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_service.h"
+#include "chrome/browser/finds/core/finds_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/prefs/pref_service.h"
 
 namespace finds {
 
@@ -53,6 +55,11 @@ FindsServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
+
+  if (!IsAllowedByEnterprisePolicy(profile->GetPrefs())) {
+    return nullptr;
+  }
+
   OptimizationGuideKeyedService* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   history::HistoryService* history_service =

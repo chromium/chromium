@@ -12,6 +12,8 @@
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -42,6 +44,8 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
     }
 
     FindsService::RegisterProfilePrefs(pref_service_.registry());
+    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+        pref_service_.registry());
 
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
@@ -146,6 +150,16 @@ TEST_F(FindsTabHelperTest, TestOptInCooldownNotPassed) {
   pref_service_.SetInt64(
       prefs::kFindsOptInPromoLastShownTimestamp,
       (base::Time::Now() + base::Days(1)).InMillisecondsSinceUnixEpoch());
+  EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
+  SimulateSRPBackNavigations(srp_return_count_threshold_);
+  EXPECT_EQ(srp_return_count(), 0);
+}
+
+TEST_F(FindsTabHelperTest, TestEnterprisePolicyDisabled) {
+  pref_service_.SetInteger(
+      optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           ModelExecutionEnterprisePolicyValue::kDisable));
   EXPECT_CALL(finds_service_observer_, OnOptInCriteriaFulfilled()).Times(0);
   SimulateSRPBackNavigations(srp_return_count_threshold_);
   EXPECT_EQ(srp_return_count(), 0);
