@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,6 +49,13 @@ IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, PRE_Test) {
 #define MAYBE_Test Test
 #endif
 IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, MAYBE_Test) {
+#if BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP()
+        << "Skipping test because it fails with InitialWebUI enabled on Linux. "
+           "See b/464087732.";
+  }
+#endif
   gfx::Rect bounds = browser()->window()->GetBounds();
   gfx::Rect expected_bounds(window_frame);
   ASSERT_EQ(expected_bounds.ToString(), bounds.ToString());
