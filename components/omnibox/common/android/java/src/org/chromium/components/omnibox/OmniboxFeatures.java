@@ -14,6 +14,7 @@ import com.google.android.gms.location.Priority;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
@@ -37,6 +38,8 @@ import java.util.List;
 /** This is the place where we define these: List of Omnibox features and parameters. */
 @NullMarked
 public class OmniboxFeatures {
+    private static final String TAG = "OmniboxFeatures";
+
     @IntDef({FeatureState.DISABLED, FeatureState.ENABLED_IN_TEST, FeatureState.ENABLED_IN_PROD})
     @Retention(RetentionPolicy.SOURCE)
     @interface FeatureState {
@@ -404,13 +407,25 @@ public class OmniboxFeatures {
     }
 
     /**
-     * @return Whether the device is in a desktop-like configuration (tablet with a physical
-     *     keyboard and precision pointer).
+     * Return whether the device is in a desktop-like configuration (interacted with using physical
+     * keyboard and precision pointer).
+     *
+     * <p>We're not limiting to tablet modes here, because narrow windows on LFF devices are
+     * eligible for Desktop treatment, too.
      */
     public static boolean isDesktopMode() {
-        return DeviceFormFactor.isTablet()
-                && DeviceInput.supportsAlphabeticKeyboard()
-                && DeviceInput.supportsPrecisionPointer();
+        if (sDiagInputConnection.getValue()) {
+            // TODO(crbug.com/492224343): Remove diagnostics once we understand the edge case.
+            Log.i(
+                    TAG,
+                    "Desktop mode check: A:%b K:%b M:%b S:%b",
+                    DeviceInput.supportsAlphabeticKeyboard(),
+                    DeviceInput.supportsKeyboard(ContextUtils.getApplicationContext()),
+                    DeviceInput.supportsPrecisionPointer(),
+                    DeviceFormFactor.isTablet());
+        }
+
+        return DeviceInput.supportsAlphabeticKeyboard() && DeviceInput.supportsPrecisionPointer();
     }
 
     /**

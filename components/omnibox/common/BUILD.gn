@@ -72,19 +72,6 @@ if (is_android) {
       "//ui/android:ui_java",
     ]
   }
-
-  robolectric_library("junit") {
-    sources = [ "android/java/src/org/chromium/components/omnibox/OmniboxFeaturesTest.java" ]
-    deps = [
-      "//base:base_java_test_support",
-      "//base:base_junit_test_support",
-      "//components/cached_flags:java",
-      "//components/omnibox/common:features_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit",
-      "//ui/android:ui_java",
-    ]
-  }
 }
 
 source_set("unit_tests") {

@@ -1245,7 +1245,6 @@ if (_is_default_toolchain) {
       "//components/externalauth/android:junit",
       "//components/minidump_uploader:minidump_uploader_javatests",
       "//components/omnibox/browser:junit",
-      "//components/omnibox/common:junit",
       "//components/search_engines/android:junit",
       "//components/segmentation_platform/public:junit",
       "//components/translate/content/android:junit",
