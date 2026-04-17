@@ -8,7 +8,6 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -86,9 +85,6 @@ public final class WebResponseCallback {
     protected void finalize() throws Throwable {
         try {
             boolean intercepted = mInterceptCalled.get();
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.ShouldInterceptRequest.Async.CallbackLeakedWithoutResponse",
-                    !intercepted);
             if (!intercepted) {
                 Log.e(
                         TAG,
