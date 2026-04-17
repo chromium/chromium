@@ -3618,7 +3618,7 @@ source_set("browser") {
   # For platforms that support extension service workers.
   # NOTE: Fuchsia depends on this class, but probably shouldn't, as it doesn't
   # support extensions.
-  if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android ||
+  if (is_win || is_apple || is_linux || is_chromeos || is_desktop_android ||
       is_fuchsia) {
     sources += [
       "service_worker/service_worker_usb_delegate_observer.cc",
