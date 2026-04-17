@@ -29,6 +29,8 @@ class PLATFORM_EXPORT ExportedCanvasResource
   bool OriginClean() const;
   scoped_refptr<StaticBitmapImage> Bitmap();
   void Transfer();
+  void EndDisplayCompositorAccess(gpu::SharedImageExportResult export_result,
+                                  bool is_lost);
 
   CanvasResource* GetResourceForTesting() const { return resource_.get(); }
 

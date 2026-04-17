@@ -57,4 +57,16 @@ void ExportedCanvasResource::Transfer() {
   resource_->Transfer();
 }
 
+void ExportedCanvasResource::EndDisplayCompositorAccess(
+    gpu::SharedImageExportResult export_result,
+    bool is_lost) {
+  auto sync_token =
+      resource_->GetSharedImage()->EndExport(std::move(export_result));
+
+  resource_->WaitSyncToken(sync_token);
+  if (is_lost) {
+    resource_->NotifyResourceLost();
+  }
+}
+
 }  // namespace blink

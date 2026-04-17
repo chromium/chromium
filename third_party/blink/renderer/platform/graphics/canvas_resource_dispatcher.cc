@@ -46,7 +46,7 @@ namespace blink {
 // thread was torn down).
 struct CanvasResourceDispatcher::ExportedResource {
  public:
-  explicit ExportedResource(scoped_refptr<CanvasResource> resource)
+  explicit ExportedResource(scoped_refptr<ExportedCanvasResource> resource)
       : resource_(std::move(resource)) {
     CHECK(resource_);
   }
@@ -54,21 +54,16 @@ struct CanvasResourceDispatcher::ExportedResource {
   void ReleaseResource(gpu::SharedImageExportResult shared_image_export_result,
                        bool is_lost) {
     CHECK(resource_);
-    auto sync_token = resource_->GetSharedImage()->EndExport(
-        std::move(shared_image_export_result));
-
-    resource_->WaitSyncToken(sync_token);
-    if (is_lost) {
-      resource_->NotifyResourceLost();
-    }
+    resource_->EndDisplayCompositorAccess(std::move(shared_image_export_result),
+                                          is_lost);
   }
 
   ~ExportedResource() {
     CHECK(resource_);
-    CanvasResource::DropRefOnOwningThread(std::move(resource_));
+    resource_.reset();
   }
 
-  scoped_refptr<CanvasResource> resource_;
+  scoped_refptr<ExportedCanvasResource> resource_;
 };
 
 CanvasResourceDispatcher::CanvasResourceDispatcher(
@@ -283,8 +278,10 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // duration of the compositor's usage (we'll drop our ref when the compositor
   // notifies us that it is no longer using the resource via
   // `ReclaimResources()`).
-  exported_resources_.insert(resource_id, std::make_unique<ExportedResource>(
-                                              std::move(canvas_resource)));
+  exported_resources_.insert(resource_id,
+                             std::make_unique<ExportedResource>(
+                                 base::MakeRefCounted<ExportedCanvasResource>(
+                                     std::move(canvas_resource))));
 
   frame->resource_list.push_back(std::move(resource));
 
