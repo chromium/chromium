@@ -289,11 +289,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, top_level_grants, barrier);
 }
 
-void TopLevelStorageAccessPermissionContext::UpdateContentSetting(
+void TopLevelStorageAccessPermissionContext::UpdateSetting(
     const permissions::PermissionRequestData& request_data,
-    ContentSetting content_setting,
+    const PermissionSetting& setting,
     bool is_one_time) {
-  CHECK(!is_one_time);
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.

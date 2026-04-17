@@ -33,11 +33,10 @@ class DisplayCapturePermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 
-  // ContentSettingPermissionContextBase
-  void UpdateContentSetting(
-      const permissions::PermissionRequestData& request_data,
-      ContentSetting content_setting,
-      bool is_one_time) override;
+  // PermissionContextBase
+  void UpdateSetting(const permissions::PermissionRequestData& request_data,
+                     const PermissionSetting& setting,
+                     bool is_one_time) override;
 };
 
 #endif  // CHROME_BROWSER_DISPLAY_CAPTURE_DISPLAY_CAPTURE_PERMISSION_CONTEXT_H_

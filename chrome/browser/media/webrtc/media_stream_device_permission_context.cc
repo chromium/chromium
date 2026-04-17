@@ -178,7 +178,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
         request_data.resolver->ComputePermissionDecisionResult(
             previous_content_setting, decision));
 
-    UpdateContentSetting(
+    UpdateSetting(
         request_data, new_content_setting,
         decision.overall_decision == PermissionDecision::kAllowThisTime);
   }

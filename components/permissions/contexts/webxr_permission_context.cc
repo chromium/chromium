@@ -102,7 +102,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
         request_data.resolver->ComputePermissionDecisionResult(previous_setting,
                                                                decision));
 
-    ContentSettingPermissionContextBase::UpdateContentSetting(
+    UpdateSetting(
         request_data, new_content_setting,
         decision.overall_decision == PermissionDecision::kAllowThisTime);
   }

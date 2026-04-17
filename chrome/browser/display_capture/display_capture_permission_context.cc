@@ -35,9 +35,9 @@ ContentSetting DisplayCapturePermissionContext::GetContentSettingStatusInternal(
   return CONTENT_SETTING_ASK;
 }
 
-void DisplayCapturePermissionContext::UpdateContentSetting(
+void DisplayCapturePermissionContext::UpdateSetting(
     const permissions::PermissionRequestData& request_data,
-    ContentSetting content_setting,
+    const PermissionSetting& setting,
     bool is_one_time) {
   NOTREACHED();
 }

@@ -27,18 +27,18 @@ class ContentSettingPermissionContextBase : public PermissionContextBase {
                        const GURL& embedding_origin) override;
 
  protected:
-  // Store the decided permission state. Virtual since the permission might be
-  // stored with different restrictions (for example for desktop notifications).
-  virtual void UpdateContentSetting(const PermissionRequestData& request_data,
-                                    ContentSetting content_setting,
-                                    bool is_one_time);
-
   // Retrieve the current permission state. Virtual since the permission might
   // want to customize logic around retrieving permission states.
   virtual ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
+
+  // PermissionContextBase:
+  void UpdateSetting(
+    const PermissionRequestData& request_data,
+    const PermissionSetting& setting,
+    bool is_one_time) override;
 
  private:
   // The private final methods below are used to hide base::Value from
@@ -51,10 +51,6 @@ class ContentSettingPermissionContextBase : public PermissionContextBase {
       const GURL& requesting_origin,
       const GURL& embedding_origin) const final;
 
-  // PermissionContextBase:
-  void UpdateSetting(const PermissionRequestData& request_data,
-                     PermissionSetting content_setting,
-                     bool is_one_time) final;
 };
 
 }  // namespace permissions

@@ -851,12 +851,17 @@ void PermissionContextBase::CleanUpRequestEmbeddedPermissionElement(
 
 void PermissionContextBase::UpdateSetting(
     const PermissionRequestData& request_data,
-    PermissionSetting setting,
+    const PermissionSetting& setting,
     bool is_one_time) {
-  DCHECK_EQ(request_data.requesting_origin,
-            request_data.requesting_origin.DeprecatedGetOriginAsURL());
-  DCHECK_EQ(request_data.embedding_origin,
-            request_data.embedding_origin.DeprecatedGetOriginAsURL());
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      content_settings_type_);
+  CHECK(info);
+  CHECK(!info->delegate().IsUndecided(setting));
+
+  CHECK_EQ(request_data.requesting_origin,
+           request_data.requesting_origin.DeprecatedGetOriginAsURL());
+  CHECK_EQ(request_data.embedding_origin,
+           request_data.embedding_origin.DeprecatedGetOriginAsURL());
 
   content_settings::ContentSettingConstraints constraints;
   constraints.set_session_model(
@@ -865,11 +870,9 @@ void PermissionContextBase::UpdateSetting(
 
   // The unused permissions module in Safety check will revoke unused site
   // permissions after a finite amount of time if the permission can be revoked.
-  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-      content_settings_type_);
-  if (info && content_settings::CanBeAutoRevokedAsUnusedPermission(
-                  content_settings_type(), info->delegate().ToValue(setting),
-                  is_one_time)) {
+  if (content_settings::CanBeAutoRevokedAsUnusedPermission(
+          content_settings_type(), info->delegate().ToValue(setting),
+          is_one_time)) {
     constraints.set_track_last_visit_for_autoexpiration(true);
   }
 

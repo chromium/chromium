@@ -41,10 +41,9 @@ class LocalNetworkAccessCompatPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 
-  void UpdateContentSetting(
-      const permissions::PermissionRequestData& request_data,
-      ContentSetting content_setting,
-      bool is_one_time) override;
+  void UpdateSetting(const permissions::PermissionRequestData& request_data,
+                     const PermissionSetting& setting,
+                     bool is_one_time) override;
 
   bool PermissionAllowedByPermissionsPolicy(
       content::RenderFrameHost* rfh) const override;

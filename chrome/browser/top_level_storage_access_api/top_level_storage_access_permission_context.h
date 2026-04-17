@@ -83,11 +83,10 @@ class TopLevelStorageAccessPermissionContext
       bool persist,
       const permissions::PermissionPromptDecision& decision) override;
 
-  // ContentSettingPermissionContextBase
-  void UpdateContentSetting(
-      const permissions::PermissionRequestData& request_data,
-      ContentSetting content_setting,
-      bool is_one_time) override;
+  // PermissionContextBase
+  void UpdateSetting(const permissions::PermissionRequestData& request_data,
+                     const PermissionSetting& content_setting,
+                     bool is_one_time) override;
 
   // ContentSettingPermissionContextBase
   ContentSetting GetContentSettingStatusInternal(

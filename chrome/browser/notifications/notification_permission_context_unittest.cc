@@ -119,7 +119,7 @@ class NotificationPermissionContextTest
                             const GURL& requesting_origin,
                             const GURL& embedding_origin,
                             ContentSetting setting) {
-    context->UpdateContentSetting(
+    context->UpdateSetting(
         permissions::PermissionRequestData(
             std::make_unique<permissions::ContentSettingPermissionResolver>(
                 ContentSettingsType::NOTIFICATIONS),

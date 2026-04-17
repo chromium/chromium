@@ -28,10 +28,9 @@ class PersistentStoragePermissionContext
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  void UpdateContentSetting(
-      const permissions::PermissionRequestData& request_data,
-      ContentSetting content_setting,
-      bool is_one_time) override;
+  void UpdateSetting(const permissions::PermissionRequestData& request_data,
+                     const PermissionSetting& setting,
+                     bool is_one_time) override;
 };
 
 #endif  // CHROME_BROWSER_STORAGE_PERSISTENT_STORAGE_PERMISSION_CONTEXT_H_

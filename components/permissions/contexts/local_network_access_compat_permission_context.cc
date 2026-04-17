@@ -76,9 +76,9 @@ LocalNetworkAccessCompatPermissionContext::GetContentSettingStatusInternal(
 
 // Nothing should be setting or requesting this permission this when split
 // permissions are enabled.
-void LocalNetworkAccessCompatPermissionContext::UpdateContentSetting(
+void LocalNetworkAccessCompatPermissionContext::UpdateSetting(
     const permissions::PermissionRequestData& request_data,
-    ContentSetting content_setting,
+    const PermissionSetting& setting,
     bool is_one_time) {
   NOTREACHED();
 }

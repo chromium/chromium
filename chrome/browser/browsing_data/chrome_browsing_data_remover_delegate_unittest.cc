@@ -3083,13 +3083,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentPermission) {
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
   PersistentStoragePermissionContext persistent_permission(GetProfile());
-  persistent_permission.UpdateContentSetting(
+  persistent_permission.UpdateSetting(
       permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::PERSISTENT_STORAGE),
           /*user_gesture=*/true, kOrigin1, GURL()),
       CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
-  persistent_permission.UpdateContentSetting(
+  persistent_permission.UpdateSetting(
       permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::PERSISTENT_STORAGE),
@@ -3134,7 +3134,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   PersistentStoragePermissionContext persistent_permission(GetProfile());
-  persistent_permission.UpdateContentSetting(
+  persistent_permission.UpdateSetting(
       permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::PERSISTENT_STORAGE),

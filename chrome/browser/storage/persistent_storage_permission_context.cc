@@ -146,17 +146,19 @@ void PersistentStoragePermissionContext::DecidePermission(
                           .is_final = true});
 }
 
-void PersistentStoragePermissionContext::UpdateContentSetting(
+void PersistentStoragePermissionContext::UpdateSetting(
     const permissions::PermissionRequestData& request_data,
-    ContentSetting content_setting,
+    const PermissionSetting& setting,
     bool is_one_time) {
-  DCHECK(!is_one_time);
-  DCHECK_EQ(request_data.requesting_origin,
-            request_data.requesting_origin.DeprecatedGetOriginAsURL());
-  DCHECK_EQ(request_data.embedding_origin,
-            request_data.embedding_origin.DeprecatedGetOriginAsURL());
-  DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
-         content_setting == CONTENT_SETTING_BLOCK);
+  CHECK(std::holds_alternative<ContentSetting>(setting));
+  ContentSetting content_setting = std::get<ContentSetting>(setting);
+  CHECK(!is_one_time);
+  CHECK_EQ(request_data.requesting_origin,
+           request_data.requesting_origin.DeprecatedGetOriginAsURL());
+  CHECK_EQ(request_data.embedding_origin,
+           request_data.embedding_origin.DeprecatedGetOriginAsURL());
+  CHECK(content_setting == CONTENT_SETTING_ALLOW ||
+        content_setting == CONTENT_SETTING_BLOCK);
 
   HostContentSettingsMapFactory::GetForProfile(browser_context())
       ->SetContentSettingDefaultScope(request_data.requesting_origin, GURL(),

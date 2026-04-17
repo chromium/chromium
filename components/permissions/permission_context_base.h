@@ -222,7 +222,7 @@ class PermissionContextBase : public content_settings::Observer {
   // Store the decided permission state. Virtual since the permission might be
   // stored with different restrictions (for example for desktop notifications).
   virtual void UpdateSetting(const PermissionRequestData& request_data,
-                             PermissionSetting setting,
+                             const PermissionSetting& setting,
                              bool is_one_time);
 
   // Whether the permission should be restricted to secure origins.
