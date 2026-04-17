@@ -5413,14 +5413,51 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="VoiceSearch.Action" enum="VoiceSearchAction"
+    expires_after="2026-11-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Total actions taken by users of Voice Search across ALL surfaces. This
+    provides an aggregated view over all entry points. These actions may
+    navigate away from the current page (e.g., submitting a speech query), but
+    can also happen without navigating away (e.g., initiating, retrying, or
+    canceling Voice Search). Recorded immediately when the user performs a
+    specific voice search action, or when a lifecycle event concludes (e.g., an
+    error canceling the search). Recorded exactly once per user action or
+    lifecycle event.
+  </summary>
+</histogram>
+
 <histogram name="VoiceSearch.Action.{OmniboxPageContext}"
     enum="VoiceSearchAction" expires_after="2026-11-20">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Actions taken by users of voice search on {OmniboxPageContext}.
+    Actions taken by users of Voice Search on {OmniboxPageContext}. These
+    actions may navigate away from the current page (e.g., submitting a speech
+    query), but can also happen without navigating away (e.g., initiating,
+    retrying, or canceling Voice Search). Recorded immediately when the user
+    performs a specific voice search action, or when a lifecycle event concludes
+    (e.g., an error canceling the search). Recorded exactly once per user action
+    or lifecycle event.
   </summary>
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="VoiceSearch.Errors" enum="VoiceSearchError"
+    expires_after="2026-11-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Total errors that occur during Voice Search across ALL surfaces. This
+    provides an aggregated view over all entry points. These may be user-induced
+    (e.g., the user's utterance could not be recognized - no match), or
+    resulting from external circumstances (e.g., network error, lack of
+    microphone permission). Recorded immediately when the underlying Web Speech
+    API reports an error event or a no-match event. All errors are recorded
+    (recorded exactly once per error occurrence).
+  </summary>
 </histogram>
 
 <histogram name="VoiceSearch.Errors.{OmniboxPageContext}"
@@ -5428,7 +5465,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Errors that occur during voice search on {OmniboxPageContext}.
+    Errors that occur during Voice Search use on {OmniboxPageContext}. These may
+    be user-induced (e.g., the user's utterance could not be recognized - no
+    match), or resulting from external circumstances (e.g., network error, lack
+    of microphone permission). Recorded immediately when the underlying Web
+    Speech API reports an error event or a no-match event. All errors are
+    recorded (recorded exactly once per error occurrence).
   </summary>
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>

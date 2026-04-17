@@ -359,6 +359,10 @@ export class ComposeboxVoiceSearchElement extends
     }
     const metricName = `VoiceSearch.${type}.${metricSource}`;
     chrome.metricsPrivate.recordEnumerationValue(metricName, value, max);
+
+    const aggregateMetricName = `VoiceSearch.${type}`;
+    chrome.metricsPrivate.recordEnumerationValue(
+        aggregateMetricName, value, max);
   }
 
   private onError_(error: VoiceSearchError) {
