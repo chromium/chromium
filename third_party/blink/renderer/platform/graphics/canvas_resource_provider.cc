@@ -2310,11 +2310,6 @@ void CanvasNon2DResourceProviderSharedImage::ClearUnusedResources() {
   }
 }
 
-bool CanvasNon2DResourceProviderSharedImage::
-    unused_resources_reclaim_timer_is_running_for_testing() const {
-  return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;
-}
-
 bool CanvasNon2DResourceProviderSharedImage::IsSingleBuffered() const {
   return image_pool_ && image_pool_->GetImageInfo().usage.Has(
                             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
