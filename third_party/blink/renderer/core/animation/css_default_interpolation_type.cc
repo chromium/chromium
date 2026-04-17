@@ -13,8 +13,9 @@
 namespace blink {
 
 CSSDefaultNonInterpolableValue::CSSDefaultNonInterpolableValue(
-    const CSSValue* css_value)
-    : css_value_(css_value) {
+    const CSSValue* css_value,
+    AttrTainted is_attr_tainted)
+    : css_value_(css_value), is_attr_tainted_(is_attr_tainted) {
   DCHECK(css_value_);
 }
 
@@ -49,7 +50,8 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
 
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(0),
-      MakeGarbageCollected<CSSDefaultNonInterpolableValue>(css_value));
+      MakeGarbageCollected<CSSDefaultNonInterpolableValue>(
+          css_value, CSSDefaultNonInterpolableValue::AttrTainted(false)));
 }
 
 void CSSDefaultInterpolationType::Composite(
@@ -66,9 +68,15 @@ void CSSDefaultInterpolationType::Apply(
     CSSInterpolationEnvironment& environment) const {
   DCHECK(
       To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
+  CSSProperty::ValueMode values_mode =
+      To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
+              ->IsAttrTainted()
+          ? CSSProperty::ValueMode::kAttrTaintedAndAnimated
+          : CSSProperty::ValueMode::kAnimated;
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(), environment.GetState(),
-      *To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
+      *To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue(),
+      values_mode);
 }
 
 }  // namespace blink

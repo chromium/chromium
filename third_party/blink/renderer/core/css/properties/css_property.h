@@ -314,6 +314,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kNormal,
     // https://drafts.csswg.org/css-variables/#animation-tainted
     kAnimated,
+    // https://drafts.csswg.org/css-values-5/#attr-taint
+    kAttrTainted,
+    kAttrTaintedAndAnimated,
   };
 
  private:

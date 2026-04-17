@@ -2656,6 +2656,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     return;
   }
 
+  bool is_attr_tainted = false;
   if (!start || !end) {
     const Document& document = state.animating_element.GetDocument();
     const CSSValue* start_css_value =
@@ -2687,12 +2688,27 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
       // correctly. If that bug is fixed, then this should never happen.
       return;
     }
+    if (property.IsCSSCustomProperty()) {
+      CSSPropertyRef custom_ref(property.GetCSSPropertyName(), document);
+      CSSVariableData* old_data = state.old_style.GetVariableData(
+          property.CustomPropertyName(),
+          custom_ref.GetProperty().IsInherited());
+      CSSVariableData* new_data = after_change_style.GetVariableData(
+          property.CustomPropertyName(),
+          custom_ref.GetProperty().IsInherited());
+      is_attr_tainted = (old_data && old_data->IsAttrTainted()) ||
+                        (new_data && new_data->IsAttrTainted());
+    }
     start = InterpolationValue(
         MakeGarbageCollected<InterpolableList>(0),
-        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(start_css_value));
+        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(
+            start_css_value,
+            CSSDefaultNonInterpolableValue::AttrTainted(is_attr_tainted)));
     end = InterpolationValue(
         MakeGarbageCollected<InterpolableList>(0),
-        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(end_css_value));
+        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(
+            end_css_value,
+            CSSDefaultNonInterpolableValue::AttrTainted(is_attr_tainted)));
   }
 
   // If the interpolated transform lists contain any singular matrices, a
