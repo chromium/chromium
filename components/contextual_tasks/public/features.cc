@@ -141,6 +141,9 @@ const base::FeatureParam<double> kContentVisibilityThreshold{
     &kContextualTasksContext,
     "ContextualTasksContextContentVisibilityThreshold", 0.7};
 
+const base::FeatureParam<std::string> kQueryEmbeddingTask{
+    &kContextualTasksContext, "ContextualTasksContextQueryEmbeddingTask", ""};
+
 const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing(
     &kContextualTasksContext,
     "ContextualTasksContextSmartTabSharing",

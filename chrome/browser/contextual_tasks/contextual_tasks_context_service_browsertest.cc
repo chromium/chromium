@@ -91,6 +91,7 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
+    last_passages_ = passages;
     if (status_ == passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
       if (timeout_) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -121,10 +122,15 @@ class FakeEmbedder : public passage_embeddings::TestEmbedder {
 
   void set_timeout(base::TimeDelta timeout) { timeout_ = timeout; }
 
+  const std::vector<std::string>& last_passages() const {
+    return last_passages_;
+  }
+
  private:
   passage_embeddings::ComputeEmbeddingsStatus status_ =
       passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
   std::optional<base::TimeDelta> timeout_;
+  std::vector<std::string> last_passages_;
 };
 
 class MockPageEmbeddingsService
@@ -259,6 +265,8 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     return ContextualTasksContextServiceFactory::GetForProfile(
         browser()->profile());
   }
+
+  FakeEmbedder& embedder() { return embedder_; }
 
   ContextualTasksContextModelHandler* GetModelHandler() {
     return service()->model_handler_.get();
@@ -475,6 +483,55 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
+}
+
+class ContextualTasksContextServiceTaskFormattingTest
+    : public ContextualTasksContextServiceTest {
+ protected:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kContextualTasksContext,
+             {{"ContextualTasksContextQueryEmbeddingTask", "search result"},
+              {"ContextualTasksContextOnlyUseTitles", "false"},
+              {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
+              {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}},
+            {kContextualTasksContextLogging, {}},
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTaskFormattingTest,
+                       SuccessWithTaskFormatting) {
+  NavigateToValidURL();
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(0.1f)},
+       {std::make_pair(
+            "passage 2",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{valid_url()},
+                                     future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
+
+  // Verify the formatted query was sent to the embedder.
+  const auto& last_passages = embedder().last_passages();
+  ASSERT_EQ(1u, last_passages.size());
+  EXPECT_EQ("task: search result | query: some text", last_passages[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
