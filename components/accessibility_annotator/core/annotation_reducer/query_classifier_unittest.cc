@@ -71,14 +71,16 @@ class QueryClassifierTest : public ::testing::Test {
   }
 
   ClassifiedQuery RunClassifier(QueryClassifier classifier,
-                                std::u16string_view query) {
+                                std::u16string_view query,
+                                bool full_search = false) {
     base::test::TestFuture<ClassifiedQuery> future;
-    classifier.Run(std::u16string(query), future.GetCallback());
+    classifier.Run(std::u16string(query), full_search, future.GetCallback());
     return future.Get();
   }
 
-  ClassifiedQuery RunClassifier(std::u16string_view query) {
-    return RunClassifier(classifier_, query);
+  ClassifiedQuery RunClassifier(std::u16string_view query,
+                                bool full_search = false) {
+    return RunClassifier(classifier_, query, full_search);
   }
 
  protected:
@@ -405,25 +407,44 @@ TEST_F(GeminiClassifierTest, SuccessWithFilterWords) {
       R"({"intent": "kAddressFull", "filter_words": ["San", "Diego"]})");
 
   ClassifiedQuery result =
-      RunClassifier(classifier_, u"What's my address in San Diego");
+      RunClassifier(classifier_, u"What's my address in San Diego",
+                    /*full_search=*/true);
   EXPECT_EQ(result.intent, EntryType::kAddressFull);
   EXPECT_THAT(result.filter_words, testing::ElementsAre(u"san", u"diego"));
+}
+
+// Tests that GeminiClassifier is only called when full_search is true.
+TEST_F(GeminiClassifierTest, FullSearchOnly) {
+  // If full_search is false, it should return kUnknown without calling Gemini.
+  // No EXPECT_CALL for ExecuteModel should be triggered here.
+  EXPECT_EQ(
+      RunClassifier(classifier_, u"some query", /*full_search=*/false).intent,
+      EntryType::kUnknown);
+
+  // If full_search is true, it should call Gemini.
+  SetMockExecutionResponse(R"({"intent": "kNameFull", "filter_words": []})");
+  EXPECT_EQ(
+      RunClassifier(classifier_, u"some query", /*full_search=*/true).intent,
+      EntryType::kNameFull);
 }
 
 // Tests that GeminiClassifier correctly handles unknown intent.
 TEST_F(GeminiClassifierTest, UnknownIntent) {
   SetMockExecutionResponse(R"({"intent": "kUnknown", "filter_words": []})");
 
-  EXPECT_EQ(RunClassifier(classifier_, u"something random").intent,
-            EntryType::kUnknown);
+  EXPECT_EQ(
+      RunClassifier(classifier_, u"something random", /*full_search=*/true)
+          .intent,
+      EntryType::kUnknown);
 }
 
 // Tests that GeminiClassifier handles invalid JSON response.
 TEST_F(GeminiClassifierTest, InvalidJson) {
   SetMockExecutionResponse("invalid json");
 
-  EXPECT_EQ(RunClassifier(classifier_, u"some query").intent,
-            EntryType::kUnknown);
+  EXPECT_EQ(
+      RunClassifier(classifier_, u"some query", /*full_search=*/true).intent,
+      EntryType::kUnknown);
 }
 
 // Tests that GeminiClassifier handles response wrapped in Markdown.
@@ -433,7 +454,8 @@ TEST_F(GeminiClassifierTest, MarkdownResponse) {
       R"({"intent": "kNameFull", "filter_words": []})"
       "\n```");
 
-  EXPECT_EQ(RunClassifier(classifier_, u"What's my name").intent,
+  EXPECT_EQ(RunClassifier(classifier_, u"What's my name", /*full_search=*/true)
+                .intent,
             EntryType::kNameFull);
 }
 
@@ -441,8 +463,9 @@ TEST_F(GeminiClassifierTest, MarkdownResponse) {
 TEST_F(GeminiClassifierTest, MissingFields) {
   SetMockExecutionResponse(R"({"filter_words": ["missing", "intent"]})");
 
-  EXPECT_EQ(RunClassifier(classifier_, u"some query").intent,
-            EntryType::kUnknown);
+  EXPECT_EQ(
+      RunClassifier(classifier_, u"some query", /*full_search=*/true).intent,
+      EntryType::kUnknown);
 }
 #endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 

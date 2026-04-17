@@ -86,6 +86,9 @@ void AccessibilityQueryService::Query(
     std::u16string_view query,
     bool full_search,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback) {
+  // Invalidate any in-flight queries.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   // We can't query if we don't have any data providers configured.
   if (data_providers_.empty()) {
     update_callback.Run(
@@ -93,26 +96,31 @@ void AccessibilityQueryService::Query(
     return;
   }
 
-  // First, run the query classifier to understand the user's intent,
-  // extracting intent type and filter words.
-  std::u16string query_str(query);
+  // Run the query classifier to understand the user's intent, extracting
+  // intent type and filter words.
   classifier_.Run(
-      query_str,
+      std::u16string(query), full_search,
       base::BindOnce(&AccessibilityQueryService::OnClassificationComplete,
-                     weak_ptr_factory_.GetWeakPtr(), query_str,
-                     std::move(update_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::u16string(query),
+                     full_search, std::move(update_callback)));
 }
 
 void AccessibilityQueryService::OnClassificationComplete(
     std::u16string query,
+    bool full_search,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback,
     ClassifiedQuery classified_query) {
   // If the classifier couldn't figure out what the user is asking for, we try
-  // the 1P resolver as a fallback.
+  // the 1P resolver as a fallback if full search is enabled.
   if (classified_query.intent == EntryType::kUnknown) {
-    QueryOnePResolver(std::move(query), update_callback,
-                      /*fallback_entries=*/{},
-                      MemorySearchStatus::kUnsupportedQuery);
+    if (full_search) {
+      QueryOnePResolver(std::move(query), update_callback,
+                        /*fallback_entries=*/{},
+                        MemorySearchStatus::kUnsupportedQuery);
+      return;
+    }
+    update_callback.Run(
+        MemorySearchResults(MemorySearchStatus::kUnsupportedQuery));
     return;
   }
 
@@ -126,7 +134,8 @@ void AccessibilityQueryService::OnClassificationComplete(
           data_providers_.size(),
           base::BindOnce(&AccessibilityQueryService::OnDataRetrieved,
                          weak_ptr_factory_.GetWeakPtr(), std::move(query),
-                         std::move(classified_query), update_callback));
+                         full_search, std::move(classified_query),
+                         update_callback));
 
   // Request all data providers to fetch entries matching the classified intent.
   for (const std::unique_ptr<MemoryDataProvider>& provider : data_providers_) {
@@ -149,6 +158,7 @@ void AccessibilityQueryService::OnClassificationComplete(
 
 void AccessibilityQueryService::OnDataRetrieved(
     std::u16string query,
+    bool full_search,
     ClassifiedQuery classified_query,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback,
     std::vector<std::vector<MemorySearchResult>> entries_list) {
@@ -158,11 +168,17 @@ void AccessibilityQueryService::OnDataRetrieved(
     base::Extend(entries, std::move(list));
   }
 
-  // If we couldn't find any local results, try the 1P resolver.
+  // If we couldn't find any local results, try the 1P resolver if full search
+  // is enabled.
   if (entries.empty()) {
-    QueryOnePResolver(std::move(query), update_callback,
-                      /*fallback_entries=*/{},
-                      MemorySearchStatus::kFinalResponseSuccess);
+    if (full_search) {
+      QueryOnePResolver(std::move(query), update_callback,
+                        /*fallback_entries=*/{},
+                        MemorySearchStatus::kFinalResponseSuccess);
+      return;
+    }
+    update_callback.Run(MemorySearchResults(
+        MemorySearchStatus::kFinalResponseSuccess, std::move(entries)));
     return;
   }
 
@@ -188,11 +204,17 @@ void AccessibilityQueryService::OnDataRetrieved(
                        any_filter_words_present);
 
   // If the strict filtering removes all items, it falls back to querying
-  // the 1P resolver if one is available. The 1P resolver might
-  // be able to find relevant results that the strict local filtering missed.
+  // the 1P resolver if one is available and full search is enabled.
+  // The 1P resolver might be able to find relevant results that the strict
+  // local filtering missed.
   if (filtered_entries.empty()) {
-    QueryOnePResolver(std::move(query), update_callback, std::move(entries),
-                      MemorySearchStatus::kFinalResponseSuccess);
+    if (full_search) {
+      QueryOnePResolver(std::move(query), update_callback, std::move(entries),
+                        MemorySearchStatus::kFinalResponseSuccess);
+      return;
+    }
+    update_callback.Run(MemorySearchResults(
+        MemorySearchStatus::kFinalResponseSuccess, std::move(entries)));
     return;
   }
 
@@ -216,26 +238,27 @@ void AccessibilityQueryService::QueryOnePResolver(
 
   // Query the 1P resolver as a fallback data source.
   one_p_resolver_->Query(
-      query,
-      base::BindOnce(
-          [](base::RepeatingCallback<void(MemorySearchResults)> update_callback,
-             std::vector<MemorySearchResult> fallback_entries,
-             MemorySearchStatus fallback_status,
-             std::vector<MemorySearchResult> one_p_entries) {
-            // If the 1P resolver didn't find any results, we fall back to
-            // the provided local entries and status.
-            if (one_p_entries.empty()) {
-              update_callback.Run(MemorySearchResults(
-                  fallback_status, std::move(fallback_entries)));
-            } else {
-              // The 1P resolver successfully found relevant results, so we
-              // return those instead of the fallback.
-              update_callback.Run(
-                  MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
-                                      std::move(one_p_entries)));
-            }
-          },
-          update_callback, std::move(fallback_entries), fallback_status));
+      query, base::BindOnce(&AccessibilityQueryService::OnOnePResolverComplete,
+                            weak_ptr_factory_.GetWeakPtr(), update_callback,
+                            std::move(fallback_entries), fallback_status));
+}
+
+void AccessibilityQueryService::OnOnePResolverComplete(
+    base::RepeatingCallback<void(MemorySearchResults)> update_callback,
+    std::vector<MemorySearchResult> fallback_entries,
+    MemorySearchStatus fallback_status,
+    std::vector<MemorySearchResult> one_p_entries) {
+  // If the 1P resolver didn't find any results, we fall back to
+  // the provided local entries and status.
+  if (one_p_entries.empty()) {
+    update_callback.Run(
+        MemorySearchResults(fallback_status, std::move(fallback_entries)));
+  } else {
+    // The 1P resolver successfully found relevant results, so we
+    // return those instead of the fallback.
+    update_callback.Run(MemorySearchResults(
+        MemorySearchStatus::kFinalResponseSuccess, std::move(one_p_entries)));
+  }
 }
 
 }  // namespace accessibility_annotator

@@ -57,11 +57,13 @@ class AccessibilityQueryService : public KeyedService {
  private:
   void OnClassificationComplete(
       std::u16string query,
+      bool full_search,
       base::RepeatingCallback<void(MemorySearchResults)> update_callback,
       ClassifiedQuery classified_query);
 
   void OnDataRetrieved(
       std::u16string query,
+      bool full_search,
       ClassifiedQuery classified_query,
       base::RepeatingCallback<void(MemorySearchResults)> update_callback,
       std::vector<std::vector<MemorySearchResult>> entries_list);
@@ -71,6 +73,12 @@ class AccessibilityQueryService : public KeyedService {
       base::RepeatingCallback<void(MemorySearchResults)> update_callback,
       std::vector<MemorySearchResult> fallback_entries,
       MemorySearchStatus fallback_status);
+
+  void OnOnePResolverComplete(
+      base::RepeatingCallback<void(MemorySearchResults)> update_callback,
+      std::vector<MemorySearchResult> fallback_entries,
+      MemorySearchStatus fallback_status,
+      std::vector<MemorySearchResult> one_p_entries);
 
   std::unique_ptr<AccessibilityQueryServiceDelegate> delegate_;
   std::vector<std::unique_ptr<MemoryDataProvider>> data_providers_;

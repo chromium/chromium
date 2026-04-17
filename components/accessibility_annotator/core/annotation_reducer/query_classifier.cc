@@ -47,6 +47,7 @@ constexpr char kFilterWordsKeyFromGemini[] = "filter_words";
 void CompositeClassify(std::vector<QueryClassifier> classifiers,
                        size_t index,
                        std::u16string query,
+                       bool full_search,
                        base::OnceCallback<void(ClassifiedQuery)> callback) {
   // If all classifiers were queried, return ClassifiedQuery with unknown
   // intent.
@@ -56,23 +57,26 @@ void CompositeClassify(std::vector<QueryClassifier> classifiers,
   }
 
   classifiers[index].Run(
-      query, base::BindOnce(
-                 [](std::vector<QueryClassifier> classifiers, size_t index,
-                    std::u16string query,
-                    base::OnceCallback<void(ClassifiedQuery)> callback,
-                    ClassifiedQuery result) {
-                   // The first classifier that finds a result returns it.
-                   if (result.intent != EntryType::kUnknown) {
-                     std::move(callback).Run(std::move(result));
-                     return;
-                   }
-                   // If `EntryType::kUnknown` was returned from the
-                   // previous classifier, delegate the request to the next
-                   // classifier.
-                   CompositeClassify(std::move(classifiers), index + 1,
-                                     std::move(query), std::move(callback));
-                 },
-                 std::move(classifiers), index, query, std::move(callback)));
+      query, full_search,
+      base::BindOnce(
+          [](std::vector<QueryClassifier> classifiers, size_t index,
+             std::u16string query, bool full_search,
+             base::OnceCallback<void(ClassifiedQuery)> callback,
+             ClassifiedQuery result) {
+            // The first classifier that finds a result returns it.
+            if (result.intent != EntryType::kUnknown) {
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+            // If `EntryType::kUnknown` was returned from the
+            // previous classifier, delegate the request to the next
+            // classifier.
+            CompositeClassify(std::move(classifiers), index + 1,
+                              std::move(query), full_search,
+                              std::move(callback));
+          },
+          std::move(classifiers), index, query, full_search,
+          std::move(callback)));
 }
 
 // Classifies the query by performing substring matching against a predefined
@@ -465,7 +469,7 @@ bool ContainsStandalonePhrase(std::u16string_view haystack,
 
 QueryClassifier CreateKeywordQueryClassifier() {
   return base::BindRepeating(
-      [](std::u16string query,
+      [](std::u16string query, bool full_search,
          base::OnceCallback<void(ClassifiedQuery)> callback) {
         KeywordQueryClassify(query, std::move(callback));
       });
@@ -476,8 +480,12 @@ QueryClassifier CreateGeminiClassifier(
     optimization_guide::RemoteModelExecutor* remote_model_executor) {
   return base::BindRepeating(
       [](optimization_guide::RemoteModelExecutor* remote_model_executor,
-         std::u16string query,
+         std::u16string query, bool full_search,
          base::OnceCallback<void(ClassifiedQuery)> callback) {
+        if (!full_search) {
+          std::move(callback).Run(ClassifiedQuery(EntryType::kUnknown));
+          return;
+        }
         GeminiClassify(remote_model_executor, query, std::move(callback));
       },
       remote_model_executor);
