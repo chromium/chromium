@@ -172,14 +172,6 @@ public class SignInPreference extends Preference
         }
     }
 
-    private static boolean shouldShowManageSyncFragment(Profile profile) {
-        return isSignedIn(profile) && !hasSyncConsent(profile);
-    }
-
-    private static boolean shouldShowAccountManagementFragment(Profile profile) {
-        return isSignedIn(profile) && hasSyncConsent(profile);
-    }
-
     /** Returns whether Chrome is signed in. */
     public static boolean isSignedIn(Profile profile) {
         return getAccountInfo(profile) != null;
@@ -189,11 +181,6 @@ public class SignInPreference extends Preference
         var identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
         return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-    }
-
-    private static boolean hasSyncConsent(Profile profile) {
-        var syncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
-        return assumeNonNull(syncService).hasSyncConsent();
     }
 
     private void setupSigninDisabledByPolicy() {
@@ -267,13 +254,14 @@ public class SignInPreference extends Preference
     }
 
     private void setupSignedIn(CoreAccountId accountId) {
+        assert isSignedIn(mProfile);
         DisplayableProfileData profileData = mProfileDataCache.getById(accountId);
         final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
         setSummary(canShowEmailAddress ? profileData.getAccountEmail() : "");
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
-        setFragment(getOpenFragmentName(mProfile));
+        setFragment(ManageSyncSettings.class.getName());
         setIcon(profileData.getImage());
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,
@@ -282,18 +270,6 @@ public class SignInPreference extends Preference
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;
-    }
-
-    /** Returns the fragment to open for this preference. */
-    public static String getOpenFragmentName(Profile profile) {
-        assert isSignedIn(profile);
-        if (shouldShowAccountManagementFragment(profile)) {
-            return AccountManagementFragment.class.getName();
-        } else {
-            // Fragment should be either AccountManagementFragment or ManageSyncSettings.
-            assert shouldShowManageSyncFragment(profile);
-            return ManageSyncSettings.class.getName();
-        }
     }
 
     // This just changes visual representation. Actual enabled flag in preference stays
@@ -350,22 +326,14 @@ public class SignInPreference extends Preference
                 public int getXmlRes(Profile profile) {
                     if (!isSignedIn(profile)) return 0;
 
-                    return shouldShowAccountManagementFragment(profile)
-                            ? AccountManagementFragment.SEARCH_INDEX_DATA_PROVIDER.getXmlRes(
-                                    profile)
-                            : ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.getXmlRes(profile);
+                    return ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.getXmlRes(profile);
                 }
 
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
-                    if (shouldShowAccountManagementFragment(profile)) {
-                        AccountManagementFragment.SEARCH_INDEX_DATA_PROVIDER
-                                .updateDynamicPreferences(context, indexData, profile);
-                    } else {
-                        ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                                context, indexData, profile);
-                    }
+                    ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            context, indexData, profile);
                 }
             };
 }

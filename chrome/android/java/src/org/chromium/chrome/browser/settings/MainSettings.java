@@ -1124,8 +1124,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         indexData.removeEntry(getUniqueId(PREF_SIGN_IN));
                     } else {
                         indexData.addChildParentLink(
-                                SignInPreference.getOpenFragmentName(profile),
-                                getUniqueId(PREF_SIGN_IN));
+                                ManageSyncSettings.class.getName(), getUniqueId(PREF_SIGN_IN));
                     }
                     if (!shouldShowDeveloperSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_DEVELOPER));
