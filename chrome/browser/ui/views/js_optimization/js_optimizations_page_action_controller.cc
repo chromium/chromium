@@ -11,6 +11,7 @@
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -123,6 +124,7 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
   auto dialog_model = dialog_model_builder.Build();
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
+  bubble_unique->SetHighlightedElement(kJsOptimizationsIconElementId);
   auto* bubble = bubble_unique.get();
   if (GetTestCallback()) {
     GetTestCallback().Run(bubble);
