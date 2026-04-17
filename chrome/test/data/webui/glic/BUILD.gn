@@ -27,6 +27,7 @@ ts_library("build_extra_ts") {
     "browser_tests/new_glic_api_browsertest.ts",
     "browser_tests/glic_api_interactive_uitest.ts",
     "browser_tests/glic_drag_and_drop_interactive_uitest.ts",
+    "browser_tests/glic_focus_interactive_uitest.ts",
     "api_boot.ts",
     "test_client/client.ts",
     "test_client/test_client.ts",

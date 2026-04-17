@@ -776,6 +776,7 @@ if (!is_android) {
       "host/glic_actor_window_management_tool_interactive_uitest.cc",
       "host/glic_annotation_manager_interactive_uitest.cc",
       "host/glic_api_interactive_uitest.cc",
+      "host/glic_focus_interactive_uitest.cc",
       "host/glic_ui_interactive_uitest.cc",
       "service/metrics/glic_instance_metrics_ui_test.cc",
       "widget/glic_instance_coordinator_interactive_uitest.cc",

@@ -570,6 +570,14 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     const panelStateKindSection = getRequiredElement('localPanels');
     panelStateKindSection.classList.toggle('hidden', id === 'guestPanel');
 
+    // Focus the webview when the guest panel is shown.
+    // b/475260887: webview.focus() won't focus the client page if the
+    // <webview> element is invisible (due to an ancestor element having
+    // display: none or HTML hidden attribute).
+    if (id === 'guestPanel') {
+      this.webview?.focus();
+    }
+
     if (loadTimeData.getBoolean('glicWebContentsWarming')) {
       // These resizes really aren't needed at all for multi-instance, but in
       // instance warming mode they get dropped most of the time. In the move to

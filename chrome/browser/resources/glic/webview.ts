@@ -209,6 +209,10 @@ export class WebviewController {
     return this.webClientState;
   }
 
+  focus(): void {
+    this.webview.focus();
+  }
+
   destroy() {
     if (this.glicRequestHeaderInjector !== undefined) {
       this.glicRequestHeaderInjector.destroy();
@@ -318,7 +322,13 @@ export class WebviewController {
   }
 
   private onLoadStop(): void {
-    this.webview.focus();
+    // Focus the webview only if it is visible. When it is not visible, the
+    // focus will fail to focus the client page (document.hasFocus() is false).
+    // GlicAppController.showPanel() will make a separate call to focus the
+    // webview when the panel is shown.
+    if (this.webview.checkVisibility()) {
+      this.webview.focus();
+    }
   }
 
   private onNewWindow(e: chrome.webviewTag.NewWindowEvent): void {
