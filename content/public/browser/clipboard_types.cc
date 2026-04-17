@@ -183,7 +183,7 @@ void GetSourceClipboardEndpoint(
 }
 
 void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter& clipboard_writer,
-                                    content::RenderFrameHost& rfh) {
+                                    RenderFrameHost& rfh) {
   clipboard_writer.SetDataSourceURL(rfh.GetMainFrame()->GetLastCommittedURL(),
                                     rfh.GetLastCommittedURL());
   clipboard_writer.WritePickledData(rfh.GetGlobalFrameToken().ToPickle(),
@@ -191,7 +191,7 @@ void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter& clipboard_writer,
 }
 
 std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
-    content::RenderFrameHost& rfh) {
+    RenderFrameHost& rfh) {
   auto* render_frame_host_main_frame = rfh.GetMainFrame();
   auto source_url = render_frame_host_main_frame->GetLastCommittedURL();
   if (!source_url.is_valid()) {
@@ -213,7 +213,7 @@ std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
       });
 }
 
-ClipboardEndpoint CreateClipboardEndpoint(content::RenderFrameHost& rfh) {
+ClipboardEndpoint CreateClipboardEndpoint(RenderFrameHost& rfh) {
   return ClipboardEndpoint(
       CreateDataEndpoint(rfh),
       base::BindRepeating(
