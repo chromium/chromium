@@ -1285,27 +1285,46 @@ TEST_F(PopupViewViewsTest, Show_A11yAnnouncesCurrentTab) {
       announcement;
   test_api(view()).SetA11yAnnouncer(announcement.Get());
 
-  EXPECT_CALL(announcement, Run(std::u16string(u"Pay Now Test"), true));
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+              u"Pay Now Test", u"1", u"2"),
+          true));
 
   ShowView(&view(), widget());
 }
 
-TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesCurrentTab) {
+TEST_F(PopupViewViewsTest, TabbedPane_A11yAnnouncesCurrentTabOnSwitch) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
       {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
        {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
-  CreateAndShowView({SuggestionType::kCreditCardEntry},
-                    /*widget_params=*/std::nullopt,
-                    /*search_bar_config=*/std::nullopt,
-                    std::move(tabbed_pane_config));
+  controller().set_suggestions({SuggestionType::kCreditCardEntry});
+  CreateView(/*widget_params=*/std::nullopt, /*search_bar_config=*/std::nullopt,
+             std::move(tabbed_pane_config));
 
   base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
       announcement;
   test_api(view()).SetA11yAnnouncer(announcement.Get());
 
-  EXPECT_CALL(announcement, Run(std::u16string(u"Pay Now Test"), true));
-  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+              u"Pay Now Test", u"1", u"2"),
+          true));
+
+  ShowView(&view(), widget());
+
+  EXPECT_CALL(controller(), OnTabSelected(1, TabbedPaneTabType::kPayLater));
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+              u"Pay Later Test", u"2", u"2"),
+          true));
+  SimulateKeyPress(ui::VKEY_RIGHT);
 }
 
 TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs) {
@@ -2730,44 +2749,41 @@ TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesLoadingState) {
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
 }
 
-TEST_F(PopupViewViewsTest, Show_A11yAnnouncesBnplFootnote) {
+TEST_F(PopupViewViewsTest, TabSelected_A11yAnnouncesBnplFootnote) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnablePayNowPayLaterTabs);
 
-  controller().set_suggestions({SuggestionType::kBnplFootnote});
-  CreateView();
-  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
-      announcement;
-  test_api(view()).SetA11yAnnouncer(announcement.Get());
+  AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
+      {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
+       {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
 
-  std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
-  EXPECT_CALL(announcement, Run(expected_announcement_text, true));
-  ShowView(&view(), widget());
-}
-
-TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesBnplFootnote) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePayNowPayLaterTabs);
-
-  controller().set_suggestions({SuggestionType::kCreditCardEntry});
-  CreateAndShowView();
-  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
-      announcement;
-  test_api(view()).SetA11yAnnouncer(announcement.Get());
-
-  std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
-  EXPECT_CALL(announcement, Run(expected_announcement_text, true));
+  Suggestion bnpl_footnote(SuggestionType::kBnplFootnote);
+  bnpl_footnote.tab_index = SuggestionTabIndex(1);
   controller().set_suggestions(
-      {SuggestionType::kCreditCardEntry, SuggestionType::kBnplFootnote});
-  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+      {Suggestion(SuggestionType::kCreditCardEntry), std::move(bnpl_footnote)});
+
+  CreateAndShowView(/*widget_params=*/std::nullopt,
+                    /*search_bar_config=*/std::nullopt,
+                    std::move(tabbed_pane_config));
+
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(controller(), OnTabSelected(1, TabbedPaneTabType::kPayLater));
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+              u"Pay Later Test", u"2", u"2"),
+          true));
+  std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
+  EXPECT_CALL(announcement, Run(expected_announcement_text, true));
+  SimulateKeyPress(ui::VKEY_RIGHT);
 }
 
 TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
