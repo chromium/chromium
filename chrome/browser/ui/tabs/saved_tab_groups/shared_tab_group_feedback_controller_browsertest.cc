@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/data_sharing/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -18,8 +20,14 @@ namespace tab_groups {
 class SharedTabGroupFeedbackControllerBrowserTest
     : public InProcessBrowserTest {
  public:
-  SharedTabGroupFeedbackControllerBrowserTest() = default;
+  SharedTabGroupFeedbackControllerBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        data_sharing::features::kDataSharingFeature);
+  }
   ~SharedTabGroupFeedbackControllerBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedTabGroupFeedbackControllerBrowserTest,
