@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NonEditableTextProperties.ICON;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 
 import android.text.method.LinkMovementMethod;
@@ -67,6 +68,8 @@ public class EditorComponentsViewBinder {
                     model.get(IMPORTANT_FOR_ACCESSIBILITY)
                             ? View.IMPORTANT_FOR_ACCESSIBILITY_YES
                             : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        } else if (key == NOTICE_VISIBLE) {
+            view.setVisibility(model.get(NOTICE_VISIBLE) ? View.VISIBLE : View.GONE);
         } else {
             assert false : "Unhandled update to property:" + key;
         }

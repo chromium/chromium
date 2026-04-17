@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.validateForm;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsUtil.scrollToFieldWithErrorMessage;
@@ -576,6 +577,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
                                 // Required fields are indicated by an asterisk (*) and announced
                                 // separately by screen readers. Don't announce the message itself.
                                 .with(IMPORTANT_FOR_ACCESSIBILITY, false)
+                                .with(NOTICE_VISIBLE, true)
                                 .build(),
                         /* isFullLine= */ true));
         mEditorModel.set(EDITOR_FIELDS, editorFields);

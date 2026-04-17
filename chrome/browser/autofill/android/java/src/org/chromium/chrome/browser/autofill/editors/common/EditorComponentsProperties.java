@@ -17,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -104,8 +105,11 @@ public class EditorComponentsProperties {
         public static final ReadableBooleanPropertyKey IMPORTANT_FOR_ACCESSIBILITY =
                 new ReadableBooleanPropertyKey("important_for_accessibility");
 
+        public static final WritableBooleanPropertyKey NOTICE_VISIBLE =
+                new WritableBooleanPropertyKey("notice_visible");
+
         public static final PropertyKey[] NOTICE_ALL_KEYS = {
-            NOTICE_TEXT, SHOW_BACKGROUND, IMPORTANT_FOR_ACCESSIBILITY
+            NOTICE_TEXT, SHOW_BACKGROUND, IMPORTANT_FOR_ACCESSIBILITY, NOTICE_VISIBLE
         };
     }
 

@@ -40,6 +40,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NonEditableTextProperties.PRIMARY_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NonEditableTextProperties.SECONDARY_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.setDropdownKey;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
@@ -341,6 +342,7 @@ public class AddressEditorTest {
         for (EditorItem item : editorFields) {
             if (item.type == NOTICE && expectedNoticeText.equals(item.model.get(NOTICE_TEXT))) {
                 assertFalse(item.model.get(SHOW_BACKGROUND));
+                assertTrue(item.model.get(NOTICE_VISIBLE));
                 return true;
             }
         }

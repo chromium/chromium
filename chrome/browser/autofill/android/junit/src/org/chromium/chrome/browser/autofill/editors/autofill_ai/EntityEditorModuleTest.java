@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
@@ -934,6 +935,7 @@ public class EntityEditorModuleTest {
             if (item.type == NOTICE && expectedText.equals(item.model.get(NOTICE_TEXT))) {
                 assertFalse(item.model.get(SHOW_BACKGROUND));
                 assertFalse(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
+                assertFalse(item.model.get(NOTICE_VISIBLE));
                 return;
             }
         }
@@ -946,6 +948,7 @@ public class EntityEditorModuleTest {
                     && expectedNoticeText.equals(item.model.get(NOTICE_TEXT).toString())) {
                 assertTrue(item.model.get(SHOW_BACKGROUND));
                 assertTrue(item.model.get(IMPORTANT_FOR_ACCESSIBILITY));
+                assertTrue(item.model.get(NOTICE_VISIBLE));
                 return;
             }
         }
