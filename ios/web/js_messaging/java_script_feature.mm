@@ -278,6 +278,20 @@ bool JavaScriptFeature::GetFeatureRepliesToMessages() const {
   return false;
 }
 
+bool JavaScriptFeature::ShouldAllowCallingFunctionInOrigin(
+    const url::Origin& origin) {
+  if (origin_filter_ == OriginFilter::kPublic) {
+    return YES;
+  }
+
+  for (url::Origin& filter_origin : origin_filter_origins_) {
+    if (origin.IsSameOriginWith(filter_origin)) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 bool JavaScriptFeature::ShouldHandleMessageFromOrigin(
     const url::Origin& origin) {
   if (origin_filter_ == OriginFilter::kPublic) {
@@ -318,6 +332,10 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
   return false;
 #else
+  if (!ShouldAllowCallingFunctionInOrigin(web_frame->GetSecurityOrigin())) {
+    return false;
+  }
+
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
@@ -330,12 +348,12 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   if (!content_world) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world);
-#endif
+#endif  // BUILDFLAG(USE_BLINK)
 }
 
 bool JavaScriptFeature::CallJavaScriptFunction(
@@ -350,6 +368,10 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
   return false;
 #else
+  if (!ShouldAllowCallingFunctionInOrigin(web_frame->GetSecurityOrigin())) {
+    return false;
+  }
+
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
@@ -362,12 +384,12 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   if (!content_world) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);
-#endif
+#endif  // BUILDFLAG(USE_BLINK)
 }
 
 bool JavaScriptFeature::ExecuteJavaScript(
@@ -380,6 +402,10 @@ bool JavaScriptFeature::ExecuteJavaScript(
   // TODO(crbug.com/40254930): Call the ContentJavascriptFeatureManager instead.
   return false;
 #else
+  if (!ShouldAllowCallingFunctionInOrigin(web_frame->GetSecurityOrigin())) {
+    return false;
+  }
+
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
   DCHECK(feature_manager);
@@ -392,12 +418,12 @@ bool JavaScriptFeature::ExecuteJavaScript(
   if (!content_world) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->ExecuteJavaScriptInContentWorld(
       script, content_world, std::move(callback));
-#endif
+#endif  // BUILDFLAG(USE_BLINK)
 }
 
 }  // namespace web

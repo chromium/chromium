@@ -258,8 +258,12 @@ class JavaScriptFeature {
       ScriptMessageReplyCallback callback);
 
  private:
+  // Whether this feature can call into a frame with `origin`. Always returns
+  // `YES` for `kPublic` features.
+  bool ShouldAllowCallingFunctionInOrigin(const url::Origin& origin);
+
   // Whether a message coming from a frame showing a page from `origin` should
-  // be handled. Always return `YES` for `kPublic` features.
+  // be handled. Always returns `YES` for `kPublic` features.
   bool ShouldHandleMessageFromOrigin(const url::Origin& origin);
 
   ContentWorld supported_world_;

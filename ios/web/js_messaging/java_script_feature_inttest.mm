@@ -30,7 +30,6 @@ const char kReplyString[] = "reply_string";
 
 namespace web {
 
-// typedef WebTestWithWebState JavaScriptFeatureTest;
 // Sets up a FakeJavaScriptFeature in the page content world.
 class JavaScriptFeaturePageContentWorldTest : public WebTestWithWebState {
  protected:
@@ -458,6 +457,32 @@ TEST_F(JavaScriptFeaturePrivateTest, JavaScriptFeatureDoNotInjectJavaScript) {
   // Shorter timeout on this as it is expected to fail.
   EXPECT_FALSE(test::WaitForWebViewContainingText(
       web_state(), kFakeJavaScriptFeatureLoadedText, base::Seconds(1)));
+}
+
+// Tests that a private JavaScriptFeature can call JavaScript when on an
+// authorized page.
+TEST_F(JavaScriptFeaturePrivateTest, CallFunctionOnAllowedPage) {
+  LoadHtml(kPageHTML, GURL("https://test.test"));
+
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+
+  EXPECT_TRUE(feature()->ReplaceDivContents(GetMainFrame()));
+
+  EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
+}
+
+// Tests that a private JavaScriptFeature can not call JavaScript when on an
+// unauthorized domain.
+TEST_F(JavaScriptFeaturePrivateTest, CallFunctionOnUnauthorizedPage) {
+  LoadHtml(kPageHTML, GURL("http://invalid.test"));
+
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+
+  EXPECT_FALSE(feature()->ReplaceDivContents(GetMainFrame()));
+
+  // The JavaScript call should not be executed.
+  EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+  EXPECT_FALSE(test::WaitForWebViewContainingText(web_state(), "updated"));
 }
 
 // Tests that a private JavaScriptFeature receives post messages from JavaScript

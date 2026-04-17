@@ -74,26 +74,28 @@ FakeJavaScriptFeature::FakeJavaScriptFeature(ContentWorld content_world)
     : FakeJavaScriptFeature(content_world, OriginFilter::kPublic) {}
 FakeJavaScriptFeature::~FakeJavaScriptFeature() = default;
 
-void FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {
-  CallJavaScriptFunction(web_frame, kScriptReplaceDivContents, {});
+bool FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {
+  return CallJavaScriptFunction(web_frame, kScriptReplaceDivContents, {});
 }
 
-void FakeJavaScriptFeature::ReplyWithPostMessage(
+bool FakeJavaScriptFeature::ReplyWithPostMessage(
     WebFrame* web_frame,
     const base::ListValue& parameters) {
   if (reply_to_messages_) {
-    CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessageAndPostReply,
-                           parameters);
+    return CallJavaScriptFunction(
+        web_frame, kScriptReplyWithPostMessageAndPostReply, parameters);
   } else {
-    CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage, parameters);
+    return CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage,
+                                  parameters);
   }
 }
 
-void FakeJavaScriptFeature::GetErrorCount(
+bool FakeJavaScriptFeature::GetErrorCount(
     WebFrame* web_frame,
     base::OnceCallback<void(const base::Value*)> callback) {
-  CallJavaScriptFunction(web_frame, kGetErrorCount, {}, std::move(callback),
-                         base::Seconds(kGetErrorCountTimeout));
+  return CallJavaScriptFunction(web_frame, kGetErrorCount, {},
+                                std::move(callback),
+                                base::Seconds(kGetErrorCountTimeout));
 }
 
 std::optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()

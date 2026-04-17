@@ -39,15 +39,21 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   ~FakeJavaScriptFeature() override;
 
   // Executes `kJavaScriptFeatureTestScriptReplaceDivContents` in `web_frame`.
-  void ReplaceDivContents(WebFrame* web_frame);
+  // Returns the value of `JavaScriptFeature::CallJavaScriptFunction` from the
+  // call to trigger the underlying JavaScript function.
+  bool ReplaceDivContents(WebFrame* web_frame);
 
   // Executes `kJavaScriptFeatureTestScriptReplyWithPostMessage` with
   // `parameters` in `web_frame`.
-  void ReplyWithPostMessage(WebFrame* web_frame,
+  // Returns the value of `JavaScriptFeature::CallJavaScriptFunction` from the
+  // call to trigger the underlying JavaScript function.
+  bool ReplyWithPostMessage(WebFrame* web_frame,
                             const base::ListValue& parameters);
 
   // Returns the number of errors received
-  void GetErrorCount(WebFrame* web_frame,
+  // Returns the value of `JavaScriptFeature::CallJavaScriptFunction` from the
+  // call to trigger the underlying JavaScript function.
+  bool GetErrorCount(WebFrame* web_frame,
                      base::OnceCallback<void(const base::Value*)> callback);
 
   WebState* last_received_web_state() const { return last_received_web_state_; }
