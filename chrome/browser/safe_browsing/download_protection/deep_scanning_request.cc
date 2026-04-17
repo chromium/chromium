@@ -20,8 +20,9 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
@@ -52,8 +53,7 @@
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -75,6 +75,8 @@ TriggeredRule::ForceSaveToCloudDestination
 GetHighestPrecedenceForceSaveToCloudDestination(
     TriggeredRule::ForceSaveToCloudDestination destination_1,
     TriggeredRule::ForceSaveToCloudDestination destination_2) {
+  // Force download to Google Drive/One Drive is only applicable to desktop.
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Prefer G_DRIVE over ONEDRIVE.
   if (base::FeatureList::IsEnabled(
           enterprise_data_protection::kEnableForceDownloadToCloud) &&
@@ -87,6 +89,7 @@ GetHighestPrecedenceForceSaveToCloudDestination(
               destination_2 == TriggeredRule::CORP_ONEDRIVE)) {
     return TriggeredRule::CORP_ONEDRIVE;
   }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   return TriggeredRule::UNSPECIFIED;
 }
 
@@ -377,7 +380,6 @@ DownloadCheckResult ResponseToDownloadCheckResult(
 /* static */
 std::optional<enterprise_connectors::AnalysisSettings>
 DeepScanningRequest::ShouldUploadBinary(const DeepScanningMetadata& metadata) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Files already on the disk shouldn't be uploaded for scanning.
   if (metadata.GetURL().SchemeIsFile()) {
     return std::nullopt;
@@ -400,9 +402,6 @@ DeepScanningRequest::ShouldUploadBinary(const DeepScanningMetadata& metadata) {
   return service->GetAnalysisSettings(
       metadata.GetURL(),
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-#else
-  return std::nullopt;
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 DeepScanningRequest::DeepScanningRequest(
@@ -1053,6 +1052,9 @@ void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
 
 content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
     DownloadCheckResult& result) {
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
   if (result != DownloadCheckResult::FORCE_SAVE_TO_GDRIVE &&
       result != DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
     return nullptr;
@@ -1075,17 +1077,16 @@ content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
   // external application. For those cases, try to find the active web
   // contents of the browser to show the dialog on.
   if (!force_save_web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
     BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(
         Profile::FromBrowserContext(metadata_->GetBrowserContext()));
     if (browser) {
       force_save_web_contents =
           browser->GetTabStripModel()->GetActiveWebContents();
     }
-#endif
   }
 
   return force_save_web_contents;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

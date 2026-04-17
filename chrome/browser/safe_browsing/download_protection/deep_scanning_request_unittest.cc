@@ -31,7 +31,6 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -39,7 +38,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/file_system_access_metadata.h"
-#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -71,6 +69,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #endif
 
 namespace safe_browsing {
@@ -135,14 +137,6 @@ const std::set<std::string>* TxtMimeTypes() {
 
 constexpr char kScanId[] = "scan_id";
 
-struct ForceSaveToCloudPrioritizationTestParams {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-  enterprise_connectors::ContentAnalysisResponse response;
-  DownloadCheckResult expected_result;
-  const char* test_name;
-};
-
 std::string GetFileName(const std::string& full_path) {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FilePath(full_path).BaseName().AsUTF8Unsafe();
@@ -150,6 +144,15 @@ std::string GetFileName(const std::string& full_path) {
   return full_path;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+struct ForceSaveToCloudPrioritizationTestParams {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  enterprise_connectors::ContentAnalysisResponse response;
+  DownloadCheckResult expected_result;
+  const char* test_name;
+};
 
 // Helper to generate responses
 enterprise_connectors::ContentAnalysisResponse CreateResponse(
@@ -169,6 +172,7 @@ enterprise_connectors::ContentAnalysisResponse CreateResponse(
   }
   return response;
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 // Helpers for the proto-base reporting events
 chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
@@ -247,6 +251,7 @@ CreateDangerousDownloadEvent(
   return event;
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 chrome::cros::reporting::proto::DlpSensitiveDataEvent
 CreateDlpSensitiveDataEventForForceSaveToCloud(
     const std::string& profile_identifier,
@@ -374,6 +379,7 @@ GetForceSaveToCloudPrioritizationTestCases() {
        "BothDisabledBothResponse"},
   };
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -1019,8 +1025,11 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
-        ->SetTestingFactory(profile_,
-                            base::BindRepeating(&BuildRealtimeReportingClient));
+        ->SetTestingFactory(
+            profile_, base::BindRepeating([](content::BrowserContext* context) {
+              return std::unique_ptr<KeyedService>(
+                  new enterprise_connectors::RealtimeReportingClient(context));
+            }));
 
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile_)
@@ -1670,6 +1679,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
   }
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(DeepScanningReportingTest, ReportForceSaveToOneDrive) {
   base::RunLoop run_loop;
   DeepScanningRequest request(
@@ -1891,6 +1901,7 @@ INSTANTIATE_TEST_SUITE_P(
         ForceSaveToCloudPrioritizationTest::ParamType>& info) {
       return info.param.test_name;
     });
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
   base::RunLoop run_loop;
@@ -2403,6 +2414,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   {
     enterprise_connectors::ContentAnalysisResponse response;
     response.set_request_token(kScanId);
@@ -2580,6 +2592,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         download_protection_service_.GetFakeBinaryUploadService()->num_acks());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
   }
+#endif  //  BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
@@ -3155,6 +3168,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
   EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_P(DeepScanningDownloadRestrictionsTest,
        LargeFiles_DeepScanForceSaveToGDrive) {
   base::RunLoop run_loop;
@@ -3354,6 +3368,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
 
   EXPECT_EQ(DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE, last_result_);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 TEST_P(DeepScanningDownloadRestrictionsTest,
        GeneratesCorrectReportForLargeFiles_PreScanDangerous) {

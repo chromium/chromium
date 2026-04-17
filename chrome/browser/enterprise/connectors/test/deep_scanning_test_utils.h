@@ -318,14 +318,12 @@ class EventReportValidatorHelper {
   signin::IdentityTestEnvironment identity_test_environment_;
 };
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 // Helper functions that set Connector policies for testing.
 void SetAnalysisConnector(PrefService* prefs,
                           AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Helper function to set the profile DM token. It installs a

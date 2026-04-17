@@ -1084,7 +1084,6 @@ EventReportValidator EventReportValidatorHelper::CreateValidator() {
   return EventReportValidator(client_.get());
 }
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void SetAnalysisConnector(PrefService* prefs,
                           AnalysisConnector connector,
                           const std::string& pref_value,
@@ -1106,7 +1105,6 @@ void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
   settings_list->clear();
   prefs->ClearPref(AnalysisConnectorScopePref(connector));
 }
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void SetProfileDMToken(Profile* profile, const std::string& dm_token) {

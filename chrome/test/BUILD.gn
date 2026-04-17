@@ -10176,6 +10176,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/connectors_manager_unittest.cc",
       "../browser/enterprise/connectors/connectors_service_unittest.cc",
       "../browser/interstitials/enterprise_util_unittest.cc",
+      "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/reporting:unit_tests",
@@ -10198,7 +10199,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/analysis/page_print_analysis_request_unittest.cc",
       "../browser/enterprise/connectors/analysis/page_print_request_handler_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
-      "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
     ]
     deps += [
       "../browser/enterprise/connectors/test:test_support",
