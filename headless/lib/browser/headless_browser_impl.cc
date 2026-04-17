@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
+#include "components/os_crypt/async/browser/os_crypt_win.h"
 #include "headless/public/switches.h"
 #endif
 
@@ -47,7 +48,6 @@
 #endif
 
 #if defined(HEADLESS_USE_PREFS)
-#include "components/os_crypt/sync/os_crypt.h"  // nogncheck
 #include "components/pref_registry/pref_registry_syncable.h"  // nogncheck
 #include "components/prefs/in_memory_pref_store.h"            // nogncheck
 #include "components/prefs/json_pref_store.h"                 // nogncheck
@@ -357,7 +357,7 @@ void HeadlessBrowserImpl::CreatePrefService() {
 
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 #if BUILDFLAG(IS_WIN)
-  OSCrypt::RegisterLocalPrefs(pref_registry.get());
+  os_crypt_async::RegisterLocalPrefs(pref_registry.get());
 #endif
 
 #if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
@@ -386,7 +386,8 @@ void HeadlessBrowserImpl::CreatePrefService() {
 #if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDisableCookieEncryption) &&
-      OSCrypt::InitWithExistingKey(local_state_.get()) != OSCrypt::kSuccess) {
+      os_crypt_async::InitWithExistingKey(local_state_.get()) !=
+          os_crypt_async::InitResult::kSuccess) {
     command_line->AppendSwitch(switches::kDisableCookieEncryption);
   }
 #endif  // BUILDFLAG(IS_WIN)

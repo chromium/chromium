@@ -226,8 +226,6 @@ src:*third_party/tflite/src/tensorflow/lite/c/common_internal.cc
 src:*third_party/tflite/src/tensorflow/lite/core/subgraph.cc
 src:*third_party/tflite/src/tensorflow/lite/delegates/utils.cc
 
-src:*components/os_crypt/sync/*
-
 src:*ui/accessibility/platform/browser_accessibility_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_atk_hyperlink.cc

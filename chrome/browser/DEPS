@@ -244,7 +244,6 @@ include_rules = [
   "+components/optimization_guide/optimization_guide_internals",
   "+components/origin_trials",
   "+components/os_crypt/async",
-  "+components/os_crypt/sync",
   "+components/ownership",
   "+components/page_image_service",
   "+components/page_info",

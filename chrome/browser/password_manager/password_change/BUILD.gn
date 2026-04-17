@@ -93,7 +93,6 @@ source_set("unit_tests") {
     "//components/autofill/content/browser:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
-    "//components/os_crypt/sync:test_support",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",

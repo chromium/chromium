@@ -15,7 +15,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/os_crypt/sync/os_crypt.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -104,19 +103,6 @@ void EchoService::LoadNativeLibrary(const ::base::FilePath& library,
 void EchoService::DecryptEncrypt(os_crypt_async::Encryptor encryptor,
                                  const std::vector<uint8_t>& input,
                                  DecryptEncryptCallback callback) {
-// OSCrypt sync services are not available because they are not initialized in
-// a child process, except on POSIX platforms where encryption is always
-// available.
-#if !(BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
-          !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-      BUILDFLAG(IS_FUCHSIA))
-  CHECK(!OSCrypt::IsEncryptionAvailable());
-#else
-  CHECK(OSCrypt::IsEncryptionAvailable());
-#endif  // !(BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&
-        // !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) ||
-        // BUILDFLAG(IS_FUCHSIA))
-
   CHECK(encryptor.IsDecryptionAvailable());
   // Take the input, which was encrypted in the caller process, and decrypt it.
   const auto plaintext = encryptor.DecryptData(input);

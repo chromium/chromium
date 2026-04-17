@@ -2242,7 +2242,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'^chromeos/ash/experiences/arc/session/serial_number_util_unittest\.cc',
             r'^components/history/core/browser/visit_annotations_database\.cc',
             r'^components/history/core/browser/visit_annotations_database_unittest\.cc',
-            r'^components/os_crypt/sync/os_crypt_unittest\.cc',
             r'^components/password_manager/core/browser/credentials_cleaner_unittest\.cc',
             r'^content/browser/file_system_access/file_system_access_file_writer_impl_unittest\.cc',
             r'^net/cookies/parsed_cookie_unittest\.cc',

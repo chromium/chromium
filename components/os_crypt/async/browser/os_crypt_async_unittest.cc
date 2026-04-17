@@ -259,8 +259,7 @@ TEST_P(OSCryptAsyncTestSwapped, EncryptorOption) {
     Encryptor encryptor = GetInstanceSync(factory);
 
     // The only provider has indicated that it is not to be used for encryption,
-    // so encryption should not be available, as OSCrypt fallback is not
-    // available.
+    // so encryption should not be available.
     ASSERT_FALSE(encryptor.IsEncryptionAvailable());
     // Decryption is possible, as long as the data is encrypted with the second
     // key.
@@ -298,7 +297,7 @@ TEST_P(OSCryptAsyncTestSwapped, EncryptorOption) {
     const auto ciphertext = encryptor.EncryptString("secrets");
     ASSERT_TRUE(ciphertext);
     // Should be encrypted with first provider - it's the highest precedence
-    // provider that indicates it's compatible with OSCrypt sync.
+    // provider that indicates it's compatible with OSCrypt Sync.
     EXPECT_TRUE(std::equal(first_provider_name.cbegin(),
                            first_provider_name.cend(), ciphertext->cbegin()));
   }
@@ -324,7 +323,7 @@ TEST_P(OSCryptAsyncTestSwapped, EncryptorOption) {
     const auto ciphertext = encryptor.EncryptString("secrets");
     ASSERT_TRUE(ciphertext);
     // Should be encrypted with first provider - it's the highest precedence
-    // provider that indicates it's compatible with OSCrypt sync.
+    // provider that indicates it's compatible with OSCrypt Sync.
     EXPECT_TRUE(std::equal(first_provider_name.cbegin(),
                            first_provider_name.cend(), ciphertext->cbegin()));
   }
@@ -397,8 +396,7 @@ TEST_F(OSCryptAsyncTest, TestOSCryptAsyncInterface) {
   }
   {
     // Verify that the key used by the encryptor returned from the testing
-    // instance indicates compatibility with OSCrypt Sync. This avoids all tests
-    // having to install the OSCrypt mocker in every fixture.
+    // instance indicates compatibility with OSCrypt Sync.
     const auto os_crypt_compat_encryptor =
         GetInstanceSync(*os_crypt, Encryptor::Option::kEncryptSyncCompat);
     {

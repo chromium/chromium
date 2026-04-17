@@ -60,7 +60,6 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(HEADLESS_USE_PREFS)
-#include "components/os_crypt/sync/os_crypt.h"  // nogncheck
 #include "content/public/browser/network_service_util.h"
 #endif
 
@@ -502,7 +501,6 @@ void HeadlessContentBrowserClient::CreateThrottlesForNavigation(
 void HeadlessContentBrowserClient::OnNetworkServiceCreated(
     ::network::mojom::NetworkService* network_service) {
   HandleExplicitlyAllowedPorts(network_service);
-  SetEncryptionKey(network_service);
 }
 
 void HeadlessContentBrowserClient::GetHyphenationDictionary(
@@ -547,21 +545,6 @@ void HeadlessContentBrowserClient::HandleExplicitlyAllowedPorts(
   }
 
   network_service->SetExplicitlyAllowedPorts(explicitly_allowed_ports);
-}
-
-void HeadlessContentBrowserClient::SetEncryptionKey(
-    ::network::mojom::NetworkService* network_service) {
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(HEADLESS_USE_PREFS)
-  // The OSCrypt keys are process bound, so if network service is out of
-  // process, send it the required key if it is available.
-  if (content::IsOutOfProcessNetworkService()
-#if BUILDFLAG(IS_WIN)
-      && OSCrypt::IsEncryptionAvailable()
-#endif
-  ) {
-    network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
-  }
-#endif
 }
 
 content::BluetoothDelegate*

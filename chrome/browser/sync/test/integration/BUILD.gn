@@ -508,7 +508,6 @@ source_set("sync_integration_test_support") {
     "//components/browser_sync",
     "//components/commerce/core:feature_list",
     "//components/favicon/core",
-    "//components/os_crypt/sync:test_support",
     "//components/password_manager/core/browser:password_manager_buildflags",
     "//components/plus_addresses/core/common:features",
     "//components/reading_list/core:test_support",

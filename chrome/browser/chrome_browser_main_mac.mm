@@ -39,7 +39,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/metrics/metrics_service.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/version_info/channel.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"

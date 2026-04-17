@@ -1527,8 +1527,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
   // OSCryptAsync provider configuration. This must run before
   // `browser_policy_connector_` initialization since implementations like
-  // BrowserPolicyConnectorAsh require an OSCryptAsync. If empty, this delegates
-  // all encryption operations to OSCrypt.
+  // BrowserPolicyConnectorAsh require an OSCryptAsync.
   std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       providers;
 
@@ -1541,8 +1540,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  // The DPAPI key provider requires OSCrypt::Init to have already been called
-  // to initialize the key storage. This happens in
+  // The DPAPI key provider requires os_crypt_async::Init to have already been
+  // called to initialize the key storage. This happens in
   // ChromeBrowserMainPartsWin::PreCreateMainMessageLoop.
   providers.emplace_back(std::make_pair(
       /*precedence=*/10u,

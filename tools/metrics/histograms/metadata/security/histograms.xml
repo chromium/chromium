@@ -105,32 +105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSCrypt.Async.DecryptionFallbackToSync" enum="Boolean"
-    expires_after="2026-08-16">
-  <owner>wfh@chromium.org</owner>
-  <owner>thomasanderson@chromium.org</owner>
-  <summary>
-    Whether or not a fallback to OSCrypt Sync occured in a decryption call to an
-    OSCrypt Async Encryptor. This histogram is recorded every time a data
-    decryption happens and only reports true if the Encryptor was unable to
-    decrypt the data, a fallback to OSCrypt Sync therefore happened, and OSCrypt
-    Sync was able to successfully decrypt the data. It reports false otherwise.
-  </summary>
-</histogram>
-
-<histogram name="OSCrypt.Async.EncryptionFallbackToSync" enum="Boolean"
-    expires_after="2026-08-16">
-  <owner>wfh@chromium.org</owner>
-  <owner>thomasanderson@chromium.org</owner>
-  <summary>
-    Whether or not a fallback to OSCrypt Sync occured in a encryption call to an
-    OSCrypt Async Encryptor. This histogram is recorded every time a data
-    encryption happens and only reports true if the Encryptor contained no valid
-    key for encryption, a fallback to OSCrypt Sync therefore happened, and
-    OSCrypt Sync successfully encrypted the data. It reports false otherwise.
-  </summary>
-</histogram>
-
 <histogram name="OSCrypt.AsyncInitialization.Time" units="ms"
     expires_after="2026-09-20">
   <owner>wfh@chromium.org</owner>
@@ -367,8 +341,8 @@ chromium-metrics-reviews@google.com.
   <owner>forshaw@chromium.org</owner>
   <summary>
     The Windows GetLastError after a failure from calling into DPAPI to decrypt
-    the main key for the os_crypt library on Windows. This is recorded during
-    the OSCrypt::Init each time the decryption fails. Note that this metric was
+    the main key for the os_crypt library on Windows. This is recorded by
+    DPAPIKeyProvider each time the decryption fails. Note that this metric was
     not recorded between 2021-08 (M91) and 2024-07 (M128).
   </summary>
 </histogram>

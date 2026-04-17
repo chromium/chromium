@@ -34,7 +34,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -192,7 +191,6 @@ class ChangePasswordFormFillingSubmissionHelperTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    OSCryptMocker::SetUp();
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateOptimizationService));
@@ -230,7 +228,6 @@ class ChangePasswordFormFillingSubmissionHelperTest
 
   void TearDown() override {
     logs_uploader_.reset();
-    OSCryptMocker::TearDown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 

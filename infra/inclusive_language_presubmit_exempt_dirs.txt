@@ -131,7 +131,6 @@ components/metrics
 components/metrics/debug
 components/omnibox/browser
 components/onc/docs
-components/os_crypt/sync
 components/page_info
 components/password_manager/core/browser
 components/payments/core

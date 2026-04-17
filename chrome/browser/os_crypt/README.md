@@ -3,10 +3,11 @@ primitives that are implemented by the elevation service in
 [src/chrome/elevation_service].
 
 `EncryptAppBoundString` and `DecryptAppBoundString` act like
-`OSCrypt::EncryptString` and `OSCrypt::DecryptString` implemented by
-[src/components/os_crypt] except that, unlike `OSCrypt`, which binds encrypted
-data to the current user using DPAPI, this API will bind the encrypted data
-with a `ProtectionLevel` specified by the caller.
+`os_crypt_async::Encryptor::EncryptString` and
+`os_crypt_async::Encryptor::DecryptString` implemented by
+[src/components/os_crypt/async] except that, unlike `Encryptor`, which binds
+encrypted data to the current user using DPAPI (on Windows), this API will bind
+the encrypted data with a `ProtectionLevel` specified by the caller.
 
 `ProtectionLevels` are defined by chrome/elevation_service and are currently:
 

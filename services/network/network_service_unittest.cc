@@ -29,7 +29,6 @@
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -1337,14 +1336,7 @@ TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
               });
     }
   } else {
-    if (IsEncryptionEnabled()) {
-      // If encryption is enabled but a CookieEncryptionProvider is not
-      // provided, then network service uses OSCrypt. This requires a valid key,
-      // so obtain one from the mocker.
-      OSCryptMocker::SetUp();
-      maybe_teardown_os_crypt.emplace(base::ScopedClosureRunner(
-          base::BindOnce([]() { OSCryptMocker::TearDown(); })));
-    }
+    CHECK(!IsEncryptionEnabled());
   }
 
   base::ScopedTempDir temp_dir;

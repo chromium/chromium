@@ -28,7 +28,6 @@ import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
-import("//components/os_crypt/sync/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/soda/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
@@ -659,7 +658,6 @@ static_library("test_support") {
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:prediction",
     "//components/os_crypt/async/browser:test_support",
-    "//components/os_crypt/sync",
     "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:test_support",
     "//components/password_manager/core/browser:test_support",
@@ -7321,7 +7319,6 @@ test("unit_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/optimization_guide/core:test_support",
     "//components/origin_trials:browser",
-    "//components/os_crypt/sync:test_support",
     "//components/page_info",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser:test_support",
@@ -11143,7 +11140,7 @@ if (!is_android) {
       "//components/metrics:test_support",
       "//components/omnibox/browser",
       "//components/os_crypt/async/browser:key_provider_interface",
-      "//components/os_crypt/sync:test_support",
+      "//components/os_crypt/common:switches",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",
       "//components/password_manager/core/browser:test_support",
@@ -11687,7 +11684,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
       "//components/metrics:content",
-      "//components/os_crypt/sync:test_support",
       "//components/passage_embeddings/core",
       "//components/passage_embeddings/core:test_support",
       "//components/password_manager/content/browser",

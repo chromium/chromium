@@ -104,7 +104,7 @@
 #include "components/crash/core/app/crash_export_thunks.h"
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/browser/os_crypt_win.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
 #include "components/version_info/channel.h"
@@ -561,7 +561,7 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
   DCHECK(local_state);
 
   // Initialize the OSCrypt.
-  bool os_crypt_init = OSCrypt::Init(local_state);
+  bool os_crypt_init = os_crypt_async::Init(local_state);
   DCHECK(os_crypt_init);
 
   base::SetExtraNoExecuteAllowedPath(chrome::DIR_USER_DATA);

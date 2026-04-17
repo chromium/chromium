@@ -184,7 +184,6 @@ source_set("impl") {
     "//components/net_log",
     "//components/no_state_prefetch/browser",
     "//components/offline_pages/core",
-    "//components/os_crypt/sync",
     "//components/page_load_metrics/browser",
     "//components/permissions",
     "//components/pref_registry",

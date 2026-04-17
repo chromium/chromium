@@ -24,7 +24,6 @@ import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
-import("//components/os_crypt/sync/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//content/public/common/features.gni")
 import("//crypto/features.gni")
@@ -1538,7 +1537,6 @@ static_library("browser") {
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
     "//components/os_crypt/async/browser",
-    "//components/os_crypt/sync",
     "//components/page_info/core:proto",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser/observers/ad_metrics",

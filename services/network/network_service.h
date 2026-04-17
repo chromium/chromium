@@ -196,7 +196,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::NetworkService::GetNetworkListCallback callback) override;
   void OnTrustStoreChanged() override;
   void OnClientCertStoreChanged() override;
-  void SetEncryptionKey(const std::string& encryption_key) override;
   void OnPeerToPeerConnectionsCountChange(uint32_t count) override;
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state) override;

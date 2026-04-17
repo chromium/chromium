@@ -67,7 +67,6 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
@@ -227,9 +226,6 @@ SyncTest::SyncTest(TestType test_type)
 SyncTest::~SyncTest() = default;
 
 void SyncTest::SetUp() {
-  // Mock the Mac Keychain service.  The real Keychain can block on user input.
-  OSCryptMocker::SetUp();
-
   switch (server_type_) {
     case EXTERNAL_LIVE_SERVER: {
       break;
@@ -256,9 +252,6 @@ void SyncTest::TearDown() {
 
   // Allow the PlatformBrowserTest framework to perform its tear down.
   PlatformBrowserTest::TearDown();
-
-  // Return OSCrypt to its real behaviour
-  OSCryptMocker::TearDown();
 }
 
 void SyncTest::PostRunTestOnMainThread() {

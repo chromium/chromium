@@ -327,6 +327,8 @@ source_set("impl") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/webnn",
       "//chrome/browser/win",
+      "//components/os_crypt/async/browser",
+      "//components/os_crypt/async/browser:dpapi_key_provider",
     ]
   }
 

@@ -16,7 +16,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
@@ -104,13 +103,6 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, OSCryptBackwardsCompatTest) {
     const auto decrypted = encryptor.DecryptData(*ciphertext);
     ASSERT_TRUE(decrypted);
     EXPECT_EQ(*decrypted, "plaintext");
-  }
-
-  {
-    std::string decrypted;
-    ASSERT_TRUE(OSCrypt::DecryptString(
-        std::string(ciphertext->begin(), ciphertext->end()), &decrypted));
-    EXPECT_EQ(decrypted, "plaintext");
   }
 
   {

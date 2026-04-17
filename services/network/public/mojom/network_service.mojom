@@ -325,9 +325,6 @@ interface NetworkService {
   // Notification that the client certificate store has been modified.
   OnClientCertStoreChanged();
 
-  // Send the encryption key to the network service to use for AES encryption.
-  SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
-
   // Called when there is a change in the current count of peer to peer
   // connections that may require low latency.
   OnPeerToPeerConnectionsCountChange(uint32 count);

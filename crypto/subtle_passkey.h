@@ -42,8 +42,6 @@ namespace webauthn {
 crypto::SubtlePassKey MakeCryptoPassKey();
 }  // namespace webauthn
 
-class OSCryptImpl;
-
 namespace crypto {
 
 // A crypto::SubtlePassKey allows you to call subtle, difficult-to-get-right, or
@@ -82,7 +80,6 @@ class CRYPTO_EXPORT SubtlePassKey final {
 
   // These classes use custom PBKDF2 parameters and have to keep doing so for
   // compatibility with existing persisted data.
-  friend class ::OSCryptImpl;
   friend class os_crypt_async::FreedesktopSecretKeyProvider;
   friend class os_crypt_async::KeychainKeyProvider;
 

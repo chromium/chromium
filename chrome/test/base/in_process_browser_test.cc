@@ -83,7 +83,6 @@
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/os_crypt/async/browser/key_provider.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -106,6 +105,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
+#include "components/os_crypt/common/os_crypt_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -490,9 +490,10 @@ void InProcessBrowserTest::SetUp() {
   // test_launcher_utils::PrepareBrowserCommandLineForTests by using
   // --password-store=basic. On Windows this is not needed as OS APIs never
   // block.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  OSCryptMocker::SetUp();
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC)
+  command_line->AppendSwitch(os_crypt::switches::kUseMockKeychain);
+#endif
+#if BUILDFLAG(IS_LINUX)
   // On Linux, verify that a password store backend is specified - it's either
   // set to "basic" in test_launcher_utils::PrepareBrowserCommandLineForTests or
   // could be overridden on the command line manually.
@@ -584,9 +585,6 @@ void InProcessBrowserTest::TearDown() {
   com_initializer_.reset();
 #endif
   BrowserTestBase::TearDown();
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  OSCryptMocker::TearDown();
-#endif
 
   if (embedded_https_test_server().Started()) {
     ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());

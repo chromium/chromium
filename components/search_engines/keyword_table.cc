@@ -629,13 +629,12 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   };
 
 // Only enable this hash checking feature on Windows. This because the value of
-// `OSCrypt::IsEncryptionAvailable` (exposed via the `Encryptor`
-// `IsDecryptionAvailable` API) can vary and is platform specific. E.g.
-// os_crypt_posix.cc historically returned 'false' for `IsEncryptionAvailable`.
-// On Linux, `IsEncryptionAvailable` can return `false` if v11 encryption is
-// not available, but data could still be encrypted with v10 encryption, and the
-// backend can change for various reasons including command line options or
-// desktop window manager.
+// `os_crypt_async::Encryptor::IsDecryptionAvailable` can vary and is platform
+// specific. E.g. some platforms might historically have returned 'false' for
+// encryption availability. On Linux, decryption availability can return
+// `false` if no encryption backend is available, and the backend can change
+// for various reasons including command line options or desktop window
+// manager.
 #if BUILDFLAG(IS_WIN)
   if (!encryptor()->IsDecryptionAvailable()) {
     status = HashValidationStatus::kNotVerifiedNoCrypto;

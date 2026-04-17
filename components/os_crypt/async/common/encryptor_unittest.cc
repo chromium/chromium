@@ -237,20 +237,6 @@ TEST_P(EncryptorParamTest, DecryptInvalid) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// Encryptor can decrypt data encrypted with OSCrypt.
-TEST_P(EncryptorParamTest, DecryptFallback) {
-  // TODO(crbug.com/40241934): Re-enable this test when we have a way to
-  // generate OSCrypt data without depending on OSCrypt.
-  GTEST_SKIP() << "OSCrypt fallback is removed.";
-}
-
-// Encryptor can decrypt data encrypted with OSCrypt.
-TEST_P(EncryptorParamTest, Decrypt16Fallback) {
-  // TODO(crbug.com/40241934): Re-enable this test when we have a way to
-  // generate OSCrypt data without depending on OSCrypt.
-  GTEST_SKIP() << "OSCrypt fallback is removed.";
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          EncryptorParamTest,
                          ::testing::ValuesIn(kTestCases),
@@ -358,14 +344,9 @@ TEST_F(EncryptorTest, ShortCiphertext) {
   // This is the nonce length for this algorithm.
   static const size_t kNonceLength = 12u;
   for (size_t i = 0; i < kNonceLength * 2; i++) {
-    base::HistogramTester histograms;
     bad_data += "a";
     auto decrypted = encryptor.DecryptData(base::as_byte_span(bad_data));
     EXPECT_FALSE(decrypted);
-    // Fallback does not happen here because the prefix on the data matches the
-    // key, but the data is invalid.
-    histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync",
-                                  false, 1);
   }
 }
 
@@ -411,9 +392,8 @@ TEST_F(EncryptorTest, Clone) {
     }
   }
 
-  // Test when the only key provider is not OSCrypt compatible. In this case, no
-  // default provider for encryption should end up being set (and fallback to
-  // OSCrypt for encryption).
+  // Test when the only key provider is not OSCrypt compatible. In this case, if
+  // kEncryptSyncCompat is requested, then encryption should fail.
   {
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
@@ -500,9 +480,7 @@ TEST_F(EncryptorTest, KeyAvailability) {
 
   {
     // If the TEST key is not even there, it's also a permanent failure, since
-    // key providers should signal a temporary failure using the proper API. See
-    // OSCryptAsyncTestWithOSCrypt.TemporarilyFailingKeyProvider for a test that
-    // verifies this.
+    // key providers should signal a temporary failure using the proper API.
     Encryptor::KeyRing key_ring;
     key_ring.emplace("BLAH", DeriveAES256TestKey("BLAH"));
     const auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");

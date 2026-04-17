@@ -130,7 +130,7 @@ void ApplicationContextImpl::PreCreateThreads() {
 }
 
 void ApplicationContextImpl::PostCreateThreads() {
-  // Delegate all encryption calls to OSCrypt.
+  // Initialize OSCryptAsync with a KeychainKeyProvider.
   auto key_provider = std::make_unique<os_crypt_async::KeychainKeyProvider>();
   std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       key_providers;

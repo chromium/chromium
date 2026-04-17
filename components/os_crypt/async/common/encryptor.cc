@@ -236,16 +236,9 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
     return std::vector<uint8_t>();
   }
 
-  bool fallback_to_sync = false;
-
-  absl::Cleanup record_metric = [&fallback_to_sync] {
-    base::UmaHistogramBoolean("OSCrypt.Async.EncryptionFallbackToSync",
-                              fallback_to_sync);
-  };
   const auto& it = keys_.find(provider_for_encryption_);
 
   if (it == keys_.end() || !it->second.has_value()) {
-
     return std::nullopt;
   }
 
@@ -270,13 +263,6 @@ std::optional<std::string> Encryptor::DecryptData(
     return std::string();
   }
 
-  bool fallback_to_sync = false;
-
-  absl::Cleanup record_metric = [&fallback_to_sync] {
-    base::UmaHistogramBoolean("OSCrypt.Async.DecryptionFallbackToSync",
-                              fallback_to_sync);
-  };
-
   for (const auto& [provider, key] : keys_) {
     if (data.size() < provider.size()) {
       continue;
@@ -299,8 +285,7 @@ std::optional<std::string> Encryptor::DecryptData(
           return std::nullopt;
         }
       } else {
-        // Indicate that this might be a temporary failure. Do not return an
-        // error yet as OSCrypt Sync might still be able to decrypt this data.
+        // Indicate that this might be a temporary failure.
         if (flags) {
           flags->temporarily_unavailable = true;
         }
@@ -308,7 +293,6 @@ std::optional<std::string> Encryptor::DecryptData(
       }
     }
   }
-
 
   return std::nullopt;
 }

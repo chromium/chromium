@@ -49,7 +49,6 @@
 #include "components/enterprise/encryption/cache/utils.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_log_proxy_source.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -872,17 +871,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // Configure the stub resolver. This must be done after the system
   // NetworkContext is created, but before anything has the chance to use it.
   stub_resolver_config_reader_.UpdateNetworkService(true /* record_metrics */);
-
-  // The OSCrypt keys are process bound, so if network service is out of
-  // process, send it the required key.
-  if (content::IsOutOfProcessNetworkService()) {
-    // On Windows, OSCrypt Async manages the encryption key via the DPAPI key
-    // provider, and there is no need to send the key separately to OSCrypt
-    // sync.
-#if !BUILDFLAG(IS_WIN)
-    network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
-#endif  // !BUILDFLAG(IS_WIN)
-  }
 
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();

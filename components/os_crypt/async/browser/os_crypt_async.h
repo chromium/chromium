@@ -38,8 +38,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   // also signals that it can be used for encryption by returning `true` from
   // the `UseForEncryption` interface method will be used for encryption.
   //
-  // If no providers are available for encryption, legacy OSCrypt will be used
-  // for encryption.
+  // If no providers are available for encryption, encryption will fail.
   //
   // Any provider that supplies a Key, regardless of their precedence or whether
   // or not they signal `UseForEncryption`, will make that Key available for

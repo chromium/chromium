@@ -160,7 +160,6 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   void HandleExplicitlyAllowedPorts(
       ::network::mojom::NetworkService* network_service);
-  void SetEncryptionKey(::network::mojom::NetworkService* network_service);
 
   raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
 

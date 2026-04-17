@@ -114,8 +114,7 @@ AwBrowserProcess::AwBrowserProcess(AwContentBrowserClient* browser_client)
   origin_trials_settings_storage_ =
       std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
 
-  // Initialize OSCryptAsync with a PosixKeyProvider. Initialization always
-  // succeeds, so encryption is never delegated to synchronous OSCrypt.
+  // Initialize OSCryptAsync with a PosixKeyProvider.
   auto key_provider = std::make_unique<os_crypt_async::PosixKeyProvider>();
   std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       key_providers;

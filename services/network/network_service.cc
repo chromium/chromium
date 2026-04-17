@@ -42,7 +42,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
@@ -102,10 +101,6 @@
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 #include "third_party/boringssl/src/include/openssl/cpu.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-#include "components/os_crypt/sync/key_storage_config_linux.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -896,10 +891,6 @@ void NetworkService::OnTrustStoreChanged() {
 
 void NetworkService::OnClientCertStoreChanged() {
   net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
-}
-
-void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
-  OSCrypt::SetRawEncryptionKey(encryption_key);
 }
 
 void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {

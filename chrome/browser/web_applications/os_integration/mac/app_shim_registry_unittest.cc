@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,9 +38,7 @@ class AppShimRegistryTest : public testing::Test {
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     registry_ = std::make_unique<TestAppShimRegistry>(local_state_.get());
     registry_->RegisterLocalPrefs(local_state_->registry());
-    OSCryptMocker::SetUp();
   }
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
  protected:
   os_crypt_async::Encryptor GetEncryptor() {

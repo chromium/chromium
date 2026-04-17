@@ -279,7 +279,6 @@ source_set("unit_tests") {
     "//components/content_settings/core/test:test_support",
     "//components/custom_handlers:test_support",
     "//components/media_device_salt",
-    "//components/os_crypt/sync:test_support",
     "//components/privacy_sandbox:privacy_sandbox_settings_headers",
     "//components/privacy_sandbox/privacy_sandbox_attestations",
     "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",

@@ -397,7 +397,6 @@ source_set("headless_browser") {
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
     "//components/os_crypt/async/browser",
-    "//components/os_crypt/sync",
     "//components/profile_metrics",
     "//components/security_state/content",
     "//components/security_state/core",
@@ -500,7 +499,6 @@ source_set("headless_browser") {
     deps += [
       "//components/origin_trials:browser",
       "//components/origin_trials:common",
-      "//components/os_crypt/sync",
       "//components/pref_registry",
       "//components/prefs",
       "//components/user_prefs",

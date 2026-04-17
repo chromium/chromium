@@ -47,7 +47,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"

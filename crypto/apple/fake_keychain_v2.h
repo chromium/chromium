@@ -59,7 +59,7 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
       std::string_view service_name,
       std::string_view account_name) override;
 
-  // Returns the password that OSCrypt uses to generate its encryption key.
+  // Returns the password used to generate the encryption key.
   std::string GetEncryptionPassword() const;
 
   // |FindGenericPassword()| can return different results depending on user

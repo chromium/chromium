@@ -22,19 +22,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "base/command_line.h"
-#include "components/os_crypt/sync/key_storage_config_linux.h"
-#include "components/os_crypt/sync/os_crypt.h"
-#include "headless/public/switches.h"
-
-#if BUILDFLAG(USE_DBUS)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "dbus/bus.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#endif
-
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 namespace headless {
 
@@ -164,10 +156,6 @@ class BrowserShutdownHandler {
 
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX)
-constexpr char kProductName[] = "HeadlessChrome";
-#endif
-
 void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   BrowserShutdownHandler::Install(base::BindOnce(
       &HeadlessBrowserImpl::ShutdownWithExitCode, browser_->GetWeakPtr()));
@@ -178,22 +166,6 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   bluez::BluezDBusManager::Initialize(
       dbus_thread_linux::GetSharedSystemBus().get());
 #endif
-
-  // Set up crypt config. This needs to be done before anything starts the
-  // network service, as the raw encryption key needs to be shared with the
-  // network service for encrypted cookie storage.
-  std::unique_ptr<os_crypt::Config> config =
-      std::make_unique<os_crypt::Config>();
-  // Forward to os_crypt the flag to use a specific password store.
-  config->store = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kPasswordStore);
-  // Use a default product name
-  config->product_name = kProductName;
-  // OSCrypt can be disabled in a special settings file, but headless doesn't
-  // need to support that.
-  config->should_use_preference = false;
-  config->user_data_path = base::FilePath();
-  OSCrypt::SetConfig(std::move(config));
 #endif  // BUILDFLAG(IS_LINUX)
 }
 

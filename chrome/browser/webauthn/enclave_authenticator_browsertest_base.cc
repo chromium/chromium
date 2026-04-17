@@ -36,7 +36,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -111,7 +110,6 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
   }
   scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
-  OSCryptMocker::SetUp();
   scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
 
   auto security_domain_service_callback =
@@ -142,7 +140,6 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
 EnclaveAuthenticatorTestBase::~EnclaveAuthenticatorTestBase() {
   EnclaveManagerFactory::SetUrlLoaderFactoryForTesting(nullptr);
   CHECK(process_and_port_.first.Terminate(/*exit_code=*/1, /*wait=*/true));
-  OSCryptMocker::TearDown();
 }
 
 base::FilePath EnclaveAuthenticatorTestBase::GetTempDirPath() {
