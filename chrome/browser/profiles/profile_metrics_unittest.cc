@@ -35,7 +35,6 @@ struct ProfileMetricsParam {
   int expected_managed_profile_count = 0;
   int expected_sync_consent_profile_count = 0;
   int expected_active_profile_count = 0;
-  std::vector<base::Bucket> expected_name_share_samples;
 };
 
 const ProfileMetricsParam profile_metrics_test_params[] = {
@@ -52,59 +51,50 @@ const ProfileMetricsParam profile_metrics_test_params[] = {
      .expected_sync_consent_profile_count = 1,
      .expected_active_profile_count = 1},
     // With Gaia name.
-    {.profiles = {{.gaia_name = u"FirstName"}},
-     .expected_active_profile_count = 1,
-     .expected_name_share_samples = {base::Bucket(
-         ProfileMetrics::GaiaNameShareStatus::kNotShared,
-         1)}},
+    {
+        .profiles = {{.gaia_name = u"FirstName"}},
+        .expected_active_profile_count = 1,
+    },
     // Multiple profiles with various states.
-    {.profiles = {{.active = false},
-                  {.sync_consent = true, .supervised = true},
-                  {.gaia_name = u"Name1", .active = false},
-                  {.gaia_name = u"Name2"}},
-     .expected_managed_profile_count = 1,
-     .expected_sync_consent_profile_count = 1,
-     .expected_active_profile_count = 2,
-     .expected_name_share_samples = {base::Bucket(
-         ProfileMetrics::GaiaNameShareStatus::kNotShared,
-         2)}},
+    {
+        .profiles = {{.active = false},
+                     {.sync_consent = true, .supervised = true},
+                     {.gaia_name = u"Name1", .active = false},
+                     {.gaia_name = u"Name2"}},
+        .expected_managed_profile_count = 1,
+        .expected_sync_consent_profile_count = 1,
+        .expected_active_profile_count = 2,
+    },
     // Duplicate Gaia name (non-managed).
-    {.profiles = {{.gaia_name = u"Name"}, {.gaia_name = u"Name"}},
-     .expected_active_profile_count = 2,
-     .expected_name_share_samples = {base::Bucket(
-         ProfileMetrics::GaiaNameShareStatus::kSharedNonManaged,
-         1)}},
+    {
+        .profiles = {{.gaia_name = u"Name"}, {.gaia_name = u"Name"}},
+        .expected_active_profile_count = 2,
+    },
     // Duplicate Gaia name (managed).
-    {.profiles = {{.gaia_name = u"Name"},
-                  {.gaia_name = u"Name", .managed = true}},
-     .expected_active_profile_count = 2,
-     .expected_name_share_samples = {base::Bucket(
-         ProfileMetrics::GaiaNameShareStatus::kSharedManaged,
-         1)}},
+    {
+        .profiles = {{.gaia_name = u"Name"},
+                     {.gaia_name = u"Name", .managed = true}},
+        .expected_active_profile_count = 2,
+    },
     // Duplicate Gaia name: non-managed takes priority over managed.
-    {.profiles = {{.gaia_name = u"Name"},
-                  {.gaia_name = u"Name"},
-                  {.gaia_name = u"Name", .managed = true}},
-     .expected_active_profile_count = 3,
-     .expected_name_share_samples = {base::Bucket(
-         ProfileMetrics::GaiaNameShareStatus::kSharedNonManaged,
-         1)}},
+    {
+        .profiles = {{.gaia_name = u"Name"},
+                     {.gaia_name = u"Name"},
+                     {.gaia_name = u"Name", .managed = true}},
+        .expected_active_profile_count = 3,
+    },
     // Multiple names with mixed sharing status.
-    {.profiles = {{ProfileConfig()},
-                  {.gaia_name = u"Name1"},
-                  {.gaia_name = u"Name1"},
-                  {.gaia_name = u"Name2", .managed = true},
-                  {.gaia_name = u"Name3"},
-                  {.gaia_name = u"Name2", .managed = true},
-                  {.gaia_name = u"Name4"},
-                  {.gaia_name = u"Name1"}},
-     .expected_active_profile_count = 8,
-     .expected_name_share_samples =
-         {base::Bucket(ProfileMetrics::GaiaNameShareStatus::kNotShared, 2),
-          base::Bucket(ProfileMetrics::GaiaNameShareStatus::kSharedNonManaged,
-                       1),
-          base::Bucket(ProfileMetrics::GaiaNameShareStatus::kSharedManaged,
-                       1)}},
+    {
+        .profiles = {{ProfileConfig()},
+                     {.gaia_name = u"Name1"},
+                     {.gaia_name = u"Name1"},
+                     {.gaia_name = u"Name2", .managed = true},
+                     {.gaia_name = u"Name3"},
+                     {.gaia_name = u"Name2", .managed = true},
+                     {.gaia_name = u"Name4"},
+                     {.gaia_name = u"Name1"}},
+        .expected_active_profile_count = 8,
+    },
 };
 
 }  // namespace
@@ -149,8 +139,6 @@ TEST_P(ProfileMetricsParamsTest, LogNumberOfProfiles) {
   base::HistogramTester histogram_tester;
   ProfileMetrics::LogNumberOfProfiles(&storage);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("Profile.GaiaNameShareStatus"),
-              base::BucketsAre(test_param.expected_name_share_samples));
   histogram_tester.ExpectUniqueSample("Profile.NumberOfProfiles",
                                       test_param.profiles.size(), 1);
   histogram_tester.ExpectUniqueSample(

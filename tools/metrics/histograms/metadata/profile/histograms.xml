@@ -183,35 +183,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.GaiaNameShareStatus" enum="ProfileGaiaNameShareStatus"
-    expires_after="2026-04-26">
-  <owner>droger@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    For all Gaia first names used as primary account in all profiles, records
-    whether this name is unique or if there are multiple profiles sharing the
-    same first name. Empty names are not considered. Profiles that are not
-    signed in are ignored.
-
-    For example, if two profiles use the name &quot;A&quot; and one profile uses
-    the name &quot;B&quot;, the histogram is recorded twice (once for
-    &quot;A&quot; and once for &quot;B&quot;).
-
-    On non-iOS platforms, this histogram is emitted on startup if it has been
-    more than 24 hours since the last time the histogram was emitted. It is also
-    emitted while Chrome is running when Chrome realizes that it has been 24
-    hours since the last time the histogram was emitted. (This normally happens
-    24 hours after the last emit, but may be longer if the device was asleep /
-    suspended at the time. If so, it will be emitted when the device wakes up.)
-    One consequence of this 24 hour timer is that a user may use Chrome in a day
-    and not emit this histogram. For example, if a user used Chrome the previous
-    day at 5pm and a histogram was emitted then, then used Chrome on this day at
-    10am, then closed Chrome, this histogram will not be emitted on this day.
-
-    On iOS, this histogram is not emitted.
-  </summary>
-</histogram>
-
 <histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
     expires_after="2026-08-30">
   <owner>duellweber@chromium.org</owner>

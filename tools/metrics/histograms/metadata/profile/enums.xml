@@ -337,18 +337,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_error_dialog.h:ProfileErrorType) -->
 
-<!-- LINT.IfChange(ProfileGaiaNameShareStatus) -->
-
-<enum name="ProfileGaiaNameShareStatus">
-  <int value="0" label="Not shared"/>
-  <int value="1" label="Shared by non managed profiles"/>
-  <int value="2"
-      label="Appears at most once in non managed profiles, but shared when
-             including managed profiles"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:GaiaNameShareStatus) -->
-
 <enum name="ProfileKeepAliveOrigin">
   <int value="0" label="kWaitingForFirstBrowserWindow"/>
   <int value="1" label="kBrowserWindow"/>
