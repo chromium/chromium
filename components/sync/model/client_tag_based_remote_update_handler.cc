@@ -187,6 +187,15 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
+  if (!data.is_deleted() && !bridge_->IsEntityDataValid(data)) {
+    SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
+                                       type_);
+    DLOG(WARNING) << "Received invalid remote update."
+                  << " client_tag_hash: " << client_tag_hash << " for "
+                  << DataTypeToDebugString(type_);
+    return nullptr;
+  }
+
   // Filter out unexpected client tag hashes.
   if (!data.is_deleted() && bridge_->SupportsGetClientTag() &&
       client_tag_hash !=
@@ -214,13 +223,6 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
 
   if (entity && entity->IsVersionAlreadyKnown(update.response_version)) {
     // Seen this update before; just ignore it.
-    return nullptr;
-  }
-
-  if (!data.is_deleted() && !bridge_->IsEntityDataValid(data)) {
-    DLOG(WARNING) << "Received invalid remote update."
-                  << " client_tag_hash: " << client_tag_hash << " for "
-                  << DataTypeToDebugString(type_);
     return nullptr;
   }
 
