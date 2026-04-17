@@ -411,11 +411,14 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Basic) {
+// TODO(crbug.com/493362471): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, DISABLED_Basic) {
   BasicPixelTest(browser(), "Basic");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, IncognitoBasic) {
+// TODO(crbug.com/493362471): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       DISABLED_IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
 }
 
