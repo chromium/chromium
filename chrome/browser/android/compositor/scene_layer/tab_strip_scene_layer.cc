@@ -600,6 +600,9 @@ void TabStripSceneLayer::PutStripTabLayer(
     float media_indicator_spacing,
     float media_indicator_internal_padding,
     float title_to_media_indicator_spacing,
+    int32_t tab_indicator_overlay_resource_id,
+    float tab_indicator_overlay_rotation,
+    float tab_indicator_overlay_width,
     float toolbar_width,
     float x,
     float y,
@@ -669,6 +672,12 @@ void TabStripSceneLayer::PutStripTabLayer(
     media_indicator_drawable = resource_manager_->GetStaticResourceWithTint(
         media_indicator_resource_id, media_indicator_tint);
   }
+  ui::Resource* media_indicator_overlay_drawable = nullptr;
+  if (should_show_media_indicator && tab_indicator_overlay_resource_id != 0) {
+    media_indicator_overlay_drawable =
+        resource_manager_->GetStaticResourceWithTint(
+            tab_indicator_overlay_resource_id, media_indicator_tint);
+  }
 
   float media_indicator_opacity = 1.0f;
   if (media_indicator_tint == close_tint) {
@@ -685,14 +694,15 @@ void TabStripSceneLayer::PutStripTabLayer(
       should_hide_favicon, should_show_media_indicator,
       media_indicator_drawable, media_indicator_width, media_indicator_spacing,
       media_indicator_internal_padding, title_to_media_indicator_spacing,
-      media_indicator_opacity, toolbar_width, x, y, width, height,
-      content_offset_y, divider_offset_x, bottom_margin, top_margin,
-      close_button_padding, close_button_alpha, is_start_divider_visible,
-      is_end_divider_visible, is_loading, spinner_rotation, opacity,
-      is_keyboard_focused, keyboard_focus_ring_drawable,
-      keyboard_focus_ring_offset, stroke_width, folio_foot_length,
-      width_to_hide_tab_title, pinned_icon_offset_x, is_underlined,
-      static_cast<SkColor>(underline_start_color),
+      media_indicator_opacity, media_indicator_overlay_drawable,
+      tab_indicator_overlay_rotation, tab_indicator_overlay_width,
+      toolbar_width, x, y, width, height, content_offset_y, divider_offset_x,
+      bottom_margin, top_margin, close_button_padding, close_button_alpha,
+      is_start_divider_visible, is_end_divider_visible, is_loading,
+      spinner_rotation, opacity, is_keyboard_focused,
+      keyboard_focus_ring_drawable, keyboard_focus_ring_offset, stroke_width,
+      folio_foot_length, width_to_hide_tab_title, pinned_icon_offset_x,
+      is_underlined, static_cast<SkColor>(underline_start_color),
       static_cast<SkColor>(underline_end_color), underline_width_threshold);
 }
 

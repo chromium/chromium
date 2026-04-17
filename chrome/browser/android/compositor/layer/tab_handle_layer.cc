@@ -55,6 +55,9 @@ void TabHandleLayer::SetProperties(
     float media_indicator_internal_padding,
     float title_to_media_indicator_spacing,
     float media_indicator_opacity,
+    ui::Resource* tab_indicator_overlay_resource,
+    float target_rotation,
+    float tab_indicator_overlay_width,
     float toolbar_width,
     float x,
     float y,
@@ -125,7 +128,7 @@ void TabHandleLayer::SetProperties(
   }
 
   if (title_layer) {
-    unsigned expected_children = 5;
+    unsigned expected_children = 6;
     title_layer_ = title_layer->layer();
     if (tab_->children().size() < expected_children) {
       tab_->AddChild(title_layer_);
@@ -228,6 +231,28 @@ void TabHandleLayer::SetProperties(
     media_indicator_layer_->SetOpacity(media_indicator_opacity);
   } else {
     media_indicator_layer_->SetIsDrawable(false);
+  }
+
+  if (should_show_media_indicator && tab_indicator_overlay_resource) {
+    tab_indicator_overlay_layer_->SetIsDrawable(true);
+    tab_indicator_overlay_layer_->SetUIResourceId(
+        tab_indicator_overlay_resource->ui_resource()->id());
+    float overlay_size = tab_indicator_overlay_width;
+    tab_indicator_overlay_layer_->SetBounds(
+        gfx::Size(overlay_size, overlay_size));
+    tab_indicator_overlay_layer_->SetOpacity(media_indicator_opacity);
+
+    // Apply spinning animation.
+    tab_indicator_overlay_layer_->SetTransformOrigin(
+        gfx::PointF(overlay_size / 2, overlay_size / 2));
+    float diff = target_rotation - tab_indicator_overlay_rotation_;
+    tab_indicator_overlay_rotation_ = target_rotation;
+    if (diff != 0) {
+      transform_->RotateAboutZAxis(diff);
+    }
+    tab_indicator_overlay_layer_->SetTransform(*transform_.get());
+  } else {
+    tab_indicator_overlay_layer_->SetIsDrawable(false);
   }
 
   if (title_layer) {
@@ -355,6 +380,11 @@ void TabHandleLayer::SetProperties(
                               media_indicator_size) /
                              2);
     media_indicator_layer_->SetPosition(gfx::PointF(media_x, media_y));
+    float overlay_size = tab_indicator_overlay_width;
+    float overlay_x = media_x + (media_indicator_size - overlay_size) / 2;
+    float overlay_y = media_y + (media_indicator_size - overlay_size) / 2;
+    tab_indicator_overlay_layer_->SetPosition(
+        gfx::PointF(overlay_x, overlay_y));
   }
 
   if (is_underlined) {
@@ -454,18 +484,20 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       start_divider_(cc::slim::UIResourceLayer::Create()),
       end_divider_(cc::slim::UIResourceLayer::Create()),
       media_indicator_layer_(cc::slim::UIResourceLayer::Create()),
+      tab_indicator_overlay_layer_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
       underline_end_layer_(cc::slim::SolidColorLayer::Create()),
       underline_start_layer_(cc::slim::SolidColorLayer::Create()),
       keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
-      foreground_(false) {
+      transform_(new gfx::Transform()) {
   decoration_tab_->SetIsDrawable(true);
 
   tab_->AddChild(decoration_tab_);
   tab_->AddChild(tab_outline_);
   tab_->AddChild(close_button_hover_highlight_);
   tab_->AddChild(media_indicator_layer_);
+  tab_->AddChild(tab_indicator_overlay_layer_);
   close_button_hover_highlight_->AddChild(close_button_);
 
   decoration_tab_->SetPosition(gfx::PointF(0, 0));

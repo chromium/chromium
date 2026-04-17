@@ -3884,17 +3884,21 @@ public class StripLayoutHelper
     private void updateSpinners(long time) {
         long diff = time - mLastSpinnerUpdate;
         float degrees = diff * SPINNER_DPMS;
-        boolean tabsToLoad = false;
+        boolean tabHasSpinner = false;
         for (int i = 0; i < mStripTabs.length; i++) {
             StripLayoutTab tab = mStripTabs[i];
             // TODO(clholgat): Only update if the tab is visible.
             if (tab.isLoading()) {
                 tab.addLoadingSpinnerRotation(degrees);
-                tabsToLoad = true;
+                tabHasSpinner = true;
+            }
+            if (tab.getTabIndicatorStatus() == TabIndicatorStatus.DYNAMIC) {
+                tab.addTabIndicatorOverlayRotation(degrees);
+                tabHasSpinner = true;
             }
         }
         mLastSpinnerUpdate = time;
-        if (tabsToLoad) {
+        if (tabHasSpinner) {
             mStripTabEventHandler.removeMessages(MESSAGE_UPDATE_SPINNER);
             mStripTabEventHandler.sendEmptyMessageDelayed(
                     MESSAGE_UPDATE_SPINNER, SPINNER_UPDATE_DELAY_MS);

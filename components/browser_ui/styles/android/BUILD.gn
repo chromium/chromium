@@ -151,6 +151,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_add_24dp.xml",
     "java/res/drawable/ic_all_bookmarks_icon_16dp.xml",
     "java/res/drawable/ic_android_messages_icon.xml",
+    "java/res/drawable/ic_arrow_selector_spark_14dp.xml",
     "java/res/drawable/ic_arrow_selector_spark_16dp.xml",
     "java/res/drawable/ic_arrow_selector_spark_24dp.xml",
     "java/res/drawable/ic_back_to_tab_20dp.xml",

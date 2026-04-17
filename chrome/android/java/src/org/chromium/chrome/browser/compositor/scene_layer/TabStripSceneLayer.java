@@ -288,8 +288,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             @ColorInt int closeButtonTint = closeButton.getTint();
 
             boolean shouldShowIndicator = st.shouldShowIndicator();
-            @DrawableRes int indicatorRes = st.getIndicatorRes();
-            @ColorInt int indicatorTint = st.getIndicatorTint();
 
             boolean isPinned = st.getIsPinned();
             float widthToHideTabTitle =
@@ -319,12 +317,15 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getClosePressed(),
                             st.shouldHideFavicon(shouldShowIndicator),
                             shouldShowIndicator,
-                            indicatorRes,
-                            indicatorTint,
+                            st.getIndicatorRes(),
+                            st.getIndicatorTint(),
                             Math.round(st.getMediaIndicatorWidth() * mDpToPx),
                             Math.round(st.getMediaIndicatorToCloseButtonSpacing() * mDpToPx),
                             Math.round(st.getMediaIndicatorInternalPadding() * mDpToPx),
                             Math.round(st.getTitleToMediaIndicatorSpacing() * mDpToPx),
+                            st.getIndicatorOverlayRes(),
+                            st.getTabIndicatorOverlayRotation(),
+                            Math.round(st.getTabIndicatorOverlayWidth() * mDpToPx),
                             Math.round(layoutHelper.getWidth() * mDpToPx),
                             Math.round(st.getDrawX() * mDpToPx),
                             Math.round(st.getDrawY() * mDpToPx),
@@ -524,6 +525,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float mediaIndicatorSpacing,
                 float mediaIndicatorInternalPadding,
                 float titleToMediaIndicatorSpacing,
+                @DrawableRes int tabIndicatorOverlayResourceId,
+                float tabIndicatorOverlayRotation,
+                float tabIndicatorOverlayWidth,
                 float toolbarWidth,
                 float x,
                 float y,

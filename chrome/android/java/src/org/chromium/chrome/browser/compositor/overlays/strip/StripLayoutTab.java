@@ -145,6 +145,8 @@ public class StripLayoutTab extends StripLayoutView {
 
     // Media Indicator Constants.
     private static final float MEDIA_INDICATOR_WIDTH = 16.f;
+    private static final float DYNAMIC_GLIC_ACTUATION_INDICATOR_WIDTH = 14.f;
+    private static final float TAB_INDICATOR_OVERLAY_WIDTH = 24.f;
     // Spacing between the media indicator and the close button.
     private static final float MEDIA_INDICATOR_TO_CLOSE_BUTTON_SPACING_DP = 12.f;
     // The media indicator icon has internal padding of approx 2dp when scaled to 16dp.
@@ -198,6 +200,7 @@ public class StripLayoutTab extends StripLayoutView {
     private float mContainerOpacity;
     private @MediaState int mMediaState;
     private @TabIndicatorStatus int mTabIndicatorStatus;
+    private float mTabIndicatorOverlayRotation;
     private boolean mIsUnderlined;
 
     // For avoiding unnecessary accessibility description updates.
@@ -388,6 +391,25 @@ public class StripLayoutTab extends StripLayoutView {
         mTabIndicatorStatus = status;
     }
 
+    /** Returns the width of the tab indicator overlay. */
+    public float getTabIndicatorOverlayWidth() {
+        return TAB_INDICATOR_OVERLAY_WIDTH;
+    }
+
+    /** Returns the rotation of the tab indicator overlay. */
+    public float getTabIndicatorOverlayRotation() {
+        return mTabIndicatorOverlayRotation;
+    }
+
+    /**
+     * Adds rotation to the tab indicator overlay.
+     *
+     * @param degrees The degrees to add to the rotation.
+     */
+    public void addTabIndicatorOverlayRotation(float degrees) {
+        mTabIndicatorOverlayRotation = (mTabIndicatorOverlayRotation + degrees) % 1080;
+    }
+
     /**
      * @return The {@link TabIndicatorStatus} representing the actuation state of the tab.
      */
@@ -399,15 +421,17 @@ public class StripLayoutTab extends StripLayoutView {
      * @return Whether some tab indicator (actuation or media) should be shown.
      */
     public boolean shouldShowIndicator() {
-        return mTabIndicatorStatus != TabIndicatorStatus.NONE
+        return getTabIndicatorStatus() != TabIndicatorStatus.NONE
                 || (mMediaState != MediaState.NONE && !shouldHideMediaIndicator());
     }
 
     /**
-     * @return The resource ID of the indicator to show, prioritizing actuation over media.
+     * @return The resource ID of the indicator to show, prioritizing actuatigon over media.
      */
     public @DrawableRes int getIndicatorRes() {
-        if (mTabIndicatorStatus != TabIndicatorStatus.NONE) {
+        if (getTabIndicatorStatus() == TabIndicatorStatus.DYNAMIC) {
+            return R.drawable.ic_arrow_selector_spark_14dp;
+        } else if (getTabIndicatorStatus() == TabIndicatorStatus.STATIC) {
             return R.drawable.ic_arrow_selector_spark_16dp;
         }
         if (shouldShowIndicator()) {
@@ -420,11 +444,21 @@ public class StripLayoutTab extends StripLayoutView {
      * @return The tint color for the active indicator.
      */
     public @ColorInt int getIndicatorTint() {
-        if (mTabIndicatorStatus != TabIndicatorStatus.NONE) {
+        if (getTabIndicatorStatus() != TabIndicatorStatus.NONE) {
             return SemanticColorUtils.getColorPrimary(mContext);
         }
         return TabUtils.getMediaIndicatorTintColor(
                 mContext, mMediaState, getCloseButton().getTint());
+    }
+
+    /**
+     * @return The resource ID of the indicator overlay to show.
+     */
+    public @DrawableRes int getIndicatorOverlayRes() {
+        if (getTabIndicatorStatus() == TabIndicatorStatus.DYNAMIC) {
+            return R.drawable.tab_indicator_spinner;
+        }
+        return Resources.ID_NULL;
     }
 
     /**
@@ -1042,6 +1076,9 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     public float getMediaIndicatorWidth() {
+        if (getTabIndicatorStatus() == TabIndicatorStatus.DYNAMIC) {
+            return DYNAMIC_GLIC_ACTUATION_INDICATOR_WIDTH;
+        }
         return MEDIA_INDICATOR_WIDTH;
     }
 
