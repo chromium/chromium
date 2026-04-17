@@ -11,9 +11,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,8 +88,8 @@ class MockGmailOtpBackend : public GmailOtpBackend {
               (override));
 
   MOCK_METHOD(void,
-              OnIncomingOneTimeTokenBackendTickle,
-              (const EncryptedMessageReference& encrypted_message_reference),
+              OnIncomingOneTimeTokenBackendNotification,
+              (const OneTimeTokenBackendNotification& notification),
               (override));
 
   // Simulates the reception of an OTP. This will run all pending callbacks from

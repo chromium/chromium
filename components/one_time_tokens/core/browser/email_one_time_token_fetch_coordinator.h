@@ -6,7 +6,7 @@
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_EMAIL_ONE_TIME_TOKEN_FETCH_COORDINATOR_H_
 
 #include "base/memory/raw_ref.h"
-#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
+#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 
 namespace one_time_tokens {
 
@@ -21,7 +21,7 @@ class EmailOneTimeTokenFetchCoordinator {
 
     // Called when the coordinator authorizes a network request to be sent.
     virtual void OnCanSendNetworkRequest(
-        const EncryptedMessageReference& reference) = 0;
+        const OneTimeTokenBackendNotification& notification) = 0;
   };
 
   explicit EmailOneTimeTokenFetchCoordinator(Delegate& delegate);
@@ -32,12 +32,13 @@ class EmailOneTimeTokenFetchCoordinator {
   ~EmailOneTimeTokenFetchCoordinator();
 
   // Signals that a network request is needed for a specific reference.
-  void SignalNetworkRequestNeeded(const EncryptedMessageReference& reference);
+  void SignalNetworkRequestNeeded(
+      const OneTimeTokenBackendNotification& notification);
 
   // Informs the coordinator that a network request for a specific reference
   // has finished.
   void InformOfNetworkRequestFinished(
-      const EncryptedMessageReference& reference);
+      const OneTimeTokenBackendNotification& notification);
 
  private:
   const raw_ref<Delegate> delegate_;

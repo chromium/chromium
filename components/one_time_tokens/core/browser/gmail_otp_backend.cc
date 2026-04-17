@@ -41,18 +41,18 @@ ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
   return subscription_manager_.Subscribe(expiration, std::move(callback));
 }
 
-void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendTickle(
-    const EncryptedMessageReference& encrypted_message_reference) {
-  coordinator_->SignalNetworkRequestNeeded(encrypted_message_reference);
+void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
+    const OneTimeTokenBackendNotification& notification) {
+  coordinator_->SignalNetworkRequestNeeded(notification);
 }
 
 void GmailOtpBackendImpl::OnCanSendNetworkRequest(
-    const EncryptedMessageReference& reference) {
-  RetrieveGmailOtp(reference);
+    const OneTimeTokenBackendNotification& notification) {
+  RetrieveGmailOtp(notification);
 }
 
 void GmailOtpBackendImpl::RetrieveGmailOtp(
-    const EncryptedMessageReference& encrypted_message_reference) {
+    const OneTimeTokenBackendNotification& notification) {
   // TODO(crbug.com/478840436) Fix the race condition where a second tickle
   // arrives while a pending request is in flight. The solution is probably
   // just to remove the has_pending_request_ from this class. Unlike SMS OTPs
@@ -65,7 +65,7 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
   has_pending_request_ = true;
   auto request = std::make_unique<EmailOneTimeTokenFetcher>(
       url_loader_factory_, *identity_manager_,
-      encrypted_message_reference.value());
+      notification.encrypted_message_reference.value());
   auto* request_ptr = request.get();
   request_ptr->Start(
       base::BindOnce(&GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,

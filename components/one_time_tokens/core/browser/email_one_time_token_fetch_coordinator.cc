@@ -14,13 +14,13 @@ EmailOneTimeTokenFetchCoordinator::~EmailOneTimeTokenFetchCoordinator() =
     default;
 
 void EmailOneTimeTokenFetchCoordinator::SignalNetworkRequestNeeded(
-    const EncryptedMessageReference& reference) {
+    const OneTimeTokenBackendNotification& notification) {
   // TODO(crbug.com/478840436): Replace pass-through with real implementation.
-  delegate_->OnCanSendNetworkRequest(reference);
+  delegate_->OnCanSendNetworkRequest(notification);
 }
 
 void EmailOneTimeTokenFetchCoordinator::InformOfNetworkRequestFinished(
-    const EncryptedMessageReference& reference) {
+    const OneTimeTokenBackendNotification& notification) {
   // TODO(crbug.com/478840436): Implement.
 }
 

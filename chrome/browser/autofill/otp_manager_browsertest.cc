@@ -19,9 +19,9 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
@@ -92,9 +92,9 @@ class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
   }
 
   // one_time_tokens::GmailOtpBackend:
-  void OnIncomingOneTimeTokenBackendTickle(
-      const one_time_tokens::EncryptedMessageReference&
-          encrypted_message_reference) override {}
+  void OnIncomingOneTimeTokenBackendNotification(
+      const one_time_tokens::OneTimeTokenBackendNotification& notification)
+      override {}
 
   // Simulates the reception of a Gmail OTP.
   void ProcessCallbacks(

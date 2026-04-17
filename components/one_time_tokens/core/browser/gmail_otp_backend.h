@@ -9,11 +9,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetch_coordinator.h"
-#include "components/one_time_tokens/core/browser/encrypted_message_reference.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
@@ -49,8 +50,8 @@ class GmailOtpBackend : public KeyedService {
                                                        Callback callback) = 0;
 
   // Called when a new OTP is received via the OneTimeToken notification.
-  virtual void OnIncomingOneTimeTokenBackendTickle(
-      const EncryptedMessageReference& encrypted_message_reference) = 0;
+  virtual void OnIncomingOneTimeTokenBackendNotification(
+      const OneTimeTokenBackendNotification& notification) = 0;
 };
 
 // Concrete implementation of GmailOtpBackend that provides a fake OTP
@@ -67,15 +68,14 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   ExpiringSubscription Subscribe(base::Time expiration,
                                  Callback callback) override;
 
-  void OnIncomingOneTimeTokenBackendTickle(
-      const EncryptedMessageReference& encrypted_message_reference) override;
+  void OnIncomingOneTimeTokenBackendNotification(
+      const OneTimeTokenBackendNotification& notification) override;
 
   void OnCanSendNetworkRequest(
-      const EncryptedMessageReference& reference) override;
+      const OneTimeTokenBackendNotification& notification) override;
 
  private:
-  void RetrieveGmailOtp(
-      const EncryptedMessageReference& encrypted_message_reference);
+  void RetrieveGmailOtp(const OneTimeTokenBackendNotification& notification);
 
   void OnResponseFromGmailOtpBackend(
       std::unique_ptr<EmailOneTimeTokenFetcher> request,

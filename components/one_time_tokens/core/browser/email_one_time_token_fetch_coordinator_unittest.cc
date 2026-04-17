@@ -15,7 +15,7 @@ class MockDelegate : public EmailOneTimeTokenFetchCoordinator::Delegate {
  public:
   MOCK_METHOD(void,
               OnCanSendNetworkRequest,
-              (const EncryptedMessageReference& reference),
+              (const OneTimeTokenBackendNotification& notification),
               (override));
 };
 
@@ -28,13 +28,19 @@ class EmailOneTimeTokenFetchCoordinatorTest : public testing::Test {
   EmailOneTimeTokenFetchCoordinator coordinator_;
 };
 
+MATCHER_P(OneTimeTokenNotificationMatches, expected_message_reference, "") {
+  return arg.encrypted_message_reference.value() == expected_message_reference;
+}
+
 // Tests that the coordinator signals the delegate when a request is needed.
 // This confirms the current pass-through behavior.
 TEST_F(EmailOneTimeTokenFetchCoordinatorTest, SignalNetworkRequestNeeded) {
-  const EncryptedMessageReference reference("test_reference");
-  EXPECT_CALL(mock_delegate_, OnCanSendNetworkRequest(testing::Eq(reference)));
+  EXPECT_CALL(mock_delegate_,
+              OnCanSendNetworkRequest(
+                  OneTimeTokenNotificationMatches("test_reference")));
 
-  coordinator_.SignalNetworkRequestNeeded(reference);
+  coordinator_.SignalNetworkRequestNeeded(OneTimeTokenBackendNotification(
+      EncryptedMessageReference("test_reference")));
 }
 
 }  // namespace
