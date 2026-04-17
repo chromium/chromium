@@ -2743,6 +2743,7 @@ def _is_cflag_allowed(cflag):
         # applied.
         '-mllvm -enable-ml-inliner=',
         '-mllvm -ml-inliner-model-selector=',
+        '-fdiagnostics-show-inlining-chain',
     ])
 
 
