@@ -47,6 +47,8 @@ class MockAndroidDnsPlatformAttemptDelegate
               (override));
 
   MOCK_METHOD(int, Result, (int, int*, base::span<uint8_t>), (override));
+
+  MOCK_METHOD(void, Close, (int), (override));
 };
 
 }  // namespace net
