@@ -109,6 +109,14 @@ void FullscreenModel::ResetForNavigation() {
   scrolling_ = false;
   start_scrolling_time_ = std::nullopt;
   is_scrolling_time_recorded_ = false;
+
+  // Duration metrics are only recorded for user-initiated transitions within
+  // the same page session. Navigations and tab changes reset the start times,
+  // effectively discarding any accumulated duration and starting fresh for the
+  // next page/tab.
+  time_entered_fullscreen_ = std::nullopt;
+  time_exited_fullscreen_ = base::TimeTicks::Now();
+
   if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     base_offset_ = NAN;
   }
@@ -486,8 +494,8 @@ void FullscreenModel::UpdateDisabledCounterForContentHeight() {
 }
 
 void FullscreenModel::SetProgress(CGFloat progress) {
-  progress = std::min(static_cast<CGFloat>(1.0), progress);
-  progress = std::max(static_cast<CGFloat>(0.0), progress);
+  progress = std::clamp(progress, static_cast<CGFloat>(0.0),
+                        static_cast<CGFloat>(1.0));
   if (AreCGFloatsEqual(progress_, progress)) {
     return;
   }
@@ -496,10 +504,22 @@ void FullscreenModel::SetProgress(CGFloat progress) {
     base::UmaHistogramEnumeration(
         kEnterFullscreenModeTransitionTriggerHistogram,
         FullscreenModeTransitionTrigger::kUserControlled);
+    time_entered_fullscreen_ = base::TimeTicks::Now();
+    if (time_exited_fullscreen_.has_value()) {
+      base::UmaHistogramLongTimes(
+          kTimeNotInFullscreenHistogram,
+          base::TimeTicks::Now() - time_exited_fullscreen_.value());
+    }
   } else if (progress == 1.0 && progress_ < 1.0) {
     base::UmaHistogramEnumeration(
         kExitFullscreenModeTransitionTriggerHistogram,
         FullscreenModeTransitionTrigger::kUserControlled);
+    time_exited_fullscreen_ = base::TimeTicks::Now();
+    if (time_entered_fullscreen_.has_value()) {
+      base::UmaHistogramLongTimes(
+          kTimeInFullscreenHistogram,
+          base::TimeTicks::Now() - time_entered_fullscreen_.value());
+    }
   }
 
   progress_ = progress;

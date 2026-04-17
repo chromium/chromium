@@ -7,6 +7,8 @@
 
 extern const char kEnterFullscreenModeTransitionTriggerHistogram[];
 extern const char kExitFullscreenModeTransitionTriggerHistogram[];
+extern const char kTimeInFullscreenHistogram[];
+extern const char kTimeNotInFullscreenHistogram[];
 
 // These values are persisted to IOS.Fullscreen.TransitionTrigger.{Enter,Exit}
 // histograms. Entries should not be renumbered and numeric values should never

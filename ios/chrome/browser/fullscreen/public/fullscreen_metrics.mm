@@ -9,3 +9,7 @@ const char kEnterFullscreenModeTransitionTriggerHistogram[] =
 
 const char kExitFullscreenModeTransitionTriggerHistogram[] =
     "IOS.Fullscreen.TransitionTrigger.Exit";
+
+const char kTimeInFullscreenHistogram[] = "IOS.Fullscreen.TimeInFullscreen";
+const char kTimeNotInFullscreenHistogram[] =
+    "IOS.Fullscreen.TimeNotInFullscreen";

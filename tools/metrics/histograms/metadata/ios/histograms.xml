@@ -2327,6 +2327,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Fullscreen.TimeInFullscreen" units="ms"
+    expires_after="2027-04-02">
+  <owner>alionadangla@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    The time spent in fullscreen mode (toolbars fully collapsed). Recorded when
+    the toolbars start appearing due to scrolling (exiting fullscreen). This
+    duration is NOT recorded if the fullscreen state is reset due to navigation
+    or tab change before the user manually exits fullscreen. This ensures that
+    forced exits don't pollute the duration metrics for user-initiated
+    fullscreen sessions.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Fullscreen.TimeNotInFullscreen" units="ms"
+    expires_after="2027-04-02">
+  <owner>alionadangla@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    The time spent not in fullscreen mode (toolbars fully visible) before
+    entering fullscreen. Recorded when the toolbars start collapsing due to
+    scrolling (entering fullscreen). This represents the time spent on the
+    current page/tab since it was last shown or navigated to. If a navigation or
+    tab change occurs while not in fullscreen, the accumulated time is discarded
+    and the timer resets for the new page/tab. In other words, this only logs
+    the time spent on the current page session before it first enters
+    fullscreen, or the time between a manual exit and the next entry on the same
+    page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Fullscreen.TimeSpentScrollingToTheBottom" units="ms"
     expires_after="2026-09-13">
   <owner>alionadangla@chromium.org</owner>

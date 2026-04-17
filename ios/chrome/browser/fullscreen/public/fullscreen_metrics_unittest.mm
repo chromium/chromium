@@ -9,6 +9,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_state_list_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/legacy_fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
@@ -16,14 +17,19 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_legacy_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
 // Test fixture for Fullscreen metrics.
 class FullscreenMetricsTest : public PlatformTest {
  public:
-  FullscreenMetricsTest() {
+  FullscreenMetricsTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
@@ -31,11 +37,17 @@ class FullscreenMetricsTest : public PlatformTest {
     mediator_ =
         std::make_unique<TestLegacyFullscreenMediator>(controller(), model());
     observer_ = std::make_unique<TestFullscreenControllerObserver>();
+
+    web_state_list_observer_ = std::make_unique<FullscreenWebStateListObserver>(
+        controller(), model(), mediator_.get());
+    web_state_list_observer_->SetWebStateList(browser_->GetWebStateList());
+
     // Set toolbar height to 100 for easy progress calculations.
     SetUpFullscreenModelForTesting(model(), 100);
     mediator_->AddObserver(observer_.get());
   }
   ~FullscreenMetricsTest() override {
+    web_state_list_observer_->Disconnect();
     mediator_->Disconnect();
     mediator_->RemoveObserver(observer_.get());
   }
@@ -68,6 +80,7 @@ class FullscreenMetricsTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestLegacyFullscreenMediator> mediator_;
+  std::unique_ptr<FullscreenWebStateListObserver> web_state_list_observer_;
   std::unique_ptr<TestFullscreenControllerObserver> observer_;
 };
 
@@ -333,4 +346,165 @@ TEST_F(FullscreenMetricsTest, RecordsExitForcedByUser) {
   histogram_tester.ExpectUniqueSample(
       kExitFullscreenModeTransitionTriggerHistogram,
       FullscreenModeTransitionTrigger::kForcedByUser, 1);
+}
+
+// Tests that FullscreenModel records kTimeInFullscreenHistogram.
+TEST_F(FullscreenMetricsTest, RecordsTimeInFullscreen) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  // Enter fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  // Wait some time.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  base::HistogramTester histogram_tester;
+  // Exit fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), -100.0);
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  histogram_tester.ExpectUniqueTimeSample(kTimeInFullscreenHistogram,
+                                          base::Seconds(10), 1);
+}
+
+// Tests that FullscreenModel records kTimeNotInFullscreenHistogram.
+TEST_F(FullscreenMetricsTest, RecordsTimeNotInFullscreen) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  // Enter fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  // Exit fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), -100.0);
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  // Wait some time.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  base::HistogramTester histogram_tester;
+  // Enter fullscreen again.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  histogram_tester.ExpectUniqueTimeSample(kTimeNotInFullscreenHistogram,
+                                          base::Seconds(5), 1);
+}
+
+// Tests that FullscreenModel does not record duration metrics on navigation.
+TEST_F(FullscreenMetricsTest, RecordsNoFullscreenTimeOnNavigation) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  WebViewProxyTabHelper::CreateForWebState(web_state.get());
+  web::FakeWebState* web_state_ptr = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state));
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  // Enter fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  // Wait some time.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  base::HistogramTester histogram_tester;
+  // Simulate navigation.
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  web_state_ptr->OnNavigationFinished(&context);
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  // Verify no duration metrics recorded.
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 0);
+  histogram_tester.ExpectTotalCount(kTimeNotInFullscreenHistogram, 0);
+
+  // Still expect Exit triggered by code because ResetForNavigation is called.
+  histogram_tester.ExpectUniqueSample(
+      kExitFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByCode, 1);
+}
+
+// Tests that FullscreenModel does not record duration metrics on tab switch.
+// This verifies that switching tabs while in fullscreen does not log a duration
+// for the time spent in fullscreen on the previous tab.
+TEST_F(FullscreenMetricsTest, RecordsNoFullscreenTimeOnTabSwitch) {
+  // Add two WebStates to the WebStateList.
+  auto web_state1 = std::make_unique<web::FakeWebState>();
+  WebViewProxyTabHelper::CreateForWebState(web_state1.get());
+  auto web_state2 = std::make_unique<web::FakeWebState>();
+  WebViewProxyTabHelper::CreateForWebState(web_state2.get());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state1));
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
+
+  // Activate the first WebState.
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  // Enter fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  // Wait some time.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  base::HistogramTester histogram_tester;
+  // Switch to the second WebState.
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  // Verify no duration metrics recorded.
+  histogram_tester.ExpectTotalCount(kTimeInFullscreenHistogram, 0);
+  histogram_tester.ExpectTotalCount(kTimeNotInFullscreenHistogram, 0);
+
+  // Still expect Exit triggered by code because ResetForNavigation is called.
+  histogram_tester.ExpectUniqueSample(
+      kExitFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByCode, 1);
+}
+
+// Tests that FullscreenModel resets kTimeNotInFullscreenHistogram reference on
+// tab switch. This verifies that switching tabs resets the reference timer,
+// and the next duration logged for the new tab only includes the time spent
+// on that specific tab before entering fullscreen.
+TEST_F(FullscreenMetricsTest, RecordsNoFullscreenTimeAcrossTabSwitch) {
+  // Add two WebStates to the WebStateList.
+  auto web_state1 = std::make_unique<web::FakeWebState>();
+  WebViewProxyTabHelper::CreateForWebState(web_state1.get());
+  auto web_state2 = std::make_unique<web::FakeWebState>();
+  WebViewProxyTabHelper::CreateForWebState(web_state2.get());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state1));
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
+
+  // Activate the first WebState.
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  // Wait some time.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Switch to the second WebState.
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
+
+  // Wait some time in the second tab.
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  base::HistogramTester histogram_tester;
+  // Enter fullscreen in the second tab.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  // Verify only the time in the second tab was recorded.
+  histogram_tester.ExpectUniqueTimeSample(kTimeNotInFullscreenHistogram,
+                                          base::Seconds(5), 1);
 }

@@ -21,8 +21,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
+    "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/web/common",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 }

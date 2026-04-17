@@ -322,6 +322,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   std::optional<base::TimeTicks> start_scrolling_time_ = std::nullopt;
   // True is the scrolling time have been recorded.
   bool is_scrolling_time_recorded_ = false;
+  // Time when fullscreen mode was entered.
+  std::optional<base::TimeTicks> time_entered_fullscreen_ = std::nullopt;
+  // Time when fullscreen mode was exited.
+  std::optional<base::TimeTicks> time_exited_fullscreen_ = std::nullopt;
   // The minimum scroll amount that will result in beginning to enter or exit
   // fullscreen.
   CGFloat scroll_threshold_ = 0.0;
