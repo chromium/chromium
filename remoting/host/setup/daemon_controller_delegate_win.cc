@@ -50,16 +50,6 @@ const char kUnprivilegedConfigFileSecurityDescriptor[] =
 
 // Configuration keys.
 
-// The configuration keys that cannot be specified in UpdateConfig().
-const char* const kReadonlyKeys[] = {
-    kHostIdConfigPath, kHostOwnerConfigPath, kServiceAccountConfigPath,
-    kDeprecatedXmppLoginConfigPath, kDeprecatedHostOwnerEmailConfigPath};
-
-// The configuration keys whose values may be read by GetConfig().
-const char* const kUnprivilegedConfigKeys[] = {kHostIdConfigPath,
-                                               kServiceAccountConfigPath,
-                                               kDeprecatedXmppLoginConfigPath};
-
 // Reads and parses the configuration file up to |kMaxConfigFileSize| in size.
 bool ReadConfig(const base::FilePath& filename, base::DictValue& config_out) {
   // ReadConfig is called in cases where no config file is expected to be
@@ -186,9 +176,9 @@ bool WriteConfig(const base::DictValue& config) {
 
   // Extract the unprivileged fields from the configuration.
   base::DictValue unprivileged_config;
-  for (const char* key : kUnprivilegedConfigKeys) {
-    if (const std::string* value = config.FindString(key)) {
-      unprivileged_config.Set(key, *value);
+  for (const auto& key : DaemonController::GetUnprivilegedConfigKeys()) {
+    if (const base::Value* value = config.Find(key)) {
+      unprivileged_config.Set(key, value->Clone());
     }
   }
 
@@ -360,14 +350,6 @@ std::optional<base::DictValue> DaemonControllerDelegateWin::GetConfig() {
 void DaemonControllerDelegateWin::UpdateConfig(
     base::DictValue updated_config,
     DaemonController::CompletionCallback done) {
-  // Check for bad keys.
-  for (const char* key : kReadonlyKeys) {
-    if (updated_config.Find(key)) {
-      LOG(ERROR) << "Cannot update config: '" << key << "' is read only.";
-      InvokeCompletionCallback(std::move(done), false);
-      return;
-    }
-  }
   // Get the old config.
   base::FilePath config_dir = remoting::GetConfigDir();
   base::DictValue config;

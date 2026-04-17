@@ -8,7 +8,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -91,6 +93,9 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // Callback type for GetUsageStatsConsent().
   typedef base::OnceCallback<void(const UsageStatsConsent&)>
       GetUsageStatsConsentCallback;
+
+  // The configuration keys whose values may be read by GetConfig().
+  static const base::flat_set<std::string_view>& GetUnprivilegedConfigKeys();
 
   // Interface representing the platform-spacific back-end. Most of its methods
   // are blocking and should be called on a background thread. There are two
