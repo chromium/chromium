@@ -345,7 +345,6 @@ import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.xr.scenecore.XrModule;
-import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -3658,13 +3657,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new TabbedActivityLaunchCauseMetrics(this);
-    }
-
-    @Override
-    public boolean shouldDisableVerticalScrollbar() {
-        // The vertical scrollbar causes buttons at the edge of the app menu to not receive any
-        // hover effects.
-        return AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled();
     }
 
     @Override

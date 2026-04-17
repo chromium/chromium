@@ -102,7 +102,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUiBackend;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -137,10 +136,7 @@ import java.util.Map;
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {LocationBarMediatorTest.ObjectAnimatorShadow.class})
-@DisableFeatures({
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-    AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR,
-})
+@DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class LocationBarMediatorTest {
 
@@ -1998,7 +1994,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testZoomButtonClicked() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -2007,35 +2002,24 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_featureEnabledAndNotDefaultZoom() {
         mMediator.onFinishNativeInitialization();
         verify(mLocationBarLayout, never()).setZoomButtonVisibility(true);
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_featureEnabledAndDefaultZoom() {
         mMediator.onFinishNativeInitialization();
         verify(mLocationBarLayout, never()).setZoomButtonVisibility(false);
     }
 
     @Test
-    @DisableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
-    public void testShouldShowZoomButton_featureDisabled() {
-        mMediator.onFinishNativeInitialization();
-        verify(mLocationBarLayout, never()).setZoomButtonVisibility(false);
-    }
-
-    @Test
-    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     public void testShouldShowZoomButton_nullWebContents() {
         mMediator.onFinishNativeInitialization();
         verify(mLocationBarLayout, never()).setZoomButtonVisibility(false);
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_popupShowing() {
         mTabletMediator.onFinishNativeInitialization();
@@ -2048,7 +2032,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_hideButton() {
         mMediator.onFinishNativeInitialization();
@@ -2167,10 +2150,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR,
-        AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR
-    })
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testZoomButtonToolbarWidthConsumer_notVisible() {
         int buttonWidth =
                 mContext.getResources()
@@ -2193,10 +2173,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR,
-        AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR
-    })
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testZoomButtonToolbarWidthConsumer() {
         int buttonWidth =
                 mContext.getResources()

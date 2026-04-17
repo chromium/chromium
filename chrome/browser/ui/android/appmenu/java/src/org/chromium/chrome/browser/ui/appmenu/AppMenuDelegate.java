@@ -45,8 +45,8 @@ public interface AppMenuDelegate {
      * @return Whether the vertical scroll should be disabled in the app menu.
      */
     default boolean shouldDisableVerticalScrollbar() {
-        return false;
-    };
+        return true;
+    }
 
     /**
      * @return {@link AppMenuPropertiesDelegate} instance that the {@link AppMenuHandlerImpl} should

@@ -10,7 +10,6 @@ import android.os.SystemClock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.zoom.ZoomConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -34,10 +33,7 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomIn(@Nullable WebContents webContents) {
-        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            return zoomInPage(webContents);
-        }
-        return zoomInVisual(webContents);
+        return zoomInPage(webContents);
     }
 
     /**
@@ -48,10 +44,7 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomOut(@Nullable WebContents webContents) {
-        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            return zoomOutPage(webContents);
-        }
-        return zoomOutVisual(webContents);
+        return zoomOutPage(webContents);
     }
 
     /**
@@ -103,10 +96,7 @@ public class ZoomController {
     public static boolean zoomReset(
             @Nullable WebContents webContents,
             @Nullable BrowserContextHandle browserContextHandle) {
-        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            return zoomResetPage(webContents, browserContextHandle);
-        }
-        return zoomResetVisual(webContents);
+        return zoomResetPage(webContents, browserContextHandle);
     }
 
     /**

@@ -439,15 +439,6 @@
     "expiry_milestone": 154
   },
   {
-    "name": "android-zoom-indicator",
-    "owners": [
-      "hitarthkothari@google.com",
-      "ckitagawa@google.com",
-      "clank-tab-dev@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "animated-default-browser-promo-in-fre",
     "owners": [ "bmcclure@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 148

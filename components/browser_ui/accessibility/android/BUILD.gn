@@ -12,22 +12,14 @@ generate_jni("accessibility_jni_headers") {
   ]
 }
 
-generate_jni("accessibility_feature_map_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java" ]
-}
-
 source_set("android") {
   sources = [
-    "accessibility_feature_map.cc",
-    "features.cc",
-    "features.h",
     "font_size_prefs_android.cc",
     "font_size_prefs_android.h",
     "page_zoom_metrics.cc",
     "page_zoom_metrics.h",
   ]
   deps = [
-    ":accessibility_feature_map_jni_headers",
     ":accessibility_jni_headers",
     "//base",
     "//components/prefs",
@@ -97,9 +89,7 @@ android_library("lib_java") {
 }
 
 android_library("page_zoom_utils_java") {
-  srcjar_deps = [ ":accessibility_feature_map_jni_headers" ]
   sources = [
-    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
   ]

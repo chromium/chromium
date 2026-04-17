@@ -91,7 +91,6 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/browser_ui/accessibility/android/features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/collaboration/public/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -9849,10 +9848,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-zoom-indicator", flag_descriptions::kAndroidZoomIndicatorName,
-     flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(browser_ui::kAndroidZoomIndicator)},
-
     {"android-zoom-immersive", flag_descriptions::kAndroidZoomImmersiveName,
      flag_descriptions::kAndroidZoomImmersiveDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidZoomImmersive)},

@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomMenuItemCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
@@ -849,8 +848,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowLFFPageZoomItem() {
-        return AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
 
     private PropertyModel buildNewPageZoomModel() {

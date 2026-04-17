@@ -276,9 +276,7 @@ public class PageZoomUtils {
 
         // If the user has ever set a custom zoom level, show the menu item.
         // This is restricted to LFF (Tablets) as UX has not approved this for mobile/phones.
-        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext())
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(ContextUtils.getApplicationContext())
                 && context != null
                 && !HostZoomMap.getAllHostZoomLevels(context).isEmpty()) {
             PageZoomUma.logAppMenuEnabledStateHistogram(
@@ -286,9 +284,8 @@ public class PageZoomUtils {
             return true;
         }
 
-        if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                ContextUtils.getApplicationContext())) {
             // Default to true for Lff
             PageZoomUma.logAppMenuEnabledStateHistogram(
                     PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.FORM_FACTOR_ENABLED);
