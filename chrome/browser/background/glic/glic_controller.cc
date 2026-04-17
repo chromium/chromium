@@ -72,6 +72,7 @@ void GlicController::RequestCaptureRegion() {
   GlicInvokeOptions options(
       glic::mojom::InvocationSource::kCaptureRegionHotkey);
   options.wait_for_panel_open = true;
+  options.target = Target(bwi->GetActiveTabInterface());
   glic_keyed_service->Invoke(std::move(options));
 }
 

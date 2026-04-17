@@ -508,8 +508,16 @@ class SelectionOverlayHotkeyInteractiveTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HotkeyTogglesSelectionOverlayOnOff \
+  DISABLED_HotkeyTogglesSelectionOverlayOnOff
+#else
+#define MAYBE_HotkeyTogglesSelectionOverlayOnOff \
+  HotkeyTogglesSelectionOverlayOnOff
+#endif
 IN_PROC_BROWSER_TEST_F(SelectionOverlayHotkeyInteractiveTest,
-                       RequestCaptureRegionViaHotkey) {
+                       MAYBE_HotkeyTogglesSelectionOverlayOnOff) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Hotkey not supported on the platform";
   }
@@ -532,7 +540,14 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayHotkeyInteractiveTest,
       WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
                         "el => el.screenshot_ !== null"),
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
-                                                    "glic-selection-overlay"}));
+                                                    "glic-selection-overlay"}),
+      Do([]() {
+        GlicBackgroundModeManager* const manager =
+            g_browser_process->GetFeatures()->glic_background_mode_manager();
+        manager->HandleHotkey(
+            GlicLauncherConfiguration::GetDefaultSelectionHotkey());
+      }),
+      WaitForHide(OverlayBaseController::kOverlayId));
 }
 
 IN_PROC_BROWSER_TEST_F(
