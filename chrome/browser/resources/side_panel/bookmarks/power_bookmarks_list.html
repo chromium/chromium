@@ -45,14 +45,9 @@
     border: var(--cr-hairline);
   }
 
-  cr-icon {
-    --icon-size: 16px;
-    height: var(--icon-size);
-    width: var(--icon-size);
-  }
-
-  sp-list-item-badge cr-icon {
-    --icon-size: 12px;
+  .new-folder-icon-container cr-icon {
+    height: 16px;
+    width: 16px;
   }
 
   cr-icon[invisible] {
@@ -76,8 +71,10 @@
     gap: 12px;
   }
 
+  #sortMenu cr-icon,
   .dialog-body > cr-icon {
-    --icon-size: 20px;
+    height: 20px;
+    width: 20px;
   }
 
   .dropdown-item {
@@ -394,7 +391,7 @@
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(
                     activeFolderPath_.*, currentUrl_, displayLists_)]]">
-      <cr-icon slot="prefix-icon" icon="bookmarks:add-tab"></cr-icon>
+      <cr-icon slot="prefix-icon" icon="sp:add-circle"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>
 
