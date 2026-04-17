@@ -108,7 +108,7 @@ class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
             active_web_contents->GetController()
                 .GetLastCommittedEntry()
                 ->GetTimestamp(),
-            GURL("https://www.example.com")),
+            GURL("https://www.activetab.com")),
         page_content_annotations::PageContentAnnotationsResult::
             CreateCategoryResults({
                 page_content_annotations::Category(
@@ -144,8 +144,15 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        NoLongerActiveTabAfterCategoryClassification) {
   base::HistogramTester histogram_tester;
 
-  // Time stamp won't match whatever navigated since it does not match the
-  // active tab.
+  // Have browser navigate to a valid URL.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.example.com")));
+
+  // Navigate to different page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.other.com")));
+
+  // URL won't match whatever navigated since it does not match the active tab.
   contextual_cueing_controller()->OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(base::Time::Now(),
                                              GURL("https://www.example.com")),
@@ -286,6 +293,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        NoAnchoredMessageCueInResponse) {
   base::HistogramTester histogram_tester;
 
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
   auto response = MakeCompleteResponse();
   response.clear_anchored_message_cue();
   SeedExecutionResult(std::move(response));
@@ -303,6 +315,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        UnknownFulfillmentSurface) {
   base::HistogramTester histogram_tester;
 
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
   auto response = MakeCompleteResponse();
   response.clear_gemini_in_chrome_surface();
   SeedExecutionResult(std::move(response));
@@ -318,6 +335,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, Ineligible) {
   base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   cue_target_->eligible = false;
   SeedExecutionResult(MakeCompleteResponse());
@@ -337,6 +359,12 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
 #endif
 
   ASSERT_FALSE(cue_target_->HasClickData());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
   base::HistogramTester histogram_tester;
 
   SeedExecutionResult(MakeCompleteResponse());
@@ -359,6 +387,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        NoLongerActiveTabAfterResponse) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
   base::HistogramTester histogram_tester;
   SeedExecutionResult(MakeCompleteResponse());
   SimulateFilterPassed();
@@ -378,6 +411,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        FeaturePromoActive) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
   base::HistogramTester histogram_tester;
   SeedExecutionResult(MakeCompleteResponse());
   SimulateFilterPassed();
@@ -396,12 +434,17 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        OnlySendsTopMaxBackgroundTabs) {
   // Create 15 tabs.
-  for (int i = 0; i < kMaxNumBackgroundTabs.Get() + 1; ++i) {
+  for (int i = 0; i < kMaxNumBackgroundTabs.Get(); ++i) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(base::StringPrintf("https://www.google.com/%d", i)),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   base::HistogramTester histogram_tester;
   SeedExecutionResult(MakeCompleteResponse());

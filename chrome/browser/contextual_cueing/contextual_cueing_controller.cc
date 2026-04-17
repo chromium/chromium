@@ -133,9 +133,7 @@ void ContextualCueingController::OnPageContentAnnotated(
           ? tab_list_interface_->GetActiveTab()->GetContents()
           : nullptr;
   if (!active_web_contents ||
-      visit.nav_entry_timestamp != active_web_contents->GetController()
-                                       .GetLastCommittedEntry()
-                                       ->GetTimestamp()) {
+      visit.url != active_web_contents->GetLastCommittedURL()) {
     MODEL_EXECUTION_LOG(
         base::StringPrintf("%s ineligible for cue: No longer active tab after "
                            "category classification.",
