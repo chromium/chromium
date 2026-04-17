@@ -51,7 +51,8 @@ namespace blink {
 //   template parameters of HashTable-based classes.
 // The former is preferred if the hash traits defines the default hash behavior
 // of the type. The latter is suitable when a type has multiple hash behaviors,
-// e.g. CaseFoldingHashTraits defines an alternative hash behavior of strings.
+// e.g. IgnoringAsciiCaseHashTraits defines an alternative hash behavior of
+// strings.
 //
 // This file contains definitions of hash traits for integral types,
 // floating-point types, enums, raw and smart pointers, std::pair, etc.

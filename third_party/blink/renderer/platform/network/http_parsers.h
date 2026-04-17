@@ -66,7 +66,8 @@ enum ContentTypeOptionsDisposition {
   kContentTypeOptionsNosniff
 };
 
-using CommaDelimitedHeaderSet = HashSet<String, CaseFoldingHashTraits<String>>;
+using CommaDelimitedHeaderSet =
+    HashSet<String, DeprecatedCaseFoldingHashTraits<String>>;
 
 struct CacheControlHeader {
   DISALLOW_NEW();

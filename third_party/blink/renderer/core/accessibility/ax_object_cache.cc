@@ -65,7 +65,7 @@ AXObjectCache* AXObjectCache::CreateSnapshotter(Document& document,
 
 namespace {
 
-using ARIAWidgetSet = HashSet<String, CaseFoldingHashTraits<String>>;
+using ARIAWidgetSet = HashSet<String, DeprecatedCaseFoldingHashTraits<String>>;
 
 const ARIAWidgetSet& ARIARoleWidgetSet() {
   // clang-format off

@@ -54,8 +54,8 @@ TEST(IgnoringAsciiCaseHashTest, NonAscii) {
   const UChar kSharpSInUpperCase[] = {0x1e9e, 0};
   String sharp_s(kSharpS);
   String sharp_s_in_upper_case(kSharpSInUpperCase);
-  // Unlike CaseFoldingHash, IgnoringAsciiCaseHash should not fold non-ASCII
-  // characters.
+  // Unlike DeprecatedCaseFoldingHash, IgnoringAsciiCaseHash should not fold
+  // non-ASCII characters.
   EXPECT_FALSE(iac::Equal(sharp_s, sharp_s_in_upper_case));
   EXPECT_NE(iac::GetHash(sharp_s), iac::GetHash(sharp_s_in_upper_case));
 

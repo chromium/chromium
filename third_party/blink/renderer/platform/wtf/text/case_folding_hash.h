@@ -88,12 +88,12 @@ struct CaseFoldingHashReader {
   }
 };
 
-// The GetHash() functions on CaseFoldingHashTraits do not support null strings.
-// find(), Contains(), and insert() on
-// HashMap<String,..., CaseFoldingHashTraits<String>>
-// cause a null-pointer dereference when passed null strings.
-class CaseFoldingHash {
-  STATIC_ONLY(CaseFoldingHash);
+// The GetHash() functions on DeprecatedCaseFoldingHashTraits do not support
+// null strings. find(), Contains(), and insert() on HashMap<String,...,
+// DeprecatedCaseFoldingHashTraits<String>> cause a null-pointer dereference
+// when passed null strings.
+class DeprecatedCaseFoldingHash {
+  STATIC_ONLY(DeprecatedCaseFoldingHash);
 
  public:
   static unsigned GetHash(base::span<const UChar> span) {
@@ -162,10 +162,11 @@ class CaseFoldingHash {
 //
 // See IgnoringAsciiCaseHashTraits for ASCII cases-insensitive strings.
 template <typename T>
-struct CaseFoldingHashTraits : HashTraits<T>, CaseFoldingHash {
-  using CaseFoldingHash::Equal;
-  using CaseFoldingHash::GetHash;
-  using CaseFoldingHash::kSafeToCompareToEmptyOrDeleted;
+struct DeprecatedCaseFoldingHashTraits : HashTraits<T>,
+                                         DeprecatedCaseFoldingHash {
+  using DeprecatedCaseFoldingHash::Equal;
+  using DeprecatedCaseFoldingHash::GetHash;
+  using DeprecatedCaseFoldingHash::kSafeToCompareToEmptyOrDeleted;
 };
 
 }  // namespace blink

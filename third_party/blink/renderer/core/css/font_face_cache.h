@@ -123,7 +123,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
 
     using Map = HeapHashMap<String,
                             Member<FontSelectionQueryResult>,
-                            CaseFoldingHashTraits<String>>;
+                            DeprecatedCaseFoldingHashTraits<String>>;
 
    public:
     void Clear();
@@ -159,7 +159,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
    private:
     using Map = HeapHashMap<String,
                             Member<CapabilitiesSet>,
-                            CaseFoldingHashTraits<String>>;
+                            DeprecatedCaseFoldingHashTraits<String>>;
 
     Map map_;
   };

@@ -18,10 +18,11 @@ struct StructTraits<
     blink::mojom::FetchAPIRequestHeadersDataView,
     blink::HashMap<blink::String,
                    blink::String,
-                   blink::CaseFoldingHashTraits<blink::String>>> {
-  using MapType = blink::HashMap<blink::String,
-                                 blink::String,
-                                 blink::CaseFoldingHashTraits<blink::String>>;
+                   blink::DeprecatedCaseFoldingHashTraits<blink::String>>> {
+  using MapType =
+      blink::HashMap<blink::String,
+                     blink::String,
+                     blink::DeprecatedCaseFoldingHashTraits<blink::String>>;
   static blink::HashMap<blink::String, blink::String> headers(
       const MapType& input) {
     blink::HashMap<blink::String, blink::String> map;

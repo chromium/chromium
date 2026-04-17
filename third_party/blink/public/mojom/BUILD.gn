@@ -1132,7 +1132,7 @@ mojom("mojom_platform") {
       types = [
         {
           mojom = "blink.mojom.FetchAPIRequestHeaders"
-          cpp = "::blink::HashMap<::blink::String, ::blink::String, ::blink::CaseFoldingHashTraits<::blink::String>>"
+          cpp = "::blink::HashMap<::blink::String, ::blink::String, ::blink::DeprecatedCaseFoldingHashTraits<::blink::String>>"
           move_only = true
         },
       ]

@@ -58,7 +58,7 @@ class PLATFORM_EXPORT HTTPHeaderMap final {
 
   typedef HashMap<AtomicString,
                   AtomicString,
-                  CaseFoldingHashTraits<AtomicString>>
+                  DeprecatedCaseFoldingHashTraits<AtomicString>>
       MapType;
   typedef MapType::AddResult AddResult;
   typedef MapType::const_iterator const_iterator;
