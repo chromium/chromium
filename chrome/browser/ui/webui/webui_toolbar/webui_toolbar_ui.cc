@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -236,15 +237,15 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
 
 const std::vector<ui::ElementIdentifier>
 WebUIToolbarUI::GetKnownElementIdentifiers() {
-  return {kLocationBarElementId,
-          kOmniboxElementId,
-          kReloadButtonElementId,
-          kToolbarSplitTabsToolbarButtonElementId,
-          kToolbarHomeButtonElementId,
-          kToolbarBackButtonElementId,
-          kToolbarForwardButtonElementId,
-          kSharedTabGroupFeedbackElementId,
-          kSharedTabGroupCommentsActionElementId,
-          kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
-          kPinnedToolbarActionShowSidePanelBookmarksElementId};
+  static const base::NoDestructor<std::vector<ui::ElementIdentifier>> ids(
+      {kLocationBarElementId, kOmniboxElementId, kReloadButtonElementId,
+       kToolbarSplitTabsToolbarButtonElementId, kToolbarHomeButtonElementId,
+       kToolbarBackButtonElementId, kToolbarForwardButtonElementId,
+       kSharedTabGroupFeedbackElementId, kSharedTabGroupCommentsActionElementId,
+       kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
+       kPinnedToolbarActionShowSidePanelBookmarksElementId});
+  auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
+  pinned_ids.reserve(pinned_ids.size() + ids->size());
+  pinned_ids.insert(pinned_ids.end(), ids->begin(), ids->end());
+  return pinned_ids;
 }

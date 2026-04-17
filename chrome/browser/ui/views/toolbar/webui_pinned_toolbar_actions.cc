@@ -12,168 +12,13 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
-
-namespace {
-
-std::optional<toolbar_ui_api::mojom::PinnedToolbarAction>
-ActionIdToPinnedToolbarAction(actions::ActionId action) {
-  switch (action) {
-    case kActionNewIncognitoWindow:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kNewIncognitoWindow;
-    case kActionShowPasswordsBubbleOrPage:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kShowPasswordsBubbleOrPage;
-    case kActionShowPaymentsBubbleOrPage:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kShowPaymentsBubbleOrPage;
-    case kActionShowAddressesBubbleOrPage:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kShowAddressesBubbleOrPage;
-    case kActionSidePanelShowBookmarks:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowBookmarks;
-    case kActionSidePanelShowReadingList:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowReadingList;
-    case kActionSidePanelShowHistoryCluster:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowHistoryCluster;
-    case kActionShowDownloads:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads;
-    case kActionClearBrowsingData:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kClearBrowsingData;
-    case kActionPrint:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
-    case kActionSidePanelShowLensOverlayResults:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowLensOverlayResults;
-    case kActionShowTranslate:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
-    case kActionQrCodeGenerator:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator;
-    case kActionRouteMedia:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia;
-    case kActionSidePanelShowReadAnything:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowReadAnything;
-    case kActionCopyUrl:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kCopyUrl;
-    case kActionSendTabToSelf:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kSendTabToSelf;
-    case kActionTaskManager:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kTaskManager;
-    case kActionDevTools:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kDevTools;
-    case kActionTabSearch:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch;
-    case kActionSidePanelShowContextualTasks:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowContextualTasks;
-    case kActionSidePanelShowLens:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowLens;
-    case kActionSidePanelShowAboutThisSite:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowAboutThisSite;
-    case kActionSidePanelShowCustomizeChrome:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowCustomizeChrome;
-    case kActionSidePanelShowShoppingInsights:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowShoppingInsights;
-    case kActionSidePanelShowMerchantTrust:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSidePanelShowMerchantTrust;
-    case kActionSendSharedTabGroupFeedback:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::
-          kSendSharedTabGroupFeedback;
-    case kActionSidePanelShowComments:
-      return toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowComments;
-    default:
-      return std::nullopt;
-  }
-}
-
-std::optional<actions::ActionId> PinnedToolbarActionToActionId(
-    toolbar_ui_api::mojom::PinnedToolbarAction action) {
-  switch (action) {
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kUnspecified:
-      return std::nullopt;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kNewIncognitoWindow:
-      return kActionNewIncognitoWindow;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kShowPasswordsBubbleOrPage:
-      return kActionShowPasswordsBubbleOrPage;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kShowPaymentsBubbleOrPage:
-      return kActionShowPaymentsBubbleOrPage;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kShowAddressesBubbleOrPage:
-      return kActionShowAddressesBubbleOrPage;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowBookmarks:
-      return kActionSidePanelShowBookmarks;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowReadingList:
-      return kActionSidePanelShowReadingList;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowHistoryCluster:
-      return kActionSidePanelShowHistoryCluster;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads:
-      return kActionShowDownloads;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kClearBrowsingData:
-      return kActionClearBrowsingData;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kPrint:
-      return kActionPrint;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowLensOverlayResults:
-      return kActionSidePanelShowLensOverlayResults;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate:
-      return kActionShowTranslate;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator:
-      return kActionQrCodeGenerator;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia:
-      return kActionRouteMedia;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowReadAnything:
-      return kActionSidePanelShowReadAnything;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kCopyUrl:
-      return kActionCopyUrl;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kSendTabToSelf:
-      return kActionSendTabToSelf;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kTaskManager:
-      return kActionTaskManager;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kDevTools:
-      return kActionDevTools;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch:
-      return kActionTabSearch;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowContextualTasks:
-      return kActionSidePanelShowContextualTasks;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowLens:
-      return kActionSidePanelShowLens;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowAboutThisSite:
-      return kActionSidePanelShowAboutThisSite;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowCustomizeChrome:
-      return kActionSidePanelShowCustomizeChrome;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowShoppingInsights:
-      return kActionSidePanelShowShoppingInsights;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSidePanelShowMerchantTrust:
-      return kActionSidePanelShowMerchantTrust;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::
-        kSendSharedTabGroupFeedback:
-      return kActionSendSharedTabGroupFeedback;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowComments:
-      return kActionSidePanelShowComments;
-    case toolbar_ui_api::mojom::PinnedToolbarAction::kDivider:
-      return std::nullopt;
-  }
-  return std::nullopt;
-}
-
-}  // namespace
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
+#include "ui/base/interaction/element_identifier.h"
 
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
     WebUIToolbarWebView* webui_toolbar_web_view)
@@ -218,7 +63,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         IsActionPinned(id)) {
       return;
     }
-    auto mojo_id = ActionIdToPinnedToolbarAction(id);
+    auto mojo_id = webui_toolbar::ActionIdToPinnedToolbarAction(id);
     CHECK(mojo_id) << "Unsupported pinned action type " << id;
     auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
     state->action = *mojo_id;
@@ -226,8 +71,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     state->enabled = item->GetEnabled();
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();
-    if (auto element_id =
-            pinned_toolbar_actions::GetElementIdentifierForAction(id)) {
+    if (auto element_id = webui_toolbar::ActionIdToElementIdentifier(id)) {
       state->element_id = element_id.GetName();
     }
     states.push_back(std::move(state));
@@ -330,7 +174,16 @@ ToolbarButton* WebUIPinnedToolbarActions::GetDownloadButton() {
 
 views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     actions::ActionId action_id) {
-  NOTIMPLEMENTED();
+  if (IsActionPinnedOrPoppedOut(action_id)) {
+    // TODO(https://crbug.com/493870881): Add support for cases where the button
+    // was very recently pinned or popped out and the WebUI hasn't had a chance
+    // to call TrackedElementHandler::TrackedElementVisibilityChanged(), so the
+    // code below will return nullptr.
+    return views::BubbleAnchor(
+        BrowserElements::From(webui_toolbar_web_view_->browser_)
+            ->GetElement(
+                webui_toolbar::ActionIdToElementIdentifier(action_id)));
+  }
   return views::BubbleAnchor();
 }
 
@@ -347,7 +200,7 @@ void WebUIPinnedToolbarActions::UpdatePinnedStateAndAnnounce(
 void WebUIPinnedToolbarActions::Invoke(
     toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
   std::optional<actions::ActionId> id =
-      PinnedToolbarActionToActionId(action_id);
+      webui_toolbar::PinnedToolbarActionToActionId(action_id);
   if (!id) {
     return;
   }

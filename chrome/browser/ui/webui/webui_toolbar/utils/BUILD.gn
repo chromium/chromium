@@ -10,11 +10,15 @@ source_set("utils") {
     "toolbar_button_utils.h",
   ]
   deps = [
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//components/browser_apis/browser_controls:mojom_data_model",
     "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
+    "//ui/base",
     "//ui/webui",
   ]
 }

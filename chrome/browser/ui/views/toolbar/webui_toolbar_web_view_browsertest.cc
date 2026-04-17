@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -2640,13 +2641,16 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
+  auto* pinned_actions = webui_toolbar_view->GetPinnedToolbarActions();
 
   for (const auto& [action_id, mojom_action] : kActionMappings) {
     ui::ElementIdentifier id =
         pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
     if (id) {
+      CHECK_EQ(id, webui_toolbar::ActionIdToElementIdentifier(action_id));
       EXPECT_FALSE(BrowserElements::From(browser())->GetElement(id));
     }
+    EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
 
     model_->UpdatePinnedState(action_id, true);
     ASSERT_TRUE(base::test::RunUntil(
@@ -2664,6 +2668,11 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
         return BrowserElements::From(browser())->GetElement(id) != nullptr;
       }));
     }
+    // Once pinned, GetBubbleAnchor() should eventually return a non-null
+    // BubbleAnchor.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return !pinned_actions->GetBubbleAnchor(action_id).IsNull();
+    }));
 
     model_->UpdatePinnedState(action_id, false);
     ASSERT_TRUE(base::test::RunUntil(
@@ -2674,6 +2683,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
         return BrowserElements::From(browser())->GetElement(id) == nullptr;
       }));
     }
+    EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
   }
 }
 
