@@ -45,6 +45,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -104,6 +105,7 @@ public final class StatusMediatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private OnClickListener mOnClickListener;
     @Mock private PageInfoAction mPageInfoAction;
+    @Mock private Runnable mTogglePopupCallback;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
 
@@ -114,6 +116,8 @@ public final class StatusMediatorUnitTest {
 
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Integer> mFuseboxStateSupplier =
+            ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
 
     @Before
     public void setUp() {
@@ -141,7 +145,9 @@ public final class StatusMediatorUnitTest {
                         ObservableSuppliers.createNonNull(mProfile),
                         mPageInfoIphController,
                         mWindowAndroid,
-                        mPageInfoAction);
+                        mPageInfoAction,
+                        mFuseboxStateSupplier,
+                        mTogglePopupCallback);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
 
         StatusIconResource logo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
@@ -736,12 +742,19 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void testFuseboxState() {
-        mMediator.onFuseboxStateChanged(FuseboxState.COMPACT);
-        assertFalse(mModel.get(StatusProperties.IMPORTANT_FOR_A11Y));
+    public void testFuseboxCompactMode() {
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
 
-        mMediator.onFuseboxStateChanged(FuseboxState.EXPANDED);
-        assertTrue(mModel.get(StatusProperties.IMPORTANT_FOR_A11Y));
+        assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
+        assertEquals(
+                R.drawable.ic_add_round_20dp_with_inset,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+
+        assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
+
+        assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        verify(mTogglePopupCallback).run();
     }
 
     private String getIconIdentifierForTesting() {

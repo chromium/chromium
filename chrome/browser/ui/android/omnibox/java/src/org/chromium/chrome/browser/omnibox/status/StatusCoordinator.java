@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -77,6 +78,8 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      * @param pageInfoAction Displays page info popup.
      * @param browserControlsVisibilityDelegate Delegate interface allowing control of the
      *     visibility of the browser controls (i.e. toolbar).
+     * @param fuseboxStateSupplier Used to decide if an plus button for fusebox should be shown.
+     * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
      */
     public StatusCoordinator(
             boolean isTablet,
@@ -87,7 +90,9 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
             WindowAndroid windowAndroid,
             PageInfoAction pageInfoAction,
             @Nullable BrowserStateBrowserControlsVisibilityDelegate
-                    browserControlsVisibilityDelegate) {
+                    browserControlsVisibilityDelegate,
+            NonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
+            Runnable onPlusButtonClicked) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -117,7 +122,9 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                         profileSupplier,
                         pageInfoIphController,
                         windowAndroid,
-                        pageInfoAction);
+                        pageInfoAction,
+                        fuseboxStateSupplier,
+                        onPlusButtonClicked);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(
@@ -276,11 +283,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
                 ? 0
                 : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes();
-    }
-
-    /** Called when teh fusebox state of the LocationBar changes */
-    public void onFuseboxStateChanged(@FuseboxState int state) {
-        mMediator.onFuseboxStateChanged(state);
     }
 
     /**

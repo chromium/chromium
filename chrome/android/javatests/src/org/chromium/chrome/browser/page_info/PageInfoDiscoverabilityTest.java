@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.omnibox.status.PermissionStatusHandler;
 import org.chromium.chrome.browser.omnibox.status.StatusMediator;
@@ -256,7 +258,10 @@ public class PageInfoDiscoverabilityTest {
                                     ObservableSuppliers.createNonNull(mProfile),
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
-                                    /* pageInfoAction= */ null);
+                                    /* pageInfoAction= */ null,
+                                    ObservableSuppliers.createNonNull(
+                                            FuseboxCoordinator.FuseboxState.DISABLED),
+                                    CallbackUtils.emptyRunnable());
                     mPermissionStatusHandler = mMediator.getPermissionStatusHandlerForTesting();
                 });
     }

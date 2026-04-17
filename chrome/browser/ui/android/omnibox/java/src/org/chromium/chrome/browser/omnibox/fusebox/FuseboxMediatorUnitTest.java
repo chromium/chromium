@@ -366,19 +366,19 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onToggleAttachmentsPopup_recordsMetrics() {
+    public void onPlusButtonClicked_recordsMetrics() {
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AttachmentsPopupToggled", true);
-        mMediator.onToggleAttachmentsPopup();
+        mMediator.onPlusButtonClicked();
         assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         histogramWatcher.assertExpected();
 
         var dismissWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AttachmentsPopupToggled", false);
-        mMediator.onToggleAttachmentsPopup();
+        mMediator.onPlusButtonClicked();
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         dismissWatcher.assertExpected();
     }
@@ -432,7 +432,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
-        mMediator.onToggleAttachmentsPopup();
+        mMediator.onPlusButtonClicked();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
     }
 
@@ -618,12 +618,12 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onToggleAttachmentsPopup_clipboardHasImage_showsClipboardButton() {
+    public void onPlusButtonClicked_clipboardHasImage_showsClipboardButton() {
         doReturn(true).when(mClipboard).hasImage();
         byte[] expectedPng = new byte[] {1, 2, 3};
         doReturn(expectedPng).when(mClipboard).getPng();
 
-        mMediator.onToggleAttachmentsPopup();
+        mMediator.onPlusButtonClicked();
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN);
@@ -635,21 +635,21 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onToggleAttachmentsPopup_clipboardDoesNotHaveImage_hidesClipboardButton() {
+    public void onPlusButtonClicked_clipboardDoesNotHaveImage_hidesClipboardButton() {
         doReturn(false).when(mClipboard).hasImage();
-        mMediator.onToggleAttachmentsPopup();
+        mMediator.onPlusButtonClicked();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
     }
 
     @Test
-    public void onToggleAttachmentsPopup_pdfUploadEligible_showsFileButton() {
+    public void onPlusButtonClicked_pdfUploadEligible_showsFileButton() {
         doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
     }
 
     @Test
-    public void onToggleAttachmentsPopup_pdfUploadNotEligible_hidesFileButton() {
+    public void onPlusButtonClicked_pdfUploadNotEligible_hidesFileButton() {
         doReturn(false).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));

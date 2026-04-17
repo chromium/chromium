@@ -134,6 +134,8 @@ public class LocationBarCoordinator
     private FuseboxCoordinator mFuseboxCoordinator;
     private final WindowAndroid mWindowAndroid;
     private final Callback<Boolean> mTextWrappingListener;
+    private final Callback<@FuseboxState Integer> mOnFuseboxStateChange =
+            this::onFuseboxStateChange;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
     private View mZoomButton;
@@ -268,7 +270,7 @@ public class LocationBarCoordinator
         NonNullObservableSupplier<Integer> fuseboxStateSupplier;
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
             fuseboxStateSupplier = mFuseboxCoordinator.getFuseboxStateSupplier();
-            fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(this::onFuseboxStateChange);
+            fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
         } else {
             fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
         }
@@ -380,7 +382,9 @@ public class LocationBarCoordinator
                         profileObservableSupplier,
                         windowAndroid,
                         pageInfoAction,
-                        browserControlsVisibilityDelegate);
+                        browserControlsVisibilityDelegate,
+                        fuseboxStateSupplier,
+                        mFuseboxCoordinator::plusButtonClicked);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
@@ -528,6 +532,7 @@ public class LocationBarCoordinator
         mOmniboxDropdownEmbedderImpl = null;
 
         if (mFuseboxCoordinator != null) {
+            mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mOnFuseboxStateChange);
             mFuseboxCoordinator.destroy();
             mFuseboxCoordinator = null;
         }

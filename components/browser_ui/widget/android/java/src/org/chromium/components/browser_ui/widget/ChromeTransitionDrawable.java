@@ -85,13 +85,21 @@ public class ChromeTransitionDrawable extends LayerDrawable {
 
     /**
      * Constructs a new ChromeTransitionDrawable. Initially, initialDrawable will be fully visible
-     * and finalDrawable will be invisible. Call {@link #startTransition()} to
-     * animate the transition from the initial drawable to the final drawable.
+     * and finalDrawable will be invisible. Call {@link #startTransition()} to animate the
+     * transition from the initial drawable to the final drawable.
+     *
      * @param initialDrawable The first, initially visible drawable.
      * @param finalDrawable The second, initially hidden, drawable.
      */
     public ChromeTransitionDrawable(Drawable initialDrawable, Drawable finalDrawable) {
         super(new Drawable[] {initialDrawable.mutate(), finalDrawable.mutate()});
+
+        // By default, the LayerDrawable uses a PADDING_MODE_NEST mode where where each subsequent
+        // layer is placed inside the padding of the previous layer. However this class's purpose is
+        // to switch between two drawables, we want them to be completely independent. This is what
+        // PADDING_MODE_STACK gives us.
+        setPaddingMode(LayerDrawable.PADDING_MODE_STACK);
+
         mInitialDrawable = getDrawable(0);
         mFinalDrawable = getDrawable(1);
         mAnimator = ObjectAnimator.ofInt(this, mTransitionProgressProperty, MAX_PROGRESS_ALPHA);

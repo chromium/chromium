@@ -36,7 +36,6 @@ found in the LICENSE file.
         android:scaleType="centerInside"
         android:clickable="true"
         android:focusable="true"
-        android:background="@drawable/search_box_icon_background_opaque"
         android:clipToOutline="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

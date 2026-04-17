@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -81,8 +82,12 @@ public class StatusMediator
     private final Handler mStoreIconHandler = new Handler();
     private final PageInfoIphController mPageInfoIphController;
     private final PageInfoAction mPageInfoAction;
+    private final NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
+    private final OnClickListener mFuseboxOnPlusButtonClicked;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             this::onSiteSearchDataChanged;
+    private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
+            this::onFuseboxStateChanged;
 
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
@@ -125,6 +130,8 @@ public class StatusMediator
      * @param profileSupplier Supplies the current {@link Profile}.
      * @param pageInfoIphController Manages when an IPH bubble for PageInfo is shown.
      * @param windowAndroid The current {@link WindowAndroid}.
+     * @param fuseboxStateSupplier Notifies about the state of the fusebox.
+     * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
      */
     public StatusMediator(
             PropertyModel model,
@@ -136,7 +143,9 @@ public class StatusMediator
             MonotonicObservableSupplier<Profile> profileSupplier,
             PageInfoIphController pageInfoIphController,
             WindowAndroid windowAndroid,
-            PageInfoAction pageInfoAction) {
+            PageInfoAction pageInfoAction,
+            NonNullObservableSupplier<Integer> fuseboxStateSupplier,
+            Runnable onPlusButtonClicked) {
         initBackgroundDrawables(context);
         mModel = model;
         mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, false);
@@ -157,6 +166,10 @@ public class StatusMediator
         mShowStatusIconWhenUrlFocused = mIsTablet;
         mPageInfoAction = pageInfoAction;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
+
+        mFuseboxStateSupplier = fuseboxStateSupplier;
+        mFuseboxOnPlusButtonClicked = v -> onPlusButtonClicked.run();
+        mFuseboxStateSupplier.addSyncObserver(mOnFuseboxStateChanged);
 
         mPermissionStatusHandler =
                 new PermissionStatusHandler(
@@ -201,6 +214,9 @@ public class StatusMediator
         if (mCookieControlsBridge != null) {
             mCookieControlsBridge.destroy();
             mCookieControlsBridge = null;
+        }
+        if (mFuseboxStateSupplier != null) {
+            mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
         }
     }
 
@@ -486,10 +502,18 @@ public class StatusMediator
         @DrawableRes int iconRes = 0;
         @ColorRes int tintRes = 0;
         @StringRes int toastRes = 0;
+        @StringRes int descRes = Resources.ID_NULL;
         @StringRes int doubleTapDescriptionRes = R.string.accessibility_toolbar_view_site_info;
         OnClickListener clickListener = null;
 
-        if (maybeUpdateStatusIconForSearchEngineIcon()) {
+        if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT) {
+            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
+            tintRes = mNavigationIconTintRes;
+            iconRes = R.drawable.ic_add_round_20dp_with_inset;
+            clickListener = mFuseboxOnPlusButtonClicked;
+            descRes = R.string.accessibility_omnibox_open_context_popup;
+            doubleTapDescriptionRes = Resources.ID_NULL;
+        } else if (maybeUpdateStatusIconForSearchEngineIcon()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             // No need to proceed further if we've already updated it for the search engine icon.
             return;
@@ -536,8 +560,13 @@ public class StatusMediator
             statusIcon.setTransitionType(transitionType);
         }
 
-        // Update the accessibility description before continuing since we need it either way.
-        mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, getAccessibilityDescriptionRes());
+        // TODO(https://crbug.com/503744512): Description res decision should be integrated into
+        //  this method's if/else statements.
+        if (descRes == Resources.ID_NULL) {
+            descRes = getAccessibilityDescriptionRes();
+        }
+
+        mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, descRes);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mModel.set(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES, toastRes);
         mModel.set(
@@ -549,11 +578,7 @@ public class StatusMediator
     }
 
     void onFuseboxStateChanged(int state) {
-        if (state == FuseboxState.COMPACT) {
-            mModel.set(StatusProperties.IMPORTANT_FOR_A11Y, false);
-        } else {
-            mModel.set(StatusProperties.IMPORTANT_FOR_A11Y, true);
-        }
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /** Returns true if the security icon has been set for the search engine icon. */

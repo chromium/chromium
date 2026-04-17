@@ -352,6 +352,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 userDidNavigate, mInput.getRequestType(), mInput.getModelMode());
     }
 
+    /** Toggles the attachments, tools, and models menu. */
+    public void plusButtonClicked() {
+        if (mMediator != null) {
+            mMediator.onPlusButtonClicked();
+        }
+    }
+
     /**
      * Registers a callback notified when the compactness of the fusebox changes. This callback will
      * only fire if the compact mode variant is enabled and the compactness state changes.
