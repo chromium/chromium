@@ -253,4 +253,11 @@ public class ListItemBuilderUnitTest {
                 0,
                 model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
     }
+
+    @Test
+    public void testBuild_withStartIconWidth() {
+        int width = 12;
+        ListItem listItem = new ListItemBuilder().withStartIconWidth(width).build();
+        assertEquals(width, (int) listItem.model.get(ListMenuItemProperties.START_ICON_WIDTH));
+    }
 }

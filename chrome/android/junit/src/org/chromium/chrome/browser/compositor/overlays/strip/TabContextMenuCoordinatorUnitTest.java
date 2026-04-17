@@ -30,6 +30,7 @@ import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_DRAWABLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_WIDTH;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
@@ -38,6 +39,7 @@ import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1961,7 +1963,14 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected 3rd submenu child to contain the tab group identifier",
                 expectedTabGroupName,
                 tabGroupRowModel.get(TITLE));
-        GradientDrawable drawable = (GradientDrawable) tabGroupRowModel.get(START_ICON_DRAWABLE);
+        assertEquals(
+                "Expected 3rd submenu child to have correct icon width",
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_group_nested_menu_color_icon_size),
+                tabGroupRowModel.get(START_ICON_WIDTH));
+        InsetDrawable insetDrawable = (InsetDrawable) tabGroupRowModel.get(START_ICON_DRAWABLE);
+        GradientDrawable drawable = (GradientDrawable) insetDrawable.getDrawable();
         assertEquals(
                 "Expected circle to have correct color",
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(

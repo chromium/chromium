@@ -123,6 +123,13 @@ public class ListMenuItemViewBinder {
                 Drawable drawable = new BitmapDrawable(view.getResources(), bitmap);
                 setStartIcon(startIcon, endIcon, drawable, keepIconSpacing);
             }
+        } else if (propertyKey == ListMenuItemProperties.START_ICON_WIDTH) {
+            if (startIcon != null) {
+                int width = model.get(ListMenuItemProperties.START_ICON_WIDTH);
+                var layoutParams = startIcon.getLayoutParams();
+                layoutParams.width = width;
+                startIcon.setLayoutParams(layoutParams);
+            }
         } else if (propertyKey == ListMenuItemProperties.GROUP_ID) {
             // Not tracked intentionally because it's mainly for clients to know which group a
             // menu item belongs to.

@@ -106,6 +106,8 @@ found in the LICENSE file.
     <dimen name="color_picker_selection_layer_inset">2dp</dimen>
     <dimen name="tab_group_color_icon_stroke">2dp</dimen>
     <dimen name="tab_group_color_icon_item_size">18dp</dimen>
+    <dimen name="tab_group_nested_menu_color_icon_size">12dp</dimen>
+    <dimen name="tab_group_row_color_icon_top_margin">1dp</dimen>
     <dimen name="tab_group_color_icon_item_radius">9dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>

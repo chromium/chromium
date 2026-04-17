@@ -37,8 +37,9 @@ found in the LICENSE file.
 
       <View
         android:id="@+id/tab_group_color"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
+        android:layout_width="@dimen/tab_group_nested_menu_color_icon_size"
+        android:layout_height="@dimen/tab_group_nested_menu_color_icon_size"
+        android:layout_marginTop="@dimen/tab_group_row_color_icon_top_margin"
         android:background="@drawable/tab_group_dialog_color_icon" />
 
       <Space

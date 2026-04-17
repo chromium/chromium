@@ -14,10 +14,16 @@ import static org.chromium.components.tab_groups.TabGroupColorPickerUtils.getTab
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
+import android.util.TypedValue;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
@@ -133,6 +139,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
+    private final int mCircleSize;
+    private final int mIconSize;
+    private final int mVisualCenterOfTextY;
+    private final int mVisualCenterOfTextYIncognito;
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -166,6 +176,48 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         mTabGroupCreationCallback = tabGroupCreationCallback;
         mWindowAndroid = windowAndroid;
         mActivity = activity;
+
+        mCircleSize = getDimensionPixelSize(R.dimen.tab_group_nested_menu_color_icon_size);
+
+        TypedValue value = new TypedValue();
+        mActivity.getTheme().resolveAttribute(R.attr.listItemIconSize, value, true);
+        mIconSize =
+                TypedValue.complexToDimensionPixelSize(
+                        value.data, mActivity.getResources().getDisplayMetrics());
+
+        mVisualCenterOfTextY =
+                calculateVisualCenterOfTextY(
+                        mActivity, R.style.TextAppearance_BrowserUIListMenuItem, mIconSize);
+        mVisualCenterOfTextYIncognito =
+                calculateVisualCenterOfTextY(
+                        mActivity,
+                        R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                        mIconSize);
+    }
+
+    /**
+     * Calculates the visual center of a text appearance relative to the icon area.
+     *
+     * @param context The {@link Context} to use.
+     * @param textAppearance The style resource for the text.
+     * @param iconSize The size of the icon area.
+     * @return The Y coordinate of the visual center of the text.
+     */
+    private static int calculateVisualCenterOfTextY(
+            Context context, int textAppearance, int iconSize) {
+        TextView textView = new TextView(context);
+        textView.setTextAppearance(textAppearance);
+
+        Rect xBounds = new Rect();
+        textView.getPaint().getTextBounds("x", 0, 1, xBounds);
+        // Visual center of text relative to its baseline.
+        float visualCenterOffset = (xBounds.top + xBounds.bottom) / 2.0f;
+
+        textView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int tvBaseline = textView.getBaseline();
+        int tvHeight = textView.getMeasuredHeight();
+        float baselineY = (iconSize / 2.0f) + (tvBaseline - (tvHeight / 2.0f));
+        return Math.round(baselineY + visualCenterOffset);
     }
 
     /**
@@ -708,6 +760,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             .withClickListener(clickListener)
                             .withIsIncognito(false)
                             .withStartIconDrawable(getCircleDrawable(colorId, false))
+                            .withStartIconWidth(mCircleSize)
                             .withShouldTintIcon(false)
                             .build());
         }
@@ -743,23 +796,34 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             .withStartIconDrawable(
                                     getCircleDrawable(
                                             mTabGroupModelFilter.getTabGroupColor(groupId), true))
+                            .withStartIconWidth(mCircleSize)
                             .withShouldTintIcon(false)
                             .build());
         }
         return result;
     }
 
-    private @Nullable GradientDrawable getCircleDrawable(
+    private @Nullable Drawable getCircleDrawable(
             @TabGroupColorId int colorId, boolean isIncognito) {
         Drawable sourceDrawable = mActivity.getDrawable(R.drawable.tab_group_dialog_color_icon);
 
-        GradientDrawable circleDrawable = null;
-        if (sourceDrawable != null) {
-            circleDrawable = (GradientDrawable) sourceDrawable.mutate();
-            @ColorInt int color = getTabGroupColorPickerItemColor(mActivity, colorId, isIncognito);
-            circleDrawable.setColor(color);
-        }
-        return circleDrawable;
+        if (sourceDrawable == null) return null;
+
+        GradientDrawable circleDrawable = (GradientDrawable) sourceDrawable.mutate();
+        @ColorInt int color = getTabGroupColorPickerItemColor(mActivity, colorId, isIncognito);
+        circleDrawable.setColor(color);
+
+        circleDrawable.setSize(mCircleSize, mCircleSize);
+
+        // Center the circle on the appropriate visual center.
+        int visualCenterOfTextY =
+                isIncognito ? mVisualCenterOfTextYIncognito : mVisualCenterOfTextY;
+        int topInset = visualCenterOfTextY - (mCircleSize / 2);
+        int bottomInset = mIconSize - (topInset + mCircleSize);
+        int leftInset = 0;
+        int rightInset = 0;
+
+        return new InsetDrawable(circleDrawable, leftInset, topInset, rightInset, bottomInset);
     }
 
     @Override

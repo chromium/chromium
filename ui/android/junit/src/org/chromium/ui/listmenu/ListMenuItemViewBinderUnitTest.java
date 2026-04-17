@@ -16,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,6 +50,7 @@ public class ListMenuItemViewBinderUnitTest {
     @Mock private ImageView mEndIcon;
     @Mock private ImageView mSubmenuArrow;
     @Mock private TextView mSubtitleView;
+    @Mock private LayoutParams mLayoutParams;
 
     private Context mContext;
 
@@ -62,6 +64,7 @@ public class ListMenuItemViewBinderUnitTest {
         when(mListItemView.findViewById(R.id.submenu_arrow)).thenReturn(mSubmenuArrow);
         when(mListItemView.findViewById(R.id.menu_item_end_icon)).thenReturn(mEndIcon);
         when(mListItemView.findViewById(R.id.menu_item_subtitle)).thenReturn(mSubtitleView);
+        when(mStartIcon.getLayoutParams()).thenReturn(mLayoutParams);
 
         // Required for ListMenuUtils.applyTintToAllIcons recursion to find icons.
         // Hierarchy from list_menu_item.xml:
@@ -249,5 +252,22 @@ public class ListMenuItemViewBinderUnitTest {
         verify(mStartIcon).setImageTintList(null);
         verify(mEndIcon).setImageTintList(null);
         verify(mSubmenuArrow).setImageTintList(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartIconWidth() {
+        int width = 12;
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.START_ICON_WIDTH, width)
+                        .build();
+
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.START_ICON_WIDTH);
+
+        verify(mStartIcon).getLayoutParams();
+        verify(mStartIcon).setLayoutParams(mLayoutParams);
+        assert (mLayoutParams.width == width);
     }
 }
