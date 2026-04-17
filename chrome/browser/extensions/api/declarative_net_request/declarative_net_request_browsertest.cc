@@ -42,6 +42,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -126,6 +127,7 @@
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
@@ -9104,6 +9106,78 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestThrottledRulesetLoadBrowserTest,
 
 const auto kExtensionLoadTypes =
     ::testing::Values(ExtensionLoadType::PACKED, ExtensionLoadType::UNPACKED);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that an extension must have local file access to redirect TO file URLs.
+// Disabled on Android since it heavily discourages direct file scheme URL
+// access.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FileUrlRedirect) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test_file.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "success"));
+  GURL file_url = net::FilePathToFileURL(file_path);
+
+  TestRule rule = CreateGenericRule();
+  rule.id = kMinValidID;
+  rule.priority = kMinValidPriority;
+  rule.condition->url_filter = std::string("http://example.com/redirect");
+  rule.action->type = std::string("redirect");
+  rule.action->redirect.emplace();
+  rule.action->redirect->url = file_url.spec();
+
+  auto run_test = [&](const std::string& ext_name, bool allow_file_access) {
+    base::FilePath extension_dir = temp_dir.GetPath().AppendASCII(ext_name);
+    EXPECT_TRUE(base::CreateDirectory(extension_dir));
+
+    TestRulesetInfo info("id", "rules_file.json", ToListValue({rule}));
+    WriteManifestAndRuleset(extension_dir, info,
+                            {URLPattern::kAllUrlsPattern, "file:///*"},
+                            ConfigFlag::kConfig_None);
+
+    // Write a simple HTML page in the extension directory.
+    EXPECT_TRUE(base::WriteFile(extension_dir.AppendASCII("page.html"),
+                                "<html><body></body></html>"));
+
+    ChromeTestExtensionLoader loader(profile());
+    loader.set_allow_file_access(allow_file_access);
+    scoped_refptr<const Extension> extension =
+        loader.LoadExtension(extension_dir);
+    EXPECT_TRUE(extension);
+
+    // Navigate to the extension's page so we have file access privileges if
+    // allowed.
+    GURL extension_page = extension->GetResourceURL("page.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_page));
+
+    // Inject an iframe navigating to http://example.com/redirect.
+    content::TestNavigationObserver observer(GetActiveWebContents(), 1);
+    ASSERT_TRUE(
+        content::ExecJs(GetPrimaryMainFrame(),
+                        "const frame = document.createElement('iframe');\n"
+                        "frame.src = 'http://example.com/redirect';\n"
+                        "document.body.appendChild(frame);"));
+    observer.Wait();
+
+    // Check the iframe's URL.
+    content::RenderFrameHost* child_frame =
+        content::ChildFrameAt(GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(child_frame);
+    GURL iframe_url = child_frame->GetLastCommittedURL();
+
+    if (allow_file_access) {
+      EXPECT_EQ(file_url, iframe_url);
+    } else {
+      EXPECT_EQ(GURL("http://example.com/redirect"), iframe_url);
+    }
+  };
+
+  run_test("ext_denied", false);
+  run_test("ext_allowed", true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
