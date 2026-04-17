@@ -299,7 +299,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    const changedPrivateProperties = changedProperties as Map<PropertyKey, any>;
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
 
     if (changedPrivateProperties.has('editedInput_') &&
         (this.editedInput_ !== '' ||
@@ -338,7 +339,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    const changedPrivateProperties = changedProperties as Map<PropertyKey, any>;
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
 
     if (changedPrivateProperties.has('editedInput_')) {
       this.onEditedInputChanged_();

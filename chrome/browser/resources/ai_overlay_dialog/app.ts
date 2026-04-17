@@ -15,7 +15,7 @@ import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation, State} from './conversation.js';
-import type {ApiConfig, ConversationConfig, Persona} from './conversation.js';
+import type {ApiConfig, ConversationConfig, OutputTranscriptionMessage, Persona} from './conversation.js';
 import {errorLog, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 import {AiOverlayToolsRemote} from './tools.mojom-webui.js';
@@ -394,7 +394,7 @@ export class AppElement extends CrLitElement {
     }
   }
 
-  private onMessageFromConversation(msg: any) {
+  private onMessageFromConversation(msg: OutputTranscriptionMessage) {
     if (msg.type === 'outputTranscription') {
       this.transcription = msg.text;
 

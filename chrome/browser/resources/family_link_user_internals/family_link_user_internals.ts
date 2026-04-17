@@ -27,7 +27,7 @@ interface BasicInfo {
   sections: Section[];
 }
 
-type UserSettings = Record<string, any>;
+type UserSettings = Record<string, unknown>;
 
 function getBasicInfoHtml(sections: Section[]) {
   // clang-format off

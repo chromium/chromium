@@ -25,18 +25,22 @@ function roundScore(score: number): number {
  *     positive number otherwise.
  */
 function compareTableItem(
-    sortKey: string, a: {[k: string]: any}, b: {[k: string]: any}): number {
+    sortKey: keyof SiteEngagementDetails, a: SiteEngagementDetails,
+    b: SiteEngagementDetails): number {
   const val1 = a[sortKey];
   const val2 = b[sortKey];
 
   // Compare the hosts of the origin ignoring schemes.
   if (sortKey === 'origin') {
-    return new URL(val1).host > new URL(val2).host ? 1 : -1;
+    return new URL(val1 as string).host > new URL(val2 as string).host ? 1 : -1;
   }
 
-  if (sortKey === 'baseScore' || sortKey === 'bonusScore' ||
+  if (sortKey === 'baseScore' || sortKey === 'installedBonus' ||
       sortKey === 'totalScore') {
-    return val1 - val2;
+    if (typeof val1 === 'number' && typeof val2 === 'number') {
+      return val1 - val2;
+    }
+    return NaN;
   }
 
   assertNotReached('Unsupported sort key: ' + sortKey);
@@ -58,7 +62,7 @@ export class SiteEngagementAppElement extends CustomElement {
       SiteEngagementDetailsProvider.getRemote();
   private updateInterval: number|null = null;
   private showWebUiPages: boolean = false;
-  private sortKey: string = 'totalScore';
+  private sortKey: keyof SiteEngagementDetails = 'totalScore';
   private sortReverse: boolean = true;
   private whenPopulatedResolver: PromiseResolver<void> = new PromiseResolver();
 
@@ -77,7 +81,7 @@ export class SiteEngagementAppElement extends CustomElement {
         if (this.sortKey === newSortKey) {
           this.sortReverse = !this.sortReverse;
         } else {
-          this.sortKey = newSortKey;
+          this.sortKey = newSortKey as keyof SiteEngagementDetails;
           this.sortReverse = false;
         }
         const oldSortColumn = this.getRequiredElement('.sort-column');

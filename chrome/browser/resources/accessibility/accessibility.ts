@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/action_link.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
@@ -25,42 +25,41 @@ enum AxMode {
   SCREEN_READER = 1 << 10,
 }
 
-interface Data {
-  type: 'browser'|'page'|'widget';
+interface BrowserData {
+  type: 'browser';
+  name: string;
+  sessionId: number;
 }
 
-type BrowserData = Data&{
-  name: string,
-  sessionId: number,
-};
+interface PageData {
+  type: 'page';
+  a11yMode: AxMode;
+  faviconUrl: string;
+  name: string;
+  pid: number;
+  processId: number;
+  routingId: number;
+  url?: string;
 
-type PageData = Data&{
-  a11yMode: AxMode,
-  faviconUrl: string,
-  name: string,
-  pid: number,
-  processId: number,
-  routingId: number,
-  url?: string,
+  // Used for GlobalStateName.
+  // Note: Does 'metadata' actually exist? Does not appear anywhere in
+  // chrome/browser/accessibility/accessibility_ui.cc.
+  metadata: boolean;
+  native: boolean;
+  pdfPrinting: boolean;
+  extendedProperties: boolean;
+  web: boolean;
 
-     // Used for GlobalStateName.
-     // Note: Does 'metadata' actually exist? Does not appear anywhere in
-     // chrome/browser/accessibility/accessibility_ui.cc.
-     metadata: boolean,
-     native: boolean,
-     pdfPrinting: boolean,
-     extendedProperties: boolean,
-     web: boolean,
+  tree?: string;
+  error?: string;
+  eventLogs?: string;
+}
 
-  tree?: string,
-  error?: string,
-  eventLogs?: string,
-};
-
-type WidgetData = Data&{
-  name: string,
-  widgetId: number,
-};
+interface WidgetData {
+  type: 'widget';
+  name: string;
+  widgetId: number;
+}
 
 interface InitData {
   browsers: BrowserData[];
@@ -172,16 +171,15 @@ function requestData(): InitData {
 }
 
 function getIdFromData(data: PageData|BrowserData|WidgetData): string {
-  if (data.type === 'page') {
-    const pageData = data as PageData;
-    return 'page_' + pageData.processId + '_' + pageData.routingId;
-  } else if (data.type === 'browser') {
-    return 'browser_' + (data as BrowserData).sessionId;
-  } else if (data.type === 'widget') {
-    return 'widget_' + (data as WidgetData).widgetId;
-  } else {
-    console.error('Unknown data type.', data);
-    return '';
+  switch (data.type) {
+    case 'page':
+      return 'page_' + data.processId + '_' + data.routingId;
+    case 'browser':
+      return 'browser_' + data.sessionId;
+    case 'widget':
+      return 'widget_' + data.widgetId;
+    default:
+      return assertNotReachedCase(data, 'Unknown data type.');
   }
 }
 
@@ -224,30 +222,16 @@ function requestTree(
           getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
       setTimeout(() => {
         browserProxy.requestNativeUiTree(
-            (data as BrowserData).sessionId,
-            requestType,
-            allow,
-            allowEmpty,
-            deny);
+            data.sessionId, requestType, allow, allowEmpty, deny);
         resolve();
       }, delay);
     } else if (data.type === 'widget') {
       browserProxy.requestWidgetsTree(
-          (data as WidgetData).widgetId,
-          requestType,
-          allow,
-          allowEmpty,
-          deny);
+          data.widgetId, requestType, allow, allowEmpty, deny);
       resolve();
     } else {
-      const pageData = data as PageData;
       browserProxy.requestWebContentsTree(
-          pageData.processId,
-          pageData.routingId,
-          requestType,
-          allow,
-          allowEmpty,
-          deny);
+          data.processId, data.routingId, requestType, allow, allowEmpty, deny);
       resolve();
     }
   });
@@ -443,34 +427,31 @@ function formatRow(
   }
 
   if (data.type === 'page') {
-    const pageData = data as PageData;
     const siteInfo = document.createElement('div');
-    const properties = ['faviconUrl', 'name', 'url'];
+    const properties: Array<keyof PageData> = ['faviconUrl', 'name', 'url'];
     for (let j = 0; j < properties.length; j++) {
-      siteInfo.appendChild(formatValue(pageData, properties[j]!));
+      siteInfo.appendChild(formatValue(data, properties[j]!));
     }
     row.appendChild(siteInfo);
 
     // Create a row of buttons that can be used to read and modify the
     // AXModes scoped to a specific WebContents.
-    row.appendChild(createModeElement(AxMode.NATIVE_APIS, pageData, 'native'));
-    row.appendChild(createModeElement(AxMode.WEB_CONTENTS, pageData, 'web'));
-    row.appendChild(
-        createModeElement(AxMode.INLINE_TEXT_BOXES, pageData, 'text'));
+    row.appendChild(createModeElement(AxMode.NATIVE_APIS, data, 'native'));
+    row.appendChild(createModeElement(AxMode.WEB_CONTENTS, data, 'web'));
+    row.appendChild(createModeElement(AxMode.INLINE_TEXT_BOXES, data, 'text'));
     row.appendChild(createModeElement(
-        AxMode.EXTENDED_PROPERTIES, pageData, 'extendedProperties'));
+        AxMode.EXTENDED_PROPERTIES, data, 'extendedProperties'));
     row.appendChild(
-        createModeElement(AxMode.SCREEN_READER, pageData, 'screenReader'));
-    row.appendChild(createModeElement(AxMode.HTML, pageData, 'html'));
+        createModeElement(AxMode.SCREEN_READER, data, 'screenReader'));
+    row.appendChild(createModeElement(AxMode.HTML, data, 'html'));
+    row.appendChild(createModeElement(AxMode.HTML_METADATA, data, 'metadata'));
     row.appendChild(
-        createModeElement(AxMode.HTML_METADATA, pageData, 'metadata'));
-    row.appendChild(
-        createModeElement(AxMode.PDF_PRINTING, pageData, 'pdfPrinting'));
+        createModeElement(AxMode.PDF_PRINTING, data, 'pdfPrinting'));
     row.appendChild(createModeElement(
-        AxMode.LABEL_IMAGES, pageData, 'labelImages',
+        AxMode.LABEL_IMAGES, data, 'labelImages',
         /*readonly=*/ true));
     row.appendChild(createModeElement(
-        AxMode.ANNOTATE_MAIN_NODE, pageData, 'annotateMainNode',
+        AxMode.ANNOTATE_MAIN_NODE, data, 'annotateMainNode',
         /* readOnly= */ true));
     // AxMode.FROM_PLATFORM is unconditionally filtered out and is therefore
     // never presented to renderers or the user.
@@ -494,8 +475,8 @@ function formatRow(
   // The accessibility event recorder currently only works for pages.
   // TODO(abigailbklein): Add event recording for native as well.
   if (data.type === 'page') {
-    row.appendChild(createStartStopAccessibilityEventRecordingElement(
-        data as PageData, row.id));
+    row.appendChild(
+        createStartStopAccessibilityEventRecordingElement(data, row.id));
   }
 
   if (hasTree) {
@@ -517,14 +498,14 @@ function insertHeadingInline(
   parentElement.appendChild(h3);
 }
 
-function formatValue(
-    data: BrowserData|PageData|WidgetData, property: string): HTMLElement {
-  const value = (data as {[k: string]: any})[property];
+function formatValue<T extends BrowserData|PageData|WidgetData>(
+    data: T, property: keyof T&string): HTMLElement {
+  const value = data[property];
 
   if (property === 'faviconUrl') {
     const faviconElement = document.createElement('img');
     if (value) {
-      faviconElement.src = value;
+      faviconElement.src = value as string;
     }
     faviconElement.alt = '';
     return faviconElement;

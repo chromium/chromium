@@ -58,8 +58,13 @@ export enum State {
   TALKING = 'talking',
 }
 
+export interface OutputTranscriptionMessage {
+  type: 'outputTranscription';
+  text: string;
+}
+
 interface UiDelegate {
-  sendToUI: (msg: any) => void;
+  sendToUI: (msg: OutputTranscriptionMessage) => void;
   onStateChange: (state: State, oldState: State) => void;
   onResponse: (audioData: string) => void;
 }
@@ -209,9 +214,9 @@ export class Conversation implements ApiSessionDelegate {
       let scheduling: string|undefined = undefined;
       const result = await this.toolExecutor.executeTool(name, args);
 
-      if (result.scheduling) {
-        scheduling = result.scheduling;
-        delete result.scheduling;
+      if (typeof result['scheduling'] === 'string') {
+        scheduling = result['scheduling'];
+        delete result['scheduling'];
       }
 
       responses.push({

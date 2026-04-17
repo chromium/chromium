@@ -36,6 +36,7 @@ build_webui("build") {
     "$root_gen_dir/components/media_router/common/mojom/route_request_result_code.mojom-webui.ts",
   ]
 
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

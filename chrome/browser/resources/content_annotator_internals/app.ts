@@ -16,8 +16,8 @@ export interface AnnotationEntry {
   url: string;
   title: string;
   tab_id?: number;
-  content_annotation: any;
-  classifier_results: any;
+  content_annotation: unknown;
+  classifier_results: unknown;
 }
 
 export class ContentAnnotatorInternalsAppElement extends CrLitElement {
@@ -66,7 +66,8 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
   }
 
   private updateLogContent_(content: Value) {
-    this.logContent_ = this.flattenValue_(content) || [];
+    this.logContent_ =
+        (this.flattenValue_(content) as AnnotationEntry[] | null) || [];
   }
 
   protected async onClearCacheClick_() {
@@ -141,7 +142,7 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
             entry => this.selectedVisitIds_.has(entry.visit_id));
   }
 
-  private flattenValue_(value: Value): any {
+  private flattenValue_(value: Value): unknown {
     if (!value) {
       return null;
     }
@@ -162,7 +163,7 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
       return value.listValue.storage.map(v => this.flattenValue_(v));
     }
     if (value.dictionaryValue !== undefined) {
-      const flattened: {[key: string]: any} = {};
+      const flattened: {[key: string]: unknown} = {};
       for (const [k, v] of Object.entries(value.dictionaryValue.storage)) {
         flattened[k] = this.flattenValue_(v);
       }
@@ -171,7 +172,7 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     return null;
   }
 
-  protected formatJson_(data: any): string {
+  protected formatJson_(data: unknown): string {
     return JSON.stringify(data, null, 2);
   }
 }

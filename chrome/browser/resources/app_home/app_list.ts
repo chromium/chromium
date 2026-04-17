@@ -45,8 +45,8 @@ export class AppListElement extends CrLitElement {
   }
 
   protected accessor apps_: AppInfo[] = [];
-  private boundContextMenuListener_: any;
-  private boundKeydownListener_: any;
+  private boundContextMenuListener_: (e: Event) => void;
+  private boundKeydownListener_: (e: KeyboardEvent) => void;
   private listenerIds_: number[] = [];
   private mojoEventTarget_: PageCallbackRouter;
   // The app item that has the context menu click opened by user.

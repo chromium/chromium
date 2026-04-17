@@ -159,9 +159,8 @@ export class ErrorMessageElement extends ErrorMessageElementBase {
     }
   }
 
-  private findErrorMessage(
-      resultCode: AddSinkResultCode|RouteRequestResultCode,
-      messageCodes: Map<ErrorMessage, any[]>) {
+  private findErrorMessage<T extends AddSinkResultCode|RouteRequestResultCode>(
+      resultCode: T, messageCodes: Map<ErrorMessage, T[]>) {
     for (const key of messageCodes.keys()) {
       if (messageCodes.get(key)!.includes(resultCode)) {
         return key;

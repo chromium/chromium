@@ -157,7 +157,7 @@ class ToolTip {
      */
     function flattenObjectRec(
         visited: Set<object>, flattened: ToolTipRowData[], path: string,
-        objectIndex: number, object: {[key: string]: any}): number {
+        objectIndex: number, object: object): number {
       if (typeof object !== 'object' || visited.has(object)) {
         return objectIndex;
       }
@@ -241,7 +241,7 @@ class ToolTip {
      *   {contents: ['1', '2'], rowClass: 'value', objectIndex: 3},
      * ]
      */
-    function flattenObject(object: {[key: string]: any}): ToolTipRowData[] {
+    function flattenObject(object: object): ToolTipRowData[] {
       const flattened: ToolTipRowData[] = [];
       flattenObjectRec(new Set(), flattened, '', 0, object);
       return flattened;
@@ -299,7 +299,7 @@ class ToolTip {
 
     // Make each row clickable.
     tr.on('click',
-          (event: any, d: ToolTipRowData) => {
+          (event: MouseEvent, d: ToolTipRowData) => {
             toggleTooltipRows(
                 event.currentTarget as HTMLElement, d.objectIndex);
           })
@@ -319,7 +319,7 @@ class ToolTip {
     this.floating = false;
   }
 
-  private onDrag_(event: any) {
+  private onDrag_(event: {x: number, y: number}) {
     this.x = event.x;
     this.y = event.y;
     this.div_.style('left', `${this.x}px`).style('top', `${this.y}px`);
@@ -725,7 +725,7 @@ export class Graph implements GraphChangeStreamInterface {
     this.nodeGroup_ = svg.append('g').attr('class', 'nodes');
     this.separatorGroup_ = svg.append('g').attr('class', 'separators');
 
-    const drag = d3.drag() as d3.DragBehavior<any, GraphNode, unknown>;
+    const drag = d3.drag() as d3.DragBehavior<SVGGElement, GraphNode, unknown>;
     drag.clickDistance(4);
     drag.on('start', this.onDragStart_.bind(this));
     drag.on('drag', this.onDrag_.bind(this));
@@ -803,7 +803,7 @@ export class Graph implements GraphChangeStreamInterface {
     this.render_();
   }
 
-  nodeDescriptions(nodeDescriptions: Map<bigint, any>) {
+  nodeDescriptions(nodeDescriptions: Map<bigint, string>) {
     for (const [nodeId, nodeDescription] of nodeDescriptions) {
       const node = this.nodes_.get(nodeId);
       if (node && node.tooltip) {
@@ -829,7 +829,8 @@ export class Graph implements GraphChangeStreamInterface {
     }
 
     function setLineEndpoints(
-        d: ToolTip, line: d3.Selection<any, unknown, null, unknown>) {
+        d: ToolTip,
+        line: d3.Selection<SVGLineElement, unknown, null, unknown>) {
       const center = d.getCenter();
       line.attr('x1', _d => center[0])
           .attr('y1', _d => center[1])
@@ -849,7 +850,7 @@ export class Graph implements GraphChangeStreamInterface {
           setLineEndpoints(d, line);
         });
     toolTipLinks.each(function(d: ToolTip) {
-      const line = d3.select(this);
+      const line = d3.select(this as SVGLineElement);
       setLineEndpoints(d, line);
     });
     toolTipLinks.exit().remove();
@@ -892,7 +893,7 @@ export class Graph implements GraphChangeStreamInterface {
     }
   }
 
-  private onGraphNodeClick_(_event: any, node: GraphNode) {
+  private onGraphNodeClick_(_event: MouseEvent, node: GraphNode) {
     if (node.tooltip) {
       node.tooltip.goAway();
       node.tooltip = null;
@@ -969,7 +970,7 @@ export class Graph implements GraphChangeStreamInterface {
       // Give dead nodes a distinguishing class to exclude them from the
       // selection above.
       const deletedNodes = node.exit().classed('dead', true) as
-          d3.Selection<any, GraphNode, SVGGElement, unknown>;
+          d3.Selection<SVGGElement, GraphNode, SVGGElement, unknown>;
 
       // Interrupt any ongoing transitions.
       deletedNodes.interrupt();
@@ -993,10 +994,12 @@ export class Graph implements GraphChangeStreamInterface {
     }
 
     // Update the title for all nodes.
-    (node.selectAll('title') as d3.Selection<any, GraphNode, any, unknown>)
+    (node.selectAll('title') as
+     d3.Selection<SVGElement, GraphNode, SVGGElement, unknown>)
         .text(d => d.title);
     // Update the favicon for all nodes.
-    (node.selectAll('image') as d3.Selection<any, GraphNode, any, unknown>)
+    (node.selectAll('image') as
+     d3.Selection<SVGImageElement, GraphNode, SVGGElement, unknown>)
         .attr('href', d => d.iconUrl);
 
     // Update and restart the simulation if the graph changed.
@@ -1005,8 +1008,9 @@ export class Graph implements GraphChangeStreamInterface {
         !dashedLink.enter().empty() || !dashedLink.exit().empty()) {
       this.simulation_!.nodes(nodes);
       const links = this.links_.concat(this.dashedLinks_);
-      this.simulation_!.force<d3.ForceLink<GraphNode, any>>('link')!.links(
-          links);
+      this.simulation_!
+          .force<d3.ForceLink<GraphNode, d3.SimulationLinkDatum<GraphNode>>>(
+              'link')!.links(links);
 
       this.restartSimulation_();
     }
@@ -1075,7 +1079,8 @@ export class Graph implements GraphChangeStreamInterface {
   /**
    * @param d The dragged node.
    */
-  private onDragStart_(event: any, d: GraphNode) {
+  private onDragStart_(
+      event: {active: number, x: number, y: number}, d: GraphNode) {
     if (!event.active) {
       this.restartSimulation_();
     }
@@ -1086,7 +1091,7 @@ export class Graph implements GraphChangeStreamInterface {
   /**
    * @param d The dragged node.
    */
-  private onDrag_(event: any, d: GraphNode) {
+  private onDrag_(event: {x: number, y: number}, d: GraphNode) {
     d.fx = event.x;
     d.fy = event.y;
   }
@@ -1094,7 +1099,8 @@ export class Graph implements GraphChangeStreamInterface {
   /**
    * @param d The dragged node.
    */
-  private onDragEnd_(event: any, d: GraphNode) {
+  private onDragEnd_(
+      event: {active: number, x: number, y: number}, d: GraphNode) {
     if (!event.active) {
       this.simulation_!.alphaTarget(0);
     }

@@ -14,7 +14,7 @@ const FILE = 'ApiSession';
 export interface FunctionDeclaration {
   name: string;
   description?: string;
-  parameters?: any;
+  parameters?: Record<string, unknown>;
 }
 
 export interface Tool {
@@ -24,7 +24,7 @@ export interface Tool {
 export interface FunctionCall {
   id: string;
   name: string;
-  args: any;
+  args: Record<string, unknown>;
 }
 
 export interface ToolCall {
@@ -34,7 +34,7 @@ export interface ToolCall {
 export interface FunctionResponse {
   id: string;
   name: string;
-  response: any;
+  response: Record<string, unknown>;
   scheduling?: string;
 }
 
@@ -158,7 +158,7 @@ export class ApiSession {
     };
 
     this.ws.onmessage = async (event) => {
-      let jsonPayload: any;
+      let jsonPayload: ServerContentMessage|null = null;
       if (event.data instanceof Blob) {
         try {
           const text = await event.data.text();

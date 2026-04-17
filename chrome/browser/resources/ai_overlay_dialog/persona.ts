@@ -16,7 +16,7 @@ import type {PersistedPageContext, Turn} from './journal.js';
  * Otherwise by string2 in the case of {else} or removed entirely otherwise.
  */
 export function processConditionals(
-    template: string, data: Record<string, any>): string {
+    template: string, data: Record<string, unknown>): string {
   let result = template;
   const openingRegex = /\?\$\{([a-zA-Z0-9_]+)\}\[/;
 
@@ -105,11 +105,11 @@ export function processNumbering(template: string): string {
 }
 
 export function processTemplate(
-    template: string, data: Record<string, any>): string {
+    template: string, data: Record<string, unknown>): string {
   const withConditionals = processConditionals(template, data);
   const withNumbering = processNumbering(withConditionals);
   return withNumbering.replace(/\$\{([a-zA-Z0-9_]+)\}/g, (match, key) => {
-    return key in data ? data[key] : match;
+    return key in data ? String(data[key]) : match;
   });
 }
 
@@ -133,7 +133,7 @@ export function formatPageVisitHistory(pages: PersistedPageContext[]): string {
 export function buildSystemInstruction(
     config: ConversationConfig, url: string, title: string, pageContent: string,
     transcript: string, pageHistory: string): string {
-  const data: Record<string, any> = {
+  const data: Record<string, unknown> = {
     persona: config.persona.persona,
     title: title,
     url: url,

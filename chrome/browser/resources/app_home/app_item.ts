@@ -16,6 +16,11 @@ import {getHtml} from './app_item.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {UserDisplayMode} from './user_display_mode.mojom-webui.js';
 
+interface ItemPosition {
+  top: number;
+  left: number;
+}
+
 export interface AppItemElement {
   $: {
     menu: CrActionMenuElement,
@@ -85,7 +90,7 @@ export class AppItemElement extends CrLitElement {
     e.stopPropagation();
   }
 
-  private isValidPosition(position: any) {
+  private isValidPosition(position: ItemPosition) {
     const rect = this.shadowRoot.getElementById(
                                     'objectContainer')!.getBoundingClientRect();
     if (!rect) {
@@ -97,7 +102,7 @@ export class AppItemElement extends CrLitElement {
         position.left >= rect.left && position.left <= rect.right);
   }
 
-  private getPositionForEvent_(e: Event) {
+  private getPositionForEvent_(e: Event): ItemPosition {
     if (e instanceof MouseEvent) {
       return {top: e.clientY, left: e.clientX};
     } else {

@@ -621,19 +621,10 @@ template("build_webui") {
         # Note: DO NOT add new entries to the list below.
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
-        "//chrome/browser/resources/access_code_cast",
-        "//chrome/browser/resources/accessibility",
-        "//chrome/browser/resources/ai_overlay_dialog",
-        "//chrome/browser/resources/app_home",
         "//chrome/browser/resources/bluetooth_internals",
-        "//chrome/browser/resources/compose",
-        "//chrome/browser/resources/content_annotator_internals",
         "//chrome/browser/resources/contextual_tasks",
-        "//chrome/browser/resources/discards",
         "//chrome/browser/resources/downloads",
-        "//chrome/browser/resources/engagement",
         "//chrome/browser/resources/extensions",
-        "//chrome/browser/resources/family_link_user_internals",
         "//chrome/browser/resources/glic",
         "//chrome/browser/resources/history",
         "//chrome/browser/resources/lens/shared",
