@@ -118,6 +118,8 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
     @Override
     public void onSinkSelected(String sourceUrn, MediaSink sink) {
+        if (mDialogManager == null) return;
+
         mDialogManager = null;
         BrowserMediaRouterDialogControllerJni.get()
                 .onSinkSelected(mNativeDialogController, sourceUrn, sink.getId());
@@ -125,6 +127,8 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
     @Override
     public void onRouteClosed(String mediaRouteId) {
+        if (mDialogManager == null) return;
+
         mDialogManager = null;
         BrowserMediaRouterDialogControllerJni.get()
                 .onRouteClosed(mNativeDialogController, mediaRouteId);
