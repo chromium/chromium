@@ -127,11 +127,14 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle);
 //   - The offset and size of each plane can fit in a size_t.
 //   - The result of offset + size for each plane does not overflow and can fit
 //     in a size_t.
+// - If |maybe_packed| is true:
+//   - The stride can be smaller than shared memory row size due to no padding.
 COMPONENT_EXPORT(GFX)
 bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
                                  const gfx::Size& size,
                                  viz::SharedImageFormat format,
-                                 bool assume_single_memory_object);
+                                 bool assume_single_memory_object,
+                                 bool maybe_packed = false);
 }  // namespace gfx
 
 #endif  // UI_GFX_NATIVE_PIXMAP_HANDLE_H_

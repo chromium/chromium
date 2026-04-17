@@ -138,7 +138,8 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle) {
 bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
                                  const gfx::Size& size,
                                  viz::SharedImageFormat format,
-                                 bool assume_single_memory_object) {
+                                 bool assume_single_memory_object,
+                                 bool maybe_packed) {
   size_t expected_planes = format.NumberOfPlanes();
   if (expected_planes == 0 || handle.planes.size() != expected_planes)
     return false;
@@ -163,10 +164,12 @@ bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
     const size_t plane_stride =
         base::strict_cast<size_t>(handle.planes[i].stride);
 
-    auto min_stride = viz::SharedMemoryRowSizeForSharedImageFormat(
-        format, i, base::checked_cast<size_t>(size.width()));
-    if (!min_stride || plane_stride < min_stride.value()) {
-      return false;
+    if (!maybe_packed) {
+      auto min_stride = viz::SharedMemoryRowSizeForSharedImageFormat(
+          format, i, base::checked_cast<size_t>(size.width()));
+      if (!min_stride || plane_stride < min_stride.value()) {
+        return false;
+      }
     }
 
     const base::CheckedNumeric<size_t> plane_height =

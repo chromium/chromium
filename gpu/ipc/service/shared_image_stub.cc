@@ -356,9 +356,13 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
       buffer_handle.type == gfx::NATIVE_PIXMAP) {
     const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
     auto format = params->si_info->meta.format;
-    if (!gfx::CanFitImageForSizeAndFormat(
-            pixmap_handle, params->si_info->meta.size, format,
-            /*assume_single_memory_object=*/false)) {
+    // Video Buffer may be packed to have a tighter stride than shared memory
+    // row, examples are NV15 or MT2T, where there's no padding bits within the
+    // component.
+    if (!gfx::CanFitImageForSizeAndFormat(pixmap_handle,
+                                          params->si_info->meta.size, format,
+                                          /*assume_single_memory_object=*/false,
+                                          /*maybe_packed=*/true)) {
       LOG(ERROR)
           << "SharedImageStub: Unable to import buffer, failed validation.";
       OnError();
