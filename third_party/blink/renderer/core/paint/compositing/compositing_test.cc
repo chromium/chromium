@@ -1049,6 +1049,85 @@ TEST_P(CompositingTest, MergeFixedLayers) {
                                  1);
 }
 
+TEST_P(CompositingTest, MergeStickyLayers) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  base::HistogramTester histograms;
+
+  SetViewSize(gfx::Size(1000, 500));
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      body { margin: 0; height: 10000px; }
+      .scroll { width: 200px; height: 200px; overflow: scroll; }
+      .sticky { position: sticky; width: 20px; height: 20px; display: inline-block; }
+    </style>
+    <div class="scroll">
+      <div style="height: 50px"></div>
+      <div id="a1" class="sticky" style="top: 0"></div>
+      <div id="a2" class="sticky" style="top: 0"></div>
+      <div id="a3" class="sticky" style="top: 50px"></div>
+      <div style="height: 300px"></div>
+    </div>
+    <div class="scroll">
+      <div style="height: 50px"></div>
+      <div id="b1" class="sticky" style="top: 0"></div>
+      <div id="b2" class="sticky" style="top: 0"></div>
+      <div id="b3" class="sticky" style="top: 50px"></div>
+      <div style="height: 300px"></div>
+    </div>
+  )HTML");
+
+  cc::Layer* a1 = CcLayerByDOMElementId("a1");
+  ASSERT_TRUE(a1);
+  EXPECT_FALSE(CcLayerByDOMElementId("a2"));
+  EXPECT_EQ(gfx::Size(40, 20), a1->bounds());
+  auto* a1_data = GetPropertyTrees()->transform_tree().GetStickyPositionData(
+      a1->transform_tree_index());
+  ASSERT_TRUE(a1_data);
+  EXPECT_TRUE(a1_data->constraints.is_anchored_top);
+  EXPECT_EQ(0, a1_data->constraints.top_offset);
+  cc::Layer* a3 = CcLayerByDOMElementId("a3");
+  ASSERT_TRUE(a3);
+  EXPECT_EQ(gfx::Size(20, 20), a3->bounds());
+  auto* a3_data = GetPropertyTrees()->transform_tree().GetStickyPositionData(
+      a3->transform_tree_index());
+  ASSERT_TRUE(a3_data);
+  EXPECT_EQ(a1_data->constraints.y_scroll_ancestor_element_id,
+            a3_data->constraints.y_scroll_ancestor_element_id);
+  EXPECT_EQ(
+      a1_data->constraints.scroll_container_relative_containing_block_rect,
+      a3_data->constraints.scroll_container_relative_containing_block_rect);
+  EXPECT_TRUE(a3_data->constraints.is_anchored_top);
+  EXPECT_EQ(50, a3_data->constraints.top_offset);
+
+  cc::Layer* b1 = CcLayerByDOMElementId("b1");
+  ASSERT_TRUE(b1);
+  EXPECT_FALSE(CcLayerByDOMElementId("b2"));
+  EXPECT_EQ(gfx::Size(40, 20), b1->bounds());
+  auto* b1_data = GetPropertyTrees()->transform_tree().GetStickyPositionData(
+      b1->transform_tree_index());
+  ASSERT_TRUE(b1_data);
+  EXPECT_NE(a1_data->constraints.y_scroll_ancestor_element_id,
+            b1_data->constraints.y_scroll_ancestor_element_id);
+  EXPECT_TRUE(b1_data->constraints.is_anchored_top);
+  EXPECT_EQ(0, b1_data->constraints.top_offset);
+  cc::Layer* b3 = CcLayerByDOMElementId("b3");
+  ASSERT_TRUE(b3);
+  EXPECT_EQ(gfx::Size(20, 20), a3->bounds());
+  auto* b3_data = GetPropertyTrees()->transform_tree().GetStickyPositionData(
+      b3->transform_tree_index());
+  ASSERT_TRUE(b3_data);
+  EXPECT_EQ(b1_data->constraints.y_scroll_ancestor_element_id,
+            b3_data->constraints.y_scroll_ancestor_element_id);
+  EXPECT_EQ(
+      b1_data->constraints.scroll_container_relative_containing_block_rect,
+      b3_data->constraints.scroll_container_relative_containing_block_rect);
+  EXPECT_TRUE(b3_data->constraints.is_anchored_top);
+  EXPECT_EQ(50, b3_data->constraints.top_offset);
+
+  histograms.ExpectUniqueSample("Blink.Compositor.StickyLayerCount", 4, 1);
+  histograms.ExpectUniqueSample("Blink.Compositor.MergedStickyLayerCount", 2,
+                                1);
+}
 class ScrollingContentsCullRectTest : public CompositingTest {
  protected:
   void SetUp() override {

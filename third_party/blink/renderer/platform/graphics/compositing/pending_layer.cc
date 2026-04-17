@@ -398,11 +398,13 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   // For metrics.
   merged_across_compositing_boundary_count_ +=
       guest.merged_across_compositing_boundary_count_;
-  // We don't merge across compositing boundaries except for MergeFixedLayers.
+  // We don't merge across compositing boundaries except for MergeFixedLayers
+  // and MergeStickyLayers.
   if (property_tree_state_.Transform().NearestDirectlyCompositedAncestor() !=
       guest.property_tree_state_.Transform()
           .NearestDirectlyCompositedAncestor()) {
-    CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled());
+    CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
+          RuntimeEnabledFeatures::MergeStickyLayersEnabled());
     merged_across_compositing_boundary_count_++;
   }
 

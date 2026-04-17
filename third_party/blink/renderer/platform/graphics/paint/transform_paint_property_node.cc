@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 #include "base/memory/values_equivalent.h"
+#include "cc/trees/sticky_position_constraint.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -170,6 +171,24 @@ bool TransformPaintPropertyNode::CanMergeForFixedPosition(
          other.RequiresCompositingForFixedPositionOnly() &&
          ScrollTranslationForFixed() == other.ScrollTranslationForFixed() &&
          Parent() == other.Parent();
+}
+
+bool TransformPaintPropertyNode::CanMergeForStickyPosition(
+    const TransformPaintPropertyNode& other) const {
+  if (!RequiresCompositingForStickyPositionOnly() ||
+      !other.RequiresCompositingForStickyPositionOnly() ||
+      UnaliasedParent()->NearestDirectlyCompositedAncestor() !=
+          other.UnaliasedParent()->NearestDirectlyCompositedAncestor()) {
+    return false;
+  }
+
+  auto* constraint = GetStickyConstraint();
+  auto* other_constraint = other.GetStickyConstraint();
+  if (!constraint && !other_constraint) {
+    return true;
+  }
+  return constraint && other_constraint &&
+         constraint->CanMerge(*other_constraint);
 }
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {

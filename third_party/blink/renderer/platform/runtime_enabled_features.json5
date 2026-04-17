@@ -3860,6 +3860,10 @@
       status: "experimental",
     },
     {
+      name: "MergeStickyLayers",
+      status: "experimental",
+    },
+    {
       name: "MessagePortCloseEvent",
       status: "test",
     },

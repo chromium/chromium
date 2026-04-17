@@ -824,6 +824,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Compositor.MergedStickyLayerCount" units="count"
+    expires_after="2026-08-07">
+  <owner>wangxianzhu@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Total number of sticky-position pending layers that are merged into
+    composited layers, under a local frame root. This is non-zero only if
+    MergeStickyLayers is enabled. Reported at the end of a full compositing
+    update, with a 0.01 sample rate.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Compositor.StickyLayerCount" units="count"
+    expires_after="2026-08-07">
+  <owner>wangxianzhu@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Number of sticky-position composited layers under a local frame root.
+    Reported at the end of a full compositing update, with a 0.01 sample rate.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Compression.CompressionStream.Format"
     enum="CompressionStreamsFormat" expires_after="2023-03-26">
   <owner>ricea@chromium.org</owner>

@@ -40,10 +40,17 @@ TransformCompositingBoundaryType InSameTransformCompositingBoundary(
   const auto* composited_ancestor1 = t1.NearestDirectlyCompositedAncestor();
   const auto* composited_ancestor2 = t2.NearestDirectlyCompositedAncestor();
   if (composited_ancestor1 != composited_ancestor2) {
-    if (RuntimeEnabledFeatures::MergeFixedLayersEnabled() &&
-        composited_ancestor1 && composited_ancestor2 &&
-        composited_ancestor1->CanMergeForFixedPosition(*composited_ancestor2)) {
-      return kSameBoundaryThroughMergeableComposited;
+    if (composited_ancestor1 && composited_ancestor2) {
+      if (RuntimeEnabledFeatures::MergeFixedLayersEnabled() &&
+          composited_ancestor1->CanMergeForFixedPosition(
+              *composited_ancestor2)) {
+        return kSameBoundaryThroughMergeableComposited;
+      }
+      if (RuntimeEnabledFeatures::MergeStickyLayersEnabled() &&
+          composited_ancestor1->CanMergeForStickyPosition(
+              *composited_ancestor2)) {
+        return kSameBoundaryThroughMergeableComposited;
+      }
     }
     return kNotSameBoundary;
   }
@@ -117,7 +124,8 @@ std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
           &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
     } else {
       DCHECK_EQ(same_boundary, kSameBoundaryThroughMergeableComposited);
-      CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled());
+      CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
+            RuntimeEnabledFeatures::MergeStickyLayersEnabled());
       const auto* composited1 = Transform().NearestDirectlyCompositedAncestor();
       const auto* composited2 =
           guest.Transform().NearestDirectlyCompositedAncestor();

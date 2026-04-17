@@ -872,6 +872,8 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
                 .NearestDirectlyCompositedAncestor()) {
       if ((!RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
            !composited_transform->RequiresCompositingForFixedPositionOnly()) &&
+          (!RuntimeEnabledFeatures::MergeStickyLayersEnabled() ||
+           !composited_transform->RequiresCompositingForStickyPositionOnly()) &&
           directly_composited_transforms_.insert(composited_transform)
               .is_new_entry) {
         continue;
@@ -1144,6 +1146,8 @@ void PaintArtifactCompositor::Update(
   const bool report_metrics = base::ShouldRecordSubsampledMetric(0.01);
   int fixed_count = 0;
   int merged_fixed_count = 0;
+  int sticky_count = 0;
+  int merged_sticky_count = 0;
 
   cc::LayerSelection layer_selection;
   HashSet<int> layers_having_text;
@@ -1229,6 +1233,11 @@ void PaintArtifactCompositor::Update(
         merged_fixed_count +=
             pending_layer.MergedAcrossCompositingBoundaryCount();
       }
+      if (transform.RequiresCompositingForStickyPosition()) {
+        ++sticky_count;
+        merged_sticky_count +=
+            pending_layer.MergedAcrossCompositingBoundaryCount();
+      }
     }
   }
 
@@ -1236,6 +1245,9 @@ void PaintArtifactCompositor::Update(
     UMA_HISTOGRAM_COUNTS_100("Blink.Compositor.FixedLayerCount", fixed_count);
     UMA_HISTOGRAM_COUNTS_100("Blink.Compositor.MergedFixedLayerCount",
                              merged_fixed_count);
+    UMA_HISTOGRAM_COUNTS_100("Blink.Compositor.StickyLayerCount", sticky_count);
+    UMA_HISTOGRAM_COUNTS_100("Blink.Compositor.MergedStickyLayerCount",
+                             merged_sticky_count);
   }
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
