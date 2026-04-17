@@ -87,7 +87,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
                         TEST_URL,
-                        mTestLogger);
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ false);
         mAdaptiveStream.setFallbackStream(mFallbackStream);
     }
 
@@ -144,7 +145,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // Primary becomes ready
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
 
-        // Failover is cancelled when primary becomes ready, so we shouldn't trigger it.
+        // Failover is canceled when primary becomes ready, so we shouldn't trigger it.
         verify(mFallbackStream, never()).start();
     }
 
@@ -169,7 +170,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
 
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
-        // The primary stream was implicitly cancelled when the fallback stream became ready.
+        // The primary stream was implicitly canceled when the fallback stream became ready.
         verify(mPrimaryStream).cancel();
 
         verify(mMockCallback).onStreamReady(mAdaptiveStream);
@@ -596,7 +597,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         verify(fallback).cancel();
         verify(mockFuture).cancel(false);
 
-        // Failover is cancelled when adaptive stream is cancelled, so we shouldn't trigger it.
+        // Failover is canceled when adaptive stream is canceled, so we shouldn't trigger it.
         verify(mFallbackStream, never()).start();
     }
 
@@ -621,13 +622,13 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
         verify(mockFuture).cancel(false);
 
-        // Failover is cancelled when primary becomes ready, so we shouldn't trigger it.
+        // Failover is canceled when primary becomes ready, so we shouldn't trigger it.
         verify(mFallbackStream, never()).start();
     }
 
     @Test
     @SmallTest
-    public void cancel_whenFutureCannotBeCancelled_schedulesFallbackCancel() {
+    public void cancel_whenFutureCannotBeCanceled_schedulesFallbackCancel() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
@@ -636,7 +637,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         when(mMockScheduledExecutorService.schedule(
                         any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
                 .thenReturn(mockFuture);
-        // Simulate that the future cannot be cancelled (e.g., it's already running).
+        // Simulate that the future cannot be canceled (e.g., it's already running).
         when(mockFuture.cancel(false)).thenReturn(false);
 
         mAdaptiveStream.start();
@@ -648,5 +649,185 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // verify(mMockScheduledExecutorService).execute(any(Runnable.class)) is implicit because
         // the setUp() mock calls run() immediately.
         verify(mFallbackStream).cancel();
+    }
+
+    @Test
+    @SmallTest
+    public void testFastIdempotent_writeBeforeReady_buffers() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL,
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        mAdaptiveStream.write(buffer, false);
+
+        verify(mPrimaryStream, never()).write(any(), any(Boolean.class));
+        verify(mFallbackStream, never()).write(any(), any(Boolean.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testFastIdempotent_onStreamReady_replaysWrites() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL,
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        buffer.put((byte) 1);
+        buffer.flip();
+        mAdaptiveStream.write(buffer, false);
+
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+
+        // Replay should happen. The replayed buffer should have same content.
+        ArgumentCaptor<ByteBuffer> bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mPrimaryStream).write(bufferCaptor.capture(), eq(false));
+        ByteBuffer replayedBuffer = bufferCaptor.getValue();
+        assertEquals(1, replayedBuffer.remaining());
+        assertEquals((byte) 1, replayedBuffer.get());
+
+        verify(mPrimaryStream).flush();
+        verify(mMockCallback).onStreamReady(mAdaptiveStream);
+    }
+
+    @Test
+    @SmallTest
+    public void testFastIdempotent_onBothStreamsReady_replaysToBoth() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL,
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        mAdaptiveStream.write(buffer, false);
+
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        verify(mPrimaryStream).write(any(ByteBuffer.class), eq(false));
+        verify(mFallbackStream).write(any(ByteBuffer.class), eq(false));
+        verify(mMockCallback).onStreamReady(mAdaptiveStream);
+    }
+
+    @Test
+    @SmallTest
+    public void testFastIdempotent_onResponseHeaders_setsActiveStreamAndCancelsOther() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL,
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+        mAdaptiveStream.start();
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        // Fallback responds first
+        mAdaptiveStream.getCallback().onResponseHeadersReceived(mFallbackStream, info);
+
+        verify(mPrimaryStream).cancel();
+        verify(mMockCallback).onResponseHeadersReceived(mAdaptiveStream, info);
+
+        // Further writes should only go to fallback
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        mAdaptiveStream.write(buffer, false);
+        verify(mFallbackStream).write(buffer, false);
+        verify(mPrimaryStream, never()).write(buffer, false);
+    }
+
+    @Test
+    @SmallTest
+    public void testFastIdempotent_onWriteCompleted_ignoresReplayedOnFallback() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL,
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        mAdaptiveStream.write(buffer, false);
+
+        // Fallback becomes ready and replays
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        ArgumentCaptor<ByteBuffer> bufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mFallbackStream).write(bufferCaptor.capture(), eq(false));
+        ByteBuffer replayedBuffer = bufferCaptor.getValue();
+
+        // Headers received on fallback, so it becomes active
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        mAdaptiveStream.getCallback().onResponseHeadersReceived(mFallbackStream, info);
+
+        // Write completion for replayed buffer on fallback
+        mAdaptiveStream
+                .getCallback()
+                .onWriteCompleted(mFallbackStream, info, replayedBuffer, false);
+
+        // Should NOT be forwarded to callback because it was a replayed write.
+        verify(mMockCallback, never()).onWriteCompleted(any(), any(), any(), any(Boolean.class));
+    }
+
+    @Test
+    @SmallTest
+    public void onSucceeded_onFallback_forwardsToCallback() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+
+        mAdaptiveStream.getCallback().onSucceeded(mFallbackStream, info);
+
+        verify(mMockCallback).onSucceeded(mAdaptiveStream, info);
+    }
+
+    @Test
+    @SmallTest
+    public void isDone_withoutActiveStream_returnsTrueIfBothDone() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        when(mPrimaryStream.isDone()).thenReturn(true);
+        when(mFallbackStream.isDone()).thenReturn(true);
+        assertTrue(mAdaptiveStream.isDone());
     }
 }

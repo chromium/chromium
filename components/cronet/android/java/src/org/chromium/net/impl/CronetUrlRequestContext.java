@@ -551,7 +551,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                     mAdaptiveRequestContext.getOrCreateScheduledExecutor(),
                                     mAdaptiveRequestContext,
                                     url,
-                                    mLogger)
+                                    mLogger,
+                                    // TODO(b/474048542): Add support for fast idempotent requests.
+                                    /* isFastIdempotentRequest= */ false)
                             : null;
 
             CronetBidirectionalStream stream =
