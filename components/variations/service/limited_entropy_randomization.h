@@ -17,9 +17,7 @@
 // entropy" layer – that is, a layer with `EntropyMode.LIMITED`. For brevity,
 // documentation in this file will refer to this layer as the "limited layer".
 // There is at most one limited layer in the seed with filters that are
-// applicable to the client. For now, it's the server's responsibility to ensure
-// this invariant. As an optimization, the client code should be updated to
-// consider the filters when calculating entropy (TODO(b/319681288)).
+// applicable to the client.
 //
 // Consider each client's chosen groups across all studies which use limited
 // entropy. While some group combinations may be more likely than others (based
