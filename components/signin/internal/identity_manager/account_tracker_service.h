@@ -56,8 +56,12 @@ void SimulateAccountImageFetch(signin::IdentityManager*,
 // Retrieves and caches GAIA information about Google Accounts.
 class AccountTrackerService {
  public:
-  typedef base::RepeatingCallback<void(const AccountInfo& info)>
-      AccountInfoCallback;
+  using AccountInfoCallback =
+      base::RepeatingCallback<void(const AccountInfo& info)>;
+  // std::string is used instead of GaiaId for migration purposes (in the past
+  // accounts were saved using email as the identifier).
+  // TODO(crbug.com/503729501): Remove this after migration is finished.
+  using GaiaIdMightBeEmail = std::string;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Possible values for the kAccountIdMigrationState preference.
@@ -202,10 +206,11 @@ class AccountTrackerService {
   base::DictValue* FindOrCreateDictForAccount(ScopedListPrefUpdate& update,
                                               const CoreAccountId& account_id);
 
-  void RemoveFromPrefs(const AccountInfo& account);
+  void RemoveFromPrefs(const GaiaIdMightBeEmail& account_id);
 
   // Used to load/save account images from/to disc.
-  base::FilePath GetImagePathFor(const CoreAccountId& account_id);
+  base::FilePath GetImagePathFor(const GaiaIdMightBeEmail& account_id);
+
   void OnAccountImageLoaded(const CoreAccountId& account_id, gfx::Image image);
   void LoadAccountImagesFromDisk();
   void SaveAccountImageToDisk(const CoreAccountId& account_id,
@@ -214,7 +219,7 @@ class AccountTrackerService {
   void OnAccountImageUpdated(const CoreAccountId& account_id,
                              const std::string& image_url_with_size,
                              bool success);
-  void RemoveAccountImageFromDisk(const CoreAccountId& account_id);
+  void RemoveAccountImageFromDisk(const GaiaIdMightBeEmail& account_id);
 
   // Returns whether the accounts are all keyed by gaia id. This should
   // be the case when the migration state is set to MIGRATION_DONE.

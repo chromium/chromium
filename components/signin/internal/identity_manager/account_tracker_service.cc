@@ -248,8 +248,8 @@ void AccountTrackerService::StopTrackingAccount(
   DVLOG(1) << "StopTracking " << account_id;
   if (accounts_.contains(account_id)) {
     AccountInfo account_info = std::move(accounts_[account_id]);
-    RemoveFromPrefs(account_info);
-    RemoveAccountImageFromDisk(account_id);
+    RemoveFromPrefs(account_id.ToString());
+    RemoveAccountImageFromDisk(account_id.ToString());
     accounts_.erase(account_id);
 
     if (!account_info.gaia.empty()) {
@@ -442,9 +442,8 @@ void AccountTrackerService::MigrateToGaiaId() {
   // Remove any obsolete account.
   for (const auto& account_id : to_remove) {
     DCHECK(accounts_.contains(account_id));
-    AccountInfo& account_info = accounts_[account_id];
-    RemoveAccountImageFromDisk(account_id);
-    RemoveFromPrefs(account_info);
+    RemoveAccountImageFromDisk(account_id.ToString());
+    RemoveFromPrefs(account_id.ToString());
     accounts_.erase(account_id);
   }
 }
@@ -501,10 +500,10 @@ AccountTrackerService::GetMigrationState(const PrefService* pref_service) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath AccountTrackerService::GetImagePathFor(
-    const CoreAccountId& account_id) {
+    const GaiaIdMightBeEmail& account_id) {
   return user_data_dir_.Append(kAccountsFolder)
       .Append(kAvatarImagesFolder)
-      .AppendASCII(account_id.ToString());
+      .AppendASCII(account_id);
 }
 
 void AccountTrackerService::OnAccountImageLoaded(
@@ -548,7 +547,8 @@ void AccountTrackerService::LoadAccountImagesFromDisk() {
   for (const auto& pair : accounts_) {
     const CoreAccountId& account_id = pair.second.account_id;
     image_storage_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&ReadImage, GetImagePathFor(account_id)),
+        FROM_HERE,
+        base::BindOnce(&ReadImage, GetImagePathFor(account_id.ToString())),
         base::BindOnce(&AccountTrackerService::OnAccountImageLoaded,
                        weak_factory_.GetWeakPtr(), account_id));
   }
@@ -565,7 +565,7 @@ void AccountTrackerService::SaveAccountImageToDisk(
   image_storage_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&SaveImage, image.As1xPNGBytes(),
-                     GetImagePathFor(account_id)),
+                     GetImagePathFor(account_id.ToString())),
       base::BindOnce(&AccountTrackerService::OnAccountImageUpdated,
                      weak_factory_.GetWeakPtr(), account_id,
                      image_url_with_size));
@@ -600,7 +600,7 @@ void AccountTrackerService::OnAccountImageUpdated(
 }
 
 void AccountTrackerService::RemoveAccountImageFromDisk(
-    const CoreAccountId& account_id) {
+    const GaiaIdMightBeEmail& account_id) {
   if (!image_storage_task_runner_) {
     return;
   }
@@ -610,9 +610,9 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
 
 void AccountTrackerService::LoadFromPrefs() {
   const base::ListValue& list = pref_service_->GetList(prefs::kAccountInfo);
-  std::set<CoreAccountId> to_remove;
-  for (size_t i = 0; i < list.size(); ++i) {
-    const base::DictValue* dict = list[i].GetIfDict();
+  std::set<std::string> to_remove;
+  for (const auto& i : list) {
+    const base::DictValue* dict = i.GetIfDict();
     if (!dict) {
       continue;
     }
@@ -624,13 +624,13 @@ void AccountTrackerService::LoadFromPrefs() {
 
     // Ignore empty account ids.
     if (account_key->empty()) {
-      to_remove.insert(CoreAccountId());
+      to_remove.insert(*account_key);
       continue;
     }
     // Ignore incorrectly persisted non-canonical account ids.
     if (account_key->find('@') != std::string::npos &&
         *account_key != gaia::CanonicalizeEmail(*account_key)) {
-      to_remove.insert(CoreAccountId::FromString(*account_key));
+      to_remove.insert(*account_key);
       continue;
     }
 
@@ -650,10 +650,8 @@ void AccountTrackerService::LoadFromPrefs() {
   }
 
   // Remove any obsolete prefs.
-  for (auto account_id : to_remove) {
-    AccountInfo account_info;
-    account_info.account_id = account_id;
-    RemoveFromPrefs(account_info);
+  for (const auto& account_id : to_remove) {
+    RemoveFromPrefs(account_id);
     RemoveAccountImageFromDisk(account_id);
   }
 
@@ -711,13 +709,13 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   dict->Merge(signin::SerializeAccountInfo(account_info));
 }
 
-void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
+void AccountTrackerService::RemoveFromPrefs(
+    const GaiaIdMightBeEmail& account_id) {
   if (!pref_service_) {
     return;
   }
 
   ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  const std::string account_id = account_info.account_id.ToString();
   update->EraseIf([&account_id](const base::Value& value) {
     if (!value.is_dict()) {
       return false;
