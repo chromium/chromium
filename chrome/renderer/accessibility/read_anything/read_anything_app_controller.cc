@@ -559,6 +559,11 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
     return true;
   }
 
+  // Don't trigger distillation if reading mode isn't shown.
+  if (IsHidden()) {
+    return true;
+  }
+
   // Update processing should also be considered paused when Readability
   // is in the process of distilling the page.
   if (model_.is_readability_next_distillation_method() &&
@@ -1127,6 +1132,14 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
   if (IsGoogleDocs() && !model_.page_finished_loading()) {
     return;
   }
+
+  // TODO: crbug.com/463940276- Long-term, we should ensure that Draw is
+  // not being called at all when reading mode is hidden.
+  // Don't attempt to draw if reading mode is hidden.
+  if (IsHidden()) {
+    return;
+  }
+
   if (recompute_display_nodes && !model_.content_node_ids().empty()) {
     model_.ComputeDisplayNodeIdsForDistilledTree();
 
@@ -2938,7 +2951,7 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadabilityLinks(
   }
 }
 
-bool ReadAnythingAppController::IsHidden() {
+bool ReadAnythingAppController::IsHidden() const {
   return IsImmersiveEnabled() &&
          model_.active_presentation_state() ==
              read_anything::mojom::ReadAnythingPresentationState::kInactive;

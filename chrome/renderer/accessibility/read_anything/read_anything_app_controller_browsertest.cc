@@ -3332,6 +3332,14 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
 }
 
 TEST_F(ReadAnythingAppControllerImmersiveTest,
+       ReadingModeHidden_UpdateProcessingPaused) {
+  // Hide reading mode
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
        ImmersiveModeWithGoodDistillation_UpdateProcessingPaused) {
   // Set to Immersive.
   controller().OnGetPresentationState(
