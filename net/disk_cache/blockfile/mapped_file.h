@@ -19,10 +19,6 @@
 #include "net/disk_cache/blockfile/file_block.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(POSIX_BYPASS_MMAP)
-#include "base/containers/heap_array.h"
-#endif
-
 namespace base {
 class FilePath;
 }
@@ -45,11 +41,6 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
   // will be mapped in memory.
   void* Init(const base::FilePath& name, size_t size);
 
-#if BUILDFLAG(POSIX_BYPASS_MMAP)
-  void* buffer() { return reinterpret_cast<void*>(buffer_.data()); }
-
-  base::span<uint8_t> as_span() { return buffer_.as_span(); }
-#else
   void* buffer() { return buffer_; }
 
   base::span<uint8_t> as_span() {
@@ -58,7 +49,6 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
     return UNSAFE_BUFFERS(
         base::span(reinterpret_cast<uint8_t*>(buffer_), view_size_));
   }
-#endif
 
   // Loads or stores a given block from the backing file (synchronously).
   bool Load(const FileBlock* block);
@@ -86,18 +76,10 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
 
   size_t view_size_ = 0;  // Size of the memory pointed by `buffer_`.
 
-#if BUILDFLAG(POSIX_BYPASS_MMAP)
-  // Copy of the buffer taken when it was last flushed.
-  base::HeapArray<uint8_t> snapshot_;
-
-  // Current buffer contents.
-  base::HeapArray<uint8_t> buffer_;
-#else
   // Address of the memory mapped buffer.
   // This field is not a raw_ptr<> because it is using mmap or MapViewOfFile
   // directly.
   RAW_PTR_EXCLUSION void* buffer_ = nullptr;
-#endif
 };
 
 // Helper class for calling Flush() on exit from the current scope.
