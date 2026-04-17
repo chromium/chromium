@@ -21,6 +21,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/resource_coordinator:utils",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs:tab_strip",

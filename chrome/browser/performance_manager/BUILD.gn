@@ -167,6 +167,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//chrome/browser/resource_coordinator:utils",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
     "//chrome/browser/ui/browser_window",

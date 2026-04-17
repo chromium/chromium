@@ -312,6 +312,7 @@ if (!is_android) {
       "//chrome/browser/glic",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/reading_list",
+      "//chrome/browser/resource_coordinator",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",

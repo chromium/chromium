@@ -55,6 +55,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//chrome/browser/resource_coordinator:utils",
     "//chrome/common:constants",
     "//components/heap_profiling/in_process",
     "//components/heap_profiling/in_process:mojom",

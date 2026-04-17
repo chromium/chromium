@@ -12,21 +12,241 @@ mojom("mojo_bindings") {
 }
 
 source_set("resource_coordinator") {
-  sources = []
+  sources = [
+    "resource_coordinator_parts.h",
+    "tab_helper.h",
+    "tab_memory_metrics_reporter.h",
+    "time.h",
+  ]
   public_deps = [
     ":mojo_bindings",
     ":mojo_bindings__generator",
+    ":mojo_bindings_shared",
+    "//base",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
   ]
 
   if (!is_android) {
     sources += [
+      "discard_metrics_lifecycle_unit_observer.h",
       "lifecycle_unit.h",
+      "lifecycle_unit_base.h",
+      "lifecycle_unit_observer.h",
+      "lifecycle_unit_source.h",
+      "lifecycle_unit_source_base.h",
+      "lifecycle_unit_source_observer.h",
+      "tab_lifecycle_unit.h",
       "tab_lifecycle_unit_external.h",
+      "tab_lifecycle_unit_source.h",
       "tab_load_tracker.h",
+      "tab_manager.h",
+      "tab_manager_resource_coordinator_signal_observer.h",
     ]
     public_deps += [
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//components/performance_manager",
+    ]
+  }
+}
+
+source_set("utils") {
+  public = [ "utils.h" ]
+
+  sources = [ "utils.cc" ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/performance_manager",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    ":resource_coordinator",
+    "//chrome/browser:browser_process",
+    "//components/performance_manager",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "resource_coordinator_parts.cc",
+    "tab_helper.cc",
+    "tab_load_tracker.cc",
+    "tab_memory_metrics_reporter.cc",
+    "time.cc",
+  ]
+
+  public_deps = [
+    ":resource_coordinator",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    ":mojo_bindings__generator",
+    ":mojo_bindings_shared",
+    ":utils",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/engagement",
+    "//chrome/browser/history",
+    "//chrome/browser/notifications",
+    "//chrome/browser/performance_manager:impl",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:chrome_features",
+    "//components/no_state_prefetch/browser",
+    "//components/performance_manager",
+    "//components/site_engagement/content",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//ui/base",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "discard_metrics_lifecycle_unit_observer.cc",
+      "lifecycle_unit.cc",
+      "lifecycle_unit_base.cc",
+      "lifecycle_unit_observer.cc",
+      "lifecycle_unit_source_base.cc",
+      "tab_lifecycle_unit.cc",
+      "tab_lifecycle_unit_external.cc",
+      "tab_lifecycle_unit_source.cc",
+      "tab_manager.cc",
+      "tab_manager_resource_coordinator_signal_observer.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/devtools",
+      "//chrome/browser/memory",
+      "//chrome/browser/permissions",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tab_contents",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications",
+      "//components/device_event_log",
+      "//components/discardable_memory/service",
+      "//components/ukm/content",
+      "//ui/message_center",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "tab_load_tracker_test_support.h" ]
+
+  sources = [ "tab_load_tracker_test_support.cc" ]
+
+  public_deps = [ ":resource_coordinator" ]
+
+  deps = [
+    ":impl",
+    "//base",
+    "//content/public/browser",
+  ]
+
+  if (!is_android) {
+    public += [ "test_lifecycle_unit.h" ]
+
+    sources += [ "test_lifecycle_unit.cc" ]
+
+    public_deps += [ "//chrome/browser/performance_manager" ]
+
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/performance_manager",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "tab_load_tracker_unittest.cc",
+    "tab_memory_metrics_reporter_unittest.cc",
+  ]
+
+  public_deps = [
+    ":resource_coordinator",
+    ":test_support",
+    ":utils",
+  ]
+
+  deps = [
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/no_state_prefetch/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "discard_metrics_lifecycle_unit_observer_unittest.cc",
+      "lifecycle_unit_base_unittest.cc",
+      "lifecycle_unit_unittest.cc",
+      "tab_lifecycle_unit_source_unittest.cc",
+      "tab_lifecycle_unit_unittest.cc",
+      "tab_manager_unittest.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:test_support",
+      "//components/performance_manager",
+      "//components/performance_manager/test_support:test_support_common",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "tab_helper_browsertest.cc",
+      "tab_manager_browsertest.cc",
+    ]
+
+    public_deps = [
+      ":resource_coordinator",
+      ":test_support",
+      ":utils",
+    ]
+
+    deps = [
+      ":impl",
       "//base",
-      "//content/public/browser",
+      "//base/test:test_support",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 }
