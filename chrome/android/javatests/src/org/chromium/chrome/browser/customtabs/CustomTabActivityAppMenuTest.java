@@ -189,7 +189,11 @@ public class CustomTabActivityAppMenuTest {
 
     private static int adjustMenuSize(int expectedMenuSize) {
         // history menu won't be shown on pre-U devices. Decrease the expected size by 1.
-        return BuildCompat.isAtLeastU() ? expectedMenuSize : expectedMenuSize - 1;
+        int result = BuildCompat.isAtLeastU() ? expectedMenuSize : expectedMenuSize - 1;
+        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+            result++;
+        }
+        return result;
     }
 
     private void assertHistoryMenuVisibility() {
@@ -215,7 +219,10 @@ public class CustomTabActivityAppMenuTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
+        final int expectedMenuSize =
+                ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()
+                        ? NUM_CHROME_MENU_ITEMS
+                        : NUM_CHROME_MENU_ITEMS - 1;
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
@@ -353,7 +360,10 @@ public class CustomTabActivityAppMenuTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = 2;
+        int expectedMenuSize = 2;
+        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+            expectedMenuSize++;
+        }
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 
@@ -384,7 +394,10 @@ public class CustomTabActivityAppMenuTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = 3;
+        int expectedMenuSize = 3;
+        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+            expectedMenuSize++;
+        }
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 
@@ -433,7 +446,10 @@ public class CustomTabActivityAppMenuTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = 3;
+        int expectedMenuSize = 3;
+        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+            expectedMenuSize++;
+        }
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
 

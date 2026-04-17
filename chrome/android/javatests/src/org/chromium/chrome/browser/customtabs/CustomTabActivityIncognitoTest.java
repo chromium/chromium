@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -375,9 +376,11 @@ public class CustomTabActivityIncognitoTest {
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
 
-        // Check the menu items have only 3 items visible including the top icon row menu for
+        int expectedMenuSize = ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled() ? 4 : 3;
+
+        // Check the menu items have only 3 or 4 items visible including the top icon row menu for
         // incognito tabs.
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, 3);
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
 
         assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
@@ -407,8 +410,11 @@ public class CustomTabActivityIncognitoTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
-        // Check the menu items have only 2 items visible "not" including the top icon row menu.
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, 2);
+        int expectedMenuSize = ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled() ? 3 : 2;
+
+        // Check the menu items have only 2 or 3 items visible "not" including the top icon row
+        // menu.
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
         assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
