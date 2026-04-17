@@ -414,5 +414,36 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+                       ActuatingChangedCallback) {
+  GlicInstanceImpl* instance = GetGlicInstanceImpl();
+  ASSERT_TRUE(instance);
+  GlicActorTaskManager* task_manager =
+      instance->GetActorTaskManagerForTesting();
+  ASSERT_TRUE(task_manager);
+
+  TestFuture<bool> actuating_true_future;
+  TestFuture<bool> actuating_false_future;
+
+  base::CallbackListSubscription subscription =
+      task_manager->AddActuatingChangedCallback(
+          base::BindLambdaForTesting([&](bool actuating) {
+            if (actuating) {
+              actuating_true_future.SetValue(true);
+            } else {
+              actuating_false_future.SetValue(false);
+            }
+          }));
+
+  // Create a task and verify callback receives true.
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+  EXPECT_TRUE(actuating_true_future.Get());
+
+  // Stop the task and verify callback receives false.
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+  EXPECT_FALSE(actuating_false_future.Get());
+}
+
 }  // namespace
 }  // namespace glic::actor

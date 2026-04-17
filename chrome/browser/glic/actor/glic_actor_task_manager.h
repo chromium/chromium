@@ -74,6 +74,10 @@ class GlicActorTaskManager {
   void CanActOnWebChanged(bool can_act_on_web);
   bool IsActuating() const;
 
+  // Adds a callback that is run when the actuating state changes.
+  base::CallbackListSubscription AddActuatingChangedCallback(
+      base::RepeatingCallback<void(bool)> callback);
+
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
 
  private:
@@ -130,6 +134,8 @@ class GlicActorTaskManager {
       actor_task_state_changed_subscription_;
 
   base::CallbackListSubscription can_act_on_web_changed_subscription_;
+
+  base::RepeatingCallbackList<void(bool)> actuating_changed_callbacks_;
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };

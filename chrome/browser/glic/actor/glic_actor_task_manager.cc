@@ -162,6 +162,8 @@ void GlicActorTaskManager::CreateTask(
       &actor_policy_checker_.get(), std::move(options), std::move(delegate));
   CHECK(!current_task_id_.is_null());
 
+  actuating_changed_callbacks_.Notify(true);
+
   actor_task_state_changed_subscription_ =
       actor_keyed_service_->AddTaskStateChangedCallback(base::BindRepeating(
           &GlicActorTaskManager::NotifyActorTaskStateChanged,
@@ -596,6 +598,12 @@ bool GlicActorTaskManager::IsActuating() const {
   return !!current_task_id_;
 }
 
+base::CallbackListSubscription
+GlicActorTaskManager::AddActuatingChangedCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  return actuating_changed_callbacks_.Add(std::move(callback));
+}
+
 void GlicActorTaskManager::InterruptActorTask(actor::TaskId task_id) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task) {
@@ -703,6 +711,8 @@ void GlicActorTaskManager::NotifyActorTaskStateChanged(actor::ActorTask& task) {
     attempted_reload_after_crash_ = false;
     reload_observer_.reset();
     actor_task_state_changed_subscription_.reset();
+
+    actuating_changed_callbacks_.Notify(false);
   }
 }
 
