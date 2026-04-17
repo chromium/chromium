@@ -353,7 +353,7 @@ constexpr int kRealIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kReal = {kRealIndices, nullptr};
 
 // Proto Message: Synthetic
-constexpr int kSyntheticIndices[] = {1, -1};
+constexpr int kSyntheticIndices[] = {1, 2, -1};
 constexpr MessageInfo kSynthetic = {kSyntheticIndices, nullptr};
 
 // Proto Message: ScrollUpdates
@@ -561,10 +561,11 @@ constexpr int kFrameTimelineIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kFrameTimeline = {kFrameTimelineIndices, nullptr};
 
 // Proto Message: AndroidChoreographerFrameCallbackData
-constexpr int kAndroidChoreographerFrameCallbackDataIndices[] = {1, 2, 3, -1};
+constexpr int kAndroidChoreographerFrameCallbackDataIndices[] = {1, 2, 3, 4,
+                                                                 -1};
 constexpr MessageInfo const*
     kAndroidChoreographerFrameCallbackDataComplexMessages[] = {
-        nullptr, &kFrameTimeline, nullptr};
+        nullptr, &kFrameTimeline, nullptr, &kFrameTimeline};
 constexpr MessageInfo kAndroidChoreographerFrameCallbackData = {
     kAndroidChoreographerFrameCallbackDataIndices,
     kAndroidChoreographerFrameCallbackDataComplexMessages};
@@ -840,9 +841,15 @@ constexpr int kFinchHashIndices[] = {1, 2, -1};
 constexpr MessageInfo kFinchHash = {kFinchHashIndices, nullptr};
 
 // Proto Message: ChromeMetadataPacket
-constexpr int kChromeMetadataPacketIndices[] = {1, 2, 3, 4, -1};
+constexpr int kChromeMetadataPacketIndices[] = {1, 2, 3, 4, 6, 7, 8, -1};
 constexpr MessageInfo const* kChromeMetadataPacketComplexMessages[] = {
-    &kBackgroundTracingMetadata, nullptr, nullptr, &kFinchHash};
+    &kBackgroundTracingMetadata,
+    nullptr,
+    nullptr,
+    &kFinchHash,
+    nullptr,
+    nullptr,
+    nullptr};
 constexpr MessageInfo kChromeMetadataPacket = {
     kChromeMetadataPacketIndices, kChromeMetadataPacketComplexMessages};
 
