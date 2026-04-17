@@ -90,6 +90,7 @@ public class RemoteViewsWithNightModeInflater {
 
             LayoutInflater inflater =
                     LayoutInflater.from(appContext).cloneInContext(contextForRemoteViews);
+            inflater.setFilter(clazz -> clazz.isAnnotationPresent(RemoteViews.RemoteView.class));
             View view = inflater.inflate(remoteViews.getLayoutId(), parent, false);
 
             remoteViews.reapply(appContext, view);

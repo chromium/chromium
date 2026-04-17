@@ -119,9 +119,15 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.night_mode"
 }
 
+android_resources("junit_resources") {
+  testonly = true
+  sources = [ "java/res_junit/layout/remote_views_test_layout.xml" ]
+}
+
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/night_mode/AutoDarkFeedbackSourceUnitTest.java",
+    "java/src/org/chromium/chrome/browser/night_mode/RemoteViewsWithNightModeInflaterUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsThemeClientUnitTest.java",
@@ -129,6 +135,7 @@ robolectric_library("junit") {
 
   deps = [
     ":java",
+    ":junit_resources",
     ":night_mode_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
