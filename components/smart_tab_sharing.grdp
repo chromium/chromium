@@ -167,8 +167,8 @@
   </message>
 
   <!-- Megaplus menu: Location where user can turn Smart Tab Sharing on and off (per thread only) -->
-  <message name="IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    Share relevant open tabs
+  <message name="IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS" desc="Label for the toggle to share open tabs in the composebox context menu.">
+    Share open tabs
   </message>
   <message name="IDS_STS_CONTEXT_MENU_TOGGLE_LABEL" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Share open tabs

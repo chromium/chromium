@@ -7,10 +7,12 @@ import './composebox_tab_favicon.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -20,7 +22,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
+import {getLoadTimeBoolean, recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {getCss} from './contextual_action_menu.css.js';
 import {getHtml} from './contextual_action_menu.html.js';
 
@@ -55,6 +57,7 @@ export class ContextualActionMenuElement extends
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
       inputState: {type: Object},
+      smartTabSharingActive: {type: Boolean},
       enableMultiTabSelection_: {
         reflect: true,
         type: Boolean,
@@ -62,6 +65,7 @@ export class ContextualActionMenuElement extends
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
       showContextMenuHeaders_: {type: Boolean},
+      smartTabSharingVisible_: {type: Boolean},
     };
   }
 
@@ -69,6 +73,7 @@ export class ContextualActionMenuElement extends
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
+  accessor smartTabSharingActive: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -80,6 +85,8 @@ export class ContextualActionMenuElement extends
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
   protected accessor showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
+  protected accessor smartTabSharingVisible_: boolean =
+      getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
   }> {
@@ -344,6 +351,25 @@ export class ContextualActionMenuElement extends
       return noNewContextAllowed && !isTabInContext;
     }
     return noNewContextAllowed || isTabInContext;
+  }
+
+  protected onSmartTabSharingToggleChange_(e: Event) {
+    const toggle = e.target as CrToggleElement;
+    this.fire('smart-tab-sharing-active-changed', {active: toggle.checked});
+  }
+
+  protected onSmartTabSharingItemClick_(e: Event) {
+    if ((e.target as HTMLElement).id === 'smartTabSharingToggle') {
+      return;
+    }
+    this.toggleSmartTabSharing_();
+  }
+
+  private toggleSmartTabSharing_() {
+    const toggle = this.shadowRoot.querySelector<CrToggleElement>(
+        '#smartTabSharingToggle')!;
+    toggle.checked = !toggle.checked;
+    this.fire('smart-tab-sharing-active-changed', {active: toggle.checked});
   }
 
   protected onTabClick_(e: Event) {

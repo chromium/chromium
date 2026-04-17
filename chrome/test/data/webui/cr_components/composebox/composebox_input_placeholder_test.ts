@@ -54,11 +54,13 @@ suite('ComposeboxInputPlaceholder', () => {
 
     searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxPageRemote = searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
-    installMock(
+    const composeboxHandler = installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             searchboxCallbackRouter)));
+    composeboxHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
 
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,

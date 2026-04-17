@@ -70,6 +70,7 @@ suite('FeedbackToast', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     document.body.appendChild(lensSidePanelElement);
+    lensSidePanelElement.$.composebox.setExpandingForTesting(false);
   });
 
   teardown(() => {
@@ -303,11 +304,11 @@ suite('FeedbackToastUpdated', () => {
       return origSetTimeout(handler, timeout);
     };
 
-    callbackRouterRemote =
-        testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+    callbackRouterRemote = testBrowserProxy.page;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     document.body.appendChild(lensSidePanelElement);
+    lensSidePanelElement.$.composebox.setExpandingForTesting(false);
   });
 
   teardown(() => {
@@ -316,6 +317,7 @@ suite('FeedbackToastUpdated', () => {
 
   test('ShowFeedbackToastOnLoadFinishedWithDelay', async () => {
     callbackRouterRemote.setIsLoadingResults(false);
+    await callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(lensSidePanelElement);
 
     // Toast should not be visible immediately.
@@ -332,6 +334,7 @@ suite('FeedbackToastUpdated', () => {
   test('FeedbackToastReshowsOnAimResultChange', async () => {
     // Show the feedback toast first.
     callbackRouterRemote.setIsLoadingResults(false);
+    await callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(lensSidePanelElement);
 
     // Toast should not be visible immediately.
@@ -358,6 +361,7 @@ suite('FeedbackToastUpdated', () => {
 
     // Changing to AIM results should reshow the toast.
     callbackRouterRemote.aimResultsChanged(true);
+    await callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(lensSidePanelElement);
     showFeedbackToastCallback();
     await waitAfterNextRender(lensSidePanelElement);
@@ -367,6 +371,7 @@ suite('FeedbackToastUpdated', () => {
   test('FeedbackToastReshowsOnFocusResultsFrame', async () => {
     // Show the feedback toast first.
     callbackRouterRemote.setIsLoadingResults(false);
+    await callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(lensSidePanelElement);
     // Toast should not be visible immediately.
     assertFalse(isRendered(getFeedbackToast()));
@@ -393,6 +398,7 @@ suite('FeedbackToastUpdated', () => {
 
     // Focusing the results frame should reshow the toast.
     callbackRouterRemote.focusResultsFrame();
+    await callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(lensSidePanelElement);
     showFeedbackToastCallback();
     await waitAfterNextRender(lensSidePanelElement);

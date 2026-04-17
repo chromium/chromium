@@ -63,6 +63,8 @@ suite('Composebox', () => {
 
     // Mock the composebox handlers.
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
+    mockPageHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(

@@ -214,8 +214,12 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddResourcePaths(kLensSharedResources);
 
   // Add required resources for the searchbox.
-  html_source->AddLocalizedStrings(
-      SearchboxHandler::GetWebUIDataSourceDict(Profile::FromWebUI(web_ui)));
+  html_source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
+      Profile::FromWebUI(web_ui),
+      /*enable_voice_search=*/false,
+      /*enable_lens_search=*/false,
+      /*session_allows_drag_and_drop=*/false,
+      /*is_lens=*/true));
   html_source->AddString(
       "searchboxDefaultIcon",
       lens::features::GetVisualSelectionUpdatesEnableGradientSuperG()

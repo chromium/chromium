@@ -32,7 +32,7 @@ import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composeb
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeShown, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeShown, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -98,6 +98,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   static override get properties() {
     return {
+      smartTabSharingActive_: {type: Boolean},
       showLensButton: {type: Boolean},
       suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
@@ -156,8 +157,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
       },
       disableComposeboxAnimation: {type: Boolean},
-      // Embedders can opt out of public composebox resize events when they do not
-      // use them.
+      // Embedders can opt out of public composebox resize events when they do
+      // not use them.
       observeResize: {type: Boolean},
       enableCarouselScrolling: {type: Boolean},
       inputPlaceholderOverride: {type: String},
@@ -198,6 +199,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
   protected accessor isCollapsible: boolean = false;
+  protected accessor smartTabSharingActive_: boolean = false;
   // Whether the composebox is currently expanded. Always true if isCollapsible
   // is false.
   protected accessor expanding_: boolean = false;
@@ -303,8 +305,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxHandler_.notifySessionStarted();
 
     const inputState = await this.searchboxHandler_.getInputState();
-      if (inputState) {
-        this.inputState = inputState.state;
+    if (inputState) {
+      this.inputState = inputState.state;
+    }
+
+    const smartTabSharingVisible =
+        getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
+    if (smartTabSharingVisible) {
+      const {active} = await this.pageHandler_.getSmartTabSharingActive();
+      this.smartTabSharingActive_ = active;
     }
 
     this.syncResizeObservers_();
@@ -508,6 +517,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   isExpanded(): boolean {
     return this.expanding_;
+  }
+
+  setExpandingForTesting(expanding: boolean) {
+    this.expanding_ = expanding;
   }
 
   protected async updateState_(state: ComposeboxState) {
@@ -756,6 +769,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.processFiles(e.detail.files);
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource);
+  }
+
+  protected onSmartTabSharingActiveChanged_(e: CustomEvent<{active: boolean}>) {
+    this.smartTabSharingActive_ = e.detail.active;
+    this.pageHandler_.setSmartTabSharingActive(e.detail.active);
   }
 
 

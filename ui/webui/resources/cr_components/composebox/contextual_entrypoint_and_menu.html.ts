@@ -27,6 +27,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .disabledTabIds="${this.disabledTabIds}"
         .tabSuggestions="${this.tabSuggestions}"
         .inputState="${this.inputState}"
+        .smartTabSharingActive="${this.smartTabSharingActive}"
         @close="${this.onMenuClose_}">
     </cr-composebox-contextual-action-menu>
   <!--_html_template_end_-->`;

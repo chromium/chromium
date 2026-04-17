@@ -101,6 +101,7 @@ suite('ComposeboxVoiceSearch', () => {
       composeboxShowVoiceSearch: true,
       composeboxShowZps: true,
       composeboxShowTypedSuggest: true,
+      composeboxSmartTabSharingVisible: false,
     });
   });
 
@@ -112,6 +113,8 @@ suite('ComposeboxVoiceSearch', () => {
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
+    handler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
     assertTrue(!!handler);
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
@@ -859,6 +862,8 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     // Intercept metrics recording.
     metrics = fakeMetricsPrivate();
     handler = TestMock.fromClass(PageHandlerRemote);
+    handler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
     searchboxHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     searchboxHandler.setResultFor(
         'getPageClassification',

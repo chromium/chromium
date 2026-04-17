@@ -16,6 +16,19 @@ export function getHtml(this: ContextualActionMenuElement) {
        asynchronously from the browser process. -->
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}" auto-reposition>
+    ${this.smartTabSharingVisible_ ? html`
+      <button class="dropdown-item toggle-item"
+          id="smartTabSharingItem"
+          role="menuitem"
+          @click="${this.onSmartTabSharingItemClick_}">
+        <span>${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
+        <cr-toggle id="smartTabSharingToggle"
+            ?checked="${this.smartTabSharingActive}"
+            @change="${this.onSmartTabSharingToggleChange_}">
+        </cr-toggle>
+      </button>
+      <hr/>
+    ` : ''}
     ${this.tabSuggestions?.length > 0 && this.isBrowserTabAllowed_() ? html`
       ${this.showContextMenuHeaders_ ? html`<h4 id="tabHeader">${
           this.getInputTypeLabel_(InputType.kBrowserTab)}</h4>` : ''}
@@ -126,6 +139,7 @@ export function getHtml(this: ContextualActionMenuElement) {
               icon="cr:check" id="model-check"></cr-icon>` : ''}
       </button>`;
     })}
+
   </cr-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on

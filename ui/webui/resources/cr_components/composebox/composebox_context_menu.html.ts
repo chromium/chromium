@@ -29,7 +29,10 @@ export function getHtml(this: ComposeboxElement) {
         @context-menu-opened="${this.onContextMenuOpened_}"
         @open-image-upload="${this.onOpenImageUpload}"
         @open-file-upload="${this.onOpenFileUpload}"
+        @smart-tab-sharing-active-changed="${
+            this.onSmartTabSharingActiveChanged_}"
         .inputState="${this.inputState}"
+        .smartTabSharingActive="${this.smartTabSharingActive_}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
         .hasImageFiles="${this.hasImageFiles()}"

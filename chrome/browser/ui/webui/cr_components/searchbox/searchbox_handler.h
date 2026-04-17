@@ -59,7 +59,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       Profile* profile,
       bool enable_voice_search = false,
       bool enable_lens_search = false,
-      bool session_allows_drag_and_drop = false);
+      bool session_allows_drag_and_drop = false,
+      bool is_lens = false);
 
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.

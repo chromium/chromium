@@ -35,6 +35,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -317,7 +318,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
     Profile* profile,
     bool enable_voice_search,
     bool enable_lens_search,
-    bool session_allows_drag_and_drop) {
+    bool session_allows_drag_and_drop,
+    bool is_lens) {
   base::DictValue dict;
 
   // The WebUI Omnibox code will override this to `true` to adjust various
@@ -497,6 +499,11 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            ntp_composebox::kShowContextMenuHeaders.Get());
   dict.Set("thinkingModelIconUpdate",
            base::FeatureList::IsEnabled(omnibox::kThinkingModelIconUpdate));
+  dict.Set("composeboxSmartTabSharingVisible",
+           is_lens ? false : contextual_tasks::GetIsSmartTabSharingEnabled());
+  dict.Set(
+      "stsMegaplusShareRelevantOpenTabs",
+      l10n_util::GetStringUTF16(IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS));
 
   return dict;
 }

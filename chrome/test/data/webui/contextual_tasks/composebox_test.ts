@@ -129,6 +129,8 @@ suite('ContextualTasksComposeboxTest', () => {
     BrowserProxyImpl.setInstance(testProxy);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
+    mockComposeboxPageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
@@ -773,6 +775,8 @@ suite('ContextualTasksComposeboxTest', () => {
     const threadFrame = contextualTasksApp.$.threadFrame;
     const composebox = contextualTasksApp.$.composebox;
 
+    mockSearchboxPageHandler.reset();
+
     // Set to zero state to ensure autocomplete is queried.
     testProxy.callbackRouterRemote.onZeroStateChange(true);
     await testProxy.callbackRouterRemote.$.flushForTesting();
@@ -1185,5 +1189,29 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(1, files.length);
     // Reference should be exactly the same (no re-allocation or modification)
     assertEquals(updatedFile, files[0]);
+  });
+
+  test('SmartTabSharingActiveChangedFiresMojo', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const crComposebox = $$(contextualComposebox, '#composebox');
+    assertTrue(!!crComposebox);
+    const entrypointAndMenu =
+        $$(crComposebox, 'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+
+    mockComposeboxPageHandler.reset();
+
+    entrypointAndMenu.dispatchEvent(
+        new CustomEvent('smart-tab-sharing-active-changed', {
+          detail: {active: true},
+          bubbles: true,
+          composed: true,
+        }));
+
+    const activeArg =
+        await mockComposeboxPageHandler.whenCalled('setSmartTabSharingActive');
+    assertEquals(
+        1, mockComposeboxPageHandler.getCallCount('setSmartTabSharingActive'));
+    assertEquals(true, activeArg);
   });
 });

@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -24,6 +25,7 @@ suite('ContextualActionMenu', () => {
       composeboxShowContextMenuTabPreviews: true,
       composeboxShowPdfUpload: true,
       ShowContextMenuHeaders: true,
+      composeboxSmartTabSharingVisible: false,
     });
 
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
@@ -556,5 +558,56 @@ suite('ContextualActionMenu', () => {
         `${geminiLabel}`,
         geminiRegular!.getAttribute('aria-label'));
     assertTrue(imageUpload!.textContent.includes(imageUploadLabel));
+  });
+
+  test('Toggling smart tab sharing fires event', async () => {
+    loadTimeData.overrideValues({composeboxSmartTabSharingVisible: true});
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    document.body.appendChild(actionMenu);
+
+    actionMenu.smartTabSharingActive = false;
+    actionMenu.showAt(actionMenu);
+    await actionMenu.updateComplete;
+
+    const toggle = $$(actionMenu, '#smartTabSharingToggle') as CrToggleElement;
+    assertTrue(!!toggle);
+
+    let eventDetail: {active: boolean}|null = null;
+    actionMenu.addEventListener(
+        'smart-tab-sharing-active-changed', (e: Event) => {
+          eventDetail = (e as CustomEvent).detail;
+        }, {once: true});
+
+    toggle.checked = true;
+    toggle.dispatchEvent(new CustomEvent('change'));
+
+    assertTrue(!!eventDetail);
+    assertTrue((eventDetail as {active: boolean}).active);
+  });
+
+  test('Clicking smart tab sharing row toggles state', async () => {
+    loadTimeData.overrideValues({composeboxSmartTabSharingVisible: true});
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    document.body.appendChild(actionMenu);
+
+    actionMenu.smartTabSharingActive = false;
+    actionMenu.showAt(actionMenu);
+    await actionMenu.updateComplete;
+
+    const item = $$(actionMenu, '#smartTabSharingItem') as HTMLElement;
+    assertTrue(!!item);
+    const toggle = $$(actionMenu, '#smartTabSharingToggle') as CrToggleElement;
+
+    let eventFired = false;
+    actionMenu.addEventListener('smart-tab-sharing-active-changed', () => {
+      eventFired = true;
+    }, {once: true});
+
+    item.click();
+
+    assertTrue(eventFired);
+    assertTrue(toggle.checked);
   });
 });
