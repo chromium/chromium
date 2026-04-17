@@ -23,6 +23,28 @@ export class AccessibilityAnnotatorInfoElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      email_: {type: String},
+      avatarUrl_: {type: String},
+    };
+  }
+
+  protected accessor email_: string = '';
+  protected accessor avatarUrl_: string = '';
+
+  override connectedCallback() {
+    super.connectedCallback();
+    AccessibilityAnnotatorInfoBrowserProxy.getInstance()
+        .handler.getAccountInfo()
+        .then(response => {
+          if (response.info) {
+            this.email_ = response.info.email;
+            this.avatarUrl_ = response.info.avatarUrl;
+          }
+        });
+  }
+
   protected onManageSettingsClick_() {
     AccessibilityAnnotatorInfoBrowserProxy.getInstance()
         .handler.onManageSettingsClicked();

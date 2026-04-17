@@ -17,12 +17,16 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/accessibility_annotator/core/url_constants.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator::info {
@@ -71,8 +75,17 @@ class AccessibilityAnnotatorInfoPageHandlerTest
 
 TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfo) {
   auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
-  identity_test_env->MakePrimaryAccountAvailable("test@example.com",
-                                                 signin::ConsentLevel::kSignin);
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image avatar_image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  signin::SimulateAccountImageFetch(identity_test_env->identity_manager(),
+                                    account_info.account_id,
+                                    "https://example.com/avatar", avatar_image);
 
   bool callback_called = false;
   handler_->GetAccountInfo(base::BindLambdaForTesting(
@@ -80,7 +93,7 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfo) {
         callback_called = true;
         ASSERT_TRUE(info);
         EXPECT_EQ("test@example.com", info->email);
-        EXPECT_FALSE(info->avatar_url.empty());
+        EXPECT_EQ(webui::GetBitmapDataUrl(bitmap), info->avatar_url);
       }));
 
   EXPECT_TRUE(callback_called);

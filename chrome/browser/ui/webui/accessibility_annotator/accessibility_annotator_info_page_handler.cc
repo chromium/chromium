@@ -9,14 +9,16 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/accessibility_annotator/core/url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace accessibility_annotator::info {
@@ -57,8 +59,13 @@ void AccessibilityAnnotatorInfoPageHandler::GetAccountInfo(
             identity_manager->FindExtendedAccountInfoByAccountId(
                 core_account_info.account_id);
         account_info_mojom->email = std::string(account_info.GetEmail());
-        account_info_mojom->avatar_url =
-            signin::GetAccountPictureUrl(account_info);
+        if (account_info.GetAvatarImage().has_value()) {
+          account_info_mojom->avatar_url = webui::GetBitmapDataUrl(
+              account_info.GetAvatarImage()->AsBitmap());
+        } else {
+          account_info_mojom->avatar_url =
+              profiles::GetPlaceholderAvatarIconUrl();
+        }
       }
     }
   }

@@ -6,7 +6,7 @@ import 'chrome://accessibility-annotator-info/accessibility_annotator_info.js';
 
 import type {AccessibilityAnnotatorInfoElement} from 'chrome://accessibility-annotator-info/accessibility_annotator_info.js';
 import {AccessibilityAnnotatorInfoBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestAccessibilityAnnotatorInfoBrowserProxy} from './test_accessibility_annotator_info_browser_proxy.js';
@@ -43,5 +43,50 @@ suite('AccessibilityAnnotatorInfoTest', function() {
     gotItButton.click();
     await browserProxy.handler.whenCalled('onInfoAcknowledged');
     assertEquals(1, browserProxy.handler.getCallCount('onInfoAcknowledged'));
+  });
+
+  test('RendersAccountInfo', async function() {
+    const testEmail = 'test@example.com';
+    const testAvatarUrl = 'https://example.com/avatar.png';
+    browserProxy.handler.setAccountInfo({
+      email: testEmail,
+      avatarUrl: testAvatarUrl,
+    });
+
+    accessibilityAnnotatorInfoElement =
+        document.createElement('accessibility-annotator-info');
+    document.body.appendChild(accessibilityAnnotatorInfoElement);
+
+    await browserProxy.handler.whenCalled('getAccountInfo');
+    await microtasksFinished();
+
+    const emailElement = accessibilityAnnotatorInfoElement.shadowRoot
+                             ?.querySelector<HTMLElement>('#email');
+    assertTrue(!!emailElement);
+    assertEquals(testEmail, emailElement.textContent);
+
+    const avatarElement = accessibilityAnnotatorInfoElement.shadowRoot
+                              ?.querySelector<HTMLImageElement>('#avatar');
+    assertTrue(!!avatarElement);
+    assertEquals(testAvatarUrl, avatarElement.src);
+
+    const accountInfoDiv = accessibilityAnnotatorInfoElement.shadowRoot
+                               ?.querySelector<HTMLElement>('.account-info');
+    assertTrue(!!accountInfoDiv);
+    assertFalse(accountInfoDiv.hidden);
+  });
+
+  test('HidesAccountInfoWhenEmpty', async function() {
+    accessibilityAnnotatorInfoElement =
+        document.createElement('accessibility-annotator-info');
+    document.body.appendChild(accessibilityAnnotatorInfoElement);
+
+    await browserProxy.handler.whenCalled('getAccountInfo');
+    await microtasksFinished();
+
+    const accountInfoDiv = accessibilityAnnotatorInfoElement.shadowRoot
+                               ?.querySelector<HTMLElement>('.account-info');
+    assertTrue(!!accountInfoDiv);
+    assertTrue(accountInfoDiv.hidden);
   });
 });

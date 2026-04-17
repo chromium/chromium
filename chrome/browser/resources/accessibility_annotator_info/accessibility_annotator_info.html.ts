@@ -10,6 +10,10 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
+  <div class="account-info" ?hidden="${!this.email_}">
+    <img id="avatar" src="${this.avatarUrl_}" alt="">
+    <span id="email">${this.email_}</span>
+  </div>
   <div class="canvasDiv">
     <!-- TODO(crbug.com/488321731): Add illustration here. -->
   </div>
