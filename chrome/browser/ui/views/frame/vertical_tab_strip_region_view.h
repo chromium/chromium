@@ -228,6 +228,8 @@ class VerticalTabStripRegionView final
   // Used to create and destroy locks for the expand on hover state.
   friend class VerticalTabStripExpandOnHoverLock;
 
+  void HandleMouseExited();
+
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
   void ClearTabStripView(views::View* view);
 
@@ -370,6 +372,9 @@ class VerticalTabStripRegionView final
 
   RegionViewFocusListener focus_listener_{this};
   ClickEventHandler click_handler_{this};
+
+  // The mouse exit event debounce timer.
+  base::OneShotTimer mouse_exit_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_
