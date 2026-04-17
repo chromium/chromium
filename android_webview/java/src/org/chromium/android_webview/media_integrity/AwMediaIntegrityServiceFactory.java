@@ -10,7 +10,8 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 @NullMarked
-public class AwMediaIntegrityServiceFactory implements InterfaceFactory {
+public class AwMediaIntegrityServiceFactory
+        implements InterfaceFactory<WebViewMediaIntegrityService> {
     private final RenderFrameHost mRenderFrameHost;
 
     public AwMediaIntegrityServiceFactory(RenderFrameHost renderFrameHost) {

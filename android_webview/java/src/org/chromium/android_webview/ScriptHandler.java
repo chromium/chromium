@@ -17,7 +17,7 @@ public class ScriptHandler {
 
     public ScriptHandler(AwContents awContents, int scriptId) {
         assert scriptId >= 0;
-        mAwContentsRef = new WeakReference(awContents);
+        mAwContentsRef = new WeakReference<>(awContents);
         mScriptId = scriptId;
     }
 

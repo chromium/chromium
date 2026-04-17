@@ -522,7 +522,11 @@ public class AccountSelectionJUnitTestBase {
         if (key == ItemProperties.DRAGBAR_HANDLE_VISIBLE) {
             return model.get((WritableBooleanPropertyKey) key);
         }
-        return model.get((WritableObjectPropertyKey<PropertyModel>) key) != null;
+        // All other ItemProperties keys are WritableObjectPropertyKey<PropertyModel>.
+        @SuppressWarnings("unchecked")
+        WritableObjectPropertyKey<PropertyModel> objectKey =
+                (WritableObjectPropertyKey<PropertyModel>) key;
+        return model.get(objectKey) != null;
     }
 
     void resetMediator() {

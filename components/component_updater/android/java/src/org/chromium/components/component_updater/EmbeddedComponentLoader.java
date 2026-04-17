@@ -87,6 +87,8 @@ public class EmbeddedComponentLoader implements ServiceConnection {
                         ComponentLoadResult.COMPONENTS_PROVIDER_SERVICE_ERROR);
                 return;
             }
+            // Bundle.getSerializable() returns Serializable; producer stores the expected map.
+            @SuppressWarnings("unchecked")
             Map<String, ParcelFileDescriptor> resultMap =
                     (Map<String, ParcelFileDescriptor>) resultData.getSerializable(KEY_RESULT);
             if (resultMap == null) {

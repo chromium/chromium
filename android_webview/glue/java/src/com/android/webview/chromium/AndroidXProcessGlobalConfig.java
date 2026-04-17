@@ -107,6 +107,8 @@ public final class AndroidXProcessGlobalConfig {
                 Class<?> holder = Class.forName("androidx.webkit.ProcessGlobalConfig", true, cl);
                 Field sProcessGlobalConfig = holder.getDeclaredField("sProcessGlobalConfig");
                 sProcessGlobalConfig.setAccessible(true);
+                // AndroidX field type is AtomicReference<HashMap<String, Object>>.
+                @SuppressWarnings("unchecked")
                 AtomicReference<HashMap<String, Object>> configRef =
                         (AtomicReference<HashMap<String, Object>>) sProcessGlobalConfig.get(null);
                 configMap = configRef.get();

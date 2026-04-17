@@ -87,11 +87,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     /**
      * The app stores that supports app-store billing methods.
      *
-     * key: the app-store app's package name, e.g., "com.google.vendor" (Google Play Store).
+     * <p>key: the app-store app's package name, e.g., "com.google.vendor" (Google Play Store).
      * value: the app-store app's billing method identifier, e.g.,
      * "https://play.google.com/billing". Only valid GURLs are allowed.
      */
-    private final Map<String, GURL> mAppStores = new HashMap();
+    private final Map<String, GURL> mAppStores = new HashMap<>();
 
     /**
      * A mapping from an Android package name to the payment app with that package name. The apps
@@ -99,7 +99,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * have been validated. The package names are used for identification because they are unique on
      * Android. Example contents:
      *
-     * {"com.bobpay.app.v1": androidPaymentApp1, "com.alicepay.app.v1": androidPaymentApp2}
+     * <p>{"com.bobpay.app.v1": androidPaymentApp1, "com.alicepay.app.v1": androidPaymentApp2}
      */
     private final Map<String, AndroidPaymentApp> mValidApps = new HashMap<>();
 

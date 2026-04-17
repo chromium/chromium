@@ -1157,7 +1157,7 @@ public class AwContents implements SmartClipProvider {
         if (mAutofillProvider == null) {
             mAutofillProvider =
                     new AutofillProvider(
-                            new WeakReference(mContext),
+                            new WeakReference<>(mContext),
                             mContainerView,
                             mWebContents,
                             "Android WebView");
@@ -3595,7 +3595,7 @@ public class AwContents implements SmartClipProvider {
                 // sure that we only reclaim memory when we've spent enough continuous time in
                 // background. Use a weak ref to make sure we don't prevent AwContents from being
                 // GC-eligible while this task is in the queue.
-                WeakReference<AwContents> weakAwc = new WeakReference(this);
+                WeakReference<AwContents> weakAwc = new WeakReference<>(this);
                 Runnable task =
                         () -> {
                             AwContents awc = weakAwc.get();

@@ -84,6 +84,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -510,7 +511,7 @@ public final class AwBrowserProcess {
         // because e.g. the disk is full, or the file system is corrupted.
         int fileCount = minidumpFiles.length;
         ParcelFileDescriptor[] minidumpFds = new ParcelFileDescriptor[fileCount];
-        Map<String, String>[] crashInfos = new Map[fileCount];
+        List<Map<String, String>> crashInfos = new ArrayList<>(fileCount);
         for (int i = 0; i < fileCount; ++i) {
             File file = minidumpFiles[i];
             ParcelFileDescriptor p = null;
@@ -519,12 +520,12 @@ public final class AwBrowserProcess {
             } catch (IOException e) {
             }
             minidumpFds[i] = p;
-            crashInfos[i] = crashesInfoMap.get(getCrashUuid(file));
+            crashInfos.add(crashesInfoMap.get(getCrashUuid(file)));
         }
 
         try {
             // AIDL does not support arrays of objects, so use a List here.
-            service.transmitCrashes(minidumpFds, Arrays.asList(crashInfos));
+            service.transmitCrashes(minidumpFds, crashInfos);
         } catch (Exception e) {
             // Exception can be RemoteException, or "RuntimeException: Too many open files".
             // https://crbug.com/1399777
@@ -692,6 +693,8 @@ public final class AwBrowserProcess {
         }
     }
 
+    // AIDL returns a raw List because List<byte[]> is not a supported AIDL type.
+    @SuppressWarnings("unchecked")
     private static void sendMetricsToService(IBinder service) {
         try {
             IMetricsBridgeService metricsService = IMetricsBridgeService.Stub.asInterface(service);

@@ -85,7 +85,7 @@ public class AwMediaIntegrityApiStatusConfig {
             Map<String, @MediaIntegrityApiStatus Integer> permissionConfig) {
         Map<Integer, List<String>> newPatterns = new HashMap<>();
         for (int status : sStatusByPriority) {
-            newPatterns.put(status, new ArrayList());
+            newPatterns.put(status, new ArrayList<>());
         }
         for (Map.Entry<String, @MediaIntegrityApiStatus Integer> entry :
                 permissionConfig.entrySet()) {

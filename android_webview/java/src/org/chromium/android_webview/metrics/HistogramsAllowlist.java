@@ -52,7 +52,7 @@ public class HistogramsAllowlist {
                     "Power.ForegroundBatteryDrain.30SecondsAvg2",
                     // histograms_allowlist_check END_PARSING
                 };
-        Set<Long> hashes = new HashSet();
+        Set<Long> hashes = new HashSet<>();
         for (String histogram : histogramsAllowlist) {
             hashes.add(AwMetricsUtils.hashHistogramName(histogram));
         }

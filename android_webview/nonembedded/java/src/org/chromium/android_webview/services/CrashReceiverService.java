@@ -36,6 +36,8 @@ public class CrashReceiverService extends Service {
 
     private final ICrashReceiverService.Stub mBinder =
             new ICrashReceiverService.Stub() {
+                // AIDL `List` is raw: List<Map<String, String>> is not a supported AIDL type.
+                @SuppressWarnings("unchecked")
                 @Override
                 public void transmitCrashes(
                         ParcelFileDescriptor[] fileDescriptors, List crashInfo) {

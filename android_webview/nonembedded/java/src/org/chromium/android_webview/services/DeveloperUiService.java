@@ -76,6 +76,8 @@ public final class DeveloperUiService extends Service {
 
     private final IDeveloperUiService.Stub mBinder =
             new IDeveloperUiService.Stub() {
+                // AIDL `Map` is raw: Map<String, Boolean> is not a supported AIDL type.
+                @SuppressWarnings("unchecked")
                 @Override
                 public void setFlagOverrides(Map overriddenFlags) {
                     if (Binder.getCallingUid() != Process.myUid()) {

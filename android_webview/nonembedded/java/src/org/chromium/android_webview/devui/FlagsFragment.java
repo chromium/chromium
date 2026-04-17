@@ -443,7 +443,10 @@ public class FlagsFragment extends DevUiBaseFragment {
                         protected void publishResults(
                                 CharSequence constraint, FilterResults results) {
                             mQuery = new FlagQuery(constraint);
-                            mItems = (List<Flag>) results.values;
+                            // performFiltering() always stores a List<Flag> here.
+                            @SuppressWarnings("unchecked")
+                            List<Flag> matches = (List<Flag>) results.values;
+                            mItems = matches;
                             notifyDataSetChanged();
                             onFilterDone();
                         }

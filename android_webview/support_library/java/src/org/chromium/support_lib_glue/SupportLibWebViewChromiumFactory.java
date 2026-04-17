@@ -883,6 +883,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         }
 
         @Override
+        @SuppressWarnings("unchecked") // Values cross the AndroidX boundary as raw Object.
         public void accept(@StartUpConfigField Integer key, Object value) {
             switch (key) {
                 case StartUpConfigField.BACKGROUND_EXECUTOR:

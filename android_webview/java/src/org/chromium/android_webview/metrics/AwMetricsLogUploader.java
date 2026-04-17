@@ -43,7 +43,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final long SERVICE_CONNECTION_TIMEOUT_MS = 10_000;
 
     private final AtomicReference<@Nullable MetricsLogUploaderServiceConnection>
-            mInitialConnection = new AtomicReference();
+            mInitialConnection = new AtomicReference<>();
     private final boolean mIsAsync;
 
     /**

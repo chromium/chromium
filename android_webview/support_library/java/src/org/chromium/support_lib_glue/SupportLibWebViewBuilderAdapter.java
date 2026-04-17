@@ -71,6 +71,7 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
         private @Nullable String mProfileName;
 
         @Override
+        @SuppressWarnings("unchecked") // Values cross the AndroidX boundary as raw Object.
         public void accept(@ConfigField Integer key, Object value) {
             try {
                 switch (key) {
