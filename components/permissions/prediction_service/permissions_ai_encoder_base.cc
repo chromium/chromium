@@ -47,7 +47,7 @@ bool PermissionsAiEncoderBase<EncoderInput>::ConvertSkBitMapToTfliteTensor(
   int index = 0;
   for (int h = 0; h < resized.height(); ++h) {
     for (int w = 0; w < resized.width(); ++w) {
-      SkColor color = resized.getColor(h, w);
+      SkColor color = resized.getColor(w, h);
       // We normalize the pixel values to be in between 0 and 1.
       data[index++] = static_cast<float>(SkColorGetR(color)) / 255.0f;
       data[index++] = static_cast<float>(SkColorGetG(color)) / 255.0f;

@@ -359,6 +359,52 @@ TEST_F(Aiv4HandlerTest, BitmapGetsCopiedToTensor) {
   EXPECT_TRUE(flag);
 }
 
+TEST_F(Aiv4HandlerTest, BitmapOrientationPreserved) {
+  PushModelFileToModelExecutor(kOptTargetNotifications,
+                               test::ModelFilePath(kZeroReturnModel));
+
+  SkBitmap snapshot =
+      test::BuildBitmap(kImageInputWidth, kImageInputHeight, SK_ColorBLUE);
+
+  // Fill top-right quadrant with RED.
+  // w >= kImageInputWidth / 2 and h < kImageInputHeight / 2
+  // This asymmetric pattern is sensitive to transposition, rotation or flip
+  // in the encoder.
+  snapshot.erase(SK_ColorRED,
+                 SkIRect::MakeLTRB(kImageInputWidth / 2, 0, kImageInputWidth,
+                                   kImageInputHeight / 2));
+
+  bool flag = false;
+  notification_executor_mock_->set_preprocess_hook(base::BindLambdaForTesting(
+      [&flag](const std::vector<TfLiteTensor*>& input_tensors) {
+        std::vector<float> data;
+        ASSERT_TRUE(
+            tflite::task::core::PopulateVector<float>(input_tensors[1], &data)
+                .ok());
+        EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
+
+        // Test a pixel in the top-right quadrant.
+        // It should be RED.
+        int test_w = kImageInputWidth * 3 / 4;
+        int test_h = kImageInputHeight / 4;
+        int index = (test_h * kImageInputWidth + test_w) * 3;
+
+        EXPECT_FLOAT_EQ(data[index], 1.0f);      // R for RED
+        EXPECT_FLOAT_EQ(data[index + 1], 0.0f);  // G for RED
+        EXPECT_FLOAT_EQ(data[index + 2], 0.0f);  // B for RED
+
+        flag = true;
+      }));
+
+  ModelCallbackFuture future;
+  auto* aiv4_handler = model_handler();
+  aiv4_handler->ExecuteModel(
+      future.GetCallback(),
+      ModelInput{std::move(snapshot), GetDummyEmbeddings()});
+  EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
+  EXPECT_TRUE(flag);
+}
+
 // This test verifies the timeout behavior of the permission model handler.
 // The timeout is triggered when the model execution takes longer than the
 // timeout threshold. Additionally, this test verifies that the model handler
