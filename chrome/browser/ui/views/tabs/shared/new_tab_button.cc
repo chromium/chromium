@@ -30,13 +30,13 @@ NewTabButton::NewTabButton(BrowserWindowInterface* browser,
 
   SetIconSize(icon_size);
 
-  if (browser_ && browser_->GetActions()) {
-    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-        kActionNewTab, browser_->GetActions()->root_action_item());
-    CHECK(action_item);
-    action_view_controller_->CreateActionViewRelationship(
-        this, action_item->GetAsWeakPtr());
-  }
+  CHECK(browser_);
+  CHECK(browser_->GetActions());
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionNewTab, browser_->GetActions()->root_action_item());
+  CHECK(action_item);
+  action_view_controller_->CreateActionViewRelationship(
+      this, action_item->GetAsWeakPtr());
 }
 
 NewTabButton::~NewTabButton() = default;
