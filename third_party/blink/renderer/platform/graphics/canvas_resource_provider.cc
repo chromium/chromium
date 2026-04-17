@@ -517,7 +517,7 @@ void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
   }
 }
 
-bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
+bool Canvas2DResourceProviderSharedImage::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
   // If the canvas is single buffered, concurrent read/writes to the resource
   // are allowed. Note that we ignore the resource lost case as well since
@@ -615,6 +615,39 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
     dst_access = resource_->BeginAccess(/*readonly=*/false);
   }
   return dst_access;
+}
+
+bool CanvasNon2DResourceProviderSharedImage::ShouldReplaceTargetBuffer(
+    PaintImage::ContentId content_id) {
+  // If the canvas is single buffered, concurrent read/writes to the resource
+  // are allowed. Note that we ignore the resource lost case as well since
+  // that only indicates that we did not get a sync token for read/write
+  // synchronization which is not a requirement for single buffered canvas.
+  if (IsSingleBuffered()) {
+    return false;
+  }
+
+  // If the resource was lost, we can not use it for writes again.
+  if (resource()->IsLost()) {
+    return true;
+  }
+
+  // We have the only ref to the resource which implies there are no active
+  // readers.
+  if (resource_->HasOneRef()) {
+    return false;
+  }
+
+  // Its possible to have deferred work in skia which uses this resource. Try
+  // flushing once to see if that releases the read refs. We can avoid a copy
+  // by queuing this work before writing to this resource.
+  if (is_accelerated_) {
+    // Another context may have a read reference to this resource. Flush the
+    // deferred queue in that context so that we don't need to copy.
+    GetFlushForImageListener()->NotifyFlushForImage(content_id);
+  }
+
+  return !resource_->HasOneRef();
 }
 
 std::unique_ptr<gpu::RasterScopedAccess>
