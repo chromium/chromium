@@ -133,7 +133,8 @@ public class TabBottomSheetWebUi {
                 ThinWebViewFactory.create(
                         mContext,
                         constraints,
-                        assumeNonNull(mWindowAndroid.getIntentRequestTracker()));
+                        assumeNonNull(mWindowAndroid.getIntentRequestTracker()),
+                        /* enablePermissionRequests= */ true);
         mWebViewResizingHelper.setThinWebView(mThinWebView);
     }
 

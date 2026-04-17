@@ -68,7 +68,8 @@ public final class SidePanelDevFeatureImpl implements SidePanelDevFeature {
                 ThinWebViewFactory.create(
                         getContext(windowAndroid),
                         new ThinWebViewConstraints(),
-                        intentRequestTracker);
+                        intentRequestTracker,
+                        /* enablePermissionRequests= */ false);
         thinWebView.attachWebContents(
                 webContents,
                 contentView,

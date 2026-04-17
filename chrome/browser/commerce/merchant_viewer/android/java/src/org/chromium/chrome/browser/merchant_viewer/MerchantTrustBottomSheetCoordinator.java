@@ -203,7 +203,10 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
     private void createThinWebView() {
         mThinWebView =
                 ThinWebViewFactory.create(
-                        mContext, new ThinWebViewConstraints(), mIntentRequestTracker);
+                        mContext,
+                        new ThinWebViewConstraints(),
+                        mIntentRequestTracker,
+                        /* enablePermissionRequests= */ false);
         setThinWebViewLayout();
     }
 

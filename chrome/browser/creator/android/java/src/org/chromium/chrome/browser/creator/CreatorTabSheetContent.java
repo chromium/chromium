@@ -139,7 +139,10 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     private void createThinWebView(int maxSheetHeight, IntentRequestTracker intentRequestTracker) {
         mThinWebView =
                 ThinWebViewFactory.create(
-                        mContext, new ThinWebViewConstraints(), intentRequestTracker);
+                        mContext,
+                        new ThinWebViewConstraints(),
+                        intentRequestTracker,
+                        /* enablePermissionRequests= */ false);
 
         mSheetContentView = new FrameLayout(mContext);
         mThinWebView

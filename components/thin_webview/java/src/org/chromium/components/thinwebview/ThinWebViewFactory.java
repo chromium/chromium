@@ -26,16 +26,19 @@ public class ThinWebViewFactory {
      * @param context The context to create this view.
      * @param constraints A set of constraints associated with this view.
      * @param intentRequestTracker A IntentRequestTracker to be used for the ThinWebView.
+     * @param enablePermissionRequests Whether to enable permission requests.
      */
     public static ThinWebView create(
             Context context,
             ThinWebViewConstraints constraints,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            boolean enablePermissionRequests) {
         if (sInstanceForTesting != null) {
             return sInstanceForTesting;
         }
 
-        return new ThinWebViewImpl(context, constraints, intentRequestTracker);
+        return new ThinWebViewImpl(
+                context, constraints, intentRequestTracker, enablePermissionRequests);
     }
 
     /**

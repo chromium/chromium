@@ -16,19 +16,16 @@ public class ThinWebViewAttachParams {
     public final @Nullable WebContentsDelegateAndroid webContentsDelegate;
     public final @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory;
     public final @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate;
-    public final boolean enablePermissionRequests;
     public final boolean supportTheming;
 
     private ThinWebViewAttachParams(
             @Nullable WebContentsDelegateAndroid webContentsDelegate,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            boolean enablePermissionRequests,
             boolean supportTheming) {
         this.webContentsDelegate = webContentsDelegate;
         this.contextMenuPopulatorFactory = contextMenuPopulatorFactory;
         this.selectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
-        this.enablePermissionRequests = enablePermissionRequests;
         this.supportTheming = supportTheming;
     }
 
@@ -37,7 +34,6 @@ public class ThinWebViewAttachParams {
         @Nullable private WebContentsDelegateAndroid mWebContentsDelegate;
         @Nullable private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
         @Nullable private SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
-        private boolean mEnablePermissionRequests;
         private boolean mSupportTheming;
 
         public Builder() {}
@@ -79,17 +75,6 @@ public class ThinWebViewAttachParams {
         }
 
         /**
-         * Sets whether to enable permission requests.
-         *
-         * @param enablePermissionRequests Whether permission requests are enabled.
-         * @return This builder.
-         */
-        public Builder setEnablePermissionRequests(boolean enablePermissionRequests) {
-            mEnablePermissionRequests = enablePermissionRequests;
-            return this;
-        }
-
-        /**
          * Sets whether to support theming (e.g. night mode).
          *
          * @param supportTheming Whether theming is supported.
@@ -110,7 +95,6 @@ public class ThinWebViewAttachParams {
                     mWebContentsDelegate,
                     mContextMenuPopulatorFactory,
                     mSelectionDropdownMenuDelegate,
-                    mEnablePermissionRequests,
                     mSupportTheming);
         }
     }

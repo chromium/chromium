@@ -17,6 +17,7 @@ import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.thinwebview.CompositorView;
@@ -30,6 +31,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * An android view backed by a {@link Surface} that is able to display a live {@link WebContents}.
@@ -45,6 +47,8 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     // reference is not optimized away by R8.
     @DoNotInline private @Nullable WebContentsDelegateAndroid mWebContentsDelegate;
     private final boolean mOwnsWindowAndroid;
+    private final boolean mEnablePermissionRequests;
+    private @Nullable ModalDialogManager mModalDialogManager;
 
     /**
      * Creates a {@link ThinWebViewImpl} backed by a {@link Surface}.
@@ -52,12 +56,22 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
      * @param context The Context to create this view.
      * @param constraints A set of constraints associated with this view.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param enablePermissionRequests Whether to enable permission requests.
      */
     public ThinWebViewImpl(
             Context context,
             ThinWebViewConstraints constraints,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            boolean enablePermissionRequests) {
         super(context);
+        mEnablePermissionRequests = enablePermissionRequests;
+
+        if (mEnablePermissionRequests) {
+            mModalDialogManager =
+                    new ModalDialogManager(
+                            new AppModalPresenter(context), ModalDialogManager.ModalDialogType.APP);
+        }
+
         if (ContextUtils.activityFromContext(context) != null) {
             mWindowAndroid =
                     new ActivityWindowAndroid(
@@ -65,9 +79,24 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
                             /* listenToActivityState= */ true,
                             intentRequestTracker,
                             /* insetObserver= */ null,
-                            /* occlusionTrackingAllowed= */ true);
+                            /* occlusionTrackingAllowed= */ true) {
+                        @Override
+                        public @Nullable ModalDialogManager getModalDialogManager() {
+                            return mModalDialogManager != null
+                                    ? mModalDialogManager
+                                    : super.getModalDialogManager();
+                        }
+                    };
         } else {
-            mWindowAndroid = new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
+            mWindowAndroid =
+                    new WindowAndroid(context, /* occlusionTrackingAllowed= */ false) {
+                        @Override
+                        public @Nullable ModalDialogManager getModalDialogManager() {
+                            return mModalDialogManager != null
+                                    ? mModalDialogManager
+                                    : super.getModalDialogManager();
+                        }
+                    };
         }
 
         mOwnsWindowAndroid = true;
@@ -86,6 +115,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         super(context);
         mWindowAndroid = windowAndroid;
         mOwnsWindowAndroid = false;
+        mEnablePermissionRequests = false;
         init(context, constraints);
     }
 
@@ -112,9 +142,6 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             WebContents webContents, View contentView, ThinWebViewAttachParams attachParams) {
         if (mNativeThinWebViewImpl == 0) return;
 
-        assert !attachParams.enablePermissionRequests
-                : "Permission requests are not supported yet.";
-
         // Native code holds only a weak reference to this object.
         mWebContentsDelegate = attachParams.webContentsDelegate;
         setContentView(contentView);
@@ -123,7 +150,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
                         mNativeThinWebViewImpl,
                         webContents,
                         attachParams.webContentsDelegate,
-                        attachParams.enablePermissionRequests,
+                        mEnablePermissionRequests,
                         attachParams.supportTheming);
 
         // Allow highlighting text.
@@ -156,6 +183,10 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         mNativeThinWebViewImpl = 0;
         if (mOwnsWindowAndroid) {
             mWindowAndroid.destroy();
+        }
+        if (mModalDialogManager != null) {
+            mModalDialogManager.destroy();
+            mModalDialogManager = null;
         }
     }
 

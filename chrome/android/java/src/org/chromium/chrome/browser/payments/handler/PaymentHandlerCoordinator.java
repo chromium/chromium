@@ -143,7 +143,10 @@ public class PaymentHandlerCoordinator {
         assert intentRequestTracker != null;
         ThinWebView thinWebView =
                 ThinWebViewFactory.create(
-                        activity, new ThinWebViewConstraints(), intentRequestTracker);
+                        activity,
+                        new ThinWebViewConstraints(),
+                        intentRequestTracker,
+                        /* enablePermissionRequests= */ false);
         assert webContentView.getParent() == null;
         thinWebView.attachWebContents(
                 mPaymentHandlerWebContents,

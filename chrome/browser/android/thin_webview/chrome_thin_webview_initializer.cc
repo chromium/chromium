@@ -25,9 +25,9 @@ void ChromeThinWebViewInitializer::AttachTabHelpers(
     content::WebContents* web_contents,
     bool enable_permission_requests) {
   TabHelpers::AttachTabHelpers(web_contents);
-  // TODO(crbug.com/491498632): use enable_permission_requests requests.
   permissions::PermissionRequestManager::FromWebContents(web_contents)
-      ->set_web_contents_supports_permission_requests(false);
+      ->set_web_contents_supports_permission_requests(
+          enable_permission_requests);
 }
 
 void ChromeThinWebViewInitializer::SetContextMenuPopulatorFactory(
