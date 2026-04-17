@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Holder;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -94,7 +95,11 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     // is not performed.
     private class TabbedModeTabModelOrchestratorApi31 extends TabbedModeTabModelOrchestrator {
         public TabbedModeTabModelOrchestratorApi31() {
-            super(/* tabMergingEnabled= */ false, mActivityLifecycleDispatcher, mCipherFactory);
+            super(
+                    /* tabMergingEnabled= */ false,
+                    mActivityLifecycleDispatcher,
+                    mCipherFactory,
+                    ObservableSuppliers.createNonNull(false));
         }
 
         @Override

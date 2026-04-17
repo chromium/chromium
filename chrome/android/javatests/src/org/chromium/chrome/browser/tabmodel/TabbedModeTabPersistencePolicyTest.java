@@ -33,6 +33,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.AdvancedMockContext;
@@ -197,7 +198,10 @@ public class TabbedModeTabPersistencePolicyTest {
                             profileProviderSupplier.set(mProfileProvider);
                             TabbedModeTabModelOrchestrator tmpOrchestrator =
                                     new TabbedModeTabModelOrchestrator(
-                                            false, mActivityLifecycleDispatcher, mCipherFactory);
+                                            false,
+                                            mActivityLifecycleDispatcher,
+                                            mCipherFactory,
+                                            ObservableSuppliers.createNonNull(false));
                             tmpOrchestrator.createTabModels(
                                     new ChromeTabbedActivity(),
                                     mModalDialogManager,

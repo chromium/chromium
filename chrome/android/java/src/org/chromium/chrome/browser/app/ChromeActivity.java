@@ -376,6 +376,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     protected RootUiCoordinator mRootUiCoordinator;
 
     protected BackPressManager mBackPressManager = new BackPressManager();
+    protected boolean mIsRecreating;
 
     private TabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
@@ -448,7 +449,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private boolean mBlockingDrawForAppRestart;
     private Runnable mShowContentRunnable;
     private boolean mIsRecreatingForTabletModeChange;
-    private boolean mIsRecreating;
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
     // Handling the dismissal of tab modal dialog.

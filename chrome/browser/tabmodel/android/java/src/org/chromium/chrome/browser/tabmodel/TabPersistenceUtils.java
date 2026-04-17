@@ -16,10 +16,11 @@ public class TabPersistenceUtils {
      * Returns true if the tab should be skipped when persisting tabs.
      *
      * @param tab The tab to check.
+     * @param isRecreating Whether the current activity is recreating.
      */
-    public static boolean shouldSkipTab(Tab tab) {
-        // Don't skip the tab if it is pinned.
-        if (tab.getIsPinned()) return false;
+    public static boolean shouldSkipTab(Tab tab, boolean isRecreating) {
+        // Don't skip the tab if it is pinned or the activity is recreating.
+        if (isRecreating || tab.getIsPinned()) return false;
 
         boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
         if (!isNtp) return false;

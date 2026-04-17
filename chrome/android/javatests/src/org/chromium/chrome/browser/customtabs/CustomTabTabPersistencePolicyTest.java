@@ -250,7 +250,7 @@ public class CustomTabTabPersistencePolicyTest {
                             TabModelSelectorImpl selectorImpl =
                                     buildTestTabModelSelector(new int[] {111, 222, 333}, null);
                             return TabPersistentStoreImpl.extractTabMetadataFromSelector(
-                                    selectorImpl, null);
+                                    selectorImpl, null, /* isRecreating= */ false);
                         });
         FileOutputStream fos = null;
         File metadataFile =

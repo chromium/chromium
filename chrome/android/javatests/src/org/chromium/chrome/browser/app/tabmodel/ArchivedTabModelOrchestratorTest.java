@@ -125,7 +125,7 @@ public class ArchivedTabModelOrchestratorTest {
     private TabArchiveSettings mTabArchiveSettings;
     private WebPageStation mPage;
     private final TabPersistencePolicy mTabPersistencePolicy =
-            new TabbedModeTabPersistencePolicy(0, false, false);
+            new TabbedModeTabPersistencePolicy(0, false, false, () -> false);
 
     @Before
     public void setUp() throws Exception {

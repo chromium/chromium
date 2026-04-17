@@ -61,6 +61,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private static final String TAG = "TMTMOrchestrator";
 
     private final boolean mTabMergingEnabled;
+    private final Supplier<Boolean> mIsRecreatingSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CipherFactory mCipherFactory;
     // Effectively final after createTabModels().
@@ -85,14 +86,17 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @param activityLifecycleDispatcher Used to determine if the current activity context is still
      *     valid when running deferred tasks.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
+     * @param isRecreatingSupplier A supplier of whether the current activity is recreating.
      */
     public TabbedModeTabModelOrchestrator(
             boolean tabMergingEnabled,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            CipherFactory cipherFactory) {
+            CipherFactory cipherFactory,
+            Supplier<Boolean> isRecreatingSupplier) {
         mTabMergingEnabled = tabMergingEnabled;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mCipherFactory = cipherFactory;
+        mIsRecreatingSupplier = isRecreatingSupplier;
     }
 
     @Override
@@ -188,7 +192,10 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         // Instantiate TabPersistentStore
         mTabPersistencePolicy =
                 new TabbedModeTabPersistencePolicy(
-                        assignedIndex, mergeTabsOnStartup, mTabMergingEnabled);
+                        assignedIndex,
+                        mergeTabsOnStartup,
+                        mTabMergingEnabled,
+                        mIsRecreatingSupplier);
         mTabPersistentStore =
                 buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_REGULAR,

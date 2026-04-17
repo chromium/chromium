@@ -1375,7 +1375,8 @@ public class MultiWindowUtilsUnitTest {
         when(mTab2.isNativePage()).thenReturn(false);
         when(mTab2.getUrl()).thenReturn(TEST_GURL);
         when(mNormalTabModel.iterator()).thenAnswer(inv -> List.of(mTab1, mTab2).iterator());
-        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(
+                mTabModelSelector, windowId, /* isRecreating= */ false);
         Assert.assertEquals(
                 /* expected= */ 2,
                 ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
@@ -1386,7 +1387,8 @@ public class MultiWindowUtilsUnitTest {
         when(mNormalTabModel.getTabAtChecked(2)).thenReturn(mTab3);
         when(mTab3.isNativePage()).thenReturn(false);
         when(mTab3.getUrl()).thenReturn(TEST_GURL);
-        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(
+                mTabModelSelector, windowId, /* isRecreating= */ false);
         Assert.assertEquals(
                 /* expected= */ 3,
                 ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
@@ -1394,9 +1396,19 @@ public class MultiWindowUtilsUnitTest {
         // Test the case of adding a NTP tab to the tab model.
         when(mTab3.isNativePage()).thenReturn(true);
         when(mTab3.getUrl()).thenReturn(NTP_GURL);
-        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(
+                mTabModelSelector, windowId, /* isRecreating= */ false);
         Assert.assertEquals(
                 /* expected= */ 2,
+                ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
+
+        // Test the case of adding a NTP tab to the tab model when the activity is recreating.
+        when(mTab3.isNativePage()).thenReturn(true);
+        when(mTab3.getUrl()).thenReturn(NTP_GURL);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(
+                mTabModelSelector, windowId, /* isRecreating= */ true);
+        Assert.assertEquals(
+                /* expected= */ 3,
                 ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
     }
 

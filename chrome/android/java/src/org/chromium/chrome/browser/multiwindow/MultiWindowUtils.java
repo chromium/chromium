@@ -1353,14 +1353,15 @@ public class MultiWindowUtils implements ActivityStateListener {
      *
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param windowId The id of the window.
+     * @param isRecreating Whether the current activity is recreating.
      */
     public static void recordTabCountForRelaunchWhenActivityPaused(
-            TabModelSelector tabModelSelector, int windowId) {
+            TabModelSelector tabModelSelector, int windowId, boolean isRecreating) {
         List<TabModel> models = tabModelSelector.getModels();
         int totalCount = 0;
         for (TabModel model : models) {
             for (Tab tab : model) {
-                if (!TabPersistenceUtils.shouldSkipTab(tab)) {
+                if (!TabPersistenceUtils.shouldSkipTab(tab, isRecreating)) {
                     totalCount++;
                 }
             }

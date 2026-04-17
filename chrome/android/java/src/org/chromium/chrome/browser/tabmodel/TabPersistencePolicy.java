@@ -138,4 +138,9 @@ public interface TabPersistencePolicy {
      * @param tabIdsCallback callback to pass {@link Tab} identifiers back in.
      */
     void getAllTabIds(Callback<SparseBooleanArray> tabIdsCallback);
+
+    /** Returns whether the current activity is recreating. */
+    default boolean isRecreating() {
+        return false;
+    }
 }

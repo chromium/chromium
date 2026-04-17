@@ -1656,7 +1656,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         // Always track the last backgrounded time in case others are using the pref.
         mInactivityTrackerSupplier.get().setLastBackgroundedTimeInPrefs(System.currentTimeMillis());
 
-        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, mWindowId);
+        MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(
+                mTabModelSelector, mWindowId, mIsRecreating);
 
         super.onPauseWithNative();
     }
@@ -3555,7 +3556,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 new TabbedModeTabModelOrchestrator(
                         tabMergingEnabled,
                         getLifecycleDispatcher(),
-                        CipherLazyHolder.sCipherInstance);
+                        CipherLazyHolder.sCipherInstance,
+                        () -> mIsRecreating);
         mTabModelStartupInfoSupplier = ObservableSuppliers.createMonotonic();
         mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
         return mTabModelOrchestrator;

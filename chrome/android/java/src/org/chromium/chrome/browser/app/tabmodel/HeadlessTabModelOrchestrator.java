@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -59,7 +60,10 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
     public HeadlessTabModelOrchestrator(@WindowId int windowId, Profile profile) {
         TabPersistencePolicy policy =
                 new TabbedModeTabPersistencePolicy(
-                        windowId, /* mergeTabsOnStartup= */ false, /* tabMergingEnabled= */ false);
+                        windowId,
+                        /* mergeTabsOnStartup= */ false,
+                        /* tabMergingEnabled= */ false,
+                        ObservableSuppliers.createNonNull(false));
         HeadlessTabCreator tabCreator = new HeadlessTabCreator(profile);
         HeadlessTabCreator incogTabCreator = new HeadlessTabCreator(profile);
         TabCreatorManager tabCreatorManager = (incog) -> incog ? tabCreator : incogTabCreator;

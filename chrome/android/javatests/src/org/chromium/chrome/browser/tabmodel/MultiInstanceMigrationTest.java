@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -100,7 +101,8 @@ public class MultiInstanceMigrationTest {
                     MockTabModelSelector selector =
                             new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     TabbedModeTabPersistencePolicy persistencePolicy =
-                            new TabbedModeTabPersistencePolicy(0, false, true);
+                            new TabbedModeTabPersistencePolicy(
+                                    0, false, true, ObservableSuppliers.createNonNull(false));
                     TabPersistentStoreImpl store =
                             new TabPersistentStoreImpl(
                                     TabPersistentStoreImpl.CLIENT_TAG_REGULAR,

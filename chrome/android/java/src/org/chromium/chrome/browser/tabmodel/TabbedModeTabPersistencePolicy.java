@@ -90,6 +90,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     private final int mMaxSelectors;
 
     private @Nullable TabContentManager mTabContentManager;
+    private @Nullable Supplier<Boolean> mIsRecreatingSupplier;
     private boolean mDestroyed;
 
     /**
@@ -103,12 +104,14 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      *     tabbed mode files at startup.
      * @param tabMergingEnabled Whether tab merging operation should be done for multi-window/
      *     instance feature in general.
+     * @param isRecreatingSupplier A supplier of whether the activity is recreating.
      */
     public TabbedModeTabPersistencePolicy(
             String metadataFileName,
             @Nullable String otherWindowTag,
             boolean mergeTabsOnStartup,
-            boolean tabMergingEnabled) {
+            boolean tabMergingEnabled,
+            Supplier<Boolean> isRecreatingSupplier) {
         mMetadataFileName = metadataFileName;
         if (mergeTabsOnStartup || tabMergingEnabled) {
             assert otherWindowTag != null
@@ -118,6 +121,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             mOtherWindowTag = null;
         }
         mMergeTabsOnStartup = mergeTabsOnStartup;
+        mIsRecreatingSupplier = isRecreatingSupplier;
         mMaxSelectors = TabWindowManager.MAX_SELECTORS_1000;
     }
 
@@ -130,14 +134,19 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      *     tabbed mode files at startup.
      * @param tabMergingEnabled Whether tab merging operation should be done for multi-window/
      *     instance feature in general.
+     * @param isRecreatingSupplier A supplier of whether the activity is recreating.
      */
     public TabbedModeTabPersistencePolicy(
-            int selectorIndex, boolean mergeTabsOnStartup, boolean tabMergingEnabled) {
+            int selectorIndex,
+            boolean mergeTabsOnStartup,
+            boolean tabMergingEnabled,
+            Supplier<Boolean> isRecreatingSupplier) {
         this(
                 getMetadataFileNameForIndex(selectorIndex),
                 Integer.toString(selectorIndex == 0 ? 1 : 0),
                 mergeTabsOnStartup,
-                tabMergingEnabled);
+                tabMergingEnabled,
+                isRecreatingSupplier);
     }
 
     @Override
@@ -490,6 +499,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     public void destroy() {
         mTabContentManager = null;
         mDestroyed = true;
+        mIsRecreatingSupplier = null;
     }
 
     /**
@@ -656,6 +666,11 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                                 tabIdsCallback.onResult(tabIds);
                             });
                 });
+    }
+
+    @Override
+    public boolean isRecreating() {
+        return assumeNonNull(mIsRecreatingSupplier).get();
     }
 
     /** Get all the state file names excluding archived. */

@@ -1015,7 +1015,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mTabBatchLoader != null) tabsToRestore.addAll(mTabBatchLoader.getTabsInBatch());
         tabsToRestore.addAll(mTabsToRestore);
 
-        return extractTabMetadataFromSelector(mTabModelSelector, tabsToRestore);
+        return extractTabMetadataFromSelector(
+                mTabModelSelector, tabsToRestore, mPersistencePolicy.isRecreating());
     }
 
     private void saveListToFile(TabModelSelectorMetadata listData) {
@@ -1837,18 +1838,21 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      *
      * @param selector The {@link TabModelSelector} to process.
      * @param tabsBeingRestored Tabs that are in the process of being restored.
+     * @param isRecreating Whether the current activity is recreating.
      * @return {@link TabModelSelectorMetadata} containing the meta data of {@code selector}.
      */
     @VisibleForTesting
     public static TabModelSelectorMetadata extractTabMetadataFromSelector(
-            TabModelSelector selector, @Nullable List<TabRestoreDetails> tabsBeingRestored) {
+            TabModelSelector selector,
+            @Nullable List<TabRestoreDetails> tabsBeingRestored,
+            boolean isRecreating) {
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
-        TabModelMetadata incognitoInfo = metadataFromModel(selector, true);
+        TabModelMetadata incognitoInfo = metadataFromModel(selector, true, isRecreating);
 
         TabModel normalModel = selector.getModel(false);
-        TabModelMetadata normalInfo = metadataFromModel(selector, false);
+        TabModelMetadata normalInfo = metadataFromModel(selector, false, isRecreating);
 
         // Cache the active tab id to be pre-loaded next launch.
         int activeTabId = Tab.INVALID_TAB_ID;
@@ -1911,9 +1915,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      *
      * @param selector The object of {@link TabModelSelector}
      * @param isIncognito Whether the TabModel is incognito.
+     * @param isRecreating Whether the current activity is recreating.
      */
     private static TabModelMetadata metadataFromModel(
-            TabModelSelector selector, boolean isIncognito) {
+            TabModelSelector selector, boolean isIncognito, boolean isRecreating) {
         TabModel tabModel = selector.getModel(isIncognito);
         TabModelMetadata modelInfo = new TabModelMetadata(tabModel.index());
 
@@ -1936,7 +1941,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 // If any non-active NTPs have been skipped, the serialized tab model index
                 // needs to be adjusted.
                 modelInfo.index = modelInfo.ids.size();
-            } else if (TabPersistenceUtils.shouldSkipTab(tab)) {
+            } else if (TabPersistenceUtils.shouldSkipTab(tab, isRecreating)) {
                 continue;
             }
             modelInfo.ids.add(tab.getId());

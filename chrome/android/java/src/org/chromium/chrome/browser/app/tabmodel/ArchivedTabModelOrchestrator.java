@@ -25,6 +25,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -411,7 +412,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         TabMetadataFileManager.getMetadataFileName(ARCHIVED_WINDOW_TAG),
                         /* otherWindowTag= */ null,
                         /* mergeTabsOnStartup= */ false,
-                        /* tabMergingEnabled= */ false) {
+                        /* tabMergingEnabled= */ false,
+                        ObservableSuppliers.createNonNull(false)) {
 
                     @Override
                     public void notifyStateLoaded(int tabCountAtStartup) {

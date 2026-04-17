@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -65,7 +66,9 @@ public class RestoreMigrateTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TabPersistentStoreImpl.extractTabMetadataFromSelector(
-                                        selector, /* tabsBeingRestored= */ null));
+                                        selector,
+                                        /* tabsBeingRestored= */ null,
+                                        /* isRecreating= */ false));
 
         File f = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
         TabMetadataFileManager.saveListToFile(
@@ -130,7 +133,11 @@ public class RestoreMigrateTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabPersistencePolicy persistencePolicy =
-                            new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
+                            new TabbedModeTabPersistencePolicy(
+                                    selectorIndex,
+                                    false,
+                                    true,
+                                    ObservableSuppliers.createNonNull(false));
                     return new TabPersistentStoreImpl(
                             TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                             persistencePolicy,
