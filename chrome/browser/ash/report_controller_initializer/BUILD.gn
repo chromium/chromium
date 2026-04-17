@@ -19,6 +19,7 @@ static_library("report_controller_initializer") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/first_run",
     "//chrome/browser/net",
     "//chrome/common",
     "//chromeos/ash/components/channel",

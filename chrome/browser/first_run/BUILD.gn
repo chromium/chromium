@@ -1,0 +1,195 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("first_run") {
+  public = []
+  sources = []
+
+  public_deps = [
+    "//base",
+    "//chrome/installer/util:with_no_strings",
+    "//extensions/buildflags",
+  ]
+
+  if (is_android) {
+    public += [ "android/first_run_prefs.h" ]
+  } else {
+    public += [
+      "bookmark_importer.h",
+      "first_run.h",
+      "first_run_dialog.h",
+      "first_run_features.h",
+      "first_run_internal.h",
+    ]
+
+    if (!is_chromeos) {
+      public += [ "upgrade_util.h" ]
+    }
+
+    if (is_linux) {
+      public += [ "upgrade_util_linux.h" ]
+    }
+
+    if (is_win) {
+      public += [ "upgrade_util_win.h" ]
+    }
+  }
+}
+
+source_set("impl") {
+  sources = []
+
+  public_deps = [
+    ":first_run",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/favicon",
+    "//chrome/browser/google",
+    "//chrome/browser/headless",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/metrics",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/common:constants",
+    "//components/bookmarks/browser",
+    "//components/favicon/core",
+    "//components/image_fetcher/core",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/startup_metric_utils",
+    "//net",
+    "//third_party/abseil-cpp:absl",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/first_run_prefs.cc",
+      "android/first_run_utils.cc",
+    ]
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  } else {
+    sources += [
+      "bookmark_importer.cc",
+      "first_run.cc",
+      "first_run_features.cc",
+    ]
+    deps += [ "//chrome/browser/importer" ]
+
+    if (is_chromeos) {
+      sources += [ "first_run_internal_chromeos.cc" ]
+    } else {
+      sources += [ "upgrade_util.cc" ]
+    }
+
+    if (is_win) {
+      sources += [
+        "first_run_internal_win.cc",
+        "upgrade_util_win.cc",
+      ]
+      deps += [
+        "//chrome/browser/win",
+        "//chrome/updater/app/server/win:updater_legacy_idl",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "first_run_internal_mac.mm",
+        "upgrade_util_mac.cc",
+      ]
+      deps += [ "//chrome/browser/mac" ]
+    }
+
+    if (is_linux) {
+      sources += [
+        "first_run_internal_linux.cc",
+        "upgrade_util_linux.cc",
+      ]
+    }
+
+    if (is_linux || is_mac) {
+      sources += [ "first_run_internal_posix.cc" ]
+    }
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "scoped_relaunch_chrome_browser_override.cc",
+      "scoped_relaunch_chrome_browser_override.h",
+    ]
+  }
+  deps = [
+    ":first_run",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/bookmarks",
+    "//chrome/common:constants",
+    "//chrome/installer/util:with_no_strings",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/startup_metric_utils",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "bookmark_importer_unittest.cc",
+      "first_run_unittest.cc",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+
+  deps = [
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/prefs",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/history/content/browser",
+    "//components/history/core/browser",
+    "//components/prefs",
+    "//components/variations",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [ "first_run_browsertest.cc" ]
+  }
+
+  if (is_linux || is_mac) {
+    sources += [ "first_run_internal_posix_browsertest.cc" ]
+  }
+}

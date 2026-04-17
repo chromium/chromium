@@ -51,6 +51,7 @@ source_set("impl") {
     "//chrome/browser:shell_integration",
     "//chrome/browser/bookmarks",
     "//chrome/browser/favicon",
+    "//chrome/browser/first_run",
     "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles:profile",

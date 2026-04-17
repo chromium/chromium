@@ -1,0 +1,56 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/first_run",
+
+  # Monolith headers
+  "+chrome/browser/browser_features.h",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/chrome_process_singleton.h",
+  "+chrome/browser/shell_integration.h",
+
+  # Componentized headers
+  "+chrome/browser/bookmarks/bookmark_model_factory.h",
+  "+chrome/browser/favicon/favicon_service_factory.h",
+  "+chrome/browser/google/google_brand.h",
+  "+chrome/browser/headless/headless_mode_util.h",
+  "+chrome/browser/image_fetcher/image_fetcher_service_factory.h",
+  "+chrome/browser/importer/external_process_importer_host.h",
+  "+chrome/browser/importer/importer_list.h",
+  "+chrome/browser/importer/importer_progress_observer.h",
+  "+chrome/browser/importer/importer_uma.h",
+  "+chrome/browser/importer/profile_writer.h",
+  "+chrome/browser/mac/initial_prefs.h",
+  "+chrome/browser/mac/relauncher.h",
+  "+chrome/browser/metrics/metrics_reporting_state.h",
+  "+chrome/browser/prefs/chrome_pref_service_factory.h",
+  "+chrome/browser/profiles/keep_alive/profile_keep_alive_types.h",
+  "+chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/profiles/profile_key.h",
+  "+chrome/browser/profiles/profiles_state.h",
+  "+chrome/browser/ui/views/eula_dialog_linux.h",
+]
+
+specific_include_rules = {
+  "bookmark_importer_unittest\\.cc": [
+    "+chrome/test/base/testing_browser_process.h",
+    "+chrome/test/base/testing_profile.h",
+    "+chrome/test/base/testing_profile_manager.h",
+  ],
+  "first_run_browsertest\\.cc": [
+    "+chrome/browser/extensions/component_loader.h",
+    "+chrome/browser/history/history_service_factory.h",
+    "+chrome/browser/metrics/chrome_metrics_service_accessor.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/test/base/in_process_browser_test.h",
+    "+chrome/test/base/ui_test_utils.h",
+  ],
+  "first_run_internal_posix_browsertest\\.cc": [
+    "+chrome/test/base/in_process_browser_test.h",
+  ],
+  "upgrade_util_win\\.cc": [
+    "+chrome/browser/win/browser_util.h",
+  ],
+}
+

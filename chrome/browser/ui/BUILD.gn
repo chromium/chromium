@@ -316,6 +316,8 @@ static_library("ui") {
     "//chrome/browser/file_system_access",
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
+    "//chrome/browser/first_run",
+    "//chrome/browser/first_run:impl",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor",
@@ -772,6 +774,9 @@ static_library("ui") {
   }
 
   allow_circular_includes_from += [
+    # TODO(crbug.com/503408628): Remove this circular dependency.
+    "//chrome/browser/first_run:impl",
+
     # enterprise headers include from //chrome/browser/ui (e.g. idle_dialog.h).
     # enterprise:impl includes headers from //chrome/browser/ui that can't be
     # split out yet.

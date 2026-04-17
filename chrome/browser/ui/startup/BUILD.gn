@@ -132,6 +132,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/devtools",
+    "//chrome/browser/first_run",
     "//chrome/browser/infobars",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

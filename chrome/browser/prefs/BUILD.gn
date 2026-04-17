@@ -70,6 +70,7 @@ source_set("impl") {
     "//chrome/browser/engagement",
     "//chrome/browser/external_protocol",
     "//chrome/browser/finds/core",
+    "//chrome/browser/first_run",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/glic/suggestions",

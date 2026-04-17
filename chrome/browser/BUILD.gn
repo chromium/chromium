@@ -577,6 +577,9 @@ static_library("browser") {
   # Any circular includes must depend on the target
   # "browser_public_dependencies".
   allow_circular_includes_from = [
+    # TODO(crbug.com/503408628): Remove this circular dependency.
+    "//chrome/browser/first_run:impl",
+
     "//chrome/browser/browsing_data:impl",
     "//chrome/browser/accessibility:impl",
 
@@ -872,6 +875,8 @@ static_library("browser") {
     "//chrome/browser/download",
     "//chrome/browser/enterprise/connectors/reporting:impl",
     "//chrome/browser/external_protocol",
+    "//chrome/browser/first_run",
+    "//chrome/browser/first_run:impl",
     "//chrome/browser/google",
     "//chrome/browser/headless:initializer",
     "//chrome/browser/history_embeddings",
@@ -2282,9 +2287,6 @@ static_library("browser") {
       "download/android/service/download_task_scheduler.cc",
       "download/android/service/download_task_scheduler.h",
       "download/android/string_utils.cc",
-      "first_run/android/first_run_prefs.cc",
-      "first_run/android/first_run_prefs.h",
-      "first_run/android/first_run_utils.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
       "lens/android/lens_policy_utils.cc",
@@ -2786,14 +2788,6 @@ static_library("browser") {
       "chrome_browser_interface_binders_webui_parts_desktop.cc",
       "chrome_process_singleton.cc",
       "chrome_process_singleton.h",
-      "first_run/bookmark_importer.cc",
-      "first_run/bookmark_importer.h",
-      "first_run/first_run.cc",
-      "first_run/first_run.h",
-      "first_run/first_run_dialog.h",
-      "first_run/first_run_features.cc",
-      "first_run/first_run_features.h",
-      "first_run/first_run_internal.h",
       "hid/chrome_hid_delegate.cc",
       "hid/chrome_hid_delegate.h",
       "hid/hid_chooser_context.cc",
@@ -3503,8 +3497,6 @@ static_library("browser") {
         "download/bubble/download_bubble_utils.h",
         "download/bubble/download_display_controller.cc",
         "download/bubble/download_display_controller.h",
-        "first_run/upgrade_util.cc",
-        "first_run/upgrade_util.h",
         "hid/hid_status_icon.cc",
         "hid/hid_status_icon.h",
         "lifetime/switch_utils.cc",
@@ -3571,12 +3563,6 @@ static_library("browser") {
         "chrome_browser_main_posix.h",
         "process_singleton_posix.cc",
       ]
-
-      if (is_chromeos) {
-        sources += [ "first_run/first_run_internal_chromeos.cc" ]
-      } else {
-        sources += [ "first_run/first_run_internal_posix.cc" ]
-      }
     }
   }
 
@@ -4771,9 +4757,6 @@ static_library("browser") {
       "device_reauth/win/authenticator_win.h",
       "device_reauth/win/device_authenticator_win.cc",
       "device_reauth/win/device_authenticator_win.h",
-      "first_run/first_run_internal_win.cc",
-      "first_run/upgrade_util_win.cc",
-      "first_run/upgrade_util_win.h",
       "font_prewarmer_tab_helper.cc",
       "font_prewarmer_tab_helper.h",
       "fullscreen_win.cc",
@@ -4906,8 +4889,6 @@ static_library("browser") {
       "device_reauth/mac/device_authenticator_mac.h",
       "device_reauth/mac/device_authenticator_mac.mm",
       "file_select_helper_mac.mm",
-      "first_run/first_run_internal_mac.mm",
-      "first_run/upgrade_util_mac.cc",
       "fullscreen_mac.mm",
       "global_keyboard_shortcuts_mac.h",
       "global_keyboard_shortcuts_mac.mm",
@@ -5146,9 +5127,6 @@ static_library("browser") {
     sources += [
       "chrome_browser_main_extra_parts_linux.cc",
       "chrome_browser_main_extra_parts_linux.h",
-      "first_run/first_run_internal_linux.cc",
-      "first_run/upgrade_util_linux.cc",
-      "first_run/upgrade_util_linux.h",
       "fullscreen_linux.cc",
       "icon_loader_auralinux.cc",
       "metrics/pressure/pressure_metrics.cc",
@@ -5933,7 +5911,9 @@ group("browser_public_dependencies") {
     # To avoid every target that is circularly dependent on
     # //chrome/browser:browser needing to include 2 separate targets, we include
     # generated files here.
+    ":browser_features",
     ":browser_generated_files",
+    ":shell_integration",
 
     # //chrome/browser/ui and //chrome/browser are semantically the same target,
     # and thus their public dependencies are shared.

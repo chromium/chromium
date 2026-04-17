@@ -907,6 +907,7 @@ source_set("impl") {
     "//chrome/browser/download",
     "//chrome/browser/external_protocol",
     "//chrome/browser/first_party_sets",
+    "//chrome/browser/first_run",
     "//chrome/browser/glic",
     "//chrome/browser/infobars",
     "//chrome/browser/invalidation",

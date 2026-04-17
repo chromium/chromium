@@ -97,6 +97,7 @@ static_library("main_parts") {
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/component_updater",
     "//chrome/browser/device_identity",
+    "//chrome/browser/first_run",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/memory",
     "//chrome/browser/net",

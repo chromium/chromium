@@ -2661,6 +2661,7 @@ if (!is_android) {
       "//chrome/browser/file_system_access:browser_tests",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/first_party_sets:browser_tests",
+      "//chrome/browser/first_run:browser_tests",
       "//chrome/browser/gcm",
       "//chrome/browser/geolocation:browser_tests",
       "//chrome/browser/glic",
@@ -3514,7 +3515,6 @@ if (!is_android) {
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_browsertest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/feedback/report_unsafe_site_dialog_browsertest.cc",
-      "../browser/first_run/first_run_browsertest.cc",
       "../browser/glic/suggestions/contextual_cueing_service_browsertest.cc",
       "../browser/glic/suggestions/zero_state_suggestions_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
@@ -6015,10 +6015,6 @@ if (!is_android) {
         "//chrome/browser/updates:browser_tests",
       ]
     }
-    if (is_linux || is_mac) {
-      sources +=
-          [ "../browser/first_run/first_run_internal_posix_browsertest.cc" ]
-    }
 
     if ((is_linux || is_chromeos) && is_asan && is_lsan) {
       # TODO(crbug.com/40553979): Fix the flakiness on Linux Asan Lsan bot.
@@ -8204,8 +8200,6 @@ test("unit_tests") {
       "../browser/enterprise/reporting/extension_request/extension_request_report_generator_unittest.cc",
       "../browser/enterprise/reporting/real_time_report_generator_unittest.cc",
       "../browser/enterprise/signals/client_certificate_fetcher_unittest.cc",
-      "../browser/first_run/bookmark_importer_unittest.cc",
-      "../browser/first_run/first_run_unittest.cc",
       "../browser/hid/chrome_hid_delegate_unittest.cc",
       "../browser/hid/hid_chooser_context_unittest.cc",
       "../browser/hid/hid_policy_allowed_devices_unittest.cc",
@@ -8449,6 +8443,7 @@ test("unit_tests") {
       "//chrome/browser/device_notifications:unit_tests",
       "//chrome/browser/engagement",
       "//chrome/browser/engagement:unit_tests",
+      "//chrome/browser/first_run:unit_tests",
       "//chrome/browser/geolocation",
       "//chrome/browser/geolocation:unit_tests",
       "//chrome/browser/glic/suggestions:unit_tests",
@@ -11266,13 +11261,12 @@ if (!is_android) {
       ]
     } else {
       sources += [
-        "../browser/first_run/scoped_relaunch_chrome_browser_override.cc",
-        "../browser/first_run/scoped_relaunch_chrome_browser_override.h",
         "../browser/password_manager/password_manager_signin_intercept_test_helper.cc",
         "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
 
       public_deps += [ "//chrome/browser/ui/webui/app_home" ]
+      public_deps += [ "//chrome/browser/first_run:test_support" ]
     }
     if (enable_dice_support) {
       sources += [

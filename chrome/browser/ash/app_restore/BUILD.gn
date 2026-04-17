@@ -96,6 +96,7 @@ static_library("app_restore") {
     "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/custom_handlers",
+    "//chrome/browser/first_run",
     "//chrome/browser/notifications",
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile_io_data",
