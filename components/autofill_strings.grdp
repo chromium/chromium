@@ -714,6 +714,12 @@
   <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
     Travel
   </message>
+  <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
+    Save and fill identity docs
+  </message>
+  <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
+    Includes information such as passports and driver's licenses
+  </message>
   <!-- TODO(crbug.com/498115758): Make Shopping strings translatable and add to Android and iOS. -->
   <if expr="not is_android and not is_ios">
     <message name="IDS_AUTOFILL_SHOPPING_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved shopping info. Sentence-Cased." formatter_data="android_java" translateable="false">
@@ -852,12 +858,6 @@
     </message>
     <message name="IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Text announced after a proactive password recovery popup is shown">
       Recovery password shown
-    </message>
-    <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
-      Save and fill identity docs
-    </message>
-    <message name="IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for identity docs. Sentence-Cased." formatter_data="android_java">
-      Includes information such as passports and driver's licenses
     </message>
     <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
       Save and fill travel info
