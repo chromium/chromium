@@ -108,13 +108,14 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
 // static
 std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
     base::WeakPtr<content::WebContents> web_contents,
+    const content::WebContents::UniqueToken& web_contents_token,
     const std::string& browser_context_id,
     const GURL& visible_url,
     PagePropertyFlags initial_property_flags,
     base::TimeTicks visibility_change_time) {
   return CreateNodeImpl<PageNodeImpl>(
-      std::move(web_contents), browser_context_id, visible_url,
-      initial_property_flags, visibility_change_time);
+      std::move(web_contents), web_contents_token, browser_context_id,
+      visible_url, initial_property_flags, visibility_change_time);
 }
 
 // static

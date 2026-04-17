@@ -23,14 +23,11 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
-
-namespace content {
-class WebContents;
-}
 
 namespace url {
 class Origin;
@@ -74,6 +71,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       bool is_active);
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
       base::WeakPtr<content::WebContents> web_contents,
+      const content::WebContents::UniqueToken& web_contents_token,
       const std::string& browser_context_id,
       const GURL& visible_url,
       PagePropertyFlags initial_properties,

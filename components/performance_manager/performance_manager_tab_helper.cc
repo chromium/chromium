@@ -116,7 +116,8 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
 
   // Create the page node.
   page_node_ = PerformanceManagerImpl::CreatePageNode(
-      web_contents->GetWeakPtr(), web_contents->GetBrowserContext()->UniqueId(),
+      web_contents->GetWeakPtr(), web_contents->GetUniqueToken(),
+      web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(), initial_property_flags,
       web_contents->GetLastActiveTimeTicks());
 

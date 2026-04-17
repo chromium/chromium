@@ -6,9 +6,11 @@
 #define CONTENT_PUBLIC_BROWSER_TRACING_SUPPORT_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -40,6 +42,15 @@ CONTENT_EXPORT perfetto::NamedTrack GetLocalFrameTracingTrack(
     const blink::LocalFrameToken& frame_token,
     bool is_main_frame,
     ChildProcessId process_id);
+
+// Returns a perfetto NamedTrack for a WebContents, identified by
+// `web_contents_token`. This may be used to emit events relating to a
+// WebContents.
+CONTENT_EXPORT perfetto::NamedTrack GetWebContentsTracingTrack(
+    const WebContents::UniqueToken& web_contents_token);
+
+// Returns a global tracing flow for `navigation_id`.
+CONTENT_EXPORT perfetto::Flow GetNavigationTracingFlow(int64_t navigation_id);
 
 }  // namespace content
 

@@ -13,10 +13,7 @@
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-
-namespace content {
-class WebContents;
-}
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager {
 class PageNode;
@@ -84,15 +81,13 @@ class PageContext {
   }
 
  private:
-  PageContext(base::UnguessableToken token,
+  PageContext(content::WebContents::UniqueToken token,
               base::WeakPtr<content::WebContents> weak_web_contents,
               base::WeakPtr<performance_manager::PageNode> weak_node);
 
-  // A unique identifier for the PageNode. A PageNodeImpl::PageToken will be
-  // assigned to this, but DEPS rules won't let PageNodeImpl be included in a
-  // public header so UnguessableToken is used directly here. Used to ensure
-  // that PageContexts for the same PageNode compare equal.
-  base::UnguessableToken token_;
+  // A unique identifier for the PageNode. Used to ensure that PageContexts for
+  // the same PageNode compare equal.
+  content::WebContents::UniqueToken token_;
 
   // A pointer to the WebContents that must be dereferenced on the UI thread.
   base::WeakPtr<content::WebContents> weak_web_contents_;

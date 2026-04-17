@@ -5,6 +5,8 @@
 #include "content/public/browser/tracing_support.h"
 
 #include "base/hash/hash.h"
+#include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/tracing_support.h"
 
 namespace content {
@@ -33,6 +35,24 @@ perfetto::NamedTrack GetLocalFrameTracingTrack(
     ChildProcessId process_id) {
   return blink::GetLocalFrameTracingTrack(
       frame_token, is_main_frame, GetChildProcessTracingTrack(process_id));
+}
+
+perfetto::NamedTrack GetWebContentsTracingTrack(
+    const WebContents::UniqueToken& web_contents_token) {
+  static const base::NoDestructor<
+      base::trace_event::TrackRegistration<perfetto::NamedTrack>>
+      page_group_track(perfetto::NamedTrack::Global("WebContentsList", 0));
+
+  auto track = perfetto::NamedTrack(
+                   "WebContents",
+                   base::UnguessableTokenHash()(web_contents_token.value()),
+                   page_group_track->track())
+                   .disable_sibling_merge();
+  return track;
+}
+
+CONTENT_EXPORT perfetto::Flow GetNavigationTracingFlow(int64_t navigation_id) {
+  return perfetto::Flow::Global(navigation_id, "navigation_id");
 }
 
 }  // namespace content

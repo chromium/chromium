@@ -233,7 +233,7 @@ class UmaPageLoadMetricsObserver
 
   void EmitInstantTraceEvent(base::TimeDelta duration, const char event_name[]);
 
-  perfetto::NamedTrack GetPageLoadTimelineTrack() const;
+  perfetto::NamedTrack GetTracingTrack(const char* track_name) const;
 
   void EmitPageLoadTimelineTraceEventBegin(const char* name,
                                            base::TimeTicks begin);
@@ -275,6 +275,7 @@ class UmaPageLoadMetricsObserver
   bool received_first_subresource_load_ = false;
   base::TimeDelta total_subresource_load_time_;
 
+  std::optional<perfetto::NamedTrack> timeline_track_;
   std::optional<TraceBeginEvent> trace_begin_event_;
 };
 

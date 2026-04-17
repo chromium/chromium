@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -184,9 +185,11 @@ struct TestNodeWrapper<PageNodeImpl>::Factory {
       const std::string& browser_context_id = std::string(),
       const GURL& url = GURL(),
       PagePropertyFlags initial_property_flags = {},
-      base::TimeTicks visibility_change_time = base::TimeTicks::Now()) {
+      base::TimeTicks visibility_change_time = base::TimeTicks::Now(),
+      const content::WebContents::UniqueToken& page_token =
+          content::WebContents::UniqueToken()) {
     return std::make_unique<PageNodeImpl>(
-        std::move(web_contents), browser_context_id, url,
+        std::move(web_contents), page_token, browser_context_id, url,
         initial_property_flags, visibility_change_time);
   }
 };

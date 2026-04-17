@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -26,6 +27,8 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
+#include "content/public/browser/tracing_support.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
 #include "net/base/load_timing_info.h"
 #include "net/http/http_response_headers.h"
@@ -38,8 +41,6 @@
 #include "ui/events/blink/blink_features.h"
 
 namespace {
-
-static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 13839844603789;
 
 // The threshold to emit a trace event is the 99th percentile
 // of the histogram on Windows Stable as of Feb 26th, 2020.
@@ -368,6 +369,7 @@ UmaPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  timeline_track_.emplace(GetTracingTrack("PageLoad: Timelines"));
   const content::NavigationHandleTiming& timing =
       navigation_handle->GetNavigationHandleTiming();
 
@@ -583,21 +585,14 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     if (timing.paint_timing->first_contentful_paint.value() >
         kFirstContentfulPaintTraceThreshold) {
       base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-      TRACE_EVENT_BEGIN(
-          "latency", "Long Navigation to First Contentful Paint",
-          perfetto::NamedTrack(
-              "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage_for_"
-              "LongNavigation",
-              reinterpret_cast<uintptr_t>(this)),
-          navigation_start);
-      TRACE_EVENT_END(
-          "latency", /* Long Navigation to First Contentful Paint */
-          perfetto::NamedTrack(
-              "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage_for_"
-              "LongNavigation",
-              reinterpret_cast<uintptr_t>(this)),
-          navigation_start +
-              timing.paint_timing->first_contentful_paint.value());
+      auto track =
+          GetTracingTrack("OnFirstContentfulPaintInPage_for_LongNavigation");
+      TRACE_EVENT_BEGIN("latency", "Long Navigation to First Contentful Paint",
+                        track, navigation_start);
+      TRACE_EVENT_END("latency", /* Long Navigation to First Contentful Paint */
+                      track,
+                      navigation_start +
+                          timing.paint_timing->first_contentful_paint.value());
     }
 
     UMA_HISTOGRAM_ENUMERATION(
@@ -903,16 +898,11 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
         internal::kHistogramCommitSentToFirstSubresourceLoadStart,
         timing_info.request_start - commit_sent_time);
 
-    TRACE_EVENT_BEGIN(
-        "loading", "CommitSentToFirstSubresourceLoadStart",
-        perfetto::NamedTrack("CommitSentToFirstSubresourceLoadStart",
-                             reinterpret_cast<uintptr_t>(this)),
-        commit_sent_time);
-    TRACE_EVENT_END(
-        "loading", /* CommitSentToFirstSubresourceLoadStart */
-        perfetto::NamedTrack("CommitSentToFirstSubresourceLoadStart",
-                             reinterpret_cast<uintptr_t>(this)),
-        timing_info.request_start);
+    auto track = GetTracingTrack("CommitSentToFirstSubresourceLoadStart");
+    TRACE_EVENT_BEGIN("loading", "CommitSentToFirstSubresourceLoadStart", track,
+                      commit_sent_time);
+    TRACE_EVENT_END("loading", /* CommitSentToFirstSubresourceLoadStart */
+                    track, timing_info.request_start);
   }
 }
 
@@ -1266,9 +1256,9 @@ void UmaPageLoadMetricsObserver::OnRestoreFromBackForwardCache(
 void UmaPageLoadMetricsObserver::EmitFCPTraceEvent(
     base::TimeDelta first_contentful_paint_timing) {
   const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
-                              perfetto::ProcessTrack::Current());
 
+  auto track = perfetto::NamedTrack::Global("Metrics: FCP",
+                                            GetDelegate().GetNavigationId());
   TRACE_EVENT_BEGIN(
       "loading,interactions",
       "PageLoadMetrics.NavigationToFirstContentfulPaint", track,
@@ -1278,7 +1268,9 @@ void UmaPageLoadMetricsObserver::EmitFCPTraceEvent(
                 ->set_page_load();
         page_load_proto->set_url(
             GetDelegate().GetUrl().possibly_invalid_spec());
-        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+        auto navigation_id = GetDelegate().GetNavigationId();
+        page_load_proto->set_navigation_id(navigation_id);
+        content::GetNavigationTracingFlow(navigation_id)(ctx);
       });
 
   TRACE_EVENT_END("loading,interactions", track,
@@ -1288,8 +1280,9 @@ void UmaPageLoadMetricsObserver::EmitFCPTraceEvent(
 void UmaPageLoadMetricsObserver::EmitLCPTraceEvent(
     base::TimeDelta largest_contentful_paint_timing) {
   const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
-                              perfetto::ProcessTrack::Current());
+
+  auto track = perfetto::NamedTrack::Global("Metrics: LCP",
+                                            GetDelegate().GetNavigationId());
   TRACE_EVENT_BEGIN(
       "loading,interactions",
       "PageLoadMetrics.NavigationToLargestContentfulPaint", track,
@@ -1297,7 +1290,9 @@ void UmaPageLoadMetricsObserver::EmitLCPTraceEvent(
         auto* page_load_proto =
             ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                 ->set_page_load();
-        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+        auto navigation_id = GetDelegate().GetNavigationId();
+        page_load_proto->set_navigation_id(navigation_id);
+        content::GetNavigationTracingFlow(navigation_id)(ctx);
 
         // URL is not needed here, as it will already be recorded in the FCP
         // trace event. We can join the events using the navigation id.
@@ -1311,11 +1306,10 @@ void UmaPageLoadMetricsObserver::EmitInstantTraceEvent(
     base::TimeDelta duration,
     const char event_name[]) {
   const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-  const perfetto::Track track(kInstantPageLoadEventsTraceTrackId,
-                              perfetto::ProcessTrack::Current());
   TRACE_EVENT_INSTANT(
-      "loading,interactions", perfetto::StaticString{event_name}, track,
-      navigation_start + duration, [&](perfetto::EventContext ctx) {
+      "loading,interactions", perfetto::StaticString{event_name},
+      *timeline_track_, navigation_start + duration,
+      [&](perfetto::EventContext ctx) {
         auto* page_load_proto =
             ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                 ->set_page_load();
@@ -1323,20 +1317,26 @@ void UmaPageLoadMetricsObserver::EmitInstantTraceEvent(
       });
 }
 
-perfetto::NamedTrack UmaPageLoadMetricsObserver::GetPageLoadTimelineTrack()
-    const {
-  // Record events in a global track so they appear under "Global Track Events"
-  // in Perfetto.
-  constexpr uint64_t kGlobalInstantTrackId = 0;
-  return perfetto::NamedTrack("PageLoad: Timelines",
-                              GetDelegate().GetNavigationId(),
-                              perfetto::Track::Global(kGlobalInstantTrackId));
+perfetto::NamedTrack UmaPageLoadMetricsObserver::GetTracingTrack(
+    const char* track_name) const {
+  // Record events in a track nested under the "WebContents" track so they
+  // appear grouped per-page in Perfetto.
+  if (content::WebContents* web_contents = GetDelegate().GetWebContents()) {
+    auto parent_track = web_contents->GetTracingTrack();
+    return perfetto::NamedTrack(perfetto::StaticString(track_name),
+                                GetDelegate().GetNavigationId(), parent_track);
+  }
+  // Fallback if WebContents is not available (should not happen usually).
+  return perfetto::NamedTrack::Global(perfetto::StaticString(track_name),
+                                      GetDelegate().GetNavigationId())
+      .disable_sibling_merge();
 }
 
 void UmaPageLoadMetricsObserver::EmitPageLoadTimelineTraceEventBegin(
     const char* name,
     base::TimeTicks begin) {
-  if (begin.is_null() || !TRACE_EVENT_CATEGORY_ENABLED("navigation")) {
+  if (begin.is_null() || !TRACE_EVENT_CATEGORY_ENABLED("navigation") ||
+      !timeline_track_) {
     return;
   }
 
@@ -1344,14 +1344,15 @@ void UmaPageLoadMetricsObserver::EmitPageLoadTimelineTraceEventBegin(
   trace_begin_event_ = TraceBeginEvent{name, navigation_id, begin};
 
   TRACE_EVENT_BEGIN(
-      "navigation", perfetto::StaticString{name}, GetPageLoadTimelineTrack(),
-      begin, [&](perfetto::EventContext& ctx) {
+      "navigation", perfetto::StaticString{name}, *timeline_track_, begin,
+      [&](perfetto::EventContext& ctx) {
         auto* page_load_proto =
             ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                 ->set_page_load();
         page_load_proto->set_navigation_id(navigation_id);
         page_load_proto->set_url(
             GetDelegate().GetUrl().possibly_invalid_spec());
+        content::GetNavigationTracingFlow(navigation_id)(ctx);
       });
 }
 
@@ -1359,7 +1360,8 @@ void UmaPageLoadMetricsObserver::EmitPageLoadTimelineTraceEventEnd(
     const char* name,
     base::TimeTicks end,
     std::optional<base::TimeDelta> before_unload_dialog_duration) {
-  if (end.is_null() || !TRACE_EVENT_CATEGORY_ENABLED("navigation")) {
+  if (end.is_null() || !TRACE_EVENT_CATEGORY_ENABLED("navigation") ||
+      !timeline_track_) {
     return;
   }
 
@@ -1372,11 +1374,11 @@ void UmaPageLoadMetricsObserver::EmitPageLoadTimelineTraceEventEnd(
   const base::TimeTicks effective_end =
       std::max(end, trace_begin_event->begin_time);
   if (before_unload_dialog_duration) {
-    TRACE_EVENT_END("navigation", GetPageLoadTimelineTrack(), effective_end,
+    TRACE_EVENT_END("navigation", *timeline_track_, effective_end,
                     "before_unload_dialog_duration",
                     *before_unload_dialog_duration);
   } else {
-    TRACE_EVENT_END("navigation", GetPageLoadTimelineTrack(), effective_end);
+    TRACE_EVENT_END("navigation", *timeline_track_, effective_end);
   }
 }
 

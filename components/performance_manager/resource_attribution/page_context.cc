@@ -20,14 +20,12 @@ namespace resource_attribution {
 using PerformanceManagerTabHelper =
     performance_manager::PerformanceManagerTabHelper;
 
-PageContext::PageContext(base::UnguessableToken token,
+PageContext::PageContext(content::WebContents::UniqueToken token,
                          base::WeakPtr<content::WebContents> weak_web_contents,
                          base::WeakPtr<PageNode> weak_node)
     : token_(std::move(token)),
       weak_web_contents_(std::move(weak_web_contents)),
-      weak_node_(std::move(weak_node)) {
-  CHECK(!token_.is_empty());
-}
+      weak_node_(std::move(weak_node)) {}
 
 PageContext::~PageContext() = default;
 
@@ -52,7 +50,7 @@ std::optional<PageContext> PageContext::FromWebContents(
   }
   PageNodeImpl* node_impl = tab_helper->primary_page_node();
   CHECK(node_impl);
-  return PageContext(node_impl->page_token().value(), contents->GetWeakPtr(),
+  return PageContext(node_impl->page_token(), contents->GetWeakPtr(),
                      node_impl->GetWeakPtr());
 }
 
@@ -72,8 +70,8 @@ PageContext PageContext::FromPageNode(const PageNode* node) {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
   auto* node_impl = PageNodeImpl::FromNode(node);
 
-  return PageContext(node_impl->page_token().value(),
-                     node_impl->GetWebContents(), node_impl->GetWeakPtr());
+  return PageContext(node_impl->page_token(), node_impl->GetWebContents(),
+                     node_impl->GetWeakPtr());
 }
 
 // static

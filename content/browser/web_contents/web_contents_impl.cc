@@ -1336,7 +1336,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       prerender_host_registry_(std::make_unique<PrerenderHostRegistry>(*this)),
       compositor_frame_sink_grouping_id_(base::UnguessableToken::Create()),
       fenced_frame_viewport_observer_(
-          std::make_unique<FencedFrameViewportObserver>(this)) {
+          std::make_unique<FencedFrameViewportObserver>(this)),
+      tracing_track_(content::GetWebContentsTracingTrack(web_contents_token_)) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
   WebContentsOfBrowserContext::Attach(*this);
   node_.SetFocusedFrameTree(&primary_frame_tree_);
@@ -1675,6 +1676,14 @@ BrowserContext* WebContentsImpl::GetBrowserContext() {
 
 base::WeakPtr<WebContents> WebContentsImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+const WebContents::UniqueToken& WebContentsImpl::GetUniqueToken() const {
+  return web_contents_token_;
+}
+
+const perfetto::NamedTrack& WebContentsImpl::GetTracingTrack() const {
+  return *tracing_track_;
 }
 
 const GURL& WebContentsImpl::GetURL() {

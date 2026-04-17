@@ -27,6 +27,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 
@@ -62,15 +63,10 @@ class PageNodeImpl
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
 
-  // A unique token to identify the PageNode and its associated WebContents for
-  // the lifetime of the browser. Most node types use an existing unique
-  // identifier for this (eg. FrameNode uses content::GlobalRenderFrameHostId,
-  // WorkerNode uses blink::WorkerToken) but WebContents has no id to use.
-  using PageToken = base::TokenType<class PageTokenTag>;
-
   using TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>::FromNode;
 
   PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
+               const content::WebContents::UniqueToken& page_token,
                const std::string& browser_context_id,
                const GURL& visible_url,
                PagePropertyFlags initial_properties,
@@ -116,11 +112,13 @@ class PageNodeImpl
 
   // Returns the unique token for the page node. This function can be called
   // from any thread.
-  const PageToken& page_token() const { return page_token_; }
+  const content::WebContents::UniqueToken& page_token() const {
+    return page_token_;
+  }
 
   // Returns a Perfetto track that can record trace events for the page. This
   // function can be called from any thread.
-  const perfetto::NamedTrack& tracing_track() const { return *tracing_track_; }
+  const perfetto::NamedTrack& tracing_track() const { return tracing_track_; }
 
   void SetType(PageType type);
   void SetIsFocused(bool is_focused);
@@ -267,11 +265,10 @@ class PageNodeImpl
   const base::WeakPtr<content::WebContents> web_contents_;
 
   // The unique token that identifies this PageNode for the life of the browser.
-  const PageToken page_token_;
+  const content::WebContents::UniqueToken page_token_;
 
   // Perfetto track that can record trace events for the page.
-  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
-      tracing_track_;
+  const perfetto::NamedTrack tracing_track_;
   const perfetto::NamedTrack loading_track_;
 
   // The main frame nodes of this page. There can be more than one main frame
