@@ -2976,17 +2976,6 @@ void WebFrameWidgetImpl::SetResizable(bool resizable) {
       MediaValueChange::kOther);
 }
 
-void WebFrameWidgetImpl::OverrideDevicePostureForEmulation(
-    mojom::blink::DevicePostureType device_posture_param) {
-  LocalFrame* frame = LocalRootImpl()->GetFrame();
-  frame->OverrideDevicePostureForEmulation(device_posture_param);
-}
-
-void WebFrameWidgetImpl::DisableDevicePostureOverrideForEmulation() {
-  LocalFrame* frame = LocalRootImpl()->GetFrame();
-  frame->DisableDevicePostureOverrideForEmulation();
-}
-
 void WebFrameWidgetImpl::SetViewportSegments(
     const std::vector<gfx::Rect>& viewport_segments_param) {
   std::vector<gfx::Rect> viewport_segments(viewport_segments_param);

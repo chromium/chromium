@@ -455,9 +455,6 @@ class CORE_EXPORT LocalFrame final
       StyleEnvironmentVariables& vars,
       const std::vector<gfx::Rect>& viewport_segments);
 
-  void OverrideDevicePostureForEmulation(
-      mojom::blink::DevicePostureType device_posture_param);
-  void DisableDevicePostureOverrideForEmulation();
   mojom::blink::DevicePostureType GetDevicePosture();
 
   String SelectedText() const;

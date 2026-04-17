@@ -433,16 +433,6 @@ mojom::blink::DevicePostureType LocalFrameMojoHandler::GetDevicePosture() {
   return current_device_posture_;
 }
 
-void LocalFrameMojoHandler::OverrideDevicePostureForEmulation(
-    mojom::blink::DevicePostureType device_posture_param) {
-  DevicePostureProvider()->OverrideDevicePostureForEmulation(
-      device_posture_param);
-}
-
-void LocalFrameMojoHandler::DisableDevicePostureOverrideForEmulation() {
-  DevicePostureProvider()->DisableDevicePostureOverrideForEmulation();
-}
-
 Page* LocalFrameMojoHandler::GetPage() const {
   return frame_->GetPage();
 }

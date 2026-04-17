@@ -1185,7 +1185,7 @@ class CONTENT_EXPORT WebContentsImpl
   // bool IsFullscreen() const override;
   blink::mojom::DisplayMode GetDisplayMode() const override;
   ui::mojom::WindowShowState GetWindowShowState() override;
-  blink::mojom::DevicePostureProvider* GetDevicePostureProvider() override;
+  DevicePostureProviderImpl* GetDevicePostureProvider() override;
   bool GetResizable() override;
   void LostPointerLock(RenderWidgetHostImpl* render_widget_host) override;
   bool HasPointerLock(RenderWidgetHostImpl* render_widget_host) override;

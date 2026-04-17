@@ -102,7 +102,7 @@ ui::mojom::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
   return ui::mojom::WindowShowState::kDefault;
 }
 
-blink::mojom::DevicePostureProvider*
+DevicePostureProviderImpl*
 RenderWidgetHostDelegate::GetDevicePostureProvider() {
   return nullptr;
 }

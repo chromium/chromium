@@ -20,7 +20,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -56,6 +55,7 @@ namespace content {
 
 class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
+class DevicePostureProviderImpl;
 class RenderWidgetHostViewBase;
 class RenderViewHostDelegateView;
 class TextInputManager;
@@ -238,7 +238,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual ui::mojom::WindowShowState GetWindowShowState();
 
   // Returns the device posture provider tracking the device posture.
-  virtual blink::mojom::DevicePostureProvider* GetDevicePostureProvider();
+  virtual DevicePostureProviderImpl* GetDevicePostureProvider();
 
   // Returns whether the window can be resized or not. Defaults to true for
   // desktopOSs and false for mobileOSs.

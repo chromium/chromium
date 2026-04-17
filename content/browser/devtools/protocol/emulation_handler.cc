@@ -779,6 +779,7 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   if (device_posture) {
     params.device_posture =
         DevicePostureTypeFromString(device_posture->GetType()).value();
+    SetDevicePostureOverride(std::move(device_posture));
   }
 
   if (mobile ||
@@ -851,6 +852,7 @@ Response EmulationHandler::ClearDeviceMetricsOverride() {
     return Response::Success();
 
   GetWebContents()->ClearDeviceEmulationSize();
+  ClearDevicePostureOverride();
   device_emulation_enabled_ = false;
   device_emulation_params_ = blink::DeviceEmulationParams();
   if (screen_orientation_lock_emulation_enabled_) {

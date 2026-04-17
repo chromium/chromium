@@ -48,7 +48,6 @@
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/ime_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
@@ -702,9 +701,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       const gfx::Rect& compositor_viewport_pixel_rect);
   void UpdateCompositorViewportRect(
       const gfx::Rect& compositor_viewport_pixel_rect);
-  void OverrideDevicePostureForEmulation(
-      mojom::blink::DevicePostureType device_posture_param);
-  void DisableDevicePostureOverrideForEmulation();
   void SetViewportSegments(const std::vector<gfx::Rect>& viewport_segments);
   viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);

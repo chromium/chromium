@@ -1833,15 +1833,6 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
   }
 }
 
-void LocalFrame::OverrideDevicePostureForEmulation(
-    mojom::blink::DevicePostureType device_posture_param) {
-  mojo_handler_->OverrideDevicePostureForEmulation(device_posture_param);
-}
-
-void LocalFrame::DisableDevicePostureOverrideForEmulation() {
-  mojo_handler_->DisableDevicePostureOverrideForEmulation();
-}
-
 mojom::blink::DevicePostureType LocalFrame::GetDevicePosture() {
   return mojo_handler_->GetDevicePosture();
 }

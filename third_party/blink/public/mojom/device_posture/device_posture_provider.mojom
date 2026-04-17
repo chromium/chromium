@@ -20,11 +20,6 @@ interface DevicePostureProvider {
   AddListenerAndGetCurrentPosture(
     pending_remote<DevicePostureClient> client)
       => (DevicePostureType posture);
-
-  // This is used by DevTools to emulate a device posture.
-  OverrideDevicePostureForEmulation(DevicePostureType posture);
-  // This is used by DevTools to disable emulation of a device posture.
-  DisableDevicePostureOverrideForEmulation();
 };
 
 // Interface that client of the DevicePostureProvider interface must implement

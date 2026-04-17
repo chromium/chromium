@@ -80,9 +80,6 @@ class LocalFrameMojoHandler
   BackForwardCacheControllerHostRemote();
 
   mojom::blink::DevicePostureType GetDevicePosture();
-  void OverrideDevicePostureForEmulation(
-      mojom::blink::DevicePostureType device_posture_param);
-  void DisableDevicePostureOverrideForEmulation();
 
  private:
   Page* GetPage() const;

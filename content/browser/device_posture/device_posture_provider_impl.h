@@ -32,10 +32,9 @@ class DevicePostureProviderImpl final
       mojo::PendingReceiver<blink::mojom::DevicePostureProvider> receiver);
   DevicePosturePlatformProvider* platform_provider() const;
 
-  // DevicePostureProvider implementation.
   CONTENT_EXPORT void OverrideDevicePostureForEmulation(
-      blink::mojom::DevicePostureType posture) override;
-  CONTENT_EXPORT void DisableDevicePostureOverrideForEmulation() override;
+      blink::mojom::DevicePostureType posture);
+  CONTENT_EXPORT void DisableDevicePostureOverrideForEmulation();
 
  private:
   // DevicePostureClient implementation.
