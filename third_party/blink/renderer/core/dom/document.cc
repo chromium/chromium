@@ -9580,9 +9580,12 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
   if (trigger == FocusTrigger::kUserGesture) {
     return true;
   }
-  if (GetExecutionContext()->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::
-              kFocusWithoutUserActivation)) {
+  // Check the focus setter's permissions policy to see if it allows focus
+  // without user activation.
+  const ExecutionContext* initiator_context = initiator_frame.DomWindow();
+  if (initiator_context && initiator_context->IsFeatureEnabled(
+                               network::mojom::PermissionsPolicyFeature::
+                                   kFocusWithoutUserActivation)) {
     return true;
   }
 

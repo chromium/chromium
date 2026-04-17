@@ -30,6 +30,13 @@
         action: action,
         focused: isFocused(input2)
       }, "*");
+    } else if (action === "focus-parent-element") {
+      const el = parent.document.getElementById(e.data.elementId);
+      el.focus();
+      e.source.postMessage({
+        action: action,
+        focused: (parent.document.activeElement === el)
+      }, "*");
     } else if (action === "focus-window") {
       window.focus();
       e.source.postMessage({

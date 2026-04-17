@@ -81,6 +81,27 @@
           childElementFocused: innerIframe.contentDocument.activeElement ===
             childInput
         }, "*");
+      } else if (action === "child-focus-parent-element") {
+        // Ask C (policy denied) to focus B's input via
+        // parent.document.getElementById().focus().
+        innerIframe.contentWindow.postMessage({
+          action: "focus-parent-element",
+          elementId: "middle-input"
+        }, "*");
+        const childResponse = await new Promise(resolve => {
+          function handler(evt) {
+            if (evt.source === innerIframe.contentWindow &&
+                evt.data && evt.data.action === "focus-parent-element") {
+              window.removeEventListener("message", handler);
+              resolve(evt.data);
+            }
+          }
+          window.addEventListener("message", handler);
+        });
+        e.source.postMessage({
+          action: action,
+          childFocusedParent: childResponse.focused
+        }, "*");
       }
     });
   });
