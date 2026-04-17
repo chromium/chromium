@@ -54,7 +54,7 @@ class AnnotatedPageContentRequest {
   AnnotatedPageContentRequest(
       content::WebContents* web_contents,
       PageContentExtractionService& page_content_extraction_service,
-      blink::mojom::AIPageContentOptionsPtr request,
+      blink::mojom::AIPageContentOptionsPtr options,
       FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
 
@@ -143,7 +143,7 @@ class AnnotatedPageContentRequest {
   raw_ref<PageContentExtractionService> page_content_extraction_service_;
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
   const raw_ptr<content::WebContents> web_contents_;
-  const blink::mojom::AIPageContentOptionsPtr request_;
+  const blink::mojom::AIPageContentOptionsPtr options_;
   const base::TimeDelta delay_;
   const bool include_inner_text_;
 

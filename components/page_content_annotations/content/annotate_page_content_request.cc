@@ -83,36 +83,36 @@ AnnotatedPageContentRequest::Create(
     PageContentExtractionService& page_content_extraction_service,
     FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback) {
-  auto request = blink::mojom::AIPageContentOptions::New();
-  request->mode =
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode =
       (page_content_annotations::features::AnnotatedPageContentMode() ==
        "actionable")
           ? blink::mojom::AIPageContentMode::kActionableElements
           : blink::mojom::AIPageContentMode::kDefault;
-  request->on_critical_path = page_content_annotations::features::
+  options->on_critical_path = page_content_annotations::features::
       IsAnnotatedPageContentOnCriticalPath();
 
   if (page_content_annotations::features::
           ShouldAnnotatedPageContentExcludeAdRelated()) {
-    request->non_salient_content_config =
+    options->non_salient_content_config =
         blink::mojom::NonSalientContentConfig::New();
-    request->non_salient_content_config->exclude_ad_related = true;
+    options->non_salient_content_config->exclude_ad_related = true;
   }
 
   return std::make_unique<AnnotatedPageContentRequest>(
-      web_contents, page_content_extraction_service, std::move(request),
+      web_contents, page_content_extraction_service, std::move(options),
       std::move(fetch_page_context_callback), std::move(get_tab_id_callback));
 }
 
 AnnotatedPageContentRequest::AnnotatedPageContentRequest(
     content::WebContents* web_contents,
     PageContentExtractionService& page_content_extraction_service,
-    blink::mojom::AIPageContentOptionsPtr request,
+    blink::mojom::AIPageContentOptionsPtr options,
     FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback)
     : page_content_extraction_service_(page_content_extraction_service),
       web_contents_(web_contents),
-      request_(std::move(request)),
+      options_(std::move(options)),
       delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
@@ -269,7 +269,7 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   // Note: This is not fetching pdfs since we do not want to cache pdfs in disk
   // in PageContentCache.
   FetchPageContextOptions options;
-  options.annotated_page_content_options = request_->Clone();
+  options.annotated_page_content_options = options_->Clone();
   if (features::kPageContentCacheEnableScreenshot.Get()) {
     ScreenshotOptions::ScreenshotCollectionOptions
         screenshot_collection_options;
