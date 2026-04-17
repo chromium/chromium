@@ -17,8 +17,7 @@ source_set("dns") {
 
   # Internals only intended for use inside network stack (and tests).
   friend = [
-    "//chrome/browser:test_support",
-    "//chrome/test/*",
+    "//chrome/browser/local_discovery:unit_tests",
     "//components/certificate_transparency:unit_tests",
     "//components/cronet/*",
 
@@ -257,7 +256,6 @@ source_set("host_resolver") {
     "//ios/web_view:*",
 
     # Tests and test support.
-    "//chrome/browser:test_support",
     "//chrome/test/*",
     "//content/shell:content_shell_lib",
     "//content/test:*",
@@ -350,16 +348,12 @@ source_set("dns_client") {
     # chrome/browser/local_discovery/service_discovery_client_impl.cc
     # Result parsing utilities for parsing results read through MdnsClient.
     # TODO(crbug.com/41408297): Remove once migrated to network service.
-    "//chrome/browser",
+    "//chrome/browser/local_discovery:impl",
 
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Result parsing for results read through MdnsClient.
     # TODO(crbug.com/41424787): Remove once migrated to network service.
     "//chrome/browser/ash/smb_client/discovery",
-
-    # Tests and test support
-    "//chrome/browser:test_support",
-    "//chrome/test/*",
 
     # Network stack/service
     "//components/certificate_transparency/*",
@@ -405,7 +399,8 @@ source_set("mdns_client") {
     # chrome/browser/local_discovery/service_discovery_client_impl.h
     # Makes MDNS queries using MDnsClient.
     # TODO(crbug.com/41408297): Remove once migrated to network service.
-    "//chrome/browser",
+    "//chrome/browser/local_discovery",
+    "//chrome/browser/local_discovery:impl",
 
     # chrome/tools/service_discovery_sniffer/service_discovery_sniffer.cc
     # Creates MDnsClient instance and passes to ServiceDiscoveryClientImpl.
@@ -417,9 +412,6 @@ source_set("mdns_client") {
     # Makes MDNS queries using MDnsClient.
     # TODO(crbug.com/41424787): Remove once migrated to network service.
     "//chrome/browser/ash/smb_client/discovery",
-
-    # Tests and test support
-    "//chrome/browser:test_support",
 
     # Network stack/service
     "//net/*",

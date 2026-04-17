@@ -31,6 +31,7 @@ static_library("printing") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/local_discovery",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/select_file_policy",

@@ -203,6 +203,7 @@ source_set("impl") {
     "//chrome/browser/ash/nearby",
     "//chrome/browser/download",
     "//chrome/browser/image_decoder",
+    "//chrome/browser/local_discovery",
     "//chrome/browser/nearby_sharing/certificates",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",

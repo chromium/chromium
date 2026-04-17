@@ -359,6 +359,7 @@ static_library("devtools") {
         "device/cast_device_provider.cc",
         "device/cast_device_provider.h",
       ]
+      deps += [ "//chrome/browser/local_discovery" ]
     }
   }
 

@@ -124,6 +124,7 @@ static_library("printing") {
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/component_updater",
+    "//chrome/browser/local_discovery",
     "//chrome/browser/net",
     "//chrome/browser/notifications",
     "//chrome/browser/printing",
@@ -224,7 +225,6 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
@@ -236,6 +236,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/printing/oauth2:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/local_discovery",
+    "//chrome/browser/local_discovery:test_support",
     "//chrome/browser/printing",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/debug_daemon",
@@ -277,6 +279,7 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/local_discovery",
     "//components/exo/wayland:ui_controls_protocol_stub",
   ]
 }

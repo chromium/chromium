@@ -1,0 +1,131 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_service_discovery)
+
+source_set("local_discovery") {
+  public = [
+    "service_discovery_client.h",
+    "service_discovery_device_lister.h",
+    "service_discovery_shared_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+
+  if (is_mac) {
+    public += [
+      "service_discovery_client_mac.h",
+      "service_discovery_client_mac_factory.h",
+      "service_discovery_client_mac_util.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [ "endpoint_resolver.h" ]
+  }
+
+  if (enable_mdns) {
+    public += [ "service_discovery_client_mdns.h" ]
+    public_deps += [ "//services/network/public/cpp" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "service_discovery_client.cc",
+    "service_discovery_device_lister.cc",
+    "service_discovery_shared_client.cc",
+  ]
+
+  deps = [
+    ":local_discovery",
+    "//chrome/browser:browser_process",
+    "//content/public/browser",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "service_discovery_client_mac.mm",
+      "service_discovery_client_mac_factory.mm",
+      "service_discovery_client_mac_util.mm",
+    ]
+
+    frameworks = [ "Network.framework" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "endpoint_resolver.cc" ]
+    deps += [ "//chrome/common:non_code_constants" ]
+  }
+
+  if (enable_mdns) {
+    sources += [
+      "service_discovery_client_impl.cc",
+      "service_discovery_client_impl.h",
+      "service_discovery_client_mdns.cc",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public_deps = [
+    ":local_discovery",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    ":impl",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "fake_service_discovery_device_lister.cc",
+    "fake_service_discovery_device_lister.h",
+    "service_discovery_client_test_helpers.cc",
+    "service_discovery_client_test_helpers.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+  deps = [
+    ":impl",
+    ":local_discovery",
+    ":test_support",
+    "//base/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  # TODO(crbug.com/429684535): Port this test to desktop Android.
+  if (!is_android) {
+    sources += [ "service_discovery_device_lister_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "service_discovery_client_mac_unittest.mm",
+      "service_discovery_client_mac_util_unittest.mm",
+    ]
+    deps += [
+      "//chrome/browser/ui:test_support",
+      "//content/test:test_support",
+    ]
+  } else {
+    sources += [
+      "local_domain_resolver_unittest.cc",
+      "service_discovery_client_unittest.cc",
+    ]
+  }
+}

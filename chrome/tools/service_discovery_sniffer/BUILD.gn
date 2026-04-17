@@ -13,6 +13,8 @@ executable("service_discovery_sniffer") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/local_discovery",
+    "//chrome/browser/local_discovery:impl",
     "//net",
     "//third_party/webrtc_overrides:webrtc_component",
   ]

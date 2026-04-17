@@ -4696,7 +4696,6 @@ static_library("browser") {
       "//chrome/browser/ash/report_controller_initializer",
       "//chrome/browser/ash/sanitize",
       "//chrome/browser/ash/scanner",
-      "//chrome/browser/ash/scanning",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/sharesheet",
       "//chrome/browser/ash/shimless_rma",
@@ -5985,43 +5984,10 @@ static_library("browser") {
   }
 
   if (enable_service_discovery) {
-    sources += [
-      "local_discovery/service_discovery_client.cc",
-      "local_discovery/service_discovery_client.h",
-      "local_discovery/service_discovery_device_lister.cc",
-      "local_discovery/service_discovery_device_lister.h",
-      "local_discovery/service_discovery_shared_client.cc",
-      "local_discovery/service_discovery_shared_client.h",
+    deps += [
+      "//chrome/browser/local_discovery",
+      "//chrome/browser/local_discovery:impl",
     ]
-
-    if (is_mac) {
-      sources += [
-        "local_discovery/service_discovery_client_mac.h",
-        "local_discovery/service_discovery_client_mac.mm",
-        "local_discovery/service_discovery_client_mac_factory.h",
-        "local_discovery/service_discovery_client_mac_factory.mm",
-        "local_discovery/service_discovery_client_mac_util.h",
-        "local_discovery/service_discovery_client_mac_util.mm",
-      ]
-
-      frameworks += [ "Network.framework" ]
-    }
-
-    if (enable_mdns) {
-      sources += [
-        "local_discovery/service_discovery_client_impl.cc",
-        "local_discovery/service_discovery_client_impl.h",
-        "local_discovery/service_discovery_client_mdns.cc",
-        "local_discovery/service_discovery_client_mdns.h",
-      ]
-    }
-
-    if (is_chromeos) {
-      sources += [
-        "local_discovery/endpoint_resolver.cc",
-        "local_discovery/endpoint_resolver.h",
-      ]
-    }
   }
 
   if (enable_session_service) {
@@ -6941,12 +6907,7 @@ static_library("test_support") {
   }
 
   if (enable_service_discovery) {
-    sources += [
-      "local_discovery/fake_service_discovery_device_lister.cc",
-      "local_discovery/fake_service_discovery_device_lister.h",
-      "local_discovery/service_discovery_client_test_helpers.cc",
-      "local_discovery/service_discovery_client_test_helpers.h",
-    ]
+    deps += [ "//chrome/browser/local_discovery:test_support" ]
   }
 
   if (has_spellcheck_panel) {
