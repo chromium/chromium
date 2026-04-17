@@ -7,8 +7,10 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -73,16 +75,41 @@ void GlicRegionCaptureController::CaptureRegion(
         GlicKeyedServiceFactory::GetGlicKeyedService(
             web_contents->GetBrowserContext());
     CHECK(glic_service);
-    // TODO(b/503444957): On a quick inspection, i think the global sharing
-    // manager isn't right here.
+    GlicInstance* instance = glic_service->GetInstanceForTab(tab);
+    if (!instance) {
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kUnknown);
+      LOG(ERROR) << "No glic instance for tab " << web_contents->GetURL();
+      return;
+    }
+    GlicSharingManager& sharing_manager = instance->host().sharing_manager();
+    // TODO(b/503733047): Remove this call and use IsTabPinned() +
+    // tab->IsActivated() if live mode support is dropped.
+    if (!sharing_manager.IsTabFocused(tab->GetHandle())) {
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kNoFocusableTab);
+      LOG(ERROR) << "Tab " << web_contents->GetURL() << " is not focused";
+      return;
+    }
     std::optional<GlicGetContextError> eligibility_error =
-        glic_service->active_instance_sharing_manager()
-            .CheckPreliminaryContextSharingEligibility(tab->GetHandle());
+        sharing_manager.CheckPreliminaryContextSharingEligibility(
+            tab->GetHandle());
     if (eligibility_error.has_value()) {
       mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                        mojom::CaptureRegionErrorReason::kUnknown);
       LOG(ERROR) << "Cannot share tab context for " << web_contents->GetURL();
+      return;
+    }
+    auto* actor_service =
+        actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+    if (actor_service && actor_service->IsActiveOnTab(*tab)) {
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kUnknown);
+      LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
       return;
     }
     selection_overlay_controller->BindCaptureRegionObserver(

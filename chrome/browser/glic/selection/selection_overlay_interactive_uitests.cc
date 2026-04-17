@@ -5,6 +5,9 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
@@ -436,6 +439,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
       PressButton(lens::LensPreselectionBubble::kCancelButtonElementId),
       WaitForHide(OverlayBaseController::kOverlayId));
 }
+
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
@@ -458,6 +462,46 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIIcon) {
         }
         return false;
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       SelectionDisabledWithTaskActingOnTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+      ui::test::PollingStateObserver<
+          std::optional<actor::mojom::ActionResultCode>>,
+      kAddTabResult);
+  std::optional<actor::mojom::ActionResultCode> add_tab_result;
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      // Start a task on the current tab.
+      Do([this, &add_tab_result]() {
+        auto* actor_service =
+            actor::ActorKeyedService::Get(browser()->profile());
+        ASSERT_TRUE(actor_service);
+        actor::TaskId task_id = actor_service->CreateTask(
+            actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+        actor::ActorTask* task = actor_service->GetTask(task_id);
+        ASSERT_TRUE(task);
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        tabs::TabInterface* tab =
+            tabs::TabInterface::GetFromContents(web_contents);
+        ASSERT_TRUE(tab);
+        task->AddTab(
+            tab->GetHandle(), /*stop_task_on_detach=*/true,
+            base::BindLambdaForTesting(
+                [&add_tab_result](actor::mojom::ActionResultPtr result) {
+                  add_tab_result = result->code;
+                }));
+      }),
+      PollState(kAddTabResult, [&add_tab_result]() { return add_tab_result; }),
+      WaitForState(kAddTabResult,
+                   std::make_optional(actor::mojom::ActionResultCode::kOk)),
+      ClickMockGlicElement({"#captureRegionBtn"}), Wait(base::Seconds(1)),
+      EnsureNotPresent(OverlayBaseController::kOverlayId));
 }
 
 class SelectionOverlayHotkeyInteractiveTest
@@ -570,6 +614,7 @@ IN_PROC_BROWSER_TEST_F(
         manager->HandleHotkey(
             GlicLauncherConfiguration::GetDefaultSelectionHotkey());
       }),
+      Wait(base::Seconds(1)),
       EnsureNotPresent(OverlayBaseController::kOverlayId));
 }
 

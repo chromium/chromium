@@ -49,6 +49,7 @@ source_set("interactive_ui_tests") {
   sources = [ "selection_overlay_interactive_uitests.cc" ]
   deps = [
     ":selection",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",

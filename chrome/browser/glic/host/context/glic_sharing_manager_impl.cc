@@ -154,6 +154,10 @@ bool GlicSharingManagerImpl::IsTabPinned(tabs::TabHandle tab_handle) const {
   return pinned_tab_manager()->IsTabPinned(tab_handle);
 }
 
+bool GlicSharingManagerImpl::IsTabFocused(tabs::TabHandle tab_handle) const {
+  return focused_tab_manager_->IsTabFocused(tab_handle);
+}
+
 namespace {
 
 // Collapses notifications about either the candidate or focused browser being
