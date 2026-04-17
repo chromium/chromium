@@ -36,8 +36,16 @@ std::unique_ptr<KeyedService>
 BatchUploadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+
+  // BatchUploadService depends on SyncService. If SyncService is not available,
+  // BatchUploadService should not be created.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return nullptr;
+  }
+
   return std::make_unique<BatchUploadService>(
-      IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile), profile->GetPrefs(),
-      std::make_unique<BatchUploadUIDelegate>());
+      IdentityManagerFactory::GetForProfile(profile), sync_service,
+      profile->GetPrefs(), std::make_unique<BatchUploadUIDelegate>());
 }

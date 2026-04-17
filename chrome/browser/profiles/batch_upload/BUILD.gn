@@ -95,6 +95,7 @@ source_set("browser_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",

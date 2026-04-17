@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -329,4 +331,42 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   EXPECT_EQ(avatar_button->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
+}
+
+// Test suite that makes the sync service unavailable to test the factory.
+class BatchUploadServiceFactorySyncServiceUnavailableTest
+    : public InProcessBrowserTest {
+ public:
+  BatchUploadServiceFactorySyncServiceUnavailableTest() {
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &BatchUploadServiceFactorySyncServiceUnavailableTest::
+                    SetTestingFactories,
+                base::Unretained(this)));
+  }
+
+ private:
+  void SetTestingFactories(content::BrowserContext* context) {
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return nullptr;
+            }));
+  }
+
+  base::CallbackListSubscription dependency_manager_subscription_;
+};
+
+// Regression test for crbug.com/502567799.
+IN_PROC_BROWSER_TEST_F(BatchUploadServiceFactorySyncServiceUnavailableTest,
+                       ReturnsNullWhenSyncServiceIsUnavailable) {
+  Profile* profile = browser()->profile();
+
+  ASSERT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile));
+
+  BatchUploadService* batch_upload_service =
+      BatchUploadServiceFactory::GetForProfile(profile);
+  EXPECT_EQ(nullptr, batch_upload_service);
 }
