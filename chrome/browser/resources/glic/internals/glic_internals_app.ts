@@ -77,6 +77,12 @@ export class GlicInternalsAppElement extends CrLitElement {
         });
   }
 
+  protected onShowErrorAllowedChange(e: Event) {
+    const allowed = (e.target as HTMLInputElement).checked;
+    this.data_!.showErrorAllowed = allowed;
+    this.pageHandler_.setShowErrorAllowed(allowed);
+  }
+
   protected onAutopushInputChange(e: Event) {
     this.data_!.config.autopushGuestUrl = (e.target as HTMLInputElement).value;
   }

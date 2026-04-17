@@ -75,6 +75,9 @@
   <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" desc="This is the button label text for the error notice.">
     Try again
   </message>
+  <message name="IDS_GLIC_SHOW_ERROR_BUTTON" desc="This is the button label text for the button that shows error details.">
+    Show error
+  </message>
   <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the dialog notice and FRE close buttons.">
     Close
   </message>

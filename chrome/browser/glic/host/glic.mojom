@@ -98,6 +98,7 @@ struct ConfigInfo {
 struct InternalsDataPayload {
   ProfileEnablement enablement;
   ConfigInfo config;
+  bool show_error_allowed;
 };
 
 // Whether actuation is enabled, and if not, why not.
@@ -350,6 +351,9 @@ interface InternalsPageHandler {
   // Sets the web continuity originating host URL preset for the internals page.
   SetWebContinuityOriginatingHostUrlPreset(
       url.mojom.Url web_continuity_originating_host_url);
+
+  // Sets whether errors are allowed to be shown.
+  SetShowErrorAllowed(bool allowed);
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.

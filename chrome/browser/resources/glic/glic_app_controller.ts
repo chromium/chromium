@@ -27,6 +27,8 @@ const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 // the --enable-features=GlicDebugWebview command-line flag.
 const kEnableDebug = loadTimeData.getBoolean('enableDebug');
 
+const kShowErrorAllowed = loadTimeData.getBoolean('showErrorAllowed');
+
 // Whether additional web client unresponsiveness tracking metrics should be
 // recorded.
 const kEnableUnresponsiveMetrics =
@@ -48,6 +50,7 @@ interface PageElementTypes {
   signInButton: HTMLButtonElement;
   unresponsiveOverlay: HTMLElement;
   reload: HTMLButtonElement;
+  showError: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -171,6 +174,13 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     $.signInButton.addEventListener('click', () => {
       this.signIn();
     });
+    $.showError.addEventListener('click', () => {
+      this.showPanel('guestPanel');
+    });
+
+    if (kShowErrorAllowed) {
+      $.showError.hidden = false;
+    }
 
     document.addEventListener('keydown', ev => {
       if (this.state !== WebUiState.kReady) {
@@ -309,7 +319,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         reloadOnOpen: true,
         onEnter:
             () => {
-              this.destroyWebview();
+              // Keep the webview alive for debugging purposes.
+              this.setWebviewDormant();
               this.showPanel('errorPanel');
             },
       },
@@ -580,6 +591,15 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     }
     this.webview.destroy();
     this.webview = undefined;
+  }
+
+  private setWebviewDormant(): void {
+    // Never allow dormant state when the panel is hidden.
+    if (this.panelStateKind === PanelStateKind.kHidden) {
+      this.destroyWebview();
+      return;
+    }
+    this.webview?.setDormant();
   }
 
   private online(): void {

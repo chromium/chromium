@@ -45,6 +45,8 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
   void SetWebContinuityOriginatingHostUrlPreset(
       const GURL& web_continuity_originating_host_url) override;
 
+  void SetShowErrorAllowed(bool allowed) override;
+
  private:
   GlicKeyedService* GetGlicService();
 

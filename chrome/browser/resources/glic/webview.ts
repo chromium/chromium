@@ -122,6 +122,7 @@ type ChromeEventFunctionType<T> =
 export class WebviewController {
   webview: WebViewType;
   private host?: GlicApiHost;
+  private dormant = false;
   private communicator?: GlicApiCommunicator;
   private hostSubscriber?: Subscriber;
   private onDestroy: Array<() => void> = [];
@@ -219,12 +220,7 @@ export class WebviewController {
       this.glicRequestHeaderInjector = undefined;
     }
     this.oneMinuteTimer.reset();
-    if (this.host) {
-      chrome.histograms.recordEnumerationValue(
-          'Glic.Host.WebClientState.OnDestroy',
-          this.host.getDetailedWebClientState(),
-          DetailedWebClientState.MAX_VALUE + 1);
-    }
+    this.reportOnDestroy();
     this.destroyHost(
         this.webClientState.getCurrentValue() === WebClientState.ERROR ?
             WebClientState.ERROR :
@@ -235,7 +231,28 @@ export class WebviewController {
     this.webview.remove();
   }
 
-  private destroyHost(webClientState: WebClientState) {
+  // Destroys the host and prevents the host from being recreated. This results
+  // in a webview which effectively cannot communicate with Chrome. Useful for
+  // debugging.
+  setDormant(): void {
+    if (this.dormant) {
+      return;
+    }
+    this.dormant = true;
+    this.reportOnDestroy();
+    this.destroyHost();
+  }
+
+  private reportOnDestroy(): void {
+    if (this.host) {
+      chrome.histograms.recordEnumerationValue(
+          'Glic.Host.WebClientState.OnDestroy',
+          this.host.getDetailedWebClientState(),
+          DetailedWebClientState.MAX_VALUE + 1);
+    }
+  }
+
+  private destroyHost(webClientState?: WebClientState) {
     if (this.hostSubscriber) {
       this.hostSubscriber.unsubscribe();
       this.hostSubscriber = undefined;
@@ -248,7 +265,9 @@ export class WebviewController {
       this.communicator.destroy();
       this.communicator = undefined;
     }
-    this.webClientState.assignAndSignal(webClientState);
+    if (webClientState !== undefined) {
+      this.webClientState.assignAndSignal(webClientState);
+    }
   }
 
   zoom(zoomAction: ZoomAction) {
@@ -390,6 +409,10 @@ export class WebviewController {
     this.hasPendingCrossDocumentNavigation = false;
 
     if (!isCrossDocumentNavigation) {
+      return;
+    }
+
+    if (this.dormant) {
       return;
     }
 

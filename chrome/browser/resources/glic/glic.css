@@ -205,6 +205,10 @@ webview:not([hidden]) {
   align-items: center;
 }
 
+.notice cr-button + cr-button {
+  margin-top: 8px;
+}
+
 .notice .icon {
   color: var(--color--error);
 }
@@ -449,4 +453,13 @@ cr-progress {
 
 #freLoadingPanel .container {
   background: var(--color--surface);
+}
+
+#showError {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color--surface-container);
+  color: var(--color--on-surface-variant);
 }

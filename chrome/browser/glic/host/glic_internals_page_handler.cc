@@ -141,6 +141,10 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
       GURL(g_browser_process->local_state()->GetString(
           prefs::kGlicWebContinuityOriginatingHostUrlPreset));
 
+  payload->show_error_allowed = Profile::FromBrowserContext(browser_context_)
+                                    ->GetPrefs()
+                                    ->GetBoolean(prefs::kGlicShowErrorAllowed);
+
   payload->config = std::move(config);
 
   std::move(callback).Run(std::move(payload));
@@ -273,6 +277,12 @@ void GlicInternalsPageHandler::SetWebContinuityOriginatingHostUrlPreset(
   g_browser_process->local_state()->SetString(
       prefs::kGlicWebContinuityOriginatingHostUrlPreset,
       web_continuity_originating_host_url.spec());
+}
+
+void GlicInternalsPageHandler::SetShowErrorAllowed(bool allowed) {
+  Profile::FromBrowserContext(browser_context_)
+      ->GetPrefs()
+      ->SetBoolean(prefs::kGlicShowErrorAllowed, allowed);
 }
 
 }  // namespace glic

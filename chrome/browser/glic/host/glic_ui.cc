@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_net_log.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
@@ -158,6 +159,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
       {"errorNotice", IDS_GLIC_ERROR_NOTICE},
       {"errorNoticeActionButton", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
       {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
+      {"showErrorButton", IDS_GLIC_SHOW_ERROR_BUTTON},
       {"ineligibleProfileNotice", IDS_GLIC_INELIGIBLE_PROFILE_NOTICE},
       {"ineligibleProfileNoticeActionButton",
        IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON},
@@ -179,6 +181,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Set up the chrome://glic source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -239,7 +242,13 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
-
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  const bool is_internal_google_account =
+      identity_manager && IsPrimaryAccountGoogleInternal(*identity_manager);
+  source->AddBoolean("showErrorAllowed", is_internal_google_account ||
+                                             profile->GetPrefs()->GetBoolean(
+                                                 prefs::kGlicShowErrorAllowed));
   source->AddInteger("maxInFlightRequests",
                      base::FeatureList::IsEnabled(kGlicMaxInFlightRequests)
                          ? kGlicMaxInFlightRequestLimit.Get()
@@ -272,10 +281,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   }
 
   // Allow corp origins for @google accounts.
-  auto* profile = Profile::FromBrowserContext(browser_context);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager && IsPrimaryAccountGoogleInternal(*identity_manager)) {
+  if (is_internal_google_account) {
     allowed_origins += " https://*.corp.google.com";
   }
 

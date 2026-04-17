@@ -113,6 +113,15 @@ export function getHtml(this: GlicInternalsAppElement) {
           ?hidden="${this.selectedTabIndex_ !== 1}">
         <h2>Debug Controls</h2>
         <div class="presets-container">
+          <h3>Panel</h3>
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <label>
+              <input type="checkbox"
+                  .checked="${!!this.data_?.showErrorAllowed}"
+                  @change="${this.onShowErrorAllowedChange}">
+              Allow Showing Errors
+            </label>
+          </div>
           <h3>Invoke</h3>
           <label for="invokePromptInput">Prompt</label>
           <input id="invokePromptInput" .value="${this.invokePrompt_}"
