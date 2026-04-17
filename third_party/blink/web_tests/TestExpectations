@@ -9731,3 +9731,7 @@ crbug.com/501810437 [ Mac ] external/wpt/inert/inert-scrollbar-hittest.html [ Sk
 # Looks like imperceptible antialiasing differences.
 crbug.com/503254576 [ Win11-arm64 ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
 crbug.com/503254576 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
+
+# Gardener 2026-04-17
+crbug.com/501845333 [ Linux ] external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Failure Pass ]
+crbug.com/501845333 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Failure Pass ]
