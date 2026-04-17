@@ -66,7 +66,7 @@ struct BomMapping {
   const char* charset;
 };
 
-const BomMapping kBomMappings[] = {
+constexpr BomMapping kBomMappings[] = {
     {"\xFE\xFF", "utf-16be"},
     {"\xFF\xFE", "utf-16le"},
     {"\xEF\xBB\xBF", "utf-8"},
@@ -76,13 +76,12 @@ const BomMapping kBomMappings[] = {
 // to |*utf16|.
 // If |charset| is empty, then we don't know what it was and guess.
 void ConvertResponseToUTF16(const std::string& charset,
-                            const std::string& bytes,
+                            std::string_view bytes,
                             std::u16string* utf16) {
   if (charset.empty()) {
     // Guess the charset by looking at the BOM.
-    std::string_view bytes_str(bytes);
     for (const auto& bom : kBomMappings) {
-      if (bytes_str.starts_with(bom.prefix)) {
+      if (bytes.starts_with(bom.prefix)) {
         return ConvertResponseToUTF16(
             bom.charset,
             // Strip the BOM in the converted response.
