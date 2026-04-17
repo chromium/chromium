@@ -2762,6 +2762,11 @@ inline constexpr char kAnnotatedPageContentExtractionName[] =
 inline constexpr char kAnnotatedPageContentExtractionDescription[] =
     "Enables annotated page content to be extracted";
 
+inline constexpr char kExactMatchFaviconsName[] = "Exact Match Favicons";
+inline constexpr char kExactMatchFaviconsDescription[] =
+    "When the first suggestion is a url, the favicon is shown in the status "
+    "view.";
+
 inline constexpr char kExtractRelatedSearchesFromPrefetchedZPSResponseName[] =
     "Extract Related Searches from Prefetched ZPS Response";
 inline constexpr char

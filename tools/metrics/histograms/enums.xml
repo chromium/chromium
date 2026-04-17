@@ -8027,6 +8027,7 @@ from previous Chrome versions.
   <int value="-2016586620"
       label="(Obsolete) AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
+  <int value="-2015274285" label="ExactMatchFavicons:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2014474383" label="GameDashboardUtilities:enabled"/>
   <int value="-2014144009"
@@ -19406,6 +19407,7 @@ from previous Chrome versions.
   <int value="1767482084" label="TopLevelTpcdSupportSettings:disabled"/>
   <int value="1767843685" label="Canvas2DHibernation:enabled"/>
   <int value="1768173143" label="EnableExpKitTextClassifier:disabled"/>
+  <int value="1768427719" label="ExactMatchFavicons:enabled"/>
   <int value="1768759000" label="AutofillProfileServerValidation:disabled"/>
   <int value="1768793496" label="autofill-ai-with-data-schema:disabled"/>
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>

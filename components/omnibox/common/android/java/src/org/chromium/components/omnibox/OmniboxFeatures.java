@@ -189,6 +189,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxItemDecoration =
             newFlag(OmniboxFeatureList.OMNIBOX_ITEM_DECORATION, FeatureState.DISABLED);
 
+    public static final CachedFlag sExactMatchFavicons =
+            newFlag(OmniboxFeatureList.EXACT_MATCH_FAVICONS, FeatureState.DISABLED);
+
     public static final CachedFlag sServeJavaCachedZeroSuggest =
             newFlag(
                     OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST,

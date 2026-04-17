@@ -4380,6 +4380,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "exact-match-favicons",
+    "owners": [ "skym@chromium.org", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 158
+  },
+  {
     "name": "exclude-pip-from-screen-capture",
     "owners": [
       "tovep@chromium.org",

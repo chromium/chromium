@@ -285,6 +285,9 @@ BASE_FEATURE(kOmniboxXGeoPermissionGranularity, ENABLED);
 // If enabled, omnibox group separators and headers will use item decorations.
 BASE_FEATURE(kOmniboxItemDecoration, DISABLED);
 
+// When the first suggestion is a url, the favicon is shown in the status view.
+BASE_FEATURE(kExactMatchFavicons, DISABLED);
+
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
 // related fieldtrial parameters.
@@ -412,7 +415,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,
-      &kOmniboxItemDecoration};
+      &kOmniboxItemDecoration,
+      &kExactMatchFavicons};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());
