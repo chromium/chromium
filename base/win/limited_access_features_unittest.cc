@@ -14,15 +14,10 @@ namespace base::win {
 // Because accessing limited access features requires adding a resource
 // to the .rc file, and tests don't have .rc files, all we can test
 // is that requesting access to a feature fails gracefully.
-// Use the taskbar pinning limited access feature since it's the only
-// one we currently have a token for.
-// TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_UnregisteredFeature DISABLED_UnregisteredFeature
-#else
-#define MAYBE_UnregisteredFeature UnregisteredFeature
-#endif
-TEST(LimitedAccessFeatures, MAYBE_UnregisteredFeature) {
+// Use the taskbar pinning limited access feature token since it's the only
+// token Chrome has. Arm64 Windows seems to be allowing taskbar pinning without
+// a token, so ask for a non-existent feature.
+TEST(LimitedAccessFeatures, UnregisteredFeature) {
   const std::wstring taskbar_api_token =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       L"InBNYixzyiUzivxj5T/HqA==";
@@ -32,7 +27,7 @@ TEST(LimitedAccessFeatures, MAYBE_UnregisteredFeature) {
   ScopedCOMInitializer com_initializer;
   ASSERT_TRUE(com_initializer.Succeeded());
   EXPECT_FALSE(TryToUnlockLimitedAccessFeature(
-      L"com.microsoft.windows.taskbar.pin", taskbar_api_token));
+      L"com.microsoft.windows.nonexistent.feature", taskbar_api_token));
 }
 
 }  // namespace base::win
