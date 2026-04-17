@@ -257,7 +257,7 @@ SearchInfo VectorDatabase::FindNearest(
   }
 
   // Dimensions are always equal.
-  CHECK_EQ(query_embedding.Dimensions(), GetEmbeddingDimensions());
+  DCHECK_EQ(query_embedding.Dimensions(), GetEmbeddingDimensions());
 
   // Magnitudes are also assumed equal; they are provided normalized by design.
   CHECK_LT(std::abs(query_embedding.Magnitude() - kUnitLength), kEpsilon);

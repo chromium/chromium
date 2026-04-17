@@ -36,10 +36,8 @@ void OnEmbeddingsReady(std::vector<std::string> categories,
       category_embeddings;
   category_embeddings.reserve(categories.size());
   for (size_t i = 0; i < categories.size(); ++i) {
-    if (embeddings[i].Dimensions() > 0) {
-      category_embeddings.emplace_back(std::move(categories[i]),
-                                       std::move(embeddings[i]));
-    }
+    category_embeddings.emplace_back(std::move(categories[i]),
+                                     std::move(embeddings[i]));
   }
 
   if (category_embeddings.empty()) {
@@ -99,12 +97,8 @@ ContentAnnotatorSemanticMatchClassifier::Classify(
     return std::nullopt;
   }
 
-  size_t expected_dimensions = category_embeddings_[0].embedding.Dimensions();
-
-  // Ensure the input embedding has the same dimensions as the classifier's
-  // rules and has a non-zero magnitude.
-  if (embedding.Dimensions() != expected_dimensions ||
-      embedding.Magnitude() < std::numeric_limits<float>::epsilon()) {
+  // Ensure the input embedding has a non-zero magnitude.
+  if (embedding.Magnitude() < std::numeric_limits<float>::epsilon()) {
     return std::nullopt;
   }
 

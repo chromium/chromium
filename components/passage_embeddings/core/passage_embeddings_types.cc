@@ -36,7 +36,6 @@ float Embedding::Magnitude() const {
 void Embedding::Normalize() {
   float magnitude = Magnitude();
   if (std::abs(magnitude - 1) > 0.0001f) {
-    CHECK(!data_.empty());
     CHECK_GT(magnitude, std::numeric_limits<float>::epsilon());
     for (float& s : data_) {
       s /= magnitude;
@@ -48,7 +47,7 @@ float Embedding::ScoreWith(const Embedding& other_embedding) const {
   // This check is redundant since the database layers ensure embeddings
   // always have a fixed consistent size, but code can change with time,
   // and being sure directly before use may eventually catch a bug.
-  CHECK_EQ(data_.size(), other_embedding.data_.size());
+  DCHECK_EQ(data_.size(), other_embedding.data_.size());
 
   float embedding_score = 0.0f;
   for (size_t i = 0; i < data_.size(); i++) {

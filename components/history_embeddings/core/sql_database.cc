@@ -292,7 +292,6 @@ std::optional<UrlData> SqlDatabase::GetUrlData(history::URLID url_id) {
 
   UrlData url_data(url_id, visit_id, visit_time);
   url_data.passages = std::move(passages.value());
-  bool loaded_missized_embedding = false;
   {
     constexpr char kSqlSelectEmbeddings[] =
         "SELECT embeddings_blob FROM embeddings "
@@ -314,17 +313,9 @@ std::optional<UrlData> SqlDatabase::GetUrlData(history::URLID url_id) {
             passage_embeddings::Embedding(
                 std::vector(vector.floats().cbegin(), vector.floats().cend())),
             vector.passage_word_count()));
-        if (url_data.passage_embeddings.back()->embedding.Dimensions() !=
-            GetEmbeddingDimensions()) {
-          url_data.passage_embeddings.clear();
-          loaded_missized_embedding = true;
-          break;
-        }
       }
     }
   }
-  base::UmaHistogramBoolean("History.Embeddings.LoadedMissizedEmbedding",
-                            loaded_missized_embedding);
   return url_data;
 }
 
@@ -487,9 +478,6 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
       base::UmaHistogramCounts1000(
           "History.Embeddings.DatabaseIterationSkippedMismatches",
           skipped_mismatches);
-      base::UmaHistogramCounts1000(
-          "History.Embeddings.DatabaseIterationSkippedMissizedEmbeddings",
-          skipped_missized);
       base::UmaHistogramCounts10000(
           "History.Embeddings.DatabaseIterationYielded", yielded);
     }
@@ -528,18 +516,6 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
                   vector.floats().cbegin(), vector.floats().cend())),
               vector.passage_word_count()));
         }
-        const size_t expected_dimensions =
-            sql_database->GetEmbeddingDimensions();
-        if (std::ranges::any_of(
-                data.passage_embeddings,
-                [=](const std::optional<PassageEmbedding>& passage_embedding) {
-                  return !passage_embedding.has_value() ||
-                         passage_embedding->embedding.Dimensions() !=
-                             expected_dimensions;
-                })) {
-          skipped_missized++;
-          continue;
-        }
 
         // Confirm embeddings and passages are 1:1.
         if (data.passage_embeddings.empty() ||
@@ -561,7 +537,6 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
     int skipped_passages = 0;
     int skipped_embeddings = 0;
     int skipped_mismatches = 0;
-    int skipped_missized = 0;
     int yielded = 0;
   };
 

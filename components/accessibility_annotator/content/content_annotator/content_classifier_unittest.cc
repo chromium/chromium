@@ -46,7 +46,8 @@ TEST(ContentClassificationInputTest, IsComplete) {
       "Test Title");
   complete_input.annotated_page_content = std::move(annotated_page_content);
   complete_input.page_title_embedding =
-      passage_embeddings::Embedding({1.0f, 2.0f, 3.0f});
+      passage_embeddings::Embedding(std::vector<float>(
+          passage_embeddings::kEmbeddingsModelOutputSize, -1.0f));
   EXPECT_TRUE(complete_input.IsComplete());
 
   {
@@ -149,7 +150,8 @@ class ContentClassifierTest : public testing::Test {
     input.adopted_language = "en";
     input.sensitivity_score = 0.1f;
     input.page_title_embedding =
-        passage_embeddings::Embedding({1.0f, 2.0f, 3.0f});
+        passage_embeddings::Embedding(std::vector<float>(
+            passage_embeddings::kEmbeddingsModelOutputSize, -1.0f));
     return input;
   }
 

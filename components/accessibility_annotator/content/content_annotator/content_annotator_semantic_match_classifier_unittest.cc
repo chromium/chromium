@@ -79,12 +79,9 @@ class ContentAnnotatorSemanticMatchClassifierTest : public testing::Test {
               std::vector<Embedding> embeddings;
               for (const auto& passage : passages) {
                 auto it = keyword_to_embedding.find(passage);
-                Embedding embedding(it != keyword_to_embedding.end()
-                                        ? it->second
-                                        : std::vector<float>{});
-                if (embedding.Dimensions() > 0) {
-                  embedding.Normalize();
-                }
+                CHECK(it != keyword_to_embedding.end());
+                Embedding embedding(it->second);
+                embedding.Normalize();
                 embeddings.push_back(std::move(embedding));
               }
               std::move(callback).Run(
@@ -178,19 +175,6 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest, ClassifyWithNoMatch) {
 
   Embedding non_matching_embedding(std::vector<float>{0.0f, 1.0f, 0.0f});
   EXPECT_FALSE(classifier->Classify(non_matching_embedding).has_value());
-}
-
-TEST_F(ContentAnnotatorSemanticMatchClassifierTest,
-       ClassifyWithMismatchedDimensions) {
-  const char kRules[] = R"JSON({ "category1": ["keyword1"] })JSON";
-  // Rule embedding has 3 dimensions.
-  MockEmbedderResponse({{"keyword1", {1.0f, 0.0f, 0.0f}}});
-  auto classifier = CreateClassifier(kRules);
-  ASSERT_TRUE(classifier);
-
-  // Input embedding has 2 dimensions.
-  Embedding mismatched_embedding(std::vector<float>{1.0f, 0.0f});
-  EXPECT_FALSE(classifier->Classify(mismatched_embedding).has_value());
 }
 
 TEST_F(ContentAnnotatorSemanticMatchClassifierTest, ClassifyWithZeroMagnitude) {

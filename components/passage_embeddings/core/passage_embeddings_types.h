@@ -115,6 +115,12 @@ class EmbedderMetadataProvider {
 };
 
 // Encapsulate embeddings and related helpers.
+//
+// Invariants for Embeddings produced by passage_embeddings::Embedder:
+// * Embeddings always have non-zero lengths.
+// * Embeddings produced in the same run of Chrome will have consistent lengths.
+// * Embeddings produced in different runs of Chrome can have different lengths
+//   only if the embeddings model version was changed.
 class Embedding {
  public:
   explicit Embedding(std::vector<float> data);
@@ -169,6 +175,13 @@ class Embedder {
   // the same number of passages and embeddings and in the same order as
   // `passages`. Otherwise the callback will return the original passages but
   // with an empty embeddings vector.
+  //
+  // Requirements on the implementation of this interface:
+  // * Embeddings must always have non-zero lengths.
+  // * Embeddings produced in the same run of Chrome must have consistent
+  //   lengths.
+  // * Embeddings produced in different runs of Chrome can have different
+  //   lengths only if the embeddings model version was changed.
   using ComputePassagesEmbeddingsCallback =
       base::OnceCallback<void(std::vector<std::string> passages,
                               std::vector<Embedding> embeddings,
