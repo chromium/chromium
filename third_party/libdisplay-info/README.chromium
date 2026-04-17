@@ -2,7 +2,7 @@ Name: libdisplay-info
 URL: https://gitlab.freedesktop.org/emersion/libdisplay-info
 Version: 0.2.0
 Revision: 66b802d05b374cd8f388dc6ad1e7ae4f08cb3300
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/503546519)
 License: MIT
 License File: LICENSE
 Shipped: no

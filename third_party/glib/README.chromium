@@ -2,7 +2,7 @@ Name: glib
 URL: https://gitlab.gnome.org/GNOME/glib
 Version: 2.85.4
 Revision: 354344fe59cc32627c9993b532d633e4ff34920e
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/503546519)
 License: LGPL-2.1
 License File: LICENSE
 Shipped: no
