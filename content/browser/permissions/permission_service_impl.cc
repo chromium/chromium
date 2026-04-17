@@ -48,6 +48,27 @@ namespace content {
 
 namespace {
 
+bool ValidatePermissionDescriptor(
+    const blink::mojom::PermissionDescriptorPtr& descriptor) {
+  if (!descriptor->extension) {
+    return true;
+  }
+  switch (descriptor->extension->which()) {
+    case blink::mojom::PermissionDescriptorExtension::Tag::kMidi:
+      return descriptor->name == PermissionName::MIDI;
+    case blink::mojom::PermissionDescriptorExtension::Tag::kClipboard:
+      return descriptor->name == PermissionName::CLIPBOARD_READ ||
+             descriptor->name == PermissionName::CLIPBOARD_WRITE;
+    case blink::mojom::PermissionDescriptorExtension::Tag::kCameraDevice:
+      return descriptor->name == PermissionName::VIDEO_CAPTURE;
+    case blink::mojom::PermissionDescriptorExtension::Tag::
+        kTopLevelStorageAccess:
+      return descriptor->name == PermissionName::TOP_LEVEL_STORAGE_ACCESS;
+    case blink::mojom::PermissionDescriptorExtension::Tag::kFullscreen:
+      return descriptor->name == PermissionName::FULLSCREEN;
+  }
+}
+
 // Helper converts given `PermissionStatus` to `EmbeddedPermissionControlResult`
 EmbeddedPermissionControlResult
 PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
@@ -189,6 +210,10 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
       web_contents->GetPrimaryPage());
   std::set<PermissionName> permission_names;
   for (const auto& permission : permissions) {
+    if (!ValidatePermissionDescriptor(permission)) {
+      ReceivedBadMessage();
+      return;
+    }
     // Check for duplicates, and ensure we're only handling permission types
     // which can be accessed through embedded controls:
     if (PermissionUtil::IsEmbeddablePermission(permission) &&
@@ -254,6 +279,10 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     return;
   }
 
+  if (!std::ranges::all_of(permissions, &ValidatePermissionDescriptor)) {
+    ReceivedBadMessage();
+    return;
+  }
   const base::Feature* required_feature = nullptr;
   switch (descriptor->detail->which()) {
     case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
@@ -312,6 +341,10 @@ void PermissionServiceImpl::RequestPermission(
 void PermissionServiceImpl::RequestPermissions(
     std::vector<PermissionDescriptorPtr> permissions,
     RequestPermissionsCallback callback) {
+  if (!std::ranges::all_of(permissions, &ValidatePermissionDescriptor)) {
+    ReceivedBadMessage();
+    return;
+  }
   BrowserContext* browser_context = context_->GetBrowserContext();
   if (!browser_context) {
     return;
@@ -425,6 +458,10 @@ void PermissionServiceImpl::OnRequestPermissionsResponse(
 
 void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
                                           HasPermissionCallback callback) {
+  if (!ValidatePermissionDescriptor(permission)) {
+    ReceivedBadMessage();
+    return;
+  }
   std::move(callback).Run(PermissionUtil::ToPermissionStatusWithDetails(
       permission->name, GetPermissionResult(permission)));
 }
@@ -432,6 +469,10 @@ void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
 void PermissionServiceImpl::RevokePermission(
     PermissionDescriptorPtr permission,
     RevokePermissionCallback callback) {
+  if (!ValidatePermissionDescriptor(permission)) {
+    ReceivedBadMessage();
+    return;
+  }
   auto permission_type =
       blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!permission_type) {
@@ -458,6 +499,10 @@ void PermissionServiceImpl::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
+  if (!ValidatePermissionDescriptor(permission)) {
+    ReceivedBadMessage();
+    return;
+  }
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
@@ -474,6 +519,10 @@ void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(
     PermissionDescriptorPtr permission,
     PermissionStatus last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
+  if (!ValidatePermissionDescriptor(permission)) {
+    ReceivedBadMessage();
+    return;
+  }
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
@@ -496,6 +545,10 @@ void PermissionServiceImpl::NotifyEventListener(
     blink::mojom::PermissionDescriptorPtr permission,
     const std::string& event_type,
     bool is_added) {
+  if (!ValidatePermissionDescriptor(permission)) {
+    ReceivedBadMessage();
+    return;
+  }
   auto type = blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
