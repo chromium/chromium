@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -255,6 +256,9 @@ class VerticalTabStripRegionView final
   void OnExpandOnHoverEnabledChanged(bool enabled);
   void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);
   void RestartExpandOnHoverTimer(const base::TimeDelta& delay);
+  void OnMouseVelocityHeuristicInterval();
+  void CalculateMouseVelocityForExpandOnHover();
+  void ResetExpandOnHoverTimers();
   void AnimateExpandOnHover(bool expand);
 
   void RegisterExpandOnHoverLock(VerticalTabStripExpandOnHoverLock* lock);
@@ -346,6 +350,10 @@ class VerticalTabStripRegionView final
 
   base::OneShotTimer expand_on_hover_timer_;
   bool is_expanded_on_hover_ = false;
+  base::RetainingOneShotTimer expand_on_hover_heuristic_timer_;
+  std::optional<gfx::Point> point_at_expand_on_hover_timer_start_;
+  std::optional<base::TimeTicks> time_at_expand_on_hover_timer_start_;
+  int expand_on_hover_heuristic_samples_ = 0;
 
   // Given that both lock counters are non-zero, force_collapse_lock_count_ will
   // always take precedence.

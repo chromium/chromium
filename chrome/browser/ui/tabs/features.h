@@ -33,11 +33,34 @@ BASE_DECLARE_FEATURE(kVerticalTabsPreviewBadge);
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
+BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsExpandOnHoverDefaultEnabled);
+
+// Default strategy for expand on hover uses a fixed delay before the tab strip
+// expands.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVerticalTabsExpandOnHoverDelay);
-// If this value is 0, no click delay is applied.
+// Additional delay after a click inside the tab strip. If this value is 0, no
+// click delay is applied.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kVerticalTabsExpandOnHoverClickDelay);
-BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsExpandOnHoverDefaultEnabled);
+
+// When enabled, use a velocity heuristic rather than
+// `kVerticalTabsExpandOnHoverDelay` and `kVerticalTabsExpandOnHoverClickDelay`
+// to determine EOH state.
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kVerticalTabsExpandOnHoverUseVelocityHeuristic);
+// This in the minimum number of samples needed to calculate the heuristic.
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples);
+// The interval with which to sample the mouse position to supplement mouse move
+// events.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kVerticalTabsExpandOnHoverVelocityHeuristicInterval);
+// Threshold for the ratio of dp/ms of horizontal movement before EOH is
+// triggered.
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kVerticalTabsExpandOnHoverVelocityHeuristicThreshold);
 
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
