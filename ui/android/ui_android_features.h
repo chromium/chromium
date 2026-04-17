@@ -66,6 +66,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSelectFileOpenDocument);
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
     kSendTouchMovesToEventForwarderObservers);
 
+// Update display for context on configuration changed and activity resumed.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUpdateDisplayForContext);
+
 // Kill switch to turn off new supportKeyabord method
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSupportKeyboard);
 

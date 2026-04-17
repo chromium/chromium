@@ -33,6 +33,10 @@ public class UiAndroidFeatureList {
             newMutableFlagWithSafeDefault(
                     UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING, false);
 
+    public static final MutableFlagWithSafeDefault sAndroidUpdateDisplayForContext =
+            newMutableFlagWithSafeDefault(
+                    UiAndroidFeatures.ANDROID_UPDATE_DISPLAY_FOR_CONTEXT, true);
+
     public static final CachedFlag sAndroidUseDisplayTopology =
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_USE_DISPLAY_TOPOLOGY,

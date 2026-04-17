@@ -41,6 +41,8 @@ BASE_FEATURE(kSelectFileOpenDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSendTouchMovesToEventForwarderObservers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidUpdateDisplayForContext, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSupportKeyboard, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseNewEtc1Encoder, base::FEATURE_ENABLED_BY_DEFAULT);

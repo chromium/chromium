@@ -114,6 +114,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   void OnActivityStarted(JNIEnv* env);
   void OnUpdateRefreshRate(JNIEnv* env,
                            float refresh_rate);
+  void OnUpdateDisplayId(JNIEnv* env, int display_id);
   void OnSupportedRefreshRatesUpdated(
       JNIEnv* env,
       const base::android::JavaRef<jfloatArray>& supported_refresh_rates);
@@ -213,7 +214,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   int display_id() const { return display_id_; }
 
   base::android::ScopedJavaGlobalRef<JWindowAndroid> java_window_;
-  const int display_id_;
+  int display_id_;
   const bool window_is_wide_color_gamut_;
   raw_ptr<WindowAndroidCompositor> compositor_;
 

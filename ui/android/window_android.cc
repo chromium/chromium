@@ -213,6 +213,10 @@ void WindowAndroid::OnUpdateRefreshRate(JNIEnv* env, float refresh_rate) {
     compositor_->OnUpdateRefreshRate(refresh_rate);
 }
 
+void WindowAndroid::OnUpdateDisplayId(JNIEnv* env, int display_id) {
+  display_id_ = display_id;
+}
+
 void WindowAndroid::OnSupportedRefreshRatesUpdated(
     JNIEnv* env,
     const JavaRef<jfloatArray>& j_supported_refresh_rates) {

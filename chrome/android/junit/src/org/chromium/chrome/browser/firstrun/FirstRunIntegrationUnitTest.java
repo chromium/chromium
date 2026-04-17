@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.test.WebApkTestHelper;
 
@@ -88,6 +89,9 @@ public final class FirstRunIntegrationUnitTest {
         when(mLibraryLoader.isInitialized()).thenReturn(true);
 
         FeatureOverrides.newBuilder().enable(BROWSER_WINDOW_INTERFACE_MOBILE).apply();
+        FeatureOverrides.newBuilder()
+                .enable(UiAndroidFeatures.ANDROID_UPDATE_DISPLAY_FOR_CONTEXT)
+                .apply();
 
         FirstRunStatus.setFirstRunFlowComplete(false);
         WebApkValidator.setDisableValidationForTesting(true);

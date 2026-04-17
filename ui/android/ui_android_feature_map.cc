@@ -29,6 +29,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
+    &ui::kAndroidUpdateDisplayForContext,
     &ui::kSupportKeyboard,
     &ui::kAndroidTouchpadOverscrollHistoryNavigation,
 };

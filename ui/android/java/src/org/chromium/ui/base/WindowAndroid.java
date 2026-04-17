@@ -14,6 +14,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.UiModeManager;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -141,7 +142,7 @@ public class WindowAndroid
 
     // Native pointer to the c++ WindowAndroid object.
     private long mNativeWindowAndroid;
-    private final DisplayAndroid mDisplayAndroid;
+    private DisplayAndroid mDisplayAndroid;
 
     // A string used as a key to store intent errors in a bundle
     static final String WINDOW_CALLBACK_ERRORS = "window_callback_errors";
@@ -154,6 +155,8 @@ public class WindowAndroid
 
     // We use a weak reference here to prevent this from leaking in WebView.
     private final ImmutableWeakReference<Context> mContextRef;
+
+    private @Nullable ComponentCallbacks mComponentCallbacks;
 
     // We track all animations over content and provide a drawing placeholder for them.
     private final HashSet<Animator> mAnimationsOverContent = new HashSet<>();
@@ -331,8 +334,25 @@ public class WindowAndroid
         // hold a strong reference to it.
         assert context != null : "Context when creating WindowAndroid must not be null.";
         mContextRef = new ImmutableWeakReference<>(context);
+
         mDisplayAndroid = display;
+        // Observe current display property changes (for same display ID).
         mDisplayAndroid.addObserver(this);
+
+        if (context != null && UiAndroidFeatureList.sAndroidUpdateDisplayForContext.isEnabled()) {
+            mComponentCallbacks =
+                    new ComponentCallbacks() {
+                        @Override
+                        public void onConfigurationChanged(Configuration newConfig) {
+                            updateDisplayForContext();
+                        }
+
+                        @Override
+                        public void onLowMemory() {}
+                    };
+
+            context.registerComponentCallbacks(mComponentCallbacks);
+        }
 
         // Disable refresh rate change on TV platforms, as it may cause black screen flicker due to
         // display mode changes.
@@ -859,6 +879,16 @@ public class WindowAndroid
     }
 
     protected void onActivityResumed() {
+        /**
+         * Update the display for context to make sure the display ID is up to date. Activity could
+         * be stopped and resumed without any configuration change when disconnected/reconnected to
+         * a display. DisplayId may change during reconnect (see crbug.com/444627601). Note: Webview
+         * does not invoke these activity events, so this will not be called for Webview.
+         */
+        if (UiAndroidFeatureList.sAndroidUpdateDisplayForContext.isEnabled()) {
+            updateDisplayForContext();
+        }
+
         for (ActivityStateObserver observer : mActivityStateObservers) {
             observer.onActivityResumed();
         }
@@ -1078,6 +1108,13 @@ public class WindowAndroid
             mDestroyStack = new RuntimeException("WindowAndroid.destroy");
         }
         mDisplayAndroid.removeObserver(this);
+
+        Context context = mContextRef.get();
+        if (context != null && mComponentCallbacks != null) {
+            context.unregisterComponentCallbacks(mComponentCallbacks);
+            mComponentCallbacks = null;
+        }
+
         // Destroys the c++ WindowAndroid object if one has been created.
         if (mNativeWindowAndroid != 0) {
             // Native code clears |mNativeWindowAndroid|.
@@ -1302,6 +1339,25 @@ public class WindowAndroid
     @Override
     public void onDisplayModesChanged(@Nullable List<Display.Mode> supportedModes) {
         recomputeSupportedRefreshRates();
+    }
+
+    /** Refreshes the display associated with this window. */
+    private void updateDisplayForContext() {
+        Context context = mContextRef.get();
+        if (context == null) return;
+        DisplayAndroid newDisplay = DisplayAndroid.getNonMultiDisplay(context);
+        if (newDisplay != mDisplayAndroid) {
+            mDisplayAndroid.removeObserver(this);
+            mDisplayAndroid = newDisplay;
+            mDisplayAndroid.addObserver(this);
+            if (mNativeWindowAndroid != 0) {
+                WindowAndroidJni.get()
+                        .onUpdateDisplayId(mNativeWindowAndroid, mDisplayAndroid.getDisplayId());
+                onAdaptiveRefreshRateInfoChanged(mDisplayAndroid.getAdaptiveRefreshRateInfo());
+                onRefreshRateChanged(mDisplayAndroid.getRefreshRate());
+            }
+            recomputeSupportedRefreshRates();
+        }
     }
 
     @Override
@@ -1678,6 +1734,8 @@ public class WindowAndroid
         void onActivityStarted(long nativeWindowAndroid);
 
         void onUpdateRefreshRate(long nativeWindowAndroid, float refreshRate);
+
+        void onUpdateDisplayId(long nativeWindowAndroid, int displayId);
 
         void destroy(long nativeWindowAndroid);
 
