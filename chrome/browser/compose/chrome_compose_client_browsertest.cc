@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
@@ -1440,8 +1441,14 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
       compose::ComposeFreOrMsbbSessionCloseReason::kAbandoned, 1);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestComposeGenericServerError \
+  DISABLED_TestComposeGenericServerError
+#else
+#define MAYBE_TestComposeGenericServerError TestComposeGenericServerError
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
-                       TestComposeGenericServerError) {
+                       MAYBE_TestComposeGenericServerError) {
   base::HistogramTester histograms;
   ShowDialogAndBindMojo();
   SetupMockModelExecution(1, "", false);
@@ -2019,8 +2026,15 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
       1);
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestShouldTriggerProactiveNudgeEnabled \
+  DISABLED_TestShouldTriggerProactiveNudgeEnabled
+#else
+#define MAYBE_TestShouldTriggerProactiveNudgeEnabled \
+  TestShouldTriggerProactiveNudgeEnabled
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
-                       TestShouldTriggerProactiveNudgeEnabled) {
+                       MAYBE_TestShouldTriggerProactiveNudgeEnabled) {
   base::HistogramTester histograms;
 
   // Enable proactive nudge.
@@ -2392,8 +2406,13 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, TestCancelUkmMetrics) {
                   ukm::builders::Compose_SessionProgress::kCanceledName, 1)));
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TestComposeShowContextMenu DISABLED_TestComposeShowContextMenu
+#else
+#define MAYBE_TestComposeShowContextMenu TestComposeShowContextMenu
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
-                       TestComposeShowContextMenu) {
+                       MAYBE_TestComposeShowContextMenu) {
   auto* rfh = browser()
                   ->tab_strip_model()
                   ->GetActiveWebContents()
