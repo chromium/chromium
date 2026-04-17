@@ -44,3 +44,7 @@ crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/co
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?cpu [ Crash ]
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?cpu [ Crash ]
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?cpu [ Crash ]
+
+# Gardener 2026-04-17
+crbug.com/503765990 [ Linux ] external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Crash ]
+crbug.com/503765990 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Crash ]
