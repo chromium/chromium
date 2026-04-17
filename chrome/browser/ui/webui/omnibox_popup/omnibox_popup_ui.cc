@@ -87,8 +87,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
       Profile::FromWebUI(web_ui),
-      /*enable_voice_search=*/true,
-      /*enable_lens_search=*/false, session_allows_drag_and_drop));
+      {.enable_voice_search = true,
+       .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 
   source->AddBoolean("isTopChromeSearchbox", true);
   source->AddBoolean("omniboxAimPopupEnabled",

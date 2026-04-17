@@ -96,17 +96,11 @@ class SearchboxHandlerTest : public ::testing::Test {
 };
 
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsDragAndDrop) {
-  base::DictValue strings =
-      SearchboxHandler::GetWebUIDataSourceDict(profile(),
-                                               /*enable_voice_search=*/false,
-                                               /*enable_lens_search=*/false);
+  base::DictValue strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
   EXPECT_FALSE(*strings.FindBool("composeboxContextDragAndDropEnabled"));
 
   base::DictValue strings_with_drag = SearchboxHandler::GetWebUIDataSourceDict(
-      profile(),
-      /*enable_voice_search=*/false,
-      /*enable_lens_search=*/false,
-      /*session_allows_drag_and_drop=*/true);
+      profile(), {.session_allows_drag_and_drop = true});
   EXPECT_TRUE(
       *strings_with_drag.FindBool("composeboxContextDragAndDropEnabled"));
 }

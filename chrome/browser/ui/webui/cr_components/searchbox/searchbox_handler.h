@@ -55,12 +55,16 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   SearchboxHandler(const SearchboxHandler&) = delete;
   SearchboxHandler& operator=(const SearchboxHandler&) = delete;
 
-  static base::DictValue GetWebUIDataSourceDict(
-      Profile* profile,
-      bool enable_voice_search = false,
-      bool enable_lens_search = false,
-      bool session_allows_drag_and_drop = false,
-      bool is_lens = false);
+  struct WebUIDataSourceOptions {
+    bool enable_voice_search = false;
+    bool enable_lens_search = false;
+    bool session_allows_drag_and_drop = false;
+    bool is_lens = false;
+  };
+
+  static base::DictValue GetWebUIDataSourceDict(Profile* profile);
+  static base::DictValue GetWebUIDataSourceDict(Profile* profile,
+                                                WebUIDataSourceOptions options);
 
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.
