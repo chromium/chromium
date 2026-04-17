@@ -2612,17 +2612,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Viz.FrameSinkVideoCapturer.ReserveFrameDuration" units="ms"
-    expires_after="2023-07-15">
-  <owner>jophba@chromium.org</owner>
-  <owner>media-capture-dev@chromium.org</owner>
-  <summary>
-    The time it took for a frame pool to reserve a video frame that would then
-    have its contents populated by the capturer. Will be logged only when
-    `Viz.FrameSinkVideoCapturer.FrameResurrected` is false.
-  </summary>
-</histogram>
-
 <histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureDuration" units="ms"
     expires_after="2023-07-15">
   <owner>jonross@chromium.org</owner>
