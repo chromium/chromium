@@ -341,6 +341,12 @@ gfx::ImageSkia GlicStatusIcon::GetIcon() const {
   // GlicStatusIconWin and GlicStatusIconChromeOS)
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kGlicChromeStatusIcon)) {
+    if (features::kGlicChromeStatusIconUseAltIcon.Get()) {
+      return gfx::CreateVectorIcon(glic::GlicVectorIconManager::GetVectorIcon(
+                                       IDR_GLIC_MAC_ALT_STATUS_ICON),
+                                   features::kGlicChromeStatusIconSizePx.Get(),
+                                   SK_ColorWHITE);
+    }
     return gfx::CreateVectorIcon(omnibox::kProductChromeRefreshIcon,
                                  features::kGlicChromeStatusIconSizePx.Get(),
                                  SK_ColorWHITE);
