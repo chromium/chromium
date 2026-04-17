@@ -28,7 +28,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:scrollbars="none">
 
-        <include layout="@layout/chrome_finds_opt_in_bottom_sheet_content" />
+        <include layout="@layout/finds_opt_in_bottom_sheet_content" />
 
     </ScrollView>
 

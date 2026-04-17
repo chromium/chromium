@@ -327,8 +327,7 @@ public class FindsOptInCoordinatorUnitTest {
         int horizontalMargin =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
+                        .getDimensionPixelSize(R.dimen.finds_opt_in_bottom_sheet_horizontal_margin);
         int maxWidth = screenWidthPixels - (horizontalMargin * 2);
 
         assertEquals(maxWidth, layoutParams.width);
@@ -358,8 +357,7 @@ public class FindsOptInCoordinatorUnitTest {
         int horizontalMargin =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
+                        .getDimensionPixelSize(R.dimen.finds_opt_in_bottom_sheet_horizontal_margin);
         int expectedMaxWidth = fakeMaxSheetWidthPx - (horizontalMargin * 2);
         assertEquals(expectedMaxWidth, layoutParams.width);
     }

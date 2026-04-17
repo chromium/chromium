@@ -93,7 +93,7 @@ public class FindsOptInCoordinator {
 
         mContentView =
                 LayoutInflater.from(mContext)
-                        .inflate(R.layout.chrome_finds_opt_in_bottom_sheet, /* root= */ null);
+                        .inflate(R.layout.finds_opt_in_bottom_sheet, /* root= */ null);
         mAnimationView = mContentView.findViewById(R.id.finds_opt_in_lottie_animation);
 
         mComponentCallbacks =
@@ -287,8 +287,7 @@ public class FindsOptInCoordinator {
         int screenWidthPixels = ViewUtils.dpToPx(mContext, configuration.screenWidthDp);
         int horizontalMargin =
                 mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.chrome_finds_opt_in_bottom_sheet_horizontal_margin);
+                        .getDimensionPixelSize(R.dimen.finds_opt_in_bottom_sheet_horizontal_margin);
         int maxWidth = screenWidthPixels - (horizontalMargin * 2);
         int maxSheetWidth = mBottomSheetController.getMaxSheetWidth();
         if (maxSheetWidth > 0) {

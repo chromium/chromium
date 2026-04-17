@@ -489,7 +489,7 @@ found in the LICENSE file.
     <dimen name="document_picture_in_picture_header_min_unoccluded_width">156dp</dimen>
 
     <!-- Chrome Finds dimensions -->
-    <dimen name="chrome_finds_opt_in_bottom_sheet_horizontal_margin">24dp</dimen>
+    <dimen name="finds_opt_in_bottom_sheet_horizontal_margin">24dp</dimen>
 
     <!-- Gesture User Education Iph-->
     <dimen name="gesture_user_education_arrow_margin_bottom">36dp</dimen>

@@ -87,7 +87,7 @@ public class AccessibilityAnnotatorBottomSheetCoordinator {
         mView.mPrimaryButton.setOnClickListener(v -> mMediator.onAcknowledgeClicked());
         mView.mSecondaryButton.setOnClickListener(v -> mMediator.onManageSettingsClicked());
 
-        mView.setAnimation(R.raw.chrome_finds_opt_in_animation);
+        mView.setAnimation(R.raw.finds_opt_in_animation);
     }
 
     /**

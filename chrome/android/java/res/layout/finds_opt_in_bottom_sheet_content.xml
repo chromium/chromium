@@ -12,7 +12,7 @@ found in the LICENSE file.
 
     <!--
         Setting height to 0dp with the lottie JSON's intrinsic
-        325:257 ratio (matching 'chrome_finds_opt_in_animation')
+        325:257 ratio (matching 'finds_opt_in_animation')
         ensures the height is calculated from the dynamically
         scaled width. This fixes a race condition where the sheet
         incorrectly allocates height before the asset loads,
@@ -28,7 +28,7 @@ found in the LICENSE file.
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:lottie_rawRes="@raw/chrome_finds_opt_in_animation"
+        app:lottie_rawRes="@raw/finds_opt_in_animation"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"/>
 
@@ -38,7 +38,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:layout_marginHorizontal=
-          "@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+          "@dimen/finds_opt_in_bottom_sheet_horizontal_margin"
         android:textAppearance="@style/TextAppearance.Headline.Primary"
         android:gravity="center_horizontal|top"
         android:text="@string/chrome_finds_opt_in_bottom_sheet_title"
@@ -53,7 +53,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal=
-          "@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+          "@dimen/finds_opt_in_bottom_sheet_horizontal_margin"
         android:textAppearance=
           "@style/TextAppearance.TextMedium.Secondary"
         app:leading="@dimen/text_size_medium_leading"
@@ -70,7 +70,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal=
-          "@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+          "@dimen/finds_opt_in_bottom_sheet_horizontal_margin"
         android:layout_marginTop="24dp"
         android:text=
           "@string/chrome_finds_opt_in_bottom_sheet_positive_button_text"
@@ -84,7 +84,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal=
-          "@dimen/chrome_finds_opt_in_bottom_sheet_horizontal_margin"
+          "@dimen/finds_opt_in_bottom_sheet_horizontal_margin"
         android:text=
           "@string/chrome_finds_opt_in_bottom_sheet_negative_button_text"
         app:layout_constraintTop_toBottomOf="@+id/opt_in_positive_button"
