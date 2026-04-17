@@ -208,9 +208,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesVerbatimMatch) {
       // Confirming should navigate to the Gemini URL.
       Confirm(kOmniboxElementId),
       WaitForWebContentsNavigation(
-          kNewTab, net::AppendOrReplaceQueryParameter(
-                       GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get()),
-                       "source", "chrome.ob")));
+          kNewTab, GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get())));
 }
 
 // Ensures Gemini mode's null match; e.g. "<Type search term>" is hidden, and

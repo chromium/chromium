@@ -1677,6 +1677,13 @@ TEST_F(OmniboxEditModelTest, OpenMatchInvocationSource) {
       controller()->autocomplete_controller()->search_provider(), 0, false,
       AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   match.destination_url = GURL("https://google.com/search?q=test");
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(u"test");
+  match.transition = ui::PAGE_TRANSITION_GENERATED;
+
+  // Ensure the keyword matches the default search provider.
+  auto* template_url_service = controller()->client()->GetTemplateURLService();
+  match.keyword = template_url_service->GetDefaultSearchProvider()->keyword();
 
   // Set the page classification to simulate an NTP realbox.
   client()->location_bar_model()->set_page_classification(

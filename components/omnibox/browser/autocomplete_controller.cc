@@ -1023,8 +1023,17 @@ void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
 
 void AutocompleteController::UpdateMatchDestinationURLWithInvocationSource(
     AutocompleteMatch* match) const {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxAppendInvocationSource)) {
+    return;
+  }
+
   if (!AutocompleteMatch::IsSearchType(match->type) ||
-      !match->destination_url.is_valid()) {
+      !match->destination_url.is_valid() || !match->search_terms_args) {
+    return;
+  }
+
+  const TemplateURL* turl = match->GetTemplateURL(template_url_service_);
+  if (!turl || turl != template_url_service_->GetDefaultSearchProvider()) {
     return;
   }
 

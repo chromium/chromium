@@ -259,6 +259,9 @@ BASE_FEATURE(kAblateSearchProviderWarmup, DISABLED);
 // If enabled, hl= is reported in search requests (applicable to iOS only).
 BASE_FEATURE(kReportApplicationLanguageInSearchRequest, ENABLED);
 
+// When enabled, appends the invocation source parameter to search URLs.
+BASE_FEATURE(kOmniboxAppendInvocationSource, ENABLED);
+
 // Enable asynchronous Omnibox/Suggest view inflation.
 BASE_FEATURE(kOmniboxAsyncViewInflation, DISABLED);
 
