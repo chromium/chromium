@@ -106,13 +106,12 @@ void ReadSimpleValueUniformsHelper(
   }
 }
 
-PaintOpReader::PaintOpReader(const volatile void* memory,
-                             size_t size,
+PaintOpReader::PaintOpReader(base::span<const volatile uint8_t> memory,
                              const PaintOp::DeserializeOptions& options,
                              bool enable_security_constraints)
-    : remaining_(UNSAFE_TODO(base::span(
-          static_cast<const volatile uint8_t*>(memory),
-          base::bits::AlignDown(size, PaintOpWriter::kDefaultAlignment)))),
+    : remaining_(memory.first(
+          base::bits::AlignDown(memory.size(),
+                                PaintOpWriter::kDefaultAlignment))),
       options_(options),
       enable_security_constraints_(enable_security_constraints) {
   PaintOpWriter::AssertAlignment(remaining_.data(), BufferAlignment());
@@ -1752,8 +1751,7 @@ size_t PaintOpReader::Read(std::optional<PaintRecord>* record) {
     return 0;
 
   auto span = remaining_.first(size_bytes);
-  sk_sp<PaintOpBuffer> buffer =
-      PaintOpBuffer::MakeFromMemory(span.data(), span.size(), options_);
+  sk_sp<PaintOpBuffer> buffer = PaintOpBuffer::MakeFromMemory(span, options_);
   if (!buffer) {
     SetInvalid(DeserializationError::kPaintOpBufferMakeFromMemoryFailure);
     return 0;

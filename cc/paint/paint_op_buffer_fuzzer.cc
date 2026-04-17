@@ -26,7 +26,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       .transfer_cache = &transfer_cache_helper,
       .paint_cache = &service_paint_cache,
       .scratch_buffer = scratch_buffer};
-  cc::PaintOpBuffer::MakeFromMemory(data, size, options);
+  // SAFETY: LibFuzzer gives a valid pointer and size pair.
+  auto span = UNSAFE_BUFFERS(base::span(data, size));
+  cc::PaintOpBuffer::MakeFromMemory(span, options);
 
   return 0;
 }

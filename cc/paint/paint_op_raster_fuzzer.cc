@@ -77,8 +77,7 @@ class FontSupport : public gpu::ServiceFontManager::Client {
 void Raster(GrDirectContext* gr_context,
             SkStrikeClient* strike_client,
             cc::ServicePaintCache* paint_cache,
-            const uint8_t* data,
-            size_t size) {
+            base::span<const uint8_t> input) {
   const size_t kRasterDimension = 32;
 
   SkImageInfo image_info = SkImageInfo::MakeN32(
@@ -98,13 +97,13 @@ void Raster(GrDirectContext* gr_context,
       .is_privileged = true};
 
   // Need kHeaderBytes bytes to be able to read the header.
-  while (size >= cc::PaintOpWriter::kHeaderBytes) {
+  while (input.size() >= cc::PaintOpWriter::kHeaderBytes) {
     std::unique_ptr<char, base::AlignedFreeDeleter> deserialized(
         static_cast<char*>(base::AlignedAlloc(
             sizeof(cc::LargestPaintOp), cc::PaintOpBuffer::kPaintOpAlign)));
     size_t bytes_read = 0;
     cc::PaintOp* deserialized_op = cc::PaintOp::Deserialize(
-        data, size, deserialized.get(), sizeof(cc::LargestPaintOp), &bytes_read,
+        input, deserialized.get(), sizeof(cc::LargestPaintOp), &bytes_read,
         deserialize_options);
 
     if (!deserialized_op) {
@@ -115,8 +114,7 @@ void Raster(GrDirectContext* gr_context,
 
     deserialized_op->DestroyThis();
 
-    size -= bytes_read;
-    UNSAFE_TODO(data += bytes_read);
+    input = input.subspan(bytes_read);
   }
 }
 
@@ -138,13 +136,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (bytes_for_fonts > size) {
     bytes_for_fonts = size / 2;
   }
-  const uint8_t* raster_data = base::bits::AlignDown(
-      UNSAFE_TODO(data + bytes_for_fonts), cc::PaintOpWriter::kMaxAlignment);
-  if (raster_data < data) {
+  const uint8_t* raster_data =
+      base::bits::AlignDown(data_span.subspan(bytes_for_fonts).data(),
+                            cc::PaintOpWriter::kMaxAlignment);
+  if (raster_data < data_span.data()) {
     return 0;
   }
-  bytes_for_fonts = raster_data - data;
-  size_t raster_size = size - bytes_for_fonts;
+  bytes_for_fonts = static_cast<uint32_t>(raster_data - data_span.data());
 
   FontSupport font_support;
   scoped_refptr<gpu::ServiceFontManager> font_manager(
@@ -164,7 +162,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK(!!gr_context_no_support);
   CHECK(!gr_context_no_support->supportsDistanceFieldText());
   Raster(gr_context_no_support.get(), font_manager->strike_client(),
-         &paint_cache, raster_data, raster_size);
+         &paint_cache, data_span.subspan(bytes_for_fonts));
 
   GrMockOptions options_with_support;
   options_with_support.fShaderDerivativeSupport = true;
@@ -174,7 +172,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK(!!gr_context_with_support);
   CHECK(gr_context_with_support->supportsDistanceFieldText());
   Raster(gr_context_with_support.get(), font_manager->strike_client(),
-         &paint_cache, raster_data, raster_size);
+         &paint_cache, data_span.subspan(bytes_for_fonts));
 
   font_manager->Unlock(locked_handles);
   font_manager->Destroy();

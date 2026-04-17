@@ -98,12 +98,10 @@ base::AlignedHeapArray<uint8_t> AllocateSerializedBuffer(
   return PaintOpWriter::AllocateAlignedBuffer(size);
 }
 
-bool ReadAndValidateOpHeader(const void* memory,
-                             size_t size,
+bool ReadAndValidateOpHeader(base::span<const uint8_t> memory,
                              uint8_t* op_type,
                              size_t* serialized_size) {
-  return PaintOpReader(memory, size,
-                       TestOptionsProvider().deserialize_options())
+  return PaintOpReader(memory, TestOptionsProvider().deserialize_options())
       .ReadAndValidateOpHeader(op_type, serialized_size);
 }
 
@@ -1303,10 +1301,8 @@ class SimpleSerializer {
   STACK_ALLOCATED();
 
  public:
-  SimpleSerializer(void* output, size_t output_size)
-      : current_(static_cast<char*>(output)),
-        output_size_(output_size),
-        remaining_(output_size) {}
+  explicit SimpleSerializer(base::span<uint8_t> output)
+      : remaining_span_(output), output_size_(output.size()) {}
 
   void Serialize(const PaintOpBuffer& buffer) {
     bytes_written_.resize(buffer.size());
@@ -1315,16 +1311,16 @@ class SimpleSerializer {
 
     size_t op_idx = 0;
     for (const PaintOp& op : buffer) {
-      size_t bytes_written = op.Serialize(current_, remaining_,
-                                          options_provider_.serialize_options(),
-                                          nullptr, SkM44(), SkM44());
+      size_t bytes_written = op.Serialize(
+          remaining_span_.data(), remaining_span_.size(),
+          options_provider_.serialize_options(), nullptr, SkM44(), SkM44());
       if (!bytes_written)
         return;
 
       uint8_t type = 0;
       size_t bytes_to_read = 0;
       EXPECT_TRUE(
-          ReadAndValidateOpHeader(current_, remaining_, &type, &bytes_to_read));
+          ReadAndValidateOpHeader(remaining_span_, &type, &bytes_to_read));
       if (op.GetType() == PaintOpType::kDrawTextBlob) {
         EXPECT_EQ(type, static_cast<int>(PaintOpType::kDrawSlug));
       } else {
@@ -1334,13 +1330,12 @@ class SimpleSerializer {
 
       bytes_written_[op_idx] = bytes_written;
       op_idx++;
-      UNSAFE_TODO(current_ += bytes_written);
-      remaining_ -= bytes_written;
+      remaining_span_ = remaining_span_.subspan(bytes_written);
 
       // Number of bytes bytes_written must be a multiple of
       // PaintOpWriter::kMaxAlignment unless the buffer is filled
       // entirely.
-      if (remaining_ != 0u) {
+      if (!remaining_span_.empty()) {
         EXPECT_EQ(
             bytes_written,
             base::bits::AlignUp(bytes_written, PaintOpWriter::kMaxAlignment));
@@ -1349,13 +1344,14 @@ class SimpleSerializer {
   }
 
   const std::vector<size_t>& bytes_written() const { return bytes_written_; }
-  size_t TotalBytesWritten() const { return output_size_ - remaining_; }
+  size_t TotalBytesWritten() const {
+    return output_size_ - remaining_span_.size();
+  }
   TestOptionsProvider* options_provider() { return &options_provider_; }
 
  private:
-  char* current_ = nullptr;
+  base::span<uint8_t> remaining_span_;
   size_t output_size_ = 0u;
-  size_t remaining_ = 0u;
   std::vector<size_t> bytes_written_;
   TestOptionsProvider options_provider_;
 };
@@ -1364,58 +1360,46 @@ class DeserializerIterator {
   STACK_ALLOCATED();
 
  public:
-  DeserializerIterator(const void* input,
-                       size_t input_size,
+  DeserializerIterator(base::span<const uint8_t> input,
                        const PaintOp::DeserializeOptions& options)
-      : DeserializerIterator(input,
-                             static_cast<const char*>(input),
-                             input_size,
-                             input_size,
-                             options) {}
+      : DeserializerIterator(input, input, options) {}
 
   ~DeserializerIterator() { DestroyDeserializedOp(); }
 
   DeserializerIterator begin() {
-    return DeserializerIterator(input_, static_cast<const char*>(input_),
-                                input_size_, input_size_, options_);
+    return DeserializerIterator(full_input_, full_input_, options_);
   }
   DeserializerIterator end() {
-    return DeserializerIterator(
-        input_, UNSAFE_TODO(static_cast<const char*>(input_) + input_size_),
-        input_size_, 0, options_);
+    return DeserializerIterator(full_input_, full_input_.last(0u), options_);
   }
   bool operator!=(const DeserializerIterator& other) {
-    return input_ != other.input_ || current_ != other.current_ ||
-           input_size_ != other.input_size_ || remaining_ != other.remaining_;
+    return full_input_.data() != other.full_input_.data() ||
+           remaining_.data() != other.remaining_.data() ||
+           full_input_.size() != other.full_input_.size() ||
+           remaining_.size() != other.remaining_.size();
   }
   DeserializerIterator& operator++() {
-    CHECK_GE(remaining_, last_bytes_read_);
-    UNSAFE_TODO(current_ += last_bytes_read_);
-    remaining_ -= last_bytes_read_;
+    CHECK_GE(remaining_.size(), last_bytes_read_);
+    remaining_ = remaining_.subspan(last_bytes_read_);
 
-    if (remaining_ > 0)
-      CHECK_GE(remaining_, 4u);
+    if (!remaining_.empty()) {
+      CHECK_GE(remaining_.size(), 4u);
+    }
 
     DeserializeCurrentOp();
 
     return *this;
   }
 
-  explicit operator bool() const { return remaining_ > 0u; }
+  explicit operator bool() const { return !remaining_.empty(); }
   const PaintOp* operator->() const { return deserialized_op_; }
   const PaintOp& operator*() const { return *deserialized_op_; }
 
  private:
-  DeserializerIterator(const void* input,
-                       const char* current,
-                       size_t input_size,
-                       size_t remaining,
+  DeserializerIterator(base::span<const uint8_t> full_input,
+                       base::span<const uint8_t> remaining,
                        const PaintOp::DeserializeOptions& options)
-      : input_(input),
-        current_(current),
-        input_size_(input_size),
-        remaining_(remaining),
-        options_(options) {
+      : full_input_(full_input), remaining_(remaining), options_(options) {
     DeserializeCurrentOp();
   }
 
@@ -1429,17 +1413,16 @@ class DeserializerIterator {
   void DeserializeCurrentOp() {
     DestroyDeserializedOp();
 
-    if (!remaining_)
+    if (remaining_.empty()) {
       return;
-    deserialized_op_ = PaintOp::Deserialize(
-        current_, remaining_, paint_op_buffer_data_,
-        std::size(paint_op_buffer_data_), &last_bytes_read_, options_);
+    }
+    deserialized_op_ = PaintOp::Deserialize(remaining_, paint_op_buffer_data_,
+                                            std::size(paint_op_buffer_data_),
+                                            &last_bytes_read_, options_);
   }
 
-  raw_ptr<const void> input_ = nullptr;
-  const char* current_ = nullptr;
-  size_t input_size_ = 0u;
-  size_t remaining_ = 0u;
+  base::span<const uint8_t> full_input_;
+  base::span<const uint8_t> remaining_;
   size_t last_bytes_read_ = 0u;
   PaintOp::DeserializeOptions options_;
   alignas(PaintOpBuffer::kPaintOpAlign) char paint_op_buffer_data_
@@ -2033,8 +2016,8 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
 
   void ResizeOutputBuffer() {
     // An serialization buffer size that should fit all the ops in the buffer_.
-    output_size_ = kSerializedBytesPerOp * buffer_.size();
-    output_ = AllocateSerializedBuffer(output_size_);
+    size_t size = kSerializedBytesPerOp * buffer_.size();
+    output_ = AllocateSerializedBuffer(size);
   }
 
   bool IsTypeSupported() {
@@ -2054,7 +2037,6 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
 
  protected:
   base::AlignedHeapArray<uint8_t> output_;
-  size_t output_size_ = 0u;
   PaintOpBuffer buffer_;
 };
 
@@ -2073,9 +2055,9 @@ sk_sp<PaintOpBuffer> SerializeAndDeserialize(
   CHECK(serializer.valid());
   CHECK_GT(serializer.written(), 0u);
 
-  sk_sp<PaintOpBuffer> deserialized_buffer =
-      PaintOpBuffer::MakeFromMemory(memory.data(), serializer.written(),
-                                    options_provider.deserialize_options());
+  sk_sp<PaintOpBuffer> deserialized_buffer = PaintOpBuffer::MakeFromMemory(
+      memory.as_span().first(serializer.written()),
+      options_provider.deserialize_options());
   return deserialized_buffer;
 }
 
@@ -2095,7 +2077,7 @@ TEST_P(PaintOpSerializationTest, SmokeTest) {
 
   ResizeOutputBuffer();
 
-  SimpleSerializer serializer(output_.data(), output_size_);
+  SimpleSerializer serializer(output_);
 
   auto canvas =
       serializer.options_provider()->strike_server()->makeAnalysisCanvas(
@@ -2123,7 +2105,7 @@ TEST_P(PaintOpSerializationTest, SmokeTest) {
   PaintOpBuffer::Iterator iter(buffer_);
   size_t i = 0;
   for (const PaintOp& base_written : DeserializerIterator(
-           output_.data(), serializer.TotalBytesWritten(),
+           output_.first(serializer.TotalBytesWritten()),
            serializer.options_provider()->deserialize_options())) {
     ASSERT_TRUE(iter);
     EXPECT_TRUE(base_written.EqualsForTesting(*iter))
@@ -2151,7 +2133,7 @@ TEST_P(PaintOpSerializationTest, SerializationFailures) {
 
   ResizeOutputBuffer();
 
-  SimpleSerializer serializer(output_.data(), output_size_);
+  SimpleSerializer serializer(output_);
   serializer.Serialize(buffer_);
   std::vector<size_t> bytes_written = serializer.bytes_written();
 
@@ -2199,12 +2181,11 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
 
   ResizeOutputBuffer();
 
-  SimpleSerializer serializer(output_.data(), output_size_);
+  SimpleSerializer serializer(output_);
   serializer.Serialize(buffer_);
   TestOptionsProvider* options_provider = serializer.options_provider();
 
-  char* first = reinterpret_cast<char*>(output_.data());
-  char* current = first;
+  base::span<const uint8_t> full_span = output_;
 
   static constexpr size_t kAlign = PaintOpWriter::kMaxAlignment;
   static constexpr size_t kOutputOpSize = kSerializedBytesPerOp;
@@ -2212,10 +2193,12 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
 
   size_t total_read = 0;
   for (size_t op_idx = 0; op_idx < buffer_.size(); ++op_idx) {
+    size_t current_offset = total_read;
     uint8_t serialized_type = 0;
     size_t serialized_size = 0;
-    ReadAndValidateOpHeader(current, PaintOpWriter::kHeaderBytes,
-                            &serialized_type, &serialized_size);
+    ReadAndValidateOpHeader(
+        full_span.subspan(current_offset, PaintOpWriter::kHeaderBytes),
+        &serialized_type, &serialized_size);
     EXPECT_EQ(static_cast<uint8_t>(GetParamType()), serialized_type);
 
     // Read from buffers of various sizes to make sure that having a serialized
@@ -2232,17 +2215,19 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
       // serialized_size, here deliberately lie about the serialized_size.
       // This will verify that individual op deserializing code behaves properly
       // when presented with invalid offsets.
-      PaintOpWriter::WriteHeaderForTesting(current, serialized_type, read_size);
+      PaintOpWriter::WriteHeaderForTesting(
+          output_.subspan(current_offset).data(), serialized_type, read_size);
       size_t bytes_read = 0;
       PaintOp* written = PaintOp::Deserialize(
-          current, read_size, deserialize_buffer.data(), kOutputOpSize,
-          &bytes_read, options_provider->deserialize_options());
+          full_span.subspan(current_offset, read_size),
+          deserialize_buffer.data(), kOutputOpSize, &bytes_read,
+          options_provider->deserialize_options());
 
       // Deserialize buffers with valid ops until the last op. This verifies
       // that the complete buffer is invalidated on encountering the first
       // corrupted op.
       auto deserialized_buffer = PaintOpBuffer::MakeFromMemory(
-          first, total_read + read_size,
+          full_span.first(total_read + read_size),
           options_provider->deserialize_options());
 
       // Serizlized sizes are only valid if they are aligned.
@@ -2282,9 +2267,8 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
     }
 
     // Restore the correct serialized_size.
-    PaintOpWriter::WriteHeaderForTesting(current, serialized_type,
-                                         serialized_size);
-    UNSAFE_TODO(current += serialized_size);
+    PaintOpWriter::WriteHeaderForTesting(output_.subspan(current_offset).data(),
+                                         serialized_type, serialized_size);
     total_read += serialized_size;
   }
 }
@@ -2307,12 +2291,12 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
   alignas(PaintOpBuffer::kPaintOpAlign) char
       deserialized[kLargestPaintOpAlignedSize];
   for (const PaintOp& op : buffer_) {
-    size_t bytes_written = op.Serialize(output_.data(), output_size_,
+    size_t bytes_written = op.Serialize(output_.data(), output_.size(),
                                         options_provider.serialize_options(),
                                         nullptr, SkM44(), SkM44());
     size_t bytes_read = 0u;
     PaintOp* written = PaintOp::Deserialize(
-        output_.data(), bytes_written, deserialized, std::size(deserialized),
+        output_.first(bytes_written), deserialized, std::size(deserialized),
         &bytes_read, options_provider.deserialize_options());
     ASSERT_TRUE(written) << PaintOpTypeToString(GetParamType());
     EXPECT_TRUE(op.EqualsForTesting(*written))
@@ -2324,10 +2308,10 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
 
     PaintFlags override_flags = static_cast<const PaintOpWithFlags&>(op).flags;
     override_flags.setAlphaf(override_flags.getAlphaf() * 0.5f);
-    bytes_written = op.Serialize(output_.data(), output_size_,
+    bytes_written = op.Serialize(output_.data(), output_.size(),
                                  options_provider.serialize_options(),
                                  &override_flags, SkM44(), SkM44());
-    written = PaintOp::Deserialize(output_.data(), bytes_written, deserialized,
+    written = PaintOp::Deserialize(output_.first(bytes_written), deserialized,
                                    std::size(deserialized), &bytes_read,
                                    options_provider.deserialize_options());
     ASSERT_TRUE(written);
@@ -2406,7 +2390,8 @@ TEST(PaintOpSerializationTest,
 
   size_t output_size = kSerializedBytesPerOp * buffer.size();
   auto output = AllocateSerializedBuffer(output_size);
-  SimpleSerializer serializer(output.data(), output_size);
+  base::span<uint8_t> output_span = output.as_span();
+  SimpleSerializer serializer(output_span);
 
   auto canvas =
       serializer.options_provider()->strike_server()->makeAnalysisCanvas(
@@ -2427,7 +2412,7 @@ TEST(PaintOpSerializationTest,
 
   size_t i = 0;
   for (const PaintOp& base_written : DeserializerIterator(
-           output.data(), serializer.TotalBytesWritten(),
+           output_span.first(serializer.TotalBytesWritten()),
            serializer.options_provider()->deserialize_options())) {
     ASSERT_TRUE(iter);
     EXPECT_EQ(PaintOpType::kDrawSlug, base_written.GetType());
@@ -2551,10 +2536,12 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
                                        nullptr, SkM44(), SkM44());
   ASSERT_GT(bytes_written, 0u);
 
+  base::span<const uint8_t> input_span = input.as_span();
+
   // Can deserialize from exactly the right size.
   size_t bytes_read = 0;
   PaintOp* success = PaintOp::Deserialize(
-      input.data(), bytes_written, output, std::size(output), &bytes_read,
+      input_span.first(bytes_written), output, std::size(output), &bytes_read,
       options_provider.deserialize_options());
   ASSERT_TRUE(success);
   EXPECT_EQ(bytes_written, bytes_read);
@@ -2563,7 +2550,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   // Fail to deserialize if serialized_size goes past input size (the
   // DeserializationFailures test above tests if the serialized_size is lying).
   for (size_t i = 0; i < bytes_written - 1; ++i) {
-    EXPECT_FALSE(PaintOp::Deserialize(input.data(), i, output,
+    EXPECT_FALSE(PaintOp::Deserialize(input_span.first(i), output,
                                       std::size(output), &bytes_read,
                                       options_provider.deserialize_options()));
   }
@@ -2571,13 +2558,13 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   // Unaligned serialized_size should fail to deserialize.
   uint8_t serialized_type = 0;
   size_t serialized_size = 0;
-  ReadAndValidateOpHeader(input.data(), bytes_written, &serialized_type,
+  ReadAndValidateOpHeader(input_span.first(bytes_written), &serialized_type,
                           &serialized_size);
   EXPECT_EQ(serialized_size,
             base::bits::AlignUp(serialized_size, PaintOpWriter::kMaxAlignment));
   PaintOpWriter::WriteHeaderForTesting(input.data(), serialized_type,
                                        serialized_size - 1);
-  EXPECT_FALSE(PaintOp::Deserialize(input.data(), bytes_written, output,
+  EXPECT_FALSE(PaintOp::Deserialize(input_span.first(bytes_written), output,
                                     std::size(output), &bytes_read,
                                     options_provider.deserialize_options()));
 
@@ -2585,7 +2572,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   PaintOpWriter::WriteHeaderForTesting(
       input.data(), static_cast<uint8_t>(PaintOpType::kLastPaintOpType) + 1,
       serialized_size);
-  EXPECT_FALSE(PaintOp::Deserialize(input.data(), bytes_written, output,
+  EXPECT_FALSE(PaintOp::Deserialize(input_span.first(bytes_written), output,
                                     std::size(output), &bytes_read,
                                     options_provider.deserialize_options()));
 }
@@ -2634,10 +2621,9 @@ TEST(PaintOpBufferTest, ValidateRects) {
     size_t bytes_read = 0;
     base::span<const uint8_t> written_span =
         serialized_span.first(bytes_written);
-    PaintOp* deserialized_op =
-        PaintOp::Deserialize(written_span.data(), written_span.size(),
-                             deserialized, std::size(deserialized), &bytes_read,
-                             options_provider.deserialize_options());
+    PaintOp* deserialized_op = PaintOp::Deserialize(
+        written_span, deserialized, std::size(deserialized), &bytes_read,
+        options_provider.deserialize_options());
     EXPECT_TRUE(deserialized_op) << op_idx;
     deserialized_op->DestroyThis();
 
@@ -2650,10 +2636,9 @@ TEST(PaintOpBufferTest, ValidateRects) {
         break;
       }
     }
-    deserialized_op =
-        PaintOp::Deserialize(written_span.data(), written_span.size(),
-                             deserialized, std::size(deserialized), &bytes_read,
-                             options_provider.deserialize_options());
+    deserialized_op = PaintOp::Deserialize(
+        written_span, deserialized, std::size(deserialized), &bytes_read,
+        options_provider.deserialize_options());
     EXPECT_FALSE(deserialized_op) << op_idx;
 
     ++op_idx;
@@ -3472,7 +3457,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
     ASSERT_GT(writer.size(), 0u) << PaintFilter::TypeToString(filter->type());
 
     sk_sp<PaintFilter> deserialized_filter;
-    PaintOpReader reader(memory.data(), writer.size(),
+    PaintOpReader reader(memory.as_span().first(writer.size()),
                          options_provider.deserialize_options(), GetParam());
     reader.Read(&deserialized_filter);
     ASSERT_TRUE(deserialized_filter);
@@ -3540,7 +3525,7 @@ TEST(PaintOpBufferTest, RecordPaintFilterDeserializationInvalidPaintOp) {
     }
   }
   sk_sp<PaintFilter> deserialized_filter;
-  PaintOpReader reader(memory.data(), writer.size(),
+  PaintOpReader reader(memory.as_span().first(writer.size()),
                        options_provider.deserialize_options(), false);
   reader.Read(&deserialized_filter);
   EXPECT_FALSE(deserialized_filter);
@@ -3642,7 +3627,7 @@ TEST(PaintOpBufferTest,
   d_options.is_privileged = false;
 
   auto deserialized_buffer = PaintOpBuffer::MakeFromMemory(
-      memory.data(), serializer.written(), d_options);
+      memory.as_span().first(serializer.written()), d_options);
   ASSERT_FALSE(deserialized_buffer);
 }
 
@@ -3850,7 +3835,7 @@ TEST(PaintOpBufferTest, SecurityConstrainedImageSerialization) {
   writer.Write(filter.get(), SkM44());
 
   sk_sp<PaintFilter> out_filter;
-  PaintOpReader reader(memory.data(), writer.size(),
+  PaintOpReader reader(memory.as_span().first(writer.size()),
                        options_provider.deserialize_options(),
                        enable_security_constraints);
   reader.Read(&out_filter);
@@ -3978,11 +3963,12 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
   // (3) sanity check, same new scale + same new colorspace, shader is reused.
   for (size_t i = 0; i < 4; ++i) {
     if (i < 2) {
-      buffers[i] = PaintOpBuffer::MakeFromMemory(memory.data(), memory_written,
-                                                 deserialize_options);
+      buffers[i] = PaintOpBuffer::MakeFromMemory(
+          memory.as_span().first(memory_written), deserialize_options);
     } else {
       buffers[i] = PaintOpBuffer::MakeFromMemory(
-          memory_scaled.data(), memory_scaled_written, deserialize_options);
+          memory_scaled.as_span().first(memory_scaled_written),
+          deserialize_options);
     }
 
     auto* entry =
@@ -4055,7 +4041,7 @@ TEST(PaintOpBufferTest, RecordShadersCachedSize) {
       .scratch_buffer = scratch_buffer,
       .is_privileged = true};
   auto deserialized = PaintOpBuffer::MakeFromMemory(
-      memory.data(), serializer.written(), deserialize_options);
+      memory.as_span().first(serializer.written()), deserialize_options);
   auto* shader_entry =
       transfer_cache->GetEntryAs<ServiceShaderTransferCacheEntry>(shader_id);
   ASSERT_TRUE(shader_entry);
@@ -4462,9 +4448,9 @@ TEST(PaintOpBufferTest, PathCaching) {
   EXPECT_TRUE(options_provider.client_paint_cache()->Get(
       PaintCacheDataType::kPath, path.getGenerationID()));
 
-  sk_sp<PaintOpBuffer> deserialized_buffer =
-      PaintOpBuffer::MakeFromMemory(memory.data(), serializer.written(),
-                                    options_provider.deserialize_options());
+  sk_sp<PaintOpBuffer> deserialized_buffer = PaintOpBuffer::MakeFromMemory(
+      memory.as_span().first(serializer.written()),
+      options_provider.deserialize_options());
   EXPECT_THAT(*deserialized_buffer, ElementsAre(PaintOpIs<DrawPathOp>()));
 
   SkPath cached_path;

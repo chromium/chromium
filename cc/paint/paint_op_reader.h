@@ -51,8 +51,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   // The DeserializeOptions passed to the reader must set all fields if it can
   // be used to for deserializing images, paint records or text blobs.
   // See PaintOpWriter for the alignment requirement for `memory`.
-  PaintOpReader(const volatile void* memory,
-                size_t size,
+  PaintOpReader(base::span<const volatile uint8_t> memory,
                 const PaintOp::DeserializeOptions& options,
                 bool enable_security_constraints = false);
 

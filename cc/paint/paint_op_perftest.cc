@@ -69,23 +69,22 @@ class PaintOpPerfTest : public testing::Test {
     test_options_provider.PushFonts();
 
     do {
-      size_t remaining_read_bytes = bytes_written;
-      uint8_t* to_read = serialized_data_.data();
+      base::span<const uint8_t> remaining =
+          serialized_data_.as_span().first(bytes_written);
 
       while (true) {
         PaintOp* deserialized_op = PaintOp::Deserialize(
-            to_read, remaining_read_bytes, deserialized_data_,
-            kLargestPaintOpAlignedSize, &bytes_read,
-            test_options_provider.deserialize_options());
+            remaining, deserialized_data_, kLargestPaintOpAlignedSize,
+            &bytes_read, test_options_provider.deserialize_options());
         CHECK(deserialized_op);
         deserialized_op->DestroyThis();
 
-        DCHECK_GE(remaining_read_bytes, bytes_read);
-        if (remaining_read_bytes == bytes_read)
+        DCHECK_GE(remaining.size(), bytes_read);
+        if (remaining.size() == bytes_read) {
           break;
+        }
 
-        remaining_read_bytes -= bytes_read;
-        UNSAFE_TODO(to_read += bytes_read);
+        remaining = remaining.subspan(bytes_read);
       }
 
       timer_.NextLap();

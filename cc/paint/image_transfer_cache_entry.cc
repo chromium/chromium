@@ -604,7 +604,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   // only used for de-serializing primitives.
   std::vector<uint8_t> scratch_buffer;
   PaintOp::DeserializeOptions options{.scratch_buffer = scratch_buffer};
-  PaintOpReader reader(data.data(), data.size(), options);
+  PaintOpReader reader(data, options);
 
   // Parameters common to RGBA and YUVA images.
   reader.Read(&has_gainmap_);

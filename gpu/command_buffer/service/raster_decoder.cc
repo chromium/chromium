@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -2953,15 +2954,15 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   }
   DCHECK(transfer_cache());
 
-  char* paint_buffer_memory = GetSharedMemoryAs<char*>(
-      raster_shm_id, raster_shm_offset, raster_shm_size);
-  if (!paint_buffer_memory) {
+  base::span<uint8_t> paint_buffer =
+      GetSharedMemoryAsSpan(raster_shm_id, raster_shm_offset, raster_shm_size);
+  if (paint_buffer.empty()) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Can not read paint buffer.");
     return error::kNoError;
   }
 
-  if (paint_buffer_memory != base::bits::AlignUp(paint_buffer_memory, 16u)) {
+  if (!base::IsAligned(paint_buffer.data(), 16u)) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Buffer is not aligned with 16 bytes.");
     return error::kNoError;
@@ -2983,7 +2984,6 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   alignas(cc::PaintOpBuffer::kPaintOpAlign) char
       data[cc::kLargestPaintOpAlignedSize];
 
-  size_t paint_buffer_size = raster_shm_size;
   gl::ScopedProgressReporter report_progress(
       shared_context_state_->progress_reporter());
 
@@ -2993,14 +2993,13 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     DCHECK(!deferred_raster_paint_buffer_offset_.has_value());
     auto* paint_op_buffer =
         scoped_shared_image_raster_write_->paint_op_buffer();
-    paint_op_buffer->Deserialize(paint_buffer_memory, raster_shm_size, options);
+    paint_op_buffer->Deserialize(paint_buffer, options);
     return error::kNoError;
   }
 
   if (deferred_raster_paint_buffer_offset_.has_value()) {
-    CHECK(*deferred_raster_paint_buffer_offset_ <= paint_buffer_size);
-    paint_buffer_size -= *deferred_raster_paint_buffer_offset_;
-    UNSAFE_TODO(paint_buffer_memory += *deferred_raster_paint_buffer_offset_);
+    CHECK(*deferred_raster_paint_buffer_offset_ <= paint_buffer.size());
+    paint_buffer = paint_buffer.subspan(*deferred_raster_paint_buffer_offset_);
     deferred_raster_paint_buffer_offset_.reset();
   } else {
     if (font_shm_size > 0) {
@@ -3026,11 +3025,10 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
 
   size_t processed_commands = 0;
 
-  while (paint_buffer_size > 0) {
+  while (!paint_buffer.empty()) {
     size_t skip = 0;
-    cc::PaintOp* deserialized_op =
-        cc::PaintOp::Deserialize(paint_buffer_memory, paint_buffer_size, data,
-                                 std::size(data), &skip, options);
+    cc::PaintOp* deserialized_op = cc::PaintOp::Deserialize(
+        paint_buffer, data, std::size(data), &skip, options);
     if (!deserialized_op) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
                          "RasterCHROMIUM: serialization failure");
@@ -3040,17 +3038,16 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     deserialized_op->Raster(raster_canvas_, playback_params);
     deserialized_op->DestroyThis();
 
-    paint_buffer_size -= skip;
-    UNSAFE_TODO(paint_buffer_memory += skip);
+    paint_buffer = paint_buffer.subspan(skip);
     processed_commands++;
 
     if (check_for_yield_op_count_.has_value() &&
         processed_commands % check_for_yield_op_count_.value() == 0 &&
-        paint_buffer_size && client()->ShouldYield()) {
+        !paint_buffer.empty() && client()->ShouldYield()) {
       // Pause command batch to check if we should yield execution.
       TRACE_EVENT0("gpu", "RasterDecoderImpl::DoRasterCHROMIUM::Yield");
       deferred_raster_paint_buffer_offset_ =
-          raster_shm_size - paint_buffer_size;
+          raster_shm_size - paint_buffer.size();
       return error::kDeferCommandUntilLater;
     }
   }

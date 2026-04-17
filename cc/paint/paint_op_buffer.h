@@ -191,15 +191,14 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
                 const PlaybackParams& params,
                 bool local_ctm = true) const;
 
-  // Deserialize PaintOps from |input|. The original content will be
+  // Deserialize PaintOps from `input`. The original content will be
   // overwritten.
-  bool Deserialize(const volatile void* input,
-                   size_t input_size,
+  bool Deserialize(base::span<const volatile uint8_t> input,
                    const DeserializeOptions& options);
 
-  static sk_sp<PaintOpBuffer> MakeFromMemory(const volatile void* input,
-                                             size_t input_size,
-                                             const DeserializeOptions& options);
+  static sk_sp<PaintOpBuffer> MakeFromMemory(
+      base::span<const volatile uint8_t> input,
+      const DeserializeOptions& options);
 
   // Given the |bounds| of a PaintOpBuffer that would be transformed by |ctm|
   // when rendered, compute the bounds needed to raster the buffer at a fixed

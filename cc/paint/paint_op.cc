@@ -2133,8 +2133,7 @@ size_t PaintOp::Serialize(void* memory,
   return writer.FinishOp(type);
 }
 
-PaintOp* PaintOp::Deserialize(const volatile void* input,
-                              size_t input_size,
+PaintOp* PaintOp::Deserialize(base::span<const volatile uint8_t> input,
                               void* output,
                               size_t output_size,
                               size_t* read_bytes,
@@ -2142,7 +2141,7 @@ PaintOp* PaintOp::Deserialize(const volatile void* input,
   DCHECK_GE(output_size, kLargestPaintOpAlignedSize);
 
   uint8_t type;
-  PaintOpReader reader(input, input_size, options);
+  PaintOpReader reader(input, options);
   if (!reader.ReadAndValidateOpHeader(&type, read_bytes)) {
     return nullptr;
   }
@@ -2150,13 +2149,12 @@ PaintOp* PaintOp::Deserialize(const volatile void* input,
 }
 
 PaintOp* PaintOp::DeserializeIntoPaintOpBuffer(
-    const volatile void* input,
-    size_t input_size,
+    base::span<const volatile uint8_t> input,
     PaintOpBuffer* buffer,
     size_t* read_bytes,
     const DeserializeOptions& options) {
   uint8_t type;
-  PaintOpReader reader(input, input_size, options);
+  PaintOpReader reader(input, options);
   if (!reader.ReadAndValidateOpHeader(&type, read_bytes)) {
     return nullptr;
   }

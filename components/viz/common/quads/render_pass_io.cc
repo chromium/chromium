@@ -525,7 +525,7 @@ sk_sp<cc::PaintFilter> PaintFilterFromString(const std::string& encoded) {
   // and serialization of PaintRecords.
   std::vector<uint8_t> scratch_buffer;
   cc::PaintOp::DeserializeOptions options{.scratch_buffer = scratch_buffer};
-  cc::PaintOpReader reader(buffer.data(), buffer.size(), options,
+  cc::PaintOpReader reader(base::as_byte_span(buffer), options,
                            /*enable_security_constraints=*/true);
   sk_sp<cc::PaintFilter> filter;
   reader.Read(&filter);

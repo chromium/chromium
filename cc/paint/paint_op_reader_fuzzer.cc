@@ -17,7 +17,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::vector<uint8_t> scratch_buffer;
   cc::PaintOp::DeserializeOptions options{.scratch_buffer = scratch_buffer};
-  cc::PaintOpReader reader(data, size, options,
+  // SAFETY: LibFuzzer gives a valid pointer and size pair.
+  auto span = UNSAFE_BUFFERS(base::span(data, size));
+  cc::PaintOpReader reader(span, options,
                            /*enable_security_constraints=*/true);
   sk_sp<cc::PaintFilter> filter;
   reader.Read(&filter);

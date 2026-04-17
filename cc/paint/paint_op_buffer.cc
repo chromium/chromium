@@ -411,20 +411,16 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
   }
 }
 
-bool PaintOpBuffer::Deserialize(const volatile void* input,
-                                size_t input_size,
+bool PaintOpBuffer::Deserialize(base::span<const volatile uint8_t> input,
                                 const PaintOp::DeserializeOptions& options) {
-  size_t total_bytes_read = 0u;
-  while (total_bytes_read < input_size) {
-    const volatile void* next_op = UNSAFE_TODO(
-        static_cast<const volatile char*>(input) + total_bytes_read);
+  while (!input.empty()) {
     size_t read_bytes = 0;
-    if (!PaintOp::DeserializeIntoPaintOpBuffer(next_op,
-                                               input_size - total_bytes_read,
-                                               this, &read_bytes, options)) {
+    if (!PaintOp::DeserializeIntoPaintOpBuffer(input, this, &read_bytes,
+                                               options)) {
       return false;
     }
-    total_bytes_read += read_bytes;
+    DCHECK_GT(read_bytes, 0u);
+    input = input.subspan(read_bytes);
   }
 
   DCHECK_GT(size(), 0u);
@@ -433,14 +429,15 @@ bool PaintOpBuffer::Deserialize(const volatile void* input,
 
 // static
 sk_sp<PaintOpBuffer> PaintOpBuffer::MakeFromMemory(
-    const volatile void* input,
-    size_t input_size,
+    base::span<const volatile uint8_t> input,
     const PaintOp::DeserializeOptions& options) {
   auto buffer = sk_make_sp<PaintOpBuffer>();
-  if (input_size == 0)
+  if (input.empty()) {
     return buffer;
-  if (!buffer->Deserialize(input, input_size, options))
+  }
+  if (!buffer->Deserialize(input, options)) {
     return nullptr;
+  }
   return buffer;
 }
 
