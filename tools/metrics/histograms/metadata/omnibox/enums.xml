@@ -609,13 +609,20 @@ chromium-metrics-reviews@google.com.
 <enum name="VoiceSearchAction">
   <int value="0" label="Activated by clicking on the icon"/>
   <int value="1" label="Activated by keyboard shortcut"/>
-  <int value="2" label="Closed overlay by a user's explicit action"/>
+  <int value="2"
+      label="(Obsolete) Closed overlay by a user's explicit action.
+             Deprecated as of 04/2026."/>
   <int value="3" label="Submitted voice query"/>
   <int value="4" label="Clicked on support link in error message"/>
   <int value="5" label="Retried by clicking Try Again link"/>
   <int value="6"
       label="(Obsolete) Retried by clicking microphone button. Deprecated as
              of 09/2022."/>
+  <int value="7" label="Stop voice search button clicked"/>
+  <int value="8" label="Resume voice search button clicked"/>
+  <int value="9" label="Voice Search Error That Does Not Cancel Voice Search"/>
+  <int value="10" label="Voice Search Error That Cancels Voice Search"/>
+  <int value="11" label="Voice Search Is Canceled By User"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/composebox_voice_search.ts:VoiceSearchAction) -->

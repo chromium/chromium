@@ -13,7 +13,7 @@ import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_component
 import {VoiceSearchAction, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
-import {GlowAnimationState, VoiceSearchState} from 'chrome://resources/cr_components/search/constants.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -850,13 +850,6 @@ suite('ComposeboxVoiceSearchMetrics', () => {
         metrics.count(
             'VoiceSearch.Action.NTP_REALBOX',
             VoiceSearchAction.QUERY_SUBMITTED));
-
-    // Verify: State logged SUCCESSFUL_TRANSCRIPT.
-    assertEquals(
-        1,
-        metrics.count(
-            'VoiceSearch.State.NTP_REALBOX',
-            VoiceSearchState.SUCCESSFUL_TRANSCRIPT));
   });
 
   test('Records CANCELED metrics on close button click', async () => {
@@ -869,14 +862,7 @@ suite('ComposeboxVoiceSearchMetrics', () => {
         1,
         metrics.count(
             'VoiceSearch.Action.NTP_REALBOX',
-            VoiceSearchAction.CLOSED_BY_USER));
-
-    // Verify: State logged VOICE_SEARCH_CANCELED.
-    assertEquals(
-        1,
-        metrics.count(
-            'VoiceSearch.State.NTP_REALBOX',
-            VoiceSearchState.VOICE_SEARCH_CANCELED));
+            VoiceSearchAction.CANCELED_BY_USER));
   });
 
   test('Records ERROR metrics on API error event', async () => {
@@ -915,8 +901,8 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     assertEquals(
         1,
         metrics.count(
-            'VoiceSearch.State.NTP_REALBOX',
-            VoiceSearchState.VOICE_SEARCH_ERROR));
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.ERROR_NON_CANCELING));
   });
 
   test('Records ERROR_NON_CANCELING state for all errors', async () => {
@@ -933,8 +919,8 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     assertEquals(
         1,
         metrics.count(
-            'VoiceSearch.State.NTP_REALBOX',
-            VoiceSearchState.VOICE_SEARCH_ERROR));
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.ERROR_NON_CANCELING));
   });
 
   test('Records NO_MATCH error on nomatch event', async () => {
