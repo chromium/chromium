@@ -1,12 +1,12 @@
 android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.ListView clickable collection focusable interesting item_count=8 row_count=8 column_count=1
-++++++android.view.View name='Enabled' selection_mode=1
+++++++android.view.View container_title='Enabled' selection_mode=1
 ++++++++android.view.View clickable collection_item focusable interesting name='One' item_index=0 row_index=0 row_span=1 column_span=1
 ++++++++android.view.View clickable collection_item focusable interesting name='Two' item_index=1 row_index=1 row_span=1 column_span=1
 ++++++++android.view.View clickable collection_item focusable interesting name='Three' item_index=2 row_index=2 row_span=1 column_span=1
 ++++++++android.view.View clickable collection_item focusable interesting name='Four' item_index=3 row_index=3 row_span=1 column_span=1
-++++++android.view.View name='Disabled' selection_mode=1
+++++++android.view.View container_title='Disabled' selection_mode=1
 ++++++++android.view.View clickable collection_item disabled interesting name='One' item_index=4 row_index=4 row_span=1 column_span=1
 ++++++++android.view.View clickable collection_item disabled interesting name='Two' item_index=5 row_index=5 row_span=1 column_span=1
 ++++++++android.view.View clickable collection_item disabled interesting name='Three' item_index=6 row_index=6 row_span=1 column_span=1

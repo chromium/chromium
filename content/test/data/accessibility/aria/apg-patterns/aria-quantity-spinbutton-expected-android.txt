@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
-++android.view.View name='Guests'
+++android.view.View container_title='Guests'
 ++++android.view.View interesting name='Guests'
 ++++android.view.View interesting name='Adults'
 ++++android.view.View

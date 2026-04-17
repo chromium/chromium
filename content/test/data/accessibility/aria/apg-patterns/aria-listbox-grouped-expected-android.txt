@@ -1,12 +1,12 @@
 android.webkit.WebView focusable focused
 ++android.widget.TextView interesting name='Choose your animal sidekick'
-++android.widget.ListView clickable collection focusable interesting name='Choose your animal sidekick' item_count=4 row_count=4 column_count=1
-++++android.view.View name='Land'
+++android.widget.ListView clickable collection focusable interesting container_title='Choose your animal sidekick' item_count=4 row_count=4 column_count=1
+++++android.view.View container_title='Land'
 ++++++android.widget.TextView name='%E2%80%A2 '
 ++++++android.widget.TextView name='Land'
 ++++++android.view.View collection_item interesting name='Cat' item_index=0 row_index=0
 ++++++android.view.View collection_item interesting name='Dog' item_index=1 row_index=1
-++++android.view.View name='Water'
+++++android.view.View container_title='Water'
 ++++++android.widget.TextView name='%E2%80%A2 '
 ++++++android.widget.TextView name='Water'
 ++++++android.view.View collection_item interesting name='Dolphin' item_index=2 row_index=2

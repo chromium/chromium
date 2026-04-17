@@ -1,7 +1,7 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
 ++View viewIdResName:"myCarousel" containerTitle:"Highlighted television shows" actions:[AX_FOCUS] bundle:[chromeRole="region", hasImage="true", roleDescription="carousel"]
 ++++Button contentDescription:"Stop automatic slide show" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="button", clickableScore="300"]
-++++ViewGroup text:"Slides" CollectionInfo:[rows=2, cols=1] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tabList", roleDescription="tab list"]
+++++ViewGroup containerTitle:"Slides" CollectionInfo:[rows=2, cols=1] actions:[AX_FOCUS] bundle:[chromeRole="tabList", roleDescription="tab list"]
 ++++++View contentDescription:"Slide 1" viewIdResName:"carousel-tab-1" clickable focusable selected CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="tab", clickableScore="300", roleDescription="tab"]
 ++++++View contentDescription:"Slide 2" viewIdResName:"carousel-tab-2" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="tab", clickableScore="300", roleDescription="tab"]
 ++++View viewIdResName:"myCarousel-items" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]

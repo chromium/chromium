@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View role_description='heading 3' heading name='Personal Information'
 ++++++android.widget.Button clickable expanded focusable heading interesting name='Personal Information' expanded_state=3
-++++android.view.View role_description='region' name='Personal Information'
+++++android.view.View role_description='region' container_title='Personal Information'
 ++++++android.view.View
 ++++++++android.view.View
 ++++++++++android.view.View interesting name='Name : '

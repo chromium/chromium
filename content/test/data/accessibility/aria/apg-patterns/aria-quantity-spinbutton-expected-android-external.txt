@@ -1,5 +1,5 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"Guests" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
+++View containerTitle:"Guests" actions:[AX_FOCUS] bundle:[chromeRole="group"]
 ++++View text:"Guests" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="legend"]
 ++++View text:"Adults" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]

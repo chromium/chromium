@@ -2,7 +2,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View viewIdResName:"accordionGroup" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++View text:"Personal Information" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
 ++++++Button text:"Personal Information" viewIdResName:"accordion1id" clickable focusable heading expandedState:3 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="button", clickableScore="300"]
-++++View text:"Personal Information" viewIdResName:"sect1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
+++++View viewIdResName:"sect1" containerTitle:"Personal Information" actions:[AX_FOCUS] bundle:[chromeRole="region", roleDescription="region"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
 ++++++++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
 ++++++++++View text:"Name : " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]

@@ -287,6 +287,16 @@ bool IsContainerOnAndroid(const ax::mojom::Role role) {
     case ax::mojom::Role::kNavigation:
     case ax::mojom::Role::kRegion:
     case ax::mojom::Role::kSearch:
+    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kMenu:
+    case ax::mojom::Role::kMenuBar:
+    case ax::mojom::Role::kRadioGroup:
+    case ax::mojom::Role::kTabList:
+    case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kTreeGrid:
+    case ax::mojom::Role::kGroup:
       return true;
     default:
       return false;

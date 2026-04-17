@@ -5,7 +5,7 @@ android.webkit.WebView focusable focused
 ++++++android.widget.Button clickable focusable interesting content_description='Previous Slide'
 ++++++android.widget.Button clickable focusable interesting content_description='Next Slide'
 ++++android.view.View
-++++++android.view.View role_description='slide' name='1 of 6'
+++++++android.view.View role_description='slide' container_title='1 of 6'
 ++++++++android.view.View
 ++++++++++android.view.View role_description='link' clickable focusable link interesting name='Walking Tour in Amsterdam'
 ++++++++++++android.widget.Image content_description='Walking Tour in Amsterdam'

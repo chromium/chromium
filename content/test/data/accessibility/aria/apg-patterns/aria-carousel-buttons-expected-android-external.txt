@@ -5,7 +5,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++Button contentDescription:"Previous Slide" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="button", clickableScore="300"]
 ++++++Button contentDescription:"Next Slide" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="button", clickableScore="300"]
 ++++View viewIdResName:"myCarousel-items" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
-++++++View text:"1 of 6" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group", hasImage="true", roleDescription="slide"]
+++++++View containerTitle:"1 of 6" actions:[AX_FOCUS] bundle:[chromeRole="group", hasImage="true", roleDescription="slide"]
 ++++++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
 ++++++++++View text:"null" contentDescription:"Walking Tour in Amsterdam" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", hasImage="true", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/aria/apg-patterns/aria-carousel-buttons.html#"]
 ++++++++++++Image contentDescription:"Walking Tour in Amsterdam" actions:[AX_FOCUS] bundle:[chromeRole="image", clickableScore="100", hasImage="true", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/aria/apg-patterns/"]

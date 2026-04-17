@@ -2687,9 +2687,11 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
       break;
     case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kRelatedElement:
-      if (::features::IsAccessibilityLabeledByEnabled() &&
-          GetData().HasIntListAttribute(
-              ax::mojom::IntListAttribute::kLabelledbyIds)) {
+      if (ui::IsContainerOnAndroid(GetRole())) {
+        name_to_cache_ = AndroidNameTo::kContainerTitle;
+      } else if (::features::IsAccessibilityLabeledByEnabled() &&
+                 GetData().HasIntListAttribute(
+                     ax::mojom::IntListAttribute::kLabelledbyIds)) {
         name_to_cache_ = AndroidNameTo::kLabeledBy;
       } else if (base::FeatureList::IsEnabled(
                      features::
