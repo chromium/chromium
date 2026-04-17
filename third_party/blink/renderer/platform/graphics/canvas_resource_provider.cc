@@ -2315,11 +2315,6 @@ bool CanvasNon2DResourceProviderSharedImage::IsSingleBuffered() const {
                             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 }
 
-bool CanvasNon2DResourceProviderSharedImage::HasUnusedResourcesForTesting()
-    const {
-  return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
-}
-
 void CanvasNon2DResourceProviderSharedImage::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {

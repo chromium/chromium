@@ -408,7 +408,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   virtual void ClearUnusedResources() = 0;
 
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
-  virtual bool HasUnusedResourcesForTesting() const = 0;
 
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -539,7 +538,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   void ClearUnusedResources() override;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
-  bool HasUnusedResourcesForTesting() const override;
+  bool HasUnusedResourcesForTesting() const;
   bool IsSingleBuffered() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
@@ -682,7 +681,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   ~CanvasNon2DResourceProviderSharedImage() override;
 
   void ClearUnusedResources() override;
-  bool HasUnusedResourcesForTesting() const override;
   bool IsSingleBuffered() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
