@@ -480,6 +480,12 @@ class ReadAnythingAppController
   // perform cleaning operations on it.
   void ReadingModeWillClose();
 
+  // Helper method for recording all reading mode per-session metrics. If
+  // reading mode is hidden, this will no-op unless overridden with the
+  // recently_hidden parameter.
+  void RecordSessionMetricsIfShownOrRecentlyHidden(
+      bool recently_hidden = false);
+
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
   void RecordNumSelections();

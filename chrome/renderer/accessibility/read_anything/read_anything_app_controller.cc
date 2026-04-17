@@ -459,7 +459,6 @@ ReadAnythingAppController::ReadAnythingAppController(
 }
 
 ReadAnythingAppController::~ReadAnythingAppController() {
-  RecordNumSelections();
   post_user_entry_draw_timer_->Stop();
 }
 
@@ -733,13 +732,11 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     return;
   }
   VLOG(1) << "On active tree changed with new id: " << tree_id;
-  RecordNumSelections();
 
   // If the previous tree was not unknown (e.g. this is not the first tree
-  // seen), log the words that were seen on the previous tree.
+  // seen), log session metrics for the previous tree.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
-    RecordEstimatedWordsSeen();
-    RecordEstimatedWordsHeard();
+    RecordSessionMetricsIfShownOrRecentlyHidden();
   }
 
   // Cancel any running draw timers.
@@ -844,10 +841,6 @@ void ReadAnythingAppController::RecordDistillationSuccess() {
 }
 
 void ReadAnythingAppController::RecordNumSelections() {
-  if (IsHidden()) {
-    return;
-  }
-
   ukm::builders::Accessibility_ReadAnything_EmptyState(model_.GetUkmSourceId())
       .SetTotalNumSelections(model_.GetNumSelections())
       .Record(ukm_recorder_.get());
@@ -855,10 +848,6 @@ void ReadAnythingAppController::RecordNumSelections() {
 }
 
 void ReadAnythingAppController::RecordEstimatedWordsSeen() {
-  if (IsHidden()) {
-    return;
-  }
-
   VLOG(1) << "Words seen: " << model_.words_seen();
   base::UmaHistogramCustomCounts(kWordsSeenHistogramName, model_.words_seen(),
                                  1, kMaxWordsConsumed, kWordsConsumedBuckets);
@@ -866,10 +855,6 @@ void ReadAnythingAppController::RecordEstimatedWordsSeen() {
 }
 
 void ReadAnythingAppController::RecordEstimatedWordsHeard() {
-  if (IsHidden()) {
-    return;
-  }
-
   VLOG(1) << "Words heard: " << model_.words_heard();
   base::UmaHistogramCustomCounts(kWordsHeardHistogramName, model_.words_heard(),
                                  1, kMaxWordsConsumed, kWordsConsumedBuckets);
@@ -2477,9 +2462,8 @@ void ReadAnythingAppController::OnDeviceLocked() {
     read_aloud_model_.LogSpeechStop(
         ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
   }
-  LogLineFocusSession();
-  RecordEstimatedWordsSeen();
-  RecordEstimatedWordsHeard();
+
+  RecordSessionMetricsIfShownOrRecentlyHidden();
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
@@ -2505,9 +2489,10 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
           ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
     }
   }
-  LogLineFocusSession();
-  RecordEstimatedWordsSeen();
-  RecordEstimatedWordsHeard();
+
+  // Since it's known that reading mode was just hidden, ensure that metrics
+  // are still logged.
+  RecordSessionMetricsIfShownOrRecentlyHidden(/*just_hidden=*/true);
 }
 
 void ReadAnythingAppController::OnSpeechEngineStalled() {
@@ -2521,9 +2506,7 @@ void ReadAnythingAppController::OnTabWillDetach() {
         ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
     ReadingModeWillClose();
   }
-  LogLineFocusSession();
-  RecordEstimatedWordsSeen();
-  RecordEstimatedWordsHeard();
+  RecordSessionMetricsIfShownOrRecentlyHidden();
 }
 
 void ReadAnythingAppController::ReadingModeWillClose() {
@@ -2722,6 +2705,20 @@ void ReadAnythingAppController::LogSpeechStop(int source) {
   }
 }
 
+void ReadAnythingAppController::RecordSessionMetricsIfShownOrRecentlyHidden(
+    bool just_hidden) {
+  // Don't log session metrics if reading mode is hidden unless it is known
+  // that it was just hidden.
+  if (!just_hidden && IsHidden()) {
+    return;
+  }
+
+  LogLineFocusSession();
+  RecordNumSelections();
+  RecordEstimatedWordsHeard();
+  RecordEstimatedWordsSeen();
+}
+
 void ReadAnythingAppController::StartLineFocusSession() {
   if (IsLineFocusEnabled()) {
     model_.set_line_focus_session_start_time(base::TimeTicks::Now());
@@ -2730,7 +2727,7 @@ void ReadAnythingAppController::StartLineFocusSession() {
 
 void ReadAnythingAppController::LogLineFocusSession() {
   if (IsLineFocusEnabled() &&
-      model_.line_focus_session_start_time().has_value() && !IsHidden()) {
+      model_.line_focus_session_start_time().has_value()) {
     base::UmaHistogramLongTimes(
         "Accessibility.ReadAnything.LineFocusSessionLength",
         base::TimeTicks::Now() -
