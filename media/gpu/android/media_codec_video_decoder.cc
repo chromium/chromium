@@ -691,10 +691,11 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->surface = target_surface_bundle_->GetJavaSurface();
   config->media_crypto = media_crypto_;
   config->initial_expected_coded_size = decoder_config_.coded_size();
-  if (!decoder_config_.hdr_metadata().IsEmpty()) {
-    // Do not communicate the container level color space unless there is also
-    // HDR metadata attached.
-    // TODO(https://crbug.com/395659818): Revisit this behavior.
+  if (base::FeatureList::IsEnabled(media::kMediaCodecColorSpaceCleanup) ||
+      !decoder_config_.hdr_metadata().IsEmpty()) {
+    // TODO(https://crbug.com/395659818): Historically, we would not communicate
+    // the container level color space unless there was also HDR metadata
+    // attached. Preserve this behavior behind a kill switch.
     config->container_color_space =
         MediaFormatColorSpace(decoder_config_.color_space_info());
     config->hdr_metadata = decoder_config_.hdr_metadata();
@@ -1116,30 +1117,34 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   if (output_buffer->size().GetArea() > decoder_config_.coded_size().GetArea())
     decoder_config_.set_coded_size(output_buffer->size());
 
-  // If the codec specified a color space for `output_buffer`, then update the
-  // output color space.
-  auto color_space = output_buffer->color_space().ToGfxColorSpace();
-  if (!color_space.IsValid()) {
-    color_space = decoder_config_.color_space_info().ToGfxColorSpace();
-    if (!color_space.IsValid()) {
-      // If we get back an unsupported color space, then just default to
-      // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
-      // TODO(https://crbug.com/395659818): Revisit this behavior. There is no
-      // way that sometimes returning a YUV color and sometimes returning an RGB
-      // color space is correct.
-      color_space = output_buffer->size().width() >= 1280
-                        ? gfx::ColorSpace::CreateREC709()
-                        : gfx::ColorSpace::CreateSRGB();
-    }
-  }
-
-  // Attach the HDR metadata if the color space got this far and is still an HDR
-  // color space.  Note that it might be converted to something else along the
-  // way, often sRGB.  In that case, don't confuse things with HDR metadata.
-  // TODO(https://crbug.com/395659818): Revisit this behavior.
+  // TODO(https://crbug.com/395659818): Idiosyncratic historical behavior is
+  // being preserved behind a kill switch. Remove it as soon as it is safe.
+  gfx::ColorSpace color_space;
   gfx::HDRMetadata hdr_metadata;
-  if (color_space.IsHDR() && !decoder_config_.hdr_metadata().IsEmpty()) {
-    hdr_metadata = decoder_config_.hdr_metadata();
+  if (base::FeatureList::IsEnabled(media::kMediaCodecColorSpaceCleanup)) {
+    GetColorSpaceAndHdrMetadata(output_buffer.get(), color_space, hdr_metadata);
+  } else {
+    // If the codec specified a color space for `output_buffer`, then update the
+    // output color space.
+    color_space = output_buffer->color_space().ToGfxColorSpace();
+    if (!color_space.IsValid()) {
+      color_space = decoder_config_.color_space_info().ToGfxColorSpace();
+      if (!color_space.IsValid()) {
+        // If we get back an unsupported color space, then just default to
+        // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
+        color_space = output_buffer->size().width() >= 1280
+                          ? gfx::ColorSpace::CreateREC709()
+                          : gfx::ColorSpace::CreateSRGB();
+      }
+    }
+
+    // Attach the HDR metadata if the color space got this far and is still an
+    // HDR color space.  Note that it might be converted to something else along
+    // the way, often sRGB.  In that case, don't confuse things with HDR
+    // metadata.
+    if (color_space.IsHDR() && !decoder_config_.hdr_metadata().IsEmpty()) {
+      hdr_metadata = decoder_config_.hdr_metadata();
+    }
   }
 
   gfx::Rect visible_rect(output_buffer->size());
@@ -1164,6 +1169,59 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
                      weak_factory_.GetWeakPtr(), reset_generation_,
                      std::move(async_trace), base::TimeTicks::Now()));
   return true;
+}
+
+void MediaCodecVideoDecoder::GetColorSpaceAndHdrMetadata(
+    const CodecOutputBuffer* buffer,
+    gfx::ColorSpace& color_space,
+    gfx::HDRMetadata& hdr_metadata) {
+  // Retrieve the MediaFormatColorSpace and gfx::ColorSpace of `buffer` and
+  // `decoder_config_`.
+  const auto& buffer_mf_cs = buffer->color_space();
+  const auto buffer_gfx_cs = buffer_mf_cs.ToGfxColorSpace();
+  const auto config_mf_cs =
+      MediaFormatColorSpace(decoder_config_.color_space_info());
+  const auto config_gfx_cs =
+      decoder_config_.color_space_info().ToGfxColorSpace();
+
+  // If the buffer has the same MediaFormatColorSpace as the decoder config
+  // did, then use the decoder config's color space directly (rather than
+  // round-tripping it through MediaFormatColorSpace, because the round-trip
+  // will conflate several spaces).
+  if (config_mf_cs == buffer_mf_cs && config_gfx_cs.IsValid()) {
+    color_space = config_gfx_cs;
+    hdr_metadata = decoder_config_.hdr_metadata();
+    return;
+  }
+
+  // If `buffer` has a valid color space that does not match the decoder config,
+  // then use the color space specified by the buffer.
+  if (buffer_gfx_cs.IsValid()) {
+    color_space = buffer_gfx_cs;
+    // If the decoder config specified a valid transfer function, but `buffer`
+    // indicates a different transfer function, then don't trust that the HDR
+    // metadata (it was intended for a different color space than what is coming
+    // out of the decoder in `buffer`).
+    if (config_mf_cs.transfer != MediaFormatColorSpace::kUnknown &&
+        config_mf_cs.transfer != buffer_mf_cs.transfer) {
+      hdr_metadata = gfx::HDRMetadata();
+    } else {
+      hdr_metadata = decoder_config_.hdr_metadata();
+    }
+    return;
+  }
+
+  // The buffer didn't have a valid color space, so use the decoder config
+  // color space, if it is valid.
+  if (config_gfx_cs.IsValid()) {
+    color_space = config_gfx_cs;
+    hdr_metadata = decoder_config_.hdr_metadata();
+    return;
+  }
+
+  // No color space was valid. Just treat it as Rec709.
+  color_space = gfx::ColorSpace::CreateREC709();
+  hdr_metadata = decoder_config_.hdr_metadata();
 }
 
 void MediaCodecVideoDecoder::RunEosDecodeCb(int reset_generation) {

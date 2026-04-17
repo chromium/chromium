@@ -50,6 +50,11 @@ MockMediaCodecBridge* FakeCodecAllocator::ProvideMockCodecAsync(
       codec ? std::move(codec)
             : MockMediaCodecBridge::CreateMockVideoDecoder(*most_recent_config);
   auto* raw_codec = mock_codec.get();
+  ON_CALL(*raw_codec, GetOutputColorSpace(testing::_))
+      .WillByDefault([this](MediaFormatColorSpace* out) {
+        *out = next_codec_color_space;
+        return MediaCodecResult::Codes::kOk;
+      });
   most_recent_codec = raw_codec;
   most_recent_codec_destruction_observer =
       mock_codec->CreateDestructionObserver();

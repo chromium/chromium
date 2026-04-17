@@ -236,6 +236,11 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // resolution.
   bool CodecNeedsReallocation(const gfx::Size& new_size);
 
+  // Compute the color space and HDR metadata for a video frame.
+  void GetColorSpaceAndHdrMetadata(const CodecOutputBuffer* buffer,
+                                   gfx::ColorSpace& color_space,
+                                   gfx::HDRMetadata& hdr_metadata);
+
   std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal();
 
   std::unique_ptr<MediaLog> media_log_;

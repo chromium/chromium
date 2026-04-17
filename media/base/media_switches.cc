@@ -713,6 +713,11 @@ BASE_FEATURE(kForceSoftwareForRtcLowResolutions,
 // Auto-dismiss global media controls.
 BASE_FEATURE(kGlobalMediaControlsAutoDismiss, base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Kill switch for removing idiosyncratic use of MediaCodec color APIs.
+BASE_FEATURE(kMediaCodecColorSpaceCleanup, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 // If enabled, users can request Media Remoting without fullscreen-in-tab.
 BASE_FEATURE(kMediaRemotingWithoutFullscreen,

@@ -62,6 +62,9 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
   // Copy of most of the fields in the most recent config, except for the ptrs.
   std::unique_ptr<VideoCodecConfig> most_recent_config;
 
+  MediaFormatColorSpace next_codec_color_space =
+      MediaFormatColorSpace::MakeRec709();
+
  private:
   CodecCreatedCB pending_codec_created_cb_;
 };
