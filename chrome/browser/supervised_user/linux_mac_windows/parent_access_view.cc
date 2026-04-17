@@ -268,15 +268,9 @@ void ParentAccessView::ResizeDueToAutoResize(content::WebContents* web_contents,
   web_view_->ResizeDueToAutoResize(web_contents, new_size);
 }
 
-void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
+void ParentAccessView::DisplayErrorMessage() {
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kEnableLocalWebApprovalErrorDialog)) {
-    CloseView();
-    return;
   }
 
   // Remove the web view that displays the PACP widget content, and replace it

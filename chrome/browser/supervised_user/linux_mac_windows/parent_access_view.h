@@ -91,7 +91,7 @@ class ParentAccessView : public views::View,
   // Closes the widget that hosts this view.
   // Results in destructing the present view and its widget.
   void CloseView();
-  void DisplayErrorMessage(content::WebContents* web_contents);
+  void DisplayErrorMessage();
 
   // Exposed for testing.
   views::WebView* GetWebViewForTesting() { return web_view_.get(); }

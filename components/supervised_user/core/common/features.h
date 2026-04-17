@@ -25,10 +25,10 @@ extern const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs;
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-// Whether we show an error screen in case of failure of a local web approval.
-BASE_DECLARE_FEATURE(kEnableLocalWebApprovalErrorDialog);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Uses supervised user strings on the signout dialog.
+BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
+#endif
 
 // Whether the Pacp widget can process a url payload as part of the local
 // approval request.
@@ -36,11 +36,6 @@ BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 
 // Whether supervised users see an updated URL filter interstitial.
 BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Uses supervised user strings on the signout dialog.
-BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
-#endif
 
 // SupervisedUserUrlFilteringService does not use the PrefService indirection
 // (specifically, the SupervisedUserPrefStore) to get the URL filtering

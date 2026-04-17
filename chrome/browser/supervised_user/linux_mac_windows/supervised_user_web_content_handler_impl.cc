@@ -136,7 +136,7 @@ void SupervisedUserWebContentHandlerImpl::DisplayErrorMessageInDialog() {
   // The `weak_parent_access_view_` might have been invalidated through an
   // accelerator.
   if (weak_parent_access_view_) {
-    weak_parent_access_view_->DisplayErrorMessage(web_contents_.get());
+    weak_parent_access_view_->DisplayErrorMessage();
   }
 }
 
