@@ -321,6 +321,10 @@ MemoryInfo* Performance::memory(ScriptState*) const {
   return nullptr;
 }
 
+SpeculationData* Performance::getSpeculations() {
+  return nullptr;
+}
+
 EventCounts* Performance::eventCounts() {
   return nullptr;
 }

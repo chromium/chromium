@@ -83,6 +83,7 @@ class PerformanceTiming;
 class ScriptState;
 class ScriptValue;
 class SoftNavigationEntry;
+class SpeculationData;
 class UserTiming;
 class V8ObjectBuilder;
 class V8UnionDoubleOrString;
@@ -116,6 +117,7 @@ class CORE_EXPORT Performance : public EventTarget {
       ScriptState*,
       ExceptionState& exception_state) const;
   virtual EventCounts* eventCounts();
+  virtual SpeculationData* getSpeculations();
   virtual std::uint64_t interactionCount() const = 0;
   virtual void PopulateContainerTimingEntries() {}
 

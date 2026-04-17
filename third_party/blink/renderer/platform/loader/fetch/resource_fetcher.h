@@ -34,6 +34,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/early_hints_preload_entry.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
@@ -253,6 +255,19 @@ class PLATFORM_EXPORT ResourceFetcher
   void ClearPreloads(ClearPreloadsPolicy = kClearAllPreloads);
   void ScheduleWarnUnusedPreloads(
       base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
+
+  // Information about a <link rel=preload> for the SpeculationMeasurement API.
+  struct PreloadInfo {
+    ResourceType resource_type;
+    std::optional<CrossOriginAttributeValue> crossorigin;
+    // Timestamp when the preload was matched/used, or nullopt if unused.
+    std::optional<base::TimeTicks> used_time;
+  };
+
+  // Returns a map from URL to PreloadInfo for all <link rel=preload> preloads.
+  const HashMap<KURL, PreloadInfo>& GetPreloadRecords() const {
+    return preload_records_;
+  }
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
@@ -652,6 +667,10 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
+
+  // Records of all preloads (used and unused) for the SpeculationMeasurement
+  // API.
+  HashMap<KURL, PreloadInfo> preload_records_;
 
   // Keeps preloads which are deferred to start loading based on the LCPP
   // signal of potentially unused preloads, in order to prevent subsequent

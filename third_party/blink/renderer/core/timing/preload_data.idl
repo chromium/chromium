@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/yoavweiss/speculative_load_measurement
+
+// Represents the crossorigin attribute state for preloads.
+// "none" means no crossorigin attribute was set (no-cors mode).
+// "anonymous" means crossorigin="" or crossorigin="anonymous" (CORS with
+// same-origin credentials).
+// "use-credentials" means crossorigin="use-credentials" (CORS with included
+// credentials).
+enum CrossOriginMode { "none", "anonymous", "use-credentials" };
+
+[
+    RuntimeEnabled=SpeculationMeasurement,
+    Exposed=Window
+]
+interface PreloadData {
+    readonly attribute USVString url;
+    readonly attribute DOMString as;
+    readonly attribute CrossOriginMode crossorigin;
+    [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp? used;
+};

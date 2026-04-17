@@ -54,6 +54,7 @@ FetchParameters::~FetchParameters() = default;
 void FetchParameters::SetCrossOriginAccessControl(
     const SecurityOrigin* origin,
     CrossOriginAttributeValue cross_origin) {
+  cross_origin_attribute_value_ = cross_origin;
   switch (cross_origin) {
     case kCrossOriginAttributeNotSet:
       NOTREACHED();

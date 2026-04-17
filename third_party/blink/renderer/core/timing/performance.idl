@@ -76,5 +76,9 @@ interface Performance : EventTarget {
 
     [Exposed=Window, RuntimeEnabled=UserDefinedEntryPointTiming] Function bind(Function innerFunction, optional any thisArg, any... args);
 
+    // Speculation Measurement
+    // https://github.com/yoavweiss/speculative_load_measurement
+    [Exposed=Window, RuntimeEnabled=SpeculationMeasurement] SpeculationData getSpeculations();
+
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

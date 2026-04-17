@@ -93,6 +93,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   MemoryInfo* memory(ScriptState*) const override;
 
   EventCounts* eventCounts() override;
+  SpeculationData* getSpeculations() override;
   uint64_t interactionCount() const override;
 
   void PopulateContainerTimingEntries() override;
