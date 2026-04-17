@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let requestsBlocked = new Set();
+const requestsBlocked = new Set();
 
 async function waitUntilRequestBlocked(url) {
   if (requestsBlocked.has(url)) {

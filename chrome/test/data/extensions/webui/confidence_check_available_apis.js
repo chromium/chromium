@@ -13,16 +13,8 @@
 //        related and whose tests fail.
 
 var expected = [
-  'activityLogPrivate',
-  'csi',
-  'developerPrivate',
-  'getVariableValue',
-  'loadTimes',
-  'management',
-  'metricsPrivate',
-  'runtime',
-  'send',
-  'test',
+  'activityLogPrivate', 'csi', 'developerPrivate', 'getVariableValue',
+  'loadTimes', 'management', 'metricsPrivate', 'runtime', 'send', 'test',
   'timeTicks'
 ];
 var actual = Object.keys(chrome).sort();
@@ -34,8 +26,9 @@ for (var i = 0; i < expected.length && isEqual; i++) {
 }
 
 if (!isEqual) {
-  console.error(window.location.href + ': ' +
-                'Expected: ' + JSON.stringify(expected) + ', ' +
-                'Actual: ' + JSON.stringify(actual));
+  console.error(
+      window.location.href + ': ' +
+      'Expected: ' + JSON.stringify(expected) + ', ' +
+      'Actual: ' + JSON.stringify(actual));
 }
 return isEqual;

@@ -7,32 +7,34 @@
  * This class is a base class of each input method implementation.
  * @constructor
  */
-var IMEBase = function() {};
+const IMEBase = function() {};
 IMEBase.prototype = {
   onActivate: function() {},
   onDeactivated: function() {},
   onFocus: function(context) {},
   onBlur: function(contextID) {},
   onInputContextUpdate: function(context) {},
-  onKeyEvent: function(context, engine, keyData, requestID) { return false; },
+  onKeyEvent: function(context, engine, keyData, requestID) {
+    return false;
+  },
   onCandidateClicked: function(candidateID, button) {},
   onMenuItemActivated: function(name) {},
   onSurroundingTextChanged: function(text, focus, anchor, offset) {},
-  onReset: function(engineID) {}
+  onReset: function(engineID) {},
 };
 
 /**
  * This class provides simple identity input methods.
  * @constructor
  **/
-var IdentityIME = function() {};
+const IdentityIME = function() {};
 IdentityIME.prototype = new IMEBase();
 
 /**
  * This class provides an IME which capitalize given character.
  * @constructor
  */
-var ToUpperIME = function() {};
+const ToUpperIME = function() {};
 ToUpperIME.prototype = new IMEBase();
 
 /**
@@ -42,13 +44,15 @@ ToUpperIME.prototype = new IMEBase();
  * @param {string} requestID A unique ID for this key event.
  * @return {boolean} True on the key event is consumed.
  **/
-ToUpperIME.prototype.onKeyEvent = function(context, engine, keyData, requestID)
-{
+ToUpperIME.prototype.onKeyEvent = function(
+    context, engine, keyData, requestID) {
   if (keyData.type == 'keydown' && /^[a-zA-Z]$/.test(keyData.key)) {
-    chrome.input.ime.commitText({
-      contextID: context.contextID,
-      text: keyData.key.toUpperCase()
-    }, function() {});
+    chrome.input.ime.commitText(
+        {
+          contextID: context.contextID,
+          text: keyData.key.toUpperCase(),
+        },
+        function() {});
     return true;
   }
   return false;
@@ -58,7 +62,7 @@ ToUpperIME.prototype.onKeyEvent = function(context, engine, keyData, requestID)
  * This class provide an IME which sneds message with API argument.
  * @constructor
  */
-var APIArgumentIME = function() {};
+const APIArgumentIME = function() {};
 APIArgumentIME.prototype = new IMEBase();
 APIArgumentIME.prototype.nextRequestID_ = 1;
 
@@ -69,36 +73,29 @@ APIArgumentIME.prototype.nextRequestID_ = 1;
  * @param {string} requestID A unique ID for this key event.
  * @return {boolean} True on the key event is consumed.
  **/
-APIArgumentIME.prototype.onKeyEvent = function(context, engine, keyData,
-    requestID)
-{
-  chrome.test.sendMessage('onKeyEvent:' +
-                          (keyData.extensionId || '') + ':' +
-                          (requestID === String(this.nextRequestID_)) + ':' +
-                          keyData.type + ':' +
-                          keyData.key + ':' +
-                          keyData.code + ':' +
-                          keyData.ctrlKey + ':' +
-                          keyData.altKey + ':' +
-                          keyData.altgrKey + ':' +
-                          keyData.shiftKey + ':' +
-                          keyData.capsLock);
+APIArgumentIME.prototype.onKeyEvent = function(
+    context, engine, keyData, requestID) {
+  chrome.test.sendMessage(
+      'onKeyEvent:' + (keyData.extensionId || '') + ':' +
+      (requestID === String(this.nextRequestID_)) + ':' + keyData.type + ':' +
+      keyData.key + ':' + keyData.code + ':' + keyData.ctrlKey + ':' +
+      keyData.altKey + ':' + keyData.altgrKey + ':' + keyData.shiftKey + ':' +
+      keyData.capsLock);
   this.nextRequestID_++;
   return false;
 };
 
-chrome.input.ime.onAssistiveWindowButtonClicked.addListener(
-    function(details) {
-      chrome.test.sendMessage(
-        `${details.buttonID} button in ${details.windowType} window clicked`);
-    });
+chrome.input.ime.onAssistiveWindowButtonClicked.addListener(function(details) {
+  chrome.test.sendMessage(
+      `${details.buttonID} button in ${details.windowType} window clicked`);
+});
 
 /**
  * This class listens the event from chrome.input.ime and forwards it to the
  * activated engine.
  * @constructor
  **/
-var EngineBridge = function() {};
+const EngineBridge = function() {};
 EngineBridge.prototype = {
 
   /**
@@ -139,8 +136,9 @@ EngineBridge.prototype = {
    * @this EngineBridge
    **/
   onDeactivated_: function(engineID) {
-    if (this.engineInstance_[engineID])
+    if (this.engineInstance_[engineID]) {
       this.engineInstance_[engineID].onDeactivated();
+    }
     this.activeEngine_ = null;
     chrome.test.sendMessage('onDeactivated');
   },
@@ -152,14 +150,13 @@ EngineBridge.prototype = {
    **/
   onFocus_: function(context) {
     this.focusedContext_ = context;
-    if (this.activeEngine_)
+    if (this.activeEngine_) {
       this.engineInstance_[this.activeEngine_].onFocus(context);
-    chrome.test.sendMessage('onFocus:' +
-                            context.type + ':' +
-                            context.autoComplete + ':' +
-                            context.autoCorrect + ':' +
-                            context.spellCheck + ':' +
-                            context.shouldDoLearning);
+    }
+    chrome.test.sendMessage(
+        'onFocus:' + context.type + ':' + context.autoComplete + ':' +
+        context.autoCorrect + ':' + context.spellCheck + ':' +
+        context.shouldDoLearning);
   },
 
   /**
@@ -168,8 +165,9 @@ EngineBridge.prototype = {
    * @this EngineBridge
    **/
   onBlur_: function(contextID) {
-    if (this.activeEngine_)
+    if (this.activeEngine_) {
       this.engineInstance_[this.activeEngine_].onBlur(contextID);
+    }
     this.focusedContext_ = null;
     chrome.test.sendMessage('onBlur');
   },
@@ -181,8 +179,9 @@ EngineBridge.prototype = {
    **/
   onInputContextUpdate_: function(context) {
     this.focusedContext_ = context;
-    if (this.activeEngine_)
+    if (this.activeEngine_) {
       this.engineInstance_[this.activeEngine_].onInputContextUpdate(context);
+    }
     chrome.test.sendMessage('onInputContextUpdate');
   },
 
@@ -194,9 +193,10 @@ EngineBridge.prototype = {
    **/
   onKeyEvent_: function(engineID, keyData, requestID) {
     chrome.test.sendMessage('onKeyEvent');
-    if (this.engineInstance_[engineID])
+    if (this.engineInstance_[engineID]) {
       return this.engineInstance_[engineID].onKeyEvent(
           this.focusedContext_, this.activeEngine_, keyData, requestID);
+    }
     return false;
   },
 
@@ -206,8 +206,9 @@ EngineBridge.prototype = {
    * @this EngineBridge
    **/
   onCandidateClicked_: function(engineID, candidateID, button) {
-    if (this.engineInstance_[engineID])
+    if (this.engineInstance_[engineID]) {
       this.engineInstance_[engineID].onCandidateClicked(candidateID, button);
+    }
     chrome.test.sendMessage('onCandidateClicked');
   },
 
@@ -265,7 +266,7 @@ EngineBridge.prototype = {
    * @this EngineBridge
    * @return {strine} An string which identify the context.
    **/
-  getFocusedContextID: function () {
+  getFocusedContextID: function() {
     return this.focusedContext_;
   },
 
@@ -280,7 +281,7 @@ EngineBridge.prototype = {
     chrome.input.ime.onBlur.addListener(this.onBlur_.bind(this));
     chrome.input.ime.onInputContextUpdate.addListener(
         this.onInputContextUpdate_.bind(this));
-    chrome.input.ime.onKeyEvent.addListener(this. onKeyEvent_.bind(this));
+    chrome.input.ime.onKeyEvent.addListener(this.onKeyEvent_.bind(this));
     chrome.input.ime.onCandidateClicked.addListener(
         this.onCandidateClicked_.bind(this));
     chrome.input.ime.onMenuItemActivated.addListener(
@@ -288,10 +289,10 @@ EngineBridge.prototype = {
     chrome.input.ime.onSurroundingTextChanged.addListener(
         this.onSurroundingTextChanged_.bind(this));
     chrome.input.ime.onReset.addListener(this.onReset_.bind(this));
-  }
+  },
 };
 
-var engineBridge = new EngineBridge();
+const engineBridge = new EngineBridge();
 engineBridge.Initialize();
 engineBridge.addEngine('IdentityIME', new IdentityIME());
 engineBridge.addEngine('ToUpperIME', new ToUpperIME());

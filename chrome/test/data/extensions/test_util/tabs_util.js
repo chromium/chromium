@@ -11,32 +11,35 @@
 export function openTab(url) {
   return new Promise((resolve) => {
     let createdTabId;
-    let completedTabIds = [];
+    const completedTabIds = [];
     chrome.tabs.onUpdated.addListener(
         function listener(tabId, changeInfo, tab) {
-      if (changeInfo.status !== 'complete')
-        return;  // Tab not done.
+          if (changeInfo.status !== 'complete') {
+            return;
+          }  // Tab not done.
 
-      if (createdTabId === undefined) {
-        // A tab completed loading before the chrome.tabs.create callback was
-        // triggered; stash the ID for later comparison to see if it was our
-        // tab.
-        completedTabIds.push(tabId);
-        return;
-      }
+          if (createdTabId === undefined) {
+            // A tab completed loading before the chrome.tabs.create callback
+            // was triggered; stash the ID for later comparison to see if it was
+            // our tab.
+            completedTabIds.push(tabId);
+            return;
+          }
 
-      if (tabId !== createdTabId)
-        return;  // Not our tab.
+          if (tabId !== createdTabId) {
+            return;
+          }  // Not our tab.
 
-      // It's ours!
-      chrome.tabs.onUpdated.removeListener(listener);
-      resolve(tab);
-    });
+          // It's ours!
+          chrome.tabs.onUpdated.removeListener(listener);
+          resolve(tab);
+        });
     chrome.tabs.create({url: url}, (tab) => {
-      if (completedTabIds.includes(tab.id))
+      if (completedTabIds.includes(tab.id)) {
         resolve(tab);
-      else
+      } else {
         createdTabId = tab.id;
+      }
     });
   });
 }
@@ -58,18 +61,19 @@ export async function getSingleTab(query) {
  * @return {string[]}
  */
 export async function getInjectedElementIds(tabId) {
-  let injectedElements = await chrome.scripting.executeScript({
-    target: { tabId: tabId },
+  const injectedElements = await chrome.scripting.executeScript({
+    target: {tabId: tabId},
     func: () => {
-      let childIds = [];
-      for (const child of document.body.children)
+      const childIds = [];
+      for (const child of document.body.children) {
         childIds.push(child.id);
+      }
       return childIds.sort();
-    }
+    },
   });
   chrome.test.assertEq(1, injectedElements.length);
   return injectedElements[0].result;
-};
+}
 
 /**
  * Returns the injected element ids in `tabId` by injection order.
@@ -77,18 +81,19 @@ export async function getInjectedElementIds(tabId) {
  * @return {string[]}
  */
 export async function getInjectedElementIdsInOrder(tabId) {
-  let injectedElements = await chrome.scripting.executeScript({
+  const injectedElements = await chrome.scripting.executeScript({
     target: {tabId: tabId},
     func: () => {
-      let childIds = [];
-      for (const child of document.body.children)
+      const childIds = [];
+      for (const child of document.body.children) {
         childIds.push(child.id);
+      }
       return childIds;
-    }
+    },
   });
   chrome.test.assertEq(1, injectedElements.length);
   return injectedElements[0].result;
-};
+}
 
 /**
  * Returns the frames in the given tab.

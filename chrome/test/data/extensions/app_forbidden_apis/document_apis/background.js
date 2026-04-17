@@ -4,14 +4,15 @@
 
 'use strict';
 
-var writeSuccess = true;
+let writeSuccess = true;
 try {
   Document.prototype.write.call(document, 'Hello, world');
 } catch (e) {
   writeSuccess = false;
 }
 
-if (writeSuccess)
+if (writeSuccess) {
   chrome.test.fail();
-else
+} else {
   chrome.test.succeed();
+}

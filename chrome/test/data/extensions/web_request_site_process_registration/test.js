@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 chrome.webRequest.onBeforeRequest.addListener(
-  function(details) {
-    if (details.url == chrome.runtime.getURL("/blocked.html")) {
-      return {cancel: true};
-    }
-  },
-  {urls: ["<all_urls>"]},
-  ["blocking"]
+    function(details) {
+      if (details.url == chrome.runtime.getURL('/blocked.html')) {
+        return {cancel: true};
+      }
+    },
+    {urls: ['<all_urls>']},
+    ['blocking'],
 );

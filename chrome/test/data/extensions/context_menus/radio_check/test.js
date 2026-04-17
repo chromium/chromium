@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var radio1_id = 'radio1';
-var radio2_id = 'radio2';
-var item1_id = 'item1';
-var item2_id = 'item2';
+const radio1_id = 'radio1';
+const radio2_id = 'radio2';
+const item1_id = 'item1';
+const item2_id = 'item2';
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
   if (info.menuItemId == radio1_id) {
@@ -27,8 +27,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 
 function createSecondRadioButton() {
   chrome.contextMenus.create(
-      {id: radio2_id, type: 'radio', title: 'Radio 2'},
-      function() {
+      {id: radio2_id, type: 'radio', title: 'Radio 2'}, function() {
         chrome.test.sendMessage('created radio2 item', function() {
           createNormalMenuItem();
         });
@@ -36,19 +35,17 @@ function createSecondRadioButton() {
 }
 
 function createNormalMenuItem() {
-  chrome.contextMenus.create(
-      {id: item1_id, title: 'Item 1'}, function() {
-        chrome.test.sendMessage('created normal item', function() {
-          createSecondNormalMenuItem();
-        });
-      });
+  chrome.contextMenus.create({id: item1_id, title: 'Item 1'}, function() {
+    chrome.test.sendMessage('created normal item', function() {
+      createSecondNormalMenuItem();
+    });
+  });
 }
 
 function createSecondNormalMenuItem() {
-  chrome.contextMenus.create(
-      {id: item2_id, title: 'Item 2' }, function() {
-        chrome.test.sendMessage('created second normal item');
-      });
+  chrome.contextMenus.create({id: item2_id, title: 'Item 2'}, function() {
+    chrome.test.sendMessage('created second normal item');
+  });
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
@@ -57,4 +54,5 @@ chrome.runtime.onInstalled.addListener(function(details) {
         chrome.test.sendMessage('created radio1 item', function() {
           createSecondRadioButton();
         });
-      })});
+      });
+});

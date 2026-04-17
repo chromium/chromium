@@ -3,4 +3,3 @@
 // found in the LICENSE file.
 
 window.scriptExecuted = true;
-

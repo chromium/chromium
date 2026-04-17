@@ -4,7 +4,7 @@
 
 document.title = 'modified';
 
-var port = chrome.runtime.connect();
+const port = chrome.runtime.connect();
 
 window.addEventListener('pagehide', () => {
   port.postMessage('pagehide');

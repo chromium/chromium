@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 // Various text messages within the edit dialog.
-var assistText = chrome.i18n.getMessage("rss_subscription_feed_url_assist");
+const assistText = chrome.i18n.getMessage('rss_subscription_feed_url_assist');
 
 // Specifies the index of the item we are editing or -1 if adding new.
-var editingIndex = -1;
+let editingIndex = -1;
 // Whether we are currently editing the default item.
-var editingDefault = false;
+let editingDefault = false;
 
 function main() {
-  document.title = chrome.i18n.getMessage("rss_subscription_edit_dialog_title");
+  document.title = chrome.i18n.getMessage('rss_subscription_edit_dialog_title');
 
   // Make sure the dialog is not visible.
-  document.getElementById('dialogBackground').style.display = "none";
+  document.getElementById('dialogBackground').style.display = 'none';
 
   // Make sure the buttons are disabled to begin with.
   document.getElementById('editReader').disabled = true;
@@ -27,11 +27,11 @@ function main() {
     document.getElementById('alwaysUseDefault').disabled = true;
     document.getElementById('resetList').disabled = true;
 
-    alert(chrome.i18n.getMessage("rss_subscription_no_localstorage"));
+    alert(chrome.i18n.getMessage('rss_subscription_no_localstorage'));
     return;
   }
 
-  var feedReaderList;
+  let feedReaderList;
   if (window.localStorage.readerList) {
     feedReaderList = JSON.parse(window.localStorage.readerList);
   } else {
@@ -40,36 +40,40 @@ function main() {
   }
 
   // If there is no default, set the first item as default.
-  if (isDefaultReader("") && feedReaderList.length > 0)
+  if (isDefaultReader('') && feedReaderList.length > 0) {
     window.localStorage.defaultReader = feedReaderList[0].url;
+  }
 
   // Populate the list of readers.
-  var readerListbox = document.getElementById('readerListbox');
-  while (readerListbox.options.length > 0)
+  const readerListbox = document.getElementById('readerListbox');
+  while (readerListbox.options.length > 0) {
     readerListbox.remove(0);
+  }
   for (i = 0; i < feedReaderList.length; ++i) {
-    var description = feedReaderList[i].description;
-    if (isDefaultReader(feedReaderList[i].url))
-      description += " " + chrome.i18n.getMessage("rss_subscription_default");
+    let description = feedReaderList[i].description;
+    if (isDefaultReader(feedReaderList[i].url)) {
+      description += ' ' + chrome.i18n.getMessage('rss_subscription_default');
+    }
     readerListbox.add(new Option(description, feedReaderList[i].url));
   }
 
   // Set up the 'show preview?' checkbox.
-  var skipPreview = document.getElementById('alwaysUseDefault');
-  skipPreview.checked = window.localStorage.showPreviewPage == "No";
+  const skipPreview = document.getElementById('alwaysUseDefault');
+  skipPreview.checked = window.localStorage.showPreviewPage == 'No';
 }
 
 function toggleFeedPreview() {
-  var alwaysUseDefault = document.getElementById('alwaysUseDefault');
-  if (alwaysUseDefault.checked)
-    window.localStorage.showPreviewPage = "No";
-  else
+  const alwaysUseDefault = document.getElementById('alwaysUseDefault');
+  if (alwaysUseDefault.checked) {
+    window.localStorage.showPreviewPage = 'No';
+  } else {
     delete window.localStorage.showPreviewPage;
+  }
 }
 
 function setDefault() {
-  var readerListbox = document.getElementById('readerListbox');
-  var selection = readerListbox.options[readerListbox.selectedIndex];
+  const readerListbox = document.getElementById('readerListbox');
+  const selection = readerListbox.options[readerListbox.selectedIndex];
   window.localStorage.defaultReader = selection.value;
 
   // Reinititalize the page.
@@ -77,7 +81,7 @@ function setDefault() {
 }
 
 function resetList() {
-  if (!confirm(chrome.i18n.getMessage("rss_subscription_reset_list_confirm"))) {
+  if (!confirm(chrome.i18n.getMessage('rss_subscription_reset_list_confirm'))) {
     return;
   }
 
@@ -90,7 +94,7 @@ function resetList() {
 }
 
 function onSelectionChanged() {
-  var selected = readerListbox.selectedIndex > -1;
+  const selected = readerListbox.selectedIndex > -1;
   // To edit a reader something must be selected.
   document.getElementById('editReader').disabled = !selected;
   // To set default, the current selection cannot already be default.
@@ -102,22 +106,21 @@ function onSelectionChanged() {
 }
 
 function editReader(index) {
-  var readerListbox = document.getElementById('readerListbox');
+  const readerListbox = document.getElementById('readerListbox');
 
   if (index == -1) {
     // Adding a new item, make sure the text boxes are empty.
-    document.getElementById('urlText').value = "";
-    document.getElementById('descriptionText').value = "";
-    editingIndex = -1;  // New item.
+    document.getElementById('urlText').value = '';
+    document.getElementById('descriptionText').value = '';
+    editingIndex = -1;      // New item.
     editingDefault = true;  // New items become default items.
   } else if (index == 0) {
     // Editing some item, find the current item index and store it.
     editingIndex = readerListbox.selectedIndex;
-    var oldOption = readerListbox.options[editingIndex];
+    const oldOption = readerListbox.options[editingIndex];
     document.getElementById('urlText').value = oldOption.value;
-    document.getElementById('descriptionText').value =
-        oldOption.text.replace(
-            ' ' + chrome.i18n.getMessage("rss_subscription_default"), '');
+    document.getElementById('descriptionText').value = oldOption.text.replace(
+        ' ' + chrome.i18n.getMessage('rss_subscription_default'), '');
     editingDefault = isDefaultReader(oldOption.value);
   }
 
@@ -125,19 +128,19 @@ function editReader(index) {
 }
 
 function removeReader() {
-  var index = readerListbox.selectedIndex;
-  var feedReaderList = JSON.parse(window.localStorage.readerList);
-  var reply =
-    confirm(chrome.i18n.getMessage("rss_subscription_remove_confirm",
-                                   feedReaderList[index].description));
+  const index = readerListbox.selectedIndex;
+  const feedReaderList = JSON.parse(window.localStorage.readerList);
+  const reply = confirm(chrome.i18n.getMessage(
+      'rss_subscription_remove_confirm', feedReaderList[index].description));
   if (reply) {
-    var wasDefault = isDefaultReader(feedReaderList[index].url);
+    const wasDefault = isDefaultReader(feedReaderList[index].url);
     // Remove the item from the list.
     feedReaderList.splice(index, 1);
     window.localStorage.readerList = JSON.stringify(feedReaderList);
 
-    if (wasDefault)
+    if (wasDefault) {
       window.localStorage.defaultReader = feedReaderList[0].url;
+    }
   }
 
   main();
@@ -151,14 +154,14 @@ function showDialog() {
   document.getElementById('save').disabled = true;
 
   // Show the dialog box.
-  document.getElementById('dialogBackground').style.display = "-webkit-box";
+  document.getElementById('dialogBackground').style.display = '-webkit-box';
 }
 
 /**
  * Hides the Edit Feed Reader dialog.
  */
 function hideDialog() {
-  document.getElementById('dialogBackground').style.display = "none";
+  document.getElementById('dialogBackground').style.display = 'none';
 }
 
 /**
@@ -166,14 +169,14 @@ function hideDialog() {
  * fields and that %s is not missing from the url field.
  */
 function validateInput() {
-  document.getElementById('statusMsg').innerText = "";
+  document.getElementById('statusMsg').innerText = '';
 
-  var description = document.getElementById('descriptionText');
-  var url = document.getElementById('urlText');
+  const description = document.getElementById('descriptionText');
+  const url = document.getElementById('urlText');
 
-  var valid = (description.value.length > 0 &&
-               url.value.length > 0 &&
-               url.value.indexOf("%s") > -1);
+  const valid =
+      (description.value.length > 0 && url.value.length > 0 &&
+       url.value.indexOf('%s') > -1);
 
   document.getElementById('save').disabled = !valid;
 }
@@ -183,20 +186,21 @@ function validateInput() {
  */
 function save() {
   // Get the old list.
-  var feedReaderList = JSON.parse(window.localStorage.readerList);
+  let feedReaderList = JSON.parse(window.localStorage.readerList);
 
-  var url = document.getElementById('urlText').value;
-  var description = document.getElementById('descriptionText').value;
+  const url = document.getElementById('urlText').value;
+  const description = document.getElementById('descriptionText').value;
 
   if (editingIndex == -1) {
     // Construct a new list.
-    var newFeedList = [];
+    const newFeedList = [];
 
     // Add the new item.
-    newFeedList.push({ 'url': url, 'description': description });
+    newFeedList.push({'url': url, 'description': description});
 
-    for (i = 0; i < feedReaderList.length; ++i)
+    for (i = 0; i < feedReaderList.length; ++i) {
       newFeedList.push(feedReaderList[i]);
+    }
 
     feedReaderList = newFeedList;
   } else {
@@ -207,8 +211,9 @@ function save() {
   window.localStorage.readerList = JSON.stringify(feedReaderList);
 
   // Retain item default status, in case the url changed while editing item.
-  if (editingDefault)
+  if (editingDefault) {
     window.localStorage.defaultReader = url;
+  }
 
   hideDialog();
 
@@ -220,7 +225,7 @@ function listen(id, eventType, method) {
   document.getElementById(id).addEventListener(eventType, method);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
   // Localize.
   i18nReplace('rss_subscription_options');
   i18nReplaceImpl('addReader', 'rss_subscription_add_reader');
@@ -233,12 +238,17 @@ document.addEventListener('DOMContentLoaded', function () {
   i18nReplace('rss_subscription_feed_description');
   i18nReplace('rss_subscription_feed_url');
   i18nReplaceImpl('save', 'rss_subscription_save_button', 'value');
-  i18nReplaceImpl('rss_subscription_close_button',
-                  'rss_subscription_close_button', 'value');
+  i18nReplaceImpl(
+      'rss_subscription_close_button', 'rss_subscription_close_button',
+      'value');
   // Init event listeners.
   listen('readerListbox', 'change', onSelectionChanged);
-  listen('addReader', 'click', function () { editReader(-1); });
-  listen('editReader', 'click', function () { editReader(0); });
+  listen('addReader', 'click', function() {
+    editReader(-1);
+  });
+  listen('editReader', 'click', function() {
+    editReader(0);
+  });
   listen('removeReader', 'click', removeReader);
   listen('setDefault', 'click', setDefault);
   listen('resetList', 'click', resetList);

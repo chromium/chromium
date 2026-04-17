@@ -4,13 +4,13 @@
 
 // Attempts to fetch and instantiate a simple Wasm module.
 async function instantiateFetch() {
-  const bytes = await fetch("empty.wasm");
+  const bytes = await fetch('empty.wasm');
 
   try {
     const instance = await WebAssembly.instantiateStreaming(bytes);
-    domAutomationController.send("success");
+    domAutomationController.send('success');
   } catch (e) {
-    domAutomationController.send("failure");
+    domAutomationController.send('failure');
   }
 }
 
@@ -22,8 +22,8 @@ async function instantiateArrayBuffer() {
 
   try {
     const instance = await WebAssembly.instantiate(bytes);
-    domAutomationController.send("success");
+    domAutomationController.send('success');
   } catch (e) {
-    domAutomationController.send("failure");
+    domAutomationController.send('failure');
   }
 }

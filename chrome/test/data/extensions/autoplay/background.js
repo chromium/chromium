@@ -4,16 +4,20 @@
 
 chrome.test.runTests([
   function autoplay_allowed_without_gesture() {
-    var audio = new Audio();
+    const audio = new Audio();
     audio.src = 'test.mp4';
-    var allowed = false;
-    audio.play().then(function() {
-      allowed = true;
-    }, function(e) {
-      allowed = e.name != 'NotAllowedError';
-    }).then(function() {
-      chrome.test.assertTrue(allowed);
-      chrome.test.succeed();
-    });
-  }
+    let allowed = false;
+    audio.play()
+        .then(
+            function() {
+              allowed = true;
+            },
+            function(e) {
+              allowed = e.name != 'NotAllowedError';
+            })
+        .then(function() {
+          chrome.test.assertTrue(allowed);
+          chrome.test.succeed();
+        });
+  },
 ]);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var contextMenuTitle = 'Context Menu #1 - Extension #2';
+const contextMenuTitle = 'Context Menu #1 - Extension #2';
 
 chrome.runtime.onInstalled.addListener(function(details) {
   chrome.contextMenus.create(
@@ -10,5 +10,5 @@ chrome.runtime.onInstalled.addListener(function(details) {
         if (!chrome.runtime.lastError) {
           chrome.test.sendMessage('created item');
         }
-  });
+      });
 });

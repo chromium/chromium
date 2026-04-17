@@ -13,5 +13,5 @@ function warnMessage() {
 logMessage();
 warnMessage();
 
-var bar = undefined;
+const bar = undefined;
 bar.foo = 'baz';

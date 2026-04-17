@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var menuId = 'my_id'
+const menuId = 'my_id';
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
   chrome.test.assertEq(menuId, info.menuItemId);
@@ -16,6 +16,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
         if (!chrome.runtime.lastError) {
           chrome.test.sendMessage('created item');
         }
-      }
+      },
   );
 });

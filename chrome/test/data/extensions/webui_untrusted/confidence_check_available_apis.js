@@ -10,7 +10,7 @@
 //
 // NOTE: Of course, update this list if/when more APIs are made available.
 
-var expected = [
+const expected = [
   // Deprecated proprietary Chrome APIs unrelated to Extensions.
   'csi',
   'loadTimes',
@@ -20,6 +20,6 @@ var expected = [
   'test',
 ];
 
-var actual = Object.keys(chrome).sort();
+const actual = Object.keys(chrome).sort();
 chrome.test.assertEq(expected, actual);
 chrome.test.notifyPass();

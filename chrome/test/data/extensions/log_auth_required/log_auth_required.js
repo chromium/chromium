@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 chrome.webRequest.onAuthRequired.addListener((_details, callback) => {
-  console.log("onAuthRequired", _details.url);
+  console.log('onAuthRequired', _details.url);
   callback({});
-}, { urls: ["<all_urls>"] }, ["asyncBlocking"]);
+}, {urls: ['<all_urls>']}, ['asyncBlocking']);

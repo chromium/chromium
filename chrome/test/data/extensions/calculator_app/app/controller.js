@@ -10,19 +10,25 @@
 // Checking for "chrome.app.runtime" availability allows testing in a regular
 // web page (like tests/manual.html).
 if (typeof chrome !== 'undefined' && chrome.app && chrome.app.runtime) {
-  var showCalculatorWindow = function () {
-    chrome.app.window.create('calculator.html', {
-      innerBounds: {
-        width: 243, minWidth: 243, maxWidth: 243,
-        height: 380, minHeight: 380, maxHeight: 380
-      },
-      id: 'calculator'
-    }, function(appWindow) {
-      appWindow.contentWindow.onload = function() {
-        new Controller(new Model(9), new View(appWindow.contentWindow));
-      };
-    });
-  }
+  const showCalculatorWindow = function() {
+    chrome.app.window.create(
+        'calculator.html', {
+          innerBounds: {
+            width: 243,
+            minWidth: 243,
+            maxWidth: 243,
+            height: 380,
+            minHeight: 380,
+            maxHeight: 380,
+          },
+          id: 'calculator',
+        },
+        function(appWindow) {
+          appWindow.contentWindow.onload = function() {
+            new Controller(new Model(9), new View(appWindow.contentWindow));
+          };
+        });
+  };
 
   chrome.app.runtime.onLaunched.addListener(showCalculatorWindow);
 }
@@ -41,7 +47,7 @@ function Controller(model, view) {
 
 /** @private */
 Controller.prototype.defineInputs_ = function() {
-  var inputs = {byButton: {}, byKey: {}};
+  const inputs = {byButton: {}, byKey: {}};
   inputs.byButton['zero'] = inputs.byKey['48'] = inputs.byKey['96'] = '0';
   inputs.byButton['one'] = inputs.byKey['49'] = inputs.byKey['97'] = '1';
   inputs.byButton['two'] = inputs.byKey['50'] = inputs.byKey['98'] = '2';
@@ -66,7 +72,10 @@ Controller.prototype.defineInputs_ = function() {
 
 /** @private */
 Controller.prototype.handleInput_ = function(input) {
-  var values, accumulator, operator, operand;
+  let values;
+  let accumulator;
+  let operator;
+  let operand;
   if (input) {
     values = this.model.handle(input);
     accumulator = values.accumulator;
@@ -89,18 +98,18 @@ Controller.prototype.handleInput_ = function(input) {
 Controller.prototype.updateValues_ = function(values) {
   // Values which are "finalized" (which have an accumulator value) shouldn't
   // and won't be updated, and this method will return false for them.
-  var before = this.view.getValues();
-  var after = !before.accumulator ? values : {};
+  const before = this.view.getValues();
+  const after = !before.accumulator ? values : {};
   this.view.setValues({
     accumulator: this.getUpdatedValue_(before, after, 'accumulator'),
     operator: this.getUpdatedValue_(before, after, 'operator'),
-    operand: this.getUpdatedValue_(before, after, 'operand', !before.operator)
+    operand: this.getUpdatedValue_(before, after, 'operand', !before.operator),
   });
   return !before.accumulator;
-}
+};
 
 /** @private */
 Controller.prototype.getUpdatedValue_ = function(before, after, key, zero) {
-  var value = (typeof after[key] !== 'undefined') ? after[key] : before[key];
+  const value = (typeof after[key] !== 'undefined') ? after[key] : before[key];
   return zero ? (value || '0') : value;
-}
+};

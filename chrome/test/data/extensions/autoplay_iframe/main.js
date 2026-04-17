@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  var guestUrl = 'http://localhost:' + config.testServer.port +
+  const guestUrl = 'http://localhost:' + config.testServer.port +
       '/extensions/autoplay_iframe/frame.html';
 
-  var iframe = document.querySelector('iframe');
+  const iframe = document.querySelector('iframe');
   iframe.addEventListener('load', function() {
     window.addEventListener('message', (e) => {
-      chrome.test.assertTrue('autoplayed' == e.data
-          || 'NotSupportedError' == e.data);
+      chrome.test.assertTrue(
+          'autoplayed' == e.data || 'NotSupportedError' == e.data);
       chrome.test.notifyPass();
     }, {once: true});
 

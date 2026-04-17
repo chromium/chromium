@@ -34,8 +34,9 @@ for (var i = 0; i < expected.length && isEqual; i++) {
 }
 
 if (!isEqual) {
-  console.error(window.location.href + ': ' +
-                'Expected: ' + JSON.stringify(expected) + ', ' +
-                'Actual: ' + JSON.stringify(actual));
+  console.error(
+      window.location.href + ': ' +
+      'Expected: ' + JSON.stringify(expected) + ', ' +
+      'Actual: ' + JSON.stringify(actual));
 }
 return isEqual;

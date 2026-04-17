@@ -6,7 +6,7 @@
 // tests can be run on the extension directly (without having to Closure compile
 // it first).
 
-var goog = {
+const goog = {
   dom: {
     safe: {
       setAnchorHref: function(element, href) {
@@ -14,24 +14,24 @@ var goog = {
       },
       setInnerHtml: function(element, html) {
         element.innerHTML = html;
-      }
-    }
+      },
+    },
   },
   html: {
     sanitizer: {
       HtmlSanitizer: {
         sanitize: function(data) {
           return data;
-        }
-      }
+        },
+      },
     },
     SafeUrl: {
       sanitize: function(data) {
         return data;
-      }
-    }
+      },
+    },
   },
 
   provide: function(namespace) {},
-  require: function(namespace) {}
+  require: function(namespace) {},
 };

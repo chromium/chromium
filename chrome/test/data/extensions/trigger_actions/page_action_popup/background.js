@@ -4,9 +4,10 @@
 
 // Show the page action icon for all tabs.
 chrome.windows.getCurrent(null, function(window) {
-  chrome.tabs.query({windowId:window.id}, function(tabs) {
-    for (var i = 0, t; t = tabs[i]; i++)
+  chrome.tabs.query({windowId: window.id}, function(tabs) {
+    for (var i = 0, t; t = tabs[i]; i++) {
       chrome.pageAction.show(t.id);
+    }
     chrome.test.sendMessage('ready');
   });
 });

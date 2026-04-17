@@ -4,9 +4,9 @@
 
 chrome.test.runTests([
   function createMojoMessagePipe() {
-    let {handle0, handle1} = Mojo.createMessagePipe();
+    const {handle0, handle1} = Mojo.createMessagePipe();
     handle0.close();
     handle1.close();
     chrome.test.succeed();
-  }
+  },
 ]);

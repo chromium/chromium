@@ -4,10 +4,9 @@
  * found in the LICENSE file.
  */
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    // Callback from extension, ChooseDesktopMedia has completed.
-    window.postMessage(request, "*");
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // Callback from extension, ChooseDesktopMedia has completed.
+  window.postMessage(request, '*');
 });
 
 window.addEventListener('message', function(event) {

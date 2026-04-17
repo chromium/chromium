@@ -10,14 +10,15 @@ chrome.runtime.onInstalled.addListener(async () => {
       action: {
         type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
         redirect: {
-          regexSubstitution: `${chrome.runtime.getURL('redirect.html')}?url=\\1`
-        }
+          regexSubstitution:
+              `${chrome.runtime.getURL('redirect.html')}?url=\\1`,
+        },
       },
       condition: {
         regexFilter: '^(https:\\/\\/example\\.com\/url\\?q=.*)',
-        resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME]
-      }
-    }]
+        resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME],
+      },
+    }],
   });
   chrome.test.sendMessage('ready');
 });

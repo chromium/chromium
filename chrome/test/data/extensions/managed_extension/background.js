@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var events = [];
+const events = [];
 
-var handleReply = function (reply) {
+const handleReply = function(reply) {
   chrome.test.log('handle reply: "' + reply + '"');
   // |reply| is the next command for the extension.
   if (reply == 'idle') {
     // Do nothing, wait for events.
   } else if (reply.startsWith('get-policy-')) {
     // Send a policy value back.
-    chrome.storage.managed.get(reply.substr(11), function (policy) {
+    chrome.storage.managed.get(reply.substr(11), function(policy) {
       chrome.test.log('sending policy value: ' + JSON.stringify(policy));
       chrome.test.sendMessage(JSON.stringify(policy), handleReply);
     });
@@ -21,9 +21,9 @@ var handleReply = function (reply) {
     chrome.test.log('Unexpected reply: ' + reply);
     chrome.test.sendMessage('fail');
   }
-}
+};
 
-chrome.storage.onChanged.addListener(function (changes, namespace) {
+chrome.storage.onChanged.addListener(function(changes, namespace) {
   if (namespace == 'managed') {
     chrome.test.log('change event: ' + JSON.stringify(changes));
     events.push(changes);

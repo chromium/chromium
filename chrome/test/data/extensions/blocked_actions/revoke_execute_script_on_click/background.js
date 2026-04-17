@@ -4,19 +4,19 @@
 
 function changeDocumentTitle() {
   document.title = 'success';
-  chrome.test.sendMessage("injection succeeded");
+  chrome.test.sendMessage('injection succeeded');
 }
 
 chrome.webNavigation.onCommitted.addListener(async function(activeInfo) {
-  let tab = await getCurrentTab();
+  const tab = await getCurrentTab();
   await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: changeDocumentTitle
+    target: {tabId: tab.id},
+    function: changeDocumentTitle,
   });
 });
 
 async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true};
-  let [tab] = await chrome.tabs.query(queryOptions);
+  const queryOptions = {active: true, currentWindow: true};
+  const [tab] = await chrome.tabs.query(queryOptions);
   return tab;
 }

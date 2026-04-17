@@ -9,10 +9,10 @@
 // If this test grows, it could use the same setup as that test, but there's no
 // need for that at the time.
 
-var didInject = false;
-var code =
-    "document.body.appendChild(document.createElement('iframe')).src = " +
-        "'http://www.known-ads.adnetwork';";
+let didInject = false;
+const code =
+    'document.body.appendChild(document.createElement(\'iframe\')).src = ' +
+    '\'http://www.known-ads.adnetwork\';';
 
 /**
  * Injects an ad into the tab using chrome.tabs.executeScript().

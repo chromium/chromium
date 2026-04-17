@@ -8,5 +8,5 @@ chrome.runtime.onConnectExternal.addListener((p) => {
     if (m == 'disconnect') {
       p.disconnect();
     }
-  })
+  });
 });

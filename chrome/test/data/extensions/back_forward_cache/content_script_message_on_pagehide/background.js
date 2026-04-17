@@ -8,5 +8,5 @@ chrome.runtime.onConnect.addListener((p) => {
       // Posting a message to cause the BFCache eviction.
       p.postMessage('evict');
     }
-  })
+  });
 });

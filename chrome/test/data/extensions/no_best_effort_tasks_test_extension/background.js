@@ -4,7 +4,7 @@
 
 chrome.runtime.onMessageExternal.addListener((request, from, sendResponse) => {
   if (request.ping) {
-    console.info("Got ping, sending pong...");
+    console.info('Got ping, sending pong...');
     sendResponse({pong: true});
   }
 });

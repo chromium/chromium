@@ -7,20 +7,21 @@
 // of the extension.
 
 // ID of the Hangout Services component extension.
-var EXTENSION_ID = "nkeimhogjdpnpccoofpliimaahmaaome";
+const EXTENSION_ID = 'nkeimhogjdpnpccoofpliimaahmaaome';
 
 // Sends a message to the Hangout Services extension, expecting
 // success, and unwraps the value returned.
 function sendMessage(message, callback) {
   function unwrapValue(result) {
-    if (callback)
+    if (callback) {
       callback(result.value);
+    }
   }
   window.top.chrome.runtime.sendMessage(EXTENSION_ID, message, unwrapValue);
 }
 
 // If connected, this port will receive events from the extension.
-var callbackPort;
+let callbackPort;
 
 //
 // Helpers to invoke functions on the extension.
@@ -32,8 +33,8 @@ function cpuGetInfo(callback) {
 
 // Will call |callback()| on completion.
 function loggingSetMetadata(metaData, callback) {
-  sendMessage({'method': 'logging.setMetadata', 'metaData': metaData},
-              callback);
+  sendMessage(
+      {'method': 'logging.setMetadata', 'metaData': metaData}, callback);
 }
 
 // Will call |callback()| on completion.
@@ -89,21 +90,18 @@ function getHardwarePlatformInfo(callback) {
 // Very micro test framework. Add all tests to |TESTS|. Each test must
 // call the passed-in callback eventually with a string indicating
 // results. Empty results indicate success.
-var TESTS = [
-  testCpuGetInfo,
-  testLogging,
-  testLoggingSetMetaDataAfterStart,
-  testEnabledLoggingButDiscard,
-  testStoreLog,
+const TESTS = [
+  testCpuGetInfo, testLogging, testLoggingSetMetaDataAfterStart,
+  testEnabledLoggingButDiscard, testStoreLog,
 
   // Uncomment to manually test timeout logic.
-  //testTimeout,
+  // testTimeout,
 ];
 
-var TEST_TIMEOUT_MS = 3000;
+const TEST_TIMEOUT_MS = 3000;
 
 function runAllTests(callback) {
-  var results = '';
+  let results = '';
 
   // Run one test at a time, running the next only on completion.
   // This makes it easier to deal with timing out tests that do not
@@ -118,15 +116,15 @@ function runAllTests(callback) {
   // TODO(grunell): Fix webrtcLoggingPrivate to be stateless.
 
   // Index of the test currently executing.
-  var testIndex = 0;
+  let testIndex = 0;
 
   function startTest(test) {
     console.log('Starting ' + test.name);
 
     // Start the test function...
     test(function(currentResults) {
-        nextTest(test.name, currentResults, false);
-      });
+      nextTest(test.name, currentResults, false);
+    });
 
     // ...and also start a timeout.
     function onTimeout() {
@@ -138,12 +136,11 @@ function runAllTests(callback) {
   function nextTest(testName, currentResults, timedOut) {
     // The check for testIndex is necessary for timeouts arriving
     // after testIndex is already past the end of the TESTS array.
-    if (testIndex >= TESTS.length ||
-        testName != TESTS[testIndex].name) {
+    if (testIndex >= TESTS.length || testName != TESTS[testIndex].name) {
       // Either a timeout of a function that already completed, or a
       // function completing after a timeout. Either way we ignore.
-      console.log('Ignoring results for ' + testName +
-                  ' (timedout: ' + timedOut + ')');
+      console.log(
+          'Ignoring results for ' + testName + ' (timedout: ' + timedOut + ')');
       return;
     }
 
@@ -171,40 +168,39 @@ function runAllTests(callback) {
 
 function testCpuGetInfo(callback) {
   cpuGetInfo(function(info) {
-      if (info.numOfProcessors != 0 &&
-          info.archName != '' &&
-          info.modelName != '') {
-        callback('');
-      } else {
-        callback('Missing information in CpuInfo');
-      }
-    });
+    if (info.numOfProcessors != 0 && info.archName != '' &&
+        info.modelName != '') {
+      callback('');
+    } else {
+      callback('Missing information in CpuInfo');
+    }
+  });
 }
 
 // Tests setting metadata, turning on upload, starting and then
 // stopping the log.
 function testLogging(callback) {
   loggingSetMetadata([{'bingo': 'bongo', 'smurf': 'geburf'}], function() {
-      loggingStart(function() {
-          loggingUploadOnRenderClose();
-          loggingStop(function() {
-              callback('');
-            });
-        });
+    loggingStart(function() {
+      loggingUploadOnRenderClose();
+      loggingStop(function() {
+        callback('');
+      });
     });
+  });
 }
 
 // Tests starting the log, setting metadata, turning on upload, and then
 // stopping the log.
 function testLoggingSetMetaDataAfterStart(callback) {
   loggingStart(function() {
-      loggingSetMetadata([{'bingo': 'bongo', 'smurf': 'geburf'}], function() {
-          loggingUploadOnRenderClose();
-          loggingStop(function() {
-              callback('');
-            });
-        });
+    loggingSetMetadata([{'bingo': 'bongo', 'smurf': 'geburf'}], function() {
+      loggingUploadOnRenderClose();
+      loggingStop(function() {
+        callback('');
+      });
     });
+  });
 }
 
 // Starts and stops logging while auto-upload is enabled, but
@@ -212,32 +208,32 @@ function testLoggingSetMetaDataAfterStart(callback) {
 function testEnabledLoggingButDiscard(callback) {
   loggingUploadOnRenderClose();
   loggingStart(function() {
-      loggingStop(function() {
-          loggingDiscard(function() {
-              callback('');
-            });
-        });
+    loggingStop(function() {
+      loggingDiscard(function() {
+        callback('');
+      });
     });
+  });
 }
 
 function testStoreLog(callback) {
-  var logId = "mylog_id";
+  const logId = 'mylog_id';
   // Start by logging something.
   loggingSetMetadata([{'bingos': 'bongos', 'smurfs': 'geburfs'}], function() {
-      loggingStart(function() {
-          loggingStop(function() {
-              loggingStore(logId, function() {
-                  loggingUploadStored(logId, function(loggingResult) {
-                    if (loggingResult != '') {
-                      callback('');
-                    } else {
-                      callback('Got empty upload result.');
-                    }
-                  });
-              });
-            });
+    loggingStart(function() {
+      loggingStop(function() {
+        loggingStore(logId, function() {
+          loggingUploadStored(logId, function(loggingResult) {
+            if (loggingResult != '') {
+              callback('');
+            } else {
+              callback('Got empty upload result.');
+            }
+          });
         });
+      });
     });
+  });
 }
 
 function testGetHardwarePlatformInfo(callback) {

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 window.addEventListener('message', function() {
-  var audio = document.createElement('audio');
+  const audio = document.createElement('audio');
   audio.src = 'test.mp4';
-  audio.play().then(() => {
-    top.postMessage('autoplayed', '*');
-  }, e => {
-    top.postMessage(e.name, '*');
-  });
+  audio.play().then(
+      () => {
+        top.postMessage('autoplayed', '*');
+      },
+      e => {
+        top.postMessage(e.name, '*');
+      });
 });

@@ -13,8 +13,8 @@ const kChromeAppErrorSuffix = 'is deprecated on Window, Mac, and Linux. ' +
 // an 'app_launched` message when launched.
 
 chrome.management.getAll(function(items) {
-  for (var i in items) {
-    var item = items[i];
+  for (const i in items) {
+    const item = items[i];
     if (item.name == 'packaged_app') {
       chrome.management.launchApp(item.id, function() {
         const lastError = chrome.runtime.lastError;

@@ -5,6 +5,11 @@
 async function fetchResource() {
   let result;
   await fetch('/extensions/resource_timing/24.png')
-    .then(() => { result = true; }).catch(() => { result = false });
+      .then(() => {
+        result = true;
+      })
+      .catch(() => {
+        result = false;
+      });
   return result;
 }

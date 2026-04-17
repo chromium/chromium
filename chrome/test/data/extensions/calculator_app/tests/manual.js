@@ -3,24 +3,24 @@
 // found in the LICENSE file.
 
 window.onload = function() {
-  var classes = {true: 'success', false: 'failure'};
-  var status = document.querySelector('.status');
-  var summary = document.querySelector('.summary');
-  var execution = summary.querySelector('.execution');
-  var count = execution.querySelector('.count');
-  var duration = execution.querySelector('.duration');
-  var results = summary.querySelector('.results');
-  var passed = results.querySelector('.passed');
-  var failed = results.querySelector('.failed');
-  var browser = document.querySelector('.browser');
-  var details = document.querySelector('.details ol');
-  var start = Date.now();
-  var run = window.runTests(false);
-  var end = Date.now();
-  var counts = {passed: 0, failed: 0};
-  var tests = [];
-  var step;
-  for (var i = 0; i < run.tests.length; ++i) {
+  const classes = {true: 'success', false: 'failure'};
+  const status = document.querySelector('.status');
+  const summary = document.querySelector('.summary');
+  const execution = summary.querySelector('.execution');
+  const count = execution.querySelector('.count');
+  const duration = execution.querySelector('.duration');
+  const results = summary.querySelector('.results');
+  const passed = results.querySelector('.passed');
+  const failed = results.querySelector('.failed');
+  const browser = document.querySelector('.browser');
+  const details = document.querySelector('.details ol');
+  const start = Date.now();
+  const run = window.runTests(false);
+  const end = Date.now();
+  const counts = {passed: 0, failed: 0};
+  const tests = [];
+  let step;
+  for (let i = 0; i < run.tests.length; ++i) {
     tests[i] = document.createElement('li');
     tests[i].setAttribute('class', classes[run.tests[i].success]);
     tests[i].appendChild(document.createElement('p'));
@@ -28,13 +28,13 @@ window.onload = function() {
     tests[i].appendChild(document.createElement('ol'));
     counts.passed += run.tests[i].success ? 1 : 0;
     counts.failed += run.tests[i].success ? 0 : 1;
-    for (var j = 0; j < run.tests[i].steps.length; ++j) {
+    for (let j = 0; j < run.tests[i].steps.length; ++j) {
       step = document.createElement('li');
       tests[i].children[1].appendChild(step);
       step.setAttribute('class', classes[run.tests[i].steps[j].success]);
       step.appendChild(document.createElement('p'));
       step.children[0].textContent = run.tests[i].steps[j].messages[0];
-      for (var k = 1; k < run.tests[i].steps[j].messages.length; ++k) {
+      for (let k = 1; k < run.tests[i].steps[j].messages.length; ++k) {
         step.appendChild(document.createElement('p'));
         step.children[k].textContent = run.tests[i].steps[j].messages[k];
         step.children[k].setAttribute('class', 'difference');
@@ -49,5 +49,7 @@ window.onload = function() {
   failed.textContent = counts.failed;
   failed.setAttribute('class', counts.failed ? 'failed' : 'failed none');
   browser.textContent = window.navigator.userAgent;
-  tests.forEach(function(test) { details.appendChild(test); });
-}
+  tests.forEach(function(test) {
+    details.appendChild(test);
+  });
+};

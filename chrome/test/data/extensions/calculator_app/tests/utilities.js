@@ -28,7 +28,7 @@
 window.mockView = {
 
   create: function() {
-    var view = Object.create(this);
+    const view = Object.create(this);
     view.display = [];
     return view;
   },
@@ -47,7 +47,7 @@ window.mockView = {
     this.display.push([
       values.accumulator || '',
       values.operator || '',
-      values.operand || ''
+      values.operand || '',
     ]);
   },
 
@@ -57,18 +57,18 @@ window.mockView = {
   },
 
   getValues: function() {
-    var last = this.display[this.display.length - 1];
+    const last = this.display[this.display.length - 1];
     return {
       accumulator: last && last[0] || null,
       operator: last && last[1] || null,
-      operand: last && last[2] || null
+      operand: last && last[2] || null,
     };
   },
 
   testButton: function(button) {
     this.onButton.call(this, button);
     return this.display;
-  }
+  },
 
 };
 
@@ -93,7 +93,7 @@ window.calculatorTestRun = {
     '=': 'equals',
     '~': 'negate',
     'A': 'clear',
-    '<': 'back'
+    '<': 'back',
   },
 
   NAMES: {
@@ -106,7 +106,7 @@ window.calculatorTestRun = {
    * Returns an object representing a run of calculator tests.
    */
   create: function() {
-    var run = Object.create(this);
+    const run = Object.create(this);
     run.tests = [];
     run.success = true;
     return run;
@@ -117,27 +117,28 @@ window.calculatorTestRun = {
    */
   test: function(name, test) {
     this.tests.push({name: name, steps: [], success: true});
-    if (typeof test === 'string')
+    if (typeof test === 'string') {
       this.testSequence_(name, test);
-    else if (typeof test === 'function')
+    } else if (typeof test === 'function') {
       test.call(this, new Controller(new Model(8), window.mockView.create()));
-    else
+    } else {
       this.fail(this.getDescription_('invalid test: ', test));
+    }
   },
 
   /**
    * Log test failures to the console.
    */
   log: function() {
-    var parts = ['\n\n', 0, ' tests passed, ', 0, ' failed.\n\n'];
+    const parts = ['\n\n', 0, ' tests passed, ', 0, ' failed.\n\n'];
     if (!this.success) {
       this.tests.forEach(function(test, index) {
-        var number = this.formatNumber_(index + 1, 2);
-        var prefix = test.success ? 'PASS: ' : 'FAIL: ';
+        const number = this.formatNumber_(index + 1, 2);
+        const prefix = test.success ? 'PASS: ' : 'FAIL: ';
         parts[test.success ? 1 : 3] += 1;
         parts.push(number, ') ', prefix, test.name, '\n');
         test.steps.forEach(function(step) {
-          var prefix = step.success ? 'PASS: ' : 'FAIL: ';
+          let prefix = step.success ? 'PASS: ' : 'FAIL: ';
           step.messages.forEach(function(message) {
             parts.push('    ', prefix, message, '\n');
             prefix = '      ';
@@ -153,17 +154,18 @@ window.calculatorTestRun = {
    * Verify that actual values after a test step match expectations.
    */
   verify: function(expected, actual, message) {
-    if (this.areEqual_(expected, actual))
+    if (this.areEqual_(expected, actual)) {
       this.succeed(message);
-    else
+    } else {
       this.fail(message, expected, actual);
+    }
   },
 
   /**
    * Record a successful test step.
    */
   succeed: function(message) {
-    var test = this.tests[this.tests.length - 1];
+    const test = this.tests[this.tests.length - 1];
     test.steps.push({success: true, messages: [message]});
   },
 
@@ -171,8 +173,8 @@ window.calculatorTestRun = {
    * Fail the current test step. Expected and actual values are optional.
    */
   fail: function(message, expected, actual) {
-    var test = this.tests[this.tests.length - 1];
-    var failure = {success: false, messages: [message]};
+    const test = this.tests[this.tests.length - 1];
+    const failure = {success: false, messages: [message]};
     if (expected !== undefined) {
       failure.messages.push(this.getDescription_('expected: ', expected));
       failure.messages.push(this.getDescription_('actual:   ', actual));
@@ -268,41 +270,43 @@ window.calculatorTestRun = {
    *   run.testInput_(controller, '=', [[], [-10, '', -10]]);
    */
   testSequence_: function(name, sequence) {
-    var controller = new Controller(new Model(8), window.mockView.create());
-    var expected = [['', '', '']];
-    var elements = this.parseSequence_(sequence);
-    for (var i = 0; i < elements.length; ++i) {
+    const controller = new Controller(new Model(8), window.mockView.create());
+    let expected = [['', '', '']];
+    const elements = this.parseSequence_(sequence);
+    for (let i = 0; i < elements.length; ++i) {
       if (!Array.isArray(elements[i])) {  // Skip over expected value arrays.
         // Update and ajust expectations.
         this.updatedExpectations_(expected, elements[i]);
-        if (Array.isArray(elements[i + 1] && elements[i + 1][0]))
+        if (Array.isArray(elements[i + 1] && elements[i + 1][0])) {
           expected = this.adjustExpectations_([], elements[i + 1], 0);
-        else
+        } else {
           expected = this.adjustExpectations_(expected, elements, i + 1);
+        }
         // Test.
-        if (elements[i].match(/^-?[\d.][\d.=]*$/))
+        if (elements[i].match(/^-?[\d.][\d.=]*$/)) {
           this.testNumber_(controller, elements[i], expected);
-        else
+        } else {
           this.testInput_(controller, elements[i], expected);
-      };
+        }
+      }
     }
   },
 
   /** @private */
   parseSequence_: function(sequence) {
     // Define the patterns used below.
-    var ATOMS = /(-?[\d.][\d.=]*)|([+*/=~<CAE_-])/g;  // number || command
-    var VALUES = /(\[[^\[\]]*\])/g;                   // expected values
+    const ATOMS = /(-?[\d.][\d.=]*)|([+*/=~<CAE_-])/g;  // number || command
+    const VALUES = /(\[[^\[\]]*\])/g;                   // expected values
     // Massage the sequence into a JSON array string, so '2 + 2 = [4]' becomes:
-    sequence = sequence.replace(ATOMS, ',$1$2,');     // ',2, ,+, ,2, ,=, [,4,]'
-    sequence = sequence.replace(/\s+/g, '');          // ',2,,+,,2,,=,[,4,]'
-    sequence = sequence.replace(VALUES, ',$1,');      // ',2,,+,,2,,=,,[,4,],'
-    sequence = sequence.replace(/,,+/g, ',');         // ',2,+,2,=,[,4,],'
-    sequence = sequence.replace(/\[,/g, '[');         // ',2,+,2,=,[4,],'
-    sequence = sequence.replace(/,\]/g, ']');         // ',2,+,2,=,[4],'
-    sequence = sequence.replace(/(^,)|(,$)/g, '');    // '2,+,2,=,[4]'
-    sequence = sequence.replace(ATOMS, '"$1$2"');     // '"2","+","2","=",["4"]'
-    sequence = sequence.replace(/"_"/g, '""');        // '"2","+","2","=",["4"]'
+    sequence = sequence.replace(ATOMS, ',$1$2,');   // ',2, ,+, ,2, ,=, [,4,]'
+    sequence = sequence.replace(/\s+/g, '');        // ',2,,+,,2,,=,[,4,]'
+    sequence = sequence.replace(VALUES, ',$1,');    // ',2,,+,,2,,=,,[,4,],'
+    sequence = sequence.replace(/,,+/g, ',');       // ',2,+,2,=,[,4,],'
+    sequence = sequence.replace(/\[,/g, '[');       // ',2,+,2,=,[4,],'
+    sequence = sequence.replace(/,\]/g, ']');       // ',2,+,2,=,[4],'
+    sequence = sequence.replace(/(^,)|(,$)/g, '');  // '2,+,2,=,[4]'
+    sequence = sequence.replace(ATOMS, '"$1$2"');   // '"2","+","2","=",["4"]'
+    sequence = sequence.replace(/"_"/g, '""');      // '"2","+","2","=",["4"]'
     // Fix some cases handled incorrectly by the massaging above, like the
     // original sequences '[_ _ 0=]' and '[-1]', which would have become
     // '["","","0","="]]' and '["-","1"]' respectively and would need to be
@@ -316,29 +320,31 @@ window.calculatorTestRun = {
 
   /** @private */
   updatedExpectations_: function(expected, element) {
-    var last = expected[expected.length - 1];
-    var empty = (last && !last[0] && !last[1] && !last[2] && !last[3]);
-    var operand = last && last.slice(2).join('');
-    var operation = element.match(/[+*/-]/);
-    var equals = (element === '=');
-    var negate = (element === '~');
-    if (operation && !operand)
+    const last = expected[expected.length - 1];
+    const empty = (last && !last[0] && !last[1] && !last[2] && !last[3]);
+    const operand = last && last.slice(2).join('');
+    const operation = element.match(/[+*/-]/);
+    const equals = (element === '=');
+    const negate = (element === '~');
+    if (operation && !operand) {
       expected.splice(-1, 1, ['', element, '']);
-    else if (operation)
+    } else if (operation) {
       expected.splice(-1, 1, [operand, last[1], operand], ['', element, '']);
-    else if (equals && empty)
+    } else if (equals && empty) {
       expected.splice(-1, 1, [], [operand || '0', '', operand || '0']);
-    else if (equals)
+    } else if (equals) {
       expected.push([], [operand || '0', '', operand || '0']);
-    else if (negate && operand)
+    } else if (negate && operand) {
       expected[expected.length - 1].splice(2, 2, '-' + operand);
+    }
   },
 
   /** @private */
   adjustExpectations_: function(expectations, adjustments, start) {
-    var replace = !expectations.length;
-    var adjustment, expectation;
-    for (var i = 0; Array.isArray(adjustments[start + i]); ++i) {
+    const replace = !expectations.length;
+    let adjustment;
+    let expectation;
+    for (let i = 0; Array.isArray(adjustments[start + i]); ++i) {
       adjustment = adjustments[start + i];
       expectation = expectations[expectations.length - 1];
       if (adjustments[start + i].length != 1) {
@@ -411,14 +417,14 @@ window.calculatorTestRun = {
    *   [[x, y, '1.2345']]
    */
   testNumber_: function(controller, number, expected) {
-    var last = expected[expected.length - 1];
-    var prefix = (last && !last[0] && last.length > 3 && last[2]) || '';
-    var suffix = (last && !last[0] && last[last.length - 1]) || number;
-    var append = (last && !last[0]) ? ['', last[1], ''] : ['', '', ''];
-    var start = (last && !last[0]) ? -1 : expected.length;
-    var count = (last && !last[0]) ? 1 : 0;
+    const last = expected[expected.length - 1];
+    const prefix = (last && !last[0] && last.length > 3 && last[2]) || '';
+    const suffix = (last && !last[0] && last[last.length - 1]) || number;
+    const append = (last && !last[0]) ? ['', last[1], ''] : ['', '', ''];
+    const start = (last && !last[0]) ? -1 : expected.length;
+    const count = (last && !last[0]) ? 1 : 0;
     expected.splice(start, count, append);
-    for (var i = 0; i < number.length; ++i) {
+    for (let i = 0; i < number.length; ++i) {
       append[2] = prefix + suffix.slice(0, i + 1);
       append[2] = append[2].replace(/^0+([0-9])/, '$1').replace(/=/g, '');
       this.testInput_(controller, number[i], expected);
@@ -431,10 +437,10 @@ window.calculatorTestRun = {
    * logging the state of the controller before and after the test.
    */
   testInput_: function(controller, input, expected) {
-    var prefix = ['"', this.NAMES[input] || input, '": '];
-    var before = this.addDescription_(prefix, controller, ' => ');
-    var display = controller.view.testButton(this.BUTTONS[input]);
-    var actual = display.slice(-expected.length);
+    const prefix = ['"', this.NAMES[input] || input, '": '];
+    const before = this.addDescription_(prefix, controller, ' => ');
+    const display = controller.view.testButton(this.BUTTONS[input]);
+    const actual = display.slice(-expected.length);
     this.verify(expected, actual, this.getDescription_(before, controller));
   },
 
@@ -445,23 +451,21 @@ window.calculatorTestRun = {
 
   /** @private */
   areArraysEqual_: function(a, b) {
-    return Array.isArray(a) &&
-           Array.isArray(b) &&
-           a.length === b.length &&
-           a.every(function(element, i) {
-             return this.areEqual_(a[i], b[i]);
-           }, this);
+    return Array.isArray(a) && Array.isArray(b) && a.length === b.length &&
+        a.every(function(element, i) {
+          return this.areEqual_(a[i], b[i]);
+        }, this);
   },
 
   /** @private */
   getDescription_: function(prefix, object, suffix) {
-    var strings = Array.isArray(prefix) ? prefix : prefix ? [prefix] : [];
+    const strings = Array.isArray(prefix) ? prefix : prefix ? [prefix] : [];
     return this.addDescription_(strings, object, suffix).join('');
   },
 
   /** @private */
   addDescription_: function(prefix, object, suffix) {
-    var strings = Array.isArray(prefix) ? prefix : prefix ? [prefix] : [];
+    const strings = Array.isArray(prefix) ? prefix : prefix ? [prefix] : [];
     if (Array.isArray(object)) {
       strings.push('[', '');
       object.forEach(function(element) {
@@ -492,10 +496,10 @@ window.calculatorTestRun = {
 
   /** @private */
   formatNumber_: function(number, digits) {
-    var string = String(number);
-    var array = Array(Math.max(digits - string.length, 0) + 1);
+    const string = String(number);
+    const array = Array(Math.max(digits - string.length, 0) + 1);
     array[array.length - 1] = string;
     return array.join('0');
-  }
+  },
 
 };

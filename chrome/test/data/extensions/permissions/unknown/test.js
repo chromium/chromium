@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 // place holder...
-var x = 0;
+let x = 0;
 x = x + 1;

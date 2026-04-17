@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Add a button to the page that can fetch a cross-origin file.
-var b = document.createElement('button');
+const b = document.createElement('button');
 b.id = 'xhrButton';
 b.innerText = 'Send XHR';
 document.body.appendChild(b);

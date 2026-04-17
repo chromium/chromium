@@ -4,4 +4,4 @@
 
 chrome.webRequest.onAuthRequired.addListener((_details, callback) => {
   callback({cancel: true});
-}, { urls: ["<all_urls>"] }, ["asyncBlocking"]);
+}, {urls: ['<all_urls>']}, ['asyncBlocking']);

@@ -10,4 +10,4 @@
 // @exclude_match http://www.google.com/foo*
 // ==/UserScript==
 
-alert("Hello! This is my script.");
+alert('Hello! This is my script.');

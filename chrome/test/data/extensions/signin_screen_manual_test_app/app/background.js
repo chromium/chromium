@@ -26,7 +26,7 @@
 // Current certificate expires on Dec 15, 2017.
 // In case an update is required, please reach out to the managed-devices@
 // mailing list.
-var TEST_CERTIFICATE =
+const TEST_CERTIFICATE =
     (new Uint8Array([
       0x30, 0x82, 0x06, 0x78, 0x30, 0x82, 0x05, 0x60, 0xa0, 0x03, 0x02, 0x01,
       0x02, 0x02, 0x0a, 0x17, 0xa5, 0x51, 0x7c, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -166,24 +166,24 @@ var TEST_CERTIFICATE =
       0x98, 0xb7, 0x64, 0xf2, 0xef, 0x7d, 0xb8, 0x11, 0x25, 0x2d, 0xb9, 0xce,
       0x9b, 0xb2, 0x4c, 0xde, 0x5b, 0x1e, 0x33, 0x6e, 0xa9, 0x1b, 0xbf, 0x8b,
       0x1c, 0x9a, 0x00, 0x3b, 0x28, 0x13, 0x00, 0x5c, 0x3c, 0x3b, 0x69, 0x50,
-      0x5e, 0xb6, 0xfd, 0x98
+      0x5e, 0xb6, 0xfd, 0x98,
     ])).buffer;
 
 // Pretend to support all types of hashes (as documented at
 // https://developer.chrome.com/extensions/certificateProvider#type-Hash).
-var TEST_CERTIFICATE_SUPPORTED_HASHES =
+const TEST_CERTIFICATE_SUPPORTED_HASHES =
     ['MD5_SHA1', 'SHA1', 'SHA256', 'SHA384', 'SHA512'];
 
 // The expected PIN code.
-var VALID_PIN = '1234';
+const VALID_PIN = '1234';
 
 // The number of wrong attempts after which requesting the PIN will be stopped.
-var MAXIMUM_PIN_FAILED_ATTEMPT_COUNT = 3;
+const MAXIMUM_PIN_FAILED_ATTEMPT_COUNT = 3;
 
 // Data that is used as a response for the sign digest request. This data is
 // random and invalid (as obtaining the real signature requires bundling the
 // app with a private key and with a piece of cryptographic code).
-var FAKE_SIGN_DIGEST_REQUEST_RESPONSE = (new Uint8Array([1, 2, 3])).buffer;
+const FAKE_SIGN_DIGEST_REQUEST_RESPONSE = (new Uint8Array([1, 2, 3])).buffer;
 
 
 function log(message) {
@@ -201,10 +201,10 @@ function arrayBufferToByteArray(arrayBuffer) {
 // Returns the text dump of the array of objects of CertificateInfo type from
 // the chrome.certificateProvider API.
 function dumpCertificateInfos(certificateInfos) {
-  var transformedList = certificateInfos.map(function(certificateInfo) {
-    var transformedItem = Object.assign({}, certificateInfo);
-    transformedItem.certificate = arrayBufferToByteArray(
-        transformedItem.certificate);
+  const transformedList = certificateInfos.map(function(certificateInfo) {
+    const transformedItem = Object.assign({}, certificateInfo);
+    transformedItem.certificate =
+        arrayBufferToByteArray(transformedItem.certificate);
     return transformedItem;
   });
   return JSON.stringify(transformedList);
@@ -228,9 +228,9 @@ function arrayBufferEquals(firstArrayBuffer, secondArrayBuffer) {
 // Listener for the chrome.certificateProvider.onCertificatesRequested event.
 function certificatesRequestedListener(reportCallback) {
   log('The onCertificatesRequested event received');
-  var response = [{
+  const response = [{
     certificate: TEST_CERTIFICATE,
-    supportedHashes: TEST_CERTIFICATE_SUPPORTED_HASHES
+    supportedHashes: TEST_CERTIFICATE_SUPPORTED_HASHES,
   }];
   log('Responding with ' + response.length +
       ' certificate(s): ' + dumpCertificateInfos(response));
@@ -301,7 +301,7 @@ function inputPinAndProcessSignRequest(
 // callback will be called with the string entered by the user, or with null in
 // case of an error.
 function requestPin(signRequestId, attemptNumber, errorType, callback) {
-  var parameters = {signRequestId: signRequestId};
+  const parameters = {signRequestId: signRequestId};
   if (errorType) {
     parameters.errorType = errorType;
     parameters.attemptsLeft =
@@ -317,9 +317,10 @@ function requestPin(signRequestId, attemptNumber, errorType, callback) {
 // closed; if there is some, then the corresponding message will be displayed in
 // the dialog that allows no further input.
 function stopPinRequest(errorType, signRequestId) {
-  var parameters = {signRequestId: signRequestId};
-  if (errorType)
+  const parameters = {signRequestId: signRequestId};
+  if (errorType) {
     parameters.errorType = errorType;
+  }
   log('Stopping the PIN request with parameters ' + JSON.stringify(parameters));
   chrome.certificateProvider.stopPinRequest(parameters, function() {
     if (chrome.runtime.lastError) {

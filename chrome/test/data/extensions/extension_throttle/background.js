@@ -10,17 +10,18 @@
  */
 function canMakeRequest(url) {
   return new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.onload = function() {
-      if (this.status == 503)
+      if (this.status == 503) {
         resolve(true);
-      else
+      } else {
         reject('Unexpected status: ' + this.status);
+      }
     };
     xhr.onerror = function() {
       resolve(false);
     };
-    xhr.open('GET', url, /*async=*/true);
+    xhr.open('GET', url, /*async=*/ true);
     xhr.send();
   });
 }
@@ -40,8 +41,8 @@ async function runTest(url, requestsToMake, expectedFailRequestNum) {
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (message.type == 'xhr') {
-    runTest(message.url, message.requestsToMake,
-            message.expectedFailRequestNum);
+    runTest(
+        message.url, message.requestsToMake, message.expectedFailRequestNum);
   } else {
     console.error('Unknown message: ' + JSON.stringify(message));
   }

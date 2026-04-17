@@ -10,9 +10,13 @@ document.body.appendChild(button);
 
 // This fetch runs in the isolated world.
 button.onclick = async () => {
-  await fetch('/extensions/resource_timing/24.png').then(
-    () => { window.domAutomationController.send(true); }).catch(
-      () => { window.domAutomationController.send(false); });
+  await fetch('/extensions/resource_timing/24.png')
+      .then(() => {
+        window.domAutomationController.send(true);
+      })
+      .catch(() => {
+        window.domAutomationController.send(false);
+      });
 };
 
 // This is loaded as a script tag element into the DOM and the fetch runs in the

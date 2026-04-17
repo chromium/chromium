@@ -7,12 +7,11 @@ chrome.runtime.onInstalled.addListener(function(details) {
       {title: 'Context Menu #1', id: 'multi4_1'}, function() {
         if (!chrome.runtime.lastError) {
           chrome.contextMenus.create(
-              {title: 'Context Menu #2', id: 'multi4_2'},
-              function() {
+              {title: 'Context Menu #2', id: 'multi4_2'}, function() {
                 if (!chrome.runtime.lastError) {
                   chrome.test.sendMessage('created items');
                 }
               });
         }
-  });
+      });
 });

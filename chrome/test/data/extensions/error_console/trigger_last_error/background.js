@@ -5,8 +5,8 @@
 // This shouldn't be sent to the error console, because we "handle" the error
 // by checking chrome.runtime.lastError.
 chrome.permissions.remove({permissions: ['kalman']}, function() {
-  var error = chrome.runtime.lastError;
+  const error = chrome.runtime.lastError;
 });
 
 // This should be sent to the error console, because lastError is unchecked.
-chrome.permissions.remove({permissions: ['foobar']}, function() { });
+chrome.permissions.remove({permissions: ['foobar']}, function() {});

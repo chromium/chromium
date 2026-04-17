@@ -14,6 +14,8 @@ button.onclick = () => {
   frame.name = 'added-by-extension';
   frame.src = `http://cross-origin.com:${location.port}` +
       '/extensions/csp/success.html';
-  frame.onload = () => { window.domAutomationController.send(true); };
+  frame.onload = () => {
+    window.domAutomationController.send(true);
+  };
   document.body.appendChild(frame);
 };

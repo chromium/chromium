@@ -7,4 +7,4 @@
 document.title = 'success';
 
 // Send a succeeded injection message that we can wait for in the test.
-chrome.test.sendMessage("injection succeeded");
+chrome.test.sendMessage('injection succeeded');

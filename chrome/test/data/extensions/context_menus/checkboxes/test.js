@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var menuItemId = 'item1';
-var checkboxOneId = 'checkbox1';
-var checkboxTwoId = 'checkbox2';
+const menuItemId = 'item1';
+const checkboxOneId = 'checkbox1';
+const checkboxTwoId = 'checkbox2';
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
   if (info.menuItemId == menuItemId) {
@@ -17,21 +17,25 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 
 function createFirstCheckbox() {
   return new Promise(function(resolve, reject) {
-    chrome.contextMenus.create({
-      id: checkboxOneId,
-      type: 'checkbox',
-      title: 'Checkbox 1',
-    }, resolve);
+    chrome.contextMenus.create(
+        {
+          id: checkboxOneId,
+          type: 'checkbox',
+          title: 'Checkbox 1',
+        },
+        resolve);
   });
 }
 
 function createSecondCheckbox() {
   return new Promise(function(resolve, reject) {
-    chrome.contextMenus.create({
-      id: checkboxTwoId,
-      type: 'checkbox',
-      title: 'Checkbox 2',
-    }, resolve);
+    chrome.contextMenus.create(
+        {
+          id: checkboxTwoId,
+          type: 'checkbox',
+          title: 'Checkbox 2',
+        },
+        resolve);
   });
 }
 
@@ -43,10 +47,12 @@ function checkSecondCheckbox() {
 
 function createNormalMenuItem() {
   return new Promise(function(resolve, reject) {
-    chrome.contextMenus.create({
-      id: menuItemId,
-      title: 'Item 1',
-    }, resolve);
+    chrome.contextMenus.create(
+        {
+          id: menuItemId,
+          title: 'Item 1',
+        },
+        resolve);
   });
 }
 
@@ -57,4 +63,5 @@ chrome.runtime.onInstalled.addListener(function(details) {
       .then(createNormalMenuItem)
       .then(function() {
         chrome.test.sendMessage('Menu created');
-      })});
+      });
+});

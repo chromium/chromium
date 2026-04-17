@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var disconnectCount = 0;
+let disconnectCount = 0;
 
 chrome.runtime.onConnectExternal.addListener((p) => {
   p.postMessage('connected');

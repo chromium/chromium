@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function onUnload() {
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
   xhr.open('GET', 'https://www.example.com/', true);
   xhr.send();
 }

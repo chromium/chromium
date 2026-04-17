@@ -3,4 +3,3 @@
 // found in the LICENSE file.
 
 // This is a simple v2 app with background permission and a background script.
-

@@ -13,17 +13,18 @@ function goBackIfPossible() {
 
 async function handlePrepareFeedIcon(request, sender) {
   // First validate that all the URLs have the right schema.
-  var input = {
+  const input = {
     url: request.url,
-    feeds: []
+    feeds: [],
   };
-  for (var i = 0; i < request.feeds.length; ++i) {
+  for (let i = 0; i < request.feeds.length; ++i) {
     const feedUrl = new URL(request.feeds[i].href);
-    if (feedUrl.protocol == "http:" || feedUrl.protocol == "https:") {
+    if (feedUrl.protocol == 'http:' || feedUrl.protocol == 'https:') {
       input['feeds'].push(request.feeds[i]);
     } else {
-      console.log('Warning: feed source rejected (wrong protocol): ' +
-                  request.feeds[i].href);
+      console.log(
+          'Warning: feed source rejected (wrong protocol): ' +
+          request.feeds[i].href);
     }
   }
 
@@ -32,16 +33,16 @@ async function handlePrepareFeedIcon(request, sender) {
   }
 
   // We have received a list of feed urls found on the page.
-  var storageEntry = {};
+  const storageEntry = {};
   storageEntry[sender.tab.id] = input;
   await chrome.storage.local.set(storageEntry, function() {
     const action_title =
-        chrome.i18n.getMessage("rss_subscription_action_title");
+        chrome.i18n.getMessage('rss_subscription_action_title');
     // Enable the page action icon.
-    chrome.action.setTitle({ tabId: sender.tab.id, title: action_title });
+    chrome.action.setTitle({tabId: sender.tab.id, title: action_title});
     chrome.action.setIcon({
       tabId: sender.tab.id,
-      path: { "16": "feed-icon-16x16.png" }
+      path: {'16': 'feed-icon-16x16.png'},
     });
   });
 }
@@ -58,12 +59,11 @@ async function handleFeedDocument(request, sender) {
 
   let attemptCloseTabAfterRedirect = false;
   try {
-    const results = await chrome.scripting.executeScript(
-        {
-          target: { tabId: sender.tab.id },
-          func: goBackIfPossible
-        });
-    let navigatedBack = results[0].result;
+    const results = await chrome.scripting.executeScript({
+      target: {tabId: sender.tab.id},
+      func: goBackIfPossible,
+    });
+    const navigatedBack = results[0].result;
 
     // Calling goBackIfPossible results in three possibilities:
     // - Error: An Exception was thrown, for example if we tried to run
@@ -74,24 +74,25 @@ async function handleFeedDocument(request, sender) {
     //            only time we should attempt to close the page, because it
     //            doesn't make sense to both show the XML code and show the
     //            Subscribe page.
-    if (!navigatedBack) attemptCloseTabAfterRedirect = true;
+    if (!navigatedBack)
+      attemptCloseTabAfterRedirect = true;
   } catch (exception) {
     console.log('Error calling executeScript', exception);
   }
 
-  var url = "subscribe.html?" + encodeURIComponent(request.href);
+  let url = 'subscribe.html?' + encodeURIComponent(request.href);
   url = chrome.runtime.getURL(url);
-  chrome.tabs.create({ url: url, index: sender.tab.index });
+  chrome.tabs.create({url: url, index: sender.tab.index});
 
   if (attemptCloseTabAfterRedirect) {
-    chrome.tabs.remove(sender.tab.id, function() { });
+    chrome.tabs.remove(sender.tab.id, function() {});
   }
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-  if (request.msg == "feedIcon") {
+  if (request.msg == 'feedIcon') {
     handlePrepareFeedIcon(request, sender);
-  } else if (request.msg == "feedDocument") {
+  } else if (request.msg == 'feedDocument') {
     handleFeedDocument(request, sender);
   }
 });

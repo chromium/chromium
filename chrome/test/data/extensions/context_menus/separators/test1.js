@@ -4,5 +4,5 @@
 
 // Create a bunch of items with no explicit parent.
 createTestSet(null, function() {
-  chrome.test.sendMessage("test1 create finished");
+  chrome.test.sendMessage('test1 create finished');
 });

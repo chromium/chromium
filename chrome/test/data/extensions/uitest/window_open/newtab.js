@@ -8,7 +8,7 @@ function testExtensionApi() {
       chrome.windows.getCurrent(null, window => {
         chrome.tabs.query({windowId: window.id}, function() {
           resolve(!chrome.runtime.lastError);
-        })
+        });
       });
     });
   } catch (e) {

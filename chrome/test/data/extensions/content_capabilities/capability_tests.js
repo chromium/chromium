@@ -4,7 +4,9 @@
 
 (function() {
 
-var getIframe = function() { return document.querySelector('iframe'); };
+const getIframe = function() {
+  return document.querySelector('iframe');
+};
 
 window.tests = {
   canReadClipboard: function() {
@@ -23,5 +25,4 @@ window.tests = {
     return getIframe().contentDocument.execCommand('copy');
   },
 };
-
 }());
