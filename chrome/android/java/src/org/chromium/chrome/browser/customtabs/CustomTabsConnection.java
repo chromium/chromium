@@ -1179,6 +1179,11 @@ public class CustomTabsConnection {
             return;
         }
 
+        if (IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
+            // The prewarming logic below is hard-coded to the regular profile.
+            return;
+        }
+
         // Conditions:
         // - There is a valid redirect endpoint.
         // - The URL's origin is first party with respect to the app.
@@ -1256,6 +1261,12 @@ public class CustomTabsConnection {
                 && !ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_MULTIPLE_PARALLEL_REQUESTS)) {
             return ParallelRequestStatus.NO_REQUEST;
         }
+
+        if (IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
+            // The prewarming logic below is hard-coded to the regular profile.
+            return ParallelRequestStatus.NO_REQUEST;
+        }
+
         String packageName = mClientManager.getClientPackageNameForSession(session);
         if (session == null
                 || packageName == null
@@ -1328,6 +1339,11 @@ public class CustomTabsConnection {
         ThreadUtils.assertOnUiThread();
 
         if (!mClientManager.getAllowResourcePrefetchForSession(session)) return 0;
+
+        if (IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
+            // The prewarming logic below is hard-coded to the regular profile.
+            return 0;
+        }
 
         List<Uri> resourceList = intent.getParcelableArrayListExtra(RESOURCE_PREFETCH_URL_LIST_KEY);
         Uri referrer = intent.getParcelableExtra(PARALLEL_REQUEST_REFERRER_KEY);
