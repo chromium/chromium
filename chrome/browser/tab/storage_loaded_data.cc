@@ -41,7 +41,7 @@ void SortTabsInOrder(
     absl::flat_hash_map<StorageId, tabs_pb::TabState>& loaded_tabs_map,
     std::vector<tabs_pb::TabState>& sorted_tabs,
     std::optional<int>& active_tab_index,
-    StorageLoadedData::StorageLoadingContext* context,
+    StorageLoadingContext* context,
     int depth = 0) {
   if (depth > kMaxTreeHeight) {
     context->SetStatus(StorageLoadingStatus::kTreeTooDeepError,
@@ -75,37 +75,6 @@ void SortTabsInOrder(
 }
 
 }  // namespace
-
-StorageLoadedData::StorageLoadingContext::StorageLoadingContext() = default;
-StorageLoadedData::StorageLoadingContext::~StorageLoadingContext() = default;
-
-StorageLoadedData::StorageLoadingContext::StorageLoadingContext(
-    StorageLoadingContext&&) = default;
-StorageLoadedData::StorageLoadingContext&
-StorageLoadedData::StorageLoadingContext::operator=(StorageLoadingContext&&) =
-    default;
-
-void StorageLoadedData::StorageLoadingContext::SetStatus(
-    StorageLoadingStatus status,
-    std::string message) {
-  if (status_ == StorageLoadingStatus::kSuccess) {
-    status_ = status;
-    error_message_ = std::move(message);
-  }
-}
-
-bool StorageLoadedData::StorageLoadingContext::HasError() const {
-  return status_ != StorageLoadingStatus::kSuccess;
-}
-
-StorageLoadingStatus StorageLoadedData::StorageLoadingContext::status() const {
-  return status_;
-}
-
-const std::optional<std::string>&
-StorageLoadedData::StorageLoadingContext::error_message() const {
-  return error_message_;
-}
 
 StorageLoadedData::Builder::Builder(
     std::string_view window_tag,
@@ -386,8 +355,7 @@ std::optional<int> StorageLoadedData::GetActiveTabIndex() const {
   return active_tab_index_;
 }
 
-const StorageLoadedData::StorageLoadingContext&
-StorageLoadedData::GetLoadingContext() const {
+const StorageLoadingContext& StorageLoadedData::GetLoadingContext() const {
   return context_;
 }
 

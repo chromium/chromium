@@ -25,11 +25,10 @@ enum class TabStorageType {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
 enum class StorageLoadingStatus {
   kSuccess = 0,
-  kParseError,
-  kMultipleUniqueNodesError,
-  kTreeTooDeepError,
-  kMissingTabError,
-  kUnknownCollectionTypeError,
+  kParseError = 1,
+  kMultipleUniqueNodesError = 2,
+  kTreeTooDeepError = 3,
+  kUnknownCollectionTypeError = 4,
 };
 
 }  // namespace tabs

@@ -18,6 +18,7 @@
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_loading_context.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 #include "components/tabs/public/tab_interface.h"
@@ -32,30 +33,6 @@ class TabStateStorageDatabase;
 // Represents data loaded from the database.
 class StorageLoadedData {
  public:
-  // Holds the error state for storage loading. Will be successful, unless
-  // marked otherwise.
-  class StorageLoadingContext {
-   public:
-    StorageLoadingContext();
-    ~StorageLoadingContext();
-
-    StorageLoadingContext(const StorageLoadingContext&) = delete;
-    StorageLoadingContext& operator=(const StorageLoadingContext&) = delete;
-
-    StorageLoadingContext(StorageLoadingContext&&);
-    StorageLoadingContext& operator=(StorageLoadingContext&&);
-
-    void SetStatus(StorageLoadingStatus status, std::string message);
-    bool HasError() const;
-
-    StorageLoadingStatus status() const;
-    const std::optional<std::string>& error_message() const;
-
-   private:
-    StorageLoadingStatus status_ = StorageLoadingStatus::kSuccess;
-    std::optional<std::string> error_message_;
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when a node is rejected. This occurs when the node is declared

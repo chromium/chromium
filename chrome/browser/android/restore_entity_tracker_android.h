@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_loading_context.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/split_tab_collection.h"
@@ -26,8 +27,6 @@ namespace tabs {
 // layer.
 class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
  public:
-  using StorageLoadingContext = StorageLoadedData::StorageLoadingContext;
-
   RestoreEntityTrackerAndroid(
       OnTabAssociation on_tab_association,
       OnCollectionAssociation on_collection_association);
