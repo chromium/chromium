@@ -61,14 +61,11 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
         mConfig = config;
-        mAccountEmail =
-                assumeNonNull(
-                        CoreAccountInfo.getEmailFrom(
-                                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         // The history sync screen should never be created when the user is signed out.
-        assert mAccountEmail != null;
-        DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(mAccountEmail);
+        final CoreAccountInfo primaryAccount =
+                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        DisplayableProfileData profileData = mProfileDataCache.getById(primaryAccount.getId());
+        mAccountEmail = profileData.getAccountEmail();
         // Use a different decline button text for recent tabs when seamless sign-in is enabled.
         String declineButtonText =
                 SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
