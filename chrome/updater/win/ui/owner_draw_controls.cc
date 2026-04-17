@@ -177,7 +177,8 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
   // Draw a scaled frame for the active/focused state.
   WTL::CPen pen;
   pen.CreatePen(PS_INSIDEFRAME, /*thickness=*/
-                std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(m_hWnd), 96)),
+                std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(m_hWnd),
+                                     USER_DEFAULT_SCREEN_DPI)),
                 GetColor(kCaptionFrameColor, COLOR_WINDOWFRAME));
   const HPEN old_pen = dc.SelectPen(pen);
   const HBRUSH old_brush = dc.SelectBrush((HBRUSH)GetStockObject(NULL_BRUSH));
@@ -221,8 +222,9 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
 
   // Scale the thickness. For instance, 2px at 100% (96 DPI) becomes 4px at 200%
   // (192 DPI).
-  const int thickness =
-      std::max(1, ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), 96));
+  const int thickness = std::max(
+      1,
+      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), USER_DEFAULT_SCREEN_DPI));
   const int center_size = thickness * 2;
 
   const int square_side = std::min(rgn_width, rgn_height) / 2 * 2;
@@ -271,8 +273,9 @@ HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
   }
 
   // Scale the bar thickness. 2px at 100% becomes 4px at 200%.
-  const int thickness =
-      std::max(1, ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), 96));
+  const int thickness = std::max(
+      1,
+      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), USER_DEFAULT_SCREEN_DPI));
 
   // Prevent thickness from exceeding total height. If the bar is thicker than
   // the area, we cap it to the area height.

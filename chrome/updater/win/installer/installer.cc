@@ -104,6 +104,7 @@ base::ScopedClosureRunner CreateSplashScreen() {
                        ui::SplashWnd splash;
                        splash.Create(nullptr);
                        splash.ShowWindow(SW_SHOW);
+                       splash.UpdateWindow();
                        splash_hwnd = splash.m_hWnd;
                        event.Signal();
 

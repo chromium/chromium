@@ -61,11 +61,3 @@ END
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
-
-IDD_SPLASH DIALOGEX 0, 0, 55, 47
-STYLE DS_SETFONT | WS_POPUP
-EXSTYLE WS_EX_TRANSPARENT
-FONT 12, "Segoe UI", 0, 0, 0x0
-BEGIN
-    CONTROL         IDB_LOGO,IDC_LOGO,"Static",SS_BITMAP,1,1,0,0
-END
