@@ -15,19 +15,20 @@ ExportedCanvasResource::ExportedCanvasResource(
   CHECK(resource_);
 }
 
-ExportedCanvasResource::~ExportedCanvasResource() = default;
+ExportedCanvasResource::~ExportedCanvasResource() {
+  // We PostTask ExportedCanvasResource to the CanvasResource owning thread, but
+  // if the thread gets destroyed before, destructor will still run, but we
+  // can't tell CanvasResource to recycle.
+  if (!resource_->is_cross_thread()) {
+    CanvasResource::DropRefOnOwningThread(std::move(resource_));
+  }
+}
 
 // static
 void ExportedCanvasResource::DropRefOnOwningThread(
     scoped_refptr<ExportedCanvasResource>&& exported_resource) {
   CHECK(exported_resource);
   CHECK(exported_resource->HasOneRef());
-
-  scoped_refptr<CanvasResource> canvas_resource =
-      std::move(exported_resource->resource_);
-
-  CHECK(!canvas_resource->is_cross_thread());
-  CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
 }
 
 // static
