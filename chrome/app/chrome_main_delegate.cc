@@ -832,15 +832,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     chrome_feature_list_creator->CreateFeatureList();
   }
 
-#if BUILDFLAG(IS_OZONE)
-  // Initialize Ozone platform and add required feature flags as per platform's
-  // properties.
-#if BUILDFLAG(IS_LINUX)
-  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
-#endif
-  ui::OzonePlatform::PreEarlyInitialization();
-#endif  // BUILDFLAG(IS_OZONE)
-
   content::InitializeMojoCore();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1510,6 +1501,18 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(ENABLE_PDF)
   MaybePatchGdiGetFontData();
 #endif
+
+#if BUILDFLAG(IS_OZONE)
+  if (process_type.empty()) {
+    // Initialize Ozone platform and add required feature flags as per
+    // platform's properties.
+#if BUILDFLAG(IS_LINUX)
+    ui::SetOzonePlatformForLinuxIfNeeded(
+        *base::CommandLine::ForCurrentProcess());
+#endif
+    ui::OzonePlatform::PreSandboxStartup();
+  }
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {

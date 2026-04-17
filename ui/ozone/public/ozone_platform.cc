@@ -69,12 +69,13 @@ OzonePlatform::OzonePlatform() {
 OzonePlatform::~OzonePlatform() = default;
 
 // static
-void OzonePlatform::PreEarlyInitialization() {
+void OzonePlatform::PreSandboxStartup() {
   EnsureInstance();
-  if (g_instance->prearly_initialized_)
+  if (g_instance->presandboxstartup_initialized_) {
     return;
-  g_instance->prearly_initialized_ = true;
-  g_instance->PreEarlyInitialize();
+  }
+  g_instance->presandboxstartup_initialized_ = true;
+  g_instance->OnPreSandboxStartup();
 }
 
 // static
@@ -213,6 +214,6 @@ void OzonePlatform::SetFailInitializeUIForTest(bool fail) {
   g_fail_initialize_ui_for_test = fail;
 }
 
-void OzonePlatform::PreEarlyInitialize() {}
+void OzonePlatform::OnPreSandboxStartup() {}
 
 }  // namespace ui

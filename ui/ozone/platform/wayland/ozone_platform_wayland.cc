@@ -237,6 +237,12 @@ class OzonePlatformWayland : public OzonePlatform,
     return connection_->xdg_decoration_manager_v1() == nullptr;
   }
 
+  void OnPreSandboxStartup() override {
+    // TODO(https://crbug.com/40083534): It may not be necessary to set this
+    // environment variable when using swiftshader.
+    setenv("EGL_PLATFORM", "wayland", 0);
+  }
+
   bool InitializeUI(const InitParams& args) override {
     if (ShouldFailInitializeUIForTest()) {
       LOG(ERROR) << "Failing for test";

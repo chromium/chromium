@@ -199,9 +199,6 @@ gl::EGLDisplayPlatform GLOzoneEGLWayland::GetNativeDisplay() {
 
 bool GLOzoneEGLWayland::LoadGLES2Bindings(
     const gl::GLImplementationParts& impl) {
-  // TODO: It may not be necessary to set this environment variable when using
-  // swiftshader.
-  setenv("EGL_PLATFORM", "wayland", 0);
   return LoadDefaultEGLGLES2Bindings(impl);
 }
 

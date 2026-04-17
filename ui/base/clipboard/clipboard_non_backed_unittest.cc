@@ -56,7 +56,7 @@ class ClipboardNonBackedTestBase : public testing::Test {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(::switches::kOzonePlatform,
                                     switches::kHeadless);
-    ui::OzonePlatform::PreEarlyInitialization();
+    ui::OzonePlatform::PreSandboxStartup();
 #endif  // BUILDFLAG(IS_OZONE)
 
     // Clipboard needs to be instantiated after Ozone is initialized so that
