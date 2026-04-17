@@ -255,21 +255,6 @@ bool StyleFetchedImage::KnownToBeOpaque(const Document&,
   return image_->GetImage()->IsOpaque();
 }
 
-RespectImageOrientationEnum StyleFetchedImage::ForceOrientationIfNecessary(
-    RespectImageOrientationEnum default_orientation) const {
-  // SVG Images don't have orientation and assert on loading when
-  // IsAccessAllowed is called.
-  if (image_->GetImage()->IsSVGImage()) {
-    return default_orientation;
-  }
-  // Cross-origin images must always respect orientation to prevent
-  // potentially private data leakage.
-  if (!image_->IsAccessAllowed()) {
-    return kRespectImageOrientation;
-  }
-  return default_orientation;
-}
-
 bool StyleFetchedImage::GetImageAnimationPolicy(
     mojom::blink::ImageAnimationPolicy& policy) {
   if (!document_ || !document_->GetSettings()) {

@@ -163,10 +163,8 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
 
   // Correct the image orientation preference for potentially cross-origin
   // content.
-  virtual RespectImageOrientationEnum ForceOrientationIfNecessary(
-      RespectImageOrientationEnum default_orientation) const {
-    return default_orientation;
-  }
+  RespectImageOrientationEnum ForceOrientationIfNecessary(
+      RespectImageOrientationEnum) const;
 
   // Whether this <image> depends on the current color.
   virtual bool DependsOnCurrentColor() const { return false; }

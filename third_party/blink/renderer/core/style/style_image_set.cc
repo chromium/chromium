@@ -148,13 +148,6 @@ bool StyleImageSet::KnownToBeOpaque(const Document& document,
          best_fit_image_->KnownToBeOpaque(document, computed_style);
 }
 
-RespectImageOrientationEnum StyleImageSet::ForceOrientationIfNecessary(
-    RespectImageOrientationEnum default_orientation) const {
-  return best_fit_image_
-             ? best_fit_image_->ForceOrientationIfNecessary(default_orientation)
-             : RespectImageOrientationEnum::kDoNotRespectImageOrientation;
-}
-
 void StyleImageSet::Trace(Visitor* visitor) const {
   visitor->Trace(best_fit_image_);
   visitor->Trace(image_set_value_);

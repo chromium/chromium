@@ -58,8 +58,6 @@ class StyleCrossfadeImage final : public StyleImage {
 
   WrappedImagePtr Data() const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
-  RespectImageOrientationEnum ForceOrientationIfNecessary(
-      RespectImageOrientationEnum) const override;
 
   void Trace(Visitor*) const override;
 

@@ -287,20 +287,6 @@ bool StyleCrossfadeImage::KnownToBeOpaque(const Document& document,
   });
 }
 
-RespectImageOrientationEnum StyleCrossfadeImage::ForceOrientationIfNecessary(
-    RespectImageOrientationEnum default_orientation) const {
-  if (default_orientation == kRespectImageOrientation) {
-    return kRespectImageOrientation;
-  }
-  for (const auto& image : images_) {
-    if (image && image->ForceOrientationIfNecessary(default_orientation) ==
-                     kRespectImageOrientation) {
-      return kRespectImageOrientation;
-    }
-  }
-  return default_orientation;
-}
-
 // Calculates the actual value of the percentage for each image,
 // and converts to 0..1 weights. See
 // https://drafts.csswg.org/css-images-4/#cross-fade-function:

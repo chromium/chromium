@@ -80,9 +80,6 @@ class StyleImageSet final : public StyleImage {
 
   ImageResourceContent* CachedImage() const override;
 
-  RespectImageOrientationEnum ForceOrientationIfNecessary(
-      RespectImageOrientationEnum default_orientation) const override;
-
   void Trace(Visitor*) const override;
 
  private:
