@@ -232,7 +232,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationNoOpsIfAccountStoreNull) {
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
               UnorderedElementsAre(
                   Pair(local_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(local_password)))));
@@ -252,7 +252,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationNoOpsIfProfileStoreNull) {
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(account_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(account_password)))));
@@ -276,11 +276,11 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
               UnorderedElementsAre(
                   Pair(local_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(local_password)))));
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(account_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(account_password)))));
@@ -302,8 +302,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsLocalPassword) {
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(local_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(local_password))),
@@ -333,8 +333,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
 
   // The first migration should upload the local password, and second migration
   // should be ignored.
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(local_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(local_password))),
@@ -383,8 +383,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationRemovesDuplicate) {
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(duplicate_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(duplicate_password)))));
@@ -412,8 +412,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(Pair(
                   new_account_password.signon_realm,
                   UnorderedElementsAre(MatchesForm(new_account_password)))));
@@ -441,8 +441,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(new_local_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(new_local_password)))));
@@ -471,8 +471,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(new_local_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(new_local_password)))));
@@ -497,8 +497,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   uploader.TriggerLocalDataMigration();
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(), SizeIs(3));
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()), SizeIs(3));
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 3, 1);
 }
 
@@ -513,9 +513,9 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsEmptyKeys) {
   RunUntilIdle();
 
   // All passwords still in profile store.
-  EXPECT_THAT(profile_store()->stored_passwords(), SizeIs(3));
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), SizeIs(3));
   // No password uploaded in account store.
-  EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()), IsEmpty());
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 0, 1);
 }
 
@@ -534,12 +534,12 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   RunUntilIdle();
 
   // Password 1 still in profile_store.
-  EXPECT_THAT(profile_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
               UnorderedElementsAre(
                   Pair(passwords[1].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[1])))));
   // Password 0 and 2 in account_store.
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(passwords[0].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[0]))),
@@ -562,8 +562,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
        PasswordFormUniqueKey(passwords[2])});
   RunUntilIdle();
 
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(passwords[0].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[0]))),
@@ -588,13 +588,13 @@ TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsPasswordsSameKey) {
   RunUntilIdle();
 
   // Only password 0 should be uploaded.
-  EXPECT_THAT(profile_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
               UnorderedElementsAre(
                   Pair(passwords[1].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[1]))),
                   Pair(passwords[2].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[2])))));
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(passwords[0].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[0])))));
@@ -618,13 +618,13 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   RunUntilIdle();
 
   // Only password 0 should be uploaded, `password_not_in_local_store` ignored.
-  EXPECT_THAT(profile_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
               UnorderedElementsAre(
                   Pair(passwords[1].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[1]))),
                   Pair(passwords[2].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[2])))));
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(passwords[0].signon_realm,
                        UnorderedElementsAre(MatchesForm(passwords[0])))));
@@ -650,14 +650,14 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
 
   // Only password 0 should be uploaded, `account_passwords[0]` should not be
   // duplicated and appear only once in account store.
-  EXPECT_THAT(profile_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()),
               UnorderedElementsAre(
                   Pair(local_passwords[1].signon_realm,
                        UnorderedElementsAre(MatchesForm(local_passwords[1]))),
                   Pair(local_passwords[2].signon_realm,
                        UnorderedElementsAre(MatchesForm(local_passwords[2])))));
   EXPECT_THAT(
-      account_store()->stored_passwords(),
+      GetAllLoginsSync(account_store()),
       UnorderedElementsAre(
           Pair(local_passwords[0].signon_realm,
                UnorderedElementsAre(MatchesForm(local_passwords[0]))),
@@ -682,7 +682,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
 
   // Password to migrate already exists in the account store.
-  ASSERT_THAT(account_store()->stored_passwords(),
+  ASSERT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(common_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(common_password)))));
@@ -693,8 +693,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
 
   // Common password should be removed from the profile store and not duplicated
   // in the account store.
-  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(account_store()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(profile_store()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store()),
               UnorderedElementsAre(
                   Pair(common_password.signon_realm,
                        UnorderedElementsAre(MatchesForm(common_password)))));

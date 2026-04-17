@@ -576,8 +576,7 @@ TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialSuccess) {
       std::move(delegate().GetInsecureCredentials().at(0));
   EXPECT_TRUE(delegate().MuteInsecureCredential(credential));
   RunUntilIdle();
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kLeaked)
@@ -629,8 +628,7 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialSuccess) {
       std::move(delegate().GetInsecureCredentials().at(0));
   EXPECT_TRUE(delegate().UnmuteInsecureCredential(credential));
   RunUntilIdle();
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kLeaked)
@@ -687,7 +685,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_THAT(store().stored_passwords(), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(&store()), IsEmpty());
 }
 
 // Test that we don't create an entry in the password store if IsLeaked is
@@ -705,7 +703,7 @@ TEST_F(PasswordCheckDelegateTest, NoLeakedFound) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
   RunUntilIdle();
 
-  EXPECT_THAT(store().stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(&store()),
               ElementsAre(Pair(kExampleCom, ElementsAre(form))));
 }
 
@@ -728,7 +726,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false),
                          TriggerBackendNotification(false)));
-  EXPECT_THAT(store().stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(&store()),
               ElementsAre(Pair(kExampleCom, ElementsAre(form))));
 }
 
@@ -782,7 +780,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false),
                          TriggerBackendNotification(false)));
-  EXPECT_THAT(store().stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(&store()),
               UnorderedElementsAre(
                   Pair(kExampleCom, UnorderedElementsAre(form_com_username1,
                                                          form_com_username2)),

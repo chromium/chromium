@@ -148,11 +148,10 @@ TEST_F(CredentialImporterTest, ImportsValidPassword) {
   ASSERT_TRUE(observer.WaitForLoginsChanged());
   GetAccountStore().RemoveObserver(&observer);
 
-  EXPECT_TRUE(GetProfileStore().IsEmpty());
-  ASSERT_THAT(GetAccountStore().stored_passwords(), SizeIs(1));
-  std::vector<PasswordForm> forms =
-      GetAccountStore().stored_passwords().begin()->second;
-  ASSERT_THAT(forms, SizeIs(1));
+  EXPECT_TRUE(GetAllLoginsSync(&GetProfileStore()).empty());
+  auto forms_map = GetAllLoginsSync(&GetAccountStore());
+  ASSERT_THAT(forms_map, SizeIs(1));
+  std::vector<PasswordForm> forms = forms_map.begin()->second;
   EXPECT_EQ(forms[0].url.spec(), "https://example.com/");
   EXPECT_EQ(forms[0].username_value, u"username");
   EXPECT_EQ(forms[0].password_value, u"password");
@@ -175,11 +174,10 @@ TEST_F(CredentialImporterTest, ImportsPasswordWithoutHttpsScheme) {
   ASSERT_TRUE(observer.WaitForLoginsChanged());
   GetAccountStore().RemoveObserver(&observer);
 
-  EXPECT_TRUE(GetProfileStore().IsEmpty());
-  ASSERT_THAT(GetAccountStore().stored_passwords(), SizeIs(1));
-  std::vector<PasswordForm> forms =
-      GetAccountStore().stored_passwords().begin()->second;
-  ASSERT_THAT(forms, SizeIs(1));
+  EXPECT_TRUE(GetAllLoginsSync(&GetProfileStore()).empty());
+  auto forms_map = GetAllLoginsSync(&GetAccountStore());
+  ASSERT_THAT(forms_map, SizeIs(1));
+  std::vector<PasswordForm> forms = forms_map.begin()->second;
   EXPECT_EQ(forms[0].url.spec(), "https://example.com/");
   EXPECT_EQ(forms[0].username_value, u"username");
   EXPECT_EQ(forms[0].password_value, u"password");
@@ -208,11 +206,10 @@ TEST_F(CredentialImporterTest, DoesNotImportPasswordWithoutUrl) {
   ASSERT_TRUE(observer.WaitForLoginsChanged());
   GetAccountStore().RemoveObserver(&observer);
 
-  EXPECT_TRUE(GetProfileStore().IsEmpty());
-  ASSERT_THAT(GetAccountStore().stored_passwords(), SizeIs(1));
-  std::vector<PasswordForm> forms =
-      GetAccountStore().stored_passwords().begin()->second;
-  ASSERT_THAT(forms, SizeIs(1));
+  EXPECT_TRUE(GetAllLoginsSync(&GetProfileStore()).empty());
+  auto forms_map = GetAllLoginsSync(&GetAccountStore());
+  ASSERT_THAT(forms_map, SizeIs(1));
+  std::vector<PasswordForm> forms = forms_map.begin()->second;
   EXPECT_EQ(forms[0].url.spec(), "https://example.com/");
   EXPECT_EQ(forms[0].username_value, u"username");
   EXPECT_EQ(forms[0].password_value, u"password");

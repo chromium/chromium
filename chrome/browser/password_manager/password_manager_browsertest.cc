@@ -1481,7 +1481,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
 
   password_manager::TestPasswordStore* password_store =
       GetDefaultPasswordStore(browser()->profile());
-  ASSERT_TRUE(password_store->IsEmpty());
+  ASSERT_TRUE(GetAllLoginsSync(password_store).empty());
 
   // Navigate to a page requiring HTTP auth.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1507,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
   // Spin the message loop to make sure the password store had a chance to save
   // the password.
   WaitForPasswordStore();
-  EXPECT_FALSE(password_store->IsEmpty());
+  EXPECT_FALSE(GetAllLoginsSync(password_store).empty());
 }
 
 // Fill out a form and click a button. The Javascript removes the form, creates
@@ -1682,7 +1682,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Migration updates should touch the password store.
   WaitForPasswordStore();
   // Only HTTPS passwords should be present.
-  EXPECT_THAT(password_store->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(password_store),
               ElementsAre(Pair(https_origin.spec(), SizeIs(1))));
 }
 
@@ -1691,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   password_manager::TestPasswordStore* password_store =
       GetDefaultPasswordStore(browser()->profile());
 
-  EXPECT_TRUE(password_store->IsEmpty());
+  EXPECT_TRUE(GetAllLoginsSync(password_store).empty());
 
   NavigateToFile("/password/form_with_only_password_field.html");
 
@@ -1707,7 +1707,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   prompt_observer.AcceptSavePrompt();
 
   WaitForPasswordStore();
-  EXPECT_FALSE(password_store->IsEmpty());
+  EXPECT_FALSE(GetAllLoginsSync(password_store).empty());
 }
 
 // Test that if a form gets autofilled, then it gets autofilled on re-creation
@@ -1802,7 +1802,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   ASSERT_TRUE(observer.Wait());
 
   WaitForPasswordStore();
-  EXPECT_TRUE(password_store->IsEmpty());
+  EXPECT_TRUE(GetAllLoginsSync(password_store).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
@@ -2411,7 +2411,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   prompt_observer.AcceptUpdatePrompt();
   WaitForPasswordStore();
   // Check that there is no backup password stored.
-  auto& passwords_map = password_store->stored_passwords();
+  auto passwords_map = GetAllLoginsSync(password_store.get());
   ASSERT_EQ(1u, passwords_map.size());
   auto& passwords_vector = passwords_map.begin()->second;
   EXPECT_THAT(
@@ -2748,7 +2748,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, BasicAuthSeparateRealms) {
   creds.username_value = u"temp";
   password_store->AddLogin(creds);
   WaitForPasswordStore();
-  ASSERT_FALSE(password_store->IsEmpty());
+  ASSERT_FALSE(GetAllLoginsSync(password_store).empty());
 
   // In addition to the HttpAuthObserver created automatically for the HTTP
   // auth dialog, also create a mock observer, for a different realm.
@@ -3113,7 +3113,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 
   // Verify that the form's 'skip_zero_click' is not updated.
-  auto& passwords_map = password_store->stored_passwords();
+  auto passwords_map = GetAllLoginsSync(password_store);
   ASSERT_EQ(1u, passwords_map.size());
   auto& passwords_vector = passwords_map.begin()->second;
   ASSERT_EQ(1u, passwords_vector.size());
@@ -3151,7 +3151,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 
   // Verify that the form's 'skip_zero_click' is not updated.
-  auto& passwords_map = password_store->stored_passwords();
+  auto passwords_map = GetAllLoginsSync(password_store);
   ASSERT_EQ(1u, passwords_map.size());
   auto& passwords_vector = passwords_map.begin()->second;
   ASSERT_EQ(1u, passwords_vector.size());
@@ -3597,7 +3597,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Check that the password for origin A was not updated automatically and the
   // update bubble is shown instead.
   WaitForPasswordStore();  // Let the navigation take its effect on storing.
-  ASSERT_THAT(password_store->stored_passwords(),
+  ASSERT_THAT(GetAllLoginsSync(password_store),
               ElementsAre(testing::Key(url_A.DeprecatedGetOriginAsURL())));
   CheckThatCredentialsStored("user", "oldpassword");
   BubbleObserver prompt_observer(WebContents());
@@ -3608,7 +3608,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   WaitForPasswordStore();
   // The stored credential has been updated with the new password.
-  const auto& passwords_map = password_store->stored_passwords();
+  auto passwords_map = GetAllLoginsSync(password_store);
   ASSERT_THAT(passwords_map,
               ElementsAre(testing::Key(url_A.DeprecatedGetOriginAsURL())));
   for (const auto& credentials : passwords_map) {

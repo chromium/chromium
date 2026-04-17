@@ -196,7 +196,7 @@ class PasswordManagerViewControllerTest
     PasswordManagerViewController* passwords_controller =
         GetPasswordManagerViewController();
     NSInteger insecure_count = 0;
-    for (const auto& signon_realm_forms : GetTestStore().stored_passwords()) {
+    for (const auto& signon_realm_forms : GetAllLoginsSync(&GetTestStore())) {
       insecure_count += std::ranges::count_if(
           signon_realm_forms.second, [](const PasswordForm& form) {
             return !form.password_issues.empty();
@@ -1196,8 +1196,8 @@ TEST_F(PasswordManagerViewControllerTest, PasswordStoreListener) {
   EXPECT_EQ(2, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
 
-  auto password =
-      GetTestStore().stored_passwords().at("http://www.example.com/").at(0);
+  PasswordForm password =
+      GetAllLoginsSync(&GetTestStore()).at("http://www.example.com/").at(0);
   GetTestStore().RemoveLogin(FROM_HERE, password);
   RunUntilIdle();
   EXPECT_EQ(1, NumberOfItemsInSection(

@@ -6,20 +6,33 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_TEST_PASSWORD_STORE_H_
 
 #include <functional>
+#include <type_traits>
 
 #include "base/callback_list.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
 
-// A matcher that compares two PasswordForm instances but ignores the |in_store|
-// member.
+// A matcher that compares two PasswordForm or StoredCredential instances but
+// ignores the |in_store| member.
 MATCHER_P(MatchesFormExceptStore, expected, "") {
-  PasswordForm arg_copy = arg;
-  arg_copy.in_store = expected.in_store;
-  return arg_copy == expected;
+  auto to_form = [](const auto& x) {
+    if constexpr (std::is_same_v<std::decay_t<decltype(x)>, StoredCredential>) {
+      return ToPasswordForm(x);
+    } else {
+      return x;
+    }
+  };
+
+  auto arg_form = to_form(arg);
+  auto expected_form = to_form(expected);
+  arg_form.in_store = expected_form.in_store;
+
+  return arg_form == expected_form;
 }
 
 // A very simple PasswordStore implementation that keeps all of the passwords
@@ -43,13 +56,6 @@ class TestPasswordStore : public PasswordStore {
 
   void Clear();
 
-  // Returns true if no passwords are stored in the store. Note that this is not
-  // as simple as asking whether stored_passwords().empty(), because the map can
-  // have entries of size 0.
-  bool IsEmpty() const;
-
-  // TODO(crbug.com/40214044): Clean up non-essential methods.
-  const TestPasswordStore::PasswordMap& stored_passwords() const;
   ::password_manager::IsAccountStore IsAccountStore() const;
 
   base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
@@ -76,6 +82,8 @@ class TestPasswordStore : public PasswordStore {
 
   base::RepeatingClosureList sync_enabled_or_disabled_cbs_;
 };
+
+TestPasswordStore::PasswordMap GetAllLoginsSync(PasswordStoreInterface* store);
 
 }  // namespace password_manager
 

@@ -411,7 +411,7 @@ TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
 
   EXPECT_EQ(future.Get().status,
             password_manager::ImportResults::Status::DISMISSED);
-  EXPECT_THAT(store().stored_passwords(), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(&store()), IsEmpty());
 }
 
 TEST_F(PasswordManagerPorterTest, ContinueImportFailsWhenNoImportActive) {
@@ -428,7 +428,7 @@ TEST_F(PasswordManagerPorterTest, ContinueImportFailsWhenNoImportActive) {
 TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
   AddPasswordForm(CreateTestPasswordForm(GURL("https://test.com"), u"username",
                                          u"old_password"));
-  ASSERT_EQ(1u, store().stored_passwords().size());
+  ASSERT_EQ(1u, GetAllLoginsSync(&store()).size());
 
   ASSERT_TRUE(base::WriteFile(temp_file_path(),
                               "origin,username,password\n"
@@ -454,16 +454,16 @@ TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
   EXPECT_EQ(continue_future.Get().status,
             password_manager::ImportResults::Status::SUCCESS);
 
-  ASSERT_EQ(1u, store().stored_passwords().size());
+  ASSERT_EQ(1u, GetAllLoginsSync(&store()).size());
   password_manager::PasswordForm stored_form =
-      store().stored_passwords().begin()->second[0];
+      GetAllLoginsSync(&store()).begin()->second[0];
   EXPECT_EQ(u"new_password", stored_form.password_value);
 }
 
 TEST_F(PasswordManagerPorterTest, RejectNewImportsWhenConflictsNotResolved) {
   AddPasswordForm(CreateTestPasswordForm(GURL("https://test.com"), u"username",
                                          u"old_password"));
-  ASSERT_EQ(1u, store().stored_passwords().size());
+  ASSERT_EQ(1u, GetAllLoginsSync(&store()).size());
 
   ASSERT_TRUE(base::WriteFile(temp_file_path(),
                               "origin,username,password\n"
@@ -499,7 +499,7 @@ TEST_F(PasswordManagerPorterTest, ResetImporterTriggersFileDeletion) {
                   ToImportCallback(&import_future));
   EXPECT_EQ(import_future.Get().status,
             password_manager::ImportResults::Status::SUCCESS);
-  ASSERT_EQ(1u, store().stored_passwords().size());
+  ASSERT_EQ(1u, GetAllLoginsSync(&store()).size());
 
   base::test::TestFuture<void> deletion_future;
   // The file deletion is performed on a background thread. The mock callback
@@ -577,15 +577,15 @@ TEST_P(PasswordManagerPorterImportTest, Import) {
   std::ignore = future.Get();
 
   if (tc.descriptions.empty()) {
-    EXPECT_THAT(store().stored_passwords(), IsEmpty());
+    EXPECT_THAT(GetAllLoginsSync(&store()), IsEmpty());
     return;
   }
   // Note: The code below assumes that all the credentials in tc.csv have the
   // same signon realm, and that it is https://example.com/.
-  ASSERT_EQ(1u, store().stored_passwords().size());
-  const std::pair<std::string /* signon_realm */,
-                  std::vector<password_manager::PasswordForm>>& credentials =
-      *store().stored_passwords().begin();
+  ASSERT_EQ(1u, GetAllLoginsSync(&store()).size());
+  std::pair<std::string /* signon_realm */,
+            std::vector<password_manager::PasswordForm>>
+      credentials = *GetAllLoginsSync(&store()).begin();
   EXPECT_EQ("https://example.com/", credentials.first);
   EXPECT_THAT(credentials.second,
               UnorderedPointwise(FormHasDescription(), tc.descriptions));

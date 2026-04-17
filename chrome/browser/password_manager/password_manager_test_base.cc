@@ -468,7 +468,7 @@ void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
   SCOPED_TRACE(::testing::Message() << username << ", " << password);
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       GetDefaultPasswordStore(browser()->profile());
-  auto& passwords_map = password_store->stored_passwords();
+  auto passwords_map = GetAllLoginsSync(password_store.get());
   ASSERT_EQ(1u, passwords_map.size());
   auto& passwords_vector = passwords_map.begin()->second;
   ASSERT_EQ(1u, passwords_vector.size());

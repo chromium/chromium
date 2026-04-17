@@ -117,7 +117,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
 
   void WaitUntilPasswordIsSavedToStore() {
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return GetTestStore().stored_passwords().size() == 1; }));
+        [&]() { return GetAllLoginsSync(&GetTestStore()).size() == 1; }));
   }
 
  private:

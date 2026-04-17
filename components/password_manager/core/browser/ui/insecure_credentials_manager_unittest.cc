@@ -585,8 +585,7 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPasswordForExistingLeak) {
   RunUntilIdle();
 
   EXPECT_EQ(insecurity_metadata,
-            store()
-                .stored_passwords()
+            GetAllLoginsSync(&store())
                 .at(kExampleCom)
                 .back()
                 .password_issues.at(InsecureType::kLeaked));
@@ -611,8 +610,7 @@ TEST_F(InsecureCredentialsManagerTest, MuteCompromisedCredential) {
                   .GetInsecureCredentialEntries()[0]
                   .password_issues.at(InsecureType::kLeaked)
                   .is_muted.value());
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kLeaked)
@@ -639,8 +637,7 @@ TEST_F(InsecureCredentialsManagerTest, UnmuteCompromisedMutedCredential) {
                    .GetInsecureCredentialEntries()[0]
                    .password_issues.at(InsecureType::kLeaked)
                    .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kLeaked)
@@ -667,8 +664,7 @@ TEST_F(InsecureCredentialsManagerTest, UnmuteCompromisedNotMutedCredential) {
                    .GetInsecureCredentialEntries()[0]
                    .password_issues.at(InsecureType::kLeaked)
                    .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kLeaked)
@@ -704,14 +700,12 @@ TEST_F(InsecureCredentialsManagerTest,
                    .GetInsecureCredentialEntries()[0]
                    .password_issues.at(InsecureType::kPhished)
                    .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kLeaked)
                    .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kPhished)
@@ -753,26 +747,22 @@ TEST_F(InsecureCredentialsManagerTest,
   expected.password_issues[InsecureType::kPhished].is_muted = IsMuted(false);
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(expected)));
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kLeaked)
                    .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kPhished)
                    .is_muted.value());
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kReused)
                   .is_muted.value());
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kWeak)
@@ -797,8 +787,7 @@ TEST_F(InsecureCredentialsManagerTest, MuteCompromisedCredentialOnMutedIsNoOp) {
   RunUntilIdle();
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(password)));
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kLeaked)
@@ -831,15 +820,12 @@ TEST_F(InsecureCredentialsManagerTest,
   expected.password_issues[InsecureType::kPhished].is_muted = IsMuted(true);
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(expected)));
-  EXPECT_TRUE(store()
-                  .stored_passwords()
-                  .at(kExampleCom)
+  auto passwords = GetAllLoginsSync(&store());
+  EXPECT_TRUE(passwords.at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kLeaked)
                   .is_muted.value());
-  EXPECT_TRUE(store()
-                  .stored_passwords()
-                  .at(kExampleCom)
+  EXPECT_TRUE(passwords.at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kPhished)
                   .is_muted.value());
@@ -880,26 +866,22 @@ TEST_F(InsecureCredentialsManagerTest, FilterThenMuteMultipleInsecurityTypes) {
   expected.password_issues[InsecureType::kPhished].is_muted = IsMuted(true);
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(expected)));
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kLeaked)
                   .is_muted.value());
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kPhished)
                   .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kReused)
                    .is_muted.value());
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kWeak)
@@ -925,8 +907,7 @@ TEST_F(InsecureCredentialsManagerTest, MuteWeakPasswordNoOp) {
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1));
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kWeak)
@@ -953,8 +934,7 @@ TEST_F(InsecureCredentialsManagerTest, UnMuteWeakPasswordNoOp) {
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1));
 
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kWeak)
@@ -980,8 +960,7 @@ TEST_F(InsecureCredentialsManagerTest, MuteReusedPasswordNoOp) {
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1));
-  EXPECT_FALSE(store()
-                   .stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(&store())
                    .at(kExampleCom)
                    .back()
                    .password_issues.at(InsecureType::kReused)
@@ -1007,8 +986,7 @@ TEST_F(InsecureCredentialsManagerTest, UnMuteReusedPasswordNoOp) {
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1));
-  EXPECT_TRUE(store()
-                  .stored_passwords()
+  EXPECT_TRUE(GetAllLoginsSync(&store())
                   .at(kExampleCom)
                   .back()
                   .password_issues.at(InsecureType::kReused)
@@ -1291,8 +1269,8 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
 // Test verifies that saving LeakCheckCredential via provider adds expected
 // compromised credential to the correct store.
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
-  ASSERT_TRUE(profile_store().stored_passwords().empty());
-  ASSERT_TRUE(account_store().stored_passwords().empty());
+  ASSERT_TRUE(GetAllLoginsSync(&profile_store()).empty());
+  ASSERT_TRUE(GetAllLoginsSync(&account_store()).empty());
   // Add `kUsername1`,`kPassword1` to both stores.
   // And add `kUsername1`,`kPassword2` to the account store only.
   profile_store().AddLogin(
@@ -1314,18 +1292,15 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
   RunUntilIdle();
 
   EXPECT_EQ(2U, provider().GetInsecureCredentialEntries().size());
-  EXPECT_EQ(1U, profile_store()
-                    .stored_passwords()
+  EXPECT_EQ(1U, GetAllLoginsSync(&profile_store())
                     .at(kExampleCom)
                     .back()
                     .password_issues.size());
-  EXPECT_EQ(1U, account_store()
-                    .stored_passwords()
+  EXPECT_EQ(1U, GetAllLoginsSync(&account_store())
                     .at(kExampleOrg)
                     .back()
                     .password_issues.size());
-  EXPECT_EQ(0U, account_store()
-                    .stored_passwords()
+  EXPECT_EQ(0U, GetAllLoginsSync(&account_store())
                     .at(kExampleCom)
                     .back()
                     .password_issues.size());
@@ -1338,18 +1313,15 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
   RunUntilIdle();
 
   EXPECT_EQ(3U, provider().GetInsecureCredentialEntries().size());
-  EXPECT_EQ(1U, profile_store()
-                    .stored_passwords()
+  EXPECT_EQ(1U, GetAllLoginsSync(&profile_store())
                     .at(kExampleCom)
                     .back()
                     .password_issues.size());
-  EXPECT_EQ(1U, account_store()
-                    .stored_passwords()
+  EXPECT_EQ(1U, GetAllLoginsSync(&account_store())
                     .at(kExampleCom)
                     .back()
                     .password_issues.size());
-  EXPECT_EQ(1U, account_store()
-                    .stored_passwords()
+  EXPECT_EQ(1U, GetAllLoginsSync(&account_store())
                     .at(kExampleOrg)
                     .back()
                     .password_issues.size());

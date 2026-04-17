@@ -337,11 +337,11 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
 
   InitiateGetCredentialLeakType();
 
-  EXPECT_FALSE(profile_store_->stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(profile_store_.get())
                    .at(profile_store_form.signon_realm)
                    .at(0)
                    .password_issues.empty());
-  EXPECT_FALSE(account_store_->stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(account_store_.get())
                    .at(account_store_form.signon_realm)
                    .at(0)
                    .password_issues.empty());
@@ -362,11 +362,11 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest,
 
   InitiateGetCredentialLeakType();
 
-  EXPECT_FALSE(profile_store_->stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(profile_store_.get())
                    .at(profile_store_form.signon_realm)
                    .at(0)
                    .password_issues.empty());
-  EXPECT_FALSE(account_store_->stored_passwords()
+  EXPECT_FALSE(GetAllLoginsSync(account_store_.get())
                    .at(account_store_form.signon_realm)
                    .at(0)
                    .password_issues.empty());

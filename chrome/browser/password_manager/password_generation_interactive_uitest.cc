@@ -518,11 +518,11 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   ASSERT_TRUE(observer.Wait());
 
   WaitForPasswordStore();
-  EXPECT_FALSE(password_store->IsEmpty());
+  EXPECT_FALSE(GetAllLoginsSync(password_store.get()).empty());
 
   // Make sure the username is correct.
   password_manager::TestPasswordStore::PasswordMap stored_passwords =
-      password_store->stored_passwords();
+      GetAllLoginsSync(password_store.get());
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(1u, stored_passwords.begin()->second.size());
   EXPECT_EQ(u"UN", (stored_passwords.begin()->second)[0].username_value);

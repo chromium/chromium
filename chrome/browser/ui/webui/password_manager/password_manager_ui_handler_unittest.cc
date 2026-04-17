@@ -238,8 +238,9 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   handler().RevokeActorLoginPermission(std::move(site));
   waiter.Wait();
 
-  ASSERT_EQ(password_store_->stored_passwords().size(), 1u);
-  const auto& passwords = password_store_->stored_passwords().begin()->second;
+  ASSERT_EQ(GetAllLoginsSync(password_store_.get()).size(), 1u);
+  std::vector<password_manager::PasswordForm> passwords =
+      GetAllLoginsSync(password_store_.get()).begin()->second;
   ASSERT_EQ(passwords.size(), 1u);
   EXPECT_FALSE(passwords[0].actor_login_approved);
 }

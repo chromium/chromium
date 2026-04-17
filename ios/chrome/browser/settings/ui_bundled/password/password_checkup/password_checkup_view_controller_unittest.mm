@@ -108,7 +108,7 @@ class PasswordCheckupViewControllerTest
         GetPasswordCheckupViewController();
 
     password_manager::InsecurePasswordCounts counts = {};
-    for (const auto& signon_realm_forms : GetTestStore().stored_passwords()) {
+    for (const auto& signon_realm_forms : GetAllLoginsSync(&GetTestStore())) {
       for (const PasswordForm& form : signon_realm_forms.second) {
         CredentialUIEntry credential = CredentialUIEntry(form);
         if (credential.IsMuted()) {

@@ -32,12 +32,8 @@ source_set("password_form_converters") {
     "password_form_converters.cc",
     "password_form_converters.h",
   ]
-  public_deps = [
-    ":password_store_interface",
-  ]
-  deps = [
-    "//base",
-  ]
+  public_deps = [ ":password_store_interface" ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -147,6 +143,7 @@ static_library("test_support") {
     "test_password_store.h",
   ]
   deps = [
+    ":password_form_converters",
     ":password_store_impl",
     "//base",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",

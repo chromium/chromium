@@ -193,7 +193,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
 
   base::HistogramTester histogram_tester;
   const TestPasswordStore::PasswordMap passwords_before_cleaning =
-      store_->stored_passwords();
+      GetAllLoginsSync(store_.get());
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterDoublePref(
@@ -223,7 +223,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
       1);
 
   const TestPasswordStore::PasswordMap current_store =
-      store_->stored_passwords();
+      GetAllLoginsSync(store_.get());
   if (test.is_hsts_enabled &&
       test.expected != HttpCredentialType::kConflicting) {
     // HTTP credentials have to be removed.

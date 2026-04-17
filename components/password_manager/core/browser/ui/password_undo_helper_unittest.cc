@@ -74,7 +74,7 @@ TEST_F(PasswordUndoHelperTest, UndoSingleForm) {
 
   RunUntilIdle();
 
-  ASSERT_THAT(ProfileStore()->stored_passwords(),
+  ASSERT_THAT(GetAllLoginsSync(ProfileStore()),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
 
   // Remove form
@@ -84,11 +84,11 @@ TEST_F(PasswordUndoHelperTest, UndoSingleForm) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(ProfileStore()), IsEmpty());
 
   UndoHelper().Undo();
   RunUntilIdle();
-  EXPECT_THAT(ProfileStore()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(ProfileStore()),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
 }
 
@@ -99,7 +99,7 @@ TEST_F(PasswordUndoHelperTest, UndoSingleBackupPasswordForm) {
 
   RunUntilIdle();
 
-  ASSERT_THAT(ProfileStore()->stored_passwords(),
+  ASSERT_THAT(GetAllLoginsSync(ProfileStore()),
               ElementsAre(Pair(form_with_backup.signon_realm,
                                ElementsAre(form_with_backup))));
 
@@ -110,13 +110,13 @@ TEST_F(PasswordUndoHelperTest, UndoSingleBackupPasswordForm) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(ProfileStore()),
               ElementsAre(Pair(form_with_backup.signon_realm,
                                ElementsAre(form_without_backup))));
 
   UndoHelper().Undo();
   RunUntilIdle();
-  EXPECT_THAT(ProfileStore()->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(ProfileStore()),
               ElementsAre(Pair(form_with_backup.signon_realm,
                                ElementsAre(form_with_backup))));
 }
@@ -136,7 +136,7 @@ TEST_F(PasswordUndoHelperTest, UndoMultipleForms) {
   RunUntilIdle();
 
   ASSERT_THAT(
-      ProfileStore()->stored_passwords(),
+      GetAllLoginsSync(ProfileStore()),
       UnorderedElementsAre(Pair(form_1.signon_realm,
                                 UnorderedElementsAre(form_1, form_1_duplicate)),
                            Pair(form_2.signon_realm, ElementsAre(form_2))));
@@ -152,13 +152,13 @@ TEST_F(PasswordUndoHelperTest, UndoMultipleForms) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(ProfileStore()), IsEmpty());
   // Undo forms removal.
   UndoHelper().Undo();
   RunUntilIdle();
 
   EXPECT_THAT(
-      ProfileStore()->stored_passwords(),
+      GetAllLoginsSync(ProfileStore()),
       UnorderedElementsAre(Pair(form_1.signon_realm,
                                 UnorderedElementsAre(form_1, form_1_duplicate)),
                            Pair(form_2.signon_realm, ElementsAre(form_2))));
@@ -174,10 +174,10 @@ TEST_F(PasswordUndoHelperTest, UndoFormsMultipleStores) {
   RunUntilIdle();
 
   ASSERT_THAT(
-      ProfileStore()->stored_passwords(),
+      GetAllLoginsSync(ProfileStore()),
       ElementsAre(Pair(profile_form.signon_realm, ElementsAre(profile_form))));
   ASSERT_THAT(
-      AccountStore()->stored_passwords(),
+      GetAllLoginsSync(AccountStore()),
       ElementsAre(Pair(account_form.signon_realm, ElementsAre(account_form))));
 
   // Remove forms
@@ -189,16 +189,16 @@ TEST_F(PasswordUndoHelperTest, UndoFormsMultipleStores) {
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
 
-  EXPECT_THAT(ProfileStore()->stored_passwords(), IsEmpty());
-  EXPECT_THAT(AccountStore()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(ProfileStore()), IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(AccountStore()), IsEmpty());
 
   UndoHelper().Undo();
   RunUntilIdle();
   EXPECT_THAT(
-      ProfileStore()->stored_passwords(),
+      GetAllLoginsSync(ProfileStore()),
       ElementsAre(Pair(profile_form.signon_realm, ElementsAre(profile_form))));
   EXPECT_THAT(
-      AccountStore()->stored_passwords(),
+      GetAllLoginsSync(AccountStore()),
       ElementsAre(Pair(account_form.signon_realm, ElementsAre(account_form))));
 }
 

@@ -1720,9 +1720,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, RemoveBackupPassword) {
   delegate->RemoveBackupPassword(password_entry.id);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(0));
-  ASSERT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
-  EXPECT_FALSE(profile_store_->stored_passwords()
+  EXPECT_THAT(GetAllLoginsSync(account_store_.get()), testing::SizeIs(0));
+  ASSERT_THAT(GetAllLoginsSync(profile_store_.get()), testing::SizeIs(1));
+  EXPECT_FALSE(GetAllLoginsSync(profile_store_.get())
                    .begin()
                    ->second.begin()
                    ->GetPasswordBackup()
@@ -2321,8 +2321,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
   passkey_model->AddNewPasskeyForTesting(passkey);
 
-  EXPECT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
-  EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_THAT(GetAllLoginsSync(profile_store_.get()), testing::SizeIs(1));
+  EXPECT_THAT(GetAllLoginsSync(account_store_.get()), testing::SizeIs(1));
   EXPECT_THAT(passkey_model->GetPasskeys(
                   webauthn::PasskeyModel::AnyRp(),
                   webauthn::PasskeyModel::ShadowedCredentials::kInclude),
@@ -2333,8 +2333,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
   EXPECT_CALL(callback, Run(true));
   delegate->DeleteAllPasswordManagerData(web_contents.get(), callback.Get());
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(profile_store_->stored_passwords(), testing::IsEmpty());
-  EXPECT_THAT(account_store_->stored_passwords(), testing::IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(profile_store_.get()), testing::IsEmpty());
+  EXPECT_THAT(GetAllLoginsSync(account_store_.get()), testing::IsEmpty());
   EXPECT_THAT(passkey_model->GetPasskeys(
                   webauthn::PasskeyModel::AnyRp(),
                   webauthn::PasskeyModel::ShadowedCredentials::kInclude),
@@ -2388,8 +2388,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllDataWithReauthFailed) {
   EXPECT_CALL(callback, Run(false));
   delegate->DeleteAllPasswordManagerData(web_contents.get(), callback.Get());
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
-  EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(1));
+  EXPECT_THAT(GetAllLoginsSync(profile_store_.get()), testing::SizeIs(1));
+  EXPECT_THAT(GetAllLoginsSync(account_store_.get()), testing::SizeIs(1));
   EXPECT_THAT(passkey_model->GetPasskeys(
                   webauthn::PasskeyModel::AnyRp(),
                   webauthn::PasskeyModel::ShadowedCredentials::kInclude),

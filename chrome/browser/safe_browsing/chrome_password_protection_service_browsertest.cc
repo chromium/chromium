@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -95,11 +96,8 @@ void AddFormToStore(PasswordStoreInterface* password_store,
                     const PasswordForm& form) {
   password_store->AddLogin(form);
   base::RunLoop().RunUntilIdle();
-  FakePasswordStoreBackend* fake_backend =
-      static_cast<FakePasswordStoreBackend*>(
-          password_store->GetBackendForTesting());
-  ASSERT_THAT(fake_backend->stored_passwords().at(form.signon_realm),
-              ElementsAre(form));
+  auto passwords_map = GetAllLoginsSync(password_store);
+  ASSERT_THAT(passwords_map.at(form.signon_realm), ElementsAre(form));
 }
 
 }  // namespace
@@ -444,13 +442,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(security_state::NONE, GetSecurityLevel(web_contents));
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
             GetVisibleSecurityState(web_contents)->malicious_content_status);
-  FakePasswordStoreBackend* fake_backend =
-      static_cast<FakePasswordStoreBackend*>(
-          password_store->GetBackendForTesting());
-  EXPECT_TRUE(fake_backend->stored_passwords()
-                  .at(kSignonRealm)
-                  .at(0)
-                  .password_issues.empty());
+  auto passwords_map = GetAllLoginsSync(password_store.get());
+  EXPECT_TRUE(passwords_map.at(kSignonRealm).at(0).password_issues.empty());
 }
 #endif
 

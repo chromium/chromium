@@ -296,7 +296,7 @@ BubbleSignInPromoInteractiveUITest::SaveLocalPassword() {
   store_waiter.WaitOrReturn();
 
   // Check that it was properly saved to profile store.
-  EXPECT_EQ(1u, local_password_store_->stored_passwords().size());
+  EXPECT_EQ(1u, GetAllLoginsSync(local_password_store_.get()).size());
 
   syncer::LocalDataItemModel::DataId data_id =
       PasswordFormUniqueKey(password_form);

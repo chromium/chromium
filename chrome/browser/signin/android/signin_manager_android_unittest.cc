@@ -219,9 +219,9 @@ TEST_F(SigninManagerAndroidTest, DoNotWipePasswordsIfLocalUpmOn) {
   WipeData(ClearedTypes::kAllData);
 
   EXPECT_THAT(
-      profile_password_store()->stored_passwords(),
+      GetAllLoginsSync(profile_password_store()),
       UnorderedElementsAre(Pair(profile_store_form.signon_realm, SizeIs(1))));
   EXPECT_THAT(
-      account_password_store()->stored_passwords(),
+      GetAllLoginsSync(account_password_store()),
       UnorderedElementsAre(Pair(account_store_form.signon_realm, SizeIs(1))));
 }

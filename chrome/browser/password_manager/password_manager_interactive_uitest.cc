@@ -105,12 +105,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   // Spin the message loop to make sure the password store had a chance to save
   // the password.
   WaitForPasswordStore();
-  EXPECT_FALSE(password_store->IsEmpty());
+  EXPECT_FALSE(GetAllLoginsSync(password_store.get()).empty());
 
   // Verify that there are two saved password, the old password and the new
   // password.
   password_manager::TestPasswordStore::PasswordMap stored_passwords =
-      password_store->stored_passwords();
+      GetAllLoginsSync(password_store.get());
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(2u, stored_passwords.begin()->second.size());
   EXPECT_EQ(u"temp", (stored_passwords.begin()->second)[0].username_value);

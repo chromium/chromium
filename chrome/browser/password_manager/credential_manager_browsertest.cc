@@ -199,9 +199,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     password_manager::TestPasswordStore* test_password_store =
         GetDefaultPasswordStore(browser()->profile());
 
-    ASSERT_EQ(1u, test_password_store->stored_passwords().size());
+    ASSERT_EQ(1u, GetAllLoginsSync(test_password_store).size());
     password_manager::PasswordForm signin_form =
-        test_password_store->stored_passwords().begin()->second[0];
+        GetAllLoginsSync(test_password_store).begin()->second[0];
     EXPECT_EQ(u"user", signin_form.username_value);
     EXPECT_EQ(u"hunter2", signin_form.password_value);
     EXPECT_EQ(a_url1.DeprecatedGetOriginAsURL().spec(),
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   // by the autofill password manager on successful login.
   WaitForPasswordStore();
   password_manager::TestPasswordStore::PasswordMap passwords_map =
-      password_store->stored_passwords();
+      GetAllLoginsSync(password_store.get());
   ASSERT_EQ(1u, passwords_map.size());
   const std::vector<password_manager::PasswordForm>& passwords_vector =
       passwords_map.begin()->second;
@@ -346,8 +346,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // Check that the password store contains the values we expect.
   {
-    auto found = password_store->stored_passwords().find(url.spec());
-    ASSERT_NE(password_store->stored_passwords().end(), found);
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(url.spec());
+    ASSERT_NE(passwords_map.end(), found);
     const std::vector<password_manager::PasswordForm>& passwords =
         found->second;
 
@@ -394,8 +395,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // Check that the password still store contains the values we expect.
   {
-    auto found = password_store->stored_passwords().find(url.spec());
-    ASSERT_NE(password_store->stored_passwords().end(), found);
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(url.spec());
+    ASSERT_NE(passwords_map.end(), found);
     const std::vector<password_manager::PasswordForm>& passwords =
         found->second;
 
@@ -432,8 +434,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // Check that the password store contains the values we expect.
   {
-    auto found = password_store->stored_passwords().find(url.spec());
-    ASSERT_NE(password_store->stored_passwords().end(), found);
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(url.spec());
+    ASSERT_NE(passwords_map.end(), found);
     const std::vector<password_manager::PasswordForm>& passwords =
         found->second;
 
@@ -481,8 +484,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // Check that the password store contains the values we expect.
   {
-    auto found = password_store->stored_passwords().find(url.spec());
-    ASSERT_NE(password_store->stored_passwords().end(), found);
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(url.spec());
+    ASSERT_NE(passwords_map.end(), found);
     const std::vector<password_manager::PasswordForm>& passwords =
         found->second;
 
@@ -525,8 +529,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // Check that the password store contains the values we expect.
   {
-    auto found = password_store->stored_passwords().find(url.spec());
-    ASSERT_NE(password_store->stored_passwords().end(), found);
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(url.spec());
+    ASSERT_NE(passwords_map.end(), found);
     const std::vector<password_manager::PasswordForm>& passwords =
         found->second;
 
@@ -580,8 +585,9 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   // Note that we don't check for username and password elements, as they don't
   // exist for credentials saved by the API.
   {
-    auto found = password_store->stored_passwords().find(url.spec());
-    ASSERT_NE(password_store->stored_passwords().end(), found);
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(url.spec());
+    ASSERT_NE(passwords_map.end(), found);
     const std::vector<password_manager::PasswordForm>& passwords =
         found->second;
 
@@ -640,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // There should be an entry for both psl.example.com and www.example.com.
   password_manager::TestPasswordStore::PasswordMap passwords =
-      password_store->stored_passwords();
+      GetAllLoginsSync(password_store.get());
   GURL www_url = https_test_server().GetURL("www.example.com", "/");
   EXPECT_EQ(2U, passwords.size());
   EXPECT_TRUE(passwords.contains(psl_url.spec()));
@@ -685,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   // There should be an entry for both psl.example.com and www.example.com.
   password_manager::TestPasswordStore::PasswordMap passwords =
-      password_store->stored_passwords();
+      GetAllLoginsSync(password_store.get());
   GURL www_url = https_test_server().GetURL("www.example.com", "/");
   EXPECT_EQ(2U, passwords.size());
   EXPECT_TRUE(passwords.contains(psl_url.spec()));
@@ -730,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   // Wait for the migration logic to actually touch the password store.
   WaitForPasswordStore();
   // Only HTTPS passwords should be present.
-  EXPECT_THAT(password_store->stored_passwords(),
+  EXPECT_THAT(GetAllLoginsSync(password_store.get()),
               ElementsAre(Pair(https_origin.spec(), SizeIs(1))));
 }
 
@@ -897,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
 
   WaitForPasswordStore();
   password_manager::TestPasswordStore::PasswordMap stored =
-      GetDefaultPasswordStore(browser()->profile())->stored_passwords();
+      GetAllLoginsSync(GetDefaultPasswordStore(browser()->profile()));
   ASSERT_EQ(1u, stored.size());
   password_manager::PasswordForm signin_form = stored.begin()->second[0];
   EXPECT_EQ(u"user", signin_form.username_value);
@@ -952,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   signin_form.times_used_in_html_form = 1;
   signin_form.password_value = u"API";
   password_manager::TestPasswordStore::PasswordMap stored =
-      password_store->stored_passwords();
+      GetAllLoginsSync(password_store.get());
   ASSERT_EQ(1u, stored.size());
   // Upon an update, the |date_last_used| should be updated to the current
   // timestamp.

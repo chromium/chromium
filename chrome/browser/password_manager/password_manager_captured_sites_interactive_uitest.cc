@@ -197,12 +197,9 @@ class CapturedSitesPasswordManagerBrowserTest
                                  const std::string& password) override {
     scoped_refptr<password_manager::TestPasswordStore> password_store =
         GetDefaultPasswordStore(browser()->profile());
-    password_manager::FakePasswordStoreBackend* fake_backend =
-        static_cast<password_manager::FakePasswordStoreBackend*>(
-            password_store->GetBackendForTesting());
-
-    auto found = fake_backend->stored_passwords().find(origin);
-    if (fake_backend->stored_passwords().end() == found) {
+    auto passwords_map = GetAllLoginsSync(password_store.get());
+    auto found = passwords_map.find(origin);
+    if (passwords_map.end() == found) {
       return false;
     }
 
