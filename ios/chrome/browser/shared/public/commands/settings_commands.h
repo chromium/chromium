@@ -97,6 +97,9 @@ enum class PushNotificationClientId;
                                             (DefaultBrowserSettingsPageSource)
                                                 source;
 
+// Shows the default search engine selection settings.
+- (void)showDefaultSearchEngineSettings;
+
 // Shows the Safety Check page and starts the Safety Check for `referrer`.
 - (void)showAndStartSafetyCheckForReferrer:
     (password_manager::PasswordCheckReferrer)referrer;

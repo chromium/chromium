@@ -19,3 +19,5 @@ NSString* const kAIHubDismissButtonAccessibilityIdentifier =
     @"kAIHubDismissButtonAccessibilityIdentifier";
 NSString* const kGeminiDirectEntryPointAccessibilityIdentifier =
     @"kGeminiDirectEntryPointAccessibilityIdentifier";
+NSString* const kSearchEngineSettingsActionIdentifier =
+    @"kSearchEngineSettingsActionIdentifier";

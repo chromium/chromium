@@ -197,15 +197,15 @@ const CGFloat kDividerWidth = 1.0;
 
 #pragma mark - UITextViewDelegate
 
-// TODO(crbug.com/493952956) Handle the link by opening the default search
-// engine settings.
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction {
   NSString* actionIdentifier = textItem.link.absoluteString;
   if (actionIdentifier && textItem.contentType == UITextItemContentTypeLink) {
+    __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
-      NSLog(@"Attempting to open internal Chrome URL: %@", actionIdentifier);
+      [weakSelf.delegate viewController:weakSelf
+                   didTapFooterItemLink:kSearchEngineSettingsActionIdentifier];
     }];
   }
 
@@ -218,8 +218,7 @@ const CGFloat kDividerWidth = 1.0;
 - (UIMenu*)textView:(UITextView*)textView
     menuConfigurationForTextItem:(UITextItem*)textItem
                      defaultMenu:(UIMenu*)defaultMenu {
-  // TODO(crbug.com/493952956) Narrow the check for the supported action.
-  if (textItem.link) {
+  if (textItem.link && !textItem.link.scheme) {
     return nil;
   }
 

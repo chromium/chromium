@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -76,10 +77,11 @@ const CGFloat kIconSize = 20;
 }
 
 + (instancetype)lensSearchEngine {
-  // TODO(crbug.com/493952956) Add the action identifier for the default
-  // search engine link handler.
   NSString* text = l10n_util::GetNSString(
       IDS_IOS_AI_HUB_LENS_UNAVAILABLE_SEARCH_ENGINE_LABEL);
-  return [[ContentEntryPointUnavailabilityItem alloc] initWithText:text];
+  return [[ContentEntryPointUnavailabilityItem alloc]
+          initWithText:text
+                  icon:nil
+      actionIdentifier:kSearchEngineSettingsActionIdentifier];
 }
 @end

@@ -222,6 +222,15 @@ extern NSString* const kSettingsDoneButtonId;
                                       delegate
                           sourceForUMA:(DefaultBrowserSettingsPageSource)source;
 
+// Creates a new SearchEngineTableViewController to select the default search
+// engine used by Chrome. `browser` is the browser where settings are being
+// displayed and should not be nil. `delegate` may be nil.
++ (instancetype)
+    defaultSearchEngineControllerForBrowser:(Browser*)browser
+                                   delegate:
+                                       (id<SettingsNavigationControllerDelegate>)
+                                           delegate;
+
 // Creates a new SafetyCheckTableViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil. `referrer` represents where in the

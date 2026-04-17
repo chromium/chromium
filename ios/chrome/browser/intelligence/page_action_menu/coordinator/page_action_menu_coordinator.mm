@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
@@ -224,6 +225,19 @@
         [weakSelf signinDidFinishWithCoordinator:coordinator result:result];
       };
   [_signinCoordinator start];
+}
+
+- (void)viewController:(PageActionMenuViewController*)viewController
+    didTapFooterItemLink:(NSString*)actionIdentifier {
+  if ([actionIdentifier
+          isEqualToString:kSearchEngineSettingsActionIdentifier]) {
+    // Capture the handler before dismissal tears down the coordinator.
+    id<SettingsCommands> settingsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SettingsCommands);
+    [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+      [settingsHandler showDefaultSearchEngineSettings];
+    }];
+  }
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

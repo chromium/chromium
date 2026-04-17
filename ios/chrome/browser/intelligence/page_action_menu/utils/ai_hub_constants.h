@@ -23,5 +23,7 @@ extern NSString* const kAIHubAskGeminiButtonAccessibilityIdentifier;
 extern NSString* const kAIHubDismissButtonAccessibilityIdentifier;
 // The accessibility identifier for the Gemini direct entry point.
 extern NSString* const kGeminiDirectEntryPointAccessibilityIdentifier;
-
+// Used as a placeholder URL for links in labels that open the default search
+// engine settings through the `SettingsCommands`.
+extern NSString* const kSearchEngineSettingsActionIdentifier;
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UTILS_AI_HUB_CONSTANTS_H_

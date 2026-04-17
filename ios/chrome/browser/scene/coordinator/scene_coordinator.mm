@@ -1300,6 +1300,20 @@ void OnListFamilyMembersResponse(
                                  completion:nil];
 }
 
+- (void)showDefaultSearchEngineSettings {
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showDefaultSearchEngineSettings];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      defaultSearchEngineControllerForBrowser:_regularBrowser.get()
+                                     delegate:self];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
 - (void)showAndStartSafetyCheckForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
   if (_settingsNavigationController) {

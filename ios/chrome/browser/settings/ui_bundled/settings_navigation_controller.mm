@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller.h"
@@ -532,6 +533,22 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [controller navigationItem].leftBarButtonItem =
       [navigationController cancelButton];
   controller.source = source;
+  return navigationController;
+}
+
++ (instancetype)
+    defaultSearchEngineControllerForBrowser:(Browser*)browser
+                                   delegate:
+                                       (id<SettingsNavigationControllerDelegate>)
+                                           delegate {
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  SearchEngineTableViewController* controller =
+      [[SearchEngineTableViewController alloc] initWithProfile:profile];
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:controller
+                             browser:browser
+                            delegate:delegate];
   return navigationController;
 }
 
@@ -1277,6 +1294,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       HandlerForProtocol(_browser->GetCommandDispatcher(), SceneCommands);
   ConfigureHandlers(controller, _browser->GetCommandDispatcher());
   controller.source = source;
+  [self pushViewController:controller animated:YES];
+}
+
+- (void)showDefaultSearchEngineSettings {
+  ProfileIOS* profile = _browser->GetProfile()->GetOriginalProfile();
+  SearchEngineTableViewController* controller =
+      [[SearchEngineTableViewController alloc] initWithProfile:profile];
+  ConfigureHandlers(controller, _browser->GetCommandDispatcher());
   [self pushViewController:controller animated:YES];
 }
 

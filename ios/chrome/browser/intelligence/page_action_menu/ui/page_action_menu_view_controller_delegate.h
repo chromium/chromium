@@ -22,6 +22,10 @@
 - (void)viewControllerDidTapSignedOutGemini:
     (PageActionMenuViewController*)viewController;
 
+// Called when the user taps a link in the footer.
+- (void)viewController:(PageActionMenuViewController*)viewController
+    didTapFooterItemLink:(NSString*)actionIdentifier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_VIEW_CONTROLLER_DELEGATE_H_
