@@ -880,8 +880,7 @@ static_library("browser") {
 
     # TODO(crbug.com/430804948): Remove this circular dependency when the
     # following headers get componentized:
-    # - c/b/enterprise/signin/profile_management_disclaimer_service_factory.h
-    # - c/b/enterprise/util/managed_browser_utils.h
+    # - c/b/signin/signin_util.h
     "//chrome/browser/ui/profiles:impl",
 
     # TODO(crbug.com/432061436): Remove this circular dependency when c/b/password_manager gets
@@ -1972,8 +1971,9 @@ static_library("browser") {
     "//ui/strings",
     "//ui/webui",
 
-    # TODO(crbug.com/430804948): Remove this dependency when profiles/profile_manager.h
-    # gets componentized.
+    # TODO(crbug.com/430804948): Remove this circular dependency when the
+    # following headers get componentized:
+    # - c/b/signin/signin_util.h
     "//chrome/browser/ui/profiles:impl",
 
     # TODO(crbug.com/432061436): Remove this dependency when c/b/password_manager gets
@@ -3602,10 +3602,6 @@ static_library("browser") {
       # - c/b/enterprise/browser_management/management_service_factory.h
       # - c/b/lifetime/application_lifetime.h
       "//chrome/browser/upgrade_detector:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when c/b/profiles/profile_manager.h
-      # gets componentized.
-      "//chrome/browser/device_notifications:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when:
       # - c/b/browser_process_platform_part.h
