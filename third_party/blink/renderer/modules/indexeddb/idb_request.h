@@ -151,8 +151,6 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
       other.type_.reset();
       start_time_ = other.start_time_;
       other.start_time_ = base::TimeTicks();
-      id_ = other.id_;
-      other.id_ = 0;
     }
     AsyncTraceState& operator=(AsyncTraceState&& rhs) {
       DCHECK(IsEmpty());
@@ -160,8 +158,6 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
       rhs.type_.reset();
       start_time_ = rhs.start_time_;
       rhs.start_time_ = base::TimeTicks();
-      id_ = rhs.id_;
-      rhs.id_ = 0;
       return *this;
     }
 
@@ -186,16 +182,12 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
    protected:  // For testing
     std::optional<TypeForMetrics> type() const { return type_; }
     const base::TimeTicks& start_time() const { return start_time_; }
-    size_t id() const { return id_; }
 
    private:
     friend class IDBRequest;
 
     std::optional<TypeForMetrics> type_;
     base::TimeTicks start_time_;
-
-    // Uniquely generated ID that ties an async trace's begin and end events.
-    size_t id_ = 0;
   };
 
   static IDBRequest* Create(ScriptState*,

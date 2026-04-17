@@ -181,11 +181,9 @@ void RecordHistogram(IDBRequest::TypeForMetrics type,
 
 IDBRequest::AsyncTraceState::AsyncTraceState(TypeForMetrics type)
     : type_(type), start_time_(base::TimeTicks::Now()) {
-  static std::atomic<size_t> counter(0);
-  id_ = counter.fetch_add(1, std::memory_order_relaxed);
   TRACE_EVENT_BEGIN("IndexedDB",
-                    perfetto::DynamicString(RequestTypeToName(type)),
-                    perfetto::Track(id_));
+                    perfetto::StaticString(RequestTypeToName(type)),
+                    perfetto::NamedTrack::FromPointer("IDBRequest", this));
 }
 
 void IDBRequest::AsyncTraceState::WillDispatchResult(bool success) {
@@ -197,7 +195,8 @@ void IDBRequest::AsyncTraceState::WillDispatchResult(bool success) {
 
 void IDBRequest::AsyncTraceState::RecordAndReset() {
   if (type_) {
-    TRACE_EVENT_END("IndexedDB", perfetto::Track(id_));
+    TRACE_EVENT_END("IndexedDB",
+                    perfetto::NamedTrack::FromPointer("IDBRequest", this));
     type_.reset();
   }
 }
@@ -264,7 +263,7 @@ IDBRequest::~IDBRequest() {
   if (!GetExecutionContext())
     return;
   if (ready_state_ == DONE)
-    DCHECK(metrics_.IsEmpty()) << metrics_.id();
+    DCHECK(metrics_.IsEmpty());
   else
     DCHECK_EQ(ready_state_, kEarlyDeath);
 }
