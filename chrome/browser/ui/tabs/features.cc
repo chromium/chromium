@@ -40,6 +40,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "expand_on_hover_click_delay",
                    base::Milliseconds(350));
 
+BASE_FEATURE_PARAM(bool,
+                   kVerticalTabsExpandOnHoverDefaultEnabled,
+                   &kVerticalTabsExpandOnHover,
+                   false);
+
 BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHorizontalTabStripComboButton, base::FEATURE_DISABLED_BY_DEFAULT);

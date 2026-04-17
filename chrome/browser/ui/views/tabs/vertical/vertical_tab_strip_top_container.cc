@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -314,6 +316,11 @@ void VerticalTabStripTopContainer::ShowContextMenuForViewImpl(
     ui::mojom::MenuSourceType source_type) {
   if (tabs::IsVerticalTabsExpandOnHoverFeatureEnabled() &&
       source == collapse_button_) {
+    BrowserUserEducationInterface::From(browser_)
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHVerticalTabsExpandOnHoverFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+
     // Reset the menu runner to avoid issues when the collapse button is
     // clicked multiple times.
     context_menu_runner_.reset();

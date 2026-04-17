@@ -10358,6 +10358,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_VERTICAL_TABS_IPH_BODY" desc="The body for the vertical tabs IPH tutorial.">
         See entire tab titles, easily manage tab groups, and free up vertical space by moving your tabs to the side.
       </message>
+      <message name="IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_ENABLED_IPH_BODY" desc="The body for the vertical tabs expand on hover IPH, when expand on hover is default enabled.">
+        You can now expand your tabs by hovering over them. To turn this off, right-click here.
+      </message>
+      <message name="IDS_VERTICAL_TABS_EXPAND_ON_HOVER_DEFAULT_DISABLED_IPH_BODY" desc="The body for the vertical tabs expand on hover IPH, when expand on hover is default disabled.">
+        You can now expand your tabs by hovering over them. To turn this on, right-click here.
+      </message>
       <message name="IDS_VERTICAL_RESIZE_AREA" is_accessibility_with_no_ui="true" desc="The accessibility label for the resize area in the vertical tab strip.">
             Vertical Tab Strip Resize Handle (Draggable)
       </message>

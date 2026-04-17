@@ -805,6 +805,9 @@ should be able to be added at any place in this file.
   <variant name="_TranslateMenuButton" summary="For translate menu button."/>
   <variant name="_UpdatedConnectionSecurityIndicators"
       summary="For updated omnibox connection security indicators."/>
+  <variant name="_VerticalTabsExpandOnHoverFeature"
+      summary="For showing the vertical tabs expand on hover feature when in
+               vertical tabs mode."/>
   <variant name="_VerticalTabstripTutorialFeature"
       summary="For showing the vertical tabs feature when the horizontal
                tabstrip is crowded."/>
