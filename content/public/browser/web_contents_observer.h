@@ -667,6 +667,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void WebAuthnAssertionRequestSucceeded(
       RenderFrameHost* render_frame_host) {}
 
+  // Invoked when a federated login request completes.
+  virtual void OnFedCmFederatedLogin(bool success) {}
+
   // Invoked when the display state of the frame changes.
   virtual void FrameDisplayStateChanged(RenderFrameHost* render_frame_host,
                                         bool is_display_none) {}

@@ -123,6 +123,7 @@ class MockWebContentsObserver : public WebContentsObserver {
                const GlobalRequestID& request_id,
                const blink::mojom::ResourceLoadInfo& resource_load_info),
               (override));
+  MOCK_METHOD(void, OnFedCmFederatedLogin, (bool success), (override));
   MOCK_METHOD(void,
               OnCookiesAccessed,
               (RenderFrameHost* render_frame_host,

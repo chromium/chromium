@@ -120,6 +120,10 @@ namespace mojom {
 class CreateNewWindowParams;
 }
 
+namespace webid {
+enum class FederatedLoginResult;
+}
+
 // An interface implemented by an object interested in knowing about the state
 // of the RenderFrameHost.
 //
@@ -226,6 +230,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // request.
   virtual void WebAuthnAssertionRequestSucceeded(
       RenderFrameHostImpl* render_frame_host) {}
+
+  // Called when a federated login request completes.
+  virtual void OnFedCmFederatedLogin(webid::FederatedLoginResult result) {}
 
   // Binds a DisplayCutoutHost object associated to |render_frame_host|.
   virtual void BindDisplayCutoutHost(

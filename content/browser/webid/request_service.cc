@@ -2099,8 +2099,14 @@ void RequestService::CompleteRequest(
     // Record metrics and console errors only the first time we complete the
     // request, even if the callback is delayed.
     RecordMetricsAndConsoleError(result, token_status, selected_idp_config_url);
-    request_dialog_controller_->OnFlowCompleted(
-        FederatedAuthRequestResultToFederatedLoginResult(result));
+    webid::FederatedLoginResult federated_login_result =
+        FederatedAuthRequestResultToFederatedLoginResult(result);
+    request_dialog_controller_->OnFlowCompleted(federated_login_result);
+
+    RenderFrameHostImpl::From(&render_frame_host())
+        ->delegate()
+        ->OnFedCmFederatedLogin(federated_login_result);
+
     if (token_received_callback_for_autofill_) {
       std::move(token_received_callback_for_autofill_)
           .Run(result == FederatedAuthRequestResult::kSuccess);

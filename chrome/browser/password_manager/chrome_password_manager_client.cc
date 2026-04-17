@@ -1923,6 +1923,28 @@ void ChromePasswordManagerClient::ResourceLoadComplete(
   }
 }
 
+void ChromePasswordManagerClient::OnFedCmFederatedLogin(bool success) {
+  // If the federated login flow happens in the popup window, the owner of the
+  // window needs to handle the notification because the window usually gets
+  // destroyed right after the login.
+  content::RenderFrameHost* opener_rfh = web_contents()->GetOpener();
+  content::WebContents* opener_web_contents =
+      opener_rfh ? content::WebContents::FromRenderFrameHost(opener_rfh)
+                 : nullptr;
+  ChromePasswordManagerClient* opener_client =
+      opener_web_contents
+          ? ChromePasswordManagerClient::FromWebContents(opener_web_contents)
+          : nullptr;
+  if (opener_client) {
+    opener_client->OnFedCmFederatedLogin(success);
+    return;
+  }
+
+  // TODO(crbug.com/498593355): Propagate the call to the password manager. Only
+  // the password manager click from the last opener will handle the federated
+  // login.
+}
+
 void ChromePasswordManagerClient::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,

@@ -40,6 +40,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/fake_local_frame.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -2006,6 +2007,31 @@ TEST_F(RequestServiceTest, SuccessfulRequest) {
   EXPECT_TRUE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.DidShowUI", true, 1);
   ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
+}
+
+TEST_F(RequestServiceTest, OnFedCmFederatedLoginSuccess) {
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents());
+
+  EXPECT_CALL(observer, OnFedCmFederatedLogin(true)).Times(1);
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
+TEST_F(RequestServiceTest, OnFedCmFederatedLoginFailure) {
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents());
+
+  EXPECT_CALL(observer, OnFedCmFederatedLogin(false)).Times(1);
+
+  RequestExpectations error_request = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
+
+  RunAuthTest(kDefaultRequestParameters, error_request, configuration);
 }
 
 // Test successful well-known fetching.
