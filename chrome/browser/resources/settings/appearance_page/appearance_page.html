@@ -267,6 +267,7 @@
             </settings-toggle-button>
             <settings-toggle-button id="hoverCardMemoryUsageToggle" class="hr"
                 hidden="[[!pageVisibility.hoverCard]]"
+                on-settings-boolean-control-change="onHoverCardMemoryUsageToggleChange_"
                 pref="{{prefs.browser.hovercard.memory_usage_enabled}}"
                 label="$i18n{showHoverCardMemoryUsage}">
             </settings-toggle-button>

@@ -577,6 +577,11 @@ export class SettingsAppearancePageElement extends
     this.appearanceBrowserProxy_.recordHoverCardImagesEnabledChanged(enabled);
   }
 
+  private onHoverCardMemoryUsageToggleChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.appearanceBrowserProxy_.recordHoverCardMemoryUsageEnabledChanged(enabled);
+  }
+
   private showVerticalTabsExpandOnHoverSetting_(): boolean {
     if (this.prefs === undefined) {
       return false;

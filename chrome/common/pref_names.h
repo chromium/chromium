@@ -3401,6 +3401,10 @@ inline constexpr char kHoverCardImagesEnabled[] =
 inline constexpr char kHoverCardMemoryUsageEnabled[] =
     "browser.hovercard.memory_usage_enabled";
 
+// Whether hovercard memory usage has been migrated to default-off
+inline constexpr char kHoverCardMemoryUsageDisableMigrationComplete[] =
+    "browser.hovercard.memory_usage_disable_migration_complete";
+
 // Boolean that specifies whether Compression Dictionary Transport is enabled.
 inline constexpr char kCompressionDictionaryTransportEnabled[] =
     "net.compression_dictionary_transport_enabled";

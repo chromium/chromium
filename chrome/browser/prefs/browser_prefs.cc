@@ -2359,6 +2359,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 04/2026.
   local_state->ClearPref(kTpcdMetadataCohorts);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 04/2026.
+  tabs::MigrateHoverCardMemoryPref(local_state);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 

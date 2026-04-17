@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -75,6 +76,18 @@ void MigrateTabSearchPref(PrefService* profile_prefs) {
   }
   profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstripMigrationComplete,
                             true);
+}
+
+void MigrateHoverCardMemoryPref(PrefService* local_prefs) {
+  if (!base::FeatureList::IsEnabled(features::kTabStripDeclutter) ||
+      local_prefs->GetBoolean(
+          prefs::kHoverCardMemoryUsageDisableMigrationComplete)) {
+    return;
+  }
+
+  local_prefs->SetBoolean(prefs::kHoverCardMemoryUsageEnabled, false);
+  local_prefs->SetBoolean(prefs::kHoverCardMemoryUsageDisableMigrationComplete,
+                          true);
 }
 
 TabSearchPosition GetTabSearchPosition(

@@ -30,6 +30,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // Migrates the tab search toolbar pin pref to the combo button pin pref.
 void MigrateTabSearchPref(PrefService* profile_prefs);
 
+// Ensures the hover card memory usage preference stays disabled if
+// it was disabled before.
+void MigrateHoverCardMemoryPref(PrefService* local_prefs);
+
 // Return the value of the preference for TabSearchPosition.
 TabSearchPosition GetTabSearchPosition(
     const BrowserWindowInterface* browser_window);

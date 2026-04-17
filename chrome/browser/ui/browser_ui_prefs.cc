@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -68,6 +69,9 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kHoverCardImagesEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kHoverCardMemoryUsageEnabled, true);
+
+  registry->RegisterBooleanPref(
+      prefs::kHoverCardMemoryUsageDisableMigrationComplete, false);
 
 #if defined(USE_AURA)
   registry->RegisterBooleanPref(prefs::kOverscrollHistoryNavigationEnabled,

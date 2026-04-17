@@ -326,6 +326,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.HoverCards.MemoryUsage.Enabled" enum="BooleanEnabled"
+    expires_after="2026-10-30">
+  <owner>dominicaustria@chromium.org</owner>
+  <owner>emshack@chromium.org</owner>
+  <summary>
+    Logged whether the hover card memory usage bar is enabled or disabled when
+    it is toggled in chrome://settings/appearance. Record for desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.NonSettingsFragmentAttached"
     enum="AndroidSettingsFragmentHashes" expires_after="2026-04-25">
   <owner>hidehiko@chromium.org</owner>
