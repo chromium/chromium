@@ -149,7 +149,8 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
             base::OnceCallback<void(Source)> picker_callback,
             base::OnceClosure cancel_callback,
             base::OnceClosure error_callback,
-            base::OnceClosure stop_audio_callback) override;
+            base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback)
+      override;
   void Close(DesktopMediaID device_id) override;
   void GetMainBundleId(DesktopMediaID::Id session_id,
                        GetMainBundleIdCallback callback) override;
@@ -171,7 +172,7 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
     base::OneShotTimer cleanup_timer;
 
     std::optional<std::string> primary_bundle_id;
-    base::OnceClosure stop_audio_callback;
+    base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback;
   };
 
   // Callbacks called by PickerObserver when it receives an event from the OS.
@@ -232,7 +233,7 @@ void NativeScreenCapturePickerMac::Open(
     base::OnceCallback<void(Source)> picker_callback,
     base::OnceClosure cancel_callback,
     base::OnceClosure error_callback,
-    base::OnceClosure stop_audio_callback) {
+    base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback) {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
   CHECK(type == DesktopMediaID::Type::TYPE_SCREEN ||
         type == DesktopMediaID::Type::TYPE_WINDOW);
@@ -341,7 +342,7 @@ void NativeScreenCapturePickerMac::UpdateAudioStatusForSession(
         VLOG(1) << "NSCPM::UpdateAudioStatus: session " << session_id
                 << " Primary application no longer present. Triggering "
                    "stop_audio_callback.";
-        std::move(session.stop_audio_callback).Run();
+        std::move(session.stop_audio_callback).Run(session_id);
       }
     }
   }

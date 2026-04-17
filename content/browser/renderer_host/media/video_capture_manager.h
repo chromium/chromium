@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/media/video_capture_device_launch_observer.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/screenlock_observer.h"
 #include "media/base/video_facing.h"
@@ -236,9 +237,15 @@ class CONTENT_EXPORT VideoCaptureManager
       base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceCallback<void()> cancel_callback,
-      base::OnceCallback<void()> error_callback);
+      base::OnceCallback<void()> error_callback,
+      base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback =
+          base::DoNothing());
 
   void CloseNativeScreenCapturePicker(DesktopMediaID device_id);
+
+  void GetMainBundleId(
+      DesktopMediaID::Id session_id,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
   VideoCaptureProvider& video_capture_provider() {
     return *video_capture_provider_.get();

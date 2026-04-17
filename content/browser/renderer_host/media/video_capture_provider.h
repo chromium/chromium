@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
@@ -42,9 +43,14 @@ class VideoCaptureProvider {
       base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceCallback<void()> cancel_callback,
-      base::OnceCallback<void()> error_callback) = 0;
+      base::OnceCallback<void()> error_callback,
+      base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback) = 0;
 
   virtual void CloseNativeScreenCapturePicker(DesktopMediaID device_id) = 0;
+
+  virtual void GetMainBundleId(
+      DesktopMediaID::Id session_id,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback) = 0;
 };
 
 }  // namespace content

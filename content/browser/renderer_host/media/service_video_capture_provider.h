@@ -55,8 +55,15 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
       base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceCallback<void()> cancel_callback,
-      base::OnceCallback<void()> error_callback) override;
+      base::OnceCallback<void()> error_callback,
+      base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback)
+      override;
   void CloseNativeScreenCapturePicker(DesktopMediaID device_id) override;
+
+  void GetMainBundleId(
+      DesktopMediaID::Id session_id,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback)
+      override;
 
   // content::GpuDataManagerObserver implementation.
   void OnGpuInfoUpdate() override;

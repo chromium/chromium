@@ -176,7 +176,8 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
   DesktopMediaID::Id OpenPickerAndSelect(
       DesktopMediaID::Type type,
       std::optional<CGWindowID> window_id = std::nullopt,
-      base::OnceClosure stop_audio_callback = base::DoNothing()) {
+      base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback =
+          base::DoNothing()) {
     DesktopMediaID::Id id = 0;
     if (@available(macOS 14.0, *)) {
       base::RunLoop run_loop;
@@ -330,7 +331,10 @@ TEST_F(NativeScreenCapturePickerMacTest,
     GetBundleMap()[kWindowB] = "com.example.AppB";
 
     OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindowA,
-                        stop_audio_run_loop.QuitClosure());
+                        base::BindLambdaForTesting([&](DesktopMediaID::Id id) {
+                          EXPECT_EQ(id, 1);
+                          stop_audio_run_loop.Quit();
+                        }));
     TriggerUpdate(kWindowB);
 
     stop_audio_run_loop.Run();
@@ -347,9 +351,10 @@ TEST_F(NativeScreenCapturePickerMacTest,
     GetBundleMap()[kWindowA] = "com.example.AppA";
     GetBundleMap()[kWindowB] = "com.example.AppB";
 
-    OpenPickerAndSelect(
-        DesktopMediaID::TYPE_WINDOW, kWindowA,
-        base::BindLambdaForTesting([&]() { stop_audio_called = true; }));
+    OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindowA,
+                        base::BindLambdaForTesting([&](DesktopMediaID::Id id) {
+                          stop_audio_called = true;
+                        }));
 
     // Update with both windows (A and B).
     FakeSCContentFilter* filter = [[FakeSCContentFilter alloc] init];

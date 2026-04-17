@@ -41,7 +41,7 @@ class NativeScreenCapturePicker {
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceClosure cancel_callback,
       base::OnceClosure error_callback,
-      base::OnceClosure stop_audio_callback) = 0;
+      base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback) = 0;
 
   // Closes the picker.
   virtual void Close(DesktopMediaID device_id) = 0;
