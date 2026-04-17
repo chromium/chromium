@@ -147,14 +147,15 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
+    base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
+        callback) {
   task_manager_->GenerateSigningKeySlowlyAsync(
       task_origin_, config_, acceptable_algorithms, priority,
       WrapCallbackWithErrorIfCancelled(
           std::move(callback),
           // SAFETY: `this` is guaranteed to be alive if the projection callback
           // is invoked.
-          base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGeneratedImpl,
+          base::BindOnce(&UnexportableKeyServiceImpl::OnSigningKeyGeneratedImpl,
                          base::Unretained(this))));
 }
 
@@ -411,8 +412,8 @@ UnexportableKeyServiceImpl::OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
   return key_ids;
 }
 
-ServiceErrorOr<UnexportableKeyId>
-UnexportableKeyServiceImpl::OnKeyGeneratedImpl(
+ServiceErrorOr<UnexportableSigningKeyId>
+UnexportableKeyServiceImpl::OnSigningKeyGeneratedImpl(
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
   ASSIGN_OR_RETURN(scoped_refptr<RefCountedUnexportableSigningKey> key,
@@ -431,7 +432,7 @@ UnexportableKeyServiceImpl::OnKeyGeneratedImpl(
   }
   // A newly generated key ID must be unique.
   CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
-  return key_id;
+  return UnexportableSigningKeyId(key_id);
 }
 
 void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag(

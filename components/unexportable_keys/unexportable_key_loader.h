@@ -60,11 +60,12 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyLoader {
   // Registers `callback` to be called when a key is loaded. Invokes `callback`
   // immediately if a key has already been loaded.
   void InvokeCallbackAfterKeyLoaded(
-      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback);
+      base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
+          callback);
 
   // If a key hasn't been loaded yet, returns ServiceError::kKeyNotReady.
   // Otherwise, returns a loaded key ID or a terminal error state.
-  ServiceErrorOr<UnexportableKeyId> GetKeyIdOrError();
+  ServiceErrorOr<UnexportableSigningKeyId> GetKeyIdOrError();
 
   // Returns the current state of the loader.
   // Public for testing.
@@ -83,12 +84,13 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyLoader {
           acceptable_algorithms,
       BackgroundTaskPriority priority);
 
-  void OnKeyLoaded(ServiceErrorOr<UnexportableKeyId> key_id_or_error);
+  void OnKeyLoaded(ServiceErrorOr<UnexportableSigningKeyId> key_id_or_error);
 
-  ServiceErrorOr<UnexportableKeyId> key_id_or_error_ =
+  ServiceErrorOr<UnexportableSigningKeyId> key_id_or_error_ =
       base::unexpected(ServiceError::kKeyNotReady);
   State state_ = State::kNotStarted;
-  std::vector<base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)>>
+  std::vector<
+      base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>>
       on_load_callbacks_;
 
   base::WeakPtrFactory<UnexportableKeyLoader> weak_ptr_factory_{this};

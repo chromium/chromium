@@ -121,8 +121,8 @@ void BindingKeyRegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
 void BindingKeyRegistrationTokenHelper::SignHeaderAndPayload(
     HeaderAndPayloadGenerator header_and_payload_generator,
     base::OnceCallback<void(base::expected<Result, Error>)> callback,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        binding_key) {
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId> binding_key) {
   if (!binding_key.has_value()) {
     Error error = std::visit(
         absl::Overload{[](const std::vector<uint8_t>&) {

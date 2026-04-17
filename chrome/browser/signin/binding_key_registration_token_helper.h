@@ -118,8 +118,8 @@ class BindingKeyRegistrationTokenHelper {
   void SignHeaderAndPayload(
       HeaderAndPayloadGenerator header_and_payload_generator,
       base::OnceCallback<void(base::expected<Result, Error>)> callback,
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          binding_key);
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableSigningKeyId> binding_key);
   void CreateRegistrationToken(
       std::string_view header_and_payload,
       unexportable_keys::UnexportableKeyId binding_key,

@@ -82,7 +82,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeySuccess) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  const UnexportableKeyId key_id;
+  const UnexportableSigningKeyId key_id;
 
   const crypto::SignatureVerifier::SignatureAlgorithm algo =
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
@@ -129,7 +129,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetAlgorithmError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  UnexportableKeyId key_id;
+  const UnexportableSigningKeyId key_id;
 
   EXPECT_CALL(mock_uks, GenerateSigningKeySlowlyAsync)
       .WillOnce(RunOnceCallback<2>(key_id));
@@ -160,7 +160,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetWrappedKeyError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  UnexportableKeyId key_id;
+  const UnexportableSigningKeyId key_id;
 
   EXPECT_CALL(mock_uks, GenerateSigningKeySlowlyAsync)
       .WillOnce(RunOnceCallback<2>(key_id));
@@ -194,7 +194,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetSubjectPublicKeyInfoError) {
   MockUnexportableKeyService mock_uks;
   UnexportableKeyServiceProxyImpl proxy_impl(&mock_uks, std::move(receiver));
 
-  UnexportableKeyId key_id;
+  const UnexportableSigningKeyId key_id;
 
   EXPECT_CALL(mock_uks, GenerateSigningKeySlowlyAsync)
       .WillOnce(RunOnceCallback<2>(key_id));

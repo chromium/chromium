@@ -56,11 +56,12 @@ class UnexportableKeyLoaderTest : public testing::Test {
   }
 
   std::vector<uint8_t> GenerateNewKeyAndReturnWrappedKey() {
-    base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+    base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+        generate_future;
     service().GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
     RunBackgroundTasks();
-    ServiceErrorOr<UnexportableKeyId> key_id = generate_future.Get();
+    ServiceErrorOr<UnexportableSigningKeyId> key_id = generate_future.Get();
     CHECK(key_id.has_value());
 
     ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
@@ -95,7 +96,8 @@ TEST_F(UnexportableKeyLoaderTest, CreateFromWrappedKeySync) {
             UnexportableKeyLoader::State::kReady);
   EXPECT_OK(key_loader->GetKeyIdOrError());
 
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> on_load_future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+      on_load_future;
   key_loader->InvokeCallbackAfterKeyLoaded(on_load_future.GetCallback());
   EXPECT_TRUE(on_load_future.IsReady());
   EXPECT_EQ(key_loader->GetKeyIdOrError(), on_load_future.Get());
@@ -114,7 +116,8 @@ TEST_F(UnexportableKeyLoaderTest, CreateFromWrappedKeyAsync) {
   EXPECT_THAT(key_loader->GetKeyIdOrError(),
               ErrorIs(ServiceError::kKeyNotReady));
 
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> on_load_future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+      on_load_future;
   key_loader->InvokeCallbackAfterKeyLoaded(on_load_future.GetCallback());
   EXPECT_FALSE(on_load_future.IsReady());
 
@@ -135,7 +138,8 @@ TEST_F(UnexportableKeyLoaderTest, CreateFromWrappedKeyMultipleCallbacks) {
   auto key_loader = UnexportableKeyLoader::CreateFromWrappedKey(
       service(), wrapped_key, kTaskPriority);
 
-  std::array<base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>, 5>
+  std::array<base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>,
+             5>
       on_load_futures;
   for (auto& future : on_load_futures) {
     key_loader->InvokeCallbackAfterKeyLoaded(future.GetCallback());
@@ -160,7 +164,8 @@ TEST_F(UnexportableKeyLoaderTest, CreateWithNewKey) {
   EXPECT_THAT(key_loader->GetKeyIdOrError(),
               ErrorIs(ServiceError::kKeyNotReady));
 
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> on_load_future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+      on_load_future;
   key_loader->InvokeCallbackAfterKeyLoaded(on_load_future.GetCallback());
   EXPECT_FALSE(on_load_future.IsReady());
 
@@ -188,7 +193,7 @@ TEST_F(UnexportableKeyLoaderTest, SignDataAfterLoading) {
 
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   key_loader->InvokeCallbackAfterKeyLoaded(base::BindLambdaForTesting(
-      [&](ServiceErrorOr<UnexportableKeyId> key_id_or_error) {
+      [&](ServiceErrorOr<UnexportableSigningKeyId> key_id_or_error) {
         ASSERT_OK(key_id_or_error);
         service().SignSlowlyAsync(*key_id_or_error,
                                   std::vector<uint8_t>({1, 2, 3}),

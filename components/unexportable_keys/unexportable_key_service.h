@@ -28,7 +28,7 @@ namespace unexportable_keys {
 // 1. Generate a new `UnexportableSigningKey` and obtain its key ID:
 //
 //  UnexportableKeyService& service = GetUnexportableKeyService();
-//  ServiceErrorOr<UnexportableKeyId> key_id;
+//  ServiceErrorOr<UnexportableSigningKeyId> key_id;
 //  service.GenerateSigningKeySlowlyAsync(
 //      kAlgorithm, kPriority, [&key_id](auto result) { key_id = result; });
 //
@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   virtual ~UnexportableKeyService() = default;
 
   // Generates a new signing key asynchronously and returns an ID of this key.
-  // Returned `UnexportableKeyId` can be used later to perform key operations on
-  // this `UnexportableKeyService`.
+  // Returned `UnexportableSigningKeyId` can be used later to perform key
+  // operations on this `UnexportableKeyService`.
   // The first supported value of `acceptable_algorithms` determines the type of
   // the key.
   // Invokes `callback` with a `ServiceError` if no supported hardware exists,
@@ -70,7 +70,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) = 0;
+      base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
+          callback) = 0;
 
   // Creates a new signing key from a `wrapped_key` asynchronously and returns
   // an ID of this key.

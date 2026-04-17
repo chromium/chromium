@@ -167,8 +167,8 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
   SessionServiceImpl& service() { return *service_; }
 
   std::vector<uint8_t> GetWrappedKey() {
-    base::test::TestFuture<
-        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
         generate_key_future;
     auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
     unexportable_key_service_.GenerateSigningKeySlowlyAsync(

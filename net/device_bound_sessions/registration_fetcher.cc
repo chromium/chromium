@@ -183,9 +183,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   ~RegistrationFetcherImpl() override {}
 
-  void OnKeyGenerated(
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_id) {
+  void OnSigningKeyGenerated(
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableSigningKeyId> key_id) {
     if (!key_id.has_value()) {
       RunCallback(
           CreateErrorRegistrationResult(SessionError(SessionError::kKeyError)));
@@ -273,7 +273,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     key_service_->GenerateSigningKeySlowlyAsync(
         supported_algos, kTaskPriority,
-        base::BindOnce(&RegistrationFetcherImpl::OnKeyGenerated, GetWeakPtr())
+        base::BindOnce(&RegistrationFetcherImpl::OnSigningKeyGenerated,
+                       GetWeakPtr())
             .Then(base::BindOnce(&RegistrationFetcherImpl::StartFetch,
                                  GetWeakPtr(),
                                  registration_params.TakeChallenge(),
@@ -897,7 +898,7 @@ void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
                  std::optional<RegistrationFetcher::RegistrationToken>)>
                  callback,
              unexportable_keys::ServiceErrorOr<
-                 unexportable_keys::UnexportableKeyId> key_result) {
+                 unexportable_keys::UnexportableSigningKeyId> key_result) {
             if (!key_result.has_value()) {
               std::move(callback).Run(std::nullopt);
               return;

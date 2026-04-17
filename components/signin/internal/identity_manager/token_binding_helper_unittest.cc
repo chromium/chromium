@@ -45,6 +45,7 @@ using ::base::test::ErrorIs;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Return;
+using ::unexportable_keys::UnexportableSigningKeyId;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -75,21 +76,21 @@ class TokenBindingHelperTest : public testing::Test {
         .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
   }
 
-  unexportable_keys::UnexportableKeyId GenerateNewKey() {
+  UnexportableSigningKeyId GenerateNewSigningKey() {
     base::test::TestFuture<
-        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+        unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId>>
         generate_future;
     unexportable_key_service_.GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
     RunBackgroundTasks();
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        key_id = generate_future.Get();
+    unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId> key_id =
+        generate_future.Get();
     CHECK(key_id.has_value());
     return *key_id;
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      const unexportable_keys::UnexportableKeyId& key_id) {
+      unexportable_keys::UnexportableKeyId key_id) {
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_.GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());
@@ -115,7 +116,7 @@ class TokenBindingHelperTest : public testing::Test {
 
 TEST_F(TokenBindingHelperTest, SetBindingKey) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
-  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
   EXPECT_FALSE(helper().HasBindingKey(account_id));
 
   helper().SetBindingKey(account_id, wrapped_key);
@@ -126,7 +127,7 @@ TEST_F(TokenBindingHelperTest, SetBindingKey) {
 
 TEST_F(TokenBindingHelperTest, SetBindingKeyToEmpty) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
-  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
   helper().SetBindingKey(account_id, wrapped_key);
 
   helper().SetBindingKey(account_id, {});
@@ -137,8 +138,8 @@ TEST_F(TokenBindingHelperTest, ClearAllKeys) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   CoreAccountId account_id2 =
       CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2"));
-  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
-  std::vector<uint8_t> wrapped_key2 = GetWrappedKey(GenerateNewKey());
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
+  std::vector<uint8_t> wrapped_key2 = GetWrappedKey(GenerateNewSigningKey());
   helper().SetBindingKey(account_id, wrapped_key);
   helper().SetBindingKey(account_id2, wrapped_key2);
 
@@ -150,10 +151,10 @@ TEST_F(TokenBindingHelperTest, ClearAllKeys) {
 TEST_F(TokenBindingHelperTest, GetBoundTokenCount) {
   EXPECT_EQ(helper().GetBoundTokenCount(), 0u);
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
-                         GetWrappedKey(GenerateNewKey()));
+                         GetWrappedKey(GenerateNewSigningKey()));
   EXPECT_EQ(helper().GetBoundTokenCount(), 1u);
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2")),
-                         GetWrappedKey(GenerateNewKey()));
+                         GetWrappedKey(GenerateNewSigningKey()));
   EXPECT_EQ(helper().GetBoundTokenCount(), 2u);
 }
 
@@ -165,12 +166,12 @@ TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfEmpty) {
 
 TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfOnlyOne) {
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
-                         GetWrappedKey(GenerateNewKey()));
+                         GetWrappedKey(GenerateNewSigningKey()));
   EXPECT_TRUE(helper().AreAllBindingKeysSame());
 }
 
 TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfAllSame) {
-  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
                          wrapped_key);
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2")),
@@ -181,14 +182,14 @@ TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfAllSame) {
 }
 
 TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, FalseIfDifferent) {
-  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
   // Two accounts share the same key but the third one is different.
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
                          wrapped_key);
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2")),
                          wrapped_key);
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id3")),
-                         GetWrappedKey(GenerateNewKey()));
+                         GetWrappedKey(GenerateNewSigningKey()));
   EXPECT_FALSE(helper().AreAllBindingKeysSame());
 }
 
@@ -198,7 +199,7 @@ TEST_F(TokenBindingHelperTest, CopyBindingKeyFromAnotherTokenServiceEmpty) {
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
-  unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   helper().SetBindingKey(account_id, wrapped_key);
 
@@ -253,7 +254,7 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoEphemeralKey) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
-  unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   helper().SetBindingKey(account_id, wrapped_key);
 

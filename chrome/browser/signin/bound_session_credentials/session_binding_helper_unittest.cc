@@ -31,6 +31,7 @@ using base::test::RunOnceCallback;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
+using ::unexportable_keys::UnexportableSigningKeyId;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -44,14 +45,14 @@ class SessionBindingHelperTest : public testing::Test {
     return unexportable_key_service_;
   }
 
-  unexportable_keys::UnexportableKeyId GenerateNewKey() {
+  UnexportableSigningKeyId GenerateNewSigningKey() {
     base::test::TestFuture<
-        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+        unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId>>
         generate_future;
     unexportable_key_service_.GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        key_id = generate_future.Get();
+    unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId> key_id =
+        generate_future.Get();
     CHECK(key_id.has_value());
     return *key_id;
   }
@@ -76,7 +77,7 @@ class SessionBindingHelperTest : public testing::Test {
 };
 
 TEST_F(SessionBindingHelperTest, MaybeLoadBindingKey) {
-  unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   SessionBindingHelper helper(unexportable_key_service(), GetWrappedKey(key_id),
                               "session_id");
   EXPECT_FALSE(helper.key_loader_);
@@ -87,14 +88,14 @@ TEST_F(SessionBindingHelperTest, MaybeLoadBindingKey) {
   EXPECT_NE(key_loader->GetStateForTesting(),
             unexportable_keys::UnexportableKeyLoader::State::kNotStarted);
   base::test::TestFuture<
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+      unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId>>
       key_future;
   key_loader->InvokeCallbackAfterKeyLoaded(key_future.GetCallback());
   EXPECT_EQ(*key_future.Get(), key_id);
 }
 
 TEST_F(SessionBindingHelperTest, GenerateBindingKeyAssertion) {
-  unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  unexportable_keys::UnexportableKeyId key_id = GenerateNewSigningKey();
   SessionBindingHelper helper(unexportable_key_service(), GetWrappedKey(key_id),
                               "session_id");
   base::test::TestFuture<
@@ -131,7 +132,7 @@ TEST_F(SessionBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
 }
 
 TEST_F(SessionBindingHelperTest, ReloadKeyAfterFailure) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   // Put a mock key service in front of the real one to simulate errors.
   testing::StrictMock<unexportable_keys::MockUnexportableKeyService>

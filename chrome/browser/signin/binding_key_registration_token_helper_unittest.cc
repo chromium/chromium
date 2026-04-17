@@ -61,14 +61,15 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
               unexportable_key_service().GetWrappedKey(result.binding_key_id));
   }
 
-  unexportable_keys::UnexportableKeyId GenerateNewKey() {
-    base::test::TestFuture<
-        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+  unexportable_keys::UnexportableSigningKeyId GenerateNewSigningKey() {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
         generate_future;
     unexportable_key_service().GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
     RunBackgroundTasks();
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>
         key_id = generate_future.Get();
     CHECK(key_id.has_value());
     return *key_id;
@@ -121,7 +122,7 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future;
-  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
   ASSERT_FALSE(wrapped_key.empty());
   BindingKeyRegistrationTokenHelper helper(unexportable_key_service(),
                                            wrapped_key);

@@ -140,8 +140,8 @@ class TokenBindingHelper {
       std::string_view ephemeral_public_key,
       const GURL& destination_url,
       GenerateAssertionCallback callback,
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          binding_key);
+      unexportable_keys::ServiceErrorOr<
+          unexportable_keys::UnexportableSigningKeyId> binding_key);
 
   void OnGetAllKeysForGarbageCollection(
       absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,

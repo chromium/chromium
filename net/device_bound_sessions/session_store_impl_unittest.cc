@@ -56,14 +56,14 @@ constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
     unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
 
-unexportable_keys::UnexportableKeyId GenerateNewKey(
+unexportable_keys::UnexportableSigningKeyId GenerateNewSigningKey(
     unexportable_keys::UnexportableKeyService& key_service) {
-  base::test::TestFuture<
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
       generate_future;
   key_service.GenerateSigningKeySlowlyAsync(
       kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
-  unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+  unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableSigningKeyId>
       key_id = generate_future.Get();
   CHECK(key_id.has_value());
   return *key_id;
@@ -109,7 +109,7 @@ std::unique_ptr<Session> CreateSessionHelper(
     std::string_view url_string,
     std::string_view session_id,
     std::string_view origin = "https://foo.test") {
-  return CreateSessionHelper(GenerateNewKey(key_service), url_string,
+  return CreateSessionHelper(GenerateNewSigningKey(key_service), url_string,
                              session_id, origin);
 }
 

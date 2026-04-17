@@ -98,8 +98,16 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::GenerateSigningKey(
     GenerateSigningKeyCallback callback) {
   unexportable_key_service_->GenerateSigningKeySlowlyAsync(
       acceptable_algorithms, priority,
-      base::BindOnce(PopulateNewKeyData, std::ref(*unexportable_key_service_))
-          .Then(std::move(callback)));
+      // TODO(crbug.com/501307307): Make PopulateNewKeyData accept a
+      // SigningKeyId once FromWrappedSigningKey also returns the more specific
+      // key id.
+      base::BindOnce(
+          [](GenerateSigningKeyCallback cb,
+             unexportable_keys::UnexportableKeyService& service,
+             ServiceErrorOr<UnexportableSigningKeyId> result) {
+            std::move(cb).Run(PopulateNewKeyData(service, std::move(result)));
+          },
+          std::move(callback), std::ref(*unexportable_key_service_)));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::FromWrappedSigningKey(

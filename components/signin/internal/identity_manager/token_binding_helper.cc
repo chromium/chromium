@@ -194,8 +194,8 @@ void TokenBindingHelper::SignAssertionToken(
     std::string_view ephemeral_public_key,
     const GURL& destination_url,
     GenerateAssertionCallback callback,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        binding_key) {
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId> binding_key) {
   if (!binding_key.has_value()) {
     RunCallbackAndRecordMetrics(std::move(callback),
                                 base::unexpected(Error::kLoadKeyFailure));

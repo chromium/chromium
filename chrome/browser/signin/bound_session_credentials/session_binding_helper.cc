@@ -95,8 +95,8 @@ void SessionBindingHelper::SignAssertionToken(
     std::string_view challenge,
     const GURL& destination_url,
     base::OnceCallback<void(base::expected<std::string, Error>)> callback,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        binding_key) {
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId> binding_key) {
   if (!binding_key.has_value()) {
     std::move(callback).Run(base::unexpected(Error::kLoadKeyFailure));
     return;

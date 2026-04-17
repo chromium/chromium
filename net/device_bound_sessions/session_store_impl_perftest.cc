@@ -83,13 +83,14 @@ class DBSCSessionStorePerfTest : public testing::Test {
     return loaded_sessions;
   }
 
-  unexportable_keys::UnexportableKeyId GenerateNewKey() {
-    base::test::TestFuture<
-        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+  unexportable_keys::UnexportableSigningKeyId GenerateNewSigningKey() {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
         generate_future;
     key_service_.GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+    unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>
         key_id = generate_future.Get();
     CHECK(key_id.has_value());
     return *key_id;
@@ -114,7 +115,7 @@ class DBSCSessionStorePerfTest : public testing::Test {
                          refresh_url,
                          std::move(scope),
                          std::move(cookie_credentials),
-                         GenerateNewKey(),
+                         GenerateNewSigningKey(),
                          /*allowed_refresh_initiators=*/{}};
     auto session_or_error = Session::CreateIfValid(params);
     ASSERT_TRUE(session_or_error.has_value());

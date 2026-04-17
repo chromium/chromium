@@ -49,6 +49,7 @@ using bound_session_credentials::RotationDebugInfo;
 using chrome::mojom::ResumeBlockedRequestsTrigger;
 using unexportable_keys::ServiceErrorOr;
 using unexportable_keys::UnexportableKeyId;
+using unexportable_keys::UnexportableSigningKeyId;
 using Result = BoundSessionRefreshCookieFetcher::Result;
 
 namespace {
@@ -114,7 +115,7 @@ class BoundSessionCookieControllerImplTest
       public BoundSessionCookieController::Delegate {
  public:
   explicit BoundSessionCookieControllerImplTest(bool build_controller = true)
-      : key_id_(GenerateNewKey()) {
+      : key_id_(GenerateNewSigningKey()) {
     storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
 
     SetUpNetworkConnection(
@@ -128,15 +129,15 @@ class BoundSessionCookieControllerImplTest
 
   ~BoundSessionCookieControllerImplTest() override = default;
 
-  UnexportableKeyId GenerateNewKey() {
-    base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  UnexportableSigningKeyId GenerateNewSigningKey() {
+    base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+        generate_future;
     unexportable_key_service_.GenerateSigningKeySlowlyAsync(
         base::span<const crypto::SignatureVerifier::SignatureAlgorithm>(
             {crypto::SignatureVerifier::ECDSA_SHA256}),
         unexportable_keys::BackgroundTaskPriority::kUserBlocking,
         generate_future.GetCallback());
-    ServiceErrorOr<unexportable_keys::UnexportableKeyId> key_id =
-        generate_future.Get();
+    ServiceErrorOr<UnexportableSigningKeyId> key_id = generate_future.Get();
     CHECK(key_id.has_value());
     return *key_id;
   }
@@ -313,7 +314,7 @@ class BoundSessionCookieControllerImplTest
         ->session_binding_helper_->key_loader_.get();
   }
 
-  UnexportableKeyId key_id() { return key_id_; }
+  UnexportableSigningKeyId key_id() { return key_id_; }
 
   size_t on_bound_session_throttler_params_changed_call_count() {
     return on_bound_session_throttler_params_changed_call_count_;
@@ -416,7 +417,7 @@ class BoundSessionCookieControllerImplTest
       crypto::UnexportableKeyProvider::Config()};
   BoundSessionTestCookieManager cookie_manager_;
   content::TestStoragePartition storage_partition_;
-  UnexportableKeyId key_id_;
+  UnexportableSigningKeyId key_id_;
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
   size_t on_bound_session_throttler_params_changed_call_count_ = 0;
@@ -427,7 +428,7 @@ class BoundSessionCookieControllerImplTest
 TEST_F(BoundSessionCookieControllerImplTest, KeyLoadedOnStartup) {
   EXPECT_NE(key_loader()->GetStateForTesting(),
             unexportable_keys::UnexportableKeyLoader::State::kNotStarted);
-  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
   key_loader()->InvokeCallbackAfterKeyLoaded(future.GetCallback());
   EXPECT_EQ(*future.Get(), key_id());
 }

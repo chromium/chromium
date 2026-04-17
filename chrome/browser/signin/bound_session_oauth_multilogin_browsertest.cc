@@ -51,6 +51,7 @@ using ::testing::Pointee;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::Values;
+using ::unexportable_keys::UnexportableSigningKeyId;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -228,15 +229,13 @@ class BoundSessionOAuthMultiloginBaseTest
         .SetBoundSessionParamsUpdatedCallbackForTesting(std::move(callback));
   }
 
-  unexportable_keys::UnexportableKeyId GenerateNewKey() {
+  UnexportableSigningKeyId GenerateNewSigningKey() {
     base::test::TestFuture<
-        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+        unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId>>
         future;
     unexportable_key_service().GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, future.GetCallback());
-    const unexportable_keys::ServiceErrorOr<
-        unexportable_keys::UnexportableKeyId>
-        key_id = future.Get();
+    const auto key_id = future.Get();
     CHECK(key_id.has_value());
     return *key_id;
   }
@@ -245,7 +244,7 @@ class BoundSessionOAuthMultiloginBaseTest
       std::optional<unexportable_keys::UnexportableKeyId> key_id =
           std::nullopt) {
     if (!key_id.has_value()) {
-      key_id = GenerateNewKey();
+      key_id = GenerateNewSigningKey();
     }
     const unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service().GetWrappedKey(*key_id);
@@ -292,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
                        ReuseExistingSession) {
   base::HistogramTester histogram_tester;
 
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
 
   const std::string email_1 = "user1@gmail.com";
@@ -403,7 +402,7 @@ class BoundSessionOAuthMultiloginPrototypeNewSessionTest
 
 IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        StartsNewBoundSession) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
       &identity_manager(),
@@ -481,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
 
 IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        DoesNotStartYoutubeSession) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
       &identity_manager(),
@@ -564,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        OverrideExistingSession) {
   base::HistogramTester histogram_tester;
 
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
 
   const std::string email = "user1@gmail.com";
@@ -881,7 +880,7 @@ class BoundSessionOAuthMultiloginStandardTest
 
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                        StartsNewBoundSession) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
       &identity_manager(),
@@ -977,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
 
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                        StartsMultipleSessions) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
       &identity_manager(),
@@ -1081,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
 
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                        ReuseExistingSession) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
 
   const std::string email_1 = "user1@gmail.com";
@@ -1216,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
 
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                        OverrideExistingSession) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
       &identity_manager(),
@@ -1343,7 +1342,7 @@ class BoundSessionOAuthMultiloginStandardWithPrototypeFallbackTest
 IN_PROC_BROWSER_TEST_F(
     BoundSessionOAuthMultiloginStandardWithPrototypeFallbackTest,
     StartsNewBoundSession) {
-  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   signin::MakeAccountAvailable(
       &identity_manager(),

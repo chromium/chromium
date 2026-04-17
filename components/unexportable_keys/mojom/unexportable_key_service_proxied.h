@@ -39,8 +39,8 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
-      override;
+      base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
+          callback) override;
   void FromWrappedSigningKeySlowlyAsync(
       base::span<const uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
@@ -94,8 +94,8 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
     ServiceErrorOr<base::Time> creation_time;
   };
 
-  void OnKeyGenerated(
-      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)>
+  void OnSigningKeyGenerated(
+      base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           original_callback,
       ServiceErrorOr<mojom::NewKeyDataPtr> result);
 
