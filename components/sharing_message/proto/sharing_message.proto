@@ -18,7 +18,6 @@ import "sms_fetch_message_test_proto3_optional.proto";
 
 package components_sharing_message;
 
-// Required in Chrome.
 option optimize_for = LITE_RUNTIME;
 
 // Message for sending between devices in Sharing.

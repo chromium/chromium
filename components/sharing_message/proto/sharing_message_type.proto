@@ -9,7 +9,6 @@ option java_package = "org.chromium.components.sharing_message.proto";
 
 package sharing_message;
 
-// Required in Chrome.
 option optimize_for = LITE_RUNTIME;
 
 // Enum for identifying a message type.
