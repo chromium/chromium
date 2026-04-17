@@ -25,6 +25,7 @@ source_set("first_run") {
     "//base",
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/profiles:profile",
+    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/first_run",
     "//components/keyed_service/content",

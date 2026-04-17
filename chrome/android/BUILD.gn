@@ -1064,6 +1064,7 @@ if (_is_default_toolchain) {
 
     deps = [
       "junit:chrome_junit_tests_org.chromium.chrome.browser",
+      "junit:chrome_junit_tests_org.chromium.chrome.browser.accessibility_annotator",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.app",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.autofill",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.background_sync",

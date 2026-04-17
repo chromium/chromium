@@ -62,8 +62,10 @@ class AccessibilityAnnotatorBottomSheetBridge
     }
 
     @CalledByNative
-    private boolean show() {
-        return mCoordinator.requestShowContent();
+    private boolean show(
+            @JniType("std::string") String manageSettingsUrl,
+            @JniType("std::string") String learnMoreUrl) {
+        return mCoordinator.requestShowContent(manageSettingsUrl, learnMoreUrl);
     }
 
     @CalledByNative

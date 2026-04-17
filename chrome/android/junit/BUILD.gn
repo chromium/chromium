@@ -445,6 +445,12 @@ if (is_android) {
     deps = [ ":chrome_junit_tests_helper" ]
   }
 
+  robolectric_library(
+      "chrome_junit_tests_org.chromium.chrome.browser.accessibility_annotator") {
+    sources = [ "src/org/chromium/chrome/browser/accessibility_annotator/AccessibilityAnnotatorBottomSheetMediatorTest.java" ]
+    deps = [ ":chrome_junit_tests_helper" ]
+  }
+
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.app") {
     sources = [
       "src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateUnitTest.java",

@@ -4,11 +4,15 @@
 
 #include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_bottom_sheet_bridge.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/android/chrome_jni_headers/AccessibilityAnnotatorBottomSheetBridge_jni.h"
+#include "components/accessibility_annotator/core/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -46,7 +50,9 @@ bool AccessibilityAnnotatorBottomSheetBridge::PerformShowContent() {
     return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AccessibilityAnnotatorBottomSheetBridge_show(env, java_obj_);
+  return Java_AccessibilityAnnotatorBottomSheetBridge_show(
+      env, java_obj_, kAccessibilityAnnotatorSettingsURL,
+      kAccessibilityAnnotatorLearnMoreURL);
 }
 
 void AccessibilityAnnotatorBottomSheetBridge::Show() {
