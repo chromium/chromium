@@ -13,8 +13,8 @@ namespace feed {
 
 // Values for the UMA ContentSuggestions.Feed.FeedSignInUI histogram.
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. This must be kept in sync with
-// FeedSignInUI in enums.xml.
+// numeric values should never be reused.
+// LINT.IfChange(FeedSignInUI)
 enum class FeedSignInUI : int {
   // Histogram recorded when a sync half sheet is shown from Feed, when sign-in
   // UI is not supported.
@@ -26,11 +26,12 @@ enum class FeedSignInUI : int {
 
   kMaxValue = kShowSignInDisableToast,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:FeedSignInUI)
 
 // Values for the UMA ContentSuggestions.Feed.EngagementType
 // histogram. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused. This must be kept
-// in sync with FeedEngagementType in enums.xml.
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(FeedEngagementType)
 enum class FeedEngagementType {
   kFeedEngaged = 0,
   kFeedEngagedSimple = 1,
@@ -40,11 +41,12 @@ enum class FeedEngagementType {
   kGoodVisit = 5,
   kMaxValue = kGoodVisit,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:FeedEngagementType)
 
 // Values for the UMA ContentSuggestions.Feed.UserActions
 // histogram. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused. This must be kept
-// in sync with FeedUserActionType in enums.xml.
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(FeedUserActionType)
 // Note: Most of these have a corresponding UserMetricsAction reported here.
 // Exceptions are described below.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
@@ -200,6 +202,7 @@ enum class FeedUserActionType {
 
   kMaxValue = kNonSwipeManualRefresh,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:FeedUserActionType)
 
 // For testing and debugging only.
 std::ostream& operator<<(std::ostream& out, FeedUserActionType value);
@@ -224,7 +227,7 @@ enum class ContentOrder : int {
 // Values for the UMA
 // ContentSuggestions.Feed.WebFeed.SortType* histograms.
 // These values are persisted to logs. Entries should never be reused.
-// This must be kept in sync with FeedSortType in enums.xml
+// LINT.IfChange(FeedSortType)
 // TODO(crbug.com/40241876): should merge with ContentOrder.
 enum class FeedSortType : int {
   // Sort Type unspecified.
@@ -236,11 +239,12 @@ enum class FeedSortType : int {
 
   kMaxValue = kSortedByLatest,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:FeedSortType)
 
 // Values for the UMA ContentSuggestions.Feed.FeedSyncPromo histogram.
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. This must be kept in sync with
-// FeedSyncPromo in enums.xml.
+// numeric values should never be reused.
+// LINT.IfChange(FeedSyncPromo)
 enum class FeedSyncPromo : int {
   // Histogram recorded when a signed out user taps on the Feed sync promo
   // and the sync flow is shown.
@@ -251,6 +255,7 @@ enum class FeedSyncPromo : int {
 
   kMaxValue = kShowDisableToast,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:FeedSyncPromo)
 
 }  // namespace feed
 

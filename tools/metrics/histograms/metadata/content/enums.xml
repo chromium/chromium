@@ -130,6 +130,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Reverse Chronological"/>
 </enum>
 
+<!-- LINT.IfChange(FeedEngagementType) -->
+
 <enum name="FeedEngagementType">
   <int value="0" label="Engaged">
     Visit - user scrolled an inch or interacted
@@ -140,8 +142,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Interacted">
     Interaction - Opening a page or using the menu&quot;
   </int>
-<!-- <int value="3" label="Scrolled">Deprecated - formerly scrolled any amount</int> -->
-
+  <int value="3" label="Scrolled (Deprecated)">
+    Deprecated - formerly scrolled any amount
+  </int>
   <int value="4" label="Scrolled">Interaction - Scrolled any amount</int>
   <int value="5" label="Good Visit">
     Visit - user (a) had a good explicit interaction, (b) spent a minute in the
@@ -149,6 +152,8 @@ chromium-metrics-reviews@google.com.
     content.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedEngagementType) -->
 
 <enum name="FeedInfoCardType">
   <int value="1" label="INFO_CARD_MAIN_PRIVACY_NOTICE"/>
@@ -238,6 +243,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Feedback tapped on page from card"/>
 </enum>
 
+<!-- LINT.IfChange(FeedSignInUI) -->
+
 <enum name="FeedSignInUI">
   <int value="0"
       label="(obsolete) Showing a sign-in half sheet triggered from feed."/>
@@ -246,11 +253,19 @@ chromium-metrics-reviews@google.com.
       label="Showing a sign-in disabled snackbar triggered from feed."/>
 </enum>
 
+<!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedSignInUI) -->
+
+<!-- LINT.IfChange(FeedSortType) -->
+
 <enum name="FeedSortType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Grouped by publisher"/>
   <int value="2" label="Sorted by latest"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedSortType) -->
+
+<!-- LINT.IfChange(FeedSyncPromo) -->
 
 <enum name="FeedSyncPromo">
   <int value="0"
@@ -260,6 +275,8 @@ chromium-metrics-reviews@google.com.
       label="The service disable message was shown when the user tapped on
              the Feed sync promo."/>
 </enum>
+
+<!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedSyncPromo) -->
 
 <enum name="FeedUploadActionsBatchStatus">
   <int value="0" label="Actions batch store/upload not attempted"/>
@@ -288,6 +305,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Can not upload actions for another user"/>
   <int value="9" label="Could not upload because pending clear all"/>
 </enum>
+
+<!-- LINT.IfChange(FeedUserActionType) -->
 
 <enum name="FeedUserActionType">
   <int value="0" label="Tapped on card"/>
@@ -409,6 +428,8 @@ chromium-metrics-reviews@google.com.
       label="(obsolete) User tapped on the 'Cancel' of the sign-in promo UI."/>
   <int value="66" label="User initiated a non-swipe manual refresh."/>
 </enum>
+
+<!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedUserActionType) -->
 
 <enum name="FeedUserCommandType">
   <int value="0" label="Enum placerholder. See crbug/1179826"/>
