@@ -36,6 +36,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
@@ -1942,7 +1943,6 @@ constexpr FeatureEntry::FeatureParam kOmniboxDiagInputConnection[]{
 
 constexpr FeatureEntry::FeatureVariation kOmniboxDiagnosticsAndroidVaiants[] = {
     {"- InputConnection", kOmniboxDiagInputConnection, nullptr}};
-
 
 const FeatureEntry::FeatureParam kOmniboxAimDedicatedModeButton[] = {
     {"show_dedicated_mode_button", "true"}};
@@ -10139,6 +10139,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     "kAISummarizationAPI"),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
+    {"on-device-category-classifier",
+     flag_descriptions::kOnDeviceCategoryClassifierName,
+     flag_descriptions::kOnDeviceCategoryClassifierDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         page_content_annotations::features::kOnDeviceCategoryClassifier)},
+
     {"on-device-model-litert-lm-backend",
      flag_descriptions::kOnDeviceModelLitertLmBackendName,
      flag_descriptions::kOnDeviceModelLitertLmBackendDescription, kOsDesktop,
@@ -10443,16 +10450,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordFormGroupedAffiliationsDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormGroupedAffiliations)},
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"contextual-cueing", flag_descriptions::kContextualCueingName,
      flag_descriptions::kContextualCueingDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(glic::kContextualCueing,
                                     kContextualCueingEnabledOptions,
                                     "ContextualCueingEnabledOptions")},
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    {"contextual-cueing-v2", flag_descriptions::kContextualCueingV2Name,
+     flag_descriptions::kContextualCueingV2Description, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueingV2)},
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition-alloc-with-advanced-checks",

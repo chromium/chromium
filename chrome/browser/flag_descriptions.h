@@ -1437,6 +1437,10 @@ inline constexpr char kContextualCueingName[] = "Contextual cueing";
 inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";
 
+inline constexpr char kContextualCueingV2Name[] = "Contextual cueing V2";
+inline constexpr char kContextualCueingV2Description[] =
+    "Enables the contextual cueing system version 2.";
+
 inline constexpr char kGlassFrameName[] = "Glass Frame";
 inline constexpr char kGlassFrameDescription[] =
     "Enables a glass effect on the browser frame.";
@@ -2109,7 +2113,6 @@ inline constexpr char kEnableProcessPerSiteUpToMainFrameThresholdName[] =
 inline constexpr char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
-
 
 inline constexpr char kAlignPdfDefaultPrintSettingsWithHTMLName[] =
     "Align PDF default print settings with HTML";
@@ -3489,6 +3492,11 @@ inline constexpr char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
+inline constexpr char kOnDeviceCategoryClassifierName[] =
+    "On-device category classifier";
+inline constexpr char kOnDeviceCategoryClassifierDescription[] =
+    "Enables the on-device category classifier.";
+
 inline constexpr char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 inline constexpr char kOptimizationGuideDebugLogsDescription[] =
@@ -4455,7 +4463,6 @@ inline constexpr char kTranslationAPIStreamingBySentenceName[] =
 inline constexpr char kTranslationAPIStreamingBySentenceDescription[] =
     "Enables sentence-split streaming for on-device translation API.";
 
-
 inline constexpr char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";
 inline constexpr char kTreatInsecureOriginAsSecureDescription[] =
@@ -4960,8 +4967,6 @@ inline constexpr char kClassifierAPIForTinyModelDescription[] =
     "Please refer to the built-in AI article [1] for details. "
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of Generative AI.";
-
-
 
 inline constexpr char kSummarizerAPIWithPerformancePreferenceName[] =
     "Summarizer API with Performance Preference";

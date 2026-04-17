@@ -1838,7 +1838,12 @@
   },
   {
     "name": "contextual-cueing",
-    "owners": [ "perrier@chromium.org","jeffreycohen@chromium.org"],
+    "owners": [ "sophiechang@chromium.org","jeffreycohen@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "contextual-cueing-v2",
+    "owners": [ "iwells@chromium.org", "sophiechang@chromium.org"],
     "expiry_milestone": 160
   },
   {
@@ -7157,6 +7162,11 @@
     "owners": [ "courtneywong@chromium.org", "agawronska@chromium.org", "cros-families-eng@google.com"],
     // This flag is used to manually test the feature and should not be removed.
     "expiry_milestone": -1
+  },
+  {
+    "name": "on-device-category-classifier",
+    "owners": [ "sophiechang@chromium.org", "wittman@chromium.org" ],
+    "expiry_milestone": 155
   },
   {
     "name": "on-device-model-litert-lm-backend",

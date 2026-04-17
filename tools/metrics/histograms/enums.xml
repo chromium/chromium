@@ -7945,6 +7945,7 @@ from previous Chrome versions.
       label="AckOnSurfaceActivationWhenInteractive:enabled"/>
   <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
   <int value="-2037921452" label="SwapNewTabAndNewTabInGroupAndroid:enabled"/>
+  <int value="-2037824983" label="ContextualCueingV2:disabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
@@ -12408,6 +12409,7 @@ from previous Chrome versions.
   <int value="-562771426" label="InstantStart:disabled"/>
   <int value="-562307460" label="AutofillAiWalletFlightReservation:disabled"/>
   <int value="-562274241" label="enable-extension-action-redesign"/>
+  <int value="-562057680" label="OnDeviceCategoryClassifier:enabled"/>
   <int value="-561194974" label="AutofillExpandedPopupViews:enabled"/>
   <int value="-560818413" label="BackgroundListening:disabled"/>
   <int value="-560750110"
@@ -19029,6 +19031,7 @@ from previous Chrome versions.
   <int value="1645141340" label="DesksCloseAll:enabled"/>
   <int value="1645447927" label="MixedContentSiteSetting:disabled"/>
   <int value="1645479440" label="HistoryManipulationIntervention:disabled"/>
+  <int value="1646096099" label="ContextualCueingV2:enabled"/>
   <int value="1646097198" label="TranslationAPI:disabled"/>
   <int value="1646498561" label="OfflineBookmarks:disabled"/>
   <int value="1646500529" label="BacklightOcr:enabled"/>
@@ -19513,6 +19516,7 @@ from previous Chrome versions.
   <int value="1800603694" label="DXGIWaitableSwapChain:disabled"/>
   <int value="1801297618" label="HelpAppAutoTriggerInstallDialog:disabled"/>
   <int value="1801585504" label="ContextMenuShopWithGoogleLens:enabled"/>
+  <int value="1801839847" label="OnDeviceCategoryClassifier:disabled"/>
   <int value="1801934728" label="SysUiShouldHoldbackFocusMode:enabled"/>
   <int value="1802631070"
       label="read-anything-with-readability-enabled:disabled"/>
