@@ -95,6 +95,12 @@ BASE_FEATURE(kWinSboxStrictHandleChecks, base::FEATURE_ENABLED_BY_DEFAULT);
 // maximum of 64GB.
 BASE_FEATURE(kWinSboxHighGPUJobMemoryLimits, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Module Tampering Protection for CIG processes. When enabled, the
+// loader remaps a clean main image if IAT tampering is detected, preventing
+// process startup failures caused by injected non-Microsoft-signed imports.
+BASE_FEATURE(kWinSboxModuleTamperingProtection,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

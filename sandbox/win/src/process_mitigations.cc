@@ -485,6 +485,11 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
   // Mitigations >= Win10 RS3 ("Fall Creator's"):
   //----------------------------------------------------------------------------
   if (version >= base::win::Version::WIN10_RS3) {
+    if (flags & MITIGATION_MODULE_TAMPERING_PROTECTION) {
+      *policy_value_2 |=
+          PROCESS_CREATION_MITIGATION_POLICY2_MODULE_TAMPERING_PROTECTION_ALWAYS_ON;
+    }
+
     // Note: This mitigation requires not only Win10 1709, but also the January
     //       2018 security updates and any applicable firmware updates from the
     //       OEM device manufacturer.

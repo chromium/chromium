@@ -5384,6 +5384,10 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 
   sandbox::MitigationFlags mitigations = config->GetProcessMitigations();
   mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxModuleTamperingProtection)) {
+    mitigations |= sandbox::MITIGATION_MODULE_TAMPERING_PROTECTION;
+  }
   sandbox::ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != sandbox::SBOX_ALL_OK) {
     return false;

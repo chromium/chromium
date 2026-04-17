@@ -378,6 +378,15 @@ SBOX_TEST_DEFINE_COMMAND(CheckPolicy) {
       break;
     }
     //--------------------------------------------------
+    // MITIGATION_MODULE_TAMPERING_PROTECTION
+    //--------------------------------------------------
+    case (TESTPOLICY_MODULETAMPERINGPROTECTION): {
+      // No GetProcessMitigationPolicy() surface is available in the current
+      // SDK used by Chromium. If this process started, the creation-time
+      // mitigation was accepted by UpdateProcThreadAttribute().
+      break;
+    }
+    //--------------------------------------------------
     // MITIGATION_CET_DISABLED
     //--------------------------------------------------
     case (TESTPOLICY_CETDISABLED): {
@@ -1001,6 +1010,41 @@ TEST(ProcessMitigationsTest,
   //    ** Post-startup not supported.  Must be enabled on creation.
   //---------------------------------
 }
+
+//------------------------------------------------------------------------------
+// Module tampering protection
+// (MITIGATION_MODULE_TAMPERING_PROTECTION)
+// >= Win10 RS3
+//------------------------------------------------------------------------------
+
+// Parameterized test: true = mitigation enabled, false = disabled.
+class ModuleTamperingProtectionTest
+    : public ::testing::TestWithParam<bool> {};
+
+TEST_P(ModuleTamperingProtectionTest, ChildProcessStartsSuccessfully) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+    return;
+  }
+
+  CheckPolicyTestRunner runner;
+  sandbox::TargetConfig* config = runner.GetConfig();
+
+  if (GetParam()) {
+    EXPECT_EQ(
+        config->SetProcessMitigations(MITIGATION_MODULE_TAMPERING_PROTECTION),
+        SBOX_ALL_OK);
+  }
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            runner.RunTest(TESTPOLICY_MODULETAMPERINGPROTECTION));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ProcessMitigationsTest,
+    ModuleTamperingProtectionTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<bool>& info) {
+      return info.param ? "Enabled" : "Disabled";
+    });
 
 //------------------------------------------------------------------------------
 // Hardware shadow stack / Control(flow) Enforcement Technology / CETCOMPAT

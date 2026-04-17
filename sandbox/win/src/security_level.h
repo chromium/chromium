@@ -292,6 +292,11 @@ const MitigationFlags MITIGATION_FSCTL_DISABLED = 0x04000000;
 // PROCESS_CREATION_MITIGATION_POLICY2_RESTRICT_CORE_SHARING_ALWAYS_ON.
 const MitigationFlags MITIGATION_RESTRICT_CORE_SHARING = 0x08000000;
 
+// Remaps a clean main image if IAT tampering is detected, preventing CIG
+// process startup failures caused by injected imports. Corresponds to
+// PROCESS_CREATION_MITIGATION_POLICY2_MODULE_TAMPERING_PROTECTION_ALWAYS_ON.
+const MitigationFlags MITIGATION_MODULE_TAMPERING_PROTECTION = 0x10000000;
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_SECURITY_LEVEL_H_
