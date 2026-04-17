@@ -226,7 +226,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3296368748942286671">Vazhdo funksionimin e aplikacioneve në sfond kur Chromium është i mbyllur</translation>
 <translation id="3313189106987092621">Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="3316771292331273802">Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chromium, përveçse nga "Llogaria jote e Google" nëse je identifikuar në Chromium. Për t'i lejuar sajtet që të të kujtojnë, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">Motori i parazgjedhur i kërkimit u ndryshua nga jashtë Chromium. Për të të mbrojtur, Chromium e rivendosi atë.</translation>
 <translation id="3331557257666250900">Identifikohu në Chromium për të marrë fjalëkalimet, faqeshënuesit dhe më shumë në të gjitha pajisjet e tua</translation>
 <translation id="3352986031709923790">këndi lart djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, lart<ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Të dhënat e Chromium në llogarinë tënde</translation>
@@ -474,6 +473,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6241367896540709610">Chromium ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="6245734527075554892">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium.</translation>
 <translation id="6248213926982192922">Bëje Chromium, shfletuesin tënd të parazgjedhur</translation>
+<translation id="6248988683584659830">Cilësimet e kërkimit</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="6270547683008298381">Këto skeda po përdorin burime shtesë. Për të përmirësuar performancën tënde, lejo që Chromium t'i bëjë ato joaktive.</translation>
 <translation id="6281746429495226318">Personalizo profilin tënd të Chromium</translation>
@@ -630,6 +630,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7810005234485217901">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë</translation>
 <translation id="7828947555739565424">Një profil i Chromium me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847673590271334840">Motori i kërkimit u ndryshua nga jashtë Chromium. Për të të mbrojtur, Chromium e rivendosi atë në parazgjedhjen e tij origjinale. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Personalizo Chromium për t'i dhënë një pamje të re</translation>
 <translation id="7859018312476869945">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chromium i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="7867198900892795913">Chromium nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>

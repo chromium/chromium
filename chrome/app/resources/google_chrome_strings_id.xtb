@@ -502,6 +502,7 @@
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="624230925347970731">Chrome akan segera ditutup</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
+<translation id="6248988683584659830">Telusuri setelan</translation>
 <translation id="6251759518630934363">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chrome.</translation>
 <translation id="6277547788421725101">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome</translation>
 <translation id="627882678981830918">Sesuaikan dan kontrol Chrome. Setel Chrome sebagai browser default.</translation>
@@ -663,6 +664,7 @@
 <translation id="7792336732117553384">&amp;Kelola Profil Chrome</translation>
 <translation id="7801699035218095297">Google Chrome mencoba menyalin sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="7804364787702057554">Akun Anda di Chrome</translation>
+<translation id="7804947029129221742">Mesin telusur Anda diubah dari luar Chrome. Untuk melindungi Anda, Chrome meresetnya ke setelan default aslinya. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Hapus dari Chrome...</translation>
 <translation id="7827099906024714326">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="7832314606810669113">Untuk mendapatkan bookmark dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Bookmark ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
@@ -781,7 +783,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8992769679401294069">Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di Akun Google Anda.</translation>
 <translation id="8999117580775242387">Jika HTTPS tidak tersedia, Chrome akan menggunakan koneksi yang tidak aman tanpa memperingatkan Anda</translation>
 <translation id="8999208279178790196">{0,plural, =0{Update Chrome tersedia}=1{Update Chrome tersedia}other{Update Chrome telah tersedia selama # hari}}</translation>
-<translation id="9010418943148193727">Mesin telusur default Anda diubah dari luar Chrome. Untuk melindungi Anda, Chrome meresetnya.</translation>
 <translation id="9014771989710951291">Beberapa organisasi mengelola Chrome</translation>
 <translation id="9024318700713112071">Setel Chrome sebagai browser default</translation>
 <translation id="9066987883552592250">Tutup Gemini di Chrome Canary</translation>

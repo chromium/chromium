@@ -225,7 +225,6 @@
 <translation id="3296368748942286671">Lanjutkan aplikasi yang berjalan di latar belakang jika Chromium ditutup</translation>
 <translation id="3313189106987092621">Chromium akan memperingatkan Anda sebelum memuat situs apa pun menggunakan koneksi yang tidak aman</translation>
 <translation id="3316771292331273802">Anda akan logout dari sebagian besar situs saat menutup semua jendela Chromium, kecuali Akun Google Anda jika Anda login ke Chromium. Agar situs mengingat Anda, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">Mesin telusur default Anda diubah dari luar Chromium. Untuk melindungi Anda, Chromium meresetnya.</translation>
 <translation id="3331557257666250900">Login ke Chromium untuk mendapatkan sandi, bookmark, dan lainnya di semua perangkat Anda</translation>
 <translation id="3352986031709923790">pojok kanan atas area penelusuran: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Data Chromium di akun Anda</translation>
@@ -473,6 +472,7 @@
 <translation id="6241367896540709610">Chromium memerlukan izin akses penyimpanan untuk mendownload file</translation>
 <translation id="6245734527075554892">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium</translation>
 <translation id="6248213926982192922">Jadikan Chromium browser default</translation>
+<translation id="6248988683584659830">Telusuri setelan</translation>
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="6270547683008298381">Tab ini menggunakan lebih banyak resource. Untuk meningkatkan performa, izinkan Chromium menonaktifkannya.</translation>
 <translation id="6281746429495226318">Sesuaikan profil Chromium Anda</translation>
@@ -629,6 +629,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7810005234485217901">Anda dapat menyematkan Penelusuran Gambar agar mudah diakses</translation>
 <translation id="7828947555739565424">Profil Chromium dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847673590271334840">Mesin telusur Anda diubah dari luar Chromium. Untuk melindungi Anda, Chromium meresetnya ke setelan default aslinya. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Sesuaikan Chromium untuk memberikan tampilan baru</translation>
 <translation id="7859018312476869945">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chromium akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="7867198900892795913">Chromium tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>

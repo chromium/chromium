@@ -501,6 +501,7 @@
 <translation id="6235018212288296708">Regola inbound per consentire il traffico mDNS in Google Chrome.</translation>
 <translation id="624230925347970731">Chrome verrà chiuso a breve</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
+<translation id="6248988683584659830">Cerca nelle impostazioni</translation>
 <translation id="6251759518630934363">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, in base all'analisi di più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
 <translation id="6277547788421725101">Uno dei tuoi genitori ha disattivato l'impostazione "Autorizzazioni per siti, app ed estensioni" per Chrome</translation>
 <translation id="627882678981830918">Personalizza e controlla Chrome. Imposta Chrome come browser predefinito.</translation>
@@ -662,6 +663,7 @@
 <translation id="7792336732117553384">&amp;Gestisci i profili Chrome</translation>
 <translation id="7801699035218095297">Google Chrome sta cercando di copiare le password. Per consentire l'operazione, digita la tua password Windows.</translation>
 <translation id="7804364787702057554">Il tuo account in Chrome</translation>
+<translation id="7804947029129221742">Il tuo motore di ricerca è stato modificato dall'esterno di Chrome. Per proteggerti, Chrome l'ha reimpostato al valore predefinito originale. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Rimuovi da Chrome...</translation>
 <translation id="7827099906024714326">Chrome deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="7832314606810669113">Accedi a Chrome per vedere preferiti e altro ancora su tutti i tuoi dispositivi. Questo preferito verrà salvato nel tuo Account Google dopo che avrai eseguito l'accesso.</translation>
@@ -781,7 +783,6 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="8992769679401294069">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="8999117580775242387">Quando HTTPS non è disponibile, Chrome utilizza una connessione non sicura senza avvisarti</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
-<translation id="9010418943148193727">Il motore di ricerca predefinito è stato modificato dall'esterno di Chrome. Per proteggerti, Chrome l'ha reimpostato.</translation>
 <translation id="9014771989710951291">Più organizzazioni gestiscono Chrome</translation>
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
 <translation id="9066987883552592250">Chiudi Gemini in Chrome Canary</translation>

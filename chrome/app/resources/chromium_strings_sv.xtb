@@ -227,7 +227,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3296368748942286671">Fortsätt köra bakgrundsappar när Chromium avslutas</translation>
 <translation id="3313189106987092621">Chromium varnar dig innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="3316771292331273802">Du loggas ut från de flesta webbplatser när du stänger alla fönster i Chromium, med undantag för Google-kontot om du är inloggad i Chromium. <ph name="SETTINGS_LINK" /> och gör så att webbplatser kommer ihåg dig.</translation>
-<translation id="3322413454779348750">Din standardsökmotor har ändrats utanför Chromium. Chromium har återställt den för att skydda dig.</translation>
 <translation id="3331557257666250900">Logga in i Chromium om du vill få dina lösenord, bokmärken med mera på alla dina enheter</translation>
 <translation id="3352986031709923790">övre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="TOP" /> % uppåt</translation>
 <translation id="3366305173356742781">Chromium-data i ditt konto</translation>
@@ -475,6 +474,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6241367896540709610">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="6245734527075554892">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium</translation>
 <translation id="6248213926982192922">Använd Chromium som standardwebbläsare</translation>
+<translation id="6248988683584659830">Sök i inställningar</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="6270547683008298381">Extra resurser används för dessa flikar. Du kan förbättra prestandan genom att låta Chromium inaktivera dem.</translation>
 <translation id="6281746429495226318">Anpassa din Chromium-profil</translation>
@@ -633,6 +633,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7810005234485217901">Du kan fästa Bildsökning för enkel åtkomst</translation>
 <translation id="7828947555739565424">Det finns redan en Chromium-profil med detta konto på enheten</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847673590271334840">Din sökmotor har ändrats utanför Chromium. Chromium har återställt den till standardinställningen för att skydda dig. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Anpassa Chromium med ett nytt utseende</translation>
 <translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="7867198900892795913">Det gick inte att uppdatera Chromium till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>

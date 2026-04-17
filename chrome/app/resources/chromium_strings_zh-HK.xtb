@@ -226,7 +226,6 @@
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
 <translation id="3313189106987092621">Chromium 會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="3316771292331273802">關閉所有 Chromium 視窗後，系統會將你登出所有網站，但如果你已登入 Chromium，Google 帳戶就會維持登入狀態。如要允許網站記住你的資料，請<ph name="SETTINGS_LINK" />。</translation>
-<translation id="3322413454779348750">你的預設搜尋引擎在 Chromium 以外被更改，Chromium 已重設有關設定以保障你的安全。</translation>
 <translation id="3331557257666250900">只要登入 Chromium，即可在所有裝置上取用你的密碼、書籤和其他資料</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
@@ -472,6 +471,7 @@
 <translation id="6241367896540709610">Chromium 需要儲存空間存取權才能下載檔案</translation>
 <translation id="6245734527075554892">使用儲存在 Chromium 中的不安全網站清單來檢查網址</translation>
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
+<translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6270547683008298381">這些分頁正在使用額外的資源。為提升效能，請讓 Chromium 將其設定為閒置分頁。</translation>
 <translation id="6281746429495226318">自訂您的 Chromium 設定檔</translation>
@@ -630,6 +630,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7810005234485217901">你可以固定「圖片搜尋」，方便之後使用</translation>
 <translation id="7828947555739565424">此裝置上已有此帳戶的 Chromium 設定檔</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="7847673590271334840">你的搜尋引擎已透過 Chromium 以外的服務變更。Chromium 已將有關設定重設為原始預設值，以保障你的安全。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">自訂 Chromium 來為瀏覽器換上新風格</translation>
 <translation id="7859018312476869945">在網址列或搜尋框中輸入內容時，Chromium 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="7867198900892795913">由於 Chromium 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>

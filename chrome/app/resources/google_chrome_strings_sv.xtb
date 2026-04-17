@@ -510,6 +510,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6235018212288296708">Regel som tillåter inkommande mDNS-trafik för Google Chrome.</translation>
 <translation id="624230925347970731">Chrome avslutas snart</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
+<translation id="6248988683584659830">Sök i inställningar</translation>
 <translation id="6251759518630934363">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
 <translation id="6277547788421725101">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome</translation>
 <translation id="627882678981830918">Anpassa och styr Chrome. Ställ in Chrome som standardwebbläsare.</translation>
@@ -671,6 +672,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7792336732117553384">&amp;Hantera Chrome-profiler</translation>
 <translation id="7801699035218095297">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Google Chrome kopieras.</translation>
 <translation id="7804364787702057554">Ditt konto i Chrome</translation>
+<translation id="7804947029129221742">Din sökmotor har ändrats utanför Chrome. Chrome har återställt den till standardinställningen för att skydda dig. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Ta bort från Chrome …</translation>
 <translation id="7827099906024714326">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7832314606810669113">Logga in i Chrome om du vill få tillgång till dina bokmärken med mera på alla dina enheter. Bokmärket sparas i ditt Google-konto när du har loggat in.</translation>
@@ -791,7 +793,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="8992769679401294069">Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i Google-kontot.</translation>
 <translation id="8999117580775242387">När HTTPS inte är tillgängligt använder Chrome en osäker anslutning utan att varna dig</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>
-<translation id="9010418943148193727">Din standardsökmotor har ändrats utanför Chrome. Chrome har återställt den för att skydda dig.</translation>
 <translation id="9014771989710951291">Flera organisationer hanterar Chrome</translation>
 <translation id="9024318700713112071">Ställ in Chrome som standardwebbläsare</translation>
 <translation id="9066987883552592250">Stäng Gemini i Chrome Canary</translation>

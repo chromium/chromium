@@ -222,7 +222,6 @@
 <translation id="3296368748942286671">Kontynuuj działanie aplikacji w tle po zamknięciu Chromium</translation>
 <translation id="3313189106987092621">Chromium będzie Cię ostrzegać przed wczytywaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="3316771292331273802">Gdy zamkniesz wszystkie okna Chromium, wylogujesz się na większości stron, ale nie z konta Google, o ile wcześniej zalogujesz się w Chromium. Aby pozwolić witrynom na zapamiętywanie Twoich danych, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">Twoja domyślna wyszukiwarka została zmieniona poza Chromium. Aby Cię chronić, przeglądarka Chromium zresetowała to ustawienie.</translation>
 <translation id="3331557257666250900">Zaloguj się w Chromium, aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3352986031709923790">prawy górny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Dane Chromium na Twoim koncie</translation>
@@ -470,6 +469,7 @@
 <translation id="6241367896540709610">Aby pobierać pliki, Chromium musi mieć dostęp do pamięci</translation>
 <translation id="6245734527075554892">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium.</translation>
 <translation id="6248213926982192922">Ustaw Chromium jako domyślną przeglądarkę</translation>
+<translation id="6248988683584659830">Ustawienia wyszukiwania</translation>
 <translation id="6268381023930128611">Wylogować z Chromium?</translation>
 <translation id="6270547683008298381">Te karty wykorzystują dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chromium je dezaktywować.</translation>
 <translation id="6281746429495226318">Dostosuj swój profil Chromium</translation>
@@ -628,6 +628,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7810005234485217901">Możesz przypiąć wyszukiwanie obrazów, aby mieć do niego łatwy dostęp</translation>
 <translation id="7828947555739565424">Na tym urządzeniu istnieje już profil Chromium z tym kontem</translation>
 <translation id="7845233973568007926">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić komputer.</translation>
+<translation id="7847673590271334840">Twoja wyszukiwarka została zmieniona poza Chromium. Aby Cię chronić, przeglądarka Chromium zresetowała to ustawienie do pierwotnej wartości domyślnej. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Spersonalizuj przeglądarkę Chromium, aby zmienić jej wygląd</translation>
 <translation id="7859018312476869945">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chromium wysyła to, co piszesz, do domyślnej wyszukiwarki, aby podawać Ci lepsze sugestie. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="7867198900892795913">Aktualizacja Chromium do najnowszej wersji nie udała się, więc nie masz dostępu do najnowszych funkcji i poprawek zabezpieczeń.</translation>

@@ -510,6 +510,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome pecharase en breve</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
+<translation id="6248988683584659830">Configuración de busca</translation>
 <translation id="6251759518630934363">Analiza máis datos de sitios que a protección estándar para avisarte sobre os que sexan perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
 <translation id="6277547788421725101">O teu pai ou nai desactivou en Chrome a opción Permisos para sitios, aplicacións e extensións</translation>
 <translation id="627882678981830918">Personalizar e controlar Chrome. Define Chrome como o navegador predeterminado.</translation>
@@ -671,6 +672,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7792336732117553384">&amp;Xestionar perfís de Chrome</translation>
 <translation id="7801699035218095297">Google Chrome está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="7804364787702057554">A túa conta en Chrome</translation>
+<translation id="7804947029129221742">O teu buscador cambiouse desde fóra de Chrome. Para protexerte, Chrome restableceu a configuración predeterminada orixinal. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Eliminar de Chrome...</translation>
 <translation id="7827099906024714326">Chrome necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión agora, estes datos eliminaranse.</translation>
 <translation id="7832314606810669113">Para poder acceder aos teus marcadores e outros datos en todos os teus dispositivos, inicia sesión en Chrome Despois de facelo, este marcador gardarase na túa Conta de Google.</translation>
@@ -791,7 +793,6 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8992769679401294069">Os teus datos están encriptados cunha frase de acceso. Escríbea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
 <translation id="8999117580775242387">Cando o protocolo HTTPS non estea dispoñible, Chrome usará unha conexión pouco segura sen avisarte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
-<translation id="9010418943148193727">O teu buscador predeterminado cambiouse desde fóra de Chrome. Para protexerte, Chrome restableceuno.</translation>
 <translation id="9014771989710951291">Varias organizacións xestionan Chrome</translation>
 <translation id="9024318700713112071">Define Chrome como o navegador predeterminado.</translation>
 <translation id="9066987883552592250">Pechar Gemini en Chrome Canary</translation>

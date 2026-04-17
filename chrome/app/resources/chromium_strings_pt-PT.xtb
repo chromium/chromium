@@ -225,7 +225,6 @@
 <translation id="3296368748942286671">Continuar a executar aplicações em segundo plano quando o Chromium está fechado</translation>
 <translation id="3313189106987092621">O Chromium envia-lhe um aviso antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="3316771292331273802">A sua sessão é terminada na maioria dos sites quando fecha todas as janelas do Chromium, exceto na sua Conta Google se tiver sessão iniciada no Chromium. Para permitir que os sites se lembrem de si, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">O seu motor de pesquisa predefinido foi alterado fora do Chromium. Para sua proteção, o Chromium repôs a definição.</translation>
 <translation id="3331557257666250900">Inicie sessão no Chromium para ter as suas palavras-passe, marcadores e muito mais em todos os dispositivos</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
@@ -473,6 +472,7 @@
 <translation id="6241367896540709610">O Chromium necessita da autorização de acesso ao armazenamento para transferir ficheiros</translation>
 <translation id="6245734527075554892">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium</translation>
 <translation id="6248213926982192922">Definir o Chromium como navegador predefinido</translation>
+<translation id="6248988683584659830">Pesquise definições</translation>
 <translation id="6268381023930128611">Quer terminar sessão no Chromium?</translation>
 <translation id="6270547683008298381">Estes separadores estão a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chromium os torne inativos.</translation>
 <translation id="6281746429495226318">Personalize o seu perfil do Chromium</translation>
@@ -631,6 +631,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7810005234485217901">Pode fixar a pesquisa de imagens para um acesso fácil</translation>
 <translation id="7828947555739565424">Já existe um perfil do Chromium com esta conta neste dispositivo.</translation>
 <translation id="7845233973568007926">Agradecemos a instalação. Tem de reiniciar o computador antes de usar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7847673590271334840">O seu motor de pesquisa foi alterado fora do Chromium. Para sua proteção, o Chromium repôs a predefinição original. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Personalize o Chromium para lhe dar um novo aspeto</translation>
 <translation id="7859018312476869945">Quando escreve na barra de endereço ou caixa de pesquisa, o Chromium envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="7867198900892795913">Não foi possível atualizar o Chromium para a versão mais recente, pelo que não está a beneficiar das novas funcionalidades e correções de segurança.</translation>

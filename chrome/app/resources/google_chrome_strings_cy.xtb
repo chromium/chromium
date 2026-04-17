@@ -510,6 +510,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6235018212288296708">Rheol dod i mewn ar gyfer Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="624230925347970731">Bydd Chrome yn cau yn fuan</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
+<translation id="6248988683584659830">Gosodiadau chwilio</translation>
 <translation id="6251759518630934363">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
 <translation id="6277547788421725101">Mae dy riant wedi diffodd "Caniatâd ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome</translation>
 <translation id="627882678981830918">Personoleiddio a rheoli Chrome. Gosod Chrome fel porwr diofyn.</translation>
@@ -671,6 +672,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7792336732117553384">&amp;Rheoli Proffiliau Chrome</translation>
 <translation id="7801699035218095297">Mae Google Chrome yn ceisio copïo cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="7804364787702057554">Eich cyfrif yn Chrome</translation>
+<translation id="7804947029129221742">Newidiwyd eich peiriant chwilio o'r tu allan i Chrome. Er mwyn eich amddiffyn, gwnaeth Chrome ei ailosod i'w osodiad diofyn gwreiddiol. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Tynnu o Chrome...</translation>
 <translation id="7827099906024714326">Mae angen i Chrome gadarnhau mai chi sydd yno cyn y gellir cadw rhywfaint o ddata yn eich Cyfrif Google a'i ddefnyddio ar eich holl ddyfeisiau. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="7832314606810669113">I gael eich nodau tudalen a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chrome. Bydd y nod tudalen hwn yn cael ei gadw yn eich Cyfrif Google ar ôl i chi fewngofnodi.</translation>
@@ -791,7 +793,6 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="8992769679401294069">Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a chadw data Chrome yn eich Cyfrif Google.</translation>
 <translation id="8999117580775242387">Pan nad yw HTTPS ar gael, bydd Chrome yn defnyddio cysylltiad anniogel heb eich rhybuddio</translation>
 <translation id="8999208279178790196">{0,plural, =0{Mae diweddariad Chrome ar gael}=1{Mae diweddariad Chrome ar gael}two{Mae diweddariad Chrome wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}}</translation>
-<translation id="9010418943148193727">Newidiwyd eich peiriant chwilio diofyn o'r tu allan i Chrome. Er mwyn eich amddiffyn, gwnaeth Chrome ei ailosod.</translation>
 <translation id="9014771989710951291">Mae mwy nag un sefydliad yn rheoli Chrome</translation>
 <translation id="9024318700713112071">Gosod Chrome fel porwr diofyn</translation>
 <translation id="9066987883552592250">Cau Gemini yn Chrome Canary</translation>

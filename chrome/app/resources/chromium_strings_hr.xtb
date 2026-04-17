@@ -225,7 +225,6 @@
 <translation id="3296368748942286671">Nastavi izvršavati ​​pozadinske aplikacije po zatvaranju preglednika Chromium</translation>
 <translation id="3313189106987092621">Chromium će vas upozoriti prije učitavanja bilo koje web-lokacije putem nesigurne veze</translation>
 <translation id="3316771292331273802">Kad zatvorite sve prozore Chromiuma, odjavit ćete se s većine web-lokacija osim Google računa ako ste prijavljeni na Chromium. Da bi vas web-lokacije zapamtile, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="3322413454779348750">Zadana tražilica promijenjena je izvan Chromiuma. Radi vaše zaštite Chromium je poništio tu postavku.</translation>
 <translation id="3331557257666250900">Prijavite se u Chromium da biste mogli pristupiti svojim zaporkama, oznakama i drugim podacima na svim svojim uređajima</translation>
 <translation id="3352986031709923790">gornji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, vrh <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Podaci Chromiuma na vašem računu</translation>
@@ -473,6 +472,7 @@
 <translation id="6241367896540709610">Chromium treba dopuštenje za pristup pohrani radi preuzimanja datoteka</translation>
 <translation id="6245734527075554892">Provjerava nalaze li se URL-ovi na popisu nesigurnih web-lokacija pohranjenom u Chromiumu</translation>
 <translation id="6248213926982192922">Neka Chromium bude zadani preglednik</translation>
+<translation id="6248988683584659830">Pretraživanje postavki</translation>
 <translation id="6268381023930128611">Želite li se odjaviti iz Chromiuma?</translation>
 <translation id="6270547683008298381">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromiumu da ih deaktivira.</translation>
 <translation id="6281746429495226318">Prilagodite profil u Chromiumu</translation>
@@ -631,6 +631,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7810005234485217901">Možete prikvačiti pretraživanje slika radi lakšeg pristupa</translation>
 <translation id="7828947555739565424">Profil u Chromiumu s tim računom već postoji na ovom uređaju</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
+<translation id="7847673590271334840">Tražilica je promijenjena izvan Chromiuma. Radi vaše zaštite Chromium je tu postavku vratio na izvornu zadanu vrijednost. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7853661403199074278">Prilagodite Chromium da biste mu dali novi izgled</translation>
 <translation id="7859018312476869945">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chromium šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
 <translation id="7867198900892795913">Chromium se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
