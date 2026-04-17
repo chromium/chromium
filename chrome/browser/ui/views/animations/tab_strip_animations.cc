@@ -22,10 +22,10 @@ DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(TabStripAnimations, kTopCorner);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(TabStripAnimations, kBottomCorner);
 
 TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
-  const int expand_collapse_duration_ms =
-      features::UseSidePanelFlyoverAnimation()
-          ? features::kSidePanelFlyoverDurationMs.Get()
-          : 450;
+  const int expand_duration_ms =
+      features::UseSidePanelFlyoverAnimation() ? 300 : 400;
+  const int collapse_duration_ms =
+      features::UseSidePanelFlyoverAnimation() ? 250 : 350;
   const gfx::Tween::Type expand_collapse_tween =
       features::UseSidePanelFlyoverAnimation()
           ? gfx::Tween::ACCEL_30_DECEL_20_85
@@ -38,7 +38,7 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
 
   return Groups(Group(
       kVerticalTabStrip,
-      Motion(kExpand, TotalDurationMs(expand_collapse_duration_ms),
+      Motion(kExpand, TotalDurationMs(expand_duration_ms),
              expand_collapse_tween,
              Animate(kTabStripWidth, FromValue(0.0), ToValue(1.0)),
              Sequence(kTopCorner, Keyframe(AtPercent(0), Value(-1.0)),
@@ -54,7 +54,7 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
              // directly during this motion.
              Animate(kTabStripHoverWidth, FromValue(1.0), ToValue(0.0)),
              Animate(kBottomCorner, FromValue(-1.0), ToValue(1.0))),
-      Motion(kCollapse, TotalDurationMs(expand_collapse_duration_ms),
+      Motion(kCollapse, TotalDurationMs(collapse_duration_ms),
              expand_collapse_tween,
              Animate(kTabStripWidth, FromValue(1.0), ToValue(0.0)),
              Sequence(kTopCorner, Keyframe(AtPercent(0), Value(1.0)),
@@ -68,12 +68,12 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
       // The expand and collapse hover animation doesn't shift contents during
       // the animation and so shares the same animation parameters across all
       // the supported platforms.
-      Motion(kExpandOnHover, TotalDurationMs(300),
+      Motion(kExpandOnHover, TotalDurationMs(250),
              gfx::Tween::EASE_IN_OUT_EMPHASIZED,
              Animate(kTabStripHoverWidth, FromValue(0.0), ToValue(1.0)),
              Animate(kTopCorner, FromValue(1.0), ToValue(-1.0)),
              Animate(kBottomCorner, FromValue(1.0), ToValue(-1.0))),
-      Motion(kCollapseOnHover, TotalDurationMs(250),
+      Motion(kCollapseOnHover, TotalDurationMs(200),
              gfx::Tween::EASE_IN_OUT_EMPHASIZED,
              Animate(kTabStripHoverWidth, FromValue(1.0), ToValue(0.0)),
              Animate(kTopCorner, FromValue(-1.0), ToValue(1.0)),

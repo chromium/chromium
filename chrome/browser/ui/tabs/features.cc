@@ -55,7 +55,7 @@ BASE_FEATURE_PARAM(int,
                    kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples,
                    &kVerticalTabsExpandOnHover,
                    "expand_on_hover_velocity_heuristic_min_samples",
-                   3);
+                   2);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kVerticalTabsExpandOnHoverVelocityHeuristicInterval,
                    &kVerticalTabsExpandOnHover,
@@ -65,7 +65,7 @@ BASE_FEATURE_PARAM(double,
                    kVerticalTabsExpandOnHoverVelocityHeuristicThreshold,
                    &kVerticalTabsExpandOnHover,
                    "expand_on_hover_velocity_heuristic_threshold",
-                   0.25);
+                   0.1);
 
 BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 
