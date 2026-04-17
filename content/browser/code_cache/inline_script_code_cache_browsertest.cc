@@ -454,7 +454,10 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, MAYBE_IsolatedByNik) {
 }
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) &&                     \
+    defined(MEMORY_SANITIZER) ||                                           \
+    defined(THREAD_SANITIZER) ||                                           \
+    ((BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && !defined(NDEBUG))
 #define MAYBE_ProducedCacheHitsOnAnotherProcess \
   DISABLED_ProducedCacheHitsOnAnotherProcess
 #else
@@ -492,8 +495,15 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
       PurgeResourceCacheFromTheMainFrame();
       ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
     }
-    EXPECT_TRUE(produced) << "Failed to produce cache";
+    ASSERT_TRUE(produced) << "Failed to produce cache; skipping Step 4 "
+                             "because the precondition is not satisfied.";
   }
+
+  const int rph_id_before_recreate = shell()
+                                        ->web_contents()
+                                        ->GetPrimaryMainFrame()
+                                        ->GetProcess()
+                                        ->GetDeprecatedID();
 
   // Step 3: Recreate the window to ensure the next load happens in a completely
   // new renderer process.
@@ -506,15 +516,30 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
     for (int i = 0; i < 5; i++) {
       base::HistogramTester histogram_tester;
       ASSERT_TRUE(NavigateToURL(shell(), url));
+      if (i == 0) {
+        const int rph_id_after_recreate = shell()
+                                          ->web_contents()
+                                          ->GetPrimaryMainFrame()
+                                          ->GetProcess()
+                                          ->GetDeprecatedID();
+        ASSERT_NE(rph_id_before_recreate, rph_id_after_recreate)
+            << "RecreateWindow() did not produce a new renderer process for "
+               "a.example; the cross-process invariant required by this test "
+               "is not satisfied. ";
+      }
       FetchHistogramsFromChildProcesses();
-      if (GetConsumeCacheCount(histogram_tester) == 1) {
+      const int persistent_consume_count = histogram_tester.GetBucketCount(
+          "V8.CompileScript.CacheBehaviour",
+          CacheBehaviourNameToInt("kConsumeCodeCache"));
+      if (persistent_consume_count == 1) {
         consumed = true;
         break;
       }
       PurgeResourceCacheFromTheMainFrame();
       ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
     }
-    EXPECT_TRUE(consumed) << "Failed to consume cache";
+    EXPECT_TRUE(consumed) << "Failed to consume persistent code cache "
+                             "(kConsumeCodeCache) in the new process.";
   }
 }
 
