@@ -216,11 +216,6 @@ class PasswordManualFallbackFlowTest : public Test {
                     PasswordForm::MatchType::kExact));
   }
 
-  void TearDown() override {
-    profile_password_store().Clear();
-    Test::TearDown();
-  }
-
   PasswordManualFallbackFlow& flow() { return *flow_; }
 
   MockPasswordManagerDriver& driver() { return *driver_; }

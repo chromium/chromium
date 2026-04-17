@@ -54,8 +54,6 @@ class TestPasswordStore : public PasswordStore {
   TestPasswordStore(const TestPasswordStore&) = delete;
   TestPasswordStore& operator=(const TestPasswordStore&) = delete;
 
-  void Clear();
-
   ::password_manager::IsAccountStore IsAccountStore() const;
 
   base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(

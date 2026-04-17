@@ -67,10 +67,6 @@ FakePasswordStoreBackend::GetTaskRunner() const {
                       : base::SequencedTaskRunner::GetCurrentDefault();
 }
 
-void FakePasswordStoreBackend::Clear() {
-  stored_passwords_.clear();
-}
-
 void FakePasswordStoreBackend::TriggerOnLoginsRetainedForAndroid(
     const std::vector<PasswordForm>& password_forms) {
   stored_passwords_.clear();

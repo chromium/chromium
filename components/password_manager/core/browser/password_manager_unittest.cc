@@ -3296,7 +3296,8 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
   for (bool found_matched_logins_in_store : kFalseTrue) {
     SCOPED_TRACE(testing::Message("found_matched_logins_in_store = ")
                  << found_matched_logins_in_store);
-    store_->Clear();
+    store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                       base::Time::Max());
     PasswordForm form(MakeFormWithOnlyNewPasswordField());
     std::vector<FormData> observed = {form.form_data};
     if (found_matched_logins_in_store) {

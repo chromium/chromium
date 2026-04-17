@@ -16,11 +16,6 @@ TestPasswordStore::TestPasswordStore(
     : PasswordStore(
           std::make_unique<FakePasswordStoreBackend>(is_account_store)) {}
 
-void TestPasswordStore::Clear() {
-  DCHECK(fake_backend()) << "Store has already been shut down!";
-  fake_backend()->Clear();
-}
-
 IsAccountStore TestPasswordStore::IsAccountStore() const {
   DCHECK(fake_backend()) << "Store has already been shut down!";
   return fake_backend()->is_account_store();

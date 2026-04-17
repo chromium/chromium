@@ -584,7 +584,9 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
 
   RunUntilIdle();
 
-  account_store()->Clear();
+  account_store()->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                              base::Time::Max());
+  RunUntilIdle();
   account_store()->CallSyncEnabledOrDisabledCallbacks();
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,

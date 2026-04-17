@@ -1238,7 +1238,8 @@ TEST_F(SafariDataImporterTest, ImportToBothStoresSequentially) {
 
   // Clear the account store before the next import since
   // `PasswordsImportToProfileStore` expects account store to be empty.
-  account_store()->Clear();
+  account_store()->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                              base::Time::Max());
 
   PasswordsImportToProfileStore();
 }

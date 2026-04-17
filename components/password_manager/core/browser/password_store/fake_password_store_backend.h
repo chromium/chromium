@@ -50,7 +50,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
   ~FakePasswordStoreBackend() override;
 
-  void Clear();
   void TriggerOnLoginsRetainedForAndroid(
       const std::vector<PasswordForm>& password_forms);
   void ReturnErrorOnRequest(

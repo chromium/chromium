@@ -312,8 +312,6 @@ class CredentialManagerImplTest : public testing::Test,
     cross_origin_form_.scheme = PasswordForm::Scheme::kHtml;
     cross_origin_form_.skip_zero_click = false;
 
-    store_->Clear();
-    EXPECT_TRUE(GetAllLoginsSync(store_.get()).empty());
   }
 
   void TearDown() override {
