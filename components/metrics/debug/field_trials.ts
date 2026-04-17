@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
@@ -238,9 +237,7 @@ export class FieldTrialsAppElement extends CustomElement {
   onUpdateForTesting = () => {};
 
   private el<K extends keyof ElementIdMap>(id: K): ElementIdMap[K] {
-    const result = this.shadowRoot!.getElementById(id) as any;
-    assert(result);
-    return result;
+    return this.getRequiredElement<ElementIdMap[K]>(`#${id}`);
   }
 
   constructor() {

@@ -85,7 +85,7 @@ export function triggerRefresh() {
 }
 
 interface ServerSpecifics {
-  autofill: any;
+  autofill: unknown;
 }
 
 type Specifics = ServerSpecifics;

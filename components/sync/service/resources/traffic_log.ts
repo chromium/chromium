@@ -12,7 +12,7 @@ let instance: TrafficLogTag|null = null;
 // See components/sync/engine/events/protocol_event.h
 export interface ProtocolEvent {
   details: string;
-  proto: any;
+  proto: unknown;
   time: string;
   type: string;
 }

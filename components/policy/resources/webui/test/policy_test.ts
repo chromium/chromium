@@ -7,9 +7,16 @@ import './policy_test_table.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import type {PolicyInfo} from './policy_test_browser_proxy.js';
+import type {PolicyInfo, PolicySchema} from './policy_test_browser_proxy.js';
 import {LevelNamesToValues, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import type {PolicyTestTableElement} from './policy_test_table.js';
+
+interface JsonPolicy {
+  source: string;
+  scope: string;
+  level: string;
+  value: unknown;
+}
 
 async function initialize() {
   await initializeTable();
@@ -36,7 +43,7 @@ async function initialize() {
 
 // Fired from PolicyUIHandler, called when the policy schema changes e.g.
 // because an extension was installed/uninstalled.
-function onSchemaUpdated(schema: any) {
+function onSchemaUpdated(schema: PolicySchema) {
   getRequiredElement<PolicyTestTableElement>('policy-test-table')
       .setSchema(schema);
 }
@@ -106,8 +113,8 @@ function applyPoliciesFromFile(jsonFile: File) {
               ...Object.fromEntries(
                   Object
                       .entries(
-                          policies.policyValues.extensions as
-                          Record<string, any>)
+                          policies.policyValues.extensions as Record<
+                              string, {policies: Record<string, JsonPolicy>}>)
                       .map(([extensionId,
                              {policies}]) => [extensionId, policies])),
             };
@@ -119,7 +126,7 @@ function applyPoliciesFromFile(jsonFile: File) {
                   continue;
                 }
                 policyTable.addRow(
-                    convertToPolicyInfo(ns, key, value as Record<string, any>));
+                    convertToPolicyInfo(ns, key, value as JsonPolicy));
               }
             }
           }
@@ -136,7 +143,7 @@ function applyPoliciesFromFile(jsonFile: File) {
 }
 
 function convertToPolicyInfo(
-    policyNamespace: string, policyName: string, value: {[key: string]: any}) {
+    policyNamespace: string, policyName: string, value: JsonPolicy) {
   const policy: PolicyInfo = {
     namespace: policyNamespace,
     name: policyName,

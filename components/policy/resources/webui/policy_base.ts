@@ -35,6 +35,8 @@ export interface PolicyValues {
     name: string,
     policies: {[name: string]: Policy},
     precedenceOrder?: string[],
+    isExtension?: boolean,
+    forSigninScreen?: boolean,
   };
 }
 
@@ -181,7 +183,8 @@ export class Page {
 
     sendWithPromise<void>('listenPoliciesUpdates');
     addWebUiListener(
-        'status-updated', (status: Status) => this.setStatus(status));
+        'status-updated',
+        (status: Record<string, Status>) => this.setStatus(status));
     addWebUiListener(
         'policies-updated',
         (names: PolicyNamesResponse, values: PolicyValuesResponse) =>
@@ -200,7 +203,7 @@ export class Page {
         policyIds.map((id: string) => {
           const knownPolicyNames =
               policyNames[id] ? policyNames[id].policyNames : [];
-          const value: any = policyValues[id];
+          const value = policyValues[id]!;
           const knownPolicyNamesSet = new Set(knownPolicyNames);
           const receivedPolicyNames =
               value.policies ? Object.keys(value.policies) : [];
@@ -226,7 +229,7 @@ export class Page {
             name: value.forSigninScreen ?
                 `${value.name} [${loadTimeData.getString('signinProfile')}]` :
                 value.name,
-            id: value.isExtension ? id : null,
+            id: value.isExtension ? id : undefined,
             policies,
             ...(value.precedenceOrder &&
                 {precedenceOrder: value.precedenceOrder}),
@@ -399,7 +402,7 @@ export class Page {
    * status.
    * Status is the dictionary containing the current policy status.
    */
-  setStatus(status: {[key: string]: any}) {
+  setStatus(status: Record<string, Status>) {
     // Remove any existing status boxes.
     const container = getRequiredElement('status-box-container');
     while (container.firstChild) {
@@ -411,7 +414,7 @@ export class Page {
 
     // Add a status box for each scope that has a cloud policy status.
     for (const scope in status) {
-      const boxStatus: Status = status[scope];
+      const boxStatus = status[scope]!;
       if (!boxStatus.policyDescriptionKey) {
         continue;
       }

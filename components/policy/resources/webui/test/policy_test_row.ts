@@ -14,7 +14,7 @@ import {getTemplate} from './policy_test_row.html.js';
 export class PolicyTestRowElement extends CustomElement {
   private hasAnError_: boolean = false;
   private errorEvents_: EventTracker = new EventTracker();
-  private inputType_: string|number|boolean|any[]|object;
+  private inputType_: string|number|boolean|unknown[]|object;
   private schema_?: PolicySchema;
 
   static override get template() {
@@ -364,7 +364,7 @@ export class PolicyTestRowElement extends CustomElement {
     const policyValueInput =
         this.getRequiredElement<HTMLInputElement>('.value');
     if (this.inputType_ === String) {
-      policyValueInput.value = initialValues.value;
+      policyValueInput.value = initialValues.value as string;
     } else {
       policyValueInput.value = JSON.stringify(initialValues.value);
     }
@@ -389,7 +389,7 @@ export class PolicyTestRowElement extends CustomElement {
 
   // Class method for returning the value for this policy (the value in the
   // value cell of this row).
-  getPolicyValue(): string|number|boolean|any[]|object {
+  getPolicyValue(): string|number|boolean|unknown[]|object {
     const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
     // If the policy expects a string, any input is valid.
     if (this.inputType_ === String) {

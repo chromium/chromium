@@ -64,27 +64,28 @@ export class PrivateMetricsAppElement extends CustomElement {
     const tbody = this.shadowRoot!.querySelector('#private-metrics-summary')!;
     tbody.replaceChildren();
 
-    const addRow = (key: string, value: any, isTime = false) => {
-      const tr = document.createElement('tr');
-      const keyTd = document.createElement('td');
-      keyTd.textContent = key;
-      const valueTd = document.createElement('td');
+    const addRow =
+        (key: string, value: CwtKeyInfo[keyof CwtKeyInfo], isTime = false) => {
+          const tr = document.createElement('tr');
+          const keyTd = document.createElement('td');
+          keyTd.textContent = key;
+          const valueTd = document.createElement('td');
 
-      if (value === undefined) {
-        valueTd.textContent = 'N/A';
-      } else if (isTime) {
-        valueTd.textContent =
-            new Date(parseInt(value, 10)).toLocaleString(undefined, {
-              dateStyle: 'long',
-              timeStyle: 'long',
-            });
-      } else {
-        valueTd.textContent = value;
-      }
-      tr.appendChild(keyTd);
-      tr.appendChild(valueTd);
-      tbody.appendChild(tr);
-    };
+          if (value === undefined) {
+            valueTd.textContent = 'N/A';
+          } else if (isTime) {
+            valueTd.textContent = new Date(parseInt(value as string, 10))
+                                      .toLocaleString(undefined, {
+                                        dateStyle: 'long',
+                                        timeStyle: 'long',
+                                      });
+          } else {
+            valueTd.textContent = String(value);
+          }
+          tr.appendChild(keyTd);
+          tr.appendChild(valueTd);
+          tbody.appendChild(tr);
+        };
 
     addRow('Issued At', publicKeyInfo.issued_at, true);
     addRow('Expiration Time', publicKeyInfo.expiration_time, true);

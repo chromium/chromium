@@ -327,6 +327,6 @@ customElements.define(
 declare global {
   interface HTMLElementEventMap {
     'rows-change': CustomEvent<{rowCount: number}>;
-    'selection-change': CustomEvent<{data: any | undefined}>;
+    'selection-change': CustomEvent<{data: unknown | undefined}>;
   }
 }

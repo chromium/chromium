@@ -5,6 +5,7 @@
 import './private_aggregation_internals_table.js';
 
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import type {Int128} from 'chrome://resources/mojo/mojo/public/mojom/base/int128.mojom-webui.js';
 
 import type {AggregatableReportRequestID, ObserverInterface, WebUIAggregatableReport} from './private_aggregation_internals.mojom-webui.js';
 import {Factory as PrivateAggregationInternalsFactory, HandlerRemote as PrivateAggregationInternalsHandlerRemote, ObserverReceiver, ReportStatus} from './private_aggregation_internals.mojom-webui.js';
@@ -17,9 +18,10 @@ function compareDefault<T>(a: T, b: T): number {
 }
 
 // Converts the mojo_base.mojom.Uint128 to a string
-function bucketReplacer(_key: string, value: any): any {
-  if (_key === 'bucket') {
-    return (value['high'] * 2n ** 64n + value['low']).toString();
+function bucketReplacer(key: string, value: unknown): unknown {
+  if (key === 'bucket') {
+    const val = value as Int128;
+    return (val.high * 2n ** 64n + val.low).toString();
   } else {
     return value;
   }

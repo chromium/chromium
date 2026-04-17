@@ -12,7 +12,7 @@ import {getTemplate} from './status_box.html.js';
 
 export interface Status {
   policyDescriptionKey: string;
-  flexOrgWarning: any;
+  flexOrgWarning: boolean;
   assetId?: string;
   location?: string;
   directoryApiId?: string;

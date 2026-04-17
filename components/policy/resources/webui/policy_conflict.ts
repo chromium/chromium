@@ -13,11 +13,11 @@ export interface Conflict {
   level: string;
   scope: string;
   source: string;
-  value: any;
+  value: unknown;
 }
 
 // Converts a policy value to a JSON string and optionally formats it.
-export function stringifyPolicyValue(value: any, format?: boolean): string {
+export function stringifyPolicyValue(value: unknown, format?: boolean): string {
   // Guard against undefined values;
   // pass nulls, as they are a valid policy value.
   if (value === undefined) {

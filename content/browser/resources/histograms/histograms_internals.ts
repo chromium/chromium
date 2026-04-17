@@ -25,15 +25,16 @@ function includeSubprocessMetrics(): boolean {
 }
 
 /** Sends a request to the given handler. */
-function sendRequest(handlerName: string): Promise<any> {
-  return sendWithPromise(handlerName, getQuery(), includeSubprocessMetrics());
+function sendRequest<T>(handlerName: string): Promise<T> {
+  return sendWithPromise<T>(
+      handlerName, getQuery(), includeSubprocessMetrics());
 }
 
 /**
  * Initiates the request for histograms.
  */
 function requestHistograms() {
-  sendRequest('requestHistograms').then(addHistograms);
+  sendRequest<Histogram[]>('requestHistograms').then(addHistograms);
 }
 
 /** Clears all loaded histograms on the webpage. */
@@ -68,7 +69,7 @@ function startMonitoring() {
   stopButton.textContent = 'Stop';
   disableSubprocessCheckbox();
   clearHistograms();
-  sendRequest('startMonitoring').then(fetchDiff);
+  sendRequest<void>('startMonitoring').then(fetchDiff);
 }
 
 /**
@@ -78,7 +79,7 @@ function startMonitoring() {
  */
 function fetchDiff() {
   fetchDiffScheduler = setTimeout(function() {
-    sendRequest('fetchDiff').then(addHistograms).then(fetchDiff);
+    sendRequest<Histogram[]>('fetchDiff').then(addHistograms).then(fetchDiff);
   }, 1000);
 }
 

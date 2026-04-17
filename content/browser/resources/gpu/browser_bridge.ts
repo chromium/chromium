@@ -36,18 +36,24 @@ export interface AngleFeature {
   description?: string;
 }
 
+export interface Data {
+  description: string;
+  id?: string;
+  value: string|boolean|number;
+}
+
 interface GpuInfo {
   ANGLEFeatures?: AngleFeature[];
-  basicInfo: any[];
-  basicInfoForHardwareGpu: any[];
-  compositorInfo: any[];
+  basicInfo: Data[];
+  basicInfoForHardwareGpu: Data[];
+  compositorInfo: Data[];
   dawnInfo?: string[];
-  devicePerfInfo: any[];
-  diagnostics?: any[];
-  displayInfo: any[];
+  devicePerfInfo: Data[];
+  diagnostics?: Data[];
+  displayInfo: Data[];
   featureStatus: FeatureStatus;
   featureStatusForHardwareGpu: FeatureStatus;
-  videoAcceleratorsInfo: any[];
+  videoAcceleratorsInfo: Data[];
   vulkanInfo: string;
 }
 

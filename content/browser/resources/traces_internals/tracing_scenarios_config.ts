@@ -199,8 +199,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
       return handler.setScenariosConfigFromString(text);
     } else {
       const bytes = await file.arrayBuffer();
-      const buffer: BigBuffer = {bytes: Array.from(new Uint8Array(bytes))} as
-          any;
+      const buffer: BigBuffer = {bytes: Array.from(new Uint8Array(bytes))};
       return handler.setScenariosConfigFromBuffer(buffer);
     }
   }

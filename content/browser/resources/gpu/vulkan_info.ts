@@ -5,7 +5,7 @@
 import {VulkanInfo_Deserialize} from './vulkan_info.mojom-webui.js';
 
 export class VulkanInfo {
-  private vulkanInfo_: Record<string, any>;
+  private vulkanInfo_: Record<string, unknown>;
 
   constructor(base64Data: string) {
     const array = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
@@ -14,7 +14,7 @@ export class VulkanInfo {
     this.beautify(this.vulkanInfo_);
   }
 
-  private beautify(obj: {[key: string]: any}) {
+  private beautify(obj: Record<string, unknown>) {
     for (const key of Object.keys(obj)) {
       const value = obj[key];
 
@@ -23,17 +23,18 @@ export class VulkanInfo {
       }
 
       if (key.endsWith('Version')) {
-        obj[key] = this.beautifyVersion(value);
+        obj[key] = this.beautifyVersion(value as number);
         continue;
       }
 
       if (key === 'extensions' || key === 'instanceExtensions') {
-        obj[key] = this.beautifyExtensions(value);
+        obj[key] = this.beautifyExtensions(
+            value as Array<{extensionName: string, specVersion: string}>);
         continue;
       }
 
       if (key.endsWith('UUID')) {
-        obj[key] = this.beautifyUuid(value);
+        obj[key] = this.beautifyUuid(value as number[]);
         continue;
       }
 
@@ -44,7 +45,7 @@ export class VulkanInfo {
       }
 
       if (typeof value === 'object') {
-        this.beautify(value);
+        this.beautify(value as Record<string, unknown>);
         continue;
       }
     }
@@ -75,8 +76,8 @@ export class VulkanInfo {
 
   private beautifyExtensions(
       extensions: Array<{extensionName: string, specVersion: string}>):
-      {[key: string]: any} {
-    const result: {[key: string]: any} = {};
+      Record<string, string> {
+    const result: Record<string, string> = {};
     for (const extension of extensions) {
       const name = extension['extensionName'];
       const version = extension['specVersion'];

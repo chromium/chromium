@@ -66,7 +66,7 @@ export interface PolicyInfo {
   source: PolicySource;
   scope: PolicyScope;
   level: PolicyLevel;
-  value: any;
+  value: unknown;
 }
 
 // Object mapping details that need to be copied between policy rows to their

@@ -23,7 +23,7 @@ export interface Policy {
   error: string;
   warning: string;
   info: string;
-  value: any;
+  value: unknown;
   deprecated?: boolean;
   future?: boolean;
   allSourcesMerged?: boolean;

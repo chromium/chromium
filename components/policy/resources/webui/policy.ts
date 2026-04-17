@@ -53,11 +53,11 @@ function getRefreshIntervalEl() {
 }
 
 function getReportButtonVisibility() {
-  const button: any = document.querySelector('button#upload-report');
+  const button = document.querySelector<HTMLElement>('button#upload-report');
   if (!button) {
     return 'none';
   }
-  return button!.style.display.toString();
+  return button.style.display;
 }
 
 Object.assign(window, {

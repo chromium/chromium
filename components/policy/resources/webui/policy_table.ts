@@ -45,7 +45,7 @@ export class PolicyTableElement extends CustomElement {
   // The last sort order and column for the policy table.
   // These are used when policies are updated to prevent un-desired sort reset.
   mostRecentSortOrder: number = SortOrder.ASCENDING;
-  mostRecentSortedColumn: string = SortButtonsField.POLICY_NAME;
+  mostRecentSortedColumn: keyof Policy = SortButtonsField.POLICY_NAME;
 
   // Updates the data model and table.
   updateDataModel(dataModel: PolicyTableModel) {
@@ -65,7 +65,7 @@ export class PolicyTableElement extends CustomElement {
 
   update(
       order: number = this.mostRecentSortOrder,
-      field: string = this.mostRecentSortedColumn) {
+      field: keyof Policy = this.mostRecentSortedColumn) {
     // Mark most recent sorted column with aria-sort and reset all others.
     for (const column of Object.values(SortButtonsField)) {
       const sortHeader = this.getRequiredElement(`.${column}`);
@@ -96,7 +96,7 @@ export class PolicyTableElement extends CustomElement {
               // Sorting the policies in chosen alpha order based on the field
               // selected, with secondary sort based on Policy name.
               if (field !== SortButtonsField.POLICY_NAME &&
-                  a[field as keyof Policy] === b[field as keyof Policy]) {
+                  a[field] === b[field]) {
                 return order *
                     (a[SortButtonsField.POLICY_NAME] >
                              b[SortButtonsField.POLICY_NAME] ?
@@ -104,8 +104,7 @@ export class PolicyTableElement extends CustomElement {
                          -1);
               }
               return order *
-                  (a[field as keyof Policy] > b[field as keyof Policy] ? 1 :
-                                                                         -1);
+                  ((a[field] as string) > (b[field] as string) ? 1 : -1);
             }
 
             // Sorting so unknown policies are last.

@@ -63,7 +63,7 @@ function compareLexicographic<V>(f: CompareFunc<V>): CompareFunc<V[]> {
   };
 }
 
-function bigintReplacer(_key: string, value: any): any {
+function bigintReplacer(_key: string, value: unknown): unknown {
   return typeof value === 'bigint' ? value.toString() : value;
 }
 
@@ -503,11 +503,11 @@ function initPanel<T>(
 
   d.init([...cols, ...detailCols]);
 
-  t.addEventListener(
-      'selection-change', (e: CustomEvent<{data: T | undefined}>) => {
-        onSelectionChange(e.detail.data);
-        d.update(e.detail.data);
-      });
+  t.addEventListener('selection-change', (e: CustomEvent<{data: unknown}>) => {
+    const data = e.detail.data as T | undefined;
+    onSelectionChange(data);
+    d.update(data);
+  });
 
   d.addEventListener('close', () => t.clearSelection());
 

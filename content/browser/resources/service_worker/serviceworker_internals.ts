@@ -310,7 +310,7 @@ function onOptions(options: Options) {
 }
 
 
-async function onButtonClick(cmdArgs: Record<string, any>, e: Event) {
+async function onButtonClick(cmdArgs: Record<string, unknown>, e: Event) {
   const command = (e.target as HTMLElement).dataset['command'];
   assert(command);
   assert(COMMANDS.includes(command));
@@ -431,7 +431,7 @@ function renderPartitionData(partitionId: number) {
 
 
 function onErrorReported(
-    partitionId: number, versionId: string, errorInfo: any) {
+    partitionId: number, versionId: string, errorInfo: unknown) {
   // Update data model.
   addLogForversion(
       partitionId, versionId, 'Error: ' + JSON.stringify(errorInfo) + '\n');
@@ -442,7 +442,7 @@ function onErrorReported(
 
 
 function onConsoleMessageReported(
-    partitionId: number, versionId: string, message: any) {
+    partitionId: number, versionId: string, message: unknown) {
   // Update data model.
   addLogForversion(
       partitionId, versionId, 'Console: ' + JSON.stringify(message) + '\n');
