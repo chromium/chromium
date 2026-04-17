@@ -12,6 +12,7 @@
 
 @class FindInPageController;
 class FullscreenController;
+@protocol FullscreenCommands;
 
 // Adds support for the Native Find in Page feature. Instantiates a
 // FindInPageController when the web state is realized which itself attaches and
@@ -34,6 +35,10 @@ class FindTabHelper final : public web::WebStateObserver,
   // Sets the full screen controller that will passed to the
   // `FindInPageController`.
   void SetFullscreenController(FullscreenController* fullscreen_controller);
+
+  // Sets the fullscreen handler that will be passed to the
+  // `FindInPageController` (refactored).
+  void SetFullscreenHandler(id<FullscreenCommands> fullscreen_handler);
 
   void SetResponseDelegate(id<FindInPageResponseDelegate> response_delegate);
   void StartFinding(NSString* search_string);

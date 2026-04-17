@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
@@ -89,14 +90,12 @@ NSString* gSearchTerm;
 }
 
 - (void)disableFindInPage {
-  CHECK(self.fullscreenController);
   _findInPageManager->StopFinding();
 
   // When pulling to refresh the webpage during FIP,
   // `userDismissedFindNavigatorForManager` will not be called. We need to
   // handle the fullscreen exit here in this case.
-  self.fullscreenController->ExitForceFullscreenMode(
-      FullscreenModeTransitionTrigger::kForcedByCode);
+  [self exitFullscreen];
 }
 
 - (BOOL)canFindInPage {
@@ -126,6 +125,20 @@ NSString* gSearchTerm;
   }
 }
 
+// Exits forced fullscreen mode.
+- (void)exitFullscreen {
+  if (IsFullscreenRefactoringEnabled()) {
+    CHECK(self.fullscreenHandler);
+    [self.fullscreenHandler
+        exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:YES];
+  } else {
+    CHECK(self.fullscreenController);
+    self.fullscreenController->ExitForceFullscreenMode(
+        FullscreenModeTransitionTrigger::kForcedByCode);
+  }
+}
+
 #pragma mark - CRWFindInPageManagerDelegate
 
 - (void)findInPageManager:(web::FindInPageManager*)manager
@@ -152,11 +165,9 @@ NSString* gSearchTerm;
 }
 
 - (void)userDismissedFindNavigatorForManager:(web::FindInPageManager*)manager {
-  CHECK(self.fullscreenController);
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
-  self.fullscreenController->ExitForceFullscreenMode(
-      FullscreenModeTransitionTrigger::kForcedByCode);
+  [self exitFullscreen];
 }
 
 - (void)detachFromWebState {
@@ -167,6 +178,7 @@ NSString* gSearchTerm;
   web::FindInPageManager::RemoveFromWebState(_webState);
   _webState = nullptr;
   _fullscreenController = nullptr;
+  self.fullscreenHandler = nil;
 }
 
 - (void)dealloc {

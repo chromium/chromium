@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
@@ -36,6 +37,17 @@ void FindTabHelper::SetFullscreenController(
   }
   DCHECK(controller_);
   controller_.fullscreenController = fullscreen_controller;
+}
+
+void FindTabHelper::SetFullscreenHandler(
+    id<FullscreenCommands> fullscreen_handler) {
+  if (!fullscreen_handler) {
+    // If the tab helper is being disconnected from the browser then stop the
+    // find session.
+    StopFinding();
+  }
+  CHECK(controller_);
+  controller_.fullscreenHandler = fullscreen_handler;
 }
 
 void FindTabHelper::SetResponseDelegate(

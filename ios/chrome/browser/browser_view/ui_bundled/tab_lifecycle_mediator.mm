@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -275,9 +276,15 @@
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
   if (findTabHelper) {
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(self.browser);
-    findTabHelper->SetFullscreenController(fullscreenController);
+    if (IsFullscreenRefactoringEnabled()) {
+      id<FullscreenCommands> fullscreenHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), FullscreenCommands);
+      findTabHelper->SetFullscreenHandler(fullscreenHandler);
+    } else {
+      FullscreenController* fullscreenController =
+          FullscreenController::FromBrowser(self.browser);
+      findTabHelper->SetFullscreenController(fullscreenController);
+    }
   }
 
   if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
@@ -414,7 +421,11 @@
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
   if (findTabHelper) {
-    findTabHelper->SetFullscreenController(nullptr);
+    if (IsFullscreenRefactoringEnabled()) {
+      findTabHelper->SetFullscreenHandler(nil);
+    } else {
+      findTabHelper->SetFullscreenController(nullptr);
+    }
   }
 
   if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
