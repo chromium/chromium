@@ -32,6 +32,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -427,6 +428,10 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
   tab_search_bubble_host_observation_.Reset();
   if (host) {
     tab_search_bubble_host_observation_.Observe(host);
+    GetEndButtonActionItem()->SetImage(
+        ui::ImageModel::FromVectorIcon(context_ == Context::kVerticalTabStrip
+                                           ? kTabSearchTabStripIcon
+                                           : vector_icons::kExpandMoreIcon));
   }
 }
 
