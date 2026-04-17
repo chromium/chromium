@@ -93,27 +93,32 @@ CGFloat kColorTransitionDuration = 0.2;
 
   _lastBounds = bounds;
 
-  //   Use even-odd fill to subtract the cutout from the full view.
-  _maskPath = [UIBezierPath bezierPathWithRect:bounds];
-  _maskPath.usesEvenOddFillRule = YES;
+  // Use a positive path to construct the mask instead of subtracting shapes.
+  _maskPath = [UIBezierPath bezierPath];
+  [_maskPath moveToPoint:CGPointMake(0, bounds.size.height)];
+  [_maskPath addLineToPoint:CGPointMake(bounds.size.width, bounds.size.height)];
+  [_maskPath addLineToPoint:CGPointMake(bounds.size.width, 0)];
 
-  // Cutout covers the overlap area (height = kAppBarCornerRadius).
-  // To avoid clamping the corner radius (UIKit clamps to half the height),
-  // we make the cutout rect twice as tall and offset it upwards.
-  CGRect cutoutRect = CGRectMake(0, -kAppBarCornerRadius, bounds.size.width,
-                                 2 * kAppBarCornerRadius);
+  // Right inverse rounded corner.
+  [_maskPath
+      addArcWithCenter:CGPointMake(bounds.size.width - kAppBarCornerRadius, 0)
+                radius:kAppBarCornerRadius
+            startAngle:0
+              endAngle:M_PI_2
+             clockwise:YES];
 
-  // The cutout's bottom corners are rounded. Since the rect is 2x radius tall,
-  // the corner radius will not be clamped and will provide the full 16pt curve
-  // in the visible [0, 16] range.
-  UIBezierPath* cutoutPath =
-      [UIBezierPath bezierPathWithRoundedRect:cutoutRect
-                            byRoundingCorners:(UIRectCornerBottomLeft |
-                                               UIRectCornerBottomRight)
-                                  cornerRadii:CGSizeMake(kAppBarCornerRadius,
-                                                         kAppBarCornerRadius)];
+  [_maskPath
+      addLineToPoint:CGPointMake(kAppBarCornerRadius, kAppBarCornerRadius)];
 
-  [_maskPath appendPath:cutoutPath];
+  // Left inverse rounded corner.
+  [_maskPath addArcWithCenter:CGPointMake(kAppBarCornerRadius, 0)
+                       radius:kAppBarCornerRadius
+                   startAngle:M_PI_2
+                     endAngle:M_PI
+                    clockwise:YES];
+
+  [_maskPath closePath];
+
   _maskLayer.path = _maskPath.CGPath;
 }
 
