@@ -168,8 +168,6 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kActorLoginFederatedClickFromActor);
 
     // Navigate to a URL so we have a valid last committed URL.
     NavigateAndCommit(GURL("https://example.com/login"));
@@ -180,7 +178,6 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   StrictMock<MockActorLoginPermissionService> mock_permission_service_;
   MockActorLoginQualityLogger mock_mqls_logger_;
 };
