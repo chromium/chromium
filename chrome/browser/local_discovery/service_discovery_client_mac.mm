@@ -22,6 +22,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
@@ -210,7 +211,20 @@ void StopServiceResolver(NetServiceResolver* resolver) {
 }  // namespace
 
 ServiceDiscoveryClientMac::ServiceDiscoveryClientMac() = default;
-ServiceDiscoveryClientMac::~ServiceDiscoveryClientMac() = default;
+
+ServiceDiscoveryClientMac::~ServiceDiscoveryClientMac() {
+  if (service_discovery_thread_) {
+    // The destructor may run on the UI thread (via DeleteOnUIThread trait),
+    // where joining a thread is disallowed. Post the thread destruction to a
+    // ThreadPool sequence that permits sync primitives so the join can proceed.
+    service_discovery_thread_->DetachFromSequence();
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce([](std::unique_ptr<base::Thread> thread) {},
+                       std::move(service_discovery_thread_)));
+  }
+}
 
 std::unique_ptr<ServiceWatcher> ServiceDiscoveryClientMac::CreateServiceWatcher(
     const std::string& service_type,
