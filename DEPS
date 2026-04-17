@@ -2494,7 +2494,7 @@ deps = {
     Var('chromium_git') + '/webm/libwebp.git' + '@' +  'c00d83f6642e7838a12bb03bca94237f03cc2e00',
 
   'src/third_party/libyuv':
-    Var('chromium_git') + '/libyuv/libyuv.git' + '@' + '94644361b4fc21befdadbf425a5d256b17f20565',
+    Var('chromium_git') + '/libyuv/libyuv.git' + '@' + 'dec82721389ebb2e37cd6160ff60dd75ce5af2e2',
 
   'src/third_party/lss': {
       'url': Var('chromium_git') + '/linux-syscall-support.git' + '@' + Var('lss_revision'),
