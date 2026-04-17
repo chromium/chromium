@@ -111,25 +111,7 @@ class TestCrosLocalPrinter : public FakeLocalPrinter {
   crosapi::mojom::PrintServersConfigPtr config_;
 };
 
-class TestLocalPrinter : public ash::FakeLocalPrinter {
- public:
-  TestLocalPrinter() = default;
-  TestLocalPrinter(TestLocalPrinter&) = delete;
-  TestLocalPrinter& operator=(TestLocalPrinter&) = delete;
-  ~TestLocalPrinter() override {}
 
-  void SetLocalPrinters(std::vector<std::string> printer_ids) {
-    printers_ = ConvertToPrinters(printer_ids);
-  }
-
-  void GetPrinters(const AccountId& accountId,
-                   ash::LocalPrinter::GetPrintersCallback cb) override {
-    std::move(cb).Run(printers_);
-  }
-
- private:
-  std::vector<chromeos::Printer> printers_;
-};
 
 class FakePrintPreviewUI : public PrintPreviewUI {
  public:
@@ -290,7 +272,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     handler_ = preview_handler.get();
     cros_local_printer_ = std::make_unique<TestCrosLocalPrinter>();
     handler_->cros_local_printer_ = cros_local_printer_.get();
-    local_printer_ = std::make_unique<TestLocalPrinter>();
+    local_printer_ = std::make_unique<ash::FakeLocalPrinter>();
     handler_->local_printer_ = local_printer_.get();
     web_ui()->AddMessageHandler(std::move(preview_handler));
     handler_->AllowJavascriptForTesting();
@@ -346,7 +328,10 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   std::vector<PrinterInfo>& printers() { return printers_; }
 
   void SetLocalPrinters(std::vector<std::string> printer_ids) {
-    local_printer_->SetLocalPrinters(printer_ids);
+    local_printer_->ClearPrinters();
+    for (auto& printer : ConvertToPrinters(printer_ids)) {
+      local_printer_->AddPrinter(std::move(printer));
+    }
   }
 
   void FireOnLocalPrintersUpdated() { handler_->OnLocalPrintersUpdated(); }
@@ -357,7 +342,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<TestCrosLocalPrinter> cros_local_printer_;
-  std::unique_ptr<TestLocalPrinter> local_printer_;
+  std::unique_ptr<ash::FakeLocalPrinter> local_printer_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   raw_ptr<ash::FakeCupsPrintersManager> printers_manager_;

@@ -61,66 +61,6 @@ constexpr auto kAccountId =
     AccountId::Literal::FromUserEmailGaiaId(kEmail,
                                             GaiaId::Literal("123456789"));
 
-// A `LocalPrinter` implementation where all functions run callbacks with
-// reasonable default values.
-class TestLocalPrinter : public ash::FakeLocalPrinter {
- public:
-  std::optional<chromeos::Printer> GetPrinter(
-      const AccountId& account_id,
-      const std::string& printer_id) override {
-    return std::nullopt;
-  }
-  void GetEulaUrl(const AccountId& account_id,
-                  const std::string& printer_id,
-                  GetEulaUrlCallback callback) override {
-    std::move(callback).Run(GURL(""));
-  }
-  void GetOAuthAccessToken(const AccountId& account_id,
-                           const std::string& printer_id,
-                           GetOAuthAccessTokenCallback callback) override {
-    std::move(callback).Run(std::nullopt);
-  }
-};
-
-class MockLocalPrinter : public TestLocalPrinter {
- public:
-  MOCK_METHOD(std::optional<chromeos::Printer>,
-              GetPrinter,
-              (const AccountId& account_id, const std::string& printer_id));
-  MOCK_METHOD(void,
-              GetEulaUrl,
-              (const AccountId& account_id,
-               const std::string& printer_id,
-               GetEulaUrlCallback callback));
-  MOCK_METHOD(void,
-              GetOAuthAccessToken,
-              (const AccountId& account_id,
-               const std::string& printer_id,
-               GetOAuthAccessTokenCallback callback));
-
-  void DelegateToBase() {
-    ON_CALL(*this, GetPrinter)
-        .WillByDefault(
-            [this](const AccountId& account_id, const std::string& printer_id) {
-              return TestLocalPrinter::GetPrinter(account_id, printer_id);
-            });
-    ON_CALL(*this, GetOAuthAccessToken)
-        .WillByDefault([this](const AccountId& account_id,
-                              const std::string& printer_id,
-                              GetOAuthAccessTokenCallback cb) {
-          return TestLocalPrinter::GetOAuthAccessToken(account_id, printer_id,
-                                                       std::move(cb));
-        });
-    ON_CALL(*this, GetEulaUrl)
-        .WillByDefault([this](const AccountId& account_id,
-                              const std::string& printer_id,
-                              GetEulaUrlCallback cb) {
-          return TestLocalPrinter::GetEulaUrl(account_id, printer_id,
-                                              std::move(cb));
-        });
-  }
-};
-
 class FakeIppClientInfoCalculator
     : public ash::printing::IppClientInfoCalculator {
  public:
@@ -265,7 +205,7 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
   LocalPrinterHandlerChromeos* local_printer_handler() {
     return local_printer_handler_.get();
   }
-  MockLocalPrinter& local_printer() { return local_printer_; }
+  ash::FakeLocalPrinter& local_printer() { return local_printer_; }
   FakeIppClientInfoCalculator& ipp_client_info_calculator() {
     return *ipp_client_info_calculator_;
   }
@@ -276,7 +216,7 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
   TestingProfile* profile() { return profile_; }
 
  private:
-  NiceMock<MockLocalPrinter> local_printer_;
+  ash::FakeLocalPrinter local_printer_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -347,9 +287,7 @@ TEST_F(LocalPrinterHandlerChromeosNoAshTest, GetAshJobSettingsEmpty) {
 }
 
 TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsEmpty) {
-  local_printer().DelegateToBase();
-  EXPECT_CALL(local_printer(), GetPrinter)
-      .WillOnce(Return(std::make_optional<chromeos::Printer>()));
+  local_printer().AddPrinter(chromeos::Printer("printer1"));
   base::DictValue fetched_settings;
   local_printer_handler()->GetAshJobSettingsForTesting(
       "printer1",
@@ -357,14 +295,13 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsEmpty) {
       kInitialJobSettings.Clone());
 
   EXPECT_EQ(fetched_settings, kInitialJobSettings);
+  EXPECT_EQ(1, local_printer().get_printer_call_count());
   EXPECT_TRUE(ipp_client_info_calculator().get_os_info_called());
   EXPECT_FALSE(ipp_client_info_calculator().get_device_info_called());
 }
 
 TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsUsername) {
-  local_printer().DelegateToBase();
-  EXPECT_CALL(local_printer(), GetPrinter)
-      .WillOnce(Return(std::make_optional<chromeos::Printer>()));
+  local_printer().AddPrinter(chromeos::Printer("printer1"));
   user_manager::UserManager::Get()->SaveUserDisplayEmail(kAccountId, kUsername);
   profile()->GetPrefs()->SetBoolean(
       ash::prefs::kPrintingSendUsernameAndFilenameEnabled, true);
@@ -383,31 +320,25 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsUsername) {
     "sendUserInfo": true
   })");
   EXPECT_EQ(fetched_settings, kExpectedValue);
+  EXPECT_EQ(1, local_printer().get_printer_call_count());
   EXPECT_TRUE(ipp_client_info_calculator().get_os_info_called());
   EXPECT_FALSE(ipp_client_info_calculator().get_device_info_called());
 }
 
 TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetEulaUrl) {
-  local_printer().DelegateToBase();
-  EXPECT_CALL(local_printer(), GetEulaUrl)
-      .WillOnce(WithArg<2>([](ash::LocalPrinter::GetEulaUrlCallback cb) {
-        std::move(cb).Run(GURL("https://example.com/eula"));
-      }));
+  local_printer().AddPrinter(chromeos::Printer("printer1"));
+  local_printer().SetEulaUrl("printer1", GURL("https://example.com/eula"));
   std::string fetched_eula_url = "unset";
   local_printer_handler()->StartGetEulaUrl(
       "printer1",
       base::BindOnce(&RecordGetEulaUrl, std::ref(fetched_eula_url)));
   EXPECT_EQ("https://example.com/eula", fetched_eula_url);
+  EXPECT_EQ(1, local_printer().get_eula_url_call_count());
 }
 
 TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsOAuthToken) {
-  local_printer().DelegateToBase();
-  auto return_expected_oauth_token =
-      [](ash::LocalPrinter::GetOAuthAccessTokenCallback cb) {
-        std::move(cb).Run(std::make_optional<std::string>("token"));
-      };
-  EXPECT_CALL(local_printer(), GetOAuthAccessToken)
-      .WillOnce(WithArg<2>(return_expected_oauth_token));
+  local_printer().AddPrinter(chromeos::Printer("printer1"));
+  local_printer().SetOAuthAccessToken("printer1", "token");
 
   base::DictValue fetched_settings;
   local_printer_handler()->GetAshJobSettingsForTesting(
@@ -421,36 +352,34 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsOAuthToken) {
     "chromeos-access-oauth-token": "token"
   })");
   EXPECT_EQ(fetched_settings, kExpectedValue);
+  EXPECT_EQ(1, local_printer().get_oauth_token_call_count());
 }
 
 TEST_F(LocalPrinterHandlerChromeosWithAshTest,
        GetAshJobSettingsClientInfoEmptyPrinterId) {
-  local_printer().DelegateToBase();
-  EXPECT_CALL(local_printer(), GetPrinter).Times(0);
   base::DictValue fetched_settings;
   local_printer_handler()->GetAshJobSettingsForTesting(
       "", base::BindOnce(&RecordAshJobSettings, std::ref(fetched_settings)),
       kInitialJobSettings.Clone());
 
   EXPECT_EQ(fetched_settings, kInitialJobSettings);
+  EXPECT_EQ(0, local_printer().get_printer_call_count());
   EXPECT_FALSE(ipp_client_info_calculator().get_os_info_called());
   EXPECT_FALSE(ipp_client_info_calculator().get_device_info_called());
 }
 
 TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsClientInfo) {
-  local_printer().DelegateToBase();
   user_manager::UserManager::Get()->SetUserPolicyStatus(
       kAccountId, /*is_managed=*/true, /*is_affiliated=*/true);
   chromeos::Printer printer("printer1");
   printer.set_source(chromeos::Printer::Source::SRC_POLICY);
   printer.SetUri("ipps://printer.example.com/");
+  local_printer().AddPrinter(printer);
   const std::vector<IppClientInfo> expected_client_info{
       {IppClientInfo::ClientType::kOperatingSystem, "ChromeOS", "patch",
        "str_version", "version"},
       {IppClientInfo::ClientType::kOther, "chromebook-42", std::nullopt, "",
        std::nullopt}};
-  EXPECT_CALL(local_printer(), GetPrinter)
-      .WillOnce(Return(std::make_optional(printer)));
   ipp_client_info_calculator().SetOsInfo(expected_client_info[0].Clone());
   ipp_client_info_calculator().SetDeviceInfo(expected_client_info[1].Clone());
 
@@ -479,6 +408,7 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsClientInfo) {
     ]
   })");
   EXPECT_EQ(fetched_settings, kExpectedValue);
+  EXPECT_EQ(1, local_printer().get_printer_call_count());
   EXPECT_TRUE(ipp_client_info_calculator().get_os_info_called());
   EXPECT_TRUE(ipp_client_info_calculator().get_device_info_called());
 }
