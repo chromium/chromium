@@ -20,7 +20,7 @@
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/android/jni_string.h"
-#include "base/uuid_jni/UUID_jni.h"
+#include "base/system_jni/UUID_jni.h"
 #include "third_party/jni_zero/jni_zero.h"
 #endif
 

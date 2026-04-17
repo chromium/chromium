@@ -1327,6 +1327,7 @@ component("base") {
       ":path_utils_jni",
       ":process_launcher_jni",
       ":sys_utils_jni",
+      ":system_jni($default_toolchain)",
       ":tasks_jni",
       ":virtual_document_path_jni",
       "//base/android/linker:ashmem",
@@ -1443,7 +1444,7 @@ component("base") {
       ":token_jni($default_toolchain)",
     ]
     public_deps += [
-      ":uuid_jni($default_toolchain)",
+      ":system_jni($default_toolchain)",
       "//third_party/jni_zero",
     ]
   }  # is_android || is_robolectric
@@ -4776,8 +4777,11 @@ if (is_android) {
     ]
   }
 
-  generate_jar_jni("uuid_jni") {
-    classes = [ "java/util/UUID.class" ]
+  generate_jar_jni("system_jni") {
+    classes = [
+      "java/util/UUID.class",
+      "android/os/Debug\$MemoryInfo.class",
+    ]
   }
 
   java_cpp_features("java_features_srcjar") {

@@ -9,8 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/memory_jni/MemoryInfoBridge_jni.h"
-#include "base/time/time.h"
+#include "base/system_jni/Debug__MemoryInfo_jni.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 
@@ -63,8 +64,8 @@ bool MeminfoDumpProvider::OnMemoryDump(
 
   last_collection_time_ = now;
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> memory_info =
-      Java_MemoryInfoBridge_getActivityManagerMemoryInfoForSelf(env);
+  ScopedJavaLocalRef<JDebug_MemoryInfo> memory_info =
+      MemoryInfoBridgeJni::getActivityManagerMemoryInfoForSelf(env);
   // Tell the manager that collection failed. Since this is likely not a
   // transient failure, don't return an empty dump, and let the manager exclude
   // this provider from the next dump.
@@ -73,15 +74,8 @@ bool MeminfoDumpProvider::OnMemoryDump(
     return false;
   }
 
-  auto clazz = jni_zero::AdoptRef(env, env->GetObjectClass(memory_info.obj()));
-
-  jfieldID other_private_dirty_id =
-      env->GetFieldID(clazz.obj(), "otherPrivateDirty", "I");
-  jfieldID other_pss_id = env->GetFieldID(clazz.obj(), "otherPss", "I");
-
-  int other_private_dirty_kb =
-      env->GetIntField(memory_info.obj(), other_private_dirty_id);
-  int other_pss_kb = env->GetIntField(memory_info.obj(), other_pss_id);
+  int other_private_dirty_kb = memory_info->Get_otherPrivateDirty(env);
+  int other_pss_kb = memory_info->Get_otherPss(env);
 
   // What "other" covers is not documented in Debug#MemoryInfo, nor in
   // ActivityManager#getProcessMemoryInfo. However, it calls

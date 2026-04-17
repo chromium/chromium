@@ -134,7 +134,7 @@ def _parse_package(contents, require=True):
 _CLASSES_REGEX = re.compile(
     r'^((?:(?!\b(?:class|interface|enum)\b)'
     r'(?:[^{}"]|"[^"]*"))*?)\b'
-    r'(?:class|interface|enum)\b\s+\b([\w.]+)'
+    r'(?:class|interface|enum)\b\s+\b([\w.$]+)'
     r'(<[\s\S]*?>)?\s*[^{]*?\{', re.MULTILINE)
 _INDENT_REGEX = re.compile(r'\s*')
 _SAME_LINE_CLOSING_BRACE_REGEX = re.compile(r'\s*\}')
