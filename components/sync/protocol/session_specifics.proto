@@ -22,8 +22,11 @@ message SessionSpecifics {
   // Unique id for the client. Since M89, this is sync's cache GUID (client
   // ID). Pre-existing sessions using a legacy ID were migrated in M143.
   optional string session_tag = 1;
-  optional SessionHeader header = 2;
-  optional SessionTab tab = 3;
+
+  oneof content {
+    SessionHeader header = 2;
+    SessionTab tab = 3;
+  }
 
   // The local tab id used by sync. Unique across all nodes for that client.
   optional int32 tab_node_id = 4 [default = -1];
