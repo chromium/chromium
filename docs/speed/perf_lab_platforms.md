@@ -44,6 +44,7 @@
  * [mac-m2-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m2-pro-perf): Mac M2 PRO Baremetal ARM.
  * [mac-m3-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m3-pro-perf): Mac M3 PRO ARM.
  * [mac-m4-mini-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m4-mini-perf): Mac M4 mini ARM.
+ * [mac-m5-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m5-pro-perf): Mac M5 PRO ARM.
 
 ### Win
 

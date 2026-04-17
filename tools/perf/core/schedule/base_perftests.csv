@@ -6,6 +6,7 @@ linux-perf-rel,1,1,200
 linux-r350-perf,1,1,200
 mac-intel-perf,1,1,300
 mac-m1_mini_2020-perf,1,1,300
+mac-m5-pro-perf,1,1,300
 win-10-perf,1,1,200
 win-10-perf-pgo,1,1,200
 win-11-perf,1,1,200

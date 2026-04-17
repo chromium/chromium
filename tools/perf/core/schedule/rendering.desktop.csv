@@ -6,6 +6,7 @@ linux-perf-pgo,1,1,False
 mac-m1_mini_2020-perf,1,1,False
 mac-m2-pro-perf,1,1,False
 mac-m4-mini-perf,1,1,False
+mac-m5-pro-perf,1,1,False
 win-10-perf,1,1,False
 win-10-perf-pgo,1,1,False
 win-10_laptop_low_end-perf,1,1,False

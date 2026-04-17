@@ -772,6 +772,12 @@ PLATFORM_INFO = {
         'platform_os': 'mac',
         'is_fyi': False
     },
+    'mac-m5-pro-perf': {
+        'description': 'Mac M5 PRO ARM',
+        'num_shards': 1,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
     'win-10_laptop_low_end-perf': {
         'description': ('Low end windows 10 HP laptops. HD Graphics 5500, '
                         'x86-64-i3-5005U, SSD, 4GB RAM.'),

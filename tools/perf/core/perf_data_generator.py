@@ -1183,6 +1183,30 @@ BUILDERS = {
         'platform': 'linux',
         'perf_processor': True,
     },
+    'mac-m5-pro-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'arm',
+            'mac_model':
+            'Mac17,9',
+            'os':
+            'Mac',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'Mac17,9_arm64-64-Apple_M5_Pro_apple m5 pro_24576_APPLE SSD AP1024Z',
+        },
+    },
     'win-10_amd_laptop-perf': {
         'tests': [
             {
