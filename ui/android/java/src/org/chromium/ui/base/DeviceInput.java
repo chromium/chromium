@@ -280,7 +280,6 @@ public class DeviceInput implements InputDeviceListener {
             return new DeviceSnapshot(
                     /* supportsAlphabeticKeyboard= */ isPhysical
                             && device.getKeyboardType() == KEYBOARD_TYPE_ALPHABETIC,
-                    // SOURCE_MOUSE applies to pointer devices, including mouse and touchpad
                     /* supportsPrecisionPointer= */ isPhysical
                             && device.supportsSource(SOURCE_MOUSE),
                     /* supportsKeyboard= */ isPhysical

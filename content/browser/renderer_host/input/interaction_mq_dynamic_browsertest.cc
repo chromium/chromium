@@ -22,9 +22,10 @@ namespace content {
 
 using InteractionMediaQueriesDynamicTest = ContentBrowserTest;
 
-// Disable test on Android ASAN bot: crbug.com/807420
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
+// Test that interaction media queries update dynamically when pointer/hover
+// capabilities change. On desktop, setting (pointer: coarse) + (hover: hover)
+// should produce a primary (pointer: coarse) and primary (hover: hover).
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
                        PointerMediaQueriesDynamic) {
   std::optional<ui::ScopedSetPointerAndHoverTypesForTesting> scoper(
@@ -32,6 +33,25 @@ IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
   SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("", "interaction-mq-dynamic.html")));
+
+  static constexpr std::u16string_view kSuccessTitle = u"SUCCESS";
+  TitleWatcher title_watcher(shell()->web_contents(), kSuccessTitle);
+  scoper.emplace(ui::POINTER_TYPE_COARSE, ui::HOVER_TYPE_HOVER);
+  SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
+  EXPECT_EQ(kSuccessTitle, title_watcher.WaitAndGetTitle());
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// On Android, when the primary pointer is touchscreen/coarse, primary hover is
+// forced to "none" (see crbug.com/41445959). Validate this dynamic update path.
+IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
+                       PointerMediaQueriesDynamicAndroid) {
+  std::optional<ui::ScopedSetPointerAndHoverTypesForTesting> scoper(
+      std::in_place, ui::POINTER_TYPE_NONE, ui::HOVER_TYPE_NONE);
+  SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("", "interaction-mq-dynamic-android.html")));
 
   static constexpr std::u16string_view kSuccessTitle = u"SUCCESS";
   TitleWatcher title_watcher(shell()->web_contents(), kSuccessTitle);

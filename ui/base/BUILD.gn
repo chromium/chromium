@@ -1147,6 +1147,7 @@ test("ui_base_unittests") {
   }
 
   if (use_blink) {
+    sources += [ "pointer/pointer_device_unittest.cc" ]
     deps += [
       "//ui/events:events_base",
       "//ui/events:test_support",

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/android/device_info.h"
 #include "base/android/jni_array.h"
 #include "base/check_op.h"
 
@@ -34,6 +35,12 @@ int MaxTouchPoints() {
 
 PointerType GetPrimaryPointerType() {
   const int available_pointer_types = GetAvailablePointerAndHoverTypes().first;
+  // In desktop mode, prefer fine pointer (mouse/trackpad) as primary.
+  if (base::android::device_info::is_desktop()) {
+    if (available_pointer_types & POINTER_TYPE_FINE) {
+      return POINTER_TYPE_FINE;
+    }
+  }
   if (available_pointer_types & POINTER_TYPE_COARSE) {
     return POINTER_TYPE_COARSE;
   }
@@ -45,7 +52,19 @@ PointerType GetPrimaryPointerType() {
 }
 
 HoverType GetPrimaryHoverType() {
-  const int available_hover_types = GetAvailablePointerAndHoverTypes().second;
+  auto [available_pointer_types, available_hover_types] =
+      GetAvailablePointerAndHoverTypes();
+  // In desktop mode, the mouse is the primary input, so report hover.
+  if (base::android::device_info::is_desktop()) {
+    if (available_hover_types & HOVER_TYPE_HOVER) {
+      return HOVER_TYPE_HOVER;
+    }
+  }
+  // On non-desktop Android, prefer COARSE (touchscreen) as primary.
+  // If the primary pointer is touch, primary hover is none.
+  if (available_pointer_types & POINTER_TYPE_COARSE) {
+    return HOVER_TYPE_NONE;
+  }
   if (available_hover_types & HOVER_TYPE_NONE) {
     return HOVER_TYPE_NONE;
   }

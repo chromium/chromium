@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic interaction media query test (Android)</title>
+    <script type="text/javascript">
+      function handleMediaChange(mediaQueryList) {
+        if (mediaQueryList.matches) {
+          pass();
+        } else {
+          fail();
+        }
+      }
+
+      function start() {
+        var mql = window.matchMedia("(pointer: coarse) and (hover:none)");
+        mql.addListener(handleMediaChange);
+      }
+
+      function pass() {
+        document.title = 'SUCCESS';
+      }
+
+      function fail() {
+        document.title = 'FAIL';
+      }
+    </script>
+</head>
+<body onLoad="start()">
+</body>
+</html>
