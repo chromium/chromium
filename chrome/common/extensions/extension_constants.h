@@ -317,14 +317,6 @@ inline constexpr char kAppStateReadyToRun[] = "ready_to_run";
 // The path part of the file system url used for media file systems.
 inline constexpr char kMediaFileSystemPathPart[] = "_";
 
-// The key name of extension request timestamp used by the
-// prefs::kCloudExtensionRequestIds preference.
-inline constexpr char kExtensionRequestTimestamp[] = "timestamp";
-
-// The key name of the extension workflow request justification used by the
-// prefs::kCloudExtensionRequestIds preference.
-inline constexpr char kExtensionWorkflowJustification[] = "justification";
-
 inline constexpr auto kBuiltInFirstPartyExtensionIds =
     std::to_array<const std::string_view>({
         kCalculatorAppId,
