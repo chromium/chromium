@@ -27,6 +27,7 @@
 namespace blink {
 
 class CanvasResource;
+class ExportedCanvasResource;
 
 class CanvasResourceDispatcherClient {
  public:
@@ -148,7 +149,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&);
   // virtual for testing
-  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&);
+  virtual void PostImageToPlaceholder(scoped_refptr<ExportedCanvasResource>&&);
 
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;

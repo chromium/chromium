@@ -66,7 +66,8 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
             /*placeholder_canvas_id=*/0,
             /*canvas_size=*/{kWidth, kHeight}) {}
 
-  MOCK_METHOD1(PostImageToPlaceholder, void(scoped_refptr<CanvasResource>&&));
+  MOCK_METHOD1(PostImageToPlaceholder,
+               void(scoped_refptr<ExportedCanvasResource>&&));
 
   MockCanvasResourceDispatcherClient& MockClient() { return client_; }
 

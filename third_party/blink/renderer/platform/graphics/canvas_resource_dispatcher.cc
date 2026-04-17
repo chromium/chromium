@@ -118,15 +118,13 @@ static void UpdatePlaceholderImage(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     int placeholder_canvas_id,
-    scoped_refptr<blink::CanvasResource>&& canvas_resource) {
+    scoped_refptr<blink::ExportedCanvasResource>&& canvas_resource) {
   DCHECK(IsMainThread());
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
   if (placeholder_canvas) {
-    placeholder_canvas->SetOffscreenCanvasResource(
-        base::MakeRefCounted<ExportedCanvasResource>(
-            std::move(canvas_resource)));
+    placeholder_canvas->SetOffscreenCanvasResource(std::move(canvas_resource));
     task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&CanvasResourceDispatcher::OnMainThreadReceivedImage,
@@ -164,7 +162,8 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
   // Determines whether the main thread may be blocked. If unblocked, post
   // |canvas_resource|. Otherwise, save it but do not post it.
   if (num_pending_placeholder_resources_ < kMaxPendingPlaceholderResources) {
-    PostImageToPlaceholder(std::move(canvas_resource));
+    PostImageToPlaceholder(base::MakeRefCounted<ExportedCanvasResource>(
+        std::move(canvas_resource)));
     num_pending_placeholder_resources_++;
   } else {
     DCHECK(num_pending_placeholder_resources_ ==
@@ -183,7 +182,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
 }
 
 void CanvasResourceDispatcher::PostImageToPlaceholder(
-    scoped_refptr<CanvasResource>&& canvas_resource) {
+    scoped_refptr<ExportedCanvasResource>&& canvas_resource) {
   // After this point, |canvas_resource| can only be used on the main thread,
   // until it is returned.
   canvas_resource->Transfer();

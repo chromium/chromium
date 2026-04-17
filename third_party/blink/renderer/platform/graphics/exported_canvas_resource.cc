@@ -14,6 +14,7 @@ ExportedCanvasResource::ExportedCanvasResource(
     scoped_refptr<CanvasResource> resource)
     : resource_(std::move(resource)) {
   CHECK(resource_);
+  CHECK(!resource_->is_cross_thread());
 }
 
 ExportedCanvasResource::~ExportedCanvasResource() {
@@ -50,6 +51,10 @@ bool ExportedCanvasResource::OriginClean() const {
 
 scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
   return resource_->Bitmap();
+}
+
+void ExportedCanvasResource::Transfer() {
+  resource_->Transfer();
 }
 
 }  // namespace blink
