@@ -117,21 +117,26 @@
                  prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
                  continuationProvider:(const ChangeProfileContinuationProvider&)
                                           continuationProvider {
-  ProfileIOS* profile = browser->GetProfile();
-  if (accessPoint == signin_metrics::AccessPoint::kWebSignin) {
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(profile);
-    ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile);
-    bool hasIdentities = [signin::GetIdentitiesOnDevice(
-                             identityManager, accountManagerService) count] > 0;
-    if (!hasIdentities) {
-      RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
-          accessPoint);
-      return nil;
+  if (!base::FeatureList::IsEnabled(switches::kNoAccountWebSignin)) {
+    ProfileIOS* profile = browser->GetProfile();
+    if (accessPoint == signin_metrics::AccessPoint::kWebSignin) {
+      signin::IdentityManager* identityManager =
+          IdentityManagerFactory::GetForProfile(profile);
+      ChromeAccountManagerService* accountManagerService =
+          ChromeAccountManagerServiceFactory::GetForProfile(profile);
+      bool hasIdentities =
+          [signin::GetIdentitiesOnDevice(identityManager, accountManagerService)
+              count] > 0;
+      if (!hasIdentities) {
+        RecordConsistencyPromoUserAction(
+            signin_metrics::AccountConsistencyPromoAction::
+                SUPPRESSED_NO_ACCOUNTS,
+            accessPoint);
+        return nil;
+      }
     }
   }
+
   return [[ConsistencyPromoSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
