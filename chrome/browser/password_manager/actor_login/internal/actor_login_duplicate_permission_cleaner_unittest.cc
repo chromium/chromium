@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -105,6 +106,7 @@ class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
 // the one corresponding to the matching federated credentials are preserved.
 TEST_F(ActorLoginDuplicatePermissionCleanerTest,
        KeepsExcludedPasswordPermissionAndItsFederatedMatchIfPasswordSaved) {
+  base::HistogramTester histogram_tester;
   const GURL kUrl("https://example.com/login");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
   const std::u16string kExcludeUser = u"user1@gmail.com";
@@ -183,6 +185,16 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
                       Not(kExcludeUser)),
                 Field(&password_manager::PasswordForm::actor_login_approved,
                       false))));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.DuplicatePermissionCleaner.Invocations", true,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.DuplicatePermissionCleaner.PasswordsDeleted",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ActorLogin.DuplicatePermissionCleaner.FederatedDeleted",
+      1, 1);
 }
 
 // Tests that when a new permission is saved for a federated credential

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_callbacks.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -80,6 +81,9 @@ ActorLoginDuplicatePermissionCleaner::~ActorLoginDuplicatePermissionCleaner() =
 
 void ActorLoginDuplicatePermissionCleaner::Start(
     base::OnceClosure done_callback) {
+  base::UmaHistogramBoolean(
+      "PasswordManager.ActorLogin.DuplicatePermissionCleaner.Invocations",
+      true);
   done_callback_ = std::move(done_callback);
 
   base::RepeatingClosure overall_barrier =
@@ -92,9 +96,6 @@ void ActorLoginDuplicatePermissionCleaner::Start(
       credential_.request_origin.GetURL().spec(),
       credential_.request_origin.GetURL());
 
-  // TODO(crbug.com/483130347): Move password fetching after federated
-  // permission fetching returns to avoid data overwrites in case the passwords
-  // change by the time federated permissions come back.
   pending_password_fetches_ = 0;
   if (profile_store_) {
     profile_store_->GetLogins(digest, weak_ptr_factory_.GetWeakPtr());
@@ -163,6 +164,10 @@ void ActorLoginDuplicatePermissionCleaner::ClearPasswordPermissions() {
     }
   }
 
+  base::UmaHistogramCounts100(
+      "PasswordManager.ActorLogin.DuplicatePermissionCleaner.PasswordsDeleted",
+      account_updates.size() + profile_updates.size());
+
   size_t pending_updates =
       (account_updates.empty() ? 0 : 1) + (profile_updates.empty() ? 0 : 1);
   if (pending_updates == 0) {
@@ -193,6 +198,7 @@ void ActorLoginDuplicatePermissionCleaner::OnFederatedPermissionsListed(
   CHECK(federated_done_callback_);
 
   base::ConcurrentCallbacks<bool> concurrent;
+  int deleted_count = 0;
   for (const auto& permission : permissions) {
     if (credential_.type == CredentialType::kFederated &&
         permission.MatchesFederatedCredential(credential_)) {
@@ -208,7 +214,12 @@ void ActorLoginDuplicatePermissionCleaner::OnFederatedPermissionsListed(
     permission_service_->DeletePermission(credential_.request_origin,
                                           permission.chosen_account_email,
                                           concurrent.CreateCallback());
+    deleted_count++;
   }
+
+  base::UmaHistogramCounts100(
+      "PasswordManager.ActorLogin.DuplicatePermissionCleaner.FederatedDeleted",
+      deleted_count);
 
   std::move(concurrent)
       .Done(base::IgnoreArgs<std::vector<bool>>(federated_done_callback_));

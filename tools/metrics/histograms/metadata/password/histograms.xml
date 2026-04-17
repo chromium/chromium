@@ -620,6 +620,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.ActorLogin.DuplicatePermissionCleaner.FederatedDeleted"
+    units="count" expires_after="2027-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>otara@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the number of conflicting federated permissions deletions requested
+    by the conflicting permissions cleaner. It doesn't take into account whether
+    the deletions were successful or not. This histogram helps gauge how many
+    conflicting permissions existed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.ActorLogin.DuplicatePermissionCleaner.Invocations"
+    enum="Boolean" expires_after="2027-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>otara@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records that the conflicting permissions cleaner was invoked. Recorded when
+    the cleaner starts.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.ActorLogin.DuplicatePermissionCleaner.PasswordsDeleted"
+    units="count" expires_after="2027-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>otara@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the number of password permissions deletions requested from both
+    password stores. It doesn't take into account whether the deletions were
+    successful or not. Used to gauge how many conflicting permissions existed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ActorLogin.GetCredentials.Result"
     enum="ActorLoginGetCredentialsResult" expires_after="2026-09-06">
   <owner>milicau@google.com</owner>
