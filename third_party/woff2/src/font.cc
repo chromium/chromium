@@ -155,7 +155,9 @@ bool ReadTrueTypeCollection(Buffer* file, const uint8_t* data, size_t len,
 
     std::map<uint32_t, Font::Table*> all_tables;
     for (const auto offset : offsets) {
-      file->set_offset(offset);
+      if (!file->set_offset(offset)) {
+        return FONT_COMPRESSION_FAILURE();
+      }
       Font& font = *font_it++;
       if (!ReadCollectionFont(file, data, len, &font, &all_tables)) {
         return FONT_COMPRESSION_FAILURE();

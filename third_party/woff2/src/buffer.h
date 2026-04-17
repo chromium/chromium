@@ -82,7 +82,7 @@ class Buffer {
   }
 
   inline bool ReadU8(uint8_t *value) {
-    if (offset_ + 1 > length_) {
+    if (length_ < 1 || offset_ > length_ - 1) {
       return FONT_COMPRESSION_FAILURE();
     }
     *value = buffer_[offset_];
@@ -91,7 +91,7 @@ class Buffer {
   }
 
   bool ReadU16(uint16_t *value) {
-    if (offset_ + 2 > length_) {
+    if (length_ < 2 || offset_ > length_ - 2) {
       return FONT_COMPRESSION_FAILURE();
     }
     std::memcpy(value, buffer_ + offset_, sizeof(uint16_t));
@@ -105,7 +105,7 @@ class Buffer {
   }
 
   bool ReadU24(uint32_t *value) {
-    if (offset_ + 3 > length_) {
+    if (length_ < 3 || offset_ > length_ - 3) {
       return FONT_COMPRESSION_FAILURE();
     }
     *value = static_cast<uint32_t>(buffer_[offset_]) << 16 |
@@ -116,7 +116,7 @@ class Buffer {
   }
 
   bool ReadU32(uint32_t *value) {
-    if (offset_ + 4 > length_) {
+    if (length_ < 4 || offset_ > length_ - 4) {
       return FONT_COMPRESSION_FAILURE();
     }
     std::memcpy(value, buffer_ + offset_, sizeof(uint32_t));
@@ -130,7 +130,7 @@ class Buffer {
   }
 
   bool ReadTag(uint32_t *value) {
-    if (offset_ + 4 > length_) {
+    if (length_ < 4 || offset_ > length_ - 4) {
       return FONT_COMPRESSION_FAILURE();
     }
     std::memcpy(value, buffer_ + offset_, sizeof(uint32_t));
@@ -139,7 +139,7 @@ class Buffer {
   }
 
   bool ReadR64(uint64_t *value) {
-    if (offset_ + 8 > length_) {
+    if (length_ < 8 || offset_ > length_ - 8) {
       return FONT_COMPRESSION_FAILURE();
     }
     std::memcpy(value, buffer_ + offset_, sizeof(uint64_t));
@@ -151,7 +151,13 @@ class Buffer {
   size_t offset() const { return offset_; }
   size_t length() const { return length_; }
 
-  void set_offset(size_t newoffset) { offset_ = newoffset; }
+  bool set_offset(size_t newoffset) {
+    if (newoffset > length_) {
+      return FONT_COMPRESSION_FAILURE();
+    }
+    offset_ = newoffset;
+    return true;
+  }
 
  private:
   const uint8_t * const buffer_;
