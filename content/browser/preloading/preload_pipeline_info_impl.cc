@@ -70,8 +70,6 @@ bool PreloadPipelineInfoImpl::IsPrerenderMatchedWithPrefetch(
 
 void PreloadPipelineInfoImpl::MarkPrerenderMatchedWithPrefetch(
     PrerenderHostId prerender_host_id) {
-  CHECK(!IsPrerenderMatchedWithPrefetch(prerender_host_id));
-
   prerender_ids_matched_with_prefetch_.insert(prerender_host_id);
 }
 
