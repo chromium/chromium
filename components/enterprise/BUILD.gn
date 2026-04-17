@@ -90,6 +90,13 @@ static_library("enterprise") {
     ]
   }
 
+  if (!is_ios && !is_android && !is_chromeos) {
+    sources += [
+      "browser/reporting/startup_command_line_collector.cc",
+      "browser/reporting/startup_command_line_collector.h",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
@@ -203,6 +210,12 @@ source_set("unit_tests") {
 
   if (!is_ios && !is_android) {
     sources += [ "browser/promotion/promotion_eligibility_checker_unittest.cc" ]
+  }
+
+  if (!is_ios && !is_android && !is_chromeos) {
+    sources += [
+      "browser/reporting/startup_command_line_collector_unittest.cc",
+    ]
   }
 
   deps = [
