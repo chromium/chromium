@@ -171,6 +171,7 @@ UpdateRecommendedDialogTest.*
 *WatermarkTestPageDynamicBrowserTest.*
 WebAppBlockedMigrationInfoBarDelegateUiTest.*
 WebAppConfirmViewBrowserTest.*
+WebAppInstallDialogBrowserTest.*
 WebAppMenuBrowserTest.*
 WebAppUpdateReviewDialog.*
 WebUIToolbarWebViewPixelBrowserTest.*
