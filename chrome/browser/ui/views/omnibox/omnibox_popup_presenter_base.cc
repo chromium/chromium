@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
@@ -54,25 +56,70 @@ void OmniboxPopupPresenterBase::Show() {
   if (auto* content = GetWebUIContent()) {
     content->ShowUI();
 
-    widget_->ShowInactive();
-    auto show_widget_time = base::TimeTicks::Now();
-    widget_->GetCompositor()->RequestPresentationTimeForNextFrame(
-        base::BindOnce(
-            [](std::string uma_metric, base::TimeTicks show_widget_time,
-               const gfx::PresentationFeedback& feedback) {
-              // If there is ever an error, the timestamp means the timestamp
-              // of the error. In that case we shouldn't record anything.
-              if (feedback.failed()) {
-                return;
-              }
-              const base::TimeDelta delta =
-                  feedback.timestamp - show_widget_time;
-              base::UmaHistogramTimes(uma_metric, delta);
-            },
-            base::StrCat(
-                {GetPopupMetricPrefix(), ".PresenterShowLatency.ToPaint"}),
-            show_widget_time));
+    auto show_request_time = base::TimeTicks::Now();
+    if (ShouldDeferUntilVisualStateReady()) {
+      is_deferred_ = true;
+      content_height_ = 0;
+      SynchronizePopupBounds();
 
+      // Call WasShown to mark the WebContents as visible so that a frame will
+      // eventually be produced that triggers the OnVisualStateReady callback.
+      content->GetWebContents()->WasShown();
+
+      content->GetWebContents()
+          ->GetPrimaryMainFrame()
+          ->InsertVisualStateCallback(
+              base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
+                             weak_factory_.GetWeakPtr(), show_request_time));
+
+      // Add a backup timer in case the visual state callback is never called.
+      // The visual state callback should always be called, but this fallback
+      // ensures that if that assumption is ever broken, the UI will eventually
+      // be shown.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
+                         weak_factory_.GetWeakPtr(), show_request_time,
+                         /*success=*/false),
+          base::Milliseconds(
+              omnibox::kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs
+                  .Get()));
+    } else {
+      ShowWidget(show_request_time);
+    }
+  }
+}
+
+void OmniboxPopupPresenterBase::OnVisualStateReady(
+    base::TimeTicks show_request_time,
+    bool success) {
+  if (!is_deferred_) {
+    return;
+  }
+
+  is_deferred_ = false;
+  // Fall back to showing the widget even if success == false
+  // so the UI state matches the requested visibility.
+  ShowWidget(show_request_time);
+}
+
+void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
+  widget_->ShowInactive();
+  widget_->GetCompositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
+      [](std::string uma_metric, base::TimeTicks show_request_time,
+         const gfx::PresentationFeedback& feedback) {
+        // If there is ever an error, the timestamp means the timestamp
+        // of the error. In that case we shouldn't record anything.
+        if (feedback.failed()) {
+          return;
+        }
+        const base::TimeDelta delta = feedback.timestamp - show_request_time;
+        base::UmaHistogramTimes(uma_metric, delta);
+      },
+      base::StrCat({GetPopupMetricPrefix(), ".PresenterShowLatency.ToPaint"}),
+      show_request_time));
+
+  if (auto* content = GetWebUIContent()) {
     content->GetWebContents()->WasShown();
     if (ShouldReceiveFocus()) {
       widget_->Activate();
@@ -83,6 +130,7 @@ void OmniboxPopupPresenterBase::Show() {
 }
 
 void OmniboxPopupPresenterBase::Hide() {
+  is_deferred_ = false;
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
     widget_->Hide();
@@ -93,7 +141,11 @@ void OmniboxPopupPresenterBase::Hide() {
 }
 
 bool OmniboxPopupPresenterBase::IsShown() const {
-  return widget_ && widget_->IsVisible();
+  return is_deferred_ || (widget_ && widget_->IsVisible());
+}
+
+bool OmniboxPopupPresenterBase::ShouldDeferUntilVisualStateReady() const {
+  return false;
 }
 
 void OmniboxPopupPresenterBase::OnContentHeightChanged(int content_height) {
@@ -189,6 +241,7 @@ bool OmniboxPopupPresenterBase::ShouldReceiveFocus() const {
 
 void OmniboxPopupPresenterBase::OnWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
+  is_deferred_ = false;
   owned_omnibox_popup_webui_container_ = GetResultsFrame()->ExtractContents();
   widget_.reset();
   WidgetDestroyed();

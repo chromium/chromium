@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -56,6 +58,10 @@ class OmniboxPopupPresenterBase {
   // going to be visible within the popup.
   OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
+  // Override to enable deferred showing until the WebUI has painted a new
+  // frame.
+  virtual bool ShouldDeferUntilVisualStateReady() const;
+
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 
  protected:
@@ -95,6 +101,13 @@ class OmniboxPopupPresenterBase {
 
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
 
+  // Shows the popup widget immediately, called after stale frame fix deferral
+  // if enabled.
+  void ShowWidget(base::TimeTicks show_widget_time);
+
+  // Callback for when the visual state is ready.
+  void OnVisualStateReady(base::TimeTicks show_widget_time, bool success);
+
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget();
 
@@ -115,6 +128,12 @@ class OmniboxPopupPresenterBase {
   // The popup widget that contains this WebView. Created and closed by `this`;
   // owned and destroyed by the OS.
   std::unique_ptr<views::Widget> widget_;
+
+  // True if `ShowWidget()` execution is currently being deferred until the
+  // WebUI has produced a new frame.
+  bool is_deferred_ = false;
+
+  base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_BASE_H_

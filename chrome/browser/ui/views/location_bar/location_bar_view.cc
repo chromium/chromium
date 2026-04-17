@@ -1922,6 +1922,13 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
   RefreshBackground();
   UpdateWithoutTabRestore();
 
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
+    // Ensure the omnibox view repaints to reflect potential placeholder text
+    // visibility changes.
+    omnibox_view_->SchedulePaint();
+  }
+
   // Update the focus ring visibility.
   if (views::FocusRing::Get(this)) {
     views::FocusRing::Get(this)->SchedulePaint();

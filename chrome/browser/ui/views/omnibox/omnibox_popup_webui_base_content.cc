@@ -133,27 +133,31 @@ void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
   WebView::ResizeDueToAutoResize(source, new_size);
-  // Debounce the resize event by 2 frame's time (assuming 60 Hz) to avoid
-  // flickering issues when the renderer sends a transient initial size.
-  // The issue is manifested as the popup being clipped at the top.
-  // This happens when:
-  // 1. Widget::Show() is called, then
-  // 2. SetBounds() is called with a smaller height.
-  // 3. a new frame is not generated timely after resize.
-  // As a result, the widget displays an old image that has an taller height,
-  // hence clipped.
-  //
-  // This debouncer suppresses the resize in step #2. The resize comes
-  // from the state when the WebUI document briefly contains empty suggestion
-  // result.
-  //
-  // TODO(crbug.com/474369306): there is a race condition between widget show
-  // and WebUI document update. The widget is shown too early. Remove the
-  // debouncer after making the JS initiate the widget show.
-  debounce_resize_timer_.Start(
-      FROM_HERE, base::Seconds(2) / 60,
-      base::BindOnce(&OmniboxPopupPresenterBase::OnContentHeightChanged,
-                     base::Unretained(popup_presenter_), new_size.height()));
+  if (popup_presenter_->ShouldDeferUntilVisualStateReady()) {
+    popup_presenter_->OnContentHeightChanged(new_size.height());
+  } else {
+    // Debounce the resize event by 2 frame's time (assuming 60 Hz) to avoid
+    // flickering issues when the renderer sends a transient initial size.
+    // The issue is manifested as the popup being clipped at the top.
+    // This happens when:
+    // 1. Widget::Show() is called, then
+    // 2. SetBounds() is called with a smaller height.
+    // 3. a new frame is not generated timely after resize.
+    // As a result, the widget displays an old image that has an taller height,
+    // hence clipped.
+    //
+    // This debouncer suppresses the resize in step #2. The resize comes
+    // from the state when the WebUI document briefly contains empty suggestion
+    // result.
+    //
+    // TODO(crbug.com/474369306): there is a race condition between widget show
+    // and WebUI document update. The widget is shown too early. Remove the
+    // debouncer after making the JS initiate the widget show.
+    debounce_resize_timer_.Start(
+        FROM_HERE, base::Seconds(2) / 60,
+        base::BindOnce(&OmniboxPopupPresenterBase::OnContentHeightChanged,
+                       base::Unretained(popup_presenter_), new_size.height()));
+  }
 }
 
 bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
