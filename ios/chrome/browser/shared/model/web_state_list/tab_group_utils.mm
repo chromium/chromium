@@ -35,6 +35,19 @@ std::set<const TabGroup*> GetAllGroupsForProfile(ProfileIOS* profile) {
   return GetAllGroupsForBrowserList(browser_list, incognito);
 }
 
+const TabGroup* GetGroupForActiveWebState(WebStateList* web_state_list) {
+  if (!web_state_list) {
+    return nullptr;
+  }
+
+  int active_index = web_state_list->active_index();
+  if (active_index == WebStateList::kInvalidIndex) {
+    return nullptr;
+  }
+
+  return web_state_list->GetGroupOfWebStateAt(active_index);
+}
+
 void MoveTabToGroup(web::WebStateID web_state_identifier,
                     const TabGroup* destination_group,
                     ProfileIOS* profile) {

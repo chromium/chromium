@@ -11,10 +11,11 @@ class Browser;
 class BrowserList;
 class ProfileIOS;
 class TabGroup;
+class WebStateList;
 
 namespace web {
 class WebStateID;
-}
+}  // namespace web
 
 // Returns all the TabGroups on all windows for the chosen mode (`incognito`).
 std::set<const TabGroup*> GetAllGroupsForBrowserList(BrowserList* browser_list,
@@ -22,6 +23,10 @@ std::set<const TabGroup*> GetAllGroupsForBrowserList(BrowserList* browser_list,
 
 // Returns all the TabGroups on all windows for the chosen mode (`incognito`).
 std::set<const TabGroup*> GetAllGroupsForProfile(ProfileIOS* profile);
+
+// Returns the tab group that contains the active web state in `web_state_list`.
+// Returns `nullptr` if the active web state is not in a group.
+const TabGroup* GetGroupForActiveWebState(WebStateList* web_state_list);
 
 // Move the web state associated with `web_state_identifier` to
 // `destination_group`, potentially moving the web state to a different window.

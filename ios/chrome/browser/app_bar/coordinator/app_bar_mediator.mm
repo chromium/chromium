@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -304,6 +305,10 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change() && !_tabGridState.tabGridVisible) {
+    self.currentTabGroup = GetGroupForActiveWebState(webStateList);
+  }
+
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
     case WebStateListChange::Type::kMove:
@@ -384,6 +389,7 @@
 }
 
 - (void)willExitTabGrid {
+  self.currentTabGroup = GetGroupForActiveWebState(self.currentWebStateList);
   [self updateForIncognitoVisible:_incognitoState.incognitoContentVisible];
 }
 
@@ -403,10 +409,10 @@
 }
 
 - (void)willHideTabGroup {
-  self.currentTabGroup = nullptr;
   if (!_tabGridState.tabGridVisible) {
     return;
   }
+  self.currentTabGroup = nullptr;
   [self updateForTabGridPage:_tabGridState.currentPage];
 }
 
@@ -534,7 +540,7 @@
 
 - (void)moveCurrentTabToGroup:(const TabGroup*)destinationGroup {
   CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK([self activeWebStateInGroup]);
+  CHECK(GetGroupForActiveWebState(self.currentWebStateList));
   int tabIndex = self.currentWebStateList->active_index();
   self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
   [self updateConsumer];
@@ -542,7 +548,7 @@
 
 - (void)removeCurrentTabFromGroup {
   CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK([self activeWebStateInGroup]);
+  CHECK(GetGroupForActiveWebState(self.currentWebStateList));
   int tabIndex = self.currentWebStateList->active_index();
   self.currentWebStateList->RemoveFromGroups({tabIndex});
   [self updateConsumer];
@@ -550,7 +556,7 @@
 
 - (void)addCurrentTabToGroup:(const TabGroup*)destinationGroup {
   CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(![self activeWebStateInGroup]);
+  CHECK(!GetGroupForActiveWebState(self.currentWebStateList));
   int tabIndex = self.currentWebStateList->active_index();
   if (destinationGroup) {
     self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
@@ -578,7 +584,13 @@
   if (_currentWebStateList) {
     _currentWebStateList->RemoveObserver(_observerBridge.get());
   }
-  _currentWebStateList = currentWebStateList;
+
+  if (currentWebStateList != _currentWebStateList) {
+    self.currentTabGroup = _tabGridState.visibleTabGroup
+                               ? GetGroupForActiveWebState(currentWebStateList)
+                               : nullptr;
+    _currentWebStateList = currentWebStateList;
+  }
 
   if (_currentWebStateList) {
     _currentWebStateList->AddObserver(_observerBridge.get());
@@ -602,17 +614,21 @@
     return;
   }
   NSUInteger tabCount;
+
+  // Determine the tab count to display in the tab grid button.
   if (self.currentTabGroup) {
     tabCount = static_cast<NSUInteger>(self.currentTabGroup->range().count());
   } else {
-    tabCount = self.currentWebStateList->count();
+    tabCount = static_cast<NSUInteger>(self.currentWebStateList->count());
   }
+
   [self.consumer updateTabCount:tabCount];
   [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
   [self.consumer setTabGroupsPageVisible:_tabGridState.currentPage ==
                                          TabGridPageTabGroups];
   [self.consumer setTabGroupVisible:_tabGridState.visibleTabGroup];
-  [self.consumer setInTabGroup:[self activeWebStateInGroup]];
+  [self.consumer
+      setInTabGroup:GetGroupForActiveWebState(self.currentWebStateList)];
 
   BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
   ToolbarButtonMenuFactory* buttonMenuFactory =
@@ -763,19 +779,6 @@
   _URLLoader->Load(params);
 
   return webStateListCount != webStateList->count();
-}
-
-// Returns whether the active web state in the current web state list is in a
-// tab group.
-- (BOOL)activeWebStateInGroup {
-  if (!self.currentWebStateList) {
-    return NO;
-  }
-  int activeIndex = self.currentWebStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex) {
-    return NO;
-  }
-  return self.currentWebStateList->GetGroupOfWebStateAt(activeIndex) != nullptr;
 }
 
 // Triggers the creation of a New Tab Group with 'identifiers'.
