@@ -7775,6 +7775,42 @@
             ]
         }
     ],
+    "DefaultBrowserPromoFre": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "RMD_Direct_Invocation",
+                    "params": {
+                        "fre_promo_arm": "rmd_direct_invocation"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromoFRE"
+                    ]
+                },
+                {
+                    "name": "Primer_No_Instructions",
+                    "params": {
+                        "fre_promo_arm": "primer_no_instructions"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromoFRE"
+                    ]
+                },
+                {
+                    "name": "Primer_Promotional_Text",
+                    "params": {
+                        "fre_promo_arm": "primer_promotional_text"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromoFRE"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserPromoIpadInstructions": [
         {
             "platforms": [
