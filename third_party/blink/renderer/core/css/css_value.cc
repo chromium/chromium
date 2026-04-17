@@ -285,9 +285,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
       case kGridTemplateAreasClass:
         return CompareCSSValues<cssvalue::CSSGridTemplateAreasValue>(*this,
                                                                      other);
-      case kPathClass:
+      case kBasicShapePathClass:
         return CompareCSSValues<cssvalue::CSSPathValue>(*this, other);
-      case kShapeClass:
+      case kBasicShapeShapeClass:
         return CompareCSSValues<cssvalue::CSSShapeValue>(*this, other);
       case kSuperellipseClass:
         return CompareCSSValues<cssvalue::CSSSuperellipseValue>(*this, other);
@@ -470,9 +470,9 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSBracketedValueList>(this)->CustomCSSText();
     case kGridTemplateAreasClass:
       return To<cssvalue::CSSGridTemplateAreasValue>(this)->CustomCSSText();
-    case kPathClass:
+    case kBasicShapePathClass:
       return To<cssvalue::CSSPathValue>(this)->CustomCSSText();
-    case kShapeClass:
+    case kBasicShapeShapeClass:
       return To<cssvalue::CSSShapeValue>(this)->CustomCSSText();
     case kSuperellipseClass:
       return To<cssvalue::CSSSuperellipseValue>(this)->CustomCSSText();
@@ -577,7 +577,7 @@ unsigned CSSValue::Hash() const {
     case kNumericLiteralClass:
       return HashInts(GetClassType(),
                       To<CSSNumericLiteralValue>(this)->CustomHash());
-    case kPathClass:
+    case kBasicShapePathClass:
       return HashInts(GetClassType(),
                       To<cssvalue::CSSPathValue>(this)->CustomHash());
     case kStringClass:
@@ -643,7 +643,7 @@ unsigned CSSValue::Hash() const {
     case kAlternateClass:
     case kReflectClass:
     case kShadowClass:
-    case kShapeClass:
+    case kBasicShapeShapeClass:
     case kUnicodeRangeClass:
     case kGridTemplateAreasClass:
     case kPaletteMixClass:
@@ -835,10 +835,10 @@ void CSSValue::Trace(Visitor* visitor) const {
       To<cssvalue::CSSGridTemplateAreasValue>(this)->TraceAfterDispatch(
           visitor);
       return;
-    case kPathClass:
+    case kBasicShapePathClass:
       To<cssvalue::CSSPathValue>(this)->TraceAfterDispatch(visitor);
       return;
-    case kShapeClass:
+    case kBasicShapeShapeClass:
       To<cssvalue::CSSShapeValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kSuperellipseClass:
@@ -1087,11 +1087,11 @@ String CSSValue::ClassTypeToString() const {
       return "UnicodeRangeClass";
     case kGridTemplateAreasClass:
       return "GridTemplateAreasClass";
-    case kPathClass:
+    case kBasicShapePathClass:
       return "PathClass";
     case kRayClass:
       return "RayClass";
-    case kShapeClass:
+    case kBasicShapeShapeClass:
       return "ShapeClass";
     case kSuperellipseClass:
       return "SuperellipseClass";
@@ -1239,7 +1239,7 @@ bool CSSValue::HasRandomFunctions() const {
       return To<cssvalue::CSSBasicShapeRectValue>(this)->HasRandomFunctions();
     case kBasicShapeXYWHClass:
       return To<cssvalue::CSSBasicShapeXYWHValue>(this)->HasRandomFunctions();
-    case kShapeClass:
+    case kBasicShapeShapeClass:
       return To<cssvalue::CSSShapeValue>(this)->HasRandomFunctions();
     case kLinearGradientClass:
       return To<cssvalue::CSSLinearGradientValue>(this)->HasRandomFunctions();
@@ -1267,7 +1267,7 @@ bool CSSValue::HasRandomFunctions() const {
     case kURLPatternClass:
     case kColorClass:
     case kStringClass:
-    case kPathClass:
+    case kBasicShapePathClass:
     case kCSSContentDistributionClass:
     case kUnparsedDeclarationClass:
     case kImageClass:

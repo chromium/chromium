@@ -61,9 +61,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
   bool IsBaseValueList() const { return class_type_ == kValueListClass; }
 
+  // Matches the spec <basic-shape> production, i.e. one of circle(), ellipse(),
+  // polygon(), inset(), rect(), xywh(), path(), shape().
   bool IsBasicShapeValue() const {
     return class_type_ >= kBasicShapeCircleClass &&
-           class_type_ <= kBasicShapeXYWHClass;
+           class_type_ <= kBasicShapeShapeClass;
   }
   bool IsBasicShapeCircleValue() const {
     return class_type_ == kBasicShapeCircleClass;
@@ -148,8 +150,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kLinearGradientClass;
   }
   bool IsPaletteMixValue() const { return class_type_ == kPaletteMixClass; }
-  bool IsPathValue() const { return class_type_ == kPathClass; }
-  bool IsShapeValue() const { return class_type_ == kShapeClass; }
+  bool IsPathValue() const { return class_type_ == kBasicShapePathClass; }
+  bool IsShapeValue() const { return class_type_ == kBasicShapeShapeClass; }
   bool IsQuadValue() const { return class_type_ == kQuadClass; }
   bool IsRayValue() const { return class_type_ == kRayClass; }
   bool IsRadialGradientValue() const {
@@ -301,14 +303,18 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kRatioClass,
     kRelativeColorClass,
 
-    // Basic shape classes.
-    // TODO(sashab): Represent these as a single subclass, BasicShapeClass.
+    // Basic shape classes. These must remain contiguous (and
+    // kBasicShapeShapeClass must stay at the end of the run), as
+    // IsBasicShapeValue() tests them with a range check.
+    // ref: https://drafts.csswg.org/css-shapes/#supported-basic-shapes
     kBasicShapeCircleClass,
     kBasicShapeEllipseClass,
     kBasicShapePolygonClass,
     kBasicShapeInsetClass,
     kBasicShapeRectClass,
     kBasicShapeXYWHClass,
+    kBasicShapePathClass,
+    kBasicShapeShapeClass,
 
     // Image classes.
     kImageClass,
@@ -351,8 +357,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kUnicodeRangeClass,
     kGridTemplateAreasClass,
     kPaletteMixClass,
-    kPathClass,
-    kShapeClass,
     kRayClass,
     kUnparsedDeclarationClass,
     kPendingSubstitutionValueClass,

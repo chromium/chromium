@@ -363,8 +363,7 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
     StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
-    if (list->First().IsBasicShapeValue() || list->First().IsPathValue() ||
-        list->First().IsShapeValue()) {
+    if (list->First().IsBasicShapeValue()) {
       const CSSValue& shape_value = list->First();
       const CSSIdentifierValue* geometry_box_value = nullptr;
       if (list->length() == 2) {
@@ -2754,8 +2753,7 @@ ShapeValue* StyleBuilderConverter::ConvertShapeValue(StyleResolverState& state,
   const auto& value_list = To<CSSValueList>(value);
   for (unsigned i = 0; i < value_list.length(); ++i) {
     const CSSValue& item_value = value_list.Item(i);
-    if (item_value.IsBasicShapeValue() || item_value.IsPathValue() ||
-        item_value.IsShapeValue()) {
+    if (item_value.IsBasicShapeValue()) {
       shape = BasicShapeForValue(state, item_value);
     } else {
       css_box = To<CSSIdentifierValue>(item_value).ConvertTo<CSSBoxType>();

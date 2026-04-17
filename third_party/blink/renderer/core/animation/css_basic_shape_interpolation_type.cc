@@ -195,8 +195,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
   const CSSValue& first = list.First();
   // Path, Shape and Ray shapes are handled by PathInterpolationType,
   // ShapeInterpolationType and RayInterpolationType.
-  if (!first.IsBasicShapeValue() || first.IsRayValue() || first.IsPathValue() ||
-      first.IsShapeValue()) {
+  if (first.IsPathValue() || first.IsShapeValue() || first.IsRayValue()) {
     return nullptr;
   }
   GeometryBox geometry_box = GeometryBox::kBorderBox;

@@ -167,7 +167,7 @@ class CSSShapeValue : public CSSValue {
   CSSShapeValue(WindRule wind_rule,
                 const CSSValuePair& origin,
                 HeapVector<Member<const CSSShapeCommand>> commands)
-      : CSSValue(kShapeClass),
+      : CSSValue(kBasicShapeShapeClass),
         wind_rule_(wind_rule),
         origin_(origin),
         commands_(std::move(commands)) {}
