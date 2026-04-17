@@ -16,7 +16,6 @@ import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
 
@@ -25,8 +24,8 @@ import java.util.List;
 public class DropdownFieldProperties {
     public static final ReadableObjectPropertyKey<List<DropdownKeyValue>> DROPDOWN_KEY_VALUE_LIST =
             new ReadableObjectPropertyKey<>("key_value_list");
-    public static final WritableObjectPropertyKey<Callback<String>> DROPDOWN_CALLBACK =
-            new WritableObjectPropertyKey<>("callback");
+    public static final ReadableObjectPropertyKey<Callback<String>> DROPDOWN_CALLBACK =
+            new ReadableObjectPropertyKey<>("callback");
     public static final ReadableObjectPropertyKey<String> DROPDOWN_HINT =
             new ReadableObjectPropertyKey<>("hint");
 

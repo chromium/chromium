@@ -273,21 +273,16 @@ public class AddressEditor extends EditorBase<AutofillAddress>
                                     DROPDOWN_KEY_VALUE_LIST,
                                     AutofillProfileBridge.getSupportedCountries())
                             .with(IS_REQUIRED, false)
+                            .with(
+                                    DROPDOWN_CALLBACK,
+                                    (countryCode) -> {
+                                        showProgressDialog();
+                                        mRecentlySelectedCountry = countryCode;
+                                        mPhoneFormatter.setCountryCode(mRecentlySelectedCountry);
+                                        loadAdminAreasForCountry(mRecentlySelectedCountry);
+                                    })
                             .build();
         }
-
-        mCountryField.set(
-                DROPDOWN_CALLBACK,
-                new Callback<>() {
-                    /** Load admin areas for the selected country. */
-                    @Override
-                    public void onResult(String countryCode) {
-                        showProgressDialog();
-                        mRecentlySelectedCountry = countryCode;
-                        mPhoneFormatter.setCountryCode(mRecentlySelectedCountry);
-                        loadAdminAreasForCountry(mRecentlySelectedCountry);
-                    }
-                });
 
         // Country dropdown is cached, so the selected item needs to be updated for the new profile
         // that's being edited. This will not fire the dropdown callback.
