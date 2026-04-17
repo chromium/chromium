@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_add_current_tab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_pick_tabs_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_paste_from_clipboard_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_camera_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_pick_picture_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <include
+        layout="@layout/fusebox_list_item"
+        android:id="@+id/fusebox_pick_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</merge>

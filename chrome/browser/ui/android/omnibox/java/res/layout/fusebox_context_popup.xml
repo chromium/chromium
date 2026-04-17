@@ -22,41 +22,7 @@ found in the LICENSE file.
         android:paddingTop="4dp"
         android:paddingBottom="4dp">
 
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_add_current_tab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_pick_tabs_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_paste_from_clipboard_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_camera_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_pick_picture_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_pick_file_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <include layout="@layout/fusebox_vertical_attachments"/>
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
