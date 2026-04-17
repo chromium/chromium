@@ -287,6 +287,10 @@ struct SecurityChipState {
   SecurityLevel security_level;
   mojo_base.mojom.String16 text;
   bool is_clickable;
+  // True specifically when the text is exactly "Dangerous" (e.g. Malware). This
+  // represents a higher alert state than the standard kDangerous security
+  // level, and generally receives a more prominent visual treatment.
+  bool is_text_dangerous;
 };
 
 // Note: The security chip and permission chips are visually mutually exclusive.

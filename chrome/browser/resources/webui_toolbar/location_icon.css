@@ -1,0 +1,156 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: inline-flex;
+}
+
+/* The base layer of the chip, defining its shape, size, and base background
+   color. */
+#container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--location-bar-chip-icon-size);
+  width: var(--location-bar-chip-icon-size);
+  border-radius: calc((var(--location-bar-chip-icon-size) +
+                       var(--location-bar-page-info-icon-padding-top) +
+                       var(--location-bar-page-info-icon-padding-bottom)) / 2);
+  padding-block-start: var(--location-bar-page-info-icon-padding-top);
+  padding-block-end: var(--location-bar-page-info-icon-padding-bottom);
+  padding-inline-start: var(--location-bar-page-info-icon-padding-left);
+  padding-inline-end: var(--location-bar-page-info-icon-padding-right);
+  background-color: var(--color-omnibox-icon-background);
+  color: var(--color-omnibox-security-chip-default, currentColor);
+  cursor: default;
+
+  /* Ensure the ::after overlay does not spill outside the rounded corners. */
+  position: relative;
+
+  /* Enforces a strict boundary so that the .text span truncates with an
+     ellipsis instead of overflowing the chip's width. */
+  overflow: hidden;
+
+  outline: none;
+
+  /* Disables the default browser tap highlight so that our custom InkDrop
+     overlay provides the sole visual feedback for taps. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+#container:focus-visible:focus {
+  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+@media (forced-colors: active) {
+  #container:focus-visible:focus {
+    /* Use outline instead of box-shadow (which does not work) in Windows
+       HCM. */
+    outline: var(--cr-focus-outline-hcm, 2px solid transparent);
+  }
+}
+
+/* An invisible overlay that mimics the native views::InkDrop behavior.
+   Instead of modifying the container's background color directly on
+   hover/active, apply a semi-transparent background to this overlay so it
+   elegantly blends with the base background color (which is critical for the
+   solid red Dangerous state to match native views implementation). */
+#container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: transparent;
+}
+
+:host([has-text]) #container {
+  /* Overrides the fixed width of the icon-only state, allowing the chip to
+     stretch naturally and become a pill shape that fits the text inside. */
+  width: auto;
+  min-width: var(--location-bar-chip-icon-size);
+  /* Extra right padding added to the base padding */
+  padding-inline-end: calc(
+      var(--location-bar-page-info-icon-padding-right) +
+      var(--location-bar-page-info-icon-label-extra-trailing-padding));
+}
+
+:host([has-text][is-dangerous]) #container {
+  padding-inline-start:
+      var(--location-bar-page-info-icon-dangerous-leading-padding);
+  padding-inline-end:
+      var(--location-bar-page-info-icon-dangerous-trailing-padding);
+}
+
+:host([clickable]:hover) #container::after {
+  background-color: var(--color-omnibox-icon-hover);
+}
+
+:host([clickable]:active) #container::after {
+  background-color: var(--color-omnibox-icon-pressed);
+}
+
+:host([is-text-dangerous][clickable]:hover) #container::after {
+  background-color: var(--color-omnibox-security-chip-ink-drop-hover);
+}
+
+:host([is-text-dangerous][clickable]:active) #container::after {
+  background-color: var(--color-omnibox-security-chip-ink-drop-ripple);
+}
+
+/* Renders the SVG icon using a webkit mask. This allows the icon to
+   automatically inherit the text color (currentColor) of the chip, bypassing
+   the need to manually manipulate the SVG's internal properties like fill or
+   stroke. */
+#iconContainer {
+  height: var(--location-bar-chip-icon-size);
+  width: var(--location-bar-chip-icon-size);
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
+:host([is-dangerous]) #container {
+  color: var(--color-omnibox-security-chip-dangerous, currentColor);
+}
+
+:host([is-text-dangerous]) #container {
+  background-color: var(
+      --color-omnibox-security-chip-dangerous-background,
+      var(--color-omnibox-icon-background));
+  color: var(--color-omnibox-security-chip-text, currentColor);
+}
+
+#text {
+  /* text-overflow: ellipsis only applies to block containers. While being a
+     flex item implicitly blockifies this span, we make it explicit here to
+     prevent future confusion and guarantee the ellipsis behavior. */
+  display: block;
+
+  /* Adds space between the icon and the text */
+  margin-inline-start: var(--location-bar-child-internal-spacing);
+
+  /* Inherits the exact typography (STYLE_BODY_4_EMPHASIS) from location bar */
+  font-family: var(--omnibox-chip-font-family);
+  font-size: var(--omnibox-chip-font-size);
+  font-weight: var(--omnibox-chip-font-weight);
+
+  /* Prevents the text from wrapping to a second line */
+  white-space: nowrap;
+
+  /* If the text is too long to fit in the available space,
+     these two rules chop it off and add an ellipsis (...) */
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Matches the C++ GetMinimumSizeForPreferredSize logic: clamps the minimum
+     width of the chip to the width of 10 characters (10ch), allowing it to
+     squash down when space is tight, but no smaller than 10 characters wide. */
+  min-width: min(10ch, max-content);
+}

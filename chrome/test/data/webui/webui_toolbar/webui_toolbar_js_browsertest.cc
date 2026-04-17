@@ -57,3 +57,7 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarHighContrastJsTest,
                        LocationBarHighContrast) {
   RunTest("webui_toolbar/location_bar_high_contrast_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationIcon) {
+  RunTest("webui_toolbar/location_icon_test.js", "mocha.run();");
+}

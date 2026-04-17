@@ -9,8 +9,15 @@ import type {LocationBarElement} from './location_bar.js';
 export function getHtml(this: LocationBarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="permissions-dashboard"></div>
-<div id="location-icon"></div>
+<div id="permissions-dashboard"
+    @pointerenter="${this.onChipPointerenter_}"
+    @pointerleave="${this.onChipPointerleave_}"
+    @pointercancel="${this.onChipPointercancel_}"></div>
+<location-icon .state="${this.locationBarState.lhsChipsState.securityChip}"
+    @pointerenter="${this.onChipPointerenter_}"
+    @pointerleave="${this.onChipPointerleave_}"
+    @pointercancel="${this.onChipPointercancel_}">
+</location-icon>
 <readonly-omnibox id="omnibox"
   .omniboxViewState="${this.locationBarState.omniboxViewState}">
 </readonly-omnibox>

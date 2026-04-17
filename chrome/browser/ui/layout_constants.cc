@@ -48,6 +48,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 1;
     case LayoutConstant::kLocationBarChildInteriorPadding:
       return 3;
+    case LayoutConstant::kLocationBarChildInternalSpacing:
+      return touch_ui ? 10 : 4;
     case LayoutConstant::kLocationBarChildCornerRadius:
       return 12;
     case LayoutConstant::kLocationBarChipIconSize:
@@ -58,6 +60,12 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 3 : 2;
     case LayoutConstant::kLocationBarPageInfoIconVerticalPadding:
       return touch_ui ? 3 : 5;
+    case LayoutConstant::kLocationBarPageInfoIconLabelExtraTrailingPadding:
+      return 4;
+    case LayoutConstant::kLocationBarPageInfoIconDangerousLeadingPadding:
+      return 6;
+    case LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding:
+      return 10;
     case LayoutConstant::kLocationBarTrailingDecorationEdgePadding:
       return touch_ui ? 3 : 12;
     case LayoutConstant::kLocationBarTrailingDecorationInnerPadding:

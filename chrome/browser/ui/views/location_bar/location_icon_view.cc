@@ -386,14 +386,17 @@ void LocationIconView::UpdateBorder() {
     SecurityLevel level = GetSecurityLevel();
     if (level == security_state::DANGEROUS) {
       // Extra space between the left edge and label.
-      const int kLeftHorizontalPadding = 6;
+      const int kLeftHorizontalPadding = GetLayoutConstant(
+          LayoutConstant::kLocationBarPageInfoIconDangerousLeadingPadding);
       // Extra space between the label and right edge.
-      const int kRightHorizontalPadding = 10;
+      const int kRightHorizontalPadding = GetLayoutConstant(
+          LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding);
       insets.set_left(kLeftHorizontalPadding);
       insets.set_right(kRightHorizontalPadding);
     } else {
       // An extra space between chip's label and right edge.
-      const int kExtraRightPadding = 4;
+      const int kExtraRightPadding = GetLayoutConstant(
+          LayoutConstant::kLocationBarPageInfoIconLabelExtraTrailingPadding);
       insets.set_right(insets.right() + kExtraRightPadding);
     }
   }

@@ -37,7 +37,7 @@
   width: 400px;
 }
 
-:host(:hover) {
+:host(:hover:not([chip-hovered])) {
   background-color: var(--color-location-bar-background-hovered);
 }
 
@@ -46,7 +46,7 @@
     background-color: var(--color-omnibox-results-background);
     border: 1px solid var(--color-location-bar-border-on-mismatch);
   }
-  :host(.input-in-progress:hover) {
+  :host(.input-in-progress:hover:not([chip-hovered])) {
     background-color: var(--color-omnibox-results-background-hovered);
   }
 
@@ -98,11 +98,8 @@
   width: 40px;
 }
 
-#location-icon {
-  border: 1px solid red;
+location-icon {
   flex-shrink: 0;
-  height: 24px;
   margin: 4px;
   margin-inline-start: calc(4px - var(--border-radius));
-  width: 24px;
 }

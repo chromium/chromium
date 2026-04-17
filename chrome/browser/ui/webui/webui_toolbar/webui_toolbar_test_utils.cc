@@ -50,7 +50,7 @@ CreateValidNavigationControlsState() {
               toolbar_ui_api::mojom::SecurityChipState::New(
                   toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
                   toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
-                  false),
+                  false, false),
               std::vector<
                   toolbar_ui_api::mojom::ContentSettingImageStatePtr>())),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),

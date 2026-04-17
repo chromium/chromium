@@ -48,6 +48,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--location-bar-bubble-anchor-vertical-inset";
     case kLocationBarChildInteriorPadding:
       return "--location-bar-child-interior-padding";
+    case kLocationBarChildInternalSpacing:
+      return "--location-bar-child-internal-spacing";
     case kLocationBarChildCornerRadius:
       return "--location-bar-child-corner-radius";
     case kLocationBarChipIconSize:
@@ -60,6 +62,12 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--location-bar-height";
     case kLocationBarPageInfoIconVerticalPadding:
       return "--location-bar-page-info-icon-vertical-padding";
+    case kLocationBarPageInfoIconLabelExtraTrailingPadding:
+      return "--location-bar-page-info-icon-label-extra-trailing-padding";
+    case kLocationBarPageInfoIconDangerousLeadingPadding:
+      return "--location-bar-page-info-icon-dangerous-leading-padding";
+    case kLocationBarPageInfoIconDangerousTrailingPadding:
+      return "--location-bar-page-info-icon-dangerous-trailing-padding";
     case kLocationBarTrailingDecorationEdgePadding:
       return "--location-bar-trailing-decoration-edge-padding";
     case kLocationBarTrailingDecorationInnerPadding:
@@ -169,8 +177,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
 // static
 std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   std::string css_string;
-  // At time this was implemented, actual usage was about 2.5K
-  css_string.reserve(3 * 1024);
+  // At the time of this update, actual usage was about 3.2K.
+  css_string.reserve(4 * 1024);
 
   css_string.append(
       "@property --touch-mode {\n"
@@ -204,11 +212,38 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
          base::NumberToString(GetLayoutConstant(layout_constant)), "px;"});
   }
 
+  gfx::Insets location_bar_page_info_icon_padding =
+      GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  base::StrAppend(
+      &css_string,
+      {"--location-bar-page-info-icon-padding-top:",
+       base::NumberToString(location_bar_page_info_icon_padding.top()), "px;"});
+  base::StrAppend(
+      &css_string,
+      {"--location-bar-page-info-icon-padding-bottom:",
+       base::NumberToString(location_bar_page_info_icon_padding.bottom()),
+       "px;"});
+  base::StrAppend(
+      &css_string,
+      {"--location-bar-page-info-icon-padding-left:",
+       base::NumberToString(location_bar_page_info_icon_padding.left()),
+       "px;"});
+  base::StrAppend(
+      &css_string,
+      {"--location-bar-page-info-icon-padding-right:",
+       base::NumberToString(location_bar_page_info_icon_padding.right()),
+       "px;"});
+
   const auto& typography_provider = views::TypographyProvider::Get();
   AddFontVariables("--omnibox-primary",
                    typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
                                                views::style::STYLE_PRIMARY),
                    css_string);
+  AddFontVariables(
+      "--omnibox-chip",
+      typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                  views::style::STYLE_BODY_4_EMPHASIS),
+      css_string);
 
   css_string.push_back('}');
   return css_string;

@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
@@ -121,5 +121,39 @@ suite('LocationBar', function() {
     assertEquals(
         crFocusOutlineColor + ' 0px 0px 0px 2px inset',
         style.get('box-shadow')?.toString());
+  });
+
+  test('Chip hovered state', async () => {
+    // Force the location bar to show the security chip.
+    locationBar.locationBarState = {
+      ...initialState,
+      lhsChipsState: {
+        securityChip: {
+          icon: 0,
+          securityLevel: 0,
+          text: 'Not secure',
+          isClickable: true,
+          isTextDangerous: false,
+        },
+        activityIndicators: [],
+      },
+    };
+    await microtasksFinished();
+
+    const locationIcon = locationBar.shadowRoot.querySelector('location-icon');
+    assertTrue(!!locationIcon);
+
+    locationIcon.dispatchEvent(new PointerEvent('pointerenter'));
+    assertTrue(locationBar.hasAttribute('chip-hovered'));
+
+    locationIcon.dispatchEvent(new PointerEvent('pointerleave'));
+    assertFalse(locationBar.hasAttribute('chip-hovered'));
+
+    // Verify pointercancel also removes the hovered state.
+    locationIcon.dispatchEvent(new PointerEvent('pointerenter'));
+    assertTrue(locationBar.hasAttribute('chip-hovered'));
+
+    locationIcon.dispatchEvent(new PointerEvent('pointercancel'));
+    assertFalse(locationBar.hasAttribute('chip-hovered'));
   });
 });

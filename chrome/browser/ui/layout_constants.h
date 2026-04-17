@@ -49,6 +49,9 @@ enum class LayoutConstant {
   // The internal padding to use inside children of the location bar.
   kLocationBarChildInteriorPadding,
 
+  // The internal spacing between the icon and text inside a location bar chip.
+  kLocationBarChildInternalSpacing,
+
   // The corner radius to use for children of the location bar.
   kLocationBarChildCornerRadius,
 
@@ -67,6 +70,17 @@ enum class LayoutConstant {
 
   // The vertical margins from the page info icon
   kLocationBarPageInfoIconVerticalPadding,
+
+  // Extra space between the page info icon's label and trailing edge.
+  kLocationBarPageInfoIconLabelExtraTrailingPadding,
+
+  // Extra space between the leading edge and label of the page info icon when
+  // it is dangerous.
+  kLocationBarPageInfoIconDangerousLeadingPadding,
+
+  // Extra space between the label and trailing edge of the page info icon when
+  // it is dangerous.
+  kLocationBarPageInfoIconDangerousTrailingPadding,
 
   // The leading edge space in the omnibox from the LHS icons used in Chrome
   // with the chrome refresh flag.

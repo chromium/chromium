@@ -24,7 +24,9 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_events.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace {
@@ -284,10 +286,14 @@ void WebUILocationBar::UpdateLhsChipsState() {
   auto mojo_security_chip_icon = GetMojoSecurityChipIcon(security_chip_icon);
   auto mojo_security_level = GetMojoSecurityLevel(model->GetSecurityLevel());
 
+  bool is_text_dangerous =
+      security_chip_text ==
+      l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
+
   auto lhs_chips_state = toolbar_ui_api::mojom::LhsChipsState::New(
       toolbar_ui_api::mojom::SecurityChipState::New(
           mojo_security_chip_icon, mojo_security_level, security_chip_text,
-          is_clickable),
+          is_clickable, is_text_dangerous),
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>());
 
   if (toolbar_view_) {

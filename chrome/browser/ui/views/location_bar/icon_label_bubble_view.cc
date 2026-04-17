@@ -674,12 +674,7 @@ int IconLabelBubbleView::GetInternalSpacing() const {
     return 0;
   }
 
-  constexpr int kDefaultInternalSpacingTouchUI = 10;
-  constexpr int kDefaultInternalSpacingChromeRefresh = 4;
-
-  return (ui::TouchUiController::Get()->touch_ui()
-              ? kDefaultInternalSpacingTouchUI
-              : kDefaultInternalSpacingChromeRefresh) +
+  return GetLayoutConstant(LayoutConstant::kLocationBarChildInternalSpacing) +
          GetExtraInternalSpacing();
 }
 

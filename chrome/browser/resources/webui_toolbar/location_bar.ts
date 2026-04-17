@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './readonly_omnibox.js';
+import './location_icon.js';
 
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -54,6 +55,7 @@ export class LocationBarElement extends CrLitElement {
         securityLevel: 0,
         text: '',
         isClickable: false,
+        isTextDangerous: false,
       },
       activityIndicators: [],
     },
@@ -88,6 +90,18 @@ export class LocationBarElement extends CrLitElement {
           'input-in-progress',
           this.locationBarState.locationBarFlags.userInputInProgress);
     }
+  }
+
+  protected onChipPointerenter_() {
+    this.toggleAttribute('chip-hovered', true);
+  }
+
+  protected onChipPointerleave_() {
+    this.toggleAttribute('chip-hovered', false);
+  }
+
+  protected onChipPointercancel_() {
+    this.onChipPointerleave_();
   }
 }
 

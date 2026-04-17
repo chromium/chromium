@@ -25,16 +25,20 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 // Helper so tests can find what they needed when optimization is on.
 // This should probably be a separate file, but rollup support only
 // handles 2 at most now.
-import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {LhsChipIdentifier, OmniboxTextColor, SecurityChipIcon} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import {LocationBarElement} from './location_bar.js';
+import {LocationIconElement} from './location_icon.js';
 
 export {
   LocationBarElement,
   OmniboxTextColor,
   ReadonlyOmniboxElement,
   TrackedElementManager,
+  SecurityChipIcon,
+  LhsChipIdentifier,
+  LocationIconElement,
 };
 export type {
     LocationBarState,
@@ -132,6 +136,7 @@ export class ToolbarAppElement extends CrLitElement {
           securityLevel: 0,
           text: '',
           isClickable: false,
+          isTextDangerous: false,
         },
         activityIndicators: [],
       },

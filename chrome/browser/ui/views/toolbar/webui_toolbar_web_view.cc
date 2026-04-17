@@ -209,7 +209,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
           toolbar_ui_api::mojom::SecurityChipState::New(
               toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
               toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
-              false),
+              false, false),
           std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>());
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
