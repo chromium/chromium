@@ -656,6 +656,7 @@
     },
     {
       name: "ApproximateGeolocationPermissionAPI",
+      status: "experimental",
     },
     {
       name: "ApproximateGeolocationWebVisibleAPI",

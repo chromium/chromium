@@ -993,6 +993,10 @@ interface GPUUncapturedErrorEvent : Event
 interface GPUValidationError : GPUError
     attribute @@toStringTag
     method constructor
+interface GeolocationPermissionStatus : PermissionStatus
+    attribute @@toStringTag
+    getter accuracyMode
+    method constructor
 interface Headers
     attribute @@toStringTag
     method @@iterator

@@ -3576,6 +3576,10 @@ interface GeolocationCoordinates
     getter speed
     method constructor
     method toJSON
+interface GeolocationPermissionStatus : PermissionStatus
+    attribute @@toStringTag
+    getter accuracyMode
+    method constructor
 interface GeolocationPosition
     attribute @@toStringTag
     getter coords

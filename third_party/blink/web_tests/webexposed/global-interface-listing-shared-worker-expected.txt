@@ -935,6 +935,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUValidationError : GPUError
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface GeolocationPermissionStatus : PermissionStatus
+[Worker]     attribute @@toStringTag
+[Worker]     getter accuracyMode
+[Worker]     method constructor
 [Worker] interface Headers
 [Worker]     attribute @@toStringTag
 [Worker]     method @@iterator
