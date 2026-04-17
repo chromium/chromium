@@ -965,6 +965,8 @@ component("platform") {
     "graphics/dom_node_id.h",
     "graphics/draw_looper_builder.cc",
     "graphics/draw_looper_builder.h",
+    "graphics/exported_canvas_resource.cc",
+    "graphics/exported_canvas_resource.h",
     "graphics/filters/distant_light_source.cc",
     "graphics/filters/distant_light_source.h",
     "graphics/filters/fe_blend.cc",

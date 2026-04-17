@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -138,7 +139,8 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameCleared) {
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame()->GetResourceForTesting(),
+            frame1_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);
@@ -149,9 +151,11 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameCleared) {
   EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(1);
   // Propagate second frame to the placeholder, causing frame 1 to be
   // cleared.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame()->GetResourceForTesting(),
+            frame1_raw_ptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame()->GetResourceForTesting(),
+            frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 }
 
@@ -169,9 +173,10 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameClearedWithExtraRef) {
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame()->GetResourceForTesting(),
+            frame1_raw_ptr);
   scoped_refptr<CanvasResource> extra_ref =
-      placeholder()->OffscreenCanvasFrame();
+      placeholder()->OffscreenCanvasFrame()->GetResourceForTesting();
   Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);
@@ -181,9 +186,11 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameClearedWithExtraRef) {
 
   EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(1);
   // Propagate second frame to the placeholder. First frame will be cleared.
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame()->GetResourceForTesting(),
+            frame1_raw_ptr);
   platform->RunUntilIdle();
-  EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
+  EXPECT_EQ(placeholder()->OffscreenCanvasFrame()->GetResourceForTesting(),
+            frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
   EXPECT_CALL(*(dispatcher()), MainThreadReceivedImage()).Times(0);

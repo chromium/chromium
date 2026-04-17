@@ -266,7 +266,8 @@ class CORE_EXPORT HTMLCanvasElement final
       ExceptionState&) override;
 
   // OffscreenCanvasPlaceholder implementation.
-  void SetOffscreenCanvasResource(scoped_refptr<CanvasResource>&&) override;
+  void SetOffscreenCanvasResource(
+      scoped_refptr<ExportedCanvasResource>&&) override;
   void Trace(Visitor*) const override;
 
   static void RegisterRenderingContextFactory(

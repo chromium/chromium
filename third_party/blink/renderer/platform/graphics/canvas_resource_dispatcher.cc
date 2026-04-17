@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
@@ -123,7 +124,9 @@ static void UpdatePlaceholderImage(
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
   if (placeholder_canvas) {
-    placeholder_canvas->SetOffscreenCanvasResource(std::move(canvas_resource));
+    placeholder_canvas->SetOffscreenCanvasResource(
+        base::MakeRefCounted<ExportedCanvasResource>(
+            std::move(canvas_resource)));
     task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&CanvasResourceDispatcher::OnMainThreadReceivedImage,

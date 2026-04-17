@@ -7,6 +7,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -35,15 +36,18 @@ void SetAnimationState(
 }  // unnamed namespace
 
 OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
-  CanvasResource::OnPlaceholderReleasedResource(std::move(placeholder_frame_));
+  ExportedCanvasResource::OnPlaceholderReleasedResource(
+      std::move(placeholder_frame_));
   UnregisterPlaceholderCanvas();
 }
 
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
-    scoped_refptr<CanvasResource>&& new_frame) {
+    scoped_refptr<ExportedCanvasResource>&& new_frame) {
   DCHECK(IsOffscreenCanvasRegistered());
   DCHECK(new_frame);
-  CanvasResource::OnPlaceholderReleasedResource(std::move(placeholder_frame_));
+
+  ExportedCanvasResource::OnPlaceholderReleasedResource(
+      std::move(placeholder_frame_));
   placeholder_frame_ = std::move(new_frame);
 
   if (deferred_animation_state_ &&
