@@ -2839,7 +2839,7 @@
     'chrome_performance_manager': ['performance-manager-reviews@chromium.org'],
     'chromecast': ['halliwell+watch@chromium.org'],
     'chromecast_public': ['gfhuang+watch@chromium.org'],
-    'chromedriver': ['mathias@chromium.org'],
+    'chromedriver': [],
     'chromeos': ['oshima+watch@chromium.org'],
     'chromeos_attestation': ['dkrahn+watch@chromium.org'],
     'chromeos_bluetooth': ['chadduffin+watch-bluetooth@chromium.org',
