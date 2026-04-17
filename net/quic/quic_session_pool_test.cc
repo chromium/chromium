@@ -2043,12 +2043,12 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   transport_security_state_.EnableStaticPinsForTesting();
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
-  HashValue primary_pin(HASH_VALUE_SHA256);
-  EXPECT_TRUE(primary_pin.DeprecatedFromString(
-      "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
+  std::optional<HashValue> primary_pin = HashValue::FromString(
+      "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY=");
+  ASSERT_TRUE(primary_pin.has_value());
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   verify_details.cert_verify_result.public_key_hashes.push_back(
-      primary_pin.sha256hashvalue());
+      primary_pin->sha256hashvalue());
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
   host_resolver_->set_synchronous_mode(true);
@@ -2103,12 +2103,12 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
       test::GetTestHashValue(bad_pin));
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
 
-  HashValue primary_pin(HASH_VALUE_SHA256);
-  EXPECT_TRUE(primary_pin.DeprecatedFromString(
-      "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
+  std::optional<HashValue> primary_pin = HashValue::FromString(
+      "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY=");
+  EXPECT_TRUE(primary_pin.has_value());
   ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
   verify_details2.cert_verify_result.public_key_hashes.push_back(
-      primary_pin.sha256hashvalue());
+      primary_pin->sha256hashvalue());
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
 
   host_resolver_->set_synchronous_mode(true);

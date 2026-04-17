@@ -339,14 +339,11 @@ void ChromeRequireCTDelegate::ParseSpkiHashes(
     absl::flat_hash_set<net::SHA256HashValue>* hashes) const {
   hashes->clear();
   for (const auto& value : spki_list) {
-    net::HashValue hash;
-    if (!hash.DeprecatedFromString(value)) {
+    std::optional<net::HashValue> hash = net::HashValue::FromString(value);
+    if (!hash || hash->tag() != net::HASH_VALUE_SHA256) {
       continue;
     }
-    if (hash.tag() != net::HASH_VALUE_SHA256) {
-      continue;
-    }
-    hashes->insert(hash.sha256hashvalue());
+    hashes->insert(hash->sha256hashvalue());
   }
 }
 

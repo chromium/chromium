@@ -6921,9 +6921,10 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
     verify_result.verified_cert = cert;
     verify_result.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
 
-    net::HashValue hash;
-    ASSERT_TRUE(hash.DeprecatedFromString(kMatchingDynamicInterstitialCert));
-    verify_result.public_key_hashes.push_back(hash.sha256hashvalue());
+    std::optional<net::HashValue> hash =
+        net::HashValue::FromString(kMatchingDynamicInterstitialCert);
+    ASSERT_TRUE(hash.has_value());
+    verify_result.public_key_hashes.push_back(hash->sha256hashvalue());
 
     mock_cert_verifier()->AddResultForCert(cert, verify_result,
                                            net::ERR_CERT_COMMON_NAME_INVALID);

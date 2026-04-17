@@ -126,9 +126,10 @@ std::vector<SHA256HashValue> DeserializeHashes(
     base::span<const char* const> serialized_hashes) {
   std::vector<SHA256HashValue> result;
   for (const auto* serialized_hash : serialized_hashes) {
-    net::HashValue h(HASH_VALUE_SHA256);
-    CHECK(h.DeprecatedFromString(std::string_view(serialized_hash)));
-    result.push_back(h.sha256hashvalue());
+    std::optional<net::HashValue> h =
+        net::HashValue::FromString(std::string_view(serialized_hash));
+    CHECK(h);
+    result.push_back(h->sha256hashvalue());
   }
   return result;
 }

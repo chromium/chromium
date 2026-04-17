@@ -16,7 +16,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace net {
 
@@ -37,26 +37,20 @@ HashValue::HashValue(base::span<const uint8_t> hash)
   base::span(fingerprint.sha256).copy_from(hash);
 }
 
-bool HashValue::DeprecatedFromString(std::string_view value) {
+// static
+std::optional<HashValue> HashValue::FromString(std::string_view value) {
   if (!value.starts_with(kSha256Slash)) {
-    return false;
+    return std::nullopt;
   }
 
   std::string_view base64_str = value.substr(kSha256Slash.size());
 
   auto decoded = base::Base64Decode(base64_str);
-  if (!decoded || decoded->size() != span().size()) {
-    return false;
+  if (!decoded || decoded->size() != crypto::hash::kSha256Size) {
+    return std::nullopt;
   }
-  tag_ = HASH_VALUE_SHA256;
-  span().copy_from(*decoded);
-  return true;
-}
 
-// static
-std::optional<HashValue> HashValue::FromString(std::string_view value) {
-  HashValue v(HASH_VALUE_SHA256);
-  return v.DeprecatedFromString(value) ? std::optional(v) : std::nullopt;
+  return HashValue(*decoded);
 }
 
 std::string HashValue::ToString() const {

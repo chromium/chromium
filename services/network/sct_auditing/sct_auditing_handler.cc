@@ -250,14 +250,15 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
     // Try to read the reporter_key from the entry and convert back to a
     // HashValue. If it fails, continue to the next entry.
-    net::HashValue cache_key(net::HASH_VALUE_SHA256);
-    if (!cache_key.DeprecatedFromString(*reporter_key_string)) {
+    std::optional<net::HashValue> cache_key =
+        net::HashValue::FromString(*reporter_key_string);
+    if (!cache_key) {
       continue;
     }
 
     // Check if cache_key already exists. If it's already in the pending set,
     // skip re-adding it.
-    auto it = pending_reporters_.Get(cache_key);
+    auto it = pending_reporters_.Get(*cache_key);
     if (it != pending_reporters_.end()) {
       continue;
     }
@@ -290,7 +291,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
       }
     }
 
-    AddReporter(cache_key, std::move(audit_report), std::move(sct_metadata),
+    AddReporter(*cache_key, std::move(audit_report), std::move(sct_metadata),
                 std::move(backoff_entry),
                 counted_towards_report_limit.value_or(false));
     ++num_reporters_deserialized;

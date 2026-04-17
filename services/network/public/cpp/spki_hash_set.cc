@@ -14,13 +14,14 @@ namespace network {
 SPKIHashSet CreateSPKIHashSet(const std::vector<std::string>& fingerprints) {
   SPKIHashSet spki_hash_list;
   for (const std::string& fingerprint : fingerprints) {
-    net::HashValue hash;
-    if (!hash.DeprecatedFromString("sha256/" + fingerprint)) {
+    std::optional<net::HashValue> hash =
+        net::HashValue::FromString("sha256/" + fingerprint);
+    if (!hash) {
       LOG(ERROR) << "Invalid SPKI: " << fingerprint;
       continue;
     }
     net::SHA256HashValue sha256;
-    base::span(sha256).copy_from(hash.span());
+    base::span(sha256).copy_from(hash->span());
     spki_hash_list.insert(sha256);
   }
   return spki_hash_list;
