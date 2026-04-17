@@ -208,20 +208,14 @@ class WebUIToolbarWebView
 
   void OnTouchUiChanged();
   void PostPushNavigationState();
-  void PushNavigationState(uint64_t state_generation);
+  void PushNavigationState();
   toolbar_ui_api::mojom::BackForwardControlStatePtr GetBackForwardState() const;
 
   // The most recent NavigationControlsState, consisting of the state of all
   // controls managed by the toolbar. This may or may not have been sent to
   // `web_ui`. If this state has not yet been sent, then there must be a pending
-  // PushNavigationState() call, with a value of `current_state_generation_`.
+  // PushNavigationState() call.
   toolbar_ui_api::mojom::NavigationControlsState last_queued_state_;
-
-  // This is incremented each time `last_queued_state_` is updated. If it does
-  // not match the value passed to PushNavigationState(), then that method does
-  // nothing, and there should be another pending task to run
-  // PushNavigationState() with the current value.
-  uint64_t current_state_generation_ = 0;
 
   InitializationState initialization_state_ =
       InitializationState::kUninitialized;
@@ -262,6 +256,11 @@ class WebUIToolbarWebView
 
   // True if the WebContents was pre-warmed and injected.
   bool is_preloaded_ = false;
+
+  // This WeakPtrFactory is used to keep tabs on pending state pushes, and then
+  // used to cancel them if the state is later updated again before we post a
+  // later PushNavigationState().
+  base::WeakPtrFactory<WebUIToolbarWebView> state_push_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<WebUIToolbarWebView> weak_ptr_factory_{this};
 };
