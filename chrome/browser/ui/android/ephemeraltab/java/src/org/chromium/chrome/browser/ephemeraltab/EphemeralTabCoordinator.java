@@ -41,9 +41,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.function.Supplier;
 
@@ -152,7 +152,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             String title,
             Profile profile,
             boolean canPromoteToNewTab,
-            boolean shouldHaveContextMenu) {
+            boolean shouldHaveContextMenu,
+            @Nullable Origin initiatorOrigin) {
         assert !isOpened() : "Avoid making new requests when an ephemeral tab is showing.";
         mUrl = url;
         mFullPageUrl = fullPageUrl;
@@ -214,7 +215,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
         mPeeked = false;
         mFullyOpened = false;
-        mMediator.requestShowContent(url, title);
+        mMediator.requestShowContent(url, title, initiatorOrigin);
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
@@ -273,13 +274,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             assumeNonNull(mSheetContent);
             mBottomSheetController.hideContent(
                     mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
-            GURL url = mFullPageUrl != null ? mFullPageUrl : mUrl;
-            mTabCreator
-                    .get()
-                    .createNewTab(
-                            new LoadUrlParams(url.getSpec(), PageTransition.LINK),
-                            TabLaunchType.FROM_LINK,
-                            mTabProvider.get());
+            var params = new LoadUrlParams(mFullPageUrl != null ? mFullPageUrl : mUrl);
+            mTabCreator.get().createNewTab(params, TabLaunchType.FROM_LINK, mTabProvider.get());
         }
     }
 

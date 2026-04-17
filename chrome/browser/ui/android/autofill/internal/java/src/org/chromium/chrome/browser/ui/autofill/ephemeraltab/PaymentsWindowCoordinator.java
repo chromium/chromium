@@ -62,7 +62,8 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
                 title,
                 profile,
                 /* canPromoteToNewTab= */ false,
-                /* shouldHaveContextMenu= */ false);
+                /* shouldHaveContextMenu= */ false,
+                /* initiatorOrigin= */ null);
     }
 
     /** Attempts to close an ephemeral tab. */

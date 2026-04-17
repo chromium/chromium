@@ -109,7 +109,8 @@ public class PageInfoAboutThisSiteController {
                     getTitle(),
                     profile,
                     /* canPromoteToNewTab= */ true,
-                    /* shouldHaveContextMenu= */ false);
+                    /* shouldHaveContextMenu= */ false,
+                    /* initiatorOrigin= */ null);
 
             mMainController.dismiss();
         } else {

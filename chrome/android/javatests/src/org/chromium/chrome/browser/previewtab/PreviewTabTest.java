@@ -17,17 +17,22 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabObserver;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabSheetContent;
 import org.chromium.chrome.browser.firstrun.DisableFirstRun;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -38,10 +43,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /**
  * Tests the Preview Tab, also known as the Ephemeral Tab. Based on the
@@ -125,6 +135,45 @@ public class PreviewTabTest {
         Assert.assertFalse(
                 "The Preview Tab should have closed but did not indicate closed",
                 mEphemeralTabCoordinator.isOpened());
+    }
+
+    private void openUrlInPreviewTab(String url) throws Exception {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        int callCount = callbackHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+                    var rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
+                    var tab = cta.getActivityTab();
+                    var tabModelSelector = cta.getTabModelSelectorSupplier().get();
+                    var ephemeralTabCoordinatorSupplier =
+                            rootUiCoordinator.getEphemeralTabCoordinatorSupplier();
+                    Supplier<SnackbarManager> snackbarManagerSupplier =
+                            () -> cta.getSnackbarManager();
+                    Supplier<BottomSheetController> bottomSheetControllerSupplier =
+                            () -> rootUiCoordinator.getBottomSheetController();
+                    var contextMenu =
+                            new TabContextMenuItemDelegate(
+                                    cta,
+                                    ActivityType.TABBED,
+                                    tab,
+                                    tabModelSelector,
+                                    ephemeralTabCoordinatorSupplier,
+                                    () -> {},
+                                    snackbarManagerSupplier,
+                                    bottomSheetControllerSupplier);
+                    ephemeralTabCoordinatorSupplier
+                            .get()
+                            .addObserver(
+                                    new EphemeralTabObserver() {
+                                        @Override
+                                        public void onNavigationFinished(GURL clickedUrl) {
+                                            callbackHelper.notifyCalled();
+                                        }
+                                    });
+                    contextMenu.onOpenInEphemeralTab(new GURL(url), "Echo Cookie");
+                });
+        callbackHelper.waitForCallback(callCount);
     }
 
     /**
@@ -217,7 +266,8 @@ public class PreviewTabTest {
                                 "PreviewTab",
                                 mActivityTestRule.getProfile(false),
                                 /* canPromoteToNewTab= */ true,
-                                /* shouldHaveContextMenu= */ true));
+                                /* shouldHaveContextMenu= */ true,
+                                /* initiatorOrigin= */ null));
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
         Assert.assertTrue("Contextual Search should be suppressed", csManager.isSuppressed());
@@ -244,7 +294,8 @@ public class PreviewTabTest {
                                 "PreviewTab",
                                 mActivityTestRule.getProfile(false),
                                 /* canPromoteToNewTab= */ true,
-                                /* shouldHaveContextMenu= */ true));
+                                /* shouldHaveContextMenu= */ true,
+                                /* initiatorOrigin= */ null));
         endAnimations();
 
         mEphemeralTabObserver.onToolbarCreatedCallback.waitForCallback(0, 1);
@@ -260,6 +311,35 @@ public class PreviewTabTest {
         mEphemeralTabObserver.onTitleSetCallback.waitForCallback(1, 1);
         Assert.assertEquals(1, mEphemeralTabObserver.onToolbarCreatedCallback.getCallCount());
 
+        closePreviewTab();
+    }
+
+    /**
+     * Test that SameSite=Strict cookies are not sent in the preview tab when it's considered a
+     * cross-site navigation from the main tab.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PreviewTab"})
+    @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
+    public void testSameSiteStrictCookie() throws Throwable {
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        String cookie = "secret_token=12345";
+        String setCookieUrl =
+                testServer.getURLWithHostName(
+                        "a.com", "/set-cookie?" + cookie + ";SameSite=Strict;Path=/");
+        mActivityTestRule.loadUrlInNewTab(setCookieUrl);
+        mActivityTestRule.loadUrl(testServer.getURLWithHostName("b.com", BASE_PAGE));
+
+        // Cross-site navigation (b.com -> a.com) to preview tab
+        String echoCookieUrl = testServer.getURLWithHostName("a.com", "/echoheader?Cookie");
+        openUrlInPreviewTab(echoCookieUrl);
+
+        WebContents webContents = mEphemeralTabCoordinator.getWebContentsForTesting();
+        String content =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        webContents, "document.body.textContent");
+        Assert.assertFalse("SameSite=Strict cookie should not be sent", content.contains(cookie));
         closePreviewTab();
     }
 }

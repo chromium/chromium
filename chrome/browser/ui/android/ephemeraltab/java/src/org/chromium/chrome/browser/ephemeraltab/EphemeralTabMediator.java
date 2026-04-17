@@ -32,6 +32,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** Mediator class for preview tab, responsible for communicating with other objects. */
 @NullMarked
@@ -148,16 +149,22 @@ public class EphemeralTabMediator {
     }
 
     /** Loads a new URL into the tab and makes it visible. */
-    void requestShowContent(GURL url, String title) {
-        loadUrl(url);
+    void requestShowContent(GURL url, String title, @Nullable Origin initiatorOrigin) {
+        loadUrl(url, initiatorOrigin);
         assumeNonNull(mSheetContent);
         mSheetContent.updateTitle(title);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
-    private void loadUrl(GURL url) {
+    private void loadUrl(GURL url, @Nullable Origin initiatorOrigin) {
         assumeNonNull(mWebContents);
-        mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url.getSpec()));
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setInitiatorOrigin(initiatorOrigin);
+        mWebContents.getNavigationController().loadUrl(params);
+    }
+
+    private @Nullable Origin getLastCommittedOrigin() {
+        return assumeNonNull(mWebContents).getMainFrame().getLastCommittedOrigin();
     }
 
     @EnsuresNonNull("mWebContentsObserver")
@@ -263,12 +270,12 @@ public class EphemeralTabMediator {
                             int disposition,
                             boolean isRendererInitiated) {
                         // We never open a separate tab when navigating in a preview tab.
-                        loadUrl(url);
+                        loadUrl(url, getLastCommittedOrigin());
                     }
 
                     @Override
                     public boolean shouldCreateWebContents(GURL targetUrl) {
-                        loadUrl(targetUrl);
+                        loadUrl(targetUrl, getLastCommittedOrigin());
                         return false;
                     }
 

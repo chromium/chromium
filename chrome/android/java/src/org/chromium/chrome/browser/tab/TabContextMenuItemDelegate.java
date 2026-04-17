@@ -407,6 +407,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (ephemeralTabCoordinator == null) {
             return;
         }
+        var initiatorOrigin = getWebContents().getMainFrame().getLastCommittedOrigin();
         ephemeralTabCoordinator.requestOpenSheet(
                 url,
                 /* fullPageUrl= */ null,
@@ -415,7 +416,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 /* canPromoteToNewTab= */ mActivityType == ActivityType.TABBED
                         || mActivityType == ActivityType.CUSTOM_TAB,
                 /* shouldHaveContextMenu= */ ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ENABLE_CONTEXT_MENU_FOR_PREVIEW_TAB));
+                        ChromeFeatureList.ENABLE_CONTEXT_MENU_FOR_PREVIEW_TAB),
+                initiatorOrigin);
     }
 
     /**

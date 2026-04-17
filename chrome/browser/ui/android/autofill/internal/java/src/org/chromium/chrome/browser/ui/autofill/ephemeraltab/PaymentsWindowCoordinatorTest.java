@@ -87,7 +87,8 @@ public class PaymentsWindowCoordinatorTest {
                         /* title= */ TAB_TITLE,
                         mProfile,
                         /* canPromoteToNewTab= */ false,
-                        /* shouldHaveContextMenu= */ false);
+                        /* shouldHaveContextMenu= */ false,
+                        /* initiatorOrigin= */ null);
         verify(mEphemeralTabCoordinator).addObserver(any(EphemeralTabObserver.class));
     }
 
@@ -104,7 +105,8 @@ public class PaymentsWindowCoordinatorTest {
                         /* title= */ TAB_TITLE,
                         mProfile,
                         /* canPromoteToNewTab= */ false,
-                        /* shouldHaveContextMenu= */ false);
+                        /* shouldHaveContextMenu= */ false,
+                        /* initiatorOrigin= */ null);
         verify(mEphemeralTabCoordinator, never()).addObserver(any(EphemeralTabObserver.class));
     }
 
@@ -121,7 +123,8 @@ public class PaymentsWindowCoordinatorTest {
                         /* title= */ TAB_TITLE,
                         mProfile,
                         /* canPromoteToNewTab= */ false,
-                        /* shouldHaveContextMenu= */ false);
+                        /* shouldHaveContextMenu= */ false,
+                        /* initiatorOrigin= */ null);
         verify(mEphemeralTabCoordinator, never()).addObserver(any(EphemeralTabObserver.class));
     }
 
