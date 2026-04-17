@@ -450,11 +450,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
-  cc::PaintImage::ContentId cached_content_id_ =
-      cc::PaintImage::kInvalidContentId;
-
-  scoped_refptr<StaticBitmapImage> cached_snapshot_;
-
   bool resource_recycling_enabled_ = true;
   const bool is_accelerated_;
 
@@ -622,6 +617,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void WillDrawUnaccelerated();
   void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 
+  cc::PaintImage::ContentId cached_content_id_ =
+      cc::PaintImage::kInvalidContentId;
+  scoped_refptr<StaticBitmapImage> cached_snapshot_;
+
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 };
@@ -776,6 +775,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
+
+  cc::PaintImage::ContentId cached_content_id_ =
+      cc::PaintImage::kInvalidContentId;
+  scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
