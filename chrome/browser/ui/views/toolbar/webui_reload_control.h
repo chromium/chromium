@@ -62,6 +62,8 @@ class WebUIReloadControl : public ReloadControl {
                            CheckReloadButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
                            ContextMenuPositionE2E);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
+                           PressAndDragDown);
 
   void UpdateState();
 

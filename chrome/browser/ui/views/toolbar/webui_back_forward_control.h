@@ -49,6 +49,8 @@ class WebUIBackForwardControl {
                            CheckForwardButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            BackForwardButtonsModifierClick);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
+                           PressAndDragDown);
 
   const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   const BackForwardButton::Direction direction_;

@@ -178,6 +178,11 @@ bool WaitForButtonEnabled(content::WebContents* web_contents,
   });
 }
 
+constexpr char kGetCoordinatesJS[] =
+    "const rect = target.getBoundingClientRect(); "
+    "const x = rect.left + rect.width / 2; "
+    "const y = rect.top + rect.height / 2; ";
+
 // Dispatches an event to a WebUI toolbar button.
 // `selector`: The CSS selector for the button element.
 // `event_class`: The JS event class (e.g. 'MouseEvent', 'PointerEvent').
@@ -188,10 +193,18 @@ std::string DispatchEventScript(const std::string& selector,
                                 const std::string& type,
                                 const std::string& options = "") {
   return base::StringPrintf(
-      "%s?.dispatchEvent(new %s('%s', "
-      "{bubbles: true, cancelable: true, view: window, %s}));",
-      GetButtonIconJS(selector).c_str(), event_class.c_str(), type.c_str(),
-      options.c_str());
+      "(() => { const target = %s; "
+      "if (target) { "
+      "  %s"
+      "  target.setPointerCapture = () => {}; "
+      "  target.releasePointerCapture = () => {}; "
+      "  target.dispatchEvent(new %s('%s', "
+      "  {bubbles: true, cancelable: true, view: window, clientX: x, clientY: "
+      "y, "
+      "  %s}));"
+      "} })();",
+      GetButtonIconJS(selector).c_str(), kGetCoordinatesJS, event_class.c_str(),
+      type.c_str(), options.c_str());
 }
 
 // Dispatches a pointerup or pointerdown event based on `event`name`.
@@ -202,9 +215,15 @@ std::string DispatchPointerEvent(
     const std::string& opts = "detail: 1, button: 0") {
   const std::string el = GetButtonIconJS(selector);
   return base::StringPrintf(
-      "%s.dispatchEvent(new PointerEvent('%s', {bubbles: true, cancelable: "
-      "true, view: window, pointerType: '%s', %s}));",
-      el.c_str(), event_name.c_str(), pointer_type.c_str(), opts.c_str());
+      "(() => { const target = %s; "
+      "%s"
+      "target.setPointerCapture = () => {}; "
+      "target.releasePointerCapture = () => {}; "
+      "target.dispatchEvent(new PointerEvent('%s', {bubbles: true, cancelable: "
+      "true, view: window, pointerType: '%s', clientX: x, clientY: y, %s})); "
+      "})();",
+      el.c_str(), kGetCoordinatesJS, event_name.c_str(), pointer_type.c_str(),
+      opts.c_str());
 }
 
 // Simulates a full physical click cycle (press + release) using PointerEvents.
@@ -214,11 +233,19 @@ std::string DispatchPointerClick(
     const std::string& opts = "detail: 1, button: 0") {
   const std::string el = GetButtonIconJS(selector);
   return base::StringPrintf(
-      "%s.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, "
-      "cancelable: true, view: window, pointerType: '%s', %s}));"
-      "%s.dispatchEvent(new PointerEvent('pointerup', {bubbles: true, "
-      "cancelable: true, view: window, pointerType: '%s', %s}));",
-      el.c_str(), pointer_type.c_str(), opts.c_str(), el.c_str(),
+      "(() => { const target = %s; "
+      "%s"
+      "target.setPointerCapture = () => {}; "
+      "target.releasePointerCapture = () => {}; "
+      "target.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, "
+      "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
+      "y, "
+      "%s}));"
+      "target.dispatchEvent(new PointerEvent('pointerup', {bubbles: true, "
+      "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
+      "y, "
+      "%s})); })();",
+      el.c_str(), kGetCoordinatesJS, pointer_type.c_str(), opts.c_str(),
       pointer_type.c_str(), opts.c_str());
 }
 
@@ -3145,3 +3172,136 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
       action2, false);
   ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
 }
+
+struct DragTestParam {
+  const char* test_name;
+  const char* selector;
+  const char* pref_name = nullptr;
+};
+
+class WebUIToolbarButtonPressAndDragTest
+    : public WebUIToolbarWebViewBrowserTest,
+      public testing::WithParamInterface<DragTestParam> {
+ public:
+  WebUIToolbarButtonPressAndDragTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUIReloadButton,
+             features::kWebUISplitTabsButton, features::kWebUIHomeButton,
+             features::kWebUIBackForwardButton,
+             features::kSkipIPCChannelPausingForNonGuests,
+             features::kWebUIInProcessResourceLoadingV2,
+             features::kInitialWebUISyncNavStartToCommit},
+            {}) {}
+};
+
+IN_PROC_BROWSER_TEST_P(WebUIToolbarButtonPressAndDragTest, PressAndDragDown) {
+  const auto& param = GetParam();
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  content::WaitForCopyableViewInWebContents(web_contents);
+
+  if (param.pref_name) {
+    PinButton(browser(), web_view, param.pref_name);
+  }
+
+  if (std::string(param.test_name) == "Reload") {
+    webui_toolbar_view->reload_control_.SetDevToolsStatus(true);
+  }
+
+  if (std::string(param.test_name) == "Back" ||
+      std::string(param.test_name) == "Forward") {
+    // Navigate twice to ensure we have back/forward history.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
+    if (std::string(param.test_name) == "Forward") {
+      chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    }
+  }
+
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, param.selector));
+
+  // Inject mocks for pointer capture to avoid errors with synthetic events.
+  std::ignore = content::ExecJs(
+      web_contents,
+      "HTMLElement.prototype.setPointerCapture = () => {}; "
+      "HTMLElement.prototype.releasePointerCapture = () => {};");
+
+  // Wait for the inner icon button.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               web_contents,
+               base::StrCat({GetButtonIconJS(param.selector), " !== null"}))
+        .ExtractBool();
+  }));
+
+  // Identify the control to check for menu_runner.
+  auto get_menu_runner = [&]() -> views::MenuRunner* {
+    if (std::string(param.selector) == kReloadButtonSelector) {
+      return webui_toolbar_view->reload_control_.menu_runner_.get();
+    } else if (std::string(param.selector) == kHomeSelector) {
+      return webui_toolbar_view->home_control_.menu_runner_.get();
+    } else if (std::string(param.selector) == kBackSelector) {
+      return webui_toolbar_view->back_control_.menu_runner_.get();
+    } else if (std::string(param.selector) == kForwardSelector) {
+      return webui_toolbar_view->forward_control_.menu_runner_.get();
+    }
+    return nullptr;
+  };
+
+  views::MenuRunner* initial_runner = get_menu_runner();
+  EXPECT_TRUE(!initial_runner || !initial_runner->IsRunning());
+
+  // Start with pointerdown.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      DispatchPointerEvent("pointerdown", param.selector, "mouse")));
+
+  // Simulate downward drag by 10px.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "(() => { "
+          "  HTMLElement.prototype.setPointerCapture = () => {}; "
+          "  HTMLElement.prototype.releasePointerCapture = () => {}; "
+          "  const target = %s; "
+          "  if (target) { "
+          "    const rect = target.getBoundingClientRect(); "
+          "    const x = rect.left + rect.width / 2; "
+          "    const y = rect.top + rect.height / 2; "
+          "    target.dispatchEvent(new PointerEvent('pointermove', "
+          "    {bubbles: true, cancelable: true, view: window, pointerType: "
+          "    'mouse', "
+          "    clientX: x, clientY: y + 10})); "
+          "  } "
+          "})();",
+          GetButtonIconJS(param.selector).c_str())));
+
+  // The menu should open immediately.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    views::MenuRunner* runner = get_menu_runner();
+    return runner && runner->IsRunning();
+  }));
+
+  // Clean up
+  get_menu_runner()->Cancel();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebUIToolbarButtonPressAndDragTest,
+    testing::Values(
+        DragTestParam{.test_name = "Reload", .selector = kReloadButtonSelector},
+        DragTestParam{.test_name = "Home",
+                      .selector = kHomeSelector,
+                      .pref_name = prefs::kShowHomeButton},
+        DragTestParam{.test_name = "Back", .selector = kBackSelector},
+        DragTestParam{.test_name = "Forward",
+                      .selector = kForwardSelector,
+                      .pref_name = prefs::kShowForwardButton}),
+    [](const testing::TestParamInfo<DragTestParam>& info) {
+      return info.param.test_name;
+    });

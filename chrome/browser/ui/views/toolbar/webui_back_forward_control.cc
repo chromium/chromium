@@ -31,6 +31,10 @@ void WebUIBackForwardControl::HandleContextMenu(
     views::Widget* widget,
     const gfx::Rect& screen_rect,
     ui::mojom::MenuSourceType source) {
+  // Reset the menu runner first so that it doesn't hold a dangling pointer
+  // to the old menu model adapter when it is being destroyed.
+  menu_runner_.reset();
+
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
       &menu_model_,
       base::BindRepeating(&WebUIToolbarWebView::OnBackForwardStateChanged,

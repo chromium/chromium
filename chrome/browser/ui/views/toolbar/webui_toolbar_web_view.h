@@ -151,6 +151,10 @@ class WebUIToolbarWebView
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
                            LongPressHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
+                           PressAndDragDownHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
+                           PressAndDragDown);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
                            DropFileOnHomeButtonAndUndo);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            BackForwardButtonsModifierClick);

@@ -51,6 +51,8 @@ class WebUIHomeControl {
                            RightClickHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
                            LongPressHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
+                           PressAndDragDown);
   void UpdateVisibility(const toolbar_ui_api::mojom::HomeControlState* state);
   void UpdateState();
 
