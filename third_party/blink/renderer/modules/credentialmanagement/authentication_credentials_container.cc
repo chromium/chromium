@@ -1150,6 +1150,12 @@ void LogResidentKeyRequirement(PublicKeyCredentialCreationOptions* public_key) {
       GetResidentKeyRequirementForLogging(public_key));
 }
 
+bool HasCredentialTypeInRequest(const CredentialRequestOptions* options) {
+  return options->hasFederated() || options->hasIdentity() ||
+         options->password() || options->hasOtp() || options->hasPublicKey() ||
+         options->hasDigital();
+}
+
 }  // namespace
 
 const char AuthenticationCredentialsContainer::kSupplementName[] =
@@ -1415,6 +1421,13 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
   if (options->hasSignal() && options->signal()->aborted()) {
     resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  if (!HasCredentialTypeInRequest(options)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "No credential type was specified in the request."));
     return promise;
   }
 

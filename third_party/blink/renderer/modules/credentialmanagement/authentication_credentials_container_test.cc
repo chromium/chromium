@@ -402,6 +402,30 @@ class MockPublicKeyCredential : public Credential {
   bool IsPublicKeyCredential() const override { return true; }
 };
 
+TEST(AuthenticationCredentialsContainerTest, GetRequest_DefaultOptions) {
+  test::TaskEnvironment task_environment;
+  MockCredentialManager mock_credential_manager;
+  CredentialManagerTestingContext context(&mock_credential_manager);
+
+  // Calling get() with default options (no credential type set) should reject
+  // with NotSupportedError.
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* exception = V8DOMException::ToWrappable(
+      context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "NotSupportedError");
+  EXPECT_EQ(exception->message(),
+            "No credential type was specified in the request.");
+}
+
 // The completion callbacks for pending mojom::CredentialManager calls each own
 // a persistent handle to a ScriptPromiseResolverBase instance. Ensure that if
 // the document is destroyed while a call is pending, it can still be freed up.
@@ -413,9 +437,11 @@ TEST(AuthenticationCredentialsContainerTest, PendingGetRequest_NoGCCycles) {
   {
     CredentialManagerTestingContext context(&mock_credential_manager);
     document_observer.Observe(context.DomWindow().document());
-    AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
-        ->get(context.GetScriptState(), CredentialRequestOptions::Create(),
-              IGNORE_EXCEPTION_FOR_TESTING);
+    CredentialRequestOptions* options = CredentialRequestOptions::Create();
+    options->setPassword(true);
+    AuthenticationCredentialsContainer::credentials(
+        *context.DomWindow().navigator())
+        ->get(context.GetScriptState(), options, IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
   }
   test::RunPendingTasks();
@@ -436,10 +462,13 @@ TEST(AuthenticationCredentialsContainerTest,
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
-  auto promise =
-      AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
-          ->get(context.GetScriptState(), CredentialRequestOptions::Create(),
-                IGNORE_EXCEPTION_FOR_TESTING);
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  options->setPassword(true);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
   mock_credential_manager.WaitForCallToGet();
 
   context.DomWindow().FrameDestroyed();
