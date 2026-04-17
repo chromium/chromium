@@ -77,8 +77,6 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
 
   void OnFrameStartForCamera();
   void OnFrameEndForCamera();
-  void OnFrameEndWithoutSubmit();
-  void SubmitLayer();
 
   void OnFrameStart() override;
   void OnFrameEnd() override;

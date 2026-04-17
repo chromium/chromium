@@ -343,11 +343,6 @@ void XRWebGLLayer::OnFrameStart() {
 }
 
 void XRWebGLLayer::OnFrameEnd() {
-  OnFrameEndWithoutSubmit();
-  SubmitLayer();
-}
-
-void XRWebGLLayer::OnFrameEndWithoutSubmit() {
   // The session might have ended in the middle of the frame. Only perform the
   // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
   // shared image access is properly ended.
@@ -391,15 +386,11 @@ void XRWebGLLayer::OnFrameEndWithoutSubmit() {
           }
         }
       }
-    }
-  }
-}
 
-void XRWebGLLayer::SubmitLayer() {
-  // Always call submit, but notify if the contents were changed or not.
-  if (!session()->ended() && framebuffer_ && session()->immersive()) {
-    session()->xr()->frameProvider()->SubmitLayer(
-        layer_id(), this, framebuffer_->HaveContentsChanged());
+      // Always call submit, but notify if the contents were changed or not.
+      session()->xr()->frameProvider()->SubmitLayer(
+          layer_id(), this, framebuffer_->HaveContentsChanged());
+    }
   }
 }
 

@@ -264,8 +264,7 @@ void XRRenderState::OnFrameEnd() {
   }
 
   if (base_layer_) {
-    base_layer_->OnFrameEndWithoutSubmit();
-    base_layer_->SubmitLayer();
+    base_layer_->OnFrameEnd();
   }
 
   if (layers_) {
