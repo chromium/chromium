@@ -245,6 +245,10 @@ SessionID ChromeOmniboxClient::GetSessionID() const {
   return sessions::SessionTabHelper::IdForTab(location_bar_->GetWebContents());
 }
 
+bool ChromeOmniboxClient::IsChromeOmniboxClient() const {
+  return true;
+}
+
 bool ChromeOmniboxClient::
     ShowConfirmationDialogIfDefaultSearchExtensionControlled(
         const GURL& url,
@@ -935,6 +939,18 @@ void ChromeOmniboxClient::OpenUrl(GURL gurl) {
   NavigateParams params(browser_, gurl, ui::PAGE_TRANSITION_GENERATED);
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
   Navigate(&params);
+}
+
+void ChromeOmniboxClient::OpenUrlWithCallback(
+    GURL gurl,
+    WindowOpenDisposition disposition,
+    base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
+        callback) {
+  CHECK(browser_);
+  NavigateParams params(browser_, gurl, ui::PAGE_TRANSITION_GENERATED);
+  params.disposition = disposition;
+
+  Navigate(&params, std::move(callback));
 }
 
 void ChromeOmniboxClient::OpenIphLink(GURL gurl) {
