@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] first-line-computed-style
+  assert_not_equals: got disallowed value "top"
+Harness: the test ran to completion.
+

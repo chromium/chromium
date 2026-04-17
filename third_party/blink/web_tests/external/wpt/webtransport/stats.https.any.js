@@ -79,7 +79,7 @@ promise_test(async t => {
   await wt.ready;
 
   const numDatagrams = 64;
-  wt.datagrams.incomingHighWaterMark = 4;
+  wt.datagrams.incomingMaxBufferedDatagrams = 4;
 
   const writer = wt.datagrams.createWritable().getWriter();
   const encoder = new TextEncoder();
@@ -101,5 +101,5 @@ promise_test(async t => {
   }
   assert_greater_than(stats.datagrams.droppedIncoming, 0);
   assert_less_than_equal(stats.datagrams.droppedIncoming,
-                         numDatagrams - wt.datagrams.incomingHighWaterMark);
+                         numDatagrams - wt.datagrams.incomingMaxBufferedDatagrams);
 }, "WebTransport client should be able to provide droppedIncoming values for datagrams");

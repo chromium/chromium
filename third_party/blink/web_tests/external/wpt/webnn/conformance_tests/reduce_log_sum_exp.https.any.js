@@ -1328,7 +1328,7 @@ const reduceLogSumExpTests = [
   },
   {
     'name':
-        'reduceLogSumExp avoids underflows caused by taking the log of small inputs'
+        'reduceLogSumExp avoids underflows caused by taking the log of small inputs',
     'graph': {
       'inputs': {
         'reduceLogSumExpInput': {
