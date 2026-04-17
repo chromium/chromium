@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
-import org.chromium.chrome.browser.tab.StorageLoadingStatus;
+import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.util.List;
-import java.util.Locale;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
@@ -573,22 +572,25 @@ public class TabStateStore implements TabPersistentStore {
         assertInitialized();
         assertOtrOperationSafe(incognito);
 
-        if (data.getLoadingStatus() != StorageLoadingStatus.SUCCESS) {
+        StorageLoadWarning[] warnings = data.getWarnings();
+        if (!mIsAuthoritative && warnings.length > 0) {
             mTabStateStorageService.clearUnusedNodesForWindow(
                     mWindowTag, incognito, /* tabStripCollection= */ null);
             mTabCountTracker.clearTabCount(incognito);
             mActiveTabCache.clearActiveTab(incognito);
-            String formattedErrorMessage =
-                    String.format(
-                            Locale.ROOT,
-                            "Failed to load data with error code %d: %s",
-                            data.getLoadingStatus(),
-                            assumeNonNull(data.getErrorMessage()));
+
+            StringBuilder errorMsgBuilder = new StringBuilder("Failed to load data with warnings:");
+            for (StorageLoadWarning warning : warnings) {
+                errorMsgBuilder
+                        .append("\nCode: ")
+                        .append(warning.code)
+                        .append(", Message: ")
+                        .append(warning.message);
+            }
+            String formattedErrorMessage = errorMsgBuilder.toString();
             Log.e(TAG, formattedErrorMessage);
 
-            if (!mIsAuthoritative) {
-                mMigrationManager.onShadowStoreRazed();
-            }
+            mMigrationManager.onShadowStoreRazed();
             fullyDestroyLoadedData(data);
 
             // Leave to guarantee failures are caught in debug.

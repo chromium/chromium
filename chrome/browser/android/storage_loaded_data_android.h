@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
+#include "chrome/browser/tab/storage_loading_context.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace tabs {
@@ -48,6 +49,10 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
     JNIEnv* env,
     tabs_pb::TabState& tab_state);
 
+base::android::ScopedJavaLocalRef<jobject> CreateStorageLoadWarning(
+    JNIEnv* env,
+    const StorageLoadingContext::Warning& warning);
+
 }  // namespace tabs
 
 namespace jni_zero {
@@ -64,6 +69,14 @@ inline tabs::StorageLoadedDataAndroid*
 FromJniType<tabs::StorageLoadedDataAndroid*>(JNIEnv* env,
                                              const JavaRef<jobject>& obj) {
   return tabs::StorageLoadedDataAndroid::FromJavaObject(env, obj);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject>
+ToJniType<tabs::StorageLoadingContext::Warning>(
+    JNIEnv* env,
+    const tabs::StorageLoadingContext::Warning& input) {
+  return tabs::CreateStorageLoadWarning(env, input);
 }
 
 // TODO(469809169): Rather than using a const_cast, declare the function as

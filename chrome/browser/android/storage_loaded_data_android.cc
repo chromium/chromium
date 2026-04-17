@@ -69,6 +69,13 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
                                                      j_tab_state);
 }
 
+base::android::ScopedJavaLocalRef<jobject> CreateStorageLoadWarning(
+    JNIEnv* env,
+    const StorageLoadingContext::Warning& warning) {
+  return Java_StorageLoadedData_createStorageLoadWarning(
+      env, static_cast<int>(warning.status), warning.message);
+}
+
 StorageLoadedDataAndroid::StorageLoadedDataAndroid(
     JNIEnv* env,
     std::unique_ptr<StorageLoadedData> data)
@@ -80,11 +87,11 @@ StorageLoadedDataAndroid::StorageLoadedDataAndroid(
     tab_group_collection_data_android.push_back(android_group);
   }
   const StorageLoadingContext& context = data_->GetLoadingContext();
+
   j_object_ = Java_StorageLoadedData_createData(
       env, reinterpret_cast<intptr_t>(this), data_->GetLoadedTabs(),
       tab_group_collection_data_android,
-      data_->GetActiveTabIndex().value_or(-1),
-      static_cast<int>(context.status()), context.error_message());
+      data_->GetActiveTabIndex().value_or(-1), context.warnings());
 }
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;

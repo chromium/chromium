@@ -16,24 +16,14 @@ StorageLoadingContext::StorageLoadingContext(StorageLoadingContext&&) = default;
 StorageLoadingContext& StorageLoadingContext::operator=(
     StorageLoadingContext&&) = default;
 
-void StorageLoadingContext::SetStatus(StorageLoadingStatus status,
-                                      std::string message) {
-  if (status_ == StorageLoadingStatus::kSuccess) {
-    status_ = status;
-    error_message_ = std::move(message);
-  }
+void StorageLoadingContext::AddWarning(StorageLoadWarningCode status,
+                                       std::string message) {
+  warnings_.push_back({status, std::move(message)});
 }
 
-bool StorageLoadingContext::HasError() const {
-  return status_ != StorageLoadingStatus::kSuccess;
-}
-
-StorageLoadingStatus StorageLoadingContext::status() const {
-  return status_;
-}
-
-const std::optional<std::string>& StorageLoadingContext::error_message() const {
-  return error_message_;
+const std::vector<StorageLoadingContext::Warning>&
+StorageLoadingContext::warnings() const {
+  return warnings_;
 }
 
 }  // namespace tabs

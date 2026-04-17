@@ -17,6 +17,7 @@
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
+#include "chrome/browser/tab/storage_loading_context.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -44,16 +45,13 @@ void SortTabsInOrder(
     StorageLoadingContext* context,
     int depth = 0) {
   if (depth > kMaxTreeHeight) {
-    context->SetStatus(StorageLoadingStatus::kTreeTooDeepError,
-                       "Tree is too tall, possible cycle?");
+    context->AddWarning(StorageLoadWarningCode::kTreeTooDeepError,
+                        "Tree is too tall, possible cycle?");
     return;
   }
   const auto it = children_map.find(current_node_storage_id);
   if (it != children_map.end()) {
     for (const auto& child_id : it->second) {
-      if (context->HasError()) {
-        return;
-      }
       SortTabsInOrder(child_id, active_tab_storage_id, children_map,
                       loaded_tabs_map, sorted_tabs, active_tab_index, context,
                       depth + 1);
@@ -98,18 +96,14 @@ void StorageLoadedData::Builder::AddNode(
     base::span<const uint8_t> payload,
     std::optional<base::span<const uint8_t>> children,
     base::PassKey<TabStateStorageDatabase> passkey) {
-  if (context_.HasError()) {
-    return;
-  }
-
   if (type == TabStorageType::kTab) {
     tabs_pb::TabState tab_state;
     if (tab_state.ParseFromArray(payload.data(), payload.size())) {
       tracker_->RegisterTab(id, tab_state, passkey);
       loaded_tabs_map_.emplace(id, std::move(tab_state));
     } else {
-      context_.SetStatus(StorageLoadingStatus::kParseError,
-                         "Failed to parse tab state for id: " + id.ToString());
+      context_.AddWarning(StorageLoadWarningCode::kParseError,
+                          "Failed to parse tab state for id: " + id.ToString());
     }
     return;
   }
@@ -124,8 +118,9 @@ void StorageLoadedData::Builder::AddNode(
   std::optional<base::Token> collection_specific_id;
   if (type == TabStorageType::kTabStrip) {
     if (root_storage_id_.has_value()) {
-      context_.SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
-                         "Multiple root nodes for window tag in the database.");
+      context_.AddWarning(
+          StorageLoadWarningCode::kMultipleUniqueNodesError,
+          "Multiple root nodes for window tag in the database.");
       return;
     }
     root_storage_id_ = id;
@@ -136,8 +131,8 @@ void StorageLoadedData::Builder::AddNode(
             StorageIdFromTokenProto(tab_strip_state.active_tab_storage_id());
       }
     } else {
-      context_.SetStatus(
-          StorageLoadingStatus::kParseError,
+      context_.AddWarning(
+          StorageLoadWarningCode::kParseError,
           "Failed to parse tab strip state for id: " + id.ToString());
     }
   } else if (type == TabStorageType::kGroup) {
@@ -147,8 +142,8 @@ void StorageLoadedData::Builder::AddNode(
           std::make_unique<TabGroupCollectionData>(group_state));
       collection_specific_id = loaded_groups_.back()->tab_group_id_;
     } else {
-      context_.SetStatus(
-          StorageLoadingStatus::kParseError,
+      context_.AddWarning(
+          StorageLoadWarningCode::kParseError,
           "Failed to parse group state for id: " + id.ToString());
     }
   } else if (type == TabStorageType::kSplit) {
@@ -165,10 +160,6 @@ void StorageLoadedData::Builder::AddDivergentNode(
     TabStorageType type,
     std::optional<base::span<const uint8_t>> children,
     base::PassKey<TabStateStorageDatabase> passkey) {
-  if (context_.HasError()) {
-    return;
-  }
-
   DCHECK(children.has_value());
   std::optional<tabs_pb::Children> children_proto =
       ParseChildren(id, *children, divergent_children_map_);
@@ -260,8 +251,8 @@ std::optional<tabs_pb::Children> StorageLoadedData::Builder::ParseChildren(
   tabs_pb::Children children_proto;
   if (!children_proto.ParseFromArray(children_payload.data(),
                                      children_payload.size())) {
-    context_.SetStatus(StorageLoadingStatus::kParseError,
-                       "Failed to parse children for id: " + id.ToString());
+    context_.AddWarning(StorageLoadWarningCode::kParseError,
+                        "Failed to parse children for id: " + id.ToString());
     return std::nullopt;
   }
 
@@ -278,13 +269,6 @@ std::optional<tabs_pb::Children> StorageLoadedData::Builder::ParseChildren(
 std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
     base::PassKey<TabStateStorageDatabase> passkey,
     TabStateStorageDatabase* database) {
-  if (context_.HasError()) {
-    return base::WrapUnique(new StorageLoadedData(
-        window_tag_, is_off_the_record_, std::vector<tabs_pb::TabState>(),
-        std::vector<std::unique_ptr<TabGroupCollectionData>>(),
-        std::move(tracker_), std::nullopt, std::move(context_)));
-  }
-
   ReconcileDivergentNodes(base::PassKey<Builder>(), database);
 
   std::vector<tabs_pb::TabState> loaded_tabs;

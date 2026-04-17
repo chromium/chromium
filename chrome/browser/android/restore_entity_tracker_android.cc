@@ -41,28 +41,25 @@ void RestoreEntityTrackerAndroid::RegisterCollection(
     std::optional<base::Token> collection_specific_id,
     base::PassKey<TabStateStorageDatabase>) {
   DCHECK(context_);
-  if (context_->HasError()) {
-    return;
-  }
 
   if (type == TabStorageType::kPinned) {
     if (pinned_collection_id_) {
-      context_->SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
-                          "Should only have one pinned collection.");
+      context_->AddWarning(StorageLoadWarningCode::kMultipleUniqueNodesError,
+                           "Should only have one pinned collection.");
       return;
     }
     pinned_collection_id_ = storage_id;
   } else if (type == TabStorageType::kUnpinned) {
     if (unpinned_collection_id_) {
-      context_->SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
-                          "Should only have one unpinned collection.");
+      context_->AddWarning(StorageLoadWarningCode::kMultipleUniqueNodesError,
+                           "Should only have one unpinned collection.");
       return;
     }
     unpinned_collection_id_ = storage_id;
   } else if (type == TabStorageType::kTabStrip) {
     if (tab_strip_collection_id_) {
-      context_->SetStatus(StorageLoadingStatus::kMultipleUniqueNodesError,
-                          "Should only have one tab strip collection.");
+      context_->AddWarning(StorageLoadWarningCode::kMultipleUniqueNodesError,
+                           "Should only have one tab strip collection.");
       return;
     }
     tab_strip_collection_id_ = storage_id;
@@ -80,17 +77,11 @@ void RestoreEntityTrackerAndroid::RegisterTab(
     const tabs_pb::TabState& tab_state,
     base::PassKey<TabStateStorageDatabase>) {
   DCHECK(context_);
-  if (context_->HasError()) {
-    return;
-  }
   tab_android_id_to_storage_id_[tab_state.tab_id()] = storage_id;
 }
 
 bool RestoreEntityTrackerAndroid::AssociateTab(const TabInterface* tab) {
   DCHECK(context_);
-  if (context_->HasError()) {
-    return false;
-  }
 
   const TabAndroid* tab_android = ToTabAndroidChecked(tab);
   TabHandle handle = tab->GetHandle();
@@ -112,9 +103,6 @@ bool RestoreEntityTrackerAndroid::AssociateTab(const TabInterface* tab) {
 bool RestoreEntityTrackerAndroid::AssociateCollection(
     const TabCollection* collection) {
   DCHECK(context_);
-  if (context_->HasError()) {
-    return false;
-  }
 
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   if (type == TabStorageType::kPinned) {
@@ -133,9 +121,9 @@ bool RestoreEntityTrackerAndroid::AssociateCollection(
     return AssociateTabGroupTabCollection(
         static_cast<const TabGroupTabCollection*>(collection));
   } else {
-    context_->SetStatus(StorageLoadingStatus::kUnknownCollectionTypeError,
-                        "Unknown collection type: " +
-                            base::NumberToString(static_cast<int>(type)));
+    context_->AddWarning(StorageLoadWarningCode::kUnknownCollectionTypeError,
+                         "Unknown collection type: " +
+                             base::NumberToString(static_cast<int>(type)));
     return false;
   }
 }
@@ -202,9 +190,6 @@ bool RestoreEntityTrackerAndroid::AssociateSplitTabCollection(
 bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
     TabCollection::Handle handle) {
   DCHECK(context_);
-  if (context_->HasError()) {
-    return false;
-  }
   return associated_nodes_.contains(handle);
 }
 

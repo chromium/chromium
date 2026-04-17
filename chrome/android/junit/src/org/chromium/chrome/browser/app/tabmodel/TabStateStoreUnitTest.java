@@ -35,9 +35,10 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.StorageLoadWarningCode;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
-import org.chromium.chrome.browser.tab.StorageLoadingStatus;
+import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabState;
@@ -137,9 +138,9 @@ public class TabStateStoreUnitTest {
         when(mRegularTabModel.getCurrentTabSupplier()).thenReturn(mRegularTabSupplier);
         when(mIncognitoTabModel.getCurrentTabSupplier()).thenReturn(mIncognitoTabSupplier);
 
-        when(mRegularData.getLoadingStatus()).thenReturn(StorageLoadingStatus.SUCCESS);
+        when(mRegularData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
         when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
-        when(mIncognitoData.getLoadingStatus()).thenReturn(StorageLoadingStatus.SUCCESS);
+        when(mIncognitoData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
         when(mIncognitoData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
     }
 
@@ -389,7 +390,7 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
-    public void testLoadState_Failure() {
+    public void testLoadStateFailure_Authoritative() {
         mTabStateStore.onNativeLibraryReady();
         mTabStateStore.loadState(false);
 
@@ -398,8 +399,55 @@ public class TabStateStoreUnitTest {
 
         Callback<StorageLoadedData> regularCallback = mCallbackCaptor.getAllValues().get(0);
 
-        when(mRegularData.getLoadingStatus()).thenReturn(StorageLoadingStatus.PARSE_ERROR);
-        when(mRegularData.getErrorMessage()).thenReturn("error");
+        when(mRegularData.getWarnings())
+                .thenReturn(
+                        new StorageLoadWarning[] {
+                            new StorageLoadWarning(StorageLoadWarningCode.PARSE_ERROR, "error")
+                        });
+
+        TabState tabState = new TabState();
+        tabState.contentsState = mock(WebContentsState.class);
+        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
+
+        regularCallback.onResult(mRegularData);
+
+        verify(mTabStateStorageService, never())
+                .clearUnusedNodesForWindow(any(), anyBoolean(), any());
+        verify(mTabCountTracker, never()).clearTabCount(anyBoolean());
+        verify(mActiveTabCache, never()).clearActiveTab(anyBoolean());
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+    }
+
+    @Test
+    public void testLoadStateFailure_NonAuthoritative() {
+        mTabStateStore =
+                new TabStateStore(
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
+                        /* isAuthoritative= */ false);
+        mTabStateStore.addObserver(mObserver);
+
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.loadState(false);
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        Callback<StorageLoadedData> regularCallback = mCallbackCaptor.getAllValues().get(0);
+
+        when(mRegularData.getWarnings())
+                .thenReturn(
+                        new StorageLoadWarning[] {
+                            new StorageLoadWarning(StorageLoadWarningCode.PARSE_ERROR, "error")
+                        });
 
         TabState tabState = new TabState();
         tabState.contentsState = mock(WebContentsState.class);
@@ -498,12 +546,12 @@ public class TabStateStoreUnitTest {
         List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
 
         StorageLoadedData regularData = mock(StorageLoadedData.class);
-        when(regularData.getLoadingStatus()).thenReturn(StorageLoadingStatus.SUCCESS);
+        when(regularData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
         when(regularData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
         callbacks.get(0).onResult(regularData);
 
         StorageLoadedData incognitoData = mock(StorageLoadedData.class);
-        when(incognitoData.getLoadingStatus()).thenReturn(StorageLoadingStatus.SUCCESS);
+        when(incognitoData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
         when(incognitoData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
         callbacks.get(1).onResult(incognitoData);
 
@@ -553,12 +601,12 @@ public class TabStateStoreUnitTest {
         List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
 
         StorageLoadedData regularData = mock(StorageLoadedData.class);
-        when(regularData.getLoadingStatus()).thenReturn(StorageLoadingStatus.SUCCESS);
+        when(regularData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
         when(regularData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
         callbacks.get(0).onResult(regularData);
 
         StorageLoadedData incognitoData = mock(StorageLoadedData.class);
-        when(incognitoData.getLoadingStatus()).thenReturn(StorageLoadingStatus.SUCCESS);
+        when(incognitoData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
         when(incognitoData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
         callbacks.get(1).onResult(incognitoData);
 

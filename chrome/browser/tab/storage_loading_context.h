@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_TAB_STORAGE_LOADING_CONTEXT_H_
 #define CHROME_BROWSER_TAB_STORAGE_LOADING_CONTEXT_H_
 
-#include <optional>
 #include <string>
+#include <vector>
 
 #include "chrome/browser/tab/tab_storage_type.h"
 
 namespace tabs {
 
-// Holds the error state for storage loading. Will be successful, unless
-// marked otherwise.
+// Holds the error state for storage loading.
 class StorageLoadingContext {
  public:
   StorageLoadingContext();
@@ -25,15 +24,16 @@ class StorageLoadingContext {
   StorageLoadingContext(StorageLoadingContext&&);
   StorageLoadingContext& operator=(StorageLoadingContext&&);
 
-  void SetStatus(StorageLoadingStatus status, std::string message);
-  bool HasError() const;
+  struct Warning {
+    StorageLoadWarningCode status;
+    std::string message;
+  };
 
-  StorageLoadingStatus status() const;
-  const std::optional<std::string>& error_message() const;
+  void AddWarning(StorageLoadWarningCode status, std::string message);
+  const std::vector<Warning>& warnings() const;
 
  private:
-  StorageLoadingStatus status_ = StorageLoadingStatus::kSuccess;
-  std::optional<std::string> error_message_;
+  std::vector<Warning> warnings_;
 };
 
 }  // namespace tabs
