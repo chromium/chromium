@@ -834,7 +834,7 @@ void XMLHttpRequest::send(Document* document, ExceptionState& exception_state) {
     String body = CreateMarkup(document);
 
     http_body = EncodedFormData::Create(
-        Utf8Encoding().Encode(body, UnencodableHandling::kNoUnencodables));
+        Utf8Encoding().Encode(body, UnencodableHandling::kNone));
   }
 
   CreateRequest(std::move(http_body), exception_state);
@@ -848,7 +848,7 @@ void XMLHttpRequest::send(const String& body, ExceptionState& exception_state) {
 
   if (!body.IsNull() && AreMethodAndURLValidForSend()) {
     http_body = EncodedFormData::Create(
-        Utf8Encoding().Encode(body, UnencodableHandling::kNoUnencodables));
+        Utf8Encoding().Encode(body, UnencodableHandling::kNone));
     UpdateContentTypeAndCharset(AtomicString("text/plain;charset=UTF-8"),
                                 "UTF-8");
   }

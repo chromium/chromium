@@ -541,7 +541,7 @@ static void NumericEntityCallback(const void* context,
                                   UErrorCode* err) {
   FormatEscapedEntityCallback(context, from_u_args, code_units, length,
                               code_point, reason, err,
-                              UnencodableHandling::kEntitiesForUnencodables);
+                              UnencodableHandling::kXmlCharRef);
 }
 
 // Invalid character handler when writing escaped entities in CSS encoding for
@@ -554,9 +554,9 @@ static void CssEscapedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  FormatEscapedEntityCallback(
-      context, from_u_args, code_units, length, code_point, reason, err,
-      UnencodableHandling::kCSSEncodedEntitiesForUnencodables);
+  FormatEscapedEntityCallback(context, from_u_args, code_units, length,
+                              code_point, reason, err,
+                              UnencodableHandling::kCssEscape);
 }
 
 // Invalid character handler when writing escaped entities in HTML/XML encoding
@@ -569,9 +569,9 @@ static void UrlEscapedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  FormatEscapedEntityCallback(
-      context, from_u_args, code_units, length, code_point, reason, err,
-      UnencodableHandling::kUrlEncodedEntitiesForUnencodables);
+  FormatEscapedEntityCallback(context, from_u_args, code_units, length,
+                              code_point, reason, err,
+                              UnencodableHandling::kUrlEncodedCharRef);
 }
 
 #if defined(USING_SYSTEM_ICU)
@@ -676,7 +676,7 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
   UErrorCode err = U_ZERO_ERROR;
 
   switch (handling) {
-    case UnencodableHandling::kEntitiesForUnencodables:
+    case UnencodableHandling::kXmlCharRef:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, NumericEntityCallback, nullptr,
                             nullptr, nullptr, &err);
@@ -687,7 +687,7 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
           0, 0, &err);
 #endif
       break;
-    case UnencodableHandling::kUrlEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kUrlEncodedCharRef:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, UrlEscapedEntityCallback, nullptr,
                             nullptr, nullptr, &err);
@@ -698,7 +698,7 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
                             0, 0, 0, &err);
 #endif
       break;
-    case UnencodableHandling::kCSSEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kCssEscape:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, CssEscapedEntityCallback, nullptr,
                             nullptr, nullptr, &err);
@@ -709,7 +709,7 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
                             0, 0, 0, &err);
 #endif
       break;
-    case UnencodableHandling::kNoUnencodables:
+    case UnencodableHandling::kNone:
       DCHECK(encoding_ == Utf16BigEndianEncoding() ||
              encoding_ == Utf16LittleEndianEncoding() ||
              encoding_ == Utf8Encoding());

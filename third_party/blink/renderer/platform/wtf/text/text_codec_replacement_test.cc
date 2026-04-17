@@ -48,7 +48,7 @@ TEST(TextCodecReplacement, EncodesToUTF8) {
   // "Kanji" in Chinese characters.
   const UChar kTestCase[] = {0x6F22, 0x5B57};
   std::string result =
-      codec->Encode(kTestCase, UnencodableHandling::kEntitiesForUnencodables);
+      codec->Encode(kTestCase, UnencodableHandling::kXmlCharRef);
 
   EXPECT_EQ("\xE6\xBC\xA2\xE5\xAD\x97", result);
 }

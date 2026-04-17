@@ -51,7 +51,7 @@ PushMessageData* PushMessageData::Create(
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
         kUSVString: {
       std::string encoded_string = Utf8Encoding().Encode(
-          message_data->GetAsUSVString(), UnencodableHandling::kNoUnencodables);
+          message_data->GetAsUSVString(), UnencodableHandling::kNone);
       return MakeGarbageCollected<PushMessageData>(
           base::as_byte_span(encoded_string));
     }

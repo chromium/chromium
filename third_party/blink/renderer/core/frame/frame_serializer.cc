@@ -1156,13 +1156,11 @@ function main(metadata) {
       std::string text;
       if (charset.IsValid()) {
         TextEncoding text_encoding(charset);
-        text = text_encoding.Encode(
-            text_string,
-            UnencodableHandling::kCSSEncodedEntitiesForUnencodables);
+        text =
+            text_encoding.Encode(text_string, UnencodableHandling::kCssEscape);
       } else {
-        text = Utf8Encoding().Encode(
-            text_string,
-            UnencodableHandling::kCSSEncodedEntitiesForUnencodables);
+        text =
+            Utf8Encoding().Encode(text_string, UnencodableHandling::kCssEscape);
       }
 
       resource_serializer_->AddToResources(String("text/css"),
@@ -1394,8 +1392,8 @@ void FrameSerializer::SerializeFrame(
     String text =
         accumulator.SerializeNodes<EditingStrategy>(document, kIncludeNode);
 
-    std::string frame_html = document.Encoding().Encode(
-        text, UnencodableHandling::kEntitiesForUnencodables);
+    std::string frame_html =
+        document.Encoding().Encode(text, UnencodableHandling::kXmlCharRef);
     resource_serializer->AddMainResource(document.SuggestedMIMEType(),
                                          SharedBuffer::Create(frame_html), url);
     resource_serializer->Finish(std::move(callback));

@@ -19,9 +19,9 @@ constexpr blink::FlushBehavior kFlushBehavior[] = {
     blink::FlushBehavior::kDataEOF};
 
 constexpr blink::UnencodableHandling kUnencodableHandlingOptions[] = {
-    blink::UnencodableHandling::kEntitiesForUnencodables,
-    blink::UnencodableHandling::kUrlEncodedEntitiesForUnencodables,
-    blink::UnencodableHandling::kCSSEncodedEntitiesForUnencodables};
+    blink::UnencodableHandling::kXmlCharRef,
+    blink::UnencodableHandling::kUrlEncodedCharRef,
+    blink::UnencodableHandling::kCssEscape};
 
 class TextCodecFuzzHarness {};
 

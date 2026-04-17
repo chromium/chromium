@@ -37,20 +37,20 @@ namespace blink {
 namespace {
 
 TEST(TextCodec, HTMLEntityEncoding) {
-  std::string replacement =
-      TextCodec::GetUnencodableReplacement(0xE003, kEntitiesForUnencodables);
+  std::string replacement = TextCodec::GetUnencodableReplacement(
+      0xE003, UnencodableHandling::kXmlCharRef);
   EXPECT_EQ(replacement, "&#57347;");
 }
 
 TEST(TextCodec, UrlEntityEncoding) {
   std::string replacement = TextCodec::GetUnencodableReplacement(
-      0xE003, kUrlEncodedEntitiesForUnencodables);
+      0xE003, UnencodableHandling::kUrlEncodedCharRef);
   EXPECT_EQ(replacement, "%26%2357347%3B");
 }
 
 TEST(TextCodec, CSSEntityEncoding) {
   std::string replacement = TextCodec::GetUnencodableReplacement(
-      0xE003, kCSSEncodedEntitiesForUnencodables);
+      0xE003, UnencodableHandling::kCssEscape);
   EXPECT_EQ(replacement, "\\e003 ");
 }
 

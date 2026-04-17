@@ -113,7 +113,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   void ConvertFromUtf16(std::u16string_view input,
                         url::CanonOutput* output) override {
     std::string encoded = encoding_->Encode(
-        String(input), UnencodableHandling::kUrlEncodedEntitiesForUnencodables);
+        String(input), UnencodableHandling::kUrlEncodedCharRef);
     output->Append(encoded);
   }
 
@@ -781,8 +781,8 @@ String DecodeUrlEscapeSequences(const StringView& string, DecodeUrlMode mode) {
 }
 
 String EncodeWithUrlEscapeSequences(const StringView& not_encoded_string) {
-  std::string utf8 = Utf8Encoding().Encode(
-      not_encoded_string, UnencodableHandling::kNoUnencodables);
+  std::string utf8 =
+      Utf8Encoding().Encode(not_encoded_string, UnencodableHandling::kNone);
   String escaped(base::span(url::UriComponentEncoder(utf8).view()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");

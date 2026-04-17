@@ -225,7 +225,7 @@ template <typename CharType>
 static std::string EncodeComplexWindowsLatin1(
     base::span<const CharType> char_data,
     UnencodableHandling handling) {
-  DCHECK_NE(handling, UnencodableHandling::kNoUnencodables);
+  DCHECK_NE(handling, UnencodableHandling::kNone);
   const wtf_size_t length = base::checked_cast<wtf_size_t>(char_data.size());
   wtf_size_t target_length = length;
   std::string result;

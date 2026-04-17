@@ -259,8 +259,7 @@ void FormData::AppendFromElement(const String& name, const String& value) {
 }
 
 std::string FormData::Encode(const String& string) const {
-  return encoding_.Encode(string,
-                          UnencodableHandling::kEntitiesForUnencodables);
+  return encoding_.Encode(string, UnencodableHandling::kXmlCharRef);
 }
 
 scoped_refptr<EncodedFormData> FormData::EncodeFormData(

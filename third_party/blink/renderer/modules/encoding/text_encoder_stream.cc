@@ -59,8 +59,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
         // check is needed.
         prefix = ReplacementCharacterInUtf8();
       }
-      result =
-          encoder_->Encode(input.Span8(), UnencodableHandling::kNoUnencodables);
+      result = encoder_->Encode(input.Span8(), UnencodableHandling::kNone);
     } else {
       bool have_output =
           Encode16BitString(input, high_surrogate, &prefix, &result);
@@ -130,7 +129,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
         const UChar astral_character[2] = {high_surrogate.value(), code_unit};
         // Third argument is ignored, as above.
         *prefix = encoder_->Encode(base::span(astral_character),
-                                   UnencodableHandling::kNoUnencodables);
+                                   UnencodableHandling::kNone);
         input_span = input_span.subspan<1u>();
         if (input_span.empty()) {
           return true;
@@ -150,8 +149,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     }
 
     // Third argument is ignored, as above.
-    *result = encoder_->Encode(input_span,
-                               UnencodableHandling::kEntitiesForUnencodables);
+    *result = encoder_->Encode(input_span, UnencodableHandling::kXmlCharRef);
     DCHECK_NE(result->length(), 0u);
     return true;
   }

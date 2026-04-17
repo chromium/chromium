@@ -36,18 +36,16 @@ std::string TextCodec::GetUnencodableReplacement(UChar32 code_point,
                                                  UnencodableHandling handling) {
   char replacement[32];
   switch (handling) {
-    case kEntitiesForUnencodables:
+    case UnencodableHandling::kXmlCharRef:
       snprintf(replacement, sizeof(replacement), "&#%u;", code_point);
       return std::string(replacement);
-    case kUrlEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kUrlEncodedCharRef:
       snprintf(replacement, sizeof(replacement), "%%26%%23%u%%3B", code_point);
       return std::string(replacement);
-
-    case kCSSEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kCssEscape:
       snprintf(replacement, sizeof(replacement), "\\%x ", code_point);
       return std::string(replacement);
-
-    case kNoUnencodables:
+    case UnencodableHandling::kNone:
       break;
   }
   NOTREACHED();

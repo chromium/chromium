@@ -506,8 +506,7 @@ class UniversalBytesConsumer final : public BytesConsumer {
 
 FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
     : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(EncodedFormData::Create(
-          Utf8Encoding().Encode(string,
-                                UnencodableHandling::kNoUnencodables)))) {}
+          Utf8Encoding().Encode(string, UnencodableHandling::kNone)))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBuffer* buffer)
     : FormDataBytesConsumer(buffer->ByteSpan()) {}
