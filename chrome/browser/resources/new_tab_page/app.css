@@ -181,7 +181,8 @@ cr-most-visited {
 
 #logo {
   margin-bottom: var(--ntp-logo-margin-bottom, 38px);
-  z-index: 1; /* Needed so it layers on top of OneGoogleBar. */
+  /* Needed so it layers on top of OneGoogleBar. */
+  z-index: var(--ntp-logo-z-index, 1);
 }
 
 :host([show-composebox_]) #logo,
