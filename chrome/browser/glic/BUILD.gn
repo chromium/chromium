@@ -23,7 +23,6 @@ source_set("glic") {
     "glic_net_log.h",
     "glic_pref_names.h",
     "glic_profile_manager.h",
-    "glic_selection_observer.h",
     "glic_settings_util.h",
     "glic_user_status_code.h",
     "glic_user_status_fetcher.h",
@@ -82,6 +81,7 @@ source_set("glic") {
 
     # Desktop-only sources
     sources += [
+      "glic_selection_observer.h",
       "widget/glic_view.h",
       "widget/glic_widget.h",
     ]
@@ -202,7 +202,6 @@ source_set("impl") {
     "glic_net_log.cc",
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
-    "glic_selection_observer.cc",
     "glic_settings_util.cc",
     "glic_user_status_fetcher.cc",
     "glic_user_status_request.cc",
@@ -297,6 +296,7 @@ source_set("impl") {
     sources += [
       "glic_occlusion_notifier.cc",
       "glic_occlusion_notifier.h",
+      "glic_selection_observer.cc",
       "glic_tab_restore_data.cc",
       "glic_tab_restore_helper.cc",
       "host/context/glic_focused_browser_manager_impl.cc",

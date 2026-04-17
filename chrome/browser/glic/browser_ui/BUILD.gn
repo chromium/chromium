@@ -73,6 +73,7 @@ source_set("browser_ui") {
   sources = [
     "glic_button_controller.cc",
     "glic_iph_controller.cc",
+    "glic_selection_widget.cc",
     "glic_tab_indicator_helper.cc",
     "glic_vector_icon_manager.cc",
     "scoped_glic_button_indicator.cc",
