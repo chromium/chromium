@@ -3279,6 +3279,17 @@ void RenderWidgetHostImpl::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
     input::InputRouterImpl::RequestMouseLockCallback response) {
+  // Browser-side enforcement of the kPointerLock sandbox flag.
+  // The renderer correctly blocks this via PointerLockController, but a
+  // compromised renderer can bypass that check via direct Mojo IPC.
+  // Note: crbug.com/492211919
+  if (delegate_ && delegate_->IsPointerLockSandboxedForWidget(this)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RWH_POINTER_LOCK_FROM_SANDBOXED_FRAME);
+    std::move(response).Run(blink::mojom::PointerLockResult::kPermissionDenied,
+                            mojo::NullRemote());
+    return;
+  }
   if (IsPointerLocked()) {
     std::move(response).Run(blink::mojom::PointerLockResult::kAlreadyLocked,
                             /*context=*/mojo::NullRemote());

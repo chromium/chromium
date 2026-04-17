@@ -1196,6 +1196,8 @@ class CONTENT_EXPORT WebContentsImpl
   DevicePostureProviderImpl* GetDevicePostureProvider() override;
   bool GetResizable() override;
   void LostPointerLock(RenderWidgetHostImpl* render_widget_host) override;
+  bool IsPointerLockSandboxedForWidget(
+      RenderWidgetHostImpl* render_widget_host) override;
   bool HasPointerLock(RenderWidgetHostImpl* render_widget_host) override;
   RenderWidgetHostImpl* GetPointerLockWidget() override;
   bool OnRenderFrameProxyVisibilityChanged(

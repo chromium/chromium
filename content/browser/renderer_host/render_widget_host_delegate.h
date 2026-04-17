@@ -258,6 +258,17 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // pointer isn't locked.
   virtual RenderWidgetHostImpl* GetPointerLockWidget();
 
+  // Returns true if the owning frame of |render_widget_host| is sandboxed
+  // with the kPointerLock flag, meaning the pointer lock request should be
+  // denied. It is ok to only check the top-most frame of the widget, because
+  // any subframes within the widget will be at least as restrictive as it.
+  // Any additional restrictions imposed on subframes of the widget cannot be
+  // enforced by the browser process, because they share a renderer process
+  // with the top-most frame of the widget.
+  // Note: crbug.com/492211919
+  virtual bool IsPointerLockSandboxedForWidget(
+      RenderWidgetHostImpl* render_widget_host);
+
   // Returns true if we are waiting for the user to make a selection on the
   // pointer lock permission request dialog.
   virtual bool IsWaitingForPointerLockPrompt(

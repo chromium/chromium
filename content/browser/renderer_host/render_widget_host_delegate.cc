@@ -133,6 +133,11 @@ bool RenderWidgetHostDelegate::IsWaitingForPointerLockPrompt(
   return false;
 }
 
+bool RenderWidgetHostDelegate::IsPointerLockSandboxedForWidget(
+    RenderWidgetHostImpl* render_widget_host) {
+  return false;
+}
+
 bool RenderWidgetHostDelegate::RequestKeyboardLock(RenderWidgetHostImpl* host,
                                                    bool esc_key_locked) {
   return false;

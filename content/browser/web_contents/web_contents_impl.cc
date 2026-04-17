@@ -5284,6 +5284,24 @@ void WebContentsImpl::LostPointerLock(
   }
 }
 
+bool WebContentsImpl::IsPointerLockSandboxedForWidget(
+    RenderWidgetHostImpl* render_widget_host) {
+  // Check the sandbox flags of the frame that owns the requesting widget.
+  // It is ok to only check the top-most frame of the widget, because any
+  // subframes within the widget will be at least as restrictive as it. Any
+  // additional restrictions imposed on subframes of the widget cannot be
+  // enforced by the browser process, because they share a renderer process
+  // with the top-most frame of the widget.
+  // Note: crbug.com/492211919
+  for (FrameTreeNode* node : GetPrimaryFrameTree().Nodes()) {
+    RenderFrameHostImpl* rfh = node->current_frame_host();
+    if (rfh && rfh->GetRenderWidgetHost() == render_widget_host) {
+      return rfh->IsSandboxed(network::mojom::WebSandboxFlags::kPointerLock);
+    }
+  }
+  return false;
+}
+
 bool WebContentsImpl::HasPointerLock(RenderWidgetHostImpl* render_widget_host) {
   // To verify if the mouse is locked, the mouse_lock_widget_ needs to be
   // assigned to the widget that requested the mouse lock, and the top-level
