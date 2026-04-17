@@ -121,7 +121,6 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   void OnConversationTurnSubmitted() override;
 
-  GlicFocusedBrowserManager& focused_browser_manager() override;
 
   base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 

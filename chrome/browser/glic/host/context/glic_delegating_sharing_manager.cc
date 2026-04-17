@@ -106,12 +106,6 @@ BrowserWindowInterface* GlicDelegatingSharingManagerBase::GetFocusedBrowser()
              : nullptr;
 }
 
-GlicFocusedBrowserManager&
-GlicDelegatingSharingManagerBase::focused_browser_manager() {
-  // Exposing this directly would break delegation strategy.
-  // TODO(b:444463509): remove direct manager access from the interface.
-  NOTREACHED();
-}
 
 base::CallbackListSubscription
 GlicDelegatingSharingManagerBase::AddFocusedTabDataChangedCallback(
