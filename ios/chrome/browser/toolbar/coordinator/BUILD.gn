@@ -16,6 +16,7 @@ source_set("coordinator") {
     "//components/omnibox/common",
     "//components/prefs",
     "//ios/chrome/browser/composebox/public:animation",
+    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/features",

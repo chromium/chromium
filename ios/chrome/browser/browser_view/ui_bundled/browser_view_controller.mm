@@ -18,6 +18,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
@@ -54,6 +56,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -69,9 +72,11 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_swipe_view_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
@@ -125,6 +130,11 @@ enum HeaderBehaviour {
 // Inset to remove from the toolbar height when in full-screen mode with the
 // dynamic island visible.
 const CGFloat kTopDynamicIslandInset = 24;
+
+// Returns true if Chrome Next IA layout and full-screen refactoring are active.
+bool IsFullscreenNextIAEnabled() {
+  return IsFullscreenRefactoringEnabled() && IsChromeNextIaEnabled();
+}
 
 }  // namespace
 
@@ -252,6 +262,9 @@ const CGFloat kTopDynamicIslandInset = 24;
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
 
+  // Whether the secondary toolbar bottom constraint has been updated initially.
+  BOOL _didInitialToolbarConstraintUpdate;
+
   // Whether the Lens Overlay is currently active and visible for the browser
   // view.
   BOOL _lensOverlayVisible;
@@ -331,6 +344,12 @@ const CGFloat kTopDynamicIslandInset = 24;
 // Height constraint for the secondary toolbar.
 @property(nonatomic, strong)
     NSLayoutConstraint* secondaryToolbarHeightConstraint;
+// Constraint anchoring the secondary toolbar to the bottom of the view.
+@property(nonatomic, strong)
+    NSLayoutConstraint* secondaryToolbarRegularBottomConstraint;
+// Constraint anchoring the secondary toolbar to the top of the App Bar.
+@property(nonatomic, strong)
+    NSLayoutConstraint* secondaryToolbarAppBarBottomConstraint;
 // Current Fullscreen progress for the footers.
 @property(nonatomic, assign) CGFloat footerFullscreenProgress;
 // Height of the header view.
@@ -958,6 +977,15 @@ const CGFloat kTopDynamicIslandInset = 24;
     [self updateToolbarState];
   }
 
+  // Update the secondary toolbar bottom constraint once after the view is added
+  // to a window. We must wait for the window to accurately determine the App
+  // Bar's position.
+  if (IsFullscreenNextIAEnabled() && !_didInitialToolbarConstraintUpdate &&
+      self.view.window) {
+    [self updateSecondaryToolbarBottomConstraint];
+    _didInitialToolbarConstraintUpdate = YES;
+  }
+
   if (!IsFullscreenRefactoringEnabled()) {
     if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
         self.webUsageEnabled) {
@@ -1301,9 +1329,27 @@ const CGFloat kTopDynamicIslandInset = 24;
   // The bottom toolbar can be constraint to the keyboard in some cases.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
   self.secondaryToolbarHeightConstraint.active = YES;
-  AddSameConstraintsToSides(
-      self.view, toolbarView,
-      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSides(self.view, toolbarView,
+                            LayoutSides::kLeading | LayoutSides::kTrailing);
+
+  if (IsFullscreenNextIAEnabled()) {
+    // Create constraint for when the App Bar is not active or on the side
+    // (Landscape).
+    self.secondaryToolbarRegularBottomConstraint = [toolbarView.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor];
+    self.secondaryToolbarRegularBottomConstraint.active = YES;
+
+    // Create constraint for when the App Bar is at the bottom (Portrait).
+    LayoutGuideCenter* globalCenter = LayoutGuideCenterForBrowser(nil);
+    UILayoutGuide* appBarGuide =
+        [globalCenter makeLayoutGuideNamed:kAppBarGuide];
+    [self.view addLayoutGuide:appBarGuide];
+    self.secondaryToolbarAppBarBottomConstraint = [toolbarView.bottomAnchor
+        constraintEqualToAnchor:appBarGuide.topAnchor];
+  } else {
+    [toolbarView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+        .active = YES;
+  }
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
@@ -1988,6 +2034,25 @@ const CGFloat kTopDynamicIslandInset = 24;
     _toolbarsSize.expandedBottomToolbarHeight =
         [self secondaryToolbarHeightWithInset];
   }
+
+  if (IsFullscreenNextIAEnabled()) {
+    [self updateSecondaryToolbarBottomConstraint];
+  }
+}
+
+// Updates the bottom constraint of the secondary toolbar depending on the
+// AppBar's position.
+- (void)updateSecondaryToolbarBottomConstraint {
+  BOOL shouldUseAppBar =
+      (AppBarPositionForView(self.view) == AppBarPosition::kBottom);
+
+  // Return early if the constraint is already in the correct state.
+  if (self.secondaryToolbarAppBarBottomConstraint.active == shouldUseAppBar) {
+    return;
+  }
+
+  self.secondaryToolbarAppBarBottomConstraint.active = shouldUseAppBar;
+  self.secondaryToolbarRegularBottomConstraint.active = !shouldUseAppBar;
 }
 
 // Returns the height difference between the fully expanded and fully collapsed
@@ -2027,10 +2092,31 @@ const CGFloat kTopDynamicIslandInset = 24;
   [self setFramesForHeaders:[self headerViews] atOffset:offset];
 }
 
+// Resizes the secondary toolbar according to `progress`, where a progress of
+// 1.0 fully expands the toolbar and a progress of 0.0 collapses it.
+- (void)updateNextIASecondaryToolbarForFullscreenProgress:(CGFloat)progress {
+  const CGFloat expandedHeight = [self secondaryToolbarHeightWithInset];
+  if (expandedHeight <= 0.0) {
+    return;
+  }
+
+  const CGFloat isolatedDelta =
+      std::max(0.0, expandedHeight - [self collapsedBottomToolbarHeight]);
+  const CGFloat offset = AlignValueToPixel((1.0 - progress) * isolatedDelta);
+  const CGFloat height = expandedHeight - offset;
+
+  self.secondaryToolbarHeightConstraint.constant = height;
+}
+
 // Translates the footer view up and down according to `progress`, where a
 // progress of 1.0 fully shows the footer and a progress of 0.0 fully hides it.
 - (void)updateFootersForFullscreenProgress:(CGFloat)progress {
   self.footerFullscreenProgress = progress;
+
+  if (IsFullscreenNextIAEnabled()) {
+    [self updateNextIASecondaryToolbarForFullscreenProgress:progress];
+    return;
+  }
 
   // Don't update the height of the secondary toolbar if it is hidden.
   if (!IsSplitToolbarMode(self)) {

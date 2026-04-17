@@ -9,6 +9,8 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -76,7 +78,8 @@
                                       PrimaryToolbarViewControllerDelegate,
                                       ReaderModeChipCommands,
                                       ToolbarCommands,
-                                      ToolbarMediatorDelegate>
+                                      ToolbarMediatorDelegate,
+                                      FullscreenBrowserAgentObserving>
 
 /// Whether this coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -133,7 +136,8 @@
   ToolbarMediator* _bottomToolbarMediator;
   /// Bottom toolbar view controller.
   ToolbarViewController* _bottomToolbarViewController;
-  /// Fullscreen UI Updater for the bottom toolbar.
+  /// Observer for fullscreen layout calculations.
+  std::unique_ptr<FullscreenBrowserAgentObserverBridge> _fullscreenObserver;
   std::unique_ptr<FullscreenUIUpdater> _bottomToolbarFullscreenUIUpdater;
   /// Bottom location bar coordinator.
   LocationBarCoordinator* _bottomLocationBarCoordinator;
@@ -208,9 +212,6 @@
         createToolbarViewControllerForMediator:_topToolbarMediator
                                    locationBar:_topLocationBarCoordinator
                                                    .locationBarViewController];
-    _topToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-        FullscreenController::FromBrowser(browser), _topToolbarViewController);
-
     _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:browser];
@@ -220,6 +221,16 @@
     [_topToolbarViewController
         setTabGroupIndicatorView:_tabGroupIndicatorCoordinator.view];
 
+    if (!IsFullscreenRefactoringEnabled()) {
+      _topToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+          FullscreenController::FromBrowser(browser),
+          _topToolbarViewController);
+    } else {
+      _fullscreenObserver =
+          std::make_unique<FullscreenBrowserAgentObserverBridge>(
+              self, FullscreenBrowserAgent::FromBrowser(browser));
+    }
+
     _bottomLocationBarCoordinator =
         [self createLocationBarCoordinatorActive:isOmniboxInBottomPosition
                                      topPosition:NO];
@@ -228,9 +239,11 @@
         createToolbarViewControllerForMediator:_bottomToolbarMediator
                                    locationBar:_bottomLocationBarCoordinator
                                                    .locationBarViewController];
-    _bottomToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-        FullscreenController::FromBrowser(browser),
-        _bottomToolbarViewController);
+    if (!IsFullscreenRefactoringEnabled()) {
+      _bottomToolbarFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+          FullscreenController::FromBrowser(browser),
+          _bottomToolbarViewController);
+    }
 
     LayoutGuideCenter* layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
     [layoutGuideCenter referenceView:_topToolbarViewController.view
@@ -304,6 +317,8 @@
     [_topLocationBarCoordinator stop];
     _topLocationBarCoordinator = nil;
     _topToolbarViewController = nil;
+    _fullscreenObserver = nullptr;
+    _topToolbarFullscreenUIUpdater = nullptr;
 
     [_tabGroupIndicatorCoordinator stop];
 
@@ -312,6 +327,7 @@
     [_bottomLocationBarCoordinator stop];
     _bottomLocationBarCoordinator = nil;
     _bottomToolbarViewController = nil;
+    _bottomToolbarFullscreenUIUpdater = nullptr;
   }
 
   self.orchestrator.editViewAnimatee = nil;
@@ -1032,6 +1048,33 @@
 
 - (CGFloat)keyboardAttachedBottomOmniboxHeight {
   return 0;
+}
+
+#pragma mark - FullscreenBrowserAgentObserving
+
+- (void)fullscreenWillUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
+  agent->AddObscuredInsetRange(UIRectEdgeTop,
+                               [self collapsedPrimaryToolbarHeight],
+                               [self expandedPrimaryToolbarHeight]);
+  agent->AddObscuredInsetRange(UIRectEdgeBottom,
+                               [self collapsedSecondaryToolbarHeight],
+                               [self expandedSecondaryToolbarHeight]);
+}
+
+- (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
+  CGFloat topMin = [self collapsedPrimaryToolbarHeight];
+  CGFloat topMax = [self expandedPrimaryToolbarHeight];
+  CGFloat topInset = topMin + (topMax - topMin) * agent->top_progress();
+  agent->AddObscuredInset(UIRectEdgeTop, topInset);
+  [_topToolbarViewController updateForFullscreenProgress:agent->top_progress()];
+
+  CGFloat bottomMin = [self collapsedSecondaryToolbarHeight];
+  CGFloat bottomMax = [self expandedSecondaryToolbarHeight];
+  CGFloat bottomInset =
+      bottomMin + (bottomMax - bottomMin) * agent->bottom_progress();
+  agent->AddObscuredInset(UIRectEdgeBottom, bottomInset);
+  [_bottomToolbarViewController
+      updateForFullscreenProgress:agent->bottom_progress()];
 }
 
 #pragma mark - Private

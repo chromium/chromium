@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/composebox/public/composebox_animation_base.h",
+  "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/features/features.h",
