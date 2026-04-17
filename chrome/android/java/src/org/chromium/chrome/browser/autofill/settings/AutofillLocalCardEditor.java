@@ -18,12 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
@@ -54,7 +51,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -87,8 +83,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     protected EditText mNumberText;
     private View mRequiredFieldsIndicatorLabel;
     private TextView mExpirationLabel;
-    protected @MonotonicNonNull Spinner mExpirationMonth;
-    protected @MonotonicNonNull Spinner mExpirationYear;
     // Since the nickname field is optional, an empty nickname is a valid nickname.
     private boolean mIsValidNickname = true;
     protected @MonotonicNonNull EditText mExpirationDate;
@@ -160,28 +154,24 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                     }
                 });
 
-            LinearLayout creditCardExpirationSpinnerContainer =
-                    v.findViewById(R.id.credit_card_expiration_spinner_container);
-            creditCardExpirationSpinnerContainer.setVisibility(View.GONE);
+        mExpirationDate = v.findViewById(R.id.expiration_month_and_year);
+        mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
 
-            mExpirationDate = v.findViewById(R.id.expiration_month_and_year);
-            mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
+        View cvcLegacyContainer = v.findViewById(R.id.cvc_legacy_container);
+        TextInputLayout cvcMaterialLabel =
+                v.findViewById(R.id.credit_card_security_code_label_material);
 
-            View cvcLegacyContainer = v.findViewById(R.id.cvc_legacy_container);
-            TextInputLayout cvcMaterialLabel =
-                    v.findViewById(R.id.credit_card_security_code_label_material);
-
-            if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-                cvcLegacyContainer.setVisibility(View.GONE);
-                cvcMaterialLabel.setVisibility(View.VISIBLE);
-                mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
-            } else {
-                cvcLegacyContainer.setVisibility(View.VISIBLE);
-                cvcMaterialLabel.setVisibility(View.GONE);
-                mCvc = v.findViewById(R.id.cvc);
-            }
-            mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
-            mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            cvcLegacyContainer.setVisibility(View.GONE);
+            cvcMaterialLabel.setVisibility(View.VISIBLE);
+            mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
+        } else {
+            cvcLegacyContainer.setVisibility(View.VISIBLE);
+            cvcMaterialLabel.setVisibility(View.GONE);
+            mCvc = v.findViewById(R.id.cvc);
+        }
+        mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
+        mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
 
         mScanButton = v.findViewById(R.id.scan_card_button);
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
@@ -253,33 +243,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     public static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
         ResettersForTesting.register(() -> sObserverForTest = null);
-    }
-
-    @SuppressWarnings("DuplicateDateFormatField") // There's probably a bug here...
-    void addSpinnerAdapters() {
-        ArrayAdapter<CharSequence> adapter =
-                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
-
-        // Populate the month dropdown.
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM (MM)", Locale.getDefault());
-
-        for (int month = 0; month < 12; month++) {
-            calendar.set(Calendar.MONTH, month);
-            adapter.add(formatter.format(calendar.getTime()));
-        }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        assumeNonNull(mExpirationMonth).setAdapter(adapter);
-
-        // Populate the year dropdown.
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
-        int initialYear = calendar.get(Calendar.YEAR);
-        for (int year = initialYear; year < initialYear + 10; year++) {
-            adapter.add(Integer.toString(year));
-        }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        assumeNonNull(mExpirationYear).setAdapter(adapter);
     }
 
     private void addCardDataToEditFields() {
