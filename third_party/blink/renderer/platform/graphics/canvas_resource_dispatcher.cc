@@ -116,7 +116,7 @@ void UpdatePlaceholderDispatcher(
 }  // namespace
 
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
-    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
+    scoped_refptr<ExportedCanvasResource> exported_resource) {
   if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId ||
       // `agent_group_scheduler_compositor_task_runner_` may be null if this
       // was created from a SharedWorker.
@@ -181,13 +181,14 @@ bool CanvasResourceDispatcher::PrepareFrame(
     return false;
   }
 
+  auto exported_resource =
+      base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource));
+
   auto next_resource_id = id_generator_.GenerateNextId();
 
   // For frameless canvas, we don't get a valid frame_sink_id and should drop.
   if (!frame_sink_id_.is_valid()) {
-    PostImageToPlaceholderIfNotBlocked(
-        base::MakeRefCounted<ExportedCanvasResource>(
-            std::move(canvas_resource)));
+    PostImageToPlaceholderIfNotBlocked(std::move(exported_resource));
     return false;
   }
 
@@ -231,7 +232,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // value will have no effect.
   const bool nearest_neighbor = false;
 
-  canvas_resource->PrepareTransferableResource(
+  exported_resource->PrepareTransferableResource(
       &resource,
       /*needs_verified_synctoken=*/true);
 
@@ -240,20 +241,16 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   const gfx::Size resource_size = resource.GetSize();
 
-  // Create a new ref on `canvas_resource` to pass to the placeholder, which
-  // will manage the lifetime of this ref.
-  auto resource_ref_for_placeholder = canvas_resource;
-  PostImageToPlaceholderIfNotBlocked(
-      base::MakeRefCounted<ExportedCanvasResource>(
-          std::move(resource_ref_for_placeholder)));
+  // This takes another ref and sends it to the placeholder. The
+  // ExternalCanvasResource will be destroyed when both display compositor and
+  // placeholder is done with it, returning underlying memory to the owner.
+  PostImageToPlaceholderIfNotBlocked(exported_resource);
 
   // Now store our ref to ensure that the resource remains valid for the
   // duration of the compositor's usage (we'll drop our ref when the compositor
   // notifies us that it is no longer using the resource via
   // `ReclaimResources()`).
-  exported_resources_.insert(
-      resource_id,
-      base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource)));
+  exported_resources_.insert(resource_id, std::move(exported_resource));
 
   frame->resource_list.push_back(std::move(resource));
 

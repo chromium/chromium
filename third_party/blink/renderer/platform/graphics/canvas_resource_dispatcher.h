@@ -145,7 +145,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void UpdateBeginFrameSource();
 
   void PostImageToPlaceholderIfNotBlocked(
-      scoped_refptr<ExportedCanvasResource>&&);
+      scoped_refptr<ExportedCanvasResource>);
   // virtual for testing
   virtual void PostImageToPlaceholder(scoped_refptr<ExportedCanvasResource>&&);
 
