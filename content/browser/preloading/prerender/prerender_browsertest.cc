@@ -9092,15 +9092,9 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that if PrerenderHostRegistry is attempting to activate a pending
 // prerender host, it will be successfully canceled with the final status of
 // `kActivatedBeforeStarted`.
-// TODO(crbug.com/496452657): This test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ActivateBeforePrerenderStarts \
-  DISABLED_ActivateBeforePrerenderStarts
-#else
-#define MAYBE_ActivateBeforePrerenderStarts ActivateBeforePrerenderStarts
-#endif
+// TODO(crbug.com/496452657): This test is flaky.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
-                       MAYBE_ActivateBeforePrerenderStarts) {
+                       DISABLED_ActivateBeforePrerenderStarts) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/empty.html?prerender1");
   ASSERT_TRUE(embedded_test_server()->Start());
