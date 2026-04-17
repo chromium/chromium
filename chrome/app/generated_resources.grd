@@ -14595,6 +14595,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         desc="Message announced to screen reader users that the voice search overlay is closed.">
         Voice search closed
       </message>
+      <message name="IDS_FUSEBOX_VOICE_SEARCH_TRANSCRIBING"
+        desc="Text shown as needed while the speech recognition service is transcribing the user's voice input.">
+        Transcribing...
+      </message>
 
       <if expr="not use_titlecase">
         <message name="IDS_NEW_TAB_APP_OPTIONS"
