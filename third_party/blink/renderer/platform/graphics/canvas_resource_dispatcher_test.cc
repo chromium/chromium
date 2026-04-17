@@ -94,7 +94,7 @@ class CanvasResourceDispatcherTest
     return dispatcher_->num_pending_placeholder_resources_;
   }
 
-  CanvasResource* GetLatestUnpostedImage() {
+  ExportedCanvasResource* GetLatestUnpostedImage() {
     return dispatcher_->latest_unposted_resource_.get();
   }
 

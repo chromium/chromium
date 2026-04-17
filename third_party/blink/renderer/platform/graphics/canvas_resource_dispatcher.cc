@@ -148,36 +148,28 @@ void UpdatePlaceholderDispatcher(
 }  // namespace
 
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
-    scoped_refptr<CanvasResource>&& canvas_resource) {
+    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
   if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId ||
       // `agent_group_scheduler_compositor_task_runner_` may be null if this
       // was created from a SharedWorker.
       !agent_group_scheduler_compositor_task_runner_) {
-    // Inform the resource that the placeholder ref was released so it can do
-    // any appropriate cleanup/recycling.
-    CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
+    exported_resource.reset();
     return;
   }
 
   // Determines whether the main thread may be blocked. If unblocked, post
   // |canvas_resource|. Otherwise, save it but do not post it.
   if (num_pending_placeholder_resources_ < kMaxPendingPlaceholderResources) {
-    PostImageToPlaceholder(base::MakeRefCounted<ExportedCanvasResource>(
-        std::move(canvas_resource)));
+    PostImageToPlaceholder(std::move(exported_resource));
     num_pending_placeholder_resources_++;
   } else {
     DCHECK(num_pending_placeholder_resources_ ==
            kMaxPendingPlaceholderResources);
 
     // The previous unposted resource becomes obsolete now.
-    // Inform the resource that the placeholder ref was released so it can do
-    // any appropriate cleanup/recycling.
-    if (latest_unposted_resource_) {
-      CanvasResource::DropRefOnOwningThread(
-          std::move(latest_unposted_resource_));
-    }
+    latest_unposted_resource_.reset();
 
-    latest_unposted_resource_ = std::move(canvas_resource);
+    latest_unposted_resource_ = std::move(exported_resource);
   }
 }
 
@@ -225,7 +217,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   // For frameless canvas, we don't get a valid frame_sink_id and should drop.
   if (!frame_sink_id_.is_valid()) {
-    PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource));
+    PostImageToPlaceholderIfNotBlocked(
+        base::MakeRefCounted<ExportedCanvasResource>(
+            std::move(canvas_resource)));
     return false;
   }
 
@@ -281,7 +275,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // Create a new ref on `canvas_resource` to pass to the placeholder, which
   // will manage the lifetime of this ref.
   auto resource_ref_for_placeholder = canvas_resource;
-  PostImageToPlaceholderIfNotBlocked(std::move(resource_ref_for_placeholder));
+  PostImageToPlaceholderIfNotBlocked(
+      base::MakeRefCounted<ExportedCanvasResource>(
+          std::move(resource_ref_for_placeholder)));
 
   // Now store our ref to ensure that the resource remains valid for the
   // duration of the compositor's usage (we'll drop our ref when the compositor

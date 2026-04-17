@@ -147,7 +147,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   // state has actually changed or not.
   void UpdateBeginFrameSource();
 
-  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&);
+  void PostImageToPlaceholderIfNotBlocked(
+      scoped_refptr<ExportedCanvasResource>&&);
   // virtual for testing
   virtual void PostImageToPlaceholder(scoped_refptr<ExportedCanvasResource>&&);
 
@@ -168,7 +169,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   // The latest_unposted_resource_ always refers to the frame
   // resource used by the latest_unposted_resource_.
-  scoped_refptr<CanvasResource> latest_unposted_resource_;
+  scoped_refptr<ExportedCanvasResource> latest_unposted_resource_;
   unsigned num_pending_placeholder_resources_;
 
   viz::BeginFrameAck current_begin_frame_ack_;
