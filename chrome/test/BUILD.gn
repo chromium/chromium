@@ -199,6 +199,7 @@ static_library("test_support") {
   }
 
   public_deps = [
+    "//chrome/browser/notifications:test_support",
     "//chrome/browser/origin_trials",
     "//chrome/browser/renderer_context_menu:test_support",
   ]
@@ -558,6 +559,8 @@ static_library("test_support") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/history",
+    "//chrome/browser/notifications",
+    "//chrome/browser/notifications:impl",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/performance_manager",
     "//chrome/browser/permissions",

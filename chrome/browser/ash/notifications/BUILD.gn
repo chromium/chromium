@@ -48,6 +48,7 @@ static_library("notifications") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/common",

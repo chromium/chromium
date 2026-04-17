@@ -4,7 +4,6 @@
 
 #include "chrome/browser/notifications/notification_test_util.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "url/origin.h"
 
 StubNotificationUIManager::StubNotificationUIManager() = default;

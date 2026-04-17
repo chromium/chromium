@@ -242,6 +242,8 @@ static_library("ui") {
     "//chrome/browser/memory",
     "//chrome/browser/net",
     "//chrome/browser/net:impl",
+    "//chrome/browser/notifications",
+    "//chrome/browser/notifications:impl",
     "//chrome/browser/search",
     "//chrome/browser/tab_contents",
     "//chrome/browser/task_manager",
@@ -803,6 +805,9 @@ static_library("ui") {
     # c/b/ui/webui/feedback/feedback_dialog.h gets componentized.
     "//chrome/browser/feedback:feedback_impl",
 
+    # notifications:impl includes chrome/browser/ui/browser.h,
+    # chrome/browser/ui/chrome_pages.h, chrome/browser/ui/browser_navigator.h
+    "//chrome/browser/notifications:impl",
     "//chrome/browser/password_manager:impl",
     "//chrome/browser/permissions",
     "//chrome/browser/search",

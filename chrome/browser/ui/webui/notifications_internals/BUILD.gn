@@ -33,6 +33,7 @@ source_set("impl") {
     ":notifications_internals",
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/notifications",
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/notifications_internals:resources_grit",

@@ -2,45 +2,354 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
 source_set("notifications") {
+  public = [
+    "displayed_notifications_dispatch_callback.h",
+    "metrics/notification_metrics_logger.h",
+    "metrics/notification_metrics_logger_factory.h",
+    "non_persistent_notification_handler.h",
+    "notification_blocker.h",
+    "notification_common.h",
+    "notification_display_queue.h",
+    "notification_display_service.h",
+    "notification_display_service_factory.h",
+    "notification_display_service_impl.h",
+    "notification_handler.h",
+    "notification_permission_context.h",
+    "notification_platform_bridge.h",
+    "notification_platform_bridge_delegator.h",
+    "notification_trigger_scheduler.h",
+    "notifier_state_tracker.h",
+    "notifier_state_tracker_factory.h",
+    "persistent_notification_handler.h",
+    "platform_notification_service_factory.h",
+    "platform_notification_service_impl.h",
+    "scheduler/notification_background_task_scheduler_impl.h",
+    "scheduler/notification_schedule_service_factory.h",
+  ]
+
   public_deps = [
+    "//base",
     "//chrome/browser/notifications/proto",
     "//chrome/browser/notifications/scheduler",
+    "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/common:buildflags",
+    "//chrome/common/notifications",
+    "//components/content_settings/core/common",
     "//components/keyed_service/core",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/gfx",
+    "//ui/message_center/public/cpp",
     "//url",
   ]
 
+  deps = [ "//components/content_settings/core/browser" ]
+
+  if (is_android) {
+    public += [
+      "notification_channels_provider_android.h",
+      "notification_platform_bridge_android.h",
+      "notification_trigger_scheduler_android.h",
+      "scheduler/display_agent_android.h",
+      "scheduler/finds_agent_android.h",
+      "scheduler/notification_background_task_scheduler_android.h",
+      "scheduler/tips_agent_android.h",
+    ]
+
+    deps += [
+      ":jni_headers",
+      "//components/content_settings/core/common",
+      "//components/pref_registry",
+      "//components/search_engines",
+    ]
+  }
+
+  if (!is_android) {
+    public += [
+      "muted_notification_handler.h",
+      "profile_notification.h",
+    ]
+
+    public_deps += [ "//components/keep_alive_registry" ]
+  }
+
+  if (is_chromeos_ash) {
+    public += [
+      "arc_application_notifier_controller.h",
+      "chrome_ash_message_center_client.h",
+      "extension_notifier_controller.h",
+      "notification_platform_bridge_chromeos.h",
+      "notification_platform_bridge_delegate.h",
+      "notifier_controller.h",
+      "notifier_dataset.h",
+      "passphrase_textfield.h",
+      "web_page_notifier_controller.h",
+    ]
+
+    public_deps += [
+      "//ash/public/cpp",
+      "//components/app_icon_loader",
+      "//components/services/app_service/public/cpp:app_types",
+      "//ui/views",
+    ]
+  }
+
+  if (is_win) {
+    public += [
+      "notification_platform_bridge_win.h",
+      "win/notification_launch_id.h",
+      "win/notification_metrics.h",
+      "win/notification_template_builder.h",
+      "win/notification_util.h",
+    ]
+  }
+
+  if (is_mac) {
+    public += [
+      "mac/mac_notification_provider_factory.h",
+      "mac/notification_dispatcher_mac.h",
+      "mac/notification_dispatcher_mojo.h",
+      "mac/notification_platform_bridge_mac.h",
+      "mac/notification_utils.h",
+    ]
+
+    public_deps += [
+      "//chrome/services/mac_notifications/public/cpp",
+      "//chrome/services/mac_notifications/public/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+
+  if (is_linux) {
+    if (use_dbus) {
+      public += [ "notification_platform_bridge_linux.h" ]
+    }
+  }
+
+  if (enable_chrome_notifications) {
+    public += [
+      "fullscreen_notification_blocker.h",
+      "notification_platform_bridge_message_center.h",
+      "notification_system_observer.h",
+      "notification_ui_manager.h",
+      "notification_ui_manager_impl.h",
+      "popups_only_ui_controller.h",
+      "screen_lock_notification_blocker.h",
+    ]
+
+    public_deps += [
+      "//extensions/browser",
+      "//ui/message_center",
+    ]
+  }
+
+  # notifier_state_tracker.h conditionally includes extensions/browser headers.
+  if (enable_extensions_core && !enable_chrome_notifications) {
+    public_deps += [ "//extensions/browser" ]
+  }
+}
+
+source_set("impl") {
   sources = [
-    "notification_common.h",
-    "notification_display_service.h",
-    "notification_display_service_factory.h",
-    "notification_handler.h",
+    "metrics/notification_metrics_logger.cc",
+    "metrics/notification_metrics_logger_factory.cc",
+    "non_persistent_notification_handler.cc",
+    "notification_blocker.cc",
+    "notification_common.cc",
+    "notification_display_queue.cc",
+    "notification_display_service.cc",
+    "notification_display_service_factory.cc",
+    "notification_display_service_impl.cc",
+    "notification_handler.cc",
+    "notification_permission_context.cc",
+    "notification_platform_bridge.cc",
+    "notification_platform_bridge_delegator.cc",
+    "notification_trigger_scheduler.cc",
+    "notifier_state_tracker.cc",
+    "notifier_state_tracker_factory.cc",
+    "persistent_notification_handler.cc",
+    "platform_notification_service_factory.cc",
+    "platform_notification_service_impl.cc",
+    "scheduler/notification_background_task_scheduler_impl.cc",
+    "scheduler/notification_schedule_service_factory.cc",
+  ]
+
+  public_deps = [
+    ":notifications",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_features",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/metrics",
+    "//chrome/browser/notifications/scheduler:factory",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/permissions",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/updates/announcement_notification",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/pref_registry",
+    "//components/safe_browsing/content/browser/notification_content_detection",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+    "//components/safe_browsing/core/common:features",
+    "//components/site_engagement/content",
+    "//components/visibility_timer",
+    "//ui/message_center",
+    "//ui/strings:ui_strings_grit",
   ]
 
   if (is_android) {
-    deps = [
-      ":jni_headers",
-      "//base",
-      "//chrome/common",
-      "//components/content_settings/core/browser",
-      "//components/content_settings/core/common",
-      "//components/keyed_service/core",
-      "//components/pref_registry",
-      "//components/prefs",
-      "//components/search_engines",
-      "//content/public/browser",
-      "//url",
-    ]
-
     sources += [
       "notification_channels_provider_android.cc",
-      "notification_channels_provider_android.h",
+      "notification_platform_bridge_android.cc",
+      "notification_suspender_android.cc",
+      "notification_trigger_scheduler_android.cc",
+      "scheduler/display_agent_android.cc",
+      "scheduler/finds_agent_android.cc",
+      "scheduler/notification_background_task_scheduler_android.cc",
+      "scheduler/tips_agent_android.cc",
+    ]
+
+    deps += [
+      ":jni_headers",
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/notifications/chime/android",
+      "//chrome/browser/notifications/scheduler/public",
+      "//chrome/browser/segmentation_platform",
+      "//chrome/browser/webapps/installable:android",
+      "//components/browser_ui/notifications/android",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "muted_notification_handler.cc",
+      "profile_notification.cc",
+      "screen_capture_notification_blocker.cc",
+      "screen_capture_notification_blocker.h",
+    ]
+
+    deps += [
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/sharing",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/proto",
+    ]
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/default_browser" ]
+    }
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "arc_application_notifier_controller.cc",
+      "chrome_ash_message_center_client.cc",
+      "extension_notifier_controller.cc",
+      "notification_platform_bridge_chromeos.cc",
+      "notifier_dataset.cc",
+      "passphrase_textfield.cc",
+      "web_page_notifier_controller.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/content_settings",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/notifications",
+      "//chrome/browser/favicon",
+      "//chrome/browser/nearby_sharing",
+      "//chrome/browser/ui/ash/multi_user",
+      "//ui/message_center",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "notification_platform_bridge_win.cc",
+      "win/notification_launch_id.cc",
+      "win/notification_metrics.cc",
+      "win/notification_template_builder.cc",
+      "win/notification_util.cc",
+    ]
+
+    deps += [
+      "//chrome/browser:shell_integration",
+      "//third_party/libxml:xml_writer",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac/mac_notification_provider_factory.cc",
+      "mac/notification_dispatcher_mojo.cc",
+      "mac/notification_platform_bridge_mac.cc",
+      "mac/notification_utils.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/apps/app_shim",
+      "//chrome/services/mac_notifications",
+      "//chrome/services/mac_notifications/public/cpp",
+      "//chrome/services/mac_notifications/public/mojom",
+    ]
+  }
+
+  if (is_linux) {
+    if (use_dbus) {
+      sources += [ "notification_platform_bridge_linux.cc" ]
+
+      deps += [
+        "//chrome/app/theme:chrome_unscaled_resources_grit",
+        "//chrome/browser/themes",
+      ]
+    }
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions/api/notifications" ]
+  }
+
+  if (enable_chrome_notifications) {
+    sources += [
+      "fullscreen_notification_blocker.cc",
+      "notification_platform_bridge_message_center.cc",
+      "notification_system_observer.cc",
+      "notification_ui_manager_impl.cc",
+      "popups_only_ui_controller.cc",
+      "screen_lock_notification_blocker.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/themes",
     ]
   }
 }
@@ -55,10 +364,50 @@ source_set("system_notification_helper_impl") {
   sources = [ "system_notification_helper.cc" ]
 
   deps = [
+    ":notifications",
     ":system_notification_helper",
     "//chrome/browser:browser_public_dependencies",
     "//ui/message_center/public/cpp",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "metrics/mock_notification_metrics_logger.cc",
+    "metrics/mock_notification_metrics_logger.h",
+    "stub_notification_display_service.cc",
+    "stub_notification_display_service.h",
+  ]
+
+  public_deps = [ ":notifications" ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
+
+  if (is_win) {
+    sources += [
+      "win/fake_itoastnotification.cc",
+      "win/fake_itoastnotification.h",
+    ]
+  }
+
+  if (enable_chrome_notifications) {
+    sources += [
+      "notification_test_util.cc",
+      "notification_test_util.h",
+    ]
+
+    deps += [
+      "//ui/message_center/public/cpp",
+      "//url",
+    ]
+  }
 }
 
 group("unit_tests") {

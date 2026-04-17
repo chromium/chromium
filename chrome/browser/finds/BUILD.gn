@@ -13,6 +13,7 @@ static_library("finds") {
     "//base",
     "//chrome/browser/finds/core",
     "//chrome/browser/history",
+    "//chrome/browser/notifications",
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
