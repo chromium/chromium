@@ -5,18 +5,12 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_COLLECTOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_COLLECTOR_H_
 
-#include "base/time/time.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "url/gurl.h"
 
 namespace performance_manager {
-
-extern const base::TimeDelta kMetricsReportDelayTimeout;
-extern const int kDefaultFrequencyUkmEQTReported;
 
 // The MetricsCollector is a graph observer that reports UMA/UKM.
 class MetricsCollector : public GraphOwned,
@@ -36,28 +30,19 @@ class MetricsCollector : public GraphOwned,
 
   // PageNodeObserver implementation:
   void OnUkmSourceIdChanged(const PageNode* page_node) override;
-  void OnMainFrameDocumentChanged(const PageNode* page_node) override;
 
   // ProcessNodeObserver implementation:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
 
  protected:
-  friend class MetricsReportRecordHolder;
   friend class UkmCollectionStateHolder;
-
-  struct MetricsReportRecord {
-    MetricsReportRecord();
-    MetricsReportRecord(const MetricsReportRecord& other);
-    GURL previous_url;
-  };
 
   struct UkmCollectionState {
     ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   };
 
  private:
-  static MetricsReportRecord* GetMetricsReportRecord(const PageNode* page_node);
   static UkmCollectionState* GetUkmCollectionState(const PageNode* page_node);
 
   // (Un)registers the various node observer flavors of this object with the
@@ -66,7 +51,6 @@ class MetricsCollector : public GraphOwned,
   void RegisterObservers(Graph* graph);
   void UnregisterObservers(Graph* graph);
 
-  bool ShouldReportMetrics(const PageNode* page_node);
   void UpdateUkmSourceIdForPage(const PageNode* page_node,
                                 ukm::SourceId ukm_source_id);
 

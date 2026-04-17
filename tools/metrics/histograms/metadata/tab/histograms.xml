@@ -2228,19 +2228,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.NewNavigationWithSameOriginTab" enum="Boolean"
-    expires_after="2024-02-11">
-  <owner>gjc@google.com</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    Whether another tab under the same origin can be found when a tab has
-    finished a navigation to a new security origin. This can happen when a new
-    tab is added with a website or the user navigates to another security
-    origin. The browser will iterate over all the tabs to find if there is a tab
-    with content under the same origin as the new link.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2026-08-24">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>sugoi@chromium.org</owner>

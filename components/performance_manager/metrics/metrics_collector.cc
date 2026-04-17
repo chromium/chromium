@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "content/public/common/process_type.h"
-#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -59,14 +58,6 @@ void OnRendererDestroyed(const ProcessNode* process_node,
 
 }  // namespace
 
-class MetricsReportRecordHolder
-    : public NodeAttachedDataImpl<MetricsReportRecordHolder> {
- public:
-  explicit MetricsReportRecordHolder(const PageNode* unused_page_node) {}
-  ~MetricsReportRecordHolder() override = default;
-  MetricsCollector::MetricsReportRecord metrics_report_record;
-};
-
 class UkmCollectionStateHolder
     : public NodeAttachedDataImpl<UkmCollectionStateHolder> {
  public:
@@ -74,15 +65,6 @@ class UkmCollectionStateHolder
   ~UkmCollectionStateHolder() override = default;
   MetricsCollector::UkmCollectionState ukm_collection_state;
 };
-
-// Delay the metrics report from for 5 minutes from when the main frame
-// navigation is committed.
-const base::TimeDelta kMetricsReportDelayTimeout = base::Minutes(5);
-
-const char kTabNavigationWithSameOriginTabHistogramName[] =
-    "Tabs.NewNavigationWithSameOriginTab";
-
-const int kDefaultFrequencyUkmEQTReported = 5u;
 
 MetricsCollector::MetricsCollector() = default;
 
@@ -99,31 +81,6 @@ void MetricsCollector::OnTakenFromGraph(Graph* graph) {
 void MetricsCollector::OnUkmSourceIdChanged(const PageNode* page_node) {
   ukm::SourceId ukm_source_id = page_node->GetUkmSourceID();
   UpdateUkmSourceIdForPage(page_node, ukm_source_id);
-}
-
-void MetricsCollector::OnMainFrameDocumentChanged(const PageNode* page_node) {
-  bool found_same_origin_page = false;
-  auto* record = GetMetricsReportRecord(page_node);
-  if (!page_node->GetMainFrameUrl().SchemeIsHTTPOrHTTPS() ||
-      url::IsSameOriginWith(record->previous_url,
-                            page_node->GetMainFrameUrl())) {
-    record->previous_url = page_node->GetMainFrameUrl();
-    return;
-  }
-
-  for (const PageNode* page : GetOwningGraph()->GetAllPageNodes()) {
-    if (page != page_node) {
-      if (page->GetBrowserContextID() == page_node->GetBrowserContextID() &&
-          url::IsSameOriginWith(page->GetMainFrameUrl(),
-                                page_node->GetMainFrameUrl())) {
-        found_same_origin_page = true;
-        break;
-      }
-    }
-  }
-  record->previous_url = page_node->GetMainFrameUrl();
-  base::UmaHistogramBoolean(kTabNavigationWithSameOriginTabHistogramName,
-                            found_same_origin_page);
 }
 
 void MetricsCollector::OnProcessLifetimeChange(
@@ -146,13 +103,6 @@ void MetricsCollector::OnBeforeProcessNodeRemoved(
 }
 
 // static
-MetricsCollector::MetricsReportRecord* MetricsCollector::GetMetricsReportRecord(
-    const PageNode* page_node) {
-  auto* holder = MetricsReportRecordHolder::GetOrCreate(page_node);
-  return &holder->metrics_report_record;
-}
-
-// static
 MetricsCollector::UkmCollectionState* MetricsCollector::GetUkmCollectionState(
     const PageNode* page_node) {
   auto* holder = UkmCollectionStateHolder::GetOrCreate(page_node);
@@ -169,20 +119,11 @@ void MetricsCollector::UnregisterObservers(Graph* graph) {
   graph->RemoveProcessNodeObserver(this);
 }
 
-bool MetricsCollector::ShouldReportMetrics(const PageNode* page_node) {
-  return page_node->GetTimeSinceLastNavigation() > kMetricsReportDelayTimeout;
-}
-
 void MetricsCollector::UpdateUkmSourceIdForPage(const PageNode* page_node,
                                                 ukm::SourceId ukm_source_id) {
   auto* state = GetUkmCollectionState(page_node);
   state->ukm_source_id = ukm_source_id;
 }
-
-MetricsCollector::MetricsReportRecord::MetricsReportRecord() = default;
-
-MetricsCollector::MetricsReportRecord::MetricsReportRecord(
-    const MetricsReportRecord& other) = default;
 
 void MetricsCollector::OnProcessDestroyed(const ProcessNode* process_node) {
   const base::TimeTicks now = base::TimeTicks::Now();
