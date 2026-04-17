@@ -154,6 +154,20 @@ class PermissionElementBrowserTestBase
             expected_issue_type));
   }
 
+  void ResetPermissions() {
+    HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    map->SetContentSettingDefaultScope(
+        embedded_test_server()->base_url(), embedded_test_server()->base_url(),
+        ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_DEFAULT);
+    map->SetContentSettingDefaultScope(
+        embedded_test_server()->base_url(), embedded_test_server()->base_url(),
+        ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_DEFAULT);
+    map->SetContentSettingDefaultScope(
+        embedded_test_server()->base_url(), embedded_test_server()->base_url(),
+        ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
@@ -220,6 +234,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     ASSERT_TRUE(content::ExecJs(
         web_contents(), content::JsReplace("notifyWhenGranted($1);", id)));
     WaitForUpdateGrantedPermissionElement(id);
+    ResetPermissions();
   }
 }
 
@@ -518,6 +533,7 @@ IN_PROC_BROWSER_TEST_P(PermissionElementStandardizedBrowserZoomTest,
         web_contents(),
         content::JsReplace("document.getElementById($1).style.zoom = 2;", id)));
     WaitForDevtoolsIssue("FontSizeTooLarge");
+    ResetPermissions();
   }
 }
 

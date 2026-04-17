@@ -43,14 +43,17 @@ UserMediaRequestProviderCallbacks::UserMediaRequestProviderCallbacks(
 void UserMediaRequestProviderCallbacks::OnSuccess(
     const MediaStreamVector& streams,
     CaptureController* capture_controller) {
+  if (!element_) {
+    return;
+  }
+
+  element_->ResetMediaStreamRequestTime();
   if (streams.empty()) {
     return;
   }
   MediaStream* stream = streams[0];
-  if (element_) {
-    HTMLUserMediaElementMediaStream::From(*element_).SetMediaStream(stream);
-    element_->DispatchEvent(*Event::Create(event_type_names::kStream));
-  }
+  HTMLUserMediaElementMediaStream::From(*element_).SetMediaStream(stream);
+  element_->DispatchEvent(*Event::Create(event_type_names::kStream));
 }
 
 void UserMediaRequestProviderCallbacks::OnError(
@@ -67,6 +70,7 @@ void UserMediaRequestProviderCallbacks::OnError(
           WorldSafeV8Reference<v8::Value>(script_state->GetIsolate(),
                                           error->ToV8(script_state)));
     }
+    element_->ResetMediaStreamRequestTime();
     element_->DispatchEvent(*Event::Create(event_type_names::kStream));
   }
 }
