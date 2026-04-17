@@ -535,7 +535,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling clusterfuzz-data
   # and whatever else without interference from each other.
-  'clusterfuzz_data_revision':'222e6dd6a37bd195742859c9ec6da7173bcf8b1b',
+  'clusterfuzz_data_revision':'16291853b71303fe621459f0c280e2ba1257d529',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
