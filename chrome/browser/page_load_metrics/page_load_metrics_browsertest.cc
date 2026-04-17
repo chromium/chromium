@@ -1195,16 +1195,22 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
 
   auto entries =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  // TODO(crbug.com/501008370): Clarify how to handle global PageLoad UKM
-  // entries recorded for InitialWebUI in tests. Currently they pollute
-  // generic tests that check the total count of PageLoad entries.
-  if (GetParam()) {
-    EXPECT_GE(entries.size(), 1u);
-  } else {
-    EXPECT_EQ(1u, entries.size());
+
+  // Filter out background WebUI navigations (e.g., NTP, side panels) that may
+  // be triggered when InitialWebUI is enabled, as they pollute the UKM entries
+  // for the primary test navigation.
+  size_t valid_count = 0;
+  for (const auto& kv : entries) {
+    if (!IsWebUISource(test_ukm_recorder_->GetSourceForSourceId(kv.first))) {
+      valid_count++;
+    }
   }
+  EXPECT_EQ(1u, valid_count);
 
   for (const auto& kv : entries) {
+    if (IsWebUISource(test_ukm_recorder_->GetSourceForSourceId(kv.first))) {
+      continue;
+    }
     EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(kv.second.get(),
                                                     PageLoad::kWasCachedName));
   }
@@ -1224,8 +1230,15 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
 
   auto entries_2 =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  // Background page does not re-record after reset, so expect 1 entry always.
-  EXPECT_EQ(1u, entries_2.size());
+  valid_count = 0;
+  for (const auto& kv : entries_2) {
+    const ukm::UkmSource* source =
+        test_ukm_recorder_->GetSourceForSourceId(kv.first);
+    if (!IsWebUISource(source)) {
+      valid_count++;
+    }
+  }
+  EXPECT_EQ(1u, valid_count);
 
   size_t cached_count = 0;
   for (const auto& kv : entries_2) {
