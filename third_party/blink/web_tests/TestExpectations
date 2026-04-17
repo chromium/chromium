@@ -9733,3 +9733,7 @@ crbug.com/490316323 [ Mac12 ] external/wpt/css/css-pseudo/first-letter-insert-te
 crbug.com/490316323 [ Mac12-arm64 ] external/wpt/css/css-pseudo/first-letter-insert-text-node-dynamic.html [ Failure Pass ]
 
 crbug.com/487985494 [ Linux ] webaudio/ScriptProcessor/scriptprocessor-offlineaudiocontext.html [ Pass Timeout ]
+
+# Gardener 2026-04-14
+crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/crossfade.html [ Failure Pass ]
+crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/none-repeat-image-as-background.html [ Failure Pass ]
