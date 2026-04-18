@@ -204,8 +204,14 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
   unsigned stop_frame = start_frame + kResponseFrameSize;
   scoped_refptr<AudioBus> pre_sample_rate_converted_response(
       AudioBus::CreateBufferFromRange(bus.get(), start_frame, stop_frame));
-  scoped_refptr<AudioBus> response(AudioBus::CreateBySampleRateConverting(
+  if (!pre_sample_rate_converted_response) {
+    return false;
+  }
+  scoped_refptr<AudioBus> response(AudioBus::TryCreateBySampleRateConverting(
       pre_sample_rate_converted_response.get(), false, sample_rate));
+  if (!response) {
+    return false;
+  }
 
   // Note that depending on the fftSize returned by the panner, we may be
   // truncating the impulse response we just loaded in, or we might zero-pad it.
@@ -216,7 +222,10 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
     // Create a new response of the right length and copy over the current
     // response.
     scoped_refptr<AudioBus> padded_response(
-        AudioBus::Create(response->NumberOfChannels(), fft_size / 2));
+        AudioBus::TryCreate(response->NumberOfChannels(), fft_size / 2));
+    if (!padded_response) {
+      return false;
+    }
     for (unsigned channel = 0; channel < response->NumberOfChannels();
          ++channel) {
       UNSAFE_TODO(memcpy(padded_response->Channel(channel)->MutableData(),
