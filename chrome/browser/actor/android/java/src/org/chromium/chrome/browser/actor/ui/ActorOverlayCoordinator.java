@@ -29,6 +29,7 @@ public class ActorOverlayCoordinator {
     private final PropertyModelChangeProcessor mChangeProcessor;
     private final SnackbarManager mSnackbarManager;
     private final BackPressHandlerRegistry mBackPressHandlerRegistry;
+    private final SnackbarManager.SnackbarController mSnackbarController;
 
     /**
      * Constructs the Coordinator.
@@ -64,6 +65,9 @@ public class ActorOverlayCoordinator {
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(mModel, mView, ActorOverlayViewBinder::bind);
 
+        // Empty impl, used to dismiss a named snackbar.
+        mSnackbarController = new SnackbarManager.SnackbarController() {};
+
         mMediator =
                 new ActorOverlayMediator(
                         mModel,
@@ -71,7 +75,8 @@ public class ActorOverlayCoordinator {
                         browserControlsVisibilityManager,
                         tabObscuringHandler,
                         layoutManagerSupplier,
-                        this::showInteractionLimitedSnackbar);
+                        this::showInteractionLimitedSnackbar,
+                        this::dismissInteractionLimitedSnackbar);
         mBackPressHandlerRegistry.addHandler(mMediator, BackPressHandler.Type.ACTOR_OVERLAY);
     }
 
@@ -85,10 +90,14 @@ public class ActorOverlayCoordinator {
         Snackbar snackbar =
                 Snackbar.make(
                         mView.getContext().getString(R.string.actor_overlay_snackbar_message),
-                        null,
+                        mSnackbarController,
                         Snackbar.TYPE_NOTIFICATION,
-                        Snackbar.UMA_UNKNOWN);
+                        Snackbar.UMA_ACTOR);
         mSnackbarManager.showSnackbar(snackbar);
+    }
+
+    private void dismissInteractionLimitedSnackbar() {
+        mSnackbarManager.dismissSnackbars(mSnackbarController);
     }
 
     /** Returns the root view of the overlay. */
@@ -115,5 +124,6 @@ public class ActorOverlayCoordinator {
         mBackPressHandlerRegistry.removeHandler(mMediator);
         mMediator.destroy();
         mChangeProcessor.destroy();
+        dismissInteractionLimitedSnackbar();
     }
 }

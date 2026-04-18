@@ -43,6 +43,7 @@ class ActorOverlayMediator
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
     private final Runnable mBackPressCallback;
+    private final Runnable mDismissSnackbarCallback;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable ActorUiTabController mTabController;
@@ -56,6 +57,7 @@ class ActorOverlayMediator
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
      * @param backPressCallback The callback to show the snackbar.
+     * @param dismissSnackbarCallback The callback to dismiss the snackbar.
      */
     public ActorOverlayMediator(
             PropertyModel model,
@@ -63,13 +65,15 @@ class ActorOverlayMediator
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabObscuringHandler tabObscuringHandler,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
-            Runnable backPressCallback) {
+            Runnable backPressCallback,
+            Runnable dismissSnackbarCallback) {
         mModel = model;
         mCurrentTabSupplier = tabModelSelector.getCurrentTabSupplier();
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mTabObscuringHandler = tabObscuringHandler;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mBackPressCallback = backPressCallback;
+        mDismissSnackbarCallback = dismissSnackbarCallback;
 
         mTabObserver =
                 new EmptyTabObserver() {
@@ -130,6 +134,7 @@ class ActorOverlayMediator
     }
 
     private void onCurrentTabChanged(@Nullable Tab tab) {
+        mDismissSnackbarCallback.run();
         if (mCurrentTab != null) {
             mCurrentTab.removeObserver(mTabObserver);
             if (mTabController != null) {

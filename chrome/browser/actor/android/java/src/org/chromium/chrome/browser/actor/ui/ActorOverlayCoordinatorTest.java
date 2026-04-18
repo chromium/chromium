@@ -171,6 +171,25 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
+    public void testSnackbarDismissedOnTabSwitch() {
+        OnClickListener clickListener =
+                mCoordinator.getModelForTesting().get(ActorOverlayProperties.ON_CLICK_LISTENER);
+        Assert.assertNotNull(clickListener);
+
+        // Show snackbar.
+        when(mSnackbarManager.isShowing()).thenReturn(false);
+        clickListener.onClick(mView);
+        verify(mSnackbarManager).showSnackbar(any());
+
+        // Switch tab.
+        clearInvocations(mSnackbarManager);
+        mCurrentTabSupplier.set(null);
+
+        // Verify snackbar dismissed.
+        verify(mSnackbarManager).dismissSnackbars(any());
+    }
+
+    @Test
     public void testVisibility() {
         clearInvocations(mView);
 
