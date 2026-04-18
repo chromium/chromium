@@ -5182,6 +5182,8 @@ enum WebFeature {
   kLanguageModel_Create_TopK = 5865,
   kHTMLInCanvas = 5866,
   kConnectionAllowlist = 5867,
+  kStyleTypeModule = 5868,
+  kShadowRootAdoptedStyleSheets = 5869,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -196,6 +197,18 @@ TEST(StyleElementTest, CSSModuleImportMapDataURI) {
       import_map->ToStringForTesting(),
       "{\"imports\":{\"foo\":\"data:text/"
       "css,a%20%7B%20top%3A%200%3B%20%7D\"},\"scopes\":{},\"integrity\": {}}");
+}
+
+TEST(StyleElementTest, StyleTypeModuleUseCounter) {
+  test::TaskEnvironment task_environment;
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Document& document = dummy_page_holder->GetDocument();
+
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kStyleTypeModule));
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<style type='module'>a { top: 0; }</style>");
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kStyleTypeModule));
 }
 
 }  // namespace blink
