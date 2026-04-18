@@ -61,8 +61,6 @@ void OmniboxPopupPresenterBase::Show() {
     auto show_request_time = base::TimeTicks::Now();
     if (ShouldDeferUntilVisualStateReady()) {
       is_deferred_ = true;
-      content_height_ = 0;
-      SynchronizePopupBounds();
 
       // Call WasShown to mark the WebContents as visible so that a frame will
       // eventually be produced that triggers the OnVisualStateReady callback.
@@ -72,7 +70,8 @@ void OmniboxPopupPresenterBase::Show() {
           ->GetPrimaryMainFrame()
           ->InsertVisualStateCallback(
               base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
-                             weak_factory_.GetWeakPtr(), show_request_time));
+                             weak_factory_.GetWeakPtr(), show_request_time,
+                             /*from_fallback=*/false));
 
       // Add a backup timer in case the visual state callback is never called.
       // The visual state callback should always be called, but this fallback
@@ -82,6 +81,7 @@ void OmniboxPopupPresenterBase::Show() {
           FROM_HERE,
           base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
                          weak_factory_.GetWeakPtr(), show_request_time,
+                         /*from_fallback=*/true,
                          /*success=*/false),
           base::Milliseconds(
               omnibox::kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs
@@ -94,10 +94,16 @@ void OmniboxPopupPresenterBase::Show() {
 
 void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks show_request_time,
+    bool from_fallback,
     bool success) {
   if (!is_deferred_) {
     return;
   }
+
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {GetPopupMetricPrefix(), ".DeferredShowVisualStateReadyFromTimeout"}),
+      from_fallback);
 
   is_deferred_ = false;
   // Fall back to showing the widget even if success == false

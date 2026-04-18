@@ -3195,6 +3195,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.Aim.DeferredShowVisualStateReadyFromTimeout"
+    enum="Boolean" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the deferred show of the AI Mode popup was triggered by the
+    fallback timer task (True) or the visual state callback (False). Logged
+    every time the popup show is triggered.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.Aim.PresenterShowLatency.ToPaint" units="ms"
     expires_after="2026-12-22">
   <owner>mahmadi@chromium.org</owner>
@@ -3240,6 +3251,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Records whether the renderer process has crashed and the contents is being
     reloaded before showing the WebUI Omnibox popup.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.WebUI.DeferredShowVisualStateReadyFromFallback"
+    enum="Boolean" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the deferred show of the WebUI popup was triggered by the
+    fallback timer task (True) or the visual state callback (False).
   </summary>
 </histogram>
 
