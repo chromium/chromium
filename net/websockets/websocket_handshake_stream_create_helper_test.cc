@@ -25,6 +25,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
@@ -37,6 +38,7 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
@@ -52,6 +54,7 @@
 #include "net/quic/quic_chromium_packet_reader.h"
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_alias_key.h"
@@ -407,6 +410,12 @@ class Http2HandshakeStreamTestSetup : public HandshakeStreamTestSetup {
     EXPECT_THAT(rv, IsOk());
 
     EXPECT_EQ(200, response->headers->response_code());
+    EXPECT_EQ(response->connection_info, HttpConnectionInfo::kHTTP2);
+
+    // HTTP/2 streams don't populate net error details.
+    NetErrorDetails details;
+    handshake->PopulateNetErrorDetails(&details);
+    EXPECT_EQ(details.connection_info, HttpConnectionInfo::kUNKNOWN);
   }
 
  private:
@@ -471,6 +480,15 @@ class Http3HandshakeStreamTestSetup : public HandshakeStreamTestSetup {
     // frames exchanged over the QUIC stream.
     EXPECT_GT(handshake->GetTotalReceivedBytes().InBytes(), 0);
     EXPECT_GT(handshake->GetTotalSentBytes().InBytes(), 0);
+
+    HttpConnectionInfo expected_connection_info =
+        QuicHttpStream::ConnectionInfoFromQuicVersion(quic_version_);
+    EXPECT_EQ(response->connection_info, expected_connection_info);
+
+    // HTTP/3 streams populate QUIC-specific net error details.
+    NetErrorDetails details;
+    handshake->PopulateNetErrorDetails(&details);
+    EXPECT_EQ(details.connection_info, expected_connection_info);
   }
 
  private:

@@ -24,6 +24,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -264,9 +265,16 @@ void WebSocketHttp3HandshakeStream::SetPriority(RequestPriority priority) {
   }
 }
 
-// TODO(momoka): Implement this.
 void WebSocketHttp3HandshakeStream::PopulateNetErrorDetails(
-    NetErrorDetails* details) {}
+    NetErrorDetails* details) {
+  if (!session_) {
+    LogMissingSessionAccess("PopulateNetErrorDetails");
+    return;
+  }
+  details->connection_info =
+      QuicHttpStream::ConnectionInfoFromQuicVersion(session_->GetQuicVersion());
+  session_->PopulateNetErrorDetails(details);
+}
 
 // TODO(momoka): Implement this.
 std::unique_ptr<HttpStream>
@@ -336,7 +344,8 @@ void WebSocketHttp3HandshakeStream::OnHeadersReceived(
   http_response_info_->response_time =
       http_response_info_->original_response_time = base::Time::Now();
   http_response_info_->request_time = request_time_;
-  http_response_info_->connection_info = HttpConnectionInfo::kHTTP2;
+  http_response_info_->connection_info =
+      QuicHttpStream::ConnectionInfoFromQuicVersion(session_->GetQuicVersion());
   http_response_info_->alpn_negotiated_protocol =
       HttpConnectionInfoToString(http_response_info_->connection_info);
 
