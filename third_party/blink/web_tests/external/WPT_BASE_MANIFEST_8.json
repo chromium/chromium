@@ -3131,6 +3131,13 @@
        ]
       ]
      },
+     "oblique-request-italic-only-family-no-crash.html": [
+      "06e3a30ec8698639da99fea93095efde2ddf98ee",
+      [
+       null,
+       {}
+      ]
+     ],
      "variable-in-feature-crash.html": [
       "0d296b3d9ad76139094d4a48c95e8ea6374a596f",
       [
@@ -5271,6 +5278,13 @@
      "sticky": {
       "position-sticky-details-crash.html": [
        "65b7ea488070d4631fe602a8cd55a2e87776cef9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "position-sticky-ib-split-execcommand-crash.html": [
+       "d0430af9a7d0d53de32c7898eb7e6a22b3914247",
        [
         null,
         {}
@@ -136725,6 +136739,19 @@
        {}
       ]
      ],
+     "inline-flex-column-image-load.html": [
+      "55091870bea6a6084fa648b26a73ae57df67b219",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/inline-flex-column-image-load-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "inline-flex-min-content-height.html": [
       "b84b9afc0b67b83d3d3e2abb73c9b7e22aeb3cbe",
       [
@@ -142755,6 +142782,19 @@
        [
         [
          "/css/css-fonts/metrics-override-normal-keyword-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "oblique-last-resort-weight-selection.html": [
+      "947c73044c952828fa9b2132975484efaf652d1d",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/oblique-last-resort-weight-selection-ref.html",
          "=="
         ]
        ],
@@ -360576,7 +360616,7 @@
      []
     ],
     "utils.js": [
-     "62e742bee7f67cf3bd92a217a0a92b23fddf3017",
+     "d410b0753582e061572302f3ce9118e95635c6b1",
      []
     ],
     "utils.js.headers": [
@@ -376610,7 +376650,7 @@
        []
       ],
       "color-valid-color-mix-function-expected.txt": [
-       "5064781d0beb9e6048d0235107df53148ad456db",
+       "75aad2febb1b6b1b1bddda0d38422a3cd77f8de9",
        []
       ],
       "opacity-valid-expected.txt": [
@@ -381512,6 +381552,10 @@
        []
       ]
      },
+     "inline-flex-column-image-load-ref.html": [
+      "11a1e3e7f71dd184ba2707b7e95cf7585f29d89e",
+      []
+     ],
      "intrinsic-size": {
       "row-005-expected.txt": [
        "19bdb84e0c7ae2d403cdf3c5bd2738faaa37a0fe",
@@ -383244,6 +383288,10 @@
      },
      "metrics-override-normal-keyword-ref.html": [
       "7575db40e1e729f7bc56da4d26fd13937cb721d3",
+      []
+     ],
+     "oblique-last-resort-weight-selection-ref.html": [
+      "501e2aed36493e43b6ccd145e9632a424ebd6369",
       []
      ],
      "palette-values-rule-add-2-ref.html": [
@@ -399213,7 +399261,7 @@
       []
      ],
      "multicol-scroll-content-ref.html": [
-      "320e425dbd16a5736e6a1ca9ae93bfb06bfbcaac",
+      "b7273649284d0ea1f60e648fd995af1048df3376",
       []
      ],
      "multicol-span-000-ref.xht": [
@@ -415022,7 +415070,7 @@
        ],
        "resources": {
         "testsuite.js": [
-         "5c9114f18ca1a8cbc08a6a5bb67d42ea6ee00308",
+         "4dd60ed813dca6cddfa3a69e02203dec5c6eb020",
          []
         ]
        },
@@ -434866,6 +434914,10 @@
       "5bee6abbb0016cd670e0703b6fca1b3a9785060f",
       []
      ],
+     "document-fullscreen-keyboard-lock-escape.tentative.window-expected.txt": [
+      "2b73965900485f54f0f300d04778824481ae5616",
+      []
+     ],
      "element-request-fullscreen-and-remove-iframe-expected.txt": [
       "076122d939ae1d5136adde1db0597251953eead1",
       []
@@ -454550,6 +454602,10 @@
       "4104016b756353a2207a93c4955fcfd5e9e8c2e4",
       []
      ],
+     "navigate-to-crossorigin-redirect-expected.txt": [
+      "ceb62d4f6342326043db7f45da67e3ebaee760f1",
+      []
+     ],
      "propagation-sameorigin-expected.txt": [
       "6e8e5d65d08e3d1f78029107de443f94a1f1befb",
       []
@@ -454573,10 +454629,6 @@
       ],
       "consumption-sameorigin-child.html": [
        "9e421fc0f1ed098a500c9c64be7cd892dce3d2be",
-       []
-      ],
-      "opened-window.html": [
-       "84de706a9ed6e8078c93407a79d8c17b383a5c0c",
        []
       ],
       "propagation-crossorigin-child.sub.html": [
@@ -473066,7 +473118,7 @@
        []
       ],
       "cookies.py": [
-       "1b56c674c0b6643ab1485500276582805ac8ec62",
+       "8eac2bdbd9e11d9a547c5617d6a480c109d9fa8a",
        []
       ],
       "counting-executor.py": [
@@ -473884,6 +473936,26 @@
       "f0f716b2a1bef316c24611229300d80ee7fb29df",
       []
      ]
+    },
+    "speculation-measurement": {
+     "support": {
+      "preloaded-data.txt": [
+       "fa171f515326a3f31987ba644e75b7a748a85679",
+       []
+      ],
+      "preloaded-script.js": [
+       "868dcae394e08760124b1131eca933d2b3ae719b",
+       []
+      ],
+      "preloaded-style.css": [
+       "4e1a7c9b825d2a9f0c44a4f9c73cd5fd0cbb7ddf",
+       []
+      ],
+      "speculation-measurement-utils.js": [
+       "52c0b35d5453a2cad00c148a6f3d8ecaae96889a",
+       []
+      ]
+     }
     },
     "speculation-tags": {
      "README": [
@@ -475851,7 +475923,11 @@
         []
        ]
       }
-     }
+     },
+     "systemLanguage-parsing-expected.txt": [
+      "9df4f6ea02c643f240f1a97455035c31c5015f23",
+      []
+     ]
     },
     "styling": {
      "attr-style-media-expected.txt": [
@@ -476286,7 +476362,7 @@
        []
       ],
       "SVGGraphicsElement.getBBox-09-expected.txt": [
-       "2f851218047b2839f155350a0ce519ae6cfd2e53",
+       "a6d182b92dbbfe8ced2947f1f4203fa87b3e49f7",
        []
       ],
       "SVGLength-px-expected.txt": [
@@ -550394,6 +550470,13 @@
        {}
       ]
      ],
+     "display-contents-animates.html": [
+      "76c380b517071609d600214911b313b969c6fdfa",
+      [
+       null,
+       {}
+      ]
+     ],
      "display-interpolation.html": [
       "fb2503ac8a415566c6770ccf391690860fddec6b",
       [
@@ -550491,6 +550574,13 @@
      ],
      "missing-values-last-keyframe.html": [
       "04c4eba45e4d5d112839244467eddacc5bac4412",
+      [
+       null,
+       {}
+      ]
+     ],
+     "missing-values-middle-keyframe.html": [
+      "aefcbb59725a7a85da6d339989c50ceacf813696",
       [
        null,
        {}
@@ -554082,7 +554172,7 @@
        ]
       ],
       "color-valid-color-mix-function.html": [
-       "6819a07bf71c9f1726279c7820edf7293cd9e3f1",
+       "fb563717fb751602c50393b7c34141bb00a3b2c6",
        [
         null,
         {}
@@ -559123,6 +559213,13 @@
        {}
       ]
      ],
+     "negative-overflow-004-no-padding.html": [
+      "4a43f69b3e6fc6e88ae99816fed0a922d93299b0",
+      [
+       null,
+       {}
+      ]
+     ],
      "negative-overflow.html": [
       "52fa9b97b66acf4673eb6da1d334ba9e0b1e17bc",
       [
@@ -559462,7 +559559,7 @@
       ]
      ],
      "position-relative-percentage-top-001.html": [
-      "3ec47c1d42d69330c616a87f0b22208f8d6196a6",
+      "417548a8a1e9d3698172a036c5e97645ac39c6df",
       [
        null,
        {}
@@ -572524,6 +572621,15 @@
        ]
       ]
      },
+     "hit-testing-active-pseudo-layout-on-mouseup.html": [
+      "790d03b4b68bb40664b0f165ceab5423ed8ff1f9",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "hover-on-pseudo-elements.tentative.html": [
       "18c762e6e0bb058ddb7ac90dbf427e30f8644232",
       [
@@ -586806,6 +586912,20 @@
        {}
       ]
      ],
+     "attr-security-animation.html": [
+      "6390b05ae87665af5afb5a9e4dad15ed7e8f2776",
+      [
+       null,
+       {}
+      ]
+     ],
+     "attr-security-transition.html": [
+      "ad15e5691d63e0e41de2af1eebd06e85e46ec13b",
+      [
+       null,
+       {}
+      ]
+     ],
      "attr-security.html": [
       "6d44c3ef64b8d9c9d6ef8283cb43cffc641c9b23",
       [
@@ -588851,6 +588971,13 @@
      ],
      "group-animation-for-root-transition.html": [
       "b7ad7598e8b1cc8c550e239c379a739add01dc39",
+      [
+       null,
+       {}
+      ]
+     ],
+     "group-transform-preserves-subpixel.html": [
+      "1276c42cf2951f4590619099497573089fc708b9",
       [
        null,
        {}
@@ -597401,7 +597528,7 @@
       ]
      ],
      "Element-innerHTML.html": [
-      "25ff9e547a88e25ea9cefb767c2e57dc41c9dfc4",
+      "f6c7765f7264c7595294d4d006685151d3448d9b",
       [
        null,
        {}
@@ -599529,6 +599656,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "click-on-absolute-pseudo.html": [
+      "d5fabec6e3e99c6ab8c5f25cac1c5e423475daf3",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "event-disabled-dynamic.html": [
@@ -604202,6 +604338,13 @@
      ],
      "stream-html-unsafe.html": [
       "65fe8bda20b9587b4e17a7fbf7bbe13c246f66bb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "stream-html-with-declarative-shadow-root.html": [
+      "f0c85bdd694f7d1780477f281282190ecc638f3e",
       [
        null,
        {}
@@ -657266,6 +657409,33 @@
       [
        null,
        {}
+      ]
+     ],
+     "document-fullscreen-keyboard-lock-escape.tentative.window.js": [
+      "fecbf6cade1b4790d24444e0f3076ab7053a3d98",
+      [
+       "fullscreen/api/document-fullscreen-keyboard-lock-escape.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-actions.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
       ]
      ],
      "document-onfullscreenchange.html": [
@@ -723144,8 +723314,17 @@
        {}
       ]
      ],
+     "navigate-to-crossorigin-redirect.html": [
+      "44a8cfead221af5eaa7f339e2f3e183c097b8b3d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "navigate-to-sameorigin.html": [
-      "3eaef114124e242e457df7238170f7c87099a310",
+      "1310d0776e66c3990224b1857238c56595843f04",
       [
        null,
        {
@@ -745766,7 +745945,7 @@
      ]
     ],
     "idlharness.any.js": [
-     "ff0a969badace39c3c4466c4528e30c21355e132",
+     "92a412c377cf3ae2966e1193a055be01e3d3ea0c",
      [
       "permissions/idlharness.any.html",
       {
@@ -774607,6 +774786,13 @@
        {}
       ]
      ],
+     "declarative-shadow-dom-serialization.html": [
+      "154cf7c14832bf916eb0ee7167720e5896630da2",
+      [
+       null,
+       {}
+      ]
+     ],
      "declarative-shadow-dom-slot-assignment-serialization.html": [
       "6a556b649e610248b53289f016c6d43d156adf0d",
       [
@@ -782030,6 +782216,22 @@
       {}
      ]
     ],
+    "speculation-measurement": {
+     "performance-speculations-unused-preload.tentative.html": [
+      "f298eca4e327dd377e670a370c37ce62d7a7480f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "performance-speculations-used-preload.tentative.html": [
+      "d5f52c99fba1267830171e23f9a92edde4e094e8",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "speculation-tags": {
      "cross-site-prefetch.https.html": [
       "3eb735cec961996fbca85f6ab6008f9b86f5cc50",
@@ -799929,6 +800131,13 @@
        ]
       ]
      },
+     "systemLanguage-parsing.html": [
+      "33cfd6657b42bfa1bc7ec0155d6977b1172bb7ae",
+      [
+       null,
+       {}
+      ]
+     ],
      "use-getComputedStyle.html": [
       "1e5d5af57cbc042a851bee180a402a05fd177fe3",
       [
@@ -800155,6 +800364,13 @@
       ],
       "getrotationofchar.html": [
        "e47ef4d22e2e5b79cc7e7e2146eda6138cf86816",
+       [
+        null,
+        {}
+       ]
+      ],
+      "getstartpositionofchar-dominant-baseline-shift.html": [
+       "d66fac851ff0925056ffe84b4638738039878aab",
        [
         null,
         {}
@@ -800608,7 +800824,7 @@
        ]
       ],
       "SVGGraphicsElement.getBBox-09.html": [
-       "46110f4fc7a202cba24afdde6870a5310fd6dc16",
+       "269615eeed7de1c8438840c245ca761418a60625",
        [
         null,
         {}

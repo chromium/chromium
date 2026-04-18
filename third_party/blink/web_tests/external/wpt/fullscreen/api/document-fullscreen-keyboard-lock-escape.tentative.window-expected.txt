@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Holding Escape with event.preventDefault() should cause fullscreen exit
+  assert_equals: fullscreen should deactivate expected null but got Element node <body><div id="log"></div>\n<script src="/fullscreen/api/d...
+[FAIL] Holding Escape without event.preventDefault() should cause fullscreen exit
+  assert_equals: fullscreen should deactivate expected null but got Element node <body><div id="log"></div>\n<script src="/fullscreen/api/d...
+Harness: the test ran to completion.
+
