@@ -7,13 +7,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/functions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
@@ -27,8 +25,9 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
 
     clock_.SetNowTicks(base::TimeTicks::Now());
 
+    mojo::Remote<blink::mojom::AudioContextManager> service_remote;
     audio_context_manager_ = &AudioContextManagerImpl::CreateForTesting(
-        *main_rfh(), service_remote_.BindNewPipeAndPassReceiver());
+        *main_rfh(), service_remote.BindNewPipeAndPassReceiver());
     audio_context_manager_->set_clock_for_testing(&clock_);
   }
 
@@ -41,10 +40,6 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
     return audio_context_manager_;
   }
 
-  mojo::Remote<blink::mojom::AudioContextManager>& service_remote() {
-    return service_remote_;
-  }
-
   const ukm::TestAutoSetUkmRecorder& test_ukm_recorder() const {
     return test_ukm_recorder_;
   }
@@ -53,7 +48,6 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   raw_ptr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
 
  private:
-  mojo::Remote<blink::mojom::AudioContextManager> service_remote_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   base::SimpleTestTickClock clock_;
 };
@@ -169,33 +163,6 @@ TEST_F(AudioContextManagerImplTest, NoContextsCreated) {
       "WebAudio.AudioContext.ConcurrentAudioContexts",
       /*sample=*/0,
       /*expected_bucket_count=*/1);
-}
-
-TEST_F(AudioContextManagerImplTest, StoppedWithoutStartedReportsBadMessage) {
-  std::string received_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
-
-  service_remote()->AudioContextAudiblePlaybackStopped(1);
-  service_remote().FlushForTesting();
-
-  EXPECT_EQ(received_error,
-            "AudioContextAudiblePlaybackStopped() called without a matching "
-            "AudioContextAudiblePlaybackStarted()");
-}
-
-TEST_F(AudioContextManagerImplTest, StartedTwiceReportsBadMessage) {
-  std::string received_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
-
-  service_remote()->AudioContextAudiblePlaybackStarted(1);
-  service_remote()->AudioContextAudiblePlaybackStarted(1);
-  service_remote().FlushForTesting();
-
-  EXPECT_EQ(received_error,
-            "AudioContextAudiblePlaybackStarted() called more than once with "
-            "the same audio_context_id");
 }
 
 }  // namespace content

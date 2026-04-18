@@ -52,14 +52,13 @@ AudioContextManagerImpl::AudioContextManagerImpl(
       clock_(base::DefaultTickClock::GetInstance()) {}
 
 AudioContextManagerImpl::~AudioContextManagerImpl() {
-  // Takes care of pending "audible start" times.
+  // Takes care pending "audible start" times.
   base::TimeTicks now = clock_->NowTicks();
   for (const auto& entry : pending_audible_durations_) {
-    base::TimeDelta audible_time = now - entry.second;
-    if (audible_time.is_positive()) {
-      RecordAudibleTime(audible_time);
-    }
+    if (!entry.second.is_null())
+      RecordAudibleTime(now - entry.second);
   }
+  pending_audible_durations_.clear();
   UMA_HISTOGRAM_EXACT_LINEAR("WebAudio.AudioContext.ConcurrentAudioContexts",
                              max_concurrent_audio_contexts_,
                              /*exclusive_max=*/101);
@@ -67,14 +66,15 @@ AudioContextManagerImpl::~AudioContextManagerImpl() {
 
 void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
     uint32_t audio_context_id) {
-  auto [it, inserted] = pending_audible_durations_.try_emplace(
-      audio_context_id, clock_->NowTicks());
-  if (!inserted) {
+  if (!pending_audible_durations_[audio_context_id].is_null()) {
     mojo::ReportBadMessage(
         "AudioContextAudiblePlaybackStarted() called more than once with the "
         "same audio_context_id");
     return;
   }
+
+  // Keeps track of the start audible time for this context.
+  pending_audible_durations_[audio_context_id] = clock_->NowTicks();
 
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .AudioContextPlaybackStarted(audio_context_id);
@@ -82,36 +82,20 @@ void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
 
 void AudioContextManagerImpl::AudioContextAudiblePlaybackStopped(
     uint32_t audio_context_id) {
-  auto it = pending_audible_durations_.find(audio_context_id);
+  base::TimeTicks then = pending_audible_durations_[audio_context_id];
+  DCHECK(!then.is_null());
 
-  // The browser process should not trust the renderer. If the renderer calls
-  // Stopped without a matching Started call (or if the ID is unknown), it is
-  // a protocol error.
-  if (it == pending_audible_durations_.end()) {
-    mojo::ReportBadMessage(
-        "AudioContextAudiblePlaybackStopped() called without a matching "
-        "AudioContextAudiblePlaybackStarted()");
-    return;
-  }
-
-  base::TimeTicks then = it->second;
-  base::TimeDelta duration = clock_->NowTicks() - then;
-
-  // It is possible for the duration to be zero if Started and Stopped are
-  // called in extremely rapid succession (within the same clock tick).
-  if (duration.is_positive()) {
-    RecordAudibleTime(duration);
-  }
+  RecordAudibleTime(clock_->NowTicks() - then);
 
   // Resets the context slot because the context is not audible.
-  pending_audible_durations_.erase(it);
+  pending_audible_durations_[audio_context_id] = base::TimeTicks();
 
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .AudioContextPlaybackStopped(audio_context_id);
 }
 
 void AudioContextManagerImpl::RecordAudibleTime(base::TimeDelta audible_time) {
-  DCHECK(audible_time.is_positive());
+  DCHECK(!audible_time.is_zero());
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   DCHECK(ukm_recorder);
