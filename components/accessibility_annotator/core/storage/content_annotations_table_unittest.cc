@@ -5,12 +5,17 @@
 #include "components/accessibility_annotator/core/storage/content_annotations_table.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/protobuf_matchers.h"
+#include "base/time/time.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "sql/database.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace accessibility_annotator {
 
@@ -22,14 +27,27 @@ class ContentAnnotationsTableTest : public testing::Test {
                                           sql::test::kTestTag);
     ASSERT_TRUE(db_->Open(temp_dir_.GetPath().AppendASCII("test.db")));
     encryptor_.emplace(os_crypt_async::GetTestEncryptorForTesting());
+    ASSERT_TRUE(table_.Init(db_.get(), &*encryptor_));
   }
 
   void TearDown() override { db_->Close(); }
+
+  ContentAnnotationsData CreateDefaultTestData() {
+    ContentAnnotationsData data;
+    data.url = GURL("https://example.com");
+    data.navigation_timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+    data.page_title = "Example Title";
+    data.tab_id = 123;
+    data.content_annotation.set_description("Test description");
+    data.classifier_results.Set("category", "test_category");
+    return data;
+  }
 
  protected:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<sql::Database> db_;
   std::optional<os_crypt_async::TestEncryptor> encryptor_;
+  ContentAnnotationsTable table_;
 };
 
 // Tests that initialization fails if the input database is null.
@@ -53,26 +71,136 @@ TEST_F(ContentAnnotationsTableTest, DoNotCreateTablesIfNullDatabase) {
 // Tests that table creation successfully creates the content annotations table
 // if it was missing.
 TEST_F(ContentAnnotationsTableTest, Init) {
-  ContentAnnotationsTable table;
-  ASSERT_TRUE(table.Init(db_.get(), &*encryptor_));
-  ASSERT_TRUE(table.CreateTablesIfNecessary());
-
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
   EXPECT_TRUE(db_->DoesTableExist("content_annotations"));
 }
 
 // Tests that table creation succeeds if table already exists.
 TEST_F(ContentAnnotationsTableTest,
        DoNotSignalFailureToCreateTablesIfAllAlreadyExist) {
-  ContentAnnotationsTable table;
-  ASSERT_TRUE(table.Init(db_.get(), &*encryptor_));
-
   // Create placeholder tables (schema doesn't matter)
   ASSERT_TRUE(db_->Execute(
       R"SQL(CREATE TABLE content_annotations (
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL))SQL"));
   ASSERT_TRUE(db_->DoesTableExist("content_annotations"));
 
-  EXPECT_TRUE(table.CreateTablesIfNecessary());
+  EXPECT_TRUE(table_.CreateTablesIfNecessary());
+}
+
+// Tests that `data` is successfully added and retrieved.
+TEST_F(ContentAnnotationsTableTest, AddAndGetContentAnnotation) {
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+
+  ContentAnnotationsData data = CreateDefaultTestData();
+  history::VisitID visit_id(1);
+
+  // Add the `data` to the table successfully.
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id, data));
+
+  // Retrieve the table row for `visit_id` and verify its contents.
+  std::optional<ContentAnnotationsData> retrieved =
+      table_.GetContentAnnotation(visit_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->url, data.url);
+  EXPECT_EQ(retrieved->navigation_timestamp, data.navigation_timestamp);
+  EXPECT_EQ(retrieved->page_title, data.page_title);
+  EXPECT_EQ(retrieved->tab_id, data.tab_id);
+  EXPECT_THAT(retrieved->content_annotation,
+              base::test::EqualsProto(data.content_annotation));
+  EXPECT_EQ(retrieved->classifier_results, data.classifier_results);
+}
+
+// Tests that DeleteContentAnnotation successfully removes the row for the given
+// `visit_id`.
+TEST_F(ContentAnnotationsTableTest, DeleteContentAnnotation) {
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+
+  history::VisitID visit_id(1);
+  // Successfully add to the table.
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id, CreateDefaultTestData()));
+
+  // Verify that the row for `visit_id` is present.
+  std::optional<ContentAnnotationsData> retrieved =
+      table_.GetContentAnnotation(visit_id);
+  EXPECT_TRUE(retrieved.has_value());
+
+  // Successfully delete the row for `visit_id`.
+  EXPECT_TRUE(table_.DeleteContentAnnotation(visit_id));
+
+  // Verify that the row for `visit_id` is no longer present.
+  std::optional<ContentAnnotationsData> retrieved_after =
+      table_.GetContentAnnotation(visit_id);
+  EXPECT_FALSE(retrieved_after.has_value());
+}
+
+// Tests that ClearAllContentAnnotations successfully removes all rows.
+TEST_F(ContentAnnotationsTableTest, GetAndClearAllContentAnnotations) {
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+
+  history::VisitID visit_id_1(1);
+  history::VisitID visit_id_2(2);
+
+  // Add two rows to the table successfully.
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id_1, CreateDefaultTestData()));
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id_2, CreateDefaultTestData()));
+
+  // Verify that there are two rows in the table and they have correct visit
+  // IDs.
+  auto all_annotations = table_.GetAllContentAnnotations();
+  EXPECT_EQ(all_annotations.size(), 2u);
+  EXPECT_EQ(all_annotations[0].first, visit_id_1);
+  EXPECT_EQ(all_annotations[1].first, visit_id_2);
+
+  EXPECT_TRUE(table_.ClearAllContentAnnotations());
+
+  // Verify that the table is empty after clearing all rows.
+  EXPECT_TRUE(table_.GetAllContentAnnotations().empty());
+}
+
+// Tests that the table can handle missing tab IDs.
+TEST_F(ContentAnnotationsTableTest, AddAndGetContentAnnotationWithNoTabId) {
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+
+  ContentAnnotationsData data = CreateDefaultTestData();
+  data.tab_id = std::nullopt;
+  history::VisitID visit_id(1);
+
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id, data));
+
+  std::optional<ContentAnnotationsData> retrieved =
+      table_.GetContentAnnotation(visit_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_FALSE(retrieved->tab_id.has_value());
+}
+
+// Tests that all functions fail if the table is not initialized.
+TEST_F(ContentAnnotationsTableTest, FunctionsFailWithoutInit) {
+  ContentAnnotationsTable uninitialized_table;
+  history::VisitID visit_id(1);
+  ContentAnnotationsData data = CreateDefaultTestData();
+
+  EXPECT_FALSE(uninitialized_table.CreateTablesIfNecessary());
+  EXPECT_FALSE(uninitialized_table.AddContentAnnotation(visit_id, data));
+  EXPECT_FALSE(uninitialized_table.GetContentAnnotation(visit_id).has_value());
+  EXPECT_TRUE(uninitialized_table.GetAllContentAnnotations().empty());
+  EXPECT_FALSE(uninitialized_table.DeleteContentAnnotation(visit_id));
+  EXPECT_FALSE(uninitialized_table.ClearAllContentAnnotations());
+}
+
+// Tests that GetContentAnnotation returns std::nullopt if the row doesn't
+// exist.
+TEST_F(ContentAnnotationsTableTest, GetNonExistentAnnotation) {
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  EXPECT_FALSE(table_.GetContentAnnotation(history::VisitID(999)).has_value());
+}
+
+// Tests that GetAllContentAnnotations returns an empty vector if the table is
+// empty.
+TEST_F(ContentAnnotationsTableTest, GetAllAnnotationsEmptyTable) {
+  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  // Ensure it's empty.
+  ASSERT_TRUE(table_.ClearAllContentAnnotations());
+  EXPECT_TRUE(table_.GetAllContentAnnotations().empty());
 }
 
 }  // namespace accessibility_annotator

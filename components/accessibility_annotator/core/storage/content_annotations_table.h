@@ -76,7 +76,8 @@ class ContentAnnotationsTable {
       history::VisitID visit_id);
 
   // Retrieves all records from content_annotations table.
-  std::vector<ContentAnnotationsData> GetAllContentAnnotations();
+  std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
+  GetAllContentAnnotations();
 
   // Deletes a record from content_annotations table by visit_id. Returns true
   // on success.

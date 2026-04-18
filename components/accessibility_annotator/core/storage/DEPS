@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/database_utils",
   "+components/os_crypt/async",
   "+net/base/registry_controlled_domains",
 ]
