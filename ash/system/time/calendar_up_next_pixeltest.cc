@@ -49,6 +49,7 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
   }
 
   void TearDown() override {
+    up_next_view_ = nullptr;
     widget_.reset();
     controller_.reset();
 
@@ -107,7 +108,7 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarUpNextView, DanglingUntriaged> up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView> up_next_view_;
   std::unique_ptr<CalendarViewController> controller_;
 };
 
