@@ -121,8 +121,10 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
   void CreateFeatureTile() {
     network_feature_pod_controller_ =
         std::make_unique<NetworkFeaturePodController>(tray_controller());
-    feature_tile_ = quick_settings_view()->AddChildView(
-        network_feature_pod_controller_->CreateTile());
+    feature_tile_ =
+        quick_settings_view()
+            ->AddChildView(network_feature_pod_controller_->CreateTile())
+            ->GetWeakPtr();
   }
 
   // Disabling a network technology does not remove corresponding networks from
@@ -311,7 +313,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
     return network_state_helper()->technology_state_controller();
   }
 
-  FeatureTile* feature_tile() { return feature_tile_; }
+  FeatureTile* feature_tile() { return feature_tile_.get(); }
 
   UnifiedSystemTrayController* tray_controller() {
     return GetPrimaryUnifiedSystemTray()
@@ -339,7 +341,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
   std::string wifi_path_;
   std::string tether_path_;
   std::string tether_wifi_path_;
-  raw_ptr<FeatureTile, DanglingUntriaged> feature_tile_;
+  base::WeakPtr<FeatureTile> feature_tile_;
   std::unique_ptr<NetworkFeaturePodController> network_feature_pod_controller_;
 };
 
