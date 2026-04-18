@@ -1647,7 +1647,7 @@ public class AutofillProfilesFragmentTest {
 
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         String expectedNoticeText =
-                context.getString(R.string.autofill_ai_local_entity_editor_source_notice);
+                context.getString(R.string.autofill_ai_save_or_update_local_entity_source_notice);
         onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
     }
 

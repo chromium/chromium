@@ -391,7 +391,8 @@ class EntityEditorMediator {
             @RecordType int recordType, boolean isPrivateEntity) {
         switch (recordType) {
             case RecordType.LOCAL:
-                return mContext.getString(R.string.autofill_ai_local_entity_editor_source_notice);
+                return mContext.getString(
+                        R.string.autofill_ai_save_or_update_local_entity_source_notice);
             case RecordType.SERVER_WALLET:
                 String email = getUserEmail();
                 if (email == null) {

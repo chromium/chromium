@@ -480,7 +480,8 @@ public class EntityEditorModuleTest {
                 mActivity.getString(R.string.payments_required_field_message));
         verifySourceNotice(
                 model.get(EntityEditorProperties.EDITOR_FIELDS),
-                mActivity.getString(R.string.autofill_ai_local_entity_editor_source_notice));
+                mActivity.getString(
+                        R.string.autofill_ai_save_or_update_local_entity_source_notice));
     }
 
     @Test

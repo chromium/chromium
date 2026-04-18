@@ -1312,7 +1312,7 @@
     <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_MESSAGE_SUBTITLE" desc="A description that appears beneath the Save title message prompting the user to save their data to Google Wallet. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Google Wallet with the promise that Chrome can then help the user fill out forms across devices more quickly using their saved info.">
       In <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>
     </message>
-    <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE" desc="A description that appears beneath the entity details notifying the user that their data is going to be stored locally on device.">
+    <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE" desc="A description that appears beneath the entity details notifying the user that their data is going to be stored locally on device." formatter_data="android_java">
       Your info is saved to your device
     </message>
     <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE" desc="A description that appears beneath the entity details notifying the user that their data is going to be stored in Google Wallet." formatter_data="android_java">
@@ -1342,9 +1342,6 @@
   <if expr="is_android">
     <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DELETE_LOCAL_ENTITY_DIALOG_TEXT" desc="The text that appears beneath a 'Delete object' title. We want the 'Autofill' keyword to be as prominent as possible because that word captures the value of saved information. 'On this device': helps the user understand that information is saved locally, not in the Cloud." formatter_data="android_java">
       Autofill won't have this info on this device to help fill out forms
-    </message>
-    <message name="IDS_AUTOFILL_AI_LOCAL_ENTITY_EDITOR_SOURCE_NOTICE" desc="The footer message in the editor dialog informing the user that their data will be stored locally on their device. 'To your device': helps the user understand that information is saved locally, not in the Cloud." formatter_data="android_java">
-      Your info is saved only to your device. You'll have the chance to save it to Wallet the next time you fill a relevant form.
     </message>
     <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DATE_FIELD_MONTH_LABEL" desc="The default value in the date field month picker in the editor dialog." formatter_data="android_java">
       Month
