@@ -35,8 +35,7 @@ const char kTestGlicFreURL[] = "about:blank?fre-page";
 class GlicNetLogBrowserTest : public InProcessBrowserTest {
  public:
   GlicNetLogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {}, {features::kGlicTrustFirstOnboarding, features::kGlicWarming});
+    feature_list_.InitWithFeatures({}, {features::kGlicWarming});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -94,7 +93,6 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
   Profile* profile = browser()->profile();
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
-  ASSERT_FALSE(GlicEnabling::IsReadyForProfile(profile));
   SetFRECompletion(profile, prefs::FreStatus::kCompleted);
   ASSERT_TRUE(GlicEnabling::IsReadyForProfile(profile));
 

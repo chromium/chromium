@@ -1029,8 +1029,7 @@ class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
   void SetUp() override {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlicTrustFirstOnboarding},
-        {features::kGlicFixTimeToFirstQueryKillSwitch});
+        {}, {features::kGlicFixTimeToFirstQueryKillSwitch});
     GlicMetricsTestBase::SetUp();
 
     enabling_ = std::make_unique<GlicEnabling>(

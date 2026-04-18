@@ -758,7 +758,7 @@ class ContextualCueingBypassNudgeCapsTest
            {"UseDynamicCues", "true"}}},
          {glic::kEnableAutoOpenGlicSidePanel, {}},
          {features::kAutoOpenGlicForPdf, {}},
-         {features::kGlicTrustFirstOnboarding, {}},
+
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
          {contextual_tasks::kContextualTasks, {}}},

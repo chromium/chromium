@@ -499,31 +499,6 @@ class GlicEnablingProfileReadyStateTestBase
 
 class GlicEnablingTrustFirstOnboardingTest
     : public GlicEnablingProfileReadyStateTestBase {
- public:
-  void SetUp() override {
-    GlicEnablingProfileReadyStateTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class GlicEnablingStandardFreTest
-    : public GlicEnablingProfileReadyStateTestBase {
- public:
-  void SetUp() override {
-    GlicEnablingProfileReadyStateTestBase::SetUp();
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kGlicTrustFirstOnboarding);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsReady) {
@@ -549,36 +524,7 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsTrue) {
   EXPECT_TRUE(GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
 }
 
-TEST_F(GlicEnablingStandardFreTest, NotConsented_ReturnsIneligible) {
-  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
-      prefs::FreStatus::kIncomplete);
-
-  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
-            mojom::ProfileReadyState::kIneligible);
-}
-
-class GlicEnablingAnyFreModeTest : public GlicEnablingProfileReadyStateTestBase,
-                                   public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    GlicEnablingProfileReadyStateTestBase::SetUp();
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-           mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kGlicTrustFirstOnboarding);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(GlicEnablingAnyFreModeTest, Consented_ReturnsReady) {
+TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsReady) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kCompleted);
 
@@ -587,7 +533,7 @@ TEST_P(GlicEnablingAnyFreModeTest, Consented_ReturnsReady) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_P(GlicEnablingAnyFreModeTest, NotSignedIn_ReturnsIneligible) {
+TEST_F(GlicEnablingTrustFirstOnboardingTest, NotSignedIn_ReturnsIneligible) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kIncomplete);
 
@@ -601,7 +547,7 @@ TEST_P(GlicEnablingAnyFreModeTest, NotSignedIn_ReturnsIneligible) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST_P(GlicEnablingAnyFreModeTest,
+TEST_F(GlicEnablingTrustFirstOnboardingTest,
        IsEnabledAndConsentForProfile_NotConsented_ReturnsFalse) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kIncomplete);
@@ -609,7 +555,7 @@ TEST_P(GlicEnablingAnyFreModeTest,
   EXPECT_FALSE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
 }
 
-TEST_P(GlicEnablingAnyFreModeTest,
+TEST_F(GlicEnablingTrustFirstOnboardingTest,
        IsEnabledAndConsentForProfile_Consented_ReturnsTrue) {
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kCompleted);
@@ -617,14 +563,12 @@ TEST_P(GlicEnablingAnyFreModeTest,
   EXPECT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, GlicEnablingAnyFreModeTest, testing::Bool());
-
 struct GatedFeatureParams {
   std::string name;
   bool is_feature_enabled = false;
   bool is_onboarding_param_enabled = false;
   bool has_user_consented = false;
-  bool is_trust_first_enabled = false;
+
   bool expected_result = false;
 };
 
@@ -653,12 +597,6 @@ class GlicEnablingGatedFeatureTest
              GetParam().is_onboarding_param_enabled ? "true" : "false"}}});
     } else {
       disabled_features.push_back(feature);
-    }
-
-    if (GetParam().is_trust_first_enabled) {
-      enabled_features.push_back({features::kGlicTrustFirstOnboarding, {}});
-    } else {
-      disabled_features.push_back(features::kGlicTrustFirstOnboarding);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -701,7 +639,6 @@ INSTANTIATE_TEST_SUITE_P(
         GatedFeatureParams{.name = "Default (All Off)",
                            .expected_result = false},
         GatedFeatureParams{.name = "TrustFirstOnly (Not Enough)",
-                           .is_trust_first_enabled = true,
                            .expected_result = false},
         GatedFeatureParams{.name = "Consented (Pure)",
                            .is_feature_enabled = true,
@@ -710,27 +647,20 @@ INSTANTIATE_TEST_SUITE_P(
         GatedFeatureParams{.name = "ConsentedWithTrustFirst",
                            .is_feature_enabled = true,
                            .has_user_consented = true,
-                           .is_trust_first_enabled = true,
                            .expected_result = true},
         GatedFeatureParams{.name = "FeatureEnabledWithTrustFirst (No Gate)",
                            .is_feature_enabled = true,
-                           .is_trust_first_enabled = true,
-                           .expected_result = false},
-        GatedFeatureParams{.name = "OnboardingGatedOnly (No TrustFirst)",
-                           .is_feature_enabled = true,
-                           .is_onboarding_param_enabled = true,
                            .expected_result = false},
         GatedFeatureParams{.name = "OnboardingGatedWithTrustFirst (Success)",
                            .is_feature_enabled = true,
                            .is_onboarding_param_enabled = true,
-                           .is_trust_first_enabled = true,
                            .expected_result = true}));
 
 struct ContextMenuFeatureParams {
   std::string name;
   bool is_feature_enabled = false;
   bool has_user_consented = false;
-  bool is_trust_first_enabled = false;
+
   bool expected_result = false;
 };
 
@@ -753,12 +683,6 @@ class GlicEnablingContextMenuTest
       enabled_features.push_back({features::kGlicContextMenu, {}});
     } else {
       disabled_features.push_back(features::kGlicContextMenu);
-    }
-
-    if (GetParam().is_trust_first_enabled) {
-      enabled_features.push_back({features::kGlicTrustFirstOnboarding, {}});
-    } else {
-      disabled_features.push_back(features::kGlicTrustFirstOnboarding);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -791,27 +715,15 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     GlicEnablingContextMenuTest,
     testing::Values(
-        ContextMenuFeatureParams{.name = "Default (All Off)",
-                                 .expected_result = false},
         ContextMenuFeatureParams{.name = "TrustFirstOnly (Not Enough)",
-                                 .is_trust_first_enabled = true,
                                  .expected_result = false},
-        ContextMenuFeatureParams{.name = "Consented (Pure)",
-                                 .is_feature_enabled = true,
-                                 .has_user_consented = true,
-                                 .expected_result = true},
         ContextMenuFeatureParams{.name = "ConsentedWithTrustFirst",
                                  .is_feature_enabled = true,
                                  .has_user_consented = true,
-                                 .is_trust_first_enabled = true,
                                  .expected_result = true},
         ContextMenuFeatureParams{.name = "FeatureEnabledWithTrustFirst",
                                  .is_feature_enabled = true,
-                                 .is_trust_first_enabled = true,
-                                 .expected_result = true},
-        ContextMenuFeatureParams{.name = "FeatureEnabledNoTrustFirstNoConsent",
-                                 .is_feature_enabled = true,
-                                 .expected_result = false}));
+                                 .expected_result = true}));
 
 TEST_F(GlicEnablingProfileEligibilityTest,
        UserEnabledActuationOnWebChangedCallback) {

@@ -1159,17 +1159,6 @@ class GlicInteractiveContextMenuTestBase
     base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
   }
 
-  auto PollForAndAcceptFre() {
-    return Steps(
-        PollUntil(
-            [this]() {
-              return glic_service()->fre_controller().GetWebUiState() ==
-                     glic::mojom::FreWebUiState::kReady;
-            },
-            "polling until the fre is ready"),
-        Do([this]() { glic_service()->fre_controller().AcceptFre(nullptr); }));
-  }
-
   auto PollForAndCompleteOnboarding() {
     return Steps(
         PollUntil(
@@ -1312,14 +1301,12 @@ class GlicInteractiveContextMenuTest
           /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
                                 features::kGlicMultitabUnderlines},
           /*disabled_features=*/{features::kGlicWarming,
-                                 blink::features::kSvgFallBackToContainerSize,
-                                 features::kGlicTrustFirstOnboarding});
+                                 blink::features::kSvgFallBackToContainerSize});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kGlic, features::kGlicShareImage},
           /*disabled_features=*/{features::kGlicWarming,
-                                 blink::features::kSvgFallBackToContainerSize,
-                                 features::kGlicTrustFirstOnboarding});
+                                 blink::features::kSvgFallBackToContainerSize});
     }
     // Ensure that we open the FRE.
     glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);
@@ -1335,6 +1322,11 @@ class GlicInteractiveContextMenuTest
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
+  // TODO(b/503845250): Support trust-first FRE.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
   const DeepQuery kPathToImg{"img"};
   RunTestSequence(
@@ -1345,8 +1337,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
           SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
-      PollForAndAcceptFre(), PollForAndInstrumentGlic(),
-      WaitForAdditionalContext(), CheckHistograms());
+      PollForAndInstrumentGlic(), WaitForAdditionalContext(),
+      CheckHistograms());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
@@ -1356,6 +1348,11 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
   }
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
+  // TODO(b/503845250): Support trust-first FRE.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
   const DeepQuery kPathToImg{
       "img",
@@ -1364,7 +1361,7 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url),
       WaitForWebContentsPainted(kActiveTab),
-      ToggleGlicWindow(GlicWindowMode::kAttached), PollForAndAcceptFre(),
+      ToggleGlicWindow(GlicWindowMode::kAttached),
       WaitForAndInstrumentGlic(kHostAndContents), CacheCurrentInstance(),
       MoveMouseTo(kActiveTab, kPathToImg),
       MayInvolveNativeContextMenu(
@@ -1382,6 +1379,11 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
   }
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
+  // TODO(b/503845250): Support trust-first FRE.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
   const DeepQuery kPathToImg{
       "img",
@@ -1393,7 +1395,7 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url),
       WaitForWebContentsPainted(kActiveTab),
-      ToggleGlicWindow(GlicWindowMode::kAttached), PollForAndAcceptFre(),
+      ToggleGlicWindow(GlicWindowMode::kAttached),
       // In this case, we will close the detached panel and then open again in
       // the side panel. This should still result in a new instance.
       WaitForAndInstrumentGlic(kHostAndContents), Detach(),
@@ -1434,8 +1436,6 @@ class GlicTrustFirstOnboardingContextMenuTest
         {
             {features::kGlic, {}},
             {features::kGlicShareImage, {}},
-            {features::kGlicTrustFirstOnboarding,
-             {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}}},
         },
         {features::kGlicWarming, blink::features::kSvgFallBackToContainerSize});
     glic_test_environment().SetFreStatusForNewProfiles(
@@ -1631,6 +1631,11 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
 
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnPasteDenied) {
+  // TODO(b/503845250): Support trust-first FRE.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
   const DeepQuery kPathToImg{"img"};
@@ -1641,13 +1646,17 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
           SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
-      PollForAndAcceptFre(),
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardPastePolicy),
       WaitForContentAnalysisDialog());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnPasteAllowed) {
+  // TODO(b/503845250): Support trust-first FRE.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const GURL url = embedded_test_server()->GetURL(kPageWithAllowedImage);
   const DeepQuery kPathToImg{"img:nth-of-type(3)"};
@@ -1658,12 +1667,16 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
           SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
-      PollForAndAcceptFre(),
       WaitForShareResult(glic::ShareImageResult::kSuccess));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsWhenGuestURLBlocked) {
+  // TODO(b/503845250): Support trust-first FRE.
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
+
   // Check that our destination is the Guest URL.
   GURL guest_url = glic::GetGuestURL();
   data_controls::SetDataControls(
@@ -1682,7 +1695,6 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
           SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
-      PollForAndAcceptFre(),
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardPastePolicy));
 }
 

@@ -53,13 +53,10 @@ class GlicBrowserTest : public InProcessBrowserTest {
 
  protected:
   virtual void InitializeFeatureList() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kGlicTrustFirstOnboarding});
   }
 
  private:
   GlicTestEnvironment glic_test_environment_{{.fre_status = std::nullopt}};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SharedGlicBrowserTest : public glic::GlicBrowserTest {
@@ -101,9 +98,6 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, PausedProfileIsNotReady) {
   auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
-
-  // False until FRE is completed.
-  ASSERT_FALSE(GlicEnabling::IsReadyForProfile(profile));
   SetFRECompletion(profile, prefs::FreStatus::kCompleted);
   ASSERT_TRUE(GlicEnabling::IsReadyForProfile(profile));
 

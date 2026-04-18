@@ -718,8 +718,10 @@ class GlicContextMenuMetricsBrowserTest : public ContextMenuBrowserTestBase {
  protected:
   GlicContextMenuMetricsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicContextMenu,
-         features::kGlicTrustFirstOnboarding},
+        {
+            features::kGlic,
+            features::kGlicContextMenu,
+        },
         {});
   }
 

@@ -128,12 +128,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTest, SessionEndsWhenHidden) {
 
 class GlicFreMetricsTest : public test::InteractiveGlicTest {
  public:
-  GlicFreMetricsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
-  }
+  GlicFreMetricsTest() {}
   ~GlicFreMetricsTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -145,9 +140,6 @@ class GlicFreMetricsTest : public test::InteractiveGlicTest {
 
  protected:
   base::UserActionTester user_action_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicFreMetricsTest, FreShownAndDismissed) {

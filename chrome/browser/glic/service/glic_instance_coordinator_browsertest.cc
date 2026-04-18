@@ -585,82 +585,6 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest
-    : public GlicInstanceCoordinatorBrowserTest {
- public:
-  GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicTrustFirstOnboarding,
-          {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Flaky test. crbug.com/498990943
-IN_PROC_BROWSER_TEST_F(
-    GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
-    DISABLED_TabContentsDaisyChainingNotSuppressedWhenTrustFirstArm1Shown) {
-  // Open FRE.
-  glic::GlicKeyedService::Get(GetProfile())
-      ->enabling()
-      .SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
-
-  ASSERT_OK(OpenGlicForActiveTab());
-  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
-
-  // Try to daisy chain via Page Contents
-  {
-    GlicTestTabAddedWaiter waiter(GetProfile());
-    SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/false);
-    tabs::TabInterface* tab2 = waiter.Wait();
-
-    GlicInstance* tab2_instance = coordinator().GetInstanceForTab(tab2);
-
-    // Verify daisy chaining occurred.
-    EXPECT_NE(nullptr, tab2_instance);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
-    AutoSubmitIsDiverted) {
-  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-
-  base::test::TestFuture<void> success_future;
-  GlicInvokeOptions options(glic::Target(tab),
-                            mojom::InvocationSource::kOsButton);
-  options.on_success = success_future.GetCallback();
-
-  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
-
-  EXPECT_TRUE(success_future.Wait());
-  EXPECT_TRUE(coordinator().GetInstanceForTab(tab));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
-    AutoSubmitNotDivertedWhenFreCompleted) {
-  // Simulate FRE completion.
-  glic::GlicKeyedService::Get(GetProfile())
-      ->enabling()
-      .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
-
-  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-
-  base::test::TestFuture<void> success_future;
-  GlicInvokeOptions options(glic::Target(tab),
-                            mojom::InvocationSource::kOsButton);
-  options.on_success = success_future.GetCallback();
-
-  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
-
-  EXPECT_TRUE(success_future.Wait());
-  EXPECT_TRUE(coordinator().GetInstanceForTab(tab));
-}
-
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        WebClientLinkClickDaisyChaining) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
@@ -1547,20 +1471,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConfiguration);
 }
 
-class GlicInstanceCoordinatorArm2Test
-    : public GlicInstanceCoordinatorBrowserTest {
- public:
-  GlicInstanceCoordinatorArm2Test() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicTrustFirstOnboarding,
-        {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorArm2Test,
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWaitsForFreCompletion_Arm2) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);

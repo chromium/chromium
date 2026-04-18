@@ -92,24 +92,6 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextForOpening) {
             l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextWhileGlicFreOpen) {
-  // Toggle to open the FRE dialog.
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
-    // Disable for kTrustFirstOnboarding.
-    GTEST_SKIP() << "Skipping for kTrustFirstOnboarding";
-  }
-  SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
-  glic_service()->ToggleUI(browser(), false,
-                           mojom::InvocationSource::kTopChromeButton);
-  // With unified FRE, the FRE shows up in the Glic panel.
-  WaitForGlicPanelShow();
-
-  EXPECT_EQ(glic_button()->GetViewAccessibility().GetCachedName(),
-            l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE));
-  EXPECT_EQ(glic_button()->GetTooltipText(),
-            l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE));
-}
-
 // Tests using programmatic window activation are flaky on Linux.
 // TODO(crbug.com/428742560): De-flake for Linux.
 #if BUILDFLAG(IS_LINUX)

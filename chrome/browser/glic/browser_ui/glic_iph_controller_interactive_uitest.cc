@@ -108,8 +108,7 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicPromoFeature}) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{feature_engagement::kIPHGlicTryItFeature,
-                               features::kGlicTrustFirstOnboarding});
+        /*disabled_features=*/{feature_engagement::kIPHGlicTryItFeature});
   }
   ~GlicIphControllerTestClassic() override = default;
 };
@@ -143,22 +142,12 @@ class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
  public:
   GlicIphControllerTestTryIt()
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
-    // enables FRE warming to test that successful IPH will warm the FRE.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kGlicTrustFirstOnboarding});
   }
 
   ~GlicIphControllerTestTryIt() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt,
-                       ShowPromoWithCtaEndsInGlicFre) {
-  RunTestSequence(ObserveState(kFreWebUiState, std::ref(GetFreController())),
-                  WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
-                  PressDefaultPromoButton(),
-                  WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
-                  StopObservingState(kFreWebUiState));
-}
+// TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt, ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
@@ -192,19 +181,12 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
     scoped_feature_list_.InitWithFeatures(
         {mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines,
          feature_engagement::kIPHGlicPromoFeature},
-        {features::kGlicTrustFirstOnboarding});
+        {});
   }
   ~GlicIphControllerTestMultiInstance() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
-                       ShowPromoWithCtaEndsInGlicFre) {
-  RunTestSequence(ObserveState(kFreWebUiState, std::ref(GetFreController())),
-                  WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
-                  PressDefaultPromoButton(),
-                  WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
-                  StopObservingState(kFreWebUiState));
-}
+// TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE.
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
                        ShowPromoWithCtaEndsInGlic) {

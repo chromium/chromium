@@ -134,8 +134,7 @@ class GlicActiveInstanceSharingManagerProfileStateTest
     : public NonInteractiveGlicTest {
  public:
   GlicActiveInstanceSharingManagerProfileStateTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic}, {features::kGlicTrustFirstOnboarding});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
 
  private:

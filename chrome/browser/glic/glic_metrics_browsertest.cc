@@ -51,7 +51,7 @@ class GlicMetricsBrowserTest : public InProcessBrowserTest {
       const std::vector<base::test::FeatureRef>& extra_disabled_features = {}) {
     std::vector<base::test::FeatureRef> enabled_features =
         GetDefaultEnabledGlicTestFeatures();
-    enabled_features.push_back(features::kGlicTrustFirstOnboarding);
+
     enabled_features.insert(enabled_features.end(),
                             extra_enabled_features.begin(),
                             extra_enabled_features.end());

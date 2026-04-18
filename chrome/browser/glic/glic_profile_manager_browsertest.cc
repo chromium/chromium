@@ -557,28 +557,20 @@ INSTANTIATE_TEST_SUITE_P(All,
 }  // namespace
 
 class GlicProfileManagerDidSelectProfileTest
-    : public GlicProfileManagerBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public GlicProfileManagerBrowserTest {
  public:
   GlicProfileManagerDidSelectProfileTest() {
-    if (IsTrustFREOnboardingEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-           mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-          {});
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kGlicTrustFirstOnboarding);
-    }
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicMultiInstance, mojom::features::kGlicMultiTab,
+         features::kGlicMultitabUnderlines},
+        {});
   }
-
-  bool IsTrustFREOnboardingEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
+IN_PROC_BROWSER_TEST_F(GlicProfileManagerDidSelectProfileTest,
                        DidSelectProfile_NoConsent) {
   // Create a profile that is eligible but has not consented.
   Profile* profile =
@@ -596,20 +588,14 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
 
   auto* service = GetMockGlicKeyedService(profile);
 
-  if (IsTrustFREOnboardingEnabled()) {
     EXPECT_CALL(*service, ToggleUI(testing::NotNull(), true,
                                    mojom::InvocationSource::kProfilePicker,
                                    testing::Eq(std::nullopt)));
-  } else {
-    EXPECT_CALL(*service,
-                OpenFreDialogInNewTab(testing::NotNull(),
-                                      mojom::InvocationSource::kProfilePicker));
-  }
 
   GlicProfileManager::GetInstance()->DidSelectProfile(profile);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
+IN_PROC_BROWSER_TEST_F(GlicProfileManagerDidSelectProfileTest,
                        DidSelectProfile_Consented) {
   // Create a profile that is eligible and has consented.
   Profile* profile =
@@ -631,7 +617,4 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
   GlicProfileManager::GetInstance()->DidSelectProfile(profile);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GlicProfileManagerDidSelectProfileTest,
-                         testing::Bool());
 }  // namespace glic

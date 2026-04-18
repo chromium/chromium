@@ -1031,9 +1031,7 @@ IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest,
 class GlicUiTrustFirstOnboardingTest : public GlicUiInteractiveUiTestBase {
  public:
   GlicUiTrustFirstOnboardingTest()
-      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {
-    feature_list_.InitAndEnableFeature(features::kGlicTrustFirstOnboarding);
-  }
+      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {}
   ~GlicUiTrustFirstOnboardingTest() override = default;
 
  private:

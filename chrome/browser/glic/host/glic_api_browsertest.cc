@@ -201,8 +201,7 @@ std::vector<std::string> GetTestSuiteNames() {
 struct TestParams {
   // This is only used by one fixture.
   bool enable_scroll_to_pdf = false;
-  bool trust_first_onboarding_arm1 = false;
-  bool trust_first_onboarding_arm2 = false;
+  bool onboarding_needed = false;
   bool auto_open_pdf = false;
 };
 
@@ -218,10 +217,7 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     if (info.param.enable_scroll_to_pdf) {
       result.push_back("EnableScrollToPdf");
     }
-    if (info.param.trust_first_onboarding_arm1) {
-      result.push_back("TrustFirstOnboardingArm1");
-    }
-    if (info.param.trust_first_onboarding_arm2) {
+    if (info.param.onboarding_needed) {
       result.push_back("TrustFirstOnboardingArm2");
     }
     if (info.param.auto_open_pdf) {
@@ -1695,8 +1691,7 @@ class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
   GlicOnboardingApiTest()
       : GlicApiTestWithOneTab({.fre_status = prefs::FreStatus::kNotStarted}) {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicTrustFirstOnboarding, {}},
-         {features::kGlicMultiInstance, {}},
+        {{features::kGlicMultiInstance, {}},
          {mojom::features::kGlicMultiTab, {}},
          {features::kGlicMultitabUnderlines, {}}},
         {/*disabled_features=*/});
@@ -3391,8 +3386,7 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
   GlicGetHostCapabilityApiTest()
       : GlicApiTestWithOneTab(
-            {.fre_status = (GetParam().trust_first_onboarding_arm1 ||
-                            GetParam().trust_first_onboarding_arm2)
+            {.fre_status = GetParam().onboarding_needed
                                ? prefs::FreStatus::kNotStarted
                                : prefs::FreStatus::kCompleted}) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -3409,25 +3403,9 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
           features::kGlicPanelResetSizeAndLocationOnOpen);
     }
 
-    CHECK(!(GetParam().trust_first_onboarding_arm1 &&
-            GetParam().trust_first_onboarding_arm2));
-    if (GetParam().trust_first_onboarding_arm1) {
-      enabled_features.push_back(
-          {features::kGlicTrustFirstOnboarding,
-           {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}});
-      enabled_features.push_back({features::kGlicMultiInstance, {}});
-      enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
-      enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
-    } else if (GetParam().trust_first_onboarding_arm2) {
-      enabled_features.push_back(
-          {features::kGlicTrustFirstOnboarding,
-           {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}}});
-      enabled_features.push_back({features::kGlicMultiInstance, {}});
-      enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
-      enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
-    } else {
-      disabled_features.push_back(features::kGlicTrustFirstOnboarding);
-    }
+    enabled_features.push_back({features::kGlicMultiInstance, {}});
+    enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
+    enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
 
     if (GetParam().auto_open_pdf) {
       enabled_features.push_back(
@@ -3453,11 +3431,7 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
         std::to_underlying(mojom::HostCapability::kScrollToPdf));
 #endif
   }
-  if (GetParam().trust_first_onboarding_arm1) {
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm1));
-  }
-  if (GetParam().trust_first_onboarding_arm2) {
+  if (GetParam().onboarding_needed) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
   }
@@ -3703,16 +3677,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateOnMemoryUsage,
   histogram_tester.ExpectTotalCount("Glic.Instance.MemoryUsageAtThreshold", 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    GlicGetHostCapabilityApiTest,
-    testing::Values(TestParams{},
-                    TestParams{.enable_scroll_to_pdf = true},
-                    TestParams{.trust_first_onboarding_arm1 = true},
-                    TestParams{.trust_first_onboarding_arm2 = true},
-                    TestParams{.trust_first_onboarding_arm1 = true,
-                               .auto_open_pdf = true}),
-    &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicGetHostCapabilityApiTest,
+                         testing::Values(TestParams{},
+                                         TestParams{
+                                             .enable_scroll_to_pdf = true},
+                                         TestParams{.onboarding_needed = true},
+                                         TestParams{.onboarding_needed = true,
+                                                    .auto_open_pdf = true}),
+                         &WithTestParams::PrintTestVariant);
 
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
