@@ -809,11 +809,12 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
             GetLiveCaptionTitleLabel()->GetText());
 }
 
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64) || \
+    BUILDFLAG(IS_MAC)
 // https://crbug.com/1222873
 // Flaky on all Mac bots: https://crbug.com/1274967
-// TODO(crbug.com/40898509): Renable on WinArm64 when live captioning is
-// enabled.
+// TODO(crbug.com/40898509): Renable on WinArm64 or Linux Arm64 when live
+// captioning is enabled.
 #define MAYBE_LiveCaptionProgressUpdate DISABLED_LiveCaptionProgressUpdate
 #else
 #define MAYBE_LiveCaptionProgressUpdate LiveCaptionProgressUpdate
@@ -880,9 +881,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
-// TODO(crbug.com/40898509): Renable on WinArm64 when live captioning is
-// enabled.
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40898509): Renable on WinArm64 or Linux Arm64 when live
+// captioning is enabled.
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
 #else
 #define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage
