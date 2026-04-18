@@ -4,6 +4,7 @@
 
 #include "chrome/updater/certificate_tag.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <functional>
@@ -13,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -241,14 +243,13 @@ void VerifyEntries(size_t added,
   while (first_free > 0 && old_entries[first_free - 1] == kFatFreeSector) {
     --first_free;
   }
-  const std::vector<uint32_t> same_entries = std::vector<uint32_t>(
-      new_entries.begin(), new_entries.begin() + first_free);
-  const std::vector<uint32_t> diff_entries = std::vector<uint32_t>(
-      new_entries.begin() + first_free,
-      new_entries.begin() + first_free + changed_entries.size());
-  const std::vector<uint32_t> free_entries = std::vector<uint32_t>(
-      new_entries.begin() + first_free + changed_entries.size(),
-      new_entries.end());
+  auto span_new_entries = base::span(new_entries);
+  const std::vector<uint32_t> same_entries =
+      base::ToVector(span_new_entries.first(first_free));
+  const std::vector<uint32_t> diff_entries = base::ToVector(
+      span_new_entries.subspan(first_free, changed_entries.size()));
+  const std::vector<uint32_t> free_entries = base::ToVector(
+      span_new_entries.subspan(first_free + changed_entries.size()));
   for (size_t i = 0; i < same_entries.size(); ++i) {
     EXPECT_EQ(old_entries[i], same_entries[i]);
   }

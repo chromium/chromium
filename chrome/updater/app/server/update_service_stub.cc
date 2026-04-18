@@ -4,14 +4,13 @@
 
 #include "chrome/updater/app/server/update_service_stub.h"
 
-#include <algorithm>
-#include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -244,11 +243,7 @@ void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
   impl_->GetAppStates(
       base::BindOnce(
           [](const std::vector<updater::UpdateService::AppState>& app_states) {
-            std::vector<mojom::AppStatePtr> app_states_mojom;
-            std::ranges::transform(app_states,
-                                   std::back_inserter(app_states_mojom),
-                                   &MakeMojoAppState);
-            return app_states_mojom;
+            return base::ToVector(app_states, &MakeMojoAppState);
           })
           .Then(std::move(callback))
           .Then(task_end_listener_));

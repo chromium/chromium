@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -159,8 +161,7 @@ void AppUpdateApps::DoUpdateApps(
           },
           app_id,
           base::BindOnce(&AppUpdateApps::DoUpdateApps, this,
-                         std::vector<updater::UpdateService::AppState>(
-                             states.begin() + 1, states.end()))));
+                         base::ToVector(base::span(states).subspan(1u)))));
 }
 
 void AppUpdateApps::FirstTaskRun() {

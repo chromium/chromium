@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-#include <iterator>
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
@@ -16,8 +15,8 @@
 
 namespace updater {
 namespace {
-// Attempts to discover all of the home directories on the system by parsing
-// /etc/passwd.
+
+// Discovers all system home directories by parsing /etc/passwd.
 std::vector<base::FilePath> ReadHomeDirsFromPasswd() {
   std::string passwd_contents;
   if (!base::ReadFileToString(base::FilePath("/etc/passwd"),
@@ -25,23 +24,22 @@ std::vector<base::FilePath> ReadHomeDirsFromPasswd() {
     return {};
   }
 
-  // /etc/passwd contains one line for each user account, with seven
-  // fields delimited by colons.
-  std::vector<base::FilePath> home_dirs;
-  std::ranges::transform(
+  // /etc/passwd has one line per user account, with seven colon-delimited
+  // fields.
+  std::vector<base::FilePath> home_dirs = base::ToVector(
       base::SplitString(passwd_contents, "\n",
                         base::WhitespaceHandling::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY),
-      std::back_inserter(home_dirs), [](const std::string& line) {
+      [](const std::string& line) {
         std::vector<std::string> entries = base::SplitString(
             line, ":", base::WhitespaceHandling::KEEP_WHITESPACE,
             base::SplitResult::SPLIT_WANT_ALL);
-        // The sixth entry (index 5) of the line will be the user's home
-        // directory.
+        // The sixth field (index 5) is the user's home directory.
         return entries.size() == 7 ? base::FilePath(entries[5])
                                    : base::FilePath();
       });
-  // Remove invalid paths
+
+  // Remove invalid paths.
   std::erase(home_dirs, base::FilePath());
   return home_dirs;
 }
@@ -71,4 +69,5 @@ base::FilePath GetActiveFile(const base::FilePath& home_dir,
       .Append("Actives")
       .Append(id);
 }
+
 }  // namespace updater

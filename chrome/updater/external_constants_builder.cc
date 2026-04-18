@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
@@ -33,14 +34,7 @@ namespace {
 
 std::vector<std::string> StringVectorFromGURLVector(
     const std::vector<GURL>& gurls) {
-  std::vector<std::string> ret;
-  ret.reserve(gurls.size());
-
-  std::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
-    return gurl.possibly_invalid_spec();
-  });
-
-  return ret;
+  return base::ToVector(gurls, &GURL::possibly_invalid_spec);
 }
 
 }  // namespace

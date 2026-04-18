@@ -68,17 +68,17 @@ class PEBinary : public BinaryInterface {
   size_t certs_size_offset_ = 0;
 };
 
-#pragma pack(push)
-#pragma pack(1)
-
 // SectorFormat represents parameters of an MSI file sector.
 struct SectorFormat {
   // the size of a sector in bytes; 512 for dll v3 and 4096 for v4.
-  uint64_t size = 0;
+  size_t size = 0;
 
   // the number of int32s in a sector.
-  int ints = 0;
+  size_t ints = 0;
 };
+
+#pragma pack(push)
+#pragma pack(1)
 
 // MSIDirEntry represents a parsed MSI directory entry for a stream.
 struct MSIDirEntry {
@@ -129,6 +129,7 @@ struct SignedDataDir {
   uint64_t offset = 0;
   bool found = false;
 };
+
 #pragma pack(pop)
 
 // MSIBinary represents a Windows MSI binary and provides functions to extract
@@ -285,7 +286,7 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
 
 // Compound file binary format constants.
 inline constexpr int kNumHeaderContentBytes = 76;
-inline constexpr int kNumHeaderTotalBytes = 512;
+inline constexpr uint32_t kNumHeaderTotalBytes = 512;
 inline constexpr int kNumDifatHeaderEntries = 109;
 inline constexpr int kNumDirEntryBytes = 128;
 inline constexpr int kMiniStreamSectorSize = 64;

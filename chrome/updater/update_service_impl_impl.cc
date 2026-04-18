@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -143,16 +144,14 @@ void GetComponents(
                  const std::vector<std::optional<update_client::CrxComponent>>&
                      unordered) {
                 // Re-order the vector to match the order of `ids`.
-                std::vector<std::optional<update_client::CrxComponent>> ordered;
-                for (const auto& id : ids) {
+                return base::ToVector(ids, [&](const auto& id) {
                   auto it = std::ranges::find_if(
                       unordered,
                       [&id](std::optional<update_client::CrxComponent> v) {
                         return v && v->app_id == id;
                       });
-                  ordered.push_back(it != unordered.end() ? *it : std::nullopt);
-                }
-                return ordered;
+                  return it != unordered.end() ? *it : std::nullopt;
+                });
               },
               ids)
               .Then(std::move(callback)));
@@ -827,23 +826,23 @@ void UpdateServiceImplImpl::GetAppStatesImpl(
 
   scoped_refptr<PersistedData> persisted_data =
       config_->GetUpdaterPersistedData();
-  std::vector<std::string> app_ids = persisted_data->GetAppIds();
-  std::vector<AppState> apps;
-  for (const std::string& app_id : app_ids) {
-    AppState app_state;
-    app_state.app_id = app_id;
-    app_state.version = persisted_data->GetProductVersion(app_id).GetString();
-    app_state.version_path = persisted_data->GetProductVersionPath(app_id);
-    app_state.version_key = persisted_data->GetProductVersionKey(app_id);
-    app_state.ap = persisted_data->GetAP(app_id);
-    app_state.ap_path = persisted_data->GetAPPath(app_id);
-    app_state.ap_key = persisted_data->GetAPKey(app_id);
-    app_state.brand_code = persisted_data->GetBrandCode(app_id);
-    app_state.brand_path = persisted_data->GetBrandPath(app_id);
-    app_state.ecp = persisted_data->GetExistenceCheckerPath(app_id);
-    app_state.cohort = persisted_data->GetCohort(app_id);
-    apps.push_back(app_state);
-  }
+  std::vector<AppState> apps = base::ToVector(
+      persisted_data->GetAppIds(), [&](const std::string& app_id) {
+        AppState app_state;
+        app_state.app_id = app_id;
+        app_state.version =
+            persisted_data->GetProductVersion(app_id).GetString();
+        app_state.version_path = persisted_data->GetProductVersionPath(app_id);
+        app_state.version_key = persisted_data->GetProductVersionKey(app_id);
+        app_state.ap = persisted_data->GetAP(app_id);
+        app_state.ap_path = persisted_data->GetAPPath(app_id);
+        app_state.ap_key = persisted_data->GetAPKey(app_id);
+        app_state.brand_code = persisted_data->GetBrandCode(app_id);
+        app_state.brand_path = persisted_data->GetBrandPath(app_id);
+        app_state.ecp = persisted_data->GetExistenceCheckerPath(app_id);
+        app_state.cohort = persisted_data->GetCohort(app_id);
+        return app_state;
+      });
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(apps)));
 }
@@ -1579,13 +1578,12 @@ void UpdateServiceImplImpl::GetUpdaterState(
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
       ->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce([] {
-            std::vector<std::string> inactive_versions;
-            for (const base::FilePath& version_executable_path :
-                 GetVersionExecutablePaths(GetUpdaterScope())) {
-              inactive_versions.push_back(update_client::StringTypeToUTF8(
-                  version_executable_path.DirName().BaseName().value()));
-            }
-            return inactive_versions;
+            return base::ToVector(
+                GetVersionExecutablePaths(GetUpdaterScope()),
+                [](const base::FilePath& version_executable_path) {
+                  return update_client::StringTypeToUTF8(
+                      version_executable_path.DirName().BaseName().value());
+                });
           }),
           base::BindOnce(
               [](scoped_refptr<PersistedData> persisted_data,

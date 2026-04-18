@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -119,8 +120,7 @@ TEST_P(MsiSetTagsTest, MsiSetTags) {
                       Return(ERROR_MORE_DATA)));
   EXPECT_CALL(mock_msi_handle, GetProperty(std::wstring(L"OriginalDatabase"), _,
                                            Eq(msi_file_path.length() + 1U)))
-      .WillOnce(DoAll(SetArgReferee<1>(std::vector(msi_file_path.begin(),
-                                                   msi_file_path.end())),
+      .WillOnce(DoAll(SetArgReferee<1>(base::ToVector(msi_file_path)),
                       SetArgReferee<2>(msi_file_path.length()),
                       Return(ERROR_SUCCESS)));
   if (!GetParam().expected_tag_string.empty()) {
@@ -182,9 +182,9 @@ TEST_P(MsiSetInstallerResultTest, MsiSetInstallerResult) {
             DoAll(SetArgReferee<2>(kAppId.length()), Return(ERROR_MORE_DATA)));
     EXPECT_CALL(mock_msi_handle, GetProperty(std::wstring(L"CustomActionData"),
                                              _, Eq(kAppId.length() + 1U)))
-        .WillOnce(
-            DoAll(SetArgReferee<1>(std::vector(kAppId.begin(), kAppId.end())),
-                  SetArgReferee<2>(kAppId.length()), Return(ERROR_SUCCESS)));
+        .WillOnce(DoAll(SetArgReferee<1>(base::ToVector(kAppId)),
+                        SetArgReferee<2>(kAppId.length()),
+                        Return(ERROR_SUCCESS)));
   } else {
     EXPECT_CALL(mock_msi_handle,
                 GetProperty(std::wstring(L"CustomActionData"), _, Eq(1U)))

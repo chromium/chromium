@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -219,7 +220,7 @@ DMSigningKey::DMSigningKey(base::span<const uint8_t> key_data,
                            base::span<const uint8_t> key_signature,
                            int key_version,
                            const std::string& domain)
-    : key_data_(key_data.begin(), key_data.end()),
+    : key_data_(base::ToVector(key_data)),
       key_signature_(key_signature.begin(), key_signature.end()),
       key_version_(key_version),
       key_signature_domain_(domain) {}

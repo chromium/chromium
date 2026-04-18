@@ -21,6 +21,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/to_vector.h"
 #include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -475,13 +476,9 @@ void CallDispatchMethod(
     Microsoft::WRL::ComPtr<IDispatch> dispatch,
     const std::wstring& method_name,
     const std::vector<base::win::ScopedVariant>& variant_params) {
-  std::vector<VARIANT> params;
-  params.reserve(variant_params.size());
-
   // IDispatch::Invoke() expects the parameters in reverse order.
-  std::ranges::transform(base::Reversed(variant_params),
-                         std::back_inserter(params),
-                         &base::win::ScopedVariant::Copy);
+  std::vector<VARIANT> params = base::ToVector(base::Reversed(variant_params),
+                                               &base::win::ScopedVariant::Copy);
 
   DISPPARAMS dp = {};
   if (!params.empty()) {
@@ -1596,13 +1593,11 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                              : __uuidof(IAppCommandWebUser),
       IID_PPV_ARGS_Helper(&app_command_web)));
 
-  std::vector<base::win::ScopedVariant> variant_params;
-  variant_params.reserve(kMaxParameters);
-  std::ranges::transform(parameters, std::back_inserter(variant_params),
-                         [](const auto& param) {
-                           return base::win::ScopedVariant(
-                               base::UTF8ToWide(param.GetString()).c_str());
-                         });
+  std::vector<base::win::ScopedVariant> variant_params =
+      base::ToVector(parameters, [](const auto& param) {
+        return base::win::ScopedVariant(
+            base::UTF8ToWide(param.GetString()).c_str());
+      });
   for (size_t i = parameters.size(); i < kMaxParameters; ++i) {
     variant_params.emplace_back(base::win::ScopedVariant::kEmptyVariant);
   }
@@ -1769,10 +1764,8 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
 #endif
   path_suffix = path_suffix.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe"));
 
-  std::vector<TestUpdaterVersion> updater_versions;
-  std::ranges::transform(
-      supported_archs, std::back_inserter(updater_versions),
-      [&](const std::string& arch) -> TestUpdaterVersion {
+  return base::ToVector(
+      supported_archs, [&](const std::string& arch) -> TestUpdaterVersion {
         const base::FilePath updater_setup_path =
             old_updater_path.AppendUTF8(base::StrCat({arch, arch_suffix}))
                 .Append(path_suffix);
@@ -1781,7 +1774,6 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
                     FileVersionInfo::CreateFileVersionInfo(updater_setup_path)
                         ->file_version()))};
       });
-  return updater_versions;
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {

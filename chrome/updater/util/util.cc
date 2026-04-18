@@ -4,7 +4,6 @@
 
 #include "chrome/updater/util/util.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>

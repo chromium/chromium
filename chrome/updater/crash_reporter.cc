@@ -4,9 +4,7 @@
 
 #include "chrome/updater/crash_reporter.h"
 
-#include <algorithm>
 #include <cstdint>
-#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
@@ -16,6 +14,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -60,14 +60,10 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
   // The first element in the command line arguments is the program name,
   // which must be skipped.
 #if BUILDFLAG(IS_WIN)
-  std::vector<std::string> args;
-  std::ranges::transform(++command_line.argv().begin(),
-                         command_line.argv().end(), std::back_inserter(args),
-                         [](const auto& arg) { return base::WideToUTF8(arg); });
-
-  return args;
+  return base::ToVector(base::span(command_line.argv()).subspan(1u),
+                        [](const auto& arg) { return base::WideToUTF8(arg); });
 #else
-  return {++command_line.argv().begin(), command_line.argv().end()};
+  return base::ToVector(base::span(command_line.argv()).subspan(1u));
 #endif
 }
 

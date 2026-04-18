@@ -13,6 +13,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
@@ -272,8 +274,7 @@ class FakePolicyManager : public PolicyManagerInterface {
     std::ranges::transform(
         channels_, std::inserter(apps_with_policy, apps_with_policy.end()),
         [](const auto& kv) { return kv.first; });
-    return std::vector<std::string>(apps_with_policy.begin(),
-                                    apps_with_policy.end());
+    return base::ToVector(apps_with_policy);
   }
 
  private:

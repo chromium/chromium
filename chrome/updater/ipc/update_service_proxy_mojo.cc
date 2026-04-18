@@ -4,7 +4,6 @@
 
 #include "chrome/updater/ipc/update_service_proxy_mojo.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -247,10 +247,7 @@ void UpdateServiceProxyMojoImpl::GetAppStates(
   EnsureConnecting();
   remote_->GetAppStates(
       base::BindOnce([](std::vector<mojom::AppStatePtr> app_states_mojo) {
-        std::vector<updater::UpdateService::AppState> app_states;
-        std::ranges::transform(app_states_mojo, std::back_inserter(app_states),
-                               &MakeAppState);
-        return app_states;
+        return base::ToVector(app_states_mojo, &MakeAppState);
       }).Then(ToMojoCallback(std::move(callback))));
 }
 

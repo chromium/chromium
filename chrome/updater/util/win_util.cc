@@ -33,6 +33,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/cpu.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
@@ -786,20 +787,10 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
   return base::win::RunDeElevatedNoWait(
       argv->at(0),
       base::JoinString(
-          [&]() -> std::vector<std::wstring> {
-            if (argv->size() <= 1) {
-              return {};
-            }
-
-            std::vector<std::wstring> parameters;
-            std::ranges::for_each(
-                argv->begin() + 1, argv->end(),
-                [&](const std::wstring& parameter) {
-                  parameters.push_back(
-                      base::CommandLine::QuoteForCommandLineToArgvW(parameter));
-                });
-            return parameters;
-          }(),
+          argv->size() <= 1
+              ? std::vector<std::wstring>{}
+              : base::ToVector(base::span(*argv).subspan(1u),
+                               &base::CommandLine::QuoteForCommandLineToArgvW),
           L" "),
       program.DirName().value());
 }

@@ -17,6 +17,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -840,12 +841,10 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
           [](std::vector<base::RepeatingCallback<std::string(bool)>>
                  app_response_providers,
              bool v4) {
-            std::vector<std::string> app_responses;
-            std::ranges::transform(
-                app_response_providers, std::back_inserter(app_responses),
-                [=](base::RepeatingCallback<std::string(bool v4)> provider) {
-                  return provider.Run(v4);
-                });
+            std::vector<std::string> app_responses = base::ToVector(
+                app_response_providers,
+                [v4](const base::RepeatingCallback<std::string(bool)>&
+                         provider) { return provider.Run(v4); });
             return v4 ? GetUpdateResponseV4(app_responses)
                       : GetUpdateResponseV3(app_responses);
           },
