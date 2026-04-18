@@ -61,6 +61,7 @@ class VersionUpdaterTest : public testing::Test {
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
     ui_proxy_config_service_.reset();
+    fake_update_engine_client_ = nullptr;
     UpdateEngineClient::Shutdown();
   }
 
@@ -164,7 +165,7 @@ class VersionUpdaterTest : public testing::Test {
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient> fake_update_engine_client_;
   update_engine::ErrorCode error_code_;
 
   base::test::TaskEnvironment task_environment_;
