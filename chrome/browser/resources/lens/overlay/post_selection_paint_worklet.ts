@@ -75,7 +75,7 @@ class PostSelectionWorklet {
     const showGradient =
         showGradientProp && showGradientProp.toString() === '1';
     if (showGradient) {
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.roundRect(
           minX, minY, size.width - cornerWidth, size.height - cornerWidth,
