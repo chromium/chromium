@@ -781,9 +781,7 @@ class WebApp {
   //  - CreateRandomWebApp()
   //  - web_app.proto
   // If parsed from manifest, also add to:
-  //  - GetManifestDataChanges() inside manifest_update_utils.h
-  //  - ManifestSilentUpdateCommand::CompareWebApps() inside
-  //    manifest_silent_update_command.cc.
+  //  - WebAppComparison::CompareWebApps() in web_app_comparison.h
   //  - SetWebAppManifestFields()
   // If the field relates to the app icons, add revert logic for it in:
   // - ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded()

@@ -245,8 +245,6 @@ source_set("web_applications") {
     "locks/with_shared_web_contents_resources.h",
     "manifest_update_manager.cc",
     "manifest_update_manager.h",
-    "manifest_update_utils.cc",
-    "manifest_update_utils.h",
     "model/app_installed_by.cc",
     "model/app_installed_by.h",
     "model/display_override.cc",

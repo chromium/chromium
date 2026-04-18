@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/jobs/manifest_update_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
-#include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/model/web_app_comparison.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"

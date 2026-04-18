@@ -644,25 +644,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/manifest_silent_update_result.h:ManifestSilentUpdateCheckResult) -->
 
-<enum name="WebAppManifestUpdateResult">
-  <int value="0" label="No app in scope"/>
-  <int value="1" label="Updating throttled"/>
-  <int value="2" label="WebContents destroyed"/>
-  <int value="3" label="App uninstalled during update"/>
-  <int value="4" label="App is placeholder"/>
-  <int value="5" label="App is up to date"/>
-  <int value="6" label="App not eligible"/>
-  <int value="7" label="App update failed"/>
-  <int value="8" label="App updated"/>
-  <int value="9" label="App is system web app"/>
-  <int value="10" label="Icon download failed"/>
-  <int value="11" label="Icon read from disk failed"/>
-  <int value="12" label="App ID mismatch"/>
-  <int value="13" label="Web app origin associations update failed"/>
-  <int value="14" label="Web app origin associations updated"/>
-  <int value="15" label="Main frame navigation cancelled manifest update"/>
-</enum>
-
 <enum name="WebAppMlInstallResponse">
   <int value="0" label="Install accepted"/>
   <int value="1" label="Dialog ignored without interaction"/>

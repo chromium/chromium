@@ -8,9 +8,9 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
-#include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace system_permission_settings {
