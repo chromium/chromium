@@ -48,6 +48,12 @@ compile_ts("assert") {
   deps = [ ":gcrweb_error" ]
 }
 
+compile_ts("crash_keys") {
+  sources = [ "resources/crash_keys.ts" ]
+
+  deps = [ "//ios/web/js_features/crash_keys:crash_keys_js" ]
+}
+
 compile_ts("util_scripts") {
   sources = [ "resources/utils.ts" ]
 }
