@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
 #include "base/strings/to_string.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
@@ -19,9 +18,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
-#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -413,7 +410,6 @@ void SelectionOverlayController::Reset() {
   initial_rgb_screenshot_.reset();
   redacted_screenshot_.reset();
   screenshot_available_ = false;
-  encoded_.reset();
   selected_regions_.clear();
   tab_context_.reset();
   capture_region_observer_.reset();
@@ -424,7 +420,6 @@ void SelectionOverlayController::RenderRegions() {
     return;
   }
 
-  std::vector<SkRect> regions;
   std::vector<std::pair<base::UnguessableToken, gfx::Rect>> gfx_regions;
   std::vector<selection::SelectedRegionPtr> regions_mojo;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
@@ -437,7 +432,6 @@ void SelectionOverlayController::RenderRegions() {
     SkRect rect_on_canvas = gfx::RectFToSkRect(gfx_rect_on_canvas);
     if (!rect_on_canvas.isEmpty() &&
         redacted_screenshot_.bounds().contains(rect_on_canvas)) {
-      regions.push_back(rect_on_canvas);
       gfx_regions.emplace_back(id, gfx::ToEnclosingRect(gfx_rect_on_canvas));
       regions_mojo.push_back(region.Clone());
     } else {
@@ -464,43 +458,6 @@ void SelectionOverlayController::RenderRegions() {
     }
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(
-          [](const SkBitmap& bitmap, std::vector<SkRect> regions) {
-            SkBitmap deep_copy_bitmap;
-            std::optional<std::vector<uint8_t>> result;
-            // TODO(http://b/485358530): Record proper histograms for the error
-            // case. Allocate memory for the deep copy.
-            if (!deep_copy_bitmap.tryAllocPixels(bitmap.info())) {
-              LOG(ERROR) << "Alloc failure";
-              return result;
-            }
-
-            SkCanvas canvas(deep_copy_bitmap);
-            canvas.drawImage(bitmap.asImage(), 0, 0);
-            SkPaint paint;
-            const SkScalar intervals[] = {5.0f, 5.0f};
-            paint.setStyle(SkPaint::kStroke_Style);
-            paint.setStrokeWidth(2.0f);
-
-            for (const auto& region : regions) {
-              paint.setColor(SK_ColorMAGENTA);
-              paint.setPathEffect(SkDashPathEffect::Make(intervals, 0.0f));
-              canvas.drawRect(region, paint);
-              paint.setPathEffect(SkDashPathEffect::Make(intervals, -5.0f));
-              paint.setColor(SK_ColorCYAN);
-              canvas.drawRect(region, paint);
-            }
-            // TODO(https://b/485548840): Pass in the screenshot collection
-            // options.
-            result = page_content_annotations::EncodeScreenshot(
-                deep_copy_bitmap, std::nullopt);
-            return result;
-          },
-          redacted_screenshot_, std::move(regions)),
-      base::BindOnce(&SelectionOverlayController::RegionsRendererd,
-                     weak_factory_.GetWeakPtr()));
 }
 
 glic::mojom::AdditionalContextPtr
@@ -523,11 +480,6 @@ SelectionOverlayController::CreateAdditionalContext(
   context->tab_id = tab_->GetHandle().raw_value();
   context->parts = std::move(parts);
   return context;
-}
-
-void SelectionOverlayController::RegionsRendererd(
-    std::optional<std::vector<uint8_t>> encoded) {
-  encoded_ = encoded;
 }
 
 }  // namespace glic

@@ -147,26 +147,6 @@ void HandleFetchPageResult(
     task_id = journal_entry->GetTaskId();
   }
   if (page_context.screenshot_result.has_value()) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-    if (tab) {
-      // TODO(b/489714641): Remove this code we shouldn't be sending
-      // the screenshot this way.
-      auto encoded_data =
-          SelectionOverlayController::FromTabWebContents(tab->GetContents())
-              ->GetEncodedData();
-      if (encoded_data.has_value()) {
-        page_context.screenshot_result->screenshot_data =
-            std::move(encoded_data.value());
-      }
-
-      if (page_context.annotated_page_content_result.has_value()) {
-        page_context.annotated_page_content_result->proto
-            .mutable_gemini_in_chrome_page_metadata()
-            ->mutable_screenshot_info()
-            ->set_has_selection_region_in_screenshot(true);
-      }
-    }
-#endif
     if (journal) {
       journal->LogScreenshot(tab_context->tab_data->url, task_id,
                              page_context.screenshot_result->mime_type,

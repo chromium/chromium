@@ -72,8 +72,6 @@ class SelectionOverlayController
   // `selection::SelectionOverlayPageHandler`:
   void DeleteRegion(const base::UnguessableToken& id) override;
 
-  std::optional<std::vector<uint8_t>>& GetEncodedData() { return encoded_; }
-
  private:
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
@@ -127,7 +125,6 @@ class SelectionOverlayController
 
   // Render all the `selected_regions_` on top of `redacted_screenshot_`.
   void RenderRegions();
-  void RegionsRendererd(std::optional<std::vector<uint8_t>> encoded);
 
   void Reset();
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(
@@ -148,7 +145,6 @@ class SelectionOverlayController
   bool screenshot_available_ = false;
   SkBitmap initial_rgb_screenshot_;
   SkBitmap redacted_screenshot_;
-  std::optional<std::vector<uint8_t>> encoded_;
   mojom::TabContextPtr tab_context_;
   // Caches the user-selected region. To be renderer on top of
   // `initial_screenshot_`.
