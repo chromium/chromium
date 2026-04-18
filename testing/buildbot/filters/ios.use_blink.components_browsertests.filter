@@ -35,3 +35,10 @@
 # TODO(crbug.com/460416951): The test is flaky on the bot. It occurs in Andriod
 # and Linux as well.
 -PageContentMetadataObserverBrowserTest.NoMetaTags
+
+# TODO(crbug.com/503810632): These tests have been failing since
+# https://crrev.com/c/7539316 and httpc://crrev.com/c/7763951 on the bot.
+-SurfaceEmbedBrowserTest.EmbedMultipleTagsCreatesMultiplePlugins
+-SurfaceEmbedBrowserTest.EmbedPixelTest
+-SurfaceEmbedBrowserTest.EmbedTagCreatesPlugin
+-SurfaceEmbedBrowserTest.EmbedTagInvalidContentId
