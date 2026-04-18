@@ -9,6 +9,8 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -93,6 +95,19 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleGlicPinning) {
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(ContainsCommand(menu, IDC_GLIC_TOGGLE_PIN, IDS_GLIC_UNPIN));
+}
+
+// Verify that executing the tab search toggle command actually changes the
+// pref.
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest,
+                       ExecuteTabSearchToggleCommand) {
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+
+  profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, false);
+  chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH_TOGGLE_PIN);
+  EXPECT_TRUE(profile_prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip));
+  chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH_TOGGLE_PIN);
+  EXPECT_FALSE(profile_prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip));
 }
 
 class SystemMenuModelBuilderTabSearchDisabledTest
