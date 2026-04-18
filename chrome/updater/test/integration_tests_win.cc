@@ -1533,7 +1533,10 @@ void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope) {
   if (!IsSystemInstall(scope)) {
     return;
   }
-  ASSIGN_OR_RETURN(const DWORD explorer_pid, GetExplorerPid(), [] {});
+  const base::ProcessId explorer_pid = base::win::GetExplorerPid();
+  if (!explorer_pid) {
+    return;
+  }
 
   Microsoft::WRL::ComPtr<IUnknown> unknown;
   ASSERT_HRESULT_SUCCEEDED(

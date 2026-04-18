@@ -175,6 +175,19 @@ class BASE_EXPORT SecurityDescriptor {
                     DWORD access_mask,
                     DWORD inheritance);
 
+  // Set one entry in the DACL using the user SID from an access token.
+  // |token| the access token whose user SID is used for the entry.
+  // |mode| the operation to perform on the ACL, e.g. grant access.
+  // |access_mask| the entries access mask.
+  // |inheritance| inheritance flags.
+  // Returns true if successful, false on
+  // error, with the Win32 last error set.
+  // If DACL is not present a NULL ACL will be added first.
+  bool SetDaclEntry(const AccessToken& token,
+                    SecurityAccessMode mode,
+                    DWORD access_mask,
+                    DWORD inheritance);
+
   // Set one entry in the DACL.
   // |known_sid| the known SID for the entry.
   // |mode| the operation to perform on the ACL, e.g. grant access.

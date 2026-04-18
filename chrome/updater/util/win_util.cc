@@ -7,7 +7,6 @@
 #include <windows.h>
 #include <winternl.h>
 
-#include <aclapi.h>
 #include <combaseapi.h>
 #include <objidl.h>
 #include <regstr.h>
@@ -61,9 +60,10 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "base/version.h"
-#include "base/win/atl.h"
+#include "base/win/access_token.h"
 #include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -71,6 +71,8 @@
 #include "base/win/scoped_localalloc.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/security_descriptor.h"
+#include "base/win/sid.h"
 #include "base/win/startup_information.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/installer_paths.h"
@@ -104,23 +106,11 @@ ICallingProcessInfo : public IUnknown {
                                                  HANDLE * handle) = 0;
 };
 
-HResultOr<bool> IsUserRunningSplitToken() {
-  HANDLE token = NULL;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  base::win::ScopedHandle token_holder(token);
-  TOKEN_ELEVATION_TYPE elevation_type = TokenElevationTypeDefault;
-  DWORD size_returned = 0;
-  if (!::GetTokenInformation(token_holder.Get(), TokenElevationType,
-                             &elevation_type, sizeof(elevation_type),
-                             &size_returned)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  bool is_split_token = elevation_type == TokenElevationTypeFull ||
-                        elevation_type == TokenElevationTypeLimited;
-  CHECK(is_split_token || elevation_type == TokenElevationTypeDefault);
-  return base::ok(is_split_token);
+// Returns `true` if the current process token is a split UAC token.
+bool IsUserRunningSplitToken() {
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  return token && token->IsSplitToken();
 }
 
 HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
@@ -206,13 +196,26 @@ bool IsExplorerRunningAtMediumOrLower() {
 // Returns NULL on failure. Call ::GetLastError() to get extended error
 // information on failure.
 HWND CreateForegroundParentWindowForUAC() {
-  CWindow foreground_parent;
-  if (foreground_parent.Create(L"STATIC", NULL, NULL, NULL,
-                               WS_POPUP | WS_VISIBLE, WS_EX_TOOLWINDOW)) {
-    foreground_parent.CenterWindow(NULL);
-    ::SetForegroundWindow(foreground_parent);
+  HWND hwnd = ::CreateWindowEx(WS_EX_TOOLWINDOW, L"STATIC", nullptr,
+                               WS_POPUP | WS_VISIBLE, 0, 0, 0, 0, nullptr,
+                               nullptr, nullptr, nullptr);
+  if (hwnd) {
+    // Center the window on the primary monitor's work area.
+    RECT work_area = {};
+    RECT window_rect = {};
+    if (::SystemParametersInfo(SPI_GETWORKAREA, 0, &work_area, 0) &&
+        ::GetWindowRect(hwnd, &window_rect)) {
+      const int window_width = window_rect.right - window_rect.left;
+      const int window_height = window_rect.bottom - window_rect.top;
+      const int cx = work_area.left +
+                     (work_area.right - work_area.left - window_width) / 2;
+      const int cy = work_area.top +
+                     (work_area.bottom - work_area.top - window_height) / 2;
+      ::SetWindowPos(hwnd, nullptr, cx, cy, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    }
+    ::SetForegroundWindow(hwnd);
   }
-  return foreground_parent.Detach();
+  return hwnd;
 }
 
 // Compares the OS, service pack, and build numbers using `::VerifyVersionInfo`,
@@ -301,8 +304,18 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
 }  // namespace
 
 NamedObjectAttributes::NamedObjectAttributes(const std::wstring& name,
-                                             const CSecurityDesc& sd)
-    : name(name), sa(CSecurityAttributes(sd)) {}
+                                             const std::wstring& sddl)
+    : name(name) {
+  if (!sddl.empty()) {
+    sd_ = base::win::SecurityDescriptor::FromSddl(sddl);
+    if (sd_) {
+      absolute_sd_ = sd_->ToAbsolute();
+      sa.nLength = sizeof(sa);
+      sa.lpSecurityDescriptor = &absolute_sd_;
+      sa.bInheritHandle = FALSE;
+    }
+  }
+}
 NamedObjectAttributes::~NamedObjectAttributes() = default;
 
 HRESULT HRESULTFromLastError() {
@@ -320,7 +333,7 @@ NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
       GetProcessUser(nullptr, nullptr, &user_sid);
       return {
           base::StrCat({kGlobalPrefix, base_name, user_sid}),
-          GetCurrentUserDefaultSecurityDescriptor().value_or(CSecurityDesc())};
+          GetCurrentUserDefaultSecurityDescriptor().value_or(std::wstring())};
     }
     case UpdaterScope::kSystem:
       // Grant access to administrators and system.
@@ -329,104 +342,78 @@ NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
   }
 }
 
-std::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor() {
-  CAccessToken token;
-  if (!token.GetProcessToken(TOKEN_QUERY)) {
+std::optional<std::wstring> GetCurrentUserDefaultSecurityDescriptor() {
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (!token) {
     return std::nullopt;
   }
 
-  CSecurityDesc security_desc;
-  CSid sid_owner;
-  if (!token.GetOwner(&sid_owner)) {
+  base::win::SecurityDescriptor sd;
+  sd.set_owner(token->Owner());
+  sd.set_group(token->PrimaryGroup());
+  if (!sd.SetDaclEntry(token->User(), base::win::SecurityAccessMode::kGrant,
+                       GENERIC_ALL, 0)) {
     return std::nullopt;
   }
-
-  security_desc.SetOwner(sid_owner);
-  CSid sid_group;
-  if (!token.GetPrimaryGroup(&sid_group)) {
-    return std::nullopt;
-  }
-
-  security_desc.SetGroup(sid_group);
-
-  CDacl dacl;
-  if (!token.GetDefaultDacl(&dacl)) {
-    return std::nullopt;
-  }
-
-  CSid sid_user;
-  if (!token.GetUser(&sid_user)) {
-    return std::nullopt;
-  }
-  if (!dacl.AddAllowedAce(sid_user, GENERIC_ALL)) {
-    return std::nullopt;
-  }
-
-  security_desc.SetDacl(dacl);
-
-  return security_desc;
+  return sd.ToSddl(OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+                   DACL_SECURITY_INFORMATION);
 }
 
-CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask) {
-  CSecurityDesc sd;
-  CDacl dacl;
-  dacl.AddAllowedAce(Sids::System(), accessmask);
-  dacl.AddAllowedAce(Sids::Admins(), accessmask);
-
-  sd.SetOwner(Sids::Admins());
-  sd.SetGroup(Sids::Admins());
-  sd.SetDacl(dacl);
-  sd.MakeAbsolute();
-  return sd;
+std::wstring GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask) {
+  base::win::SecurityDescriptor sd;
+  sd.set_owner(base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
+  sd.set_group(base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
+  sd.SetDaclEntry(base::win::WellKnownSid::kLocalSystem,
+                  base::win::SecurityAccessMode::kGrant, accessmask, 0);
+  sd.SetDaclEntry(base::win::WellKnownSid::kBuiltinAdministrators,
+                  base::win::SecurityAccessMode::kGrant, accessmask, 0);
+  return sd
+      .ToSddl(OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+              DACL_SECURITY_INFORMATION)
+      .value_or(std::wstring());
 }
 
 std::optional<std::wstring> AddCurrentUserAllowedAce(
     const std::wstring& sddl,
     ACCESS_MASK required_permissions,
     UINT8 required_ace_flags) {
-  CAccessToken token;
-  CSid sid;
-  if (!token.GetEffectiveToken(TOKEN_QUERY) || !token.GetUser(&sid)) {
-    VLOG(2) << "Failed to get current user sid: " << std::hex
+  auto token = base::win::AccessToken::FromEffective();
+  if (!token) {
+    VLOG(2) << "Failed to get effective token: " << std::hex
             << HRESULTFromLastError();
     return {};
   }
 
-  CSecurityDesc sd;
-  if (!sd.FromString(sddl.c_str())) {
-    return {};
-  }
-  CDacl dacl;
-  if (!sd.GetDacl(&dacl)) {
-    VLOG(2) << "Failed to get dacl: " << std::hex << HRESULTFromLastError();
-    return {};
-  }
-
-  int ace_count = dacl.GetAceCount();
-  for (int i = 0; i < ace_count; ++i) {
-    CSid sid_entry;
-    ACCESS_MASK existing_permissions = 0;
-    BYTE existing_ace_flags = 0;
-    dacl.GetAclEntry(i, &sid_entry, &existing_permissions, NULL,
-                     &existing_ace_flags);
-    if (sid_entry == sid &&
-        required_permissions == (existing_permissions & required_permissions) &&
-        required_ace_flags == (existing_ace_flags & ~INHERITED_ACE)) {
-      return sddl;
-    }
-  }
-
-  if (!dacl.AddAllowedAce(sid, required_permissions, required_ace_flags)) {
-    VLOG(2) << "Failed to add ace: " << std::hex << HRESULTFromLastError();
+  // Parse existing SDDL into a security descriptor. For empty input, use a
+  // minimal SDDL with an empty DACL.
+  std::wstring input_sddl = sddl.empty() ? L"D:" : sddl;
+  auto sd = base::win::SecurityDescriptor::FromSddl(input_sddl);
+  if (!sd) {
     return {};
   }
 
-  sd.SetDacl(dacl);
-  CString new_sddl;
-  if (!sd.ToString(&new_sddl)) {
+  // Add the ACE for the current user. SetDaclEntry uses SetEntriesInAcl which
+  // merges permissions for an existing SID, ensuring idempotency and canonical
+  // ACE ordering.
+  if (!sd->SetDaclEntry(*token, base::win::SecurityAccessMode::kGrant,
+                        required_permissions, required_ace_flags)) {
+    VLOG(2) << "Failed to add ACE: " << std::hex << HRESULTFromLastError();
     return {};
   }
-  return std::wstring(new_sddl);
+
+  SECURITY_INFORMATION info_flags = DACL_SECURITY_INFORMATION;
+  if (sd->owner()) {
+    info_flags |= OWNER_SECURITY_INFORMATION;
+  }
+  if (sd->group()) {
+    info_flags |= GROUP_SECURITY_INFORMATION;
+  }
+  if (sd->sacl()) {
+    info_flags |= SACL_SECURITY_INFORMATION;
+  }
+
+  return sd->ToSddl(info_flags);
 }
 
 std::wstring GetAppClientsKey(const std::string& app_id) {
@@ -516,45 +503,6 @@ bool SetEulaAccepted(UpdaterScope scope, bool eula_accepted) {
                        .WriteValue(L"eulaaccepted", 0ul) == ERROR_SUCCESS;
 }
 
-HResultOr<bool> IsTokenAdmin(HANDLE token) {
-  SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
-  PSID administrators_group = nullptr;
-  if (!::AllocateAndInitializeSid(&nt_authority, 2, SECURITY_BUILTIN_DOMAIN_RID,
-                                  DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0,
-                                  &administrators_group)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  absl::Cleanup free_sid = [&] { ::FreeSid(administrators_group); };
-  BOOL is_member = false;
-  if (!::CheckTokenMembership(token, administrators_group, &is_member)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  return base::ok(is_member);
-}
-
-HResultOr<bool> IsUserAdmin() {
-  return IsTokenAdmin(NULL);
-}
-
-HResultOr<bool> IsUserNonElevatedAdmin() {
-  HANDLE token = NULL;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_READ, &token)) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  bool is_user_non_elevated_admin = false;
-  base::win::ScopedHandle token_holder(token);
-  TOKEN_ELEVATION_TYPE elevation_type = TokenElevationTypeDefault;
-  DWORD size_returned = 0;
-  if (::GetTokenInformation(token_holder.Get(), TokenElevationType,
-                            &elevation_type, sizeof(elevation_type),
-                            &size_returned)) {
-    if (elevation_type == TokenElevationTypeLimited) {
-      is_user_non_elevated_admin = true;
-    }
-  }
-  return base::ok(is_user_non_elevated_admin);
-}
-
 HResultOr<bool> IsCOMCallerAdmin() {
   ScopedClientImpersonation impersonate_client;
   if (!impersonate_client.is_valid()) {
@@ -565,54 +513,40 @@ HResultOr<bool> IsCOMCallerAdmin() {
     return base::ok(::IsUserAnAdmin());
   }
 
-  HResultOr<ScopedKernelHANDLE> token = [] {
-    using Token = HResultOr<ScopedKernelHANDLE>;
-    Token::value_type token;
-    if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
-                           ScopedKernelHANDLE::Receiver(token).get())) {
-      HRESULT hr = HRESULTFromLastError();
-      LOG(ERROR) << "::OpenThreadToken failed: " << std::hex << hr;
-      return Token(base::unexpected(hr));
-    }
-    return Token(std::move(token));
-  }();
-
-  if (!token.has_value()) {
-    return base::unexpected(token.error());
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentThread(
+          /*open_as_self=*/true, TOKEN_QUERY);
+  if (!token) {
+    HRESULT hr = HRESULTFromLastError();
+    LOG(ERROR) << "AccessToken::FromCurrentThread failed: " << std::hex << hr;
+    return base::unexpected(hr);
   }
 
-  return IsTokenAdmin(token.value().get()).transform_error([](HRESULT error) {
-    CHECK(FAILED(error));
-    LOG(ERROR) << "IsTokenAdmin failed: " << std::hex << error;
-    return error;
-  });
+  return base::ok(
+      token->IsMember(base::win::WellKnownSid::kBuiltinAdministrators));
 }
 
 bool IsUACOn() {
   // The presence of a split token definitively indicates that UAC is on. But
   // the absence of the token does not necessarily indicate that UAC is off.
-  HResultOr<bool> is_split_token = IsUserRunningSplitToken();
-  return (is_split_token.has_value() && is_split_token.value()) ||
-         IsExplorerRunningAtMediumOrLower();
+  return IsUserRunningSplitToken() || IsExplorerRunningAtMediumOrLower();
 }
 
 bool IsElevatedWithUACOn() {
-  HResultOr<bool> is_user_admin = IsUserAdmin();
-  return (!is_user_admin.has_value() || is_user_admin.value()) && IsUACOn();
+  return ::IsUserAnAdmin() && IsUACOn();
 }
 
 std::string GetUACState() {
   std::string s;
 
-  HResultOr<bool> is_user_admin = IsUserAdmin();
-  if (is_user_admin.has_value()) {
-    base::StringAppendF(&s, "IsUserAdmin: %d, ", is_user_admin.value());
-  }
+  base::StringAppendF(&s, "IsUserAdmin: %d, ", ::IsUserAnAdmin());
 
-  HResultOr<bool> is_user_non_elevated_admin = IsUserNonElevatedAdmin();
-  if (is_user_non_elevated_admin.has_value()) {
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (token) {
+    bool is_non_elevated_admin = token->IsSplitToken() && !token->IsElevated();
     base::StringAppendF(&s, "IsUserNonElevatedAdmin: %d, ",
-                        is_user_non_elevated_admin.value());
+                        is_non_elevated_admin);
   }
 
   base::StringAppendF(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d, ", IsUACOn(),
@@ -1278,7 +1212,7 @@ std::wstring GetTextForSystemError(int error) {
       FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK;
 
   if (error >= WINHTTP_ERROR_BASE && error <= WINHTTP_ERROR_LAST) {
-    source = ::GetModuleHandle(_T("winhttp.dll"));
+    source = ::GetModuleHandle(L"winhttp.dll");
     if (source) {
       format_options |= FORMAT_MESSAGE_FROM_HMODULE;
     }
@@ -1396,7 +1330,6 @@ bool MigrateLegacyUpdaters(
   return true;
 }
 
-namespace {
 
 struct ScopedWtsConnectStateCloseTraits {
   static WTS_CONNECTSTATE_CLASS* InvalidValue() { return nullptr; }
@@ -1465,72 +1398,25 @@ std::optional<DWORD> GetActiveSessionId() {
   return {};
 }
 
-std::vector<DWORD> FindProcesses(const std::wstring& process_name) {
-  base::NamedProcessIterator iter(process_name, nullptr);
-  std::vector<DWORD> pids;
-  while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
-    pids.push_back(process_entry->pid());
-  }
-  return pids;
-}
-
-// Returns processes running under `session_id`.
-std::vector<DWORD> FindProcessesInSession(const std::wstring& process_name,
-                                          std::optional<DWORD> session_id) {
+// Returns the PID of `explorer.exe` in the active session. Unlike
+// `base::win::GetExplorerPid()`, this works from session 0 (e.g. system
+// services).
+std::optional<base::ProcessId> GetExplorerPidInActiveSession() {
+  std::optional<DWORD> session_id = GetActiveSessionId();
   if (!session_id) {
     return {};
   }
-  std::vector<DWORD> pids;
-  for (const auto pid : FindProcesses(process_name)) {
+
+  base::NamedProcessIterator iter(L"EXPLORER.EXE", nullptr);
+  while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
     DWORD process_session = 0;
-    if (::ProcessIdToSessionId(pid, &process_session) &&
-        (process_session == *session_id)) {
-      pids.push_back(pid);
+    if (::ProcessIdToSessionId(process_entry->pid(), &process_session) &&
+        process_session == *session_id) {
+      return process_entry->pid();
     }
   }
-  return pids;
-}
 
-// Returns an impersonation token for the user running process_id.
-HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
-    std::optional<DWORD> process_id) {
-  if (!process_id) {
-    return base::unexpected(E_UNEXPECTED);
-  }
-  base::win::ScopedHandle process(::OpenProcess(
-      PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, *process_id));
-  if (!process.is_valid()) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  ScopedKernelHANDLE process_token;
-  if (!::OpenProcessToken(process.Get(), TOKEN_DUPLICATE | TOKEN_QUERY,
-                          ScopedKernelHANDLE::Receiver(process_token).get())) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  ScopedKernelHANDLE user_token;
-  if (!::DuplicateTokenEx(process_token.get(),
-                          TOKEN_IMPERSONATE | TOKEN_QUERY |
-                              TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE,
-                          NULL, SecurityImpersonation, TokenPrimary,
-                          ScopedKernelHANDLE::Receiver(user_token).get())) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-  return user_token;
-}
-
-}  // namespace
-
-std::optional<DWORD> GetExplorerPid() {
-  std::vector<DWORD> pids =
-      FindProcessesInSession(L"EXPLORER.EXE", GetActiveSessionId());
-  if (pids.empty()) {
-    return {};
-  }
-  return pids[0];
-}
-
-HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken() {
-  return GetImpersonationToken(GetExplorerPid());
+  return {};
 }
 
 bool IsAuditMode() {
@@ -1747,6 +1633,23 @@ void LogComCaller(base::cstring_view caller_func) {
                    GetCommandLineForPid(process.Pid());
                return cmd_line.has_value() ? *cmd_line : std::wstring();
              }();
+}
+
+std::optional<base::win::AccessToken> GetLoggedOnUserToken() {
+  std::optional<base::ProcessId> pid = GetExplorerPidInActiveSession();
+  if (!pid) {
+    return std::nullopt;
+  }
+
+  base::Process process =
+      base::Process::OpenWithAccess(*pid, PROCESS_QUERY_INFORMATION);
+  if (!process.IsValid()) {
+    return std::nullopt;
+  }
+
+  return base::win::AccessToken::FromProcess(
+      process.Handle(), /*impersonation=*/false,
+      TOKEN_IMPERSONATE | TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE);
 }
 
 }  // namespace updater

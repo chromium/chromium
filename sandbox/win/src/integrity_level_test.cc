@@ -14,9 +14,6 @@
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Must be last or StrCat defn conflicts.
-#include <atlsecurity.h>
-
 namespace sandbox {
 
 SBOX_TEST_COMMAND(CheckUntrustedIntegrityLevel) {

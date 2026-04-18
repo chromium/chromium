@@ -913,6 +913,7 @@ if (is_win || is_mac || is_linux) {
       "get_updater_scope_unittest.cc",
       "installer_unittest.cc",
       "net/fallback_net_fetcher_unittest.cc",
+      "net/network_fetcher_unittest.cc",
       "net/network_unittest.cc",
       "out_of_process_unzipper_unittest.cc",
       "persisted_data_unittest.cc",

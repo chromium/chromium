@@ -419,6 +419,13 @@ bool SecurityDescriptor::SetDaclEntry(const Sid& sid,
   return dacl_->SetEntry(sid, mode, access_mask, inheritance);
 }
 
+bool SecurityDescriptor::SetDaclEntry(const AccessToken& token,
+                                      SecurityAccessMode mode,
+                                      DWORD access_mask,
+                                      DWORD inheritance) {
+  return SetDaclEntry(token.User(), mode, access_mask, inheritance);
+}
+
 bool SecurityDescriptor::SetDaclEntry(WellKnownSid known_sid,
                                       SecurityAccessMode mode,
                                       DWORD access_mask,
