@@ -177,6 +177,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
 
+  base::WeakPtr<WorkspaceWindowResizer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // Returns the currently used instance for test.
   static WorkspaceWindowResizer* GetInstanceForTest();
 
