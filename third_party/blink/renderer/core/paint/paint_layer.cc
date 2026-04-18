@@ -1169,10 +1169,9 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
   transform_state.Translate(gfx::Vector2dF(local_fragment.PaintOffset()));
 
   if (const auto* properties = local_fragment.PaintProperties()) {
-    for (const TransformPaintPropertyNode* transform :
-         properties->AllCSSTransformPropertiesOutsideToInside()) {
-      if (transform)
-        transform_state.ApplyTransform(*transform);
+    for (const auto* transform :
+         properties->CSSTransformPropertiesOutsideToInside()) {
+      transform_state.ApplyTransform(*transform);
     }
   }
 

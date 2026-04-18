@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
@@ -258,9 +259,36 @@ class CORE_EXPORT ObjectPaintProperties
     return nodes_.HasFieldInRange(NodeId::kFirstCSSTransform,
                                   NodeId::kLastCSSTransform);
   }
-  std::array<const TransformPaintPropertyNode*, 5>
-  AllCSSTransformPropertiesOutsideToInside() const {
-    return {Translate(), Rotate(), Scale(), Offset(), Transform()};
+
+  // Existing CSS transform property nodes (Translate, Rotate, Scale, Offset,
+  // Transform) in outside-to-inside order, skipping absent nodes.
+  class CSSTransformRange {
+    STACK_ALLOCATED();
+
+   public:
+    CSSTransformRange() = default;
+    explicit CSSTransformRange(
+        const std::array<const TransformPaintPropertyNode*, 5>& nodes) {
+      for (const auto* node : nodes) {
+        if (node) {
+          nodes_[count_++] = node;
+        }
+      }
+    }
+    auto begin() const { return base::span(nodes_).first(count_).begin(); }
+    auto end() const { return base::span(nodes_).first(count_).end(); }
+
+   private:
+    std::array<const TransformPaintPropertyNode*, 5> nodes_ = {nullptr};
+    unsigned count_ = 0;
+  };
+
+  CSSTransformRange CSSTransformPropertiesOutsideToInside() const {
+    if (!HasCSSTransformPropertyNode()) [[likely]] {
+      return CSSTransformRange();
+    }
+    return CSSTransformRange(
+        {Translate(), Rotate(), Scale(), Offset(), Transform()});
   }
 
   ADD_TRANSFORM(PaintOffsetTranslation, NodeId::kPaintOffsetTranslation)
