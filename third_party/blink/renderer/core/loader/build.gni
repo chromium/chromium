@@ -179,6 +179,7 @@ blink_core_tests_loader = [
   "alternate_signed_exchange_resource_info_test.cc",
   "anchor_element_interaction_test.cc",
   "base_fetch_context_test.cc",
+  "connection_allowlist_preload_test.cc",
   "document_load_timing_test.cc",
   "document_loader_auto_speculation_rules_test.cc",
   "document_loader_test.cc",

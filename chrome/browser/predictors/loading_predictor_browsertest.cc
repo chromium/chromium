@@ -71,6 +71,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -3537,6 +3538,111 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
       dns_prefetch_url.GetHost(), network_anonymization_key))
       << "DNS lookup via initial about:blank iframe contentWindow injection "
          "should be blocked for non-allowlisted host.";
+}
+
+// Verify that Connection-Allowlist policy is inherited by space-prefixed
+// " about:" iframes. The space before "about:" should not prevent policy
+// inheritance from the parent document.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistLoadingPredictorBrowserTest,
+    ConnectionAllowlistSpacePrefixedAboutIframePolicyInheritance) {
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/connection-allowlist");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  GURL dns_prefetch_url("https://c.test");
+
+  content::RenderFrameHost* main_frame_rfh = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(ExecJs(main_frame_rfh, R"(
+            var iframe = document.createElement('iframe');
+            iframe.src = ' about:';
+            document.body.appendChild(iframe);
+          )"));
+  observer.Wait();
+
+  content::RenderFrameHost* child_frame_rfh =
+      content::ChildFrameAt(main_frame_rfh, 0);
+  ASSERT_TRUE(child_frame_rfh);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      child_frame_rfh->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+
+  // Inject a dns-prefetch link into the iframe's contentDocument.
+  EXPECT_TRUE(ExecJs(child_frame_rfh, content::JsReplace(R"(
+              var link = document.createElement('link');
+              link.rel = 'dns-prefetch';
+              link.href = $1;
+              document.head.appendChild(link);
+            )",
+                                                         dns_prefetch_url)));
+
+  preconnect_manager_observer()->WaitUntilHostLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key);
+
+  EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HostFound(
+      dns_prefetch_url.GetHost(), network_anonymization_key))
+      << "DNS lookup via space-prefixed about: iframe contentWindow "
+         "injection should be blocked for non-allowlisted host.";
+}
+
+// Verify that entity-encoded rel attributes (e.g. rel="preco&#110;&#110;ect"
+// decoded by the HTML parser to "preconnect") are subject to
+// Connection-Allowlist enforcement when injected into an iframe's
+// contentDocument via innerHTML.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistLoadingPredictorBrowserTest,
+    ConnectionAllowlistEntityEncodedRelIframePolicyInheritance) {
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/connection-allowlist");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  GURL dns_prefetch_url("https://c.test");
+
+  content::RenderFrameHost* main_frame_rfh = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
+  // Create about:blank iframe and wait for it to load.
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(ExecJs(main_frame_rfh, R"(
+            var iframe = document.createElement('iframe');
+            iframe.src = 'about:blank';
+            document.body.appendChild(iframe);
+          )"));
+  observer.Wait();
+
+  content::RenderFrameHost* child_frame_rfh =
+      content::ChildFrameAt(main_frame_rfh, 0);
+  ASSERT_TRUE(child_frame_rfh);
+  net::NetworkAnonymizationKey network_anonymization_key =
+      child_frame_rfh->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+
+  // Inject entity-encoded rel via innerHTML. The HTML parser decodes
+  // "preco&#110;&#110;ect" to "preconnect".
+  EXPECT_TRUE(ExecJs(child_frame_rfh, content::JsReplace(R"(
+              document.head.innerHTML =
+                  '<link rel="preco&#110;&#110;ect" href="' + $1 + '">';
+            )",
+                                                         dns_prefetch_url)));
+
+  preconnect_manager_observer()->WaitUntilHostLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key);
+
+  EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HostFound(
+      dns_prefetch_url.GetHost(), network_anonymization_key))
+      << "Entity-encoded rel in iframe contentWindow should be blocked "
+         "for non-allowlisted host.";
 }
 
 }  // namespace predictors

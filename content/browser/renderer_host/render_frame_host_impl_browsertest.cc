@@ -10684,4 +10684,33 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(popup_url, new_contents->GetLastCommittedURL());
 }
 
+// Verify that window.open() to a non-allowlisted origin is blocked by
+// Connection-Allowlist. The opened window should not successfully navigate
+// to the non-allowlisted origin.
+// Bug: crbug.com/496096540, crbug.com/496907108
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistWindowOpenBlocked) {
+  GURL url(https_server()->GetURL("a.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL blocked_url(https_server()->GetURL("b.com", "/title2.html"));
+
+  WebContentsAddedObserver new_tab_observer;
+  TestNavigationObserver nav_observer(blocked_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     JsReplace("window.open($1);", blocked_url)));
+
+  WebContents* new_contents = new_tab_observer.GetWebContents();
+  ASSERT_TRUE(new_contents);
+  nav_observer.Wait();
+
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+            nav_observer.last_net_error_code());
+  EXPECT_TRUE(
+      new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+}
+
 }  // namespace content
