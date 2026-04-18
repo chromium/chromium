@@ -15,6 +15,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/glic_dirty_dot_spark.xml",
     "java/res/drawable/glic_promo_logo.xml",
     "java/res/layout/glic_auto_browse.xml",
     "java/res/layout/glic_default_tab_access.xml",

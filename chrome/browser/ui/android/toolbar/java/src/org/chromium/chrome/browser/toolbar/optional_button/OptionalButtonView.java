@@ -81,6 +81,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private ImageView mAnimationImage;
 
     private @Nullable Drawable mIconDrawable;
+    private @Nullable Drawable mCollapsedIconDrawable;
 
     private @MonotonicNonNull ViewGroup mTransitionRoot;
     private @Nullable String mContentDescription;
@@ -294,6 +295,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mCurrentButtonSupportsTinting = buttonSpec.getSupportsTinting();
 
         mIconDrawable = buttonSpec.getDrawable();
+        mCollapsedIconDrawable = buttonSpec.getCollapsedDrawable();
 
         boolean isCpaCheckedState = buttonData.getButtonSpec().isChecked();
 
@@ -524,9 +526,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
      */
     @Override
     public void onTransitionEnd(@Nullable Transition transition) {
-        if (mTransitionFinishedCallback != null
-                && getCurrentTransitionType() != TransitionType.NONE) {
-            mTransitionFinishedCallback.onResult(getCurrentTransitionType());
+        @TransitionType int transitionType = getCurrentTransitionType();
+
+        if (mTransitionFinishedCallback != null && transitionType != TransitionType.NONE) {
+            mTransitionFinishedCallback.onResult(transitionType);
         }
 
         mState = getNextState();
@@ -539,7 +542,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             if (mCanChangeOwnVisibility) this.setVisibility(GONE);
         } else {
             mButton.setVisibility(VISIBLE);
-            mButton.setImageDrawable(mIconDrawable);
+            Drawable drawableToUse =
+                    (transitionType == TransitionType.COLLAPSING_ACTION_CHIP
+                                    && mCollapsedIconDrawable != null)
+                            ? mCollapsedIconDrawable
+                            : mIconDrawable;
+
+            mButton.setImageDrawable(drawableToUse);
             ImageViewCompat.setImageTintList(
                     mButton, mCurrentButtonSupportsTinting ? mForegroundColorTint : null);
             mButton.setOnClickListener(mClickListener);
@@ -913,7 +922,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mAnimationImage.setVisibility(GONE);
         mActionChipLabel.setVisibility(GONE);
 
-        mButton.setImageDrawable(mIconDrawable);
+        Drawable drawableToUse =
+                (mCollapsedIconDrawable != null) ? mCollapsedIconDrawable : mIconDrawable;
+        mButton.setImageDrawable(drawableToUse);
         ImageViewCompat.setImageTintList(
                 mButton, mCurrentButtonSupportsTinting ? mForegroundColorTint : null);
 

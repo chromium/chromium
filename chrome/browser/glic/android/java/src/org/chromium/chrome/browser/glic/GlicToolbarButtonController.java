@@ -118,9 +118,17 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mTrackerSupplier = trackerSupplier;
         mTaskSupplier = taskSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
+        Drawable collapsedDrawable =
+                AppCompatResources.getDrawable(context, R.drawable.glic_dirty_dot_spark);
         mWorkingSpec = createWorkingSpec(context);
-        mReviewSpec = createReviewSpec();
-        mDoneSpec = createDoneSpec();
+        mReviewSpec =
+                new ButtonSpec.Builder(createReviewSpec())
+                        .setCollapsedDrawable(collapsedDrawable)
+                        .build();
+        mDoneSpec =
+                new ButtonSpec.Builder(createDoneSpec())
+                        .setCollapsedDrawable(collapsedDrawable)
+                        .build();
     }
 
     private ButtonSpec createReviewSpec() {
@@ -360,6 +368,9 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     @Override
     public void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
+        if (newState == ActorTaskState.FINISHED) {
+            mPersistDoneState = true;
+        }
         int oldButtonState = mButtonState;
 
         mButtonState = mapTaskStateToButtonState(newState);

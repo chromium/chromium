@@ -51,6 +51,7 @@ public interface ButtonData {
     final class ButtonSpec {
         public static final int INVALID_TOOLTIP_TEXT_ID = 0;
         private final @Nullable Drawable mDrawable;
+        private final @Nullable Drawable mCollapsedDrawable;
         // TODO(crbug.com/40753109): make mOnClickListener
         private final @Nullable View.OnClickListener mOnClickListener;
         private final @Nullable OnLongClickListener mOnLongClickListener;
@@ -68,6 +69,7 @@ public interface ButtonData {
 
         private ButtonSpec(
                 @Nullable Drawable drawable,
+                @Nullable Drawable collapsedDrawable,
                 @Nullable View.OnClickListener onClickListener,
                 @Nullable OnLongClickListener onLongClickListener,
                 String contentDescription,
@@ -81,6 +83,7 @@ public interface ButtonData {
                 boolean shouldSuppressCpa,
                 int actionChipCollapseDelayMs) {
             mDrawable = drawable;
+            mCollapsedDrawable = collapsedDrawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
             mContentDescription = contentDescription;
@@ -99,6 +102,7 @@ public interface ButtonData {
         /** Builder for {@link ButtonSpec}. */
         public static class Builder {
             private @Nullable Drawable mDrawable;
+            private @Nullable Drawable mCollapsedDrawable;
             private @Nullable View.OnClickListener mOnClickListener;
             private @Nullable OnLongClickListener mOnLongClickListener;
             private String mContentDescription;
@@ -136,6 +140,7 @@ public interface ButtonData {
              */
             public Builder(ButtonSpec buttonSpec) {
                 mDrawable = buttonSpec.mDrawable;
+                mCollapsedDrawable = buttonSpec.mCollapsedDrawable;
                 mOnClickListener = buttonSpec.mOnClickListener;
                 mOnLongClickListener = buttonSpec.mOnLongClickListener;
                 mContentDescription = buttonSpec.mContentDescription;
@@ -152,6 +157,11 @@ public interface ButtonData {
 
             public Builder setDrawable(@Nullable Drawable drawable) {
                 mDrawable = drawable;
+                return this;
+            }
+
+            public Builder setCollapsedDrawable(@Nullable Drawable collapsedDrawable) {
+                mCollapsedDrawable = collapsedDrawable;
                 return this;
             }
 
@@ -219,6 +229,7 @@ public interface ButtonData {
             public ButtonSpec build() {
                 return new ButtonSpec(
                         mDrawable,
+                        mCollapsedDrawable,
                         mOnClickListener,
                         mOnLongClickListener,
                         mContentDescription,
@@ -237,6 +248,16 @@ public interface ButtonData {
         /** Returns the {@link Drawable} for the button icon. */
         public @Nullable Drawable getDrawable() {
             return mDrawable;
+        }
+
+        /**
+         * Returns the {@link Drawable} for the button icon when collapsed (e.g., after an action
+         * chip collapses), as opposed to the regular drawable which is used when the button is
+         * first shown or expanded. If this is null then the regular drawable is used for all
+         * states.
+         */
+        public @Nullable Drawable getCollapsedDrawable() {
+            return mCollapsedDrawable;
         }
 
         /** Returns the {@link View.OnClickListener} used on the button. */
