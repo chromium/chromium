@@ -2079,9 +2079,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
 
   // We should be doing the post-drag animation.
-  ASSERT_TRUE(tab_strip2->GetDragContext()
-                  ->GetPositioningDelegate()
-                  ->IsAnimatingDragEnd());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tab_strip2->GetDragContext()
+        ->GetPositioningDelegate()
+        ->IsAnimatingDragEnd();
+  }));
   // The tab should still be considered as dragging.
   ASSERT_TRUE(tab_strip2->tab_at(1)->dragging());
 
