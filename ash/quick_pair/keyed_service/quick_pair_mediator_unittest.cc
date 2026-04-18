@@ -170,6 +170,18 @@ class MediatorTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void TearDown() override {
+    mock_fast_pair_repository_ = nullptr;
+    mock_companion_app_broker_ = nullptr;
+    mock_ui_broker_ = nullptr;
+    mock_pairer_broker_ = nullptr;
+    fake_retroactive_pairing_detector_ = nullptr;
+    mock_scanner_broker_ = nullptr;
+    feature_status_tracker_ = nullptr;
+    adapter_.reset();
+    AshTestBase::TearDown();
+  }
+
   void SetHasAtLeastOneDiscoverySessionChanged(
       bool has_at_least_one_discovery_session) {
     fake_discovery_session_manager()->SetIsDiscoverySessionActive(
@@ -199,14 +211,13 @@ class MediatorTest : public AshTestBase {
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
-  raw_ptr<FakeFeatureStatusTracker, DanglingUntriaged> feature_status_tracker_;
-  raw_ptr<MockScannerBroker, DanglingUntriaged> mock_scanner_broker_;
-  raw_ptr<FakeRetroactivePairingDetector, DanglingUntriaged>
-      fake_retroactive_pairing_detector_;
-  raw_ptr<MockPairerBroker, DanglingUntriaged> mock_pairer_broker_;
-  raw_ptr<MockUIBroker, DanglingUntriaged> mock_ui_broker_;
-  raw_ptr<MockCompanionAppBroker, DanglingUntriaged> mock_companion_app_broker_;
-  raw_ptr<MockFastPairRepository, DanglingUntriaged> mock_fast_pair_repository_;
+  raw_ptr<FakeFeatureStatusTracker> feature_status_tracker_;
+  raw_ptr<MockScannerBroker> mock_scanner_broker_;
+  raw_ptr<FakeRetroactivePairingDetector> fake_retroactive_pairing_detector_;
+  raw_ptr<MockPairerBroker> mock_pairer_broker_;
+  raw_ptr<MockUIBroker> mock_ui_broker_;
+  raw_ptr<MockCompanionAppBroker> mock_companion_app_broker_;
+  raw_ptr<MockFastPairRepository> mock_fast_pair_repository_;
   bluetooth_config::FakeAdapterStateController fake_adapter_state_controller_;
   std::unique_ptr<Mediator> mediator_;
 };
