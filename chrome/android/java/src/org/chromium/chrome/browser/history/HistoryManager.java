@@ -411,7 +411,10 @@ public class HistoryManager
     }
 
     public void setQuery(String query) {
-        assumeNonNull(mToolbar);
+        if (mToolbar == null) {
+            // In the Incognito mode, we don't have the query box.
+            return;
+        }
 
         if (!mIsLargeFormFactorDevice && !mIsSearching) {
             enterSearchMode(false);

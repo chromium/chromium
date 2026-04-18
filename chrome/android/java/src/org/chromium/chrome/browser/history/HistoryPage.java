@@ -116,8 +116,6 @@ public class HistoryPage extends BasicNativePage {
         String query = uri.getQueryParameter(QUERY_PARAM_QUERY);
         if (query != null) {
             mHistoryManager.setQuery(query);
-        } else {
-            mHistoryManager.onEndSearch();
         }
     }
 
