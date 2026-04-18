@@ -686,6 +686,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">de les quatre últimes setmanes</translation>
 <translation id="393697183122708255">La cerca per veu no està disponible</translation>
+<translation id="3941718885865495207">Full inferior d'activació de les troballes de Chrome</translation>
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pestanya fixada d'imatge sobre imatge</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="395377504920307820">Utilitza sense cap compte</translation>
@@ -1191,6 +1192,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
 <translation id="6013305291643746595">S'ordena per més antics</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
+<translation id="6023820583797130428">Obre el menú per tornar enrere</translation>
 <translation id="6026538407078977628">Desplega en pantalla completa</translation>
 <translation id="6030719887161080597">Gestiona la informació que utilitzen els llocs web per mesurar el rendiment dels anuncis</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
@@ -1635,6 +1637,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya estàndard}other{<ph name="TABS_COUNT_MANY" /> pestanyes estàndard}}</translation>
 <translation id="7603168929588204083">La data no és vàlida</translation>
 <translation id="7605594153474022051">La sincronització no funciona</translation>
+<translation id="7608245556672190037">El full d'activació de les troballes de Chrome s'ha obert a alçada completa</translation>
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7612989789287281429">S'està iniciant la sessió…</translation>
 <translation id="7619072057915878432">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors a la xarxa.</translation>
@@ -1642,6 +1645,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7628417132421583481">Ves al gestor de contrasenyes</translation>
 <translation id="7630202231528827509">URL del proveïdor</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
+<translation id="764047009170754705">S'ha tancat el full d'activació de les troballes de Chrome</translation>
 <translation id="7646499124171960488">T'avisa de llocs web públics no segurs</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
 <translation id="7655240423373329753">7 darrers dies</translation>
@@ -1866,6 +1870,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="847433688444405067">Navega per tots els dispositius</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>
+<translation id="8481771036036087705">El full d'activació de les troballes de Chrome s'ha obert a mitja alçada</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">No hi ha cap finestra inactiva</translation>
 <translation id="8493948351860045254">Allibera espai</translation>

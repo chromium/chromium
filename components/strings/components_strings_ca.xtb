@@ -2721,6 +2721,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política de l'administrador no recomana copiar aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana copiar aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">El grup de pestanyes "<ph name="GROUP_NAME" />" ja no està disponible</translation>
+<translation id="5262342527470539728">La teva informació es desa a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" /></translation>
 <translation id="5263867360296733198">Abans de penjar-los, cal dur a terme una revisió</translation>
 <translation id="5266128565379329178">Enquadernació per la part superior</translation>
 <translation id="5269225904387178860">Encunyació quàdruple a la part inferior</translation>
@@ -4770,6 +4771,7 @@ Detalls addicionals:
 Detalls addicionals:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">S'ha permès l'ús del micròfon aquesta vegada</translation>
+<translation id="8421746712901926961">Desa la informació a <ph name="GOOGLE_WALLET_TITLE_1" /> i enllesteix més ràpidament les tasques, com ara emplenar formularis en tots els productes de Google. Pots <ph name="MANAGE_INFO_LINK" /> a <ph name="GOOGLE_WALLET_TITLE_2" /> per a <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8426945547715537628">Vols permetre l'anul·lació del teclat?</translation>
