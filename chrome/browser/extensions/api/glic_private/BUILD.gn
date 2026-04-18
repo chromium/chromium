@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions_core,
        "Cannot depend on extensions because enable_extensions_core=false.")
@@ -20,10 +21,13 @@ source_set("glic_private") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common/extensions/api",
+    "//components/endpoint_fetcher",
+    "//content/public/browser",
     "//extensions/browser",
     "//url",
   ]

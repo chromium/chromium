@@ -1951,6 +1951,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.PrivateApi.PromptRetrievalResult"
+    enum="GlicPrivateApiStatusCodeHistogramValue" expires_after="2026-12-31">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Records the detailed outcome of invoking the glic private prompt retrieval
+    API. This tracks both successful and unsuccessful retrieval attempts,
+    differentiating between local validation failures, HTTP/parsing errors, and
+    server-reported statuses. Recorded once per API invocation.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ProfileEnablement.DisabledReason.{Suffix}"
     enum="GlicProfileEnablementReason" expires_after="2026-09-27">
   <owner>dewittj@chromium.org</owner>

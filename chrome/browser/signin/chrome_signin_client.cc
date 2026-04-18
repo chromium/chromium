@@ -96,6 +96,10 @@
 #include "chrome/browser/signin/bound_session_credentials/throttled_gaia_auth_fetcher.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_features.h"
+#endif
+
 namespace {
 
 // List of sources for which sign out is always allowed.
@@ -178,6 +182,16 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     return signin::OAuthConsumer(
         signin::oauth_consumer_name::kGlicUserStatusName,
         {features::kGeminiOAuth2Scope.Get()});
+  }
+
+  signin::OAuthConsumer GetOAuthConsumerForGlicInvokeApi() const override {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kGlicInvokeApiName,
+        {extensions_features::kGlicInvokeApiOAuth2ScopeParam.Get()});
+#else
+    NOTREACHED();
+#endif
   }
 
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {

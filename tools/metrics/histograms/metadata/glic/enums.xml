@@ -592,6 +592,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_keyed_service.h:GlicPrewarmingFreSource) -->
 
+<!-- LINT.IfChange(GlicPrivateApiStatusCodeHistogramValue) -->
+
+<enum name="GlicPrivateApiStatusCodeHistogramValue">
+  <int value="0" label="Success"/>
+  <int value="1" label="LocalInvalidInvocationSource"/>
+  <int value="2" label="LocalMissingPromptId"/>
+  <int value="3" label="ServerMissingPrompt"/>
+  <int value="4" label="HttpError"/>
+  <int value="5" label="ParseError"/>
+  <int value="6" label="LocalNoActiveTab"/>
+  <int value="7" label="LocalGlicNotEnabled"/>
+  <int value="8" label="LocalGlicNotReady"/>
+  <int value="9" label="LocalGlicActuationNotAllowed"/>
+  <int value="10" label="LocalGlicNotEnabledAndConsented"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/api/glic_private/glic_private_api.cc:GlicPrivateApiStatusCodeHistogramValue) -->
+
 <enum name="GlicProfileEnablementReason">
   <int value="0" label="Feature disabled"/>
   <int value="1" label="Not regular profile"/>

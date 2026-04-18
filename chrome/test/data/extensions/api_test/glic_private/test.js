@@ -29,6 +29,9 @@ chrome.test.getConfig(config => {
     case 'invoke_new_tab':
       tests_runInvokeNewTab();
       return;
+    case 'invoke_server_error':
+      tests_runInvokeServerError();
+      return;
     default:
       chrome.test.fail('invalid mode provided.');
       return;
@@ -44,7 +47,7 @@ function tests_runFullyEnabled() {
     chrome.test.assertTrue(state.isEnabled, 'isEnabled should be true');
     chrome.test.assertTrue(
         state.isEnabledAndConsented, 'isEnabledAndConsented should be true');
-    chrome.test.assertEq('READY', state.readyState);
+    chrome.test.assertEq('ready', state.readyState);
 
     chrome.test.assertTrue(state.liveAllowed, 'liveAllowed should be true');
     chrome.test.assertTrue(
@@ -66,7 +69,7 @@ function tests_runDisabled() {
     chrome.test.assertFalse(
         state.isEnabledAndConsented, 'isEnabledAndConsented should be false');
     chrome.test.assertEq(
-        'INELIGIBLE', state.readyState, 'readyState should be INELIGIBLE');
+        'ineligible', state.readyState, 'readyState should be INELIGIBLE');
 
     chrome.test.assertFalse(state.liveAllowed, 'liveAllowed should be false');
     chrome.test.assertFalse(
@@ -112,8 +115,10 @@ function tests_runFeatureDisabled() {
 
 function tests_runInvoke() {
   chrome.test.runTests([async function invokeSuccess() {
-    await chrome.glicPrivate.invoke(
-        {promptId: 'TEST_PROMPT_ID', invocationSource: 'UniversalCart'});
+    await chrome.glicPrivate.invoke({
+      promptId: 'TEST_PROMPT_ID',
+      invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART
+    });
     chrome.test.succeed();
   }]);
 }
@@ -121,9 +126,11 @@ function tests_runInvoke() {
 function tests_runInvokeDisabled() {
   chrome.test.runTests([async function invoke() {
     await chrome.test.assertPromiseRejects(
-        chrome.glicPrivate.invoke(
-            {promptId: 'TEST_PROMPT_ID', invocationSource: 'UniversalCart'}),
-        'Error: Glic is not enabled.');
+        chrome.glicPrivate.invoke({
+          promptId: 'TEST_PROMPT_ID',
+          invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART
+        }),
+        'Error: local-glic-not-enabled');
     chrome.test.succeed();
   }]);
 }
@@ -132,9 +139,23 @@ function tests_runInvokeNewTab() {
   chrome.test.runTests([async function invokeSuccessInNewTab() {
     await chrome.glicPrivate.invoke({
       promptId: 'TEST_PROMPT_ID',
-      invocationSource: 'UniversalCart',
+      invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
       inNewTab: true
     });
     chrome.test.succeed();
   }]);
+}
+
+function tests_runInvokeServerError() {
+  chrome.test.runTests([
+    async function invokeHttpError() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            promptId: 'http_error',
+            invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART
+          }),
+          'Error: http-error');
+      chrome.test.succeed();
+    },
+  ]);
 }

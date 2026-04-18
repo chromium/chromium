@@ -529,4 +529,5 @@ Refer to README.md for content description and update process.
  <item id="actor_login_permission_service" added_in_milestone="148" content_hash_code="004d2614" os_list="linux,windows,android,chromeos" file_path="components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.cc" />
  <item id="fetch_email_one_time_token" added_in_milestone="148" content_hash_code="069305a9" os_list="linux,windows,android,chromeos" file_path="components/one_time_tokens/core/browser/email_one_time_token_fetcher.cc" />
  <item id="multistep_filter_server_requests" added_in_milestone="148" content_hash_code="054b2094" os_list="linux,windows,android,chromeos" file_path="components/multistep_filter/core/annotation_index/annotation_index_client_impl.cc" />
+ <item id="glic_private_api_prompt_fetcher" added_in_milestone="149" content_hash_code="0290976d" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/api/glic_private/glic_private_api.cc" />
 </annotations>

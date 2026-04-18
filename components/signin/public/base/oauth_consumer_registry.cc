@@ -769,6 +769,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kMultistepFilterName,
           /*scopes=*/{kSiteAutomationIndexOAuth2Scope});
+    case OAuthConsumerId::kGlicInvokeApi:
+      return GetOAuthConsumerForGlicInvokeApi();
   }
 }
 

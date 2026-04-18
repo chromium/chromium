@@ -78,6 +78,9 @@ BASE_DECLARE_FEATURE(kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered);
 
 // Controls the availability of Glic access from Google webpages.
 BASE_DECLARE_FEATURE(kApiGlicAccessFromGoogleWebpage);
+extern const base::FeatureParam<std::string> kProdPromptEndpointUrlParam;
+extern const base::FeatureParam<std::string> kGlicInvokeApiOAuth2ScopeParam;
+extern const base::FeatureParam<bool> kGlicRequireConsentForInvokeParam;
 
 // Controls the availability of the new `proxyOverrideRulesPrivate` API.
 BASE_DECLARE_FEATURE(kApiProxyOverrideRulesPrivate);

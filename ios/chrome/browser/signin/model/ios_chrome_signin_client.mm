@@ -37,6 +37,10 @@ class IOSChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     NOTREACHED();
   }
 
+  signin::OAuthConsumer GetOAuthConsumerForGlicInvokeApi() const override {
+    NOTREACHED();
+  }
+
   signin::OAuthConsumer GetOAuthConsumerForIndigo() const override {
     NOTREACHED();
   }
