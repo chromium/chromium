@@ -84,9 +84,10 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
     contents->SetBackground(
         views::CreateSolidBackground(cros_tokens::kCrosSysSystemBaseElevated));
 
-    feature_tile_ =
-        widget_->GetContentsView()->AddChildView(std::move(feature_tile));
-    ConfigureQSFeatureTile(feature_tile_);
+    feature_tile_ = widget_->GetContentsView()
+                        ->AddChildView(std::move(feature_tile))
+                        ->GetWeakPtr();
+    ConfigureQSFeatureTile(feature_tile_.get());
 
     // Add the non-default cellular and ethernet devices to Shill.
     network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,
@@ -113,7 +114,7 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  FeatureTile* feature_tile() { return feature_tile_; }
+  FeatureTile* feature_tile() { return feature_tile_.get(); }
 
   NetworkStateTestHelper* network_state_helper() {
     return &network_config_helper_.network_state_helper();
@@ -163,7 +164,7 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
   std::unique_ptr<NetworkFeaturePodController> network_feature_pod_controller_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   // Owned by `widget_`.
-  raw_ptr<FeatureTile, DanglingUntriaged> feature_tile_ = nullptr;
+  base::WeakPtr<FeatureTile> feature_tile_ = nullptr;
 };
 
 TEST_F(NetworkFeatureTilePixelTest, NoNetworks) {
