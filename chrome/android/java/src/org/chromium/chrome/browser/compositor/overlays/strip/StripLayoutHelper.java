@@ -5382,13 +5382,15 @@ public class StripLayoutHelper
      * @param anchorView The Glic button the menu will be anchored to
      */
     private void showGlicButtonMenu(StripLayoutView anchorView) {
-        if (mGlicButtonContextMenuCoordinator == null) return;
+        if (mGlicButtonContextMenuCoordinator == null
+                || mModel == null
+                || mModel.getProfile() == null) return;
         RectProvider anchorRectProvider = new RectProvider();
         anchorView.getAnchorRect(anchorRectProvider.getRect());
         getAdjustedAnchorRect(anchorRectProvider);
         var activity = assertNonNull(mWindowAndroid.getActivity().get());
         mGlicButtonContextMenuCoordinator.showMenu(
-                anchorRectProvider, activity, mCachedTabWidthSupplier.get());
+                anchorRectProvider, activity, mModel.getProfile(), mCachedTabWidthSupplier.get());
     }
 
     /**

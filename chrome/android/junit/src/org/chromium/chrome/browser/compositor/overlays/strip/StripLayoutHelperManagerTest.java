@@ -109,7 +109,12 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -166,6 +171,9 @@ public class StripLayoutHelperManagerTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private PrefService mPrefService;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private final SettableMonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier =
@@ -196,6 +204,11 @@ public class StripLayoutHelperManagerTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         TabStripSceneLayer.setTestFlag(true);
 
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
+        when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
+
         mLayerTitleCacheSupplier.set(mLayerTitleCache);
         mTabContentManagerSupplier.set(mTabContentManager);
         mTabModelSupplier.set(mStandardTabModel);
@@ -218,6 +231,9 @@ public class StripLayoutHelperManagerTest {
 
     @After
     public void tearDown() {
+        if (mStripLayoutHelperManager != null) {
+            mStripLayoutHelperManager.destroy();
+        }
         TabStripSceneLayer.setTestFlag(false);
         CompositorAnimationHandler.setTestingMode(false);
     }
@@ -264,6 +280,7 @@ public class StripLayoutHelperManagerTest {
                         mSnackbarManager,
                         () -> {},
                         mGlicKeyedService);
+        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
     }
@@ -655,7 +672,6 @@ public class StripLayoutHelperManagerTest {
         // Setup and stub required mocks.
         int hoveredTabId = 1;
         int selectedTabId = 2;
-        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
         when(mStandardTabModel.index()).thenReturn(selectedTabId);
         when(mStandardTabModel.getTabAt(selectedTabId)).thenReturn(mSelectedTab);
@@ -737,7 +753,6 @@ public class StripLayoutHelperManagerTest {
     // TODO(crbug.com/430058918): Reenable or add new test.
     @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testTabStripHeightTransition_Hide() {
-        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
         float yOffset = 10;
         doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
@@ -923,7 +938,6 @@ public class StripLayoutHelperManagerTest {
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
-        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
         // The yOffset will be forced to be reduced by the tab strip height to be kept invisible.
         float yOffset = -10;
@@ -1541,7 +1555,6 @@ public class StripLayoutHelperManagerTest {
     // TODO(crbug.com/430058918): Reenable or add new test.
     @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
     public void testVisibilityConstraintAndOffsetOverride() {
-        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         doReturn(false).when(mBrowserControlStateProvider).isVisibilityForced();
 
         float yOffset = 10;
@@ -1661,7 +1674,6 @@ public class StripLayoutHelperManagerTest {
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testPushAndUpdateStrip_RefactorEnabled() {
-        mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, true);

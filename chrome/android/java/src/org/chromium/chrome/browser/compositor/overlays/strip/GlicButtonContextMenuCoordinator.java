@@ -19,8 +19,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.glic.GlicUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -50,7 +50,11 @@ public class GlicButtonContextMenuCoordinator {
      * @param activity The {@link Activity} in which the menu is shown.
      * @param menuWidth The width of the menu in dp.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, Activity activity, float menuWidth) {
+    public void showMenu(
+            RectProvider anchorViewRectProvider,
+            Activity activity,
+            Profile profile,
+            float menuWidth) {
         ModelList modelList = new ModelList();
         modelList.add(
                 new ListItemBuilder()
@@ -60,7 +64,8 @@ public class GlicButtonContextMenuCoordinator {
                         .build());
 
         BasicListMenu listMenu =
-                BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, getListMenuDelegate());
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        mContext, modelList, getListMenuDelegate(profile));
         View contentView = listMenu.getContentView();
         View decorView = activity.getWindow().getDecorView();
         var popupWidthPx =
@@ -98,11 +103,10 @@ public class GlicButtonContextMenuCoordinator {
     }
 
     @VisibleForTesting
-    Delegate getListMenuDelegate() {
+    Delegate getListMenuDelegate(Profile profile) {
         return (model, view) -> {
             if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
-                ChromeSharedPreferences.getInstance()
-                        .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false);
+                GlicUtils.setButtonPinnedToTabStrip(profile, false);
             }
             assumeNonNull(mMenuWindow).dismiss();
         };

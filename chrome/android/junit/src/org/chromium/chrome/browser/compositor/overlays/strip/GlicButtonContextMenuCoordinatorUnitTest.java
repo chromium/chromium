@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -15,7 +16,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.ListView;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,8 +30,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.glic.GlicPrefNames;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -47,25 +50,28 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
     private Activity mActivity;
     @Mock private RectProvider mRectProvider;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     private GlicButtonContextMenuCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
         mCoordinator = new GlicButtonContextMenuCoordinator(mActivity);
-    }
 
-    @After
-    public void tearDown() {
-        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_BUTTON_PINNED);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
     }
 
     @Test
     public void testShowAndDismiss() {
-        mCoordinator.showMenu(mRectProvider, mActivity, /* menuWidth= */ 250f);
+        mCoordinator.showMenu(mRectProvider, mActivity, mProfile, /* menuWidth= */ 250f);
         assertTrue("Menu should be showing", mCoordinator.isShowing());
 
         mCoordinator.dismiss();
@@ -74,15 +80,8 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
     @Test
     public void testClickUnpin() {
-        // Set initial state for SharedPreferences
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
-        assertTrue(
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false));
-
         // Show menu
-        mCoordinator.showMenu(mRectProvider, mActivity, /* menuWidth= */ 250f);
+        mCoordinator.showMenu(mRectProvider, mActivity, mProfile, /* menuWidth= */ 250f);
 
         assertNotNull(mCoordinator.getPopupWindow());
         View contentView = mCoordinator.getPopupWindow().getContentView();
@@ -93,14 +92,11 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
         PropertyModel model = ((ListItem) adapter.getItem(0)).model;
         assertEquals(R.string.glic_button_cxmenu_unpin, model.get(ListMenuItemProperties.TITLE_ID));
 
-        // Click "Unpin".
-        mCoordinator.getListMenuDelegate().onItemSelected(model, listView);
+        // Click "Unpin"
+        mCoordinator.getListMenuDelegate(mProfile).onItemSelected(model, listView);
 
-        // Verify the menu dismissed and the unpin state updated
-        assertFalse("Menu should be dismissed after clicking an item.", mCoordinator.isShowing());
-        assertFalse(
-                "Glic button pinned state should be false after clicking unpin.",
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false));
+        // Verify the menu dismissed and the pin state updated
+        assertFalse("Menu should be dismissed.", mCoordinator.isShowing());
+        verify(mPrefService).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, false);
     }
 }

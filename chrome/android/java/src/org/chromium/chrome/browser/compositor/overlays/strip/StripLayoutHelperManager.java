@@ -13,8 +13,6 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -36,7 +34,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -72,6 +69,8 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
+import org.chromium.chrome.browser.glic.GlicPrefNames;
+import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -85,8 +84,8 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
@@ -120,6 +119,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -145,8 +145,7 @@ public class StripLayoutHelperManager
                 PauseResumeWithNativeObserver,
                 TabStripSceneLayerHolder,
                 TopResumedActivityChangedObserver,
-                AppHeaderObserver,
-                OnSharedPreferenceChangeListener {
+                AppHeaderObserver {
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
      * fix experiment where we create a placeholder tab strip on startup to mitigate jank as tabs
@@ -298,6 +297,7 @@ public class StripLayoutHelperManager
             (tabModel) -> {
                 tabModelSwitched(tabModel.isIncognito());
             };
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private final ActorUiTabController.Observer mActorObserver;
 
     private @MonotonicNonNull TabModelObserver mTabModelObserver; // Set on native initialization.
@@ -636,7 +636,6 @@ public class StripLayoutHelperManager
                         getActiveStripLayoutHelper().onKeyboardFocus(isFocused, view);
                     };
             createGlicButton(context, glicClickHandlerOnButton, glicKeyboardFocusHandler);
-            ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             StripLayoutViewOnClickHandler selectorClickHandler =
@@ -888,7 +887,11 @@ public class StripLayoutHelperManager
         // Delete the EventFilter to avoid any updates on destroyed StripLayoutHelpers.
         mEventFilter = null;
         mTabStripEventHandler = null;
-        ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
         if (mTabModelSelector != null) {
@@ -1856,13 +1859,25 @@ public class StripLayoutHelperManager
             mTabStripDragHandler.setTabModelSelector(mTabModelSelector);
         }
 
-        // Register observer for existing standard tabs.
+        // Register Glic actor observer for existing standard tabs.
         TabModel standardModel = mTabModelSelector.getModel(false);
         for (int i = 0; i < standardModel.getCount(); i++) {
             Tab tab = standardModel.getTabAt(i);
             if (tab != null) {
                 registerActorObserver(tab);
             }
+        }
+
+        // Register Glic pref change observer for Glic button pin state.
+        Profile profile = standardModel.getProfile();
+        if (profile != null) {
+            if (mPrefChangeRegistrar != null) {
+                mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
+                mPrefChangeRegistrar.destroy();
+            }
+            mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
+            mPrefChangeRegistrar.addObserver(
+                    GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, () -> updateStripButtons());
         }
     }
 
@@ -1971,14 +1986,6 @@ public class StripLayoutHelperManager
         return ChromeFeatureList.sGlic.isEnabled() && AndroidSidePanelEnabledFn.isEnabled();
     }
 
-    @Override
-    public void onSharedPreferenceChanged(
-            SharedPreferences sharedPreferences, @Nullable String key) {
-        if (ChromePreferenceKeys.GLIC_BUTTON_PINNED.equals(key)) {
-            updateStripButtons();
-        }
-    }
-
     private void updateStripButtons() {
         // Use helper methods to calculate new visibility of strip buttons.
         boolean newGlicVisibility = shouldGlicBeVisible();
@@ -2030,9 +2037,14 @@ public class StripLayoutHelperManager
     }
 
     private boolean shouldGlicBeVisible() {
-        if (mGlicButton == null || mIsIncognito) return false;
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+        if (mGlicButton == null
+                || mIsIncognito
+                || mTabModelSelector == null
+                || mTabModelSelector.getCurrentModel() == null) {
+            return false;
+        }
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+        return profile != null && GlicUtils.isButtonPinnedToTabStrip(profile);
     }
 
     public float getGlicButtonStartPadding() {

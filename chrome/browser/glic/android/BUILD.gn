@@ -39,6 +39,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsNavigation.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicUtils.java",
   ]
   resources_package = "org.chromium.chrome.browser.glic"
 

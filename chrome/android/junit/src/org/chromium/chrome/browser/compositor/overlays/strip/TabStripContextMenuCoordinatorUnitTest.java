@@ -32,17 +32,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -68,6 +70,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
     @Mock private Runnable mOnNewTabClick;
     @Mock private RectProvider mRectProvider;
     @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     private Activity mActivity;
     private TabStripContextMenuCoordinator mCoordinator;
@@ -96,6 +100,9 @@ public class TabStripContextMenuCoordinatorUnitTest {
                         mWindowAndroid,
                         mSnackbarManager,
                         mOnNewTabClick);
+
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
@@ -229,8 +236,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
     public void showMenu_verifyPinGlicOption() {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false);
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
         verifyMenuState(/* expectedNumItems= */ 6);
         assertEquals(
@@ -242,9 +248,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 .onItemSelected(getItemModelAtPosition(5), mListView);
 
         // Verify.
-        assertTrue(
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false));
+        verify(mPrefService).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, true);
         assertFalse(mMenuWindow.isShowing());
     }
 
@@ -253,8 +257,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
     public void showMenu_verifyUnpinGlicOption() {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
         verifyMenuState(/* expectedNumItems= */ 6);
         assertEquals(
@@ -267,9 +270,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 .onItemSelected(getItemModelAtPosition(5), mListView);
 
         // Verify.
-        assertFalse(
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true));
+        verify(mPrefService).setBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, false);
         assertFalse(mMenuWindow.isShowing());
     }
 

@@ -23,11 +23,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
@@ -199,11 +199,8 @@ public class TabStripContextMenuCoordinator {
             if (!isIncognito) {
                 itemList.add(BasicListMenu.buildMenuDivider(/* isIncognito= */ false));
 
-                boolean isPinned =
-                        ChromeSharedPreferences.getInstance()
-                                .readBoolean(
-                                        ChromePreferenceKeys.GLIC_BUTTON_PINNED,
-                                        /* defaultValue= */ true);
+                Profile profile = mTabModel.getProfile();
+                boolean isPinned = profile != null && GlicUtils.isButtonPinnedToTabStrip(profile);
                 if (isPinned) {
                     itemList.add(
                             new ListItemBuilder()
@@ -237,6 +234,7 @@ public class TabStripContextMenuCoordinator {
                 model.get(CLICK_LISTENER).onClick(contentView);
                 return;
             }
+            Profile profile = mTabModel.getProfile();
             if (model.get(MENU_ITEM_ID) == R.id.new_tab_menu_id) {
                 mOnNewTabClick.run();
             } else if (model.get(MENU_ITEM_ID) == R.id.reopen_closed_entry) {
@@ -248,12 +246,10 @@ public class TabStripContextMenuCoordinator {
                 mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
                 RecordUserAction.record("Android.TabStripMenu.PinGlic");
-                ChromeSharedPreferences.getInstance()
-                        .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+                if (profile != null) GlicUtils.setButtonPinnedToTabStrip(profile, true);
             } else if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
                 RecordUserAction.record("Android.TabStripMenu.UnpinGlic");
-                ChromeSharedPreferences.getInstance()
-                        .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false);
+                if (profile != null) GlicUtils.setButtonPinnedToTabStrip(profile, false);
             }
             assumeNonNull(mMenuWindow).dismiss();
         };
