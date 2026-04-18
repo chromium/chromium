@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.DeviceInfo;
@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -61,7 +62,7 @@ public class SigninFirstRunFragment extends Fragment
         implements FirstRunFragment,
                 FullscreenSigninCoordinator.Delegate,
                 DeviceLockCoordinator.Delegate {
-    @VisibleForTesting static final int ADD_ACCOUNT_REQUEST_CODE = 1;
+    private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
     private @Nullable FrameLayout mFragmentView;
     private View mMainView;
@@ -387,5 +388,21 @@ public class SigninFirstRunFragment extends Fragment
 
     boolean getDelayedExitFirstRunCalledForTesting() {
         return mDelayedExitFirstRunCalledForTesting;
+    }
+
+    Drawable getProfilePictureForTesting() {
+        return mFullscreenSigninCoordinator.getProfilePictureForTesting(); // IN-TEST
+    }
+
+    void setStartAnimationForTesting(boolean start) {
+        mFullscreenSigninCoordinator.setStartAnimationForTesting(start); // IN-TEST
+    }
+
+    @Nullable BadgeConfig getSigninAnimationBadgeConfigForTesting() {
+        return mFullscreenSigninCoordinator.getSigninAnimationBadgeConfigForTesting(); // IN-TEST
+    }
+
+    @Nullable BadgeConfig getContinueButtonBadgeConfigForTesting() {
+        return mFullscreenSigninCoordinator.getContinueButtonBadgeConfigForTesting(); // IN-TEST
     }
 }

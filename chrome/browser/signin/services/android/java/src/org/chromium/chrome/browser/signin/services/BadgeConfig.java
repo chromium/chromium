@@ -106,6 +106,14 @@ public final class BadgeConfig {
                     .withYPosition(R.dimen.badge_position_y);
         }
 
+        /** Sets the full config for a large child account badge. */
+        public Builder withLargeChildAccountConfig() {
+            return withBadgeSize(R.dimen.large_badge_size)
+                    .withBorderSize(R.dimen.large_badge_border_size)
+                    .withXPosition(R.dimen.large_badge_position_x)
+                    .withYPosition(R.dimen.large_badge_position_y);
+        }
+
         /* Set full config for toolbar identity disc. */
         public Builder withToolbarIdentityDiscConfig() {
             return withBadgeSize(R.dimen.toolbar_identity_disc_badge_size)

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.StringRes;
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -212,5 +214,21 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     /** Abandon the sign-in process and dismiss the sign-in page. */
     public void cancelSignInAndDismiss() {
         mMediator.dismiss();
+    }
+
+    public Drawable getProfilePictureForTesting() {
+        return mMediator.getProfilePictureForTesting(); // IN-TEST
+    }
+
+    public void setStartAnimationForTesting(boolean start) {
+        mMediator.setStartAnimationForTesting(start); // IN-TEST
+    }
+
+    public @Nullable BadgeConfig getSigninAnimationBadgeConfigForTesting() {
+        return mMediator.getSigninAnimationBadgeConfigForTesting(); // IN-TEST
+    }
+
+    public @Nullable BadgeConfig getContinueButtonBadgeConfigForTesting() {
+        return mMediator.getContinueButtonBadgeConfigForTesting(); // IN-TEST
     }
 }

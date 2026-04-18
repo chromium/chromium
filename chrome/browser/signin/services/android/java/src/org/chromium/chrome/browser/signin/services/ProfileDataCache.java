@@ -272,6 +272,10 @@ public class ProfileDataCache implements IdentityManager.Observer {
         }
     }
 
+    public @Nullable BadgeConfig getBadgeConfigForTesting(CoreAccountId accountId) {
+        return getBadgeConfigForAccount(accountId);
+    }
+
     /**
      * @param observer Observer that should be notified when new profile images are available.
      */

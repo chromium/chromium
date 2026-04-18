@@ -44,7 +44,7 @@ class FullscreenSigninViewBinder {
             view.getSelectedAccountView()
                     .setOnClickListener(
                             model.get(FullscreenSigninProperties.ON_SELECTED_ACCOUNT_CLICKED));
-        } else if (propertyKey == FullscreenSigninProperties.SELECTED_ACCOUNT_DATA) {
+        } else if (propertyKey == FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER) {
@@ -171,7 +171,7 @@ class FullscreenSigninViewBinder {
             return;
         }
         final @Nullable DisplayableProfileData profileData =
-                model.get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA);
+                model.get(FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA);
         if (profileData == null) {
             view.getContinueButtonView().setText(R.string.signin_add_account_to_device);
         } else {
@@ -224,7 +224,7 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
         final int selectedAccountVisibility =
                 !showInitialLoadProgressSpinner
-                                && model.get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA)
+                                && model.get(FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA)
                                         != null
                                 && model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED)
                         ? View.VISIBLE

@@ -23,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 class FullscreenSigninProperties {
     static final ReadableObjectPropertyKey<OnClickListener> ON_SELECTED_ACCOUNT_CLICKED =
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
-    static final WritableObjectPropertyKey<DisplayableProfileData> SELECTED_ACCOUNT_DATA =
+    static final WritableObjectPropertyKey<DisplayableProfileData> BOTTOM_GROUP_ACCOUNT_DATA =
             new WritableObjectPropertyKey<>("selected_account_data");
 
     // PropertyKey for the button |Continue as ...|
@@ -98,7 +98,7 @@ class FullscreenSigninProperties {
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ON_SELECTED_ACCOUNT_CLICKED,
-                SELECTED_ACCOUNT_DATA,
+                BOTTOM_GROUP_ACCOUNT_DATA,
                 SHOW_ACCOUNT_SUPERVISION_NOTICE,
                 ON_CONTINUE_AS_CLICKED,
                 ON_DISMISS_CLICKED,
@@ -133,7 +133,7 @@ class FullscreenSigninProperties {
             boolean showInitialLoadProgressSpinner) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
-                .with(SELECTED_ACCOUNT_DATA, null)
+                .with(BOTTOM_GROUP_ACCOUNT_DATA, null)
                 .with(SHOW_ACCOUNT_SUPERVISION_NOTICE, false)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
                 .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())

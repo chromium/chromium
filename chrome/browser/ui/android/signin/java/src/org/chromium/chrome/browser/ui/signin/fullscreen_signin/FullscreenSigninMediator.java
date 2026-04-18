@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
@@ -78,7 +79,6 @@ import java.util.List;
 import java.util.Objects;
 
 @NullMarked
-@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FullscreenSigninMediator
         implements AccountsChangeObserver,
                 ProfileDataCache.Observer,
@@ -121,7 +121,10 @@ public class FullscreenSigninMediator
     private final FullscreenSigninConfig mConfig;
     private final PropertyModel mModel;
 
-    private @Nullable ProfileDataCache mProfileDataCache;
+    // Two separate caches are necessary because scaling the large (110dp) animation image down
+    // to the small (40dp) button size would make the child account badge unreadable.
+    private @Nullable ProfileDataCache mContinueButtonProfileDataCache;
+    private @Nullable ProfileDataCache mSigninAnimationProfileDataCache;
     private boolean mDestroyed;
 
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
@@ -198,10 +201,33 @@ public class FullscreenSigninMediator
         return mModel;
     }
 
+    Drawable getProfilePictureForTesting() {
+        return mModel.get(FullscreenSigninProperties.PROFILE_PICTURE);
+    }
+
+    void setStartAnimationForTesting(boolean start) {
+        mModel.set(FullscreenSigninProperties.START_ANIMATION, start);
+    }
+
+    @Nullable BadgeConfig getSigninAnimationBadgeConfigForTesting() {
+        if (mSigninAnimationProfileDataCache == null || mSelectedAccount == null) return null;
+        return mSigninAnimationProfileDataCache.getBadgeConfigForTesting( // IN-TEST
+                mSelectedAccount.getId());
+    }
+
+    @Nullable BadgeConfig getContinueButtonBadgeConfigForTesting() {
+        if (mContinueButtonProfileDataCache == null || mSelectedAccount == null) return null;
+        return mContinueButtonProfileDataCache.getBadgeConfigForTesting( // IN-TEST
+                mSelectedAccount.getId());
+    }
+
     void destroy() {
         assert !mDestroyed;
-        if (mProfileDataCache != null) {
-            mProfileDataCache.removeObserver(this);
+        if (mContinueButtonProfileDataCache != null) {
+            mContinueButtonProfileDataCache.removeObserver(this);
+        }
+        if (mSigninAnimationProfileDataCache != null) {
+            mSigninAnimationProfileDataCache.removeObserver(this);
         }
         if (mForcedSigninStatusProvider != null) {
             mForcedSigninStatusProvider.hideForcedSigninScreen(mForcedSigninToken);
@@ -299,6 +325,7 @@ public class FullscreenSigninMediator
         mModel.set(
                 FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                 hasPolicies && mDelegate.shouldDisplayManagementNoticeOnManagedDevices());
+
         updateShouldHideDismissButton();
 
         mModel.set(FullscreenSigninProperties.TITLE_STRING, getTitleText());
@@ -318,13 +345,22 @@ public class FullscreenSigninMediator
     }
 
     private void initializeProfileDataCache(Profile profile) {
-        assert mProfileDataCache == null;
+        assert mContinueButtonProfileDataCache == null;
+        assert mSigninAnimationProfileDataCache == null;
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        mProfileDataCache =
+        mContinueButtonProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                         mContext, assertNonNull(identityManager));
-        mProfileDataCache.addObserver(this);
+        mContinueButtonProfileDataCache.addObserver(this);
+        // Create a separate cache for the sign-in animation. We use the logo height (110dp)
+        // to ensure the profile picture is high-resolution when it replaces the Chrome logo.
+        // A separate cache is used because scaling a 110dp image back down to 40dp for the
+        // "Continue" button would make the child account badge nearly invisible.
+        mSigninAnimationProfileDataCache =
+                ProfileDataCache.createWithoutBadge(
+                        mContext, identityManager, R.dimen.fullscreen_signin_logo_default_height);
+        mSigninAnimationProfileDataCache.addObserver(this);
         updateSelectedAccountData();
     }
 
@@ -506,13 +542,20 @@ public class FullscreenSigninMediator
      */
     private void startSignInAnimation(SigninFlowTimestampsLogger signinTimestampsLogger) {
         DisplayableProfileData profileData =
-                mModel.get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA);
+                mModel.get(FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA);
         mModel.set(
                 FullscreenSigninProperties.TITLE_STRING,
                 String.format(
                         mContext.getString(R.string.signed_in_fre_title),
                         profileData.getGivenNameOrFullNameOrEmail()));
-        mModel.set(FullscreenSigninProperties.PROFILE_PICTURE, profileData.getImage());
+        mModel.set(
+                FullscreenSigninProperties.PROFILE_PICTURE,
+                // If the signin animation is starting, an account should already have been selected
+                // and the sign-in animation profile picture data cache should have been
+                // initialized.
+                assumeNonNull(mSigninAnimationProfileDataCache)
+                        .getProfileDataOrDefault(assumeNonNull(mSelectedAccount).getEmail())
+                        .getImage());
         if (sAnimationsEnabled) {
             mModel.set(
                     FullscreenSigninProperties.ANIMATOR_LISTENER,
@@ -531,6 +574,7 @@ public class FullscreenSigninMediator
                             getSigninCallback(signinTimestampsLogger).onSignInAborted();
                         }
                     });
+            // PROFILE_PICTURE is expected to be set before starting the animation.
             mModel.set(FullscreenSigninProperties.START_ANIMATION, true);
         } else {
             finishSignIn(signinTimestampsLogger);
@@ -724,11 +768,32 @@ public class FullscreenSigninMediator
     }
 
     private void updateSelectedAccountData() {
-        if (mProfileDataCache != null && mSelectedAccount != null) {
+        if (mSelectedAccount == null) return;
+
+        if (mContinueButtonProfileDataCache != null) {
+            // Both caches are initialized together so they're either both null or none of them are.
+            assert mSigninAnimationProfileDataCache != null;
+
             mModel.set(
-                    FullscreenSigninProperties.SELECTED_ACCOUNT_DATA,
-                    mProfileDataCache.getById(mSelectedAccount.getId()));
+                    FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA,
+                    mContinueButtonProfileDataCache.getProfileDataOrDefault(
+                            mSelectedAccount.getEmail()));
             mModel.set(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION, !mIsChild);
+
+            // Until real data arrives, PROFILE_PICTURE is a placeholder silhouette.
+            // When the sign-in animation starts, it sets the PROFILE_PICTURE and then sets
+            // START_ANIMATION to true in the model.
+            // We perform the check below because if START_ANIMATION is false, we are still
+            // displaying the Chrome icon. In that scenario, the arrival of the profile picture data
+            // should not cause the Chrome icon to be replaced. However, if the animation has
+            // already started, we'll replace the placeholder with the real profile image.
+            if (mModel.get(FullscreenSigninProperties.START_ANIMATION)) {
+                mModel.set(
+                        FullscreenSigninProperties.PROFILE_PICTURE,
+                        mSigninAnimationProfileDataCache
+                                .getProfileDataOrDefault(mSelectedAccount.getEmail())
+                                .getImage());
+            }
         }
     }
 
@@ -747,7 +812,7 @@ public class FullscreenSigninMediator
         if (accounts.isEmpty()) {
             mDefaultAccount = null;
             mSelectedAccount = null;
-            mModel.set(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA, null);
+            mModel.set(FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA, null);
             mModel.set(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION, false);
             if (mDialogCoordinator != null) {
                 mDialogCoordinator.dismissDialog();
@@ -768,10 +833,14 @@ public class FullscreenSigninMediator
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 
-    private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
-        if (mProfileDataCache == null) {
+    @VisibleForTesting
+    void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
+        if (mContinueButtonProfileDataCache == null) {
+            // Both caches are initialized together so they're either both null or none of them are.
+            assert mSigninAnimationProfileDataCache == null;
             return;
         }
+
         mIsChild = isChild;
         mModel.set(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE, mIsChild);
         if (mIsChild) {
@@ -783,12 +852,24 @@ public class FullscreenSigninMediator
                 !mIsChild && mSelectedAccount != null);
         updateShouldHideDismissButton();
         // Selected account data will be updated in {@link #onProfileDataUpdated}
-        mProfileDataCache.setBadge(
-                isChild
-                        ? BadgeConfig.create(R.drawable.ic_account_child_20dp)
-                                .withDefaultSizeChildAccountConfig()
-                                .build(mContext)
-                        : null);
+
+        BadgeConfig continueButtonBadgeConfig = null;
+        BadgeConfig signinAnimationBadgeConfig = null;
+        if (isChild) {
+            continueButtonBadgeConfig =
+                    BadgeConfig.create(R.drawable.ic_account_child_20dp)
+                            .withDefaultSizeChildAccountConfig()
+                            .build(mContext);
+            // The recommendation for a 32dp icon is to use the 40dp icon and scale it down.
+            signinAnimationBadgeConfig =
+                    BadgeConfig.create(R.drawable.ic_account_child_40dp)
+                            .withLargeChildAccountConfig()
+                            .build(mContext);
+        }
+        mContinueButtonProfileDataCache.setBadge(continueButtonBadgeConfig);
+        if (mSigninAnimationProfileDataCache != null) {
+            mSigninAnimationProfileDataCache.setBadge(signinAnimationBadgeConfig);
+        }
     }
 
     /**

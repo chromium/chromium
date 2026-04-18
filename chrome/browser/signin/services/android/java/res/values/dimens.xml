@@ -13,6 +13,12 @@ found in the LICENSE file.
     <dimen name="badge_border_size">1.3dp</dimen>
     <dimen name="badge_size">20dp</dimen>
 
+    <!-- Large Badge Dimensions -->
+    <dimen name="large_badge_size">32dp</dimen>
+    <dimen name="large_badge_border_size">2dp</dimen>
+    <dimen name="large_badge_position_x">84dp</dimen>
+    <dimen name="large_badge_position_y">78dp</dimen>
+
     <!-- Toolbar Identity Disc Badge Dimensions -->
     <dimen name="toolbar_identity_disc_badge_size">16dp</dimen>
     <dimen name="toolbar_identity_disc_badge_border_size">0dp</dimen>
