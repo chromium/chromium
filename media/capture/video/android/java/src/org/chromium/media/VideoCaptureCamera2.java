@@ -1829,9 +1829,9 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
         // TODO(mcasas): The following line is correct for N5 with prerelease Build,
         // but NOT for N7 with a dev Build. Figure out which one to support.
-        mInvertDeviceOrientationReadings =
-                cameraCharacteristics.get(CameraCharacteristics.LENS_FACING)
-                        == CameraCharacteristics.LENS_FACING_BACK;
+        final int facing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
+        mInvertDeviceOrientationReadings = facing == CameraCharacteristics.LENS_FACING_BACK;
+        mIsExternalCamera = facing == CameraCharacteristics.LENS_FACING_EXTERNAL;
 
         mEnableFaceDetection = enableFaceDetection;
         mUseHardwareBuffers = useHardwareBuffers;

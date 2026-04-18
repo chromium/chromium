@@ -53,6 +53,8 @@ public abstract class VideoCapture {
     // individual implementations.
     protected boolean mInvertDeviceOrientationReadings;
 
+    protected boolean mIsExternalCamera;
+
     protected @Nullable VideoCaptureFormat mCaptureFormat;
 
     protected final int mId;
@@ -191,6 +193,10 @@ public abstract class VideoCapture {
     }
 
     protected final int getCameraRotation() {
+        // For external camera, we should not rotate the frame.
+        if (mIsExternalCamera) {
+            return 0;
+        }
         int rotation =
                 mInvertDeviceOrientationReadings
                         ? (360 - getDeviceRotation())
