@@ -28,6 +28,7 @@
 
 #include <array>
 #include <iosfwd>
+#include <optional>
 #include <string_view>
 #include <type_traits>
 
@@ -545,6 +546,24 @@ class WTF_EXPORT String {
   // `String("a,,b").Split(',')` produces ["a", "", "b"], and
   // `String("").Split(',')` produces [""].
   Vector<String> Split(UChar separator) const;
+
+  // Returns a list of substrings of `this`, separated by the positions where
+  // `finder` returns a length.
+  //
+  // `finder` should be a callable object that takes `StringView` and
+  // `size_type` and returns the length of the separator if the specified offset
+  // points to a separator, or std::nullopt otherwise.
+  template <typename Finder>
+    requires requires(Finder finder, const StringView& s, size_type pos) {
+      requires std::is_same_v<decltype(finder(s, pos)),
+                              std::optional<size_type>>;
+    }
+  Vector<String> Split(Finder finder) const {
+    return internal::SplitByFinder<String, Finder,
+                                   /* allow_empty_entries */ true>(*this,
+                                                                   finder);
+  }
+
   // Returns a list of substrings of `this`, separated by `separator`.
   // This doesn't produce empty substrings.
   // This function copies the content of the string. Please consider if
@@ -553,6 +572,23 @@ class WTF_EXPORT String {
   // `String(" a  b").SplitSkippingEmpty(' ')` produces ["a", "b"], and
   // `String("").SplitSkippingEmpty(',')` produces an empty list.
   Vector<String> SplitSkippingEmpty(UChar separator) const;
+
+  // Returns a list of substrings of `this`, separated by the positions where
+  // `finder` returns a length. This doesn't produce empty substrings.
+  //
+  // `finder` should be a callable object that takes `StringView` and
+  // `size_type` and returns the length of the separator if the specified offset
+  // points to a separator, or std::nullopt otherwise.
+  template <typename Finder>
+    requires requires(Finder finder, const StringView& s, size_type pos) {
+      requires std::is_same_v<decltype(finder(s, pos)),
+                              std::optional<size_type>>;
+    }
+  Vector<String> SplitSkippingEmpty(Finder finder) const {
+    return internal::SplitByFinder<String, Finder,
+                                   /* allow_empty_entries */ false>(*this,
+                                                                    finder);
+  }
 
 #ifdef __OBJC__
   String(NSString*);

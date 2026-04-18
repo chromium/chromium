@@ -44,27 +44,16 @@ StringView StripLeadingAndTrailingHtmlSpaces(const StringView& string) {
   return string.StripWhiteSpace(IsHTMLSpace);
 }
 
-// TODO(iclelland): Consider refactoring this into a general
-// String::Split(predicate) method
 Vector<String> SplitOnASCIIWhitespace(const String& input) {
-  Vector<String> output;
-  unsigned length = input.length();
-  if (!length) {
-    return output;
-  }
-  VisitCharacters(input, [&](auto chars) {
-    size_t cursor = 0;
-    using CharacterType = std::decay_t<decltype(*chars.data())>;
-    cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
-    while (cursor < chars.size()) {
-      const wtf_size_t token_start = static_cast<wtf_size_t>(cursor);
-      cursor = SkipUntil<CharacterType, IsHTMLSpace>(chars, cursor);
-      output.push_back(input.substr(
-          token_start, static_cast<wtf_size_t>(cursor - token_start)));
-      cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
-    }
-  });
-  return output;
+  return input.SplitSkippingEmpty(
+      [](const StringView& input,
+         string_size_t pos) -> std::optional<string_size_t> {
+        // SAFETY: SplitSkippingEmpty() guarantees that pos is always in bounds.
+        if (IsHTMLSpace(UNSAFE_BUFFERS(input[pos]))) {
+          return 1u;
+        }
+        return std::nullopt;
+      });
 }
 
 String SerializeForNumberType(const Decimal& number) {

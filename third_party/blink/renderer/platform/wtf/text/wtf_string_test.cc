@@ -396,6 +396,66 @@ TEST(StringTest, SplitByString) {
   EXPECT_EQ(" bar", result[2]);
 }
 
+TEST(StringTest, SplitByFinder) {
+  // Test splitting by zero-length separator (split into characters)
+  auto result = String("abc").Split(
+      [](const StringView&, string_size_t pos) -> std::optional<string_size_t> {
+        if (pos > 0) {
+          return 0u;
+        }
+        return std::nullopt;
+      });
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ("a", result[0]);
+  EXPECT_EQ("b", result[1]);
+  EXPECT_EQ("c", result[2]);
+
+  // Test splitting by character simulation
+  result = String("foo,,bar")
+               .Split([](const StringView& str,
+                         string_size_t pos) -> std::optional<string_size_t> {
+                 // SAFETY: Split() guarantees that pos is always in bounds.
+                 if (UNSAFE_BUFFERS(str[pos]) == ',') {
+                   return 1u;
+                 }
+                 return std::nullopt;
+               });
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("", result[1]);
+  EXPECT_EQ("bar", result[2]);
+
+  // Test splitting by \n or \r\n
+  auto eol_finder = [](const StringView& str,
+                       string_size_t pos) -> std::optional<string_size_t> {
+    auto sub = str.subview(pos);
+    if (sub.starts_with('\n')) {
+      return 1u;
+    }
+    if (sub.starts_with("\r\n")) {
+      return 2u;
+    }
+    return std::nullopt;
+  };
+  result = String("foo\n\r\nbaz").Split(eol_finder);
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("", result[1]);
+  EXPECT_EQ("baz", result[2]);
+  result = String("foo\n\r\nbaz\n").Split(eol_finder);
+  EXPECT_EQ(4u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("", result[1]);
+  EXPECT_EQ("baz", result[2]);
+  EXPECT_EQ("", result[3]);
+
+  // Test SplitSkippingEmpty by finder
+  result = String("foo\n\r\nbaz\n").SplitSkippingEmpty(eol_finder);
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ("foo", result[0]);
+  EXPECT_EQ("baz", result[1]);
+}
+
 TEST(StringTest, StartsWithIgnoringUnicodeCase) {
   // [U+017F U+212A i a] starts with "sk".
   EXPECT_TRUE(String::FromUtf8("\xC5\xBF\xE2\x84\xAAia")
