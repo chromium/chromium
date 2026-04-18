@@ -10,8 +10,6 @@ static_library("test_support") {
   sources = [
     "cli_util.cc",
     "cli_util.h",
-    "fake_ice_connection.cc",
-    "fake_ice_connection.h",
     "fake_network_dispatcher.cc",
     "fake_network_dispatcher.h",
     "fake_network_manager.cc",
