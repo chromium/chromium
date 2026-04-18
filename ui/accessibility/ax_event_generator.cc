@@ -581,6 +581,18 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       break;
     case ax::mojom::StringAttribute::kValue:
       if (node->data().IsRangeValueSupported()) {
+        if (tree->event_data()) {
+          for (const auto& intent : tree->event_data()->event_intents) {
+            if (intent.command == ax::mojom::Command::kSpinButtonDecrement) {
+              AddEvent(node, Event::VALUE_IN_SPIN_BUTTON_DECREMENTED);
+              return;
+            }
+            if (intent.command == ax::mojom::Command::kSpinButtonIncrement) {
+              AddEvent(node, Event::VALUE_IN_SPIN_BUTTON_INCREMENTED);
+              return;
+            }
+          }
+        }
         AddEvent(node, Event::RANGE_VALUE_CHANGED);
       } else if (IsSelectElement(node->GetRole())) {
         AddEvent(node, Event::SELECTED_VALUE_CHANGED);
@@ -1119,6 +1131,18 @@ void AXEventGenerator::FireValueInTextFieldChangedEventIfNecessary(
   if (!text_field_ancestor || text_field_ancestor == target_node)
     return;
 
+  // For increment or decrement intents, the generic descendant-driven
+  // event is suppressed in order to avoid double-firing. This method is
+  // called with these intents when child text nodes are updated, which
+  // causes AXEventGenerator::OnNodeCreated to be called.
+  if (tree->event_data()) {
+    for (const auto& intent : tree->event_data()->event_intents) {
+      if (intent.command == ax::mojom::Command::kSpinButtonIncrement ||
+          intent.command == ax::mojom::Command::kSpinButtonDecrement) {
+        return;
+      }
+    }
+  }
   AddEvent(text_field_ancestor, Event::EDITABLE_TEXT_CHANGED);
   AddEvent(text_field_ancestor, Event::VALUE_IN_TEXT_FIELD_CHANGED);
 }
@@ -1551,6 +1575,10 @@ const char* ToString(AXEventGenerator::Event event) {
       return "subtreeCreated";
     case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       return "textAttributeChanged";
+    case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_DECREMENTED:
+      return "valueInSpinButtonDecremented";
+    case AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_INCREMENTED:
+      return "valueInSpinButtonIncremented";
     case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       return "valueInTextFieldChanged";
     case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:

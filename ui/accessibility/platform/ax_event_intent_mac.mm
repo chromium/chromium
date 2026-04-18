@@ -189,6 +189,8 @@ AXTextStateChangeIntent FromEventIntent(const AXEventIntent& event_intent) {
     case ax::mojom::Command::kHistory:
       return AXTextStateChangeIntent();  // Not currently implemented on Mac.
     case ax::mojom::Command::kInsert:
+    case ax::mojom::Command::kSpinButtonDecrement:
+    case ax::mojom::Command::kSpinButtonIncrement:
       switch (event_intent.input_event_type) {
         case ax::mojom::InputEventType::kInsertText:
         case ax::mojom::InputEventType::kInsertLineBreak:

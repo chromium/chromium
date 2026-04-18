@@ -1101,7 +1101,8 @@ enum MoveDirection {
 // "InputEvent" - see the relevant enum in this file.
 // A selection command may be further described by its "TextBoundary" and
 // "MoveDirection" - see the relevant enums in this file.
-// Next value: 11
+// Next version: 2
+// Next value: 13
 [Extensible, Stable, Uuid="f389c8cf-8382-45bc-a447-656ba2ed8fcf"]
 enum Command {
   [Default]kNone = 0,
@@ -1115,6 +1116,8 @@ enum Command {
   kMarker = 8,  // Document markers have been added or removed.
   kMoveSelection = 9,  // The selection moved by a specific granularity.
   kSetSelection = 10,  // A completely new selection has been set.
+  [MinVersion=1] kSpinButtonIncrement = 11,  // Increment in a spin button
+  [MinVersion=1] kSpinButtonDecrement = 12,  // Decrement in a spin button
 };
 
 // Describes an edit command in more detail.

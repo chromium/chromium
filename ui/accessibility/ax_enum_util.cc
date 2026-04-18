@@ -2043,6 +2043,8 @@ const char* ToString(ax::mojom::Command command) {
       return "none";
     case ax::mojom::Command::kClearSelection:
       return "clearSelection";
+    case ax::mojom::Command::kSpinButtonDecrement:
+      return "spinButtonDecrement";
     case ax::mojom::Command::kDelete:
       return "delete";
     case ax::mojom::Command::kDictate:
@@ -2053,6 +2055,8 @@ const char* ToString(ax::mojom::Command command) {
       return "format";
     case ax::mojom::Command::kHistory:
       return "history";
+    case ax::mojom::Command::kSpinButtonIncrement:
+      return "spinButtonIncrement";
     case ax::mojom::Command::kInsert:
       return "insert";
     case ax::mojom::Command::kMarker:

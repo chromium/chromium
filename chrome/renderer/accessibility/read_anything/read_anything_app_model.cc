@@ -1222,6 +1222,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::STATE_CHANGED:
       case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+      case ui::AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_DECREMENTED:
+      case ui::AXEventGenerator::Event::VALUE_IN_SPIN_BUTTON_INCREMENTED:
       case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
         break;

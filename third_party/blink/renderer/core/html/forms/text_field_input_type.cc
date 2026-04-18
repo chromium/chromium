@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_field_input_type.h"
 
+#include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -791,10 +792,16 @@ void TextFieldInputType::DidSetValueByUserEdit() {
 }
 
 void TextFieldInputType::SpinButtonStepDown() {
+  ScopedBlinkAXEventIntent intent(
+      BlinkAXEventIntent(ax::mojom::blink::Command::kSpinButtonDecrement),
+      &GetElement().GetDocument());
   StepUpFromLayoutObject(-1);
 }
 
 void TextFieldInputType::SpinButtonStepUp() {
+  ScopedBlinkAXEventIntent intent(
+      BlinkAXEventIntent(ax::mojom::blink::Command::kSpinButtonIncrement),
+      &GetElement().GetDocument());
   StepUpFromLayoutObject(1);
 }
 

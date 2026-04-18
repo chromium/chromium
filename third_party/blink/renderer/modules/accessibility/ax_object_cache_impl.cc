@@ -5655,6 +5655,9 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   }
 
   std::vector<ui::AXEventIntent> event_intents;
+  for (const auto& intent : ActiveEventIntents()) {
+    event_intents.push_back(intent.key.intent());
+  }
   AddDirtyObjectToSerializationQueue(obj, event_from, event_from_action,
                                      event_intents);
 

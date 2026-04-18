@@ -120,6 +120,8 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     SUBTREE_CREATED,
     TEXT_ATTRIBUTE_CHANGED,
     TEXT_SELECTION_CHANGED,
+    VALUE_IN_SPIN_BUTTON_DECREMENTED,
+    VALUE_IN_SPIN_BUTTON_INCREMENTED,
     VALUE_IN_TEXT_FIELD_CHANGED,
 
     // This event is fired for the exact set of attributes that affect the
