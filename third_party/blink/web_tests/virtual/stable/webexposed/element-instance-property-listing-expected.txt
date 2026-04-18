@@ -300,6 +300,7 @@ namespace http://www.w3.org/1999/xhtml
     property prepend
     property previousElementSibling
     property previousSibling
+    property pseudo
     property querySelector
     property querySelectorAll
     property releasePointerCapture
@@ -1550,6 +1551,7 @@ namespace http://www.w3.org/2000/svg
     property prepend
     property previousElementSibling
     property previousSibling
+    property pseudo
     property querySelector
     property querySelectorAll
     property releasePointerCapture

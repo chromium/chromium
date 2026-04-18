@@ -1777,7 +1777,7 @@
     },
     {
       name: "CSSPseudoElementInterface",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPseudoElementViewTransitions",
@@ -2481,7 +2481,7 @@
     {
       // `event.pseudoTarget` property to represent pseudo-elements in events. Returns `CSSPseudoElement` or null.
       name: "EventPseudoTargetProperty",
-      status: "experimental",
+      status: "stable",
       depends_on: ["CSSPseudoElementInterface"],
     },
     {
@@ -4588,7 +4588,7 @@
       // Support hit-testing for ::after, ::before, ::marker
       // (e.g. for CSSPseudoElement).
       name: "PseudoElementsHitTestable",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support :hover on ::after, ::before, ::marker.
