@@ -17,8 +17,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/client_util/local_tab_handler.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
@@ -130,7 +131,8 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
@@ -155,8 +157,13 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
     return std::make_unique<DummySegmentationPlatformService>();
 
   Profile* profile = Profile::FromBrowserContext(context);
-  OptimizationGuideKeyedService* optimization_guide =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto* global_state_holder =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
+  optimization_guide::OptimizationGuideModelProvider* optimization_guide =
+      global_state_holder
+          ? &global_state_holder->GetGlobalState().prediction_manager()
+          : nullptr;
   sync_sessions::SessionSyncService* session_sync_service =
       SessionSyncServiceFactory::GetForProfile(profile);
   auto tab_fetcher = std::make_unique<processing::LocalTabHandler>(
