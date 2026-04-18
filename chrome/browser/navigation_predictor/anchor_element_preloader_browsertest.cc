@@ -460,8 +460,9 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
                 .network_anonymization_key());
 }
 
+// TODO(crbug.com/503036437): Re-enable this test once flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
-                       PreconnectNetworkAnonymizationKeyCrossOrigin) {
+                       DISABLED_PreconnectNetworkAnonymizationKeyCrossOrigin) {
   const GURL& url = GetTestURL("/iframe_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
