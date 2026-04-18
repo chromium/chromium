@@ -23,14 +23,10 @@ found in the LICENSE file.
       android:title="@string/account_management_title"/>
 
   <Preference
+      android:key="sign_out_divider"
       android:layout="@layout/horizontal_divider"/>
 
   <Preference
       android:key="sign_out"
       android:title="@string/account_management_sign_out"/>
-
-  <Preference
-      android:key="sign_out_divider"
-      android:layout="@layout/horizontal_divider"/>
-
 </PreferenceScreen>

@@ -429,7 +429,6 @@ chrome_java_resources = [
   "java/res/layout/accessibility_annotator_bottom_sheet.xml",
   "java/res/layout/account_chooser_dialog_item.xml",
   "java/res/layout/account_chooser_dialog_title.xml",
-  "java/res/layout/account_divider_preference.xml",
   "java/res/layout/account_management_account_row.xml",
   "java/res/layout/app_history_filter.xml",
   "java/res/layout/auto_pip_permission_dialog.xml",
