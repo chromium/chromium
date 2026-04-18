@@ -51,8 +51,11 @@ class PdfViewerPrivateApiTest : public ExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, All) {
-  ASSERT_TRUE(RunExtensionTest("pdf_viewer_private")) << message_;
+IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, AccessControl) {
+  // Runs the tests in access_control_test.js
+  ASSERT_TRUE(RunExtensionTest("pdf_viewer_private",
+                               {.extension_url = "access_control_test.html"}))
+      << message_;
 }
 
 }  // namespace extensions

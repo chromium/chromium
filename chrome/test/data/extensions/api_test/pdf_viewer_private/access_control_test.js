@@ -45,4 +45,4 @@ chrome.test.runTests([
     chrome.test.assertFalse(result);
     chrome.test.succeed();
   },
- ]);
+]);

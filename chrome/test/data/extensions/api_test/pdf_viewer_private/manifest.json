@@ -4,8 +4,5 @@
   "version": "1",
   "manifest_version": 3,
   "description": "end-to-end browser test for chrome.pdfViewerPrivate API",
-  "background": {
-    "service_worker": "background.js"
-  },
   "permissions": ["pdfViewerPrivate"]
 }
