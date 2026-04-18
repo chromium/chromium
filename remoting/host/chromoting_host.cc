@@ -34,7 +34,6 @@
 #include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/host_stub.h"
-#include "remoting/protocol/ice_connection_to_client.h"
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_connection_to_client.h"
@@ -349,17 +348,10 @@ void ChromotingHost::OnIncomingSession(
 
   HOST_LOG << "Client connected: " << session->jid();
 
-  // Create either IceConnectionToClient or WebrtcConnectionToClient.
-  // TODO(sergeyu): Move this logic to the protocol layer.
-  std::unique_ptr<protocol::ConnectionToClient> connection;
-  if (session->config().protocol() == SessionConfig::Protocol::WEBRTC) {
-    connection = std::make_unique<protocol::WebrtcConnectionToClient>(
-        base::WrapUnique(session), transport_context_, audio_task_runner_);
-  } else {
-    connection = std::make_unique<protocol::IceConnectionToClient>(
-        base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_);
-  }
+  // Create a WebrtcConnectionToClient.
+  std::unique_ptr<protocol::ConnectionToClient> connection =
+      std::make_unique<protocol::WebrtcConnectionToClient>(
+          base::WrapUnique(session), transport_context_, audio_task_runner_);
 
   // Create a ClientSession object.
   std::vector<raw_ptr<HostExtension, VectorExperimental>> extension_ptrs;
