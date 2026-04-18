@@ -688,15 +688,6 @@ void LockSchemeRegistries() {
   scheme_registries_locked = true;
 }
 
-// TODO(crbug.com/351564777): Delete this after //third_party/openscreen
-// transition is complete.
-bool IsStandard(const char* spec, const Component& scheme) {
-  SchemeType unused_scheme_type;
-  // SAFETY: It's unsafe. Do not use this function.
-  return DoIsStandard(UNSAFE_BUFFERS(scheme.maybe_as_string_view_on(spec)),
-                      &unused_scheme_type);
-}
-
 bool IsStandard(std::optional<std::string_view> scheme) {
   SchemeType unused_scheme_type;
   return DoIsStandard(scheme, &unused_scheme_type);

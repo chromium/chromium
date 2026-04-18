@@ -157,10 +157,6 @@ bool FindAndCompareScheme(std::u16string_view str,
 
 // Returns true if the given scheme identified by |scheme| within |spec| is in
 // the list of known standard-format schemes (see AddStandardScheme).
-// TODO(crbug.com/351564777): Delete this after //third_party/openscreen
-// transition is complete.
-UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(
-    URL) bool IsStandard(const char* spec, const Component& scheme);
 COMPONENT_EXPORT(URL)
 bool IsStandard(std::optional<std::string_view> scheme);
 COMPONENT_EXPORT(URL)
