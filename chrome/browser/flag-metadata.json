@@ -4064,11 +4064,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-toolbar-swipe-on-non-desktop-lff",
-    "owners": [ "massan@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enable-touch-drag-drop",
     "owners": [ "mustaq@chromium.org", "input-dev@chromium.org" ],
     "expiry_milestone": 142

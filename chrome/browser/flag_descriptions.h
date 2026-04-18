@@ -647,11 +647,6 @@ inline constexpr char kEnableExtensionInstallPolicyFetchingDescription[] =
     "Enables fetching of extension install policies from the cloud for the "
     "ExtensionInstallCloudPolicyChecksEnabled policy.";
 
-inline constexpr char kEnableToolbarSwipeOnNonDesktopLffName[] =
-    "Enable Toolbar Swipe On Non-Desktop LFF";
-inline constexpr char kEnableToolbarSwipeOnNonDesktopLffDescription[] =
-    "Enable swiping on the toolbar to switch tabs on Non-Desktop LFF.";
-
 inline constexpr char kD3D12VideoEncoderName[] = "Use D3D12 video encoder";
 inline constexpr char kD3D12VideoEncoderDescription[] =
     "Enables D3D12 video encoding. The system might still fall back to "

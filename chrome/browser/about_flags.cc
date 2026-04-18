@@ -5282,11 +5282,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSubmenusTabContextMenuLffTabStripDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSubmenusTabContextMenuLffTabStrip)},
-    {"enable-toolbar-swipe-on-non-desktop-lff",
-     flag_descriptions::kEnableToolbarSwipeOnNonDesktopLffName,
-     flag_descriptions::kEnableToolbarSwipeOnNonDesktopLffDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEnableToolbarSwipeOnNonDesktopLff)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,
