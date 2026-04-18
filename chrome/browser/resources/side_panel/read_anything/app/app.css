@@ -253,6 +253,39 @@
   display: none;
 }
 
+/* Collapse table borders to make continuous lines. */
+#appFlexParent table {
+  border-collapse: collapse;
+}
+
+/*
+* Hide empty spacer rows (commonly found in distilled Wikipedia infoboxes) to
+* prevent awkward dead space.
+*/
+#appFlexParent tr:has(> th:empty:only-child) {
+  display: none;
+}
+
+/* Apply alternating background colors to data rows only.
+* Using :is(tbody, table) ensures it works for standard tables (<tbody>) and
+* Wikipedia-style tables (direct <tr> children), while ignoring <thead> so the
+* header and first row don't visually blend together.
+*/
+#appFlexParent :is(tbody, table) > tr:nth-child(odd of :not(:has(> th:empty:only-child))) {
+  background-color: color-mix(in srgb, var(--foreground-color) 15%, transparent);
+}
+
+/* Apply a starting border to each table cell to act as a separator. */
+#appFlexParent :is(th, td) {
+  border-inline-start: 2px solid color-mix(in srgb, var(--foreground-color) 30%, transparent);
+  padding: 4px 8px;
+}
+
+/* Remove the starting border from the first column of each row. */
+#appFlexParent tr > :is(th, td):first-child {
+  border-inline-start: none;
+}
+
 #docs-load-more-button {
   background: var(--color-sys-tonal-container);
   margin: 0 auto;
