@@ -219,7 +219,6 @@ def dev_list():
       "binutils",
       "bison",
       "bzip2",
-      "cdbs",
       "curl",
       "dbus-x11",
       "devscripts",
@@ -350,6 +349,11 @@ def dev_list():
       packages.append("lib32gcc-s1")
     elif package_exists("lib32gcc1"):
       packages.append("lib32gcc1")
+
+  # Debian sid no longer ships cdbs; keep installing it where it still exists.
+  # See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1132889
+  if package_exists("cdbs"):
+    packages.append("cdbs")
 
   return packages
 
