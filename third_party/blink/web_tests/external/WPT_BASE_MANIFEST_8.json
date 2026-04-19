@@ -327390,6 +327390,19 @@
        ]
       },
       "the-page": {
+       "Document-documentElement-remove-clears-content.html": [
+        "7b83a7a403587b713b440485bf0f3eba823a1eb7",
+        [
+         null,
+         [
+          [
+           "/css/reference/blank.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "body-margin-1a.html": [
         "ba891d5021a3ec0f93d026994f3e6cfca190e0d4",
         [
@@ -361118,6 +361131,10 @@
       "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
       []
      ],
+     "iframe-contentwindow-injection.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
      "link_header_modulepreload_allow.sub.window.js.sub.headers": [
       "7cfe3690abc41428f5bae14f2c0634a99207dd28",
       []
@@ -361154,6 +361171,14 @@
       "05a5826807caadfce5e11a2f43123d12803b5380",
       []
      ],
+     "link_rel_stylesheet.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
+     "link_rel_whitespace_bypass.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
      "navigation-anchor-new-tab.sub.window.js.headers": [
       "b0bc58c1265c6287474f094cbb6b7113d1520a9c",
       []
@@ -361178,6 +361203,10 @@
       "12b5f5f9f35ad84306ad3655889c2040a68a3e0e",
       []
      ],
+     "navigation-window-open.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
      "reporting-allowed-fetch.https.sub.html.sub.headers": [
       "fece5522bb1fe08fec45296da0c80e58eb1c9198",
       []
@@ -361199,6 +361228,14 @@
       []
      ],
      "resources": {
+      "blank-with-allowlist.html": [
+       "25f83eb71be99e03e5de5af313d8cd637612dafb",
+       []
+      ],
+      "blank-with-allowlist.html.headers": [
+       "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+       []
+      ],
       "fetch_redirect_test.js": [
        "a607de74db6117c512923fc9dee297d8a45d1a99",
        []
@@ -361261,6 +361298,10 @@
       ]
      },
      "shared-worker.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
+     "subresource-blocking.sub.window.js.headers": [
       "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
       []
      ],
@@ -535608,6 +535649,33 @@
        }
       ]
      ],
+     "iframe-contentwindow-injection.sub.window.js": [
+      "b682d442284228c83f1581cc14ef83661e969216",
+      [
+       "connection-allowlist/tentative/iframe-contentwindow-injection.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "link_header_modulepreload_allow.sub.window.js": [
       "8c9931391cafbd95c9625c49f9dce15e1934115e",
       [
@@ -535812,6 +535880,60 @@
        }
       ]
      ],
+     "link_rel_stylesheet.sub.window.js": [
+      "9e2e5f73dfa0cbc2c8c78fc33d50acc6542e4858",
+      [
+       "connection-allowlist/tentative/link_rel_stylesheet.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "link_rel_whitespace_bypass.sub.window.js": [
+      "6b4e80e4af33c92515359d31d21d9c175f60009a",
+      [
+       "connection-allowlist/tentative/link_rel_whitespace_bypass.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "navigation-anchor-new-tab.sub.window.js": [
       "1582b7fb8e8e938fcb0a28accd9d72865694de86",
       [
@@ -535912,6 +536034,29 @@
        }
       ]
      ],
+     "navigation-window-open.sub.window.js": [
+      "9bc506186c7cd7dfa187943555f1e4dd26147303",
+      [
+       "connection-allowlist/tentative/navigation-window-open.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "reporting-allowed-fetch.https.sub.html": [
       "63b4a9bf59573ed692cf489f75fb6920ce8282fb",
       [
@@ -535958,6 +536103,33 @@
           "/common/get-host-info.sub.js"
          ]
         ]
+       }
+      ]
+     ],
+     "subresource-blocking.sub.window.js": [
+      "bee0e8b8d60bd10d12cd1364673d82d6093fb1d9",
+      [
+       "connection-allowlist/tentative/subresource-blocking.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
