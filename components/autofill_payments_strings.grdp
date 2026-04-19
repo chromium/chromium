@@ -1097,10 +1097,10 @@
       Cards not accepted by this merchant are disabled such as virtual cards.
   </message>
   <message name="IDS_AUTOFILL_DOWNSTREAM_CARD_AWARENESS_IPH_BUBBLE_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for externally-saved card suggestions. This IPH is displayed when a user interacts with a payment form for the first time after adding a card through other Google services outside of Chrome.">
-      You can autofill cards that are saved in your Google Account
+      You can autofill cards that are saved in Google Wallet
   </message>
   <message name="IDS_AUTOFILL_DOWNSTREAM_CARD_AWARENESS_IPH_BUBBLE_LABEL_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the `In-Product Help(IPH)` bubble for downstream card awareness. This IPH is displayed when a user interacts with a payment form for the first time after adding a card through other Google services outside of Chrome.">
-      You can autofill cards that are saved in your Google Account.
+      You can autofill cards that are saved in Google Wallet.
   </message>
   <!-- virtual cards related strings - end -->
   <message name="IDS_AUTOFILL_CARD_AUTH_SELECTION_DIALOG_TITLE_MULTIPLE_OPTIONS" desc="Title for the credit card unmasking dialog for multiple challenge options. Used in VCN authentication, and once a challenge option is selected a new dialog is rendered where the user authenticates with the selected challenge option." formatter_data="android_java">
