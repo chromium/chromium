@@ -355,10 +355,6 @@ ProcessSingleton::NotifyOtherProcessOrCreate() {
         DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "Chrome.ProcessSingleton.TimeToNotify",
             base::TimeTicks::Now() - begin_ticks);
-      } else {
-        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Chrome.ProcessSingleton.TimeToFailure",
-            base::TimeTicks::Now() - begin_ticks);
       }
       // The single browser process was notified, the user chose not to
       // terminate a hung browser, or the lock file could not be created.
@@ -370,8 +366,6 @@ ProcessSingleton::NotifyOtherProcessOrCreate() {
     // terminated. Retry once if this is the first time; otherwise, fall through
     // to report that the process must exit because the profile is in use.
   }
-  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToFailure",
-                                        base::TimeTicks::Now() - begin_ticks);
   return PROFILE_IN_USE;
 }
 

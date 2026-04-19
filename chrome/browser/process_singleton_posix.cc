@@ -953,10 +953,6 @@ ProcessSingleton::NotifyOtherProcessWithTimeoutOrCreate(
       DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "Chrome.ProcessSingleton.TimeToNotify",
           base::TimeTicks::Now() - begin_ticks);
-    } else {
-      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-          "Chrome.ProcessSingleton.TimeToFailure",
-          base::TimeTicks::Now() - begin_ticks);
     }
     return result;
   }
@@ -979,10 +975,6 @@ ProcessSingleton::NotifyOtherProcessWithTimeoutOrCreate(
   if (result == PROCESS_NOTIFIED) {
     DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "Chrome.ProcessSingleton.TimeToNotify",
-        base::TimeTicks::Now() - begin_ticks);
-  } else {
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Chrome.ProcessSingleton.TimeToFailure",
         base::TimeTicks::Now() - begin_ticks);
   }
 

@@ -299,17 +299,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.ProcessSingleton.TimeToFailure" units="ms"
-    expires_after="2024-06-04">
-  <owner>etienneb@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <summary>
-    Time it takes to return an error from the process singleton algorithm (nor
-    succeeding in obtaining it, nor in generating a rendez-vous). This does not
-    include time spent in the fast notification path (chrome_exe_main_win.cc).
-  </summary>
-</histogram>
-
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
     expires_after="2025-04-13">
   <owner>etienneb@chromium.org</owner>
