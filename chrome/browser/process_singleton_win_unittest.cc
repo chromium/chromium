@@ -294,8 +294,6 @@ TEST_F(ProcessSingletonTest, KillsHungBrowserWithNoWindows) {
   histogram_tester().ExpectTotalCount(
       "Chrome.ProcessSingleton.TerminateProcessTime", 1u);
   histogram_tester().ExpectUniqueSample(
-      "Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows", 0, 1u);
-  histogram_tester().ExpectUniqueSample(
       "Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows", 0, 1u);
   histogram_tester().ExpectUniqueSample(
       "Chrome.ProcessSingleton.RemoteHungProcessTerminateReason",
@@ -353,8 +351,6 @@ TEST_F(ProcessSingletonTest, KillWithUserPermission) {
       ProcessSingleton::TERMINATE_SUCCEEDED, 1u);
   histogram_tester().ExpectTotalCount(
       "Chrome.ProcessSingleton.TerminateProcessTime", 1u);
-  histogram_tester().ExpectUniqueSample(
-      "Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows", 0, 1u);
   histogram_tester().ExpectUniqueSample(
       "Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows", 0, 1u);
   histogram_tester().ExpectUniqueSample(

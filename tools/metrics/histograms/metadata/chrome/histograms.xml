@@ -260,16 +260,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2024-10-06">
-  <owner>gab@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>
-    The error code of remote process termination on Windows in case when remote
-    process hung.
-  </summary>
-</histogram>
-
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
     expires_after="2026-08-30">
   <owner>gab@chromium.org</owner>

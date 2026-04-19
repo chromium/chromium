@@ -183,7 +183,6 @@ void TerminateProcessWithHistograms(const base::Process& process,
   DCHECK(process.IsValid());
   base::TimeTicks start_time = base::TimeTicks::Now();
   bool result = (::TerminateProcess(process.Handle(), exit_code) != FALSE);
-  DWORD terminate_error = 0;
   if (result) {
     DWORD wait_error = 0;
     // The process may not end immediately due to pending I/O
@@ -210,14 +209,10 @@ void TerminateProcessWithHistograms(const base::Process& process,
     base::UmaHistogramSparse(
         "Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows", wait_error);
   } else {
-    terminate_error = ::GetLastError();
     internal::SendRemoteProcessInteractionResultHistogram(
         ProcessSingleton::TERMINATE_FAILED);
     DPLOG(ERROR) << "Unable to terminate process";
   }
-  base::UmaHistogramSparse(
-      "Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows",
-      terminate_error);
 }
 
 }  // namespace
