@@ -952,6 +952,9 @@ as required builders.
 * [android-internal-desktop-x64-rel](https://ci.chromium.org/p/chrome/builders/try/android-internal-desktop-x64-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""android-internal-desktop-x64-rel""))
   * Experiment percentage: 5.0
 
+* [chromeos-betty-chrome-gtest](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest""))
+  * Experiment percentage: 5.0
+
 * [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest-and-cqtast""))
   * Experiment percentage: 100.0
 

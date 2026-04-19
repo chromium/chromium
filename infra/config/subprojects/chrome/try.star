@@ -169,6 +169,11 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "chromeos-betty-chrome-gtest",
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 5,
+        on_default_cq = True,
+    ),
+    owner_whitelist = ["googlers"],
 )
 
 chrome_internal_verifier(
@@ -178,7 +183,7 @@ chrome_internal_verifier(
         experiment_percentage = 100,
         on_default_cq = True,
     ),
-    owner_whitelist = ["google/chromeos-pa@google.com"],
+    owner_whitelist = ["google/chromeos-pa@google.com", "project-chromium-robot-committers"],
 )
 
 chrome_internal_verifier(
