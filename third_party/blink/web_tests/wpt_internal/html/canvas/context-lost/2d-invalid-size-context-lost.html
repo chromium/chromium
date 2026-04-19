@@ -396,7 +396,7 @@ canvasPromiseTest(async (canvas) => {
 /**
  * Check that the canvas is unusable while the context is lost.
  */
-canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+canvasPromiseTest(async (canvas) => {
   const ctx = get2dContext(canvas);
 
   assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
@@ -423,7 +423,7 @@ canvasPromiseTest(async (canvas, {canvasType} = {}) => {
 /**
  * Give an invalid size to an initialized canvas.
  */
-canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+canvasPromiseTest(async (canvas) => {
   const ctx = get2dContext(canvas);
 
   // Use the canvas do that it allocates a backing bitmap.
@@ -448,7 +448,7 @@ canvasPromiseTest(async (canvas, {canvasType} = {}) => {
 /**
  * Give an invalid size to a new uninitialized canvas.
  */
-canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+canvasPromiseTest(async (canvas) => {
   const ctx = get2dContext(canvas);
 
   // Set an invalid size in a new canvas (before resources are allocated).
