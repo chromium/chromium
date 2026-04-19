@@ -42,6 +42,17 @@
                       forUserPref:prefs::kSigninWebSignDismissalCount];
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testConsistencyPromoSigninHiddenWhenNoAccountsSignedIn)]) {
+    config.features_disabled.push_back(switches::kNoAccountWebSignin);
+  } else {
+    config.features_enabled.push_back(switches::kNoAccountWebSignin);
+  }
+  return config;
+}
+
 // Tests that ConsistencyPromoSigninCoordinator shows up, and then skips it.
 - (void)testDismissConsistencyPromoSignin {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -54,6 +65,28 @@
                                           ConsistencySigninSkipButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+}
+
+// Tests that ConsistencyPromoSigninCoordinator is surfaced when there are
+// noAccounts available.
+- (void)testConsistencyPromoSigninShownWhenNoAccountsSignedIn {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL url = self.testServer->GetURL("/echo");
+
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+}
+
+// Tests that ConsistencyPromoSigninCoordinator is NOT surfaced when there are
+// noAccounts available and kNoAccountWebSignin is disabled.
+- (void)testConsistencyPromoSigninHiddenWhenNoAccountsSignedIn {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL url = self.testServer->GetURL("/echo");
+
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
+
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 }
 
