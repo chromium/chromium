@@ -97,41 +97,43 @@ function canvasPromiseTest(
 
   if (testTypes.includes(CanvasTestType.HTML) &&
       isTestTypeEnabled(CanvasTestType.HTML)) {
-    promise_test(async () => {
+    promise_test(async (test) => {
       if (!document.body) {
         document.documentElement.appendChild(document.createElement("body"));
       }
       const canvas = document.createElement('canvas');
       document.body.appendChild(canvas);
-      await testBody(canvas, {canvasType: CanvasTestType.HTML});
+      await testBody(canvas, {test, canvasType: CanvasTestType.HTML});
       document.body.removeChild(canvas);
     }, 'HTMLCanvasElement: ' + description);
   }
 
   if (testTypes.includes(CanvasTestType.DETACHED_HTML) &&
       isTestTypeEnabled(CanvasTestType.DETACHED_HTML)) {
-    promise_test(() => testBody(document.createElement('canvas'),
-                                {canvasType: CanvasTestType.DETACHED_HTML}),
-                 'Detached HTMLCanvasElement: ' + description);
+    promise_test((test) => {
+      return testBody(document.createElement('canvas'),
+                      {test, canvasType: CanvasTestType.DETACHED_HTML});
+    }, 'Detached HTMLCanvasElement: ' + description);
   }
 
   if (testTypes.includes(CanvasTestType.OFFSCREEN) &&
       isTestTypeEnabled(CanvasTestType.OFFSCREEN)) {
-    promise_test(() => testBody(new OffscreenCanvas(300, 150),
-                                {canvasType: CanvasTestType.OFFSCREEN}),
-                 'OffscreenCanvas: ' + description);
+    promise_test((test) => {
+      return testBody(new OffscreenCanvas(300, 150),
+                      {test, canvasType: CanvasTestType.OFFSCREEN});
+    }, 'OffscreenCanvas: ' + description);
   }
 
   if (testTypes.includes(CanvasTestType.PLACEHOLDER) &&
       isTestTypeEnabled(CanvasTestType.PLACEHOLDER)) {
-    promise_test(async () => {
+    promise_test(async (test) => {
       if (!document.body) {
         document.documentElement.appendChild(document.createElement("body"));
       }
       const placeholder = document.createElement('canvas');
       document.body.appendChild(placeholder);
       await testBody(placeholder.transferControlToOffscreen(),
-                     {canvasType: CanvasTestType.PLACEHOLDER});
+                      {test, canvasType: CanvasTestType.PLACEHOLDER});
     }, 'PlaceholderCanvas: ' + description);
   }
 }

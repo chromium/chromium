@@ -37,7 +37,13 @@ function drawAndReadBack(ctx) {
  */
 async function waitFrames(frameCount) {
   for (let i = 0; i < frameCount; ++i) {
-    await new Promise(resolve => requestAnimationFrame(resolve))
+    await Promise.race([
+        new Promise(resolve => requestAnimationFrame(resolve)),
+        // It's possible for `requestAnimationFrame` to never produce a frame
+        // when killing the GPU process.
+        promiseFinishBefore(
+            2000, 'requestAnimationFrame did not produce a frame.'),
+    ]);
   }
 }
 
@@ -178,16 +184,58 @@ async function waitForContextRestored(ctx, deadlineMs=2000) {
 }
 
 /**
+ * Returns a promise that is resolved when `promise` resolves, and is rejected
+ * if the canvas associated with `ctx` gets either a contextlost or
+ * contextrestored event.
+ */
+async function resolvedWithoutContextEvent(promise, ctx) {
+  const controller = new AbortController();
+  await raceAndAbortOthers(controller, [
+    promise,
+    promiseContextNotLost(ctx, controller.signal),
+    promiseContextNotRestored(ctx, controller.signal),
+  ]);
+}
+
+/**
  * Returns a promise that resolves after `frameCount` animation frames and
  * rejects if a contextlost or contextrestored event fires before then.
  */
 async function waitFramesAndRejectOnContextEvents(ctx, frameCount=5) {
-  const controller = new AbortController();
-  await raceAndAbortOthers(controller, [
-    waitFrames(frameCount),
-    promiseContextNotLost(ctx, controller.signal),
-    promiseContextNotRestored(ctx, controller.signal),
-  ]);
+  return resolvedWithoutContextEvent(waitFrames(frameCount), ctx);
+}
+
+/**
+ * Returns a promise that is resolved when the GPU process goes back online.
+ * This must be called before the GPU process dies and awaited on after.
+ */
+function promiseGpuProcessRestored() {
+  const probeCanvas = document.createElement('canvas');
+  const probeCtx = get2dContext(probeCanvas);
+  drawAndReadBack(probeCtx);
+  const promise = Promise.race([
+      promiseContextRestored(probeCtx),
+      promiseFinishBefore(5000, 'GPU process should have been restored.'),
+    ]);
+  // Store a reference to the canvas in the promise, to make sure `probeCanvas`
+  // isn't GCed before the test is done.
+  promise.probeCanvas = probeCanvas;
+  return promise;
+}
+
+/**
+ * Terminates the GPU process and return a promise that resolves when the GPU
+ * process is back online. A cleanup callback is registered into the provided
+ * `test` fixture to make sure that the GPU process is restored before the test
+ * completes.
+ */
+function terminateGpuProcess(test) {
+  assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
+              'This test requires chrome.gpuBenchmarking.');
+  const gpuRestoredPromise = promiseGpuProcessRestored();
+  test.add_cleanup(() => gpuRestoredPromise);
+  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+  return gpuRestoredPromise;
 }
 
 /**
@@ -1115,5 +1163,395 @@ canvasPromiseTest(async (canvas) => {
   await waitForContextRestored(ctx);
 }, 'Bad size -> contextlost -> contextrestored -> bad size.',
    {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Kill the GPU process and let it restore normally.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  drawAndReadBack(ctx);
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should start with acceleration enabled.');
+  terminateGpuProcess(test);
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    await waitForContextLost(ctx);
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should be restored with GPU acceleration.');
+}, 'Valid provider -> GPU crash -> notify GPU lost -> contextlost -> ' +
+   'try restore -> restored.',
+   // `chrome.gpuBenchmarking` is not available on workers.
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Create a resource provider while the GPU process is down.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  terminateGpuProcess(test);
+
+  // Try to create a provider while the GPU process is down.
+  if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    assert_array_equals(drawAndReadBack(ctx), [0, 0, 0, 0],
+                        'GPU canvas should be unusable.');
+  } else {
+    assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                        'CPU canvas should still be usable.');
+  }
+  assert_false(ctx.isContextLost(), `Canvas shouldn't know the GPU is gone.`);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    // The provider created while the GPU process was down still gets notified.
+    await waitForContextLost(ctx);
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should be restored with GPU acceleration.');
+}, 'No provider -> GPU crash -> create provider.',
+   // `chrome.gpuBenchmarking` is not available on workers.
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Resize and reuse a canvas while the GPU is down.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas is initialized with valid resources.
+  drawAndReadBack(ctx);
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should start with acceleration enabled.');
+
+  // Kill the GPU process and resize the canvas before it's notified of the GPU
+  // process loss.
+  terminateGpuProcess(test);
+  canvas.width = 64;
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+  if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    assert_array_equals(drawAndReadBack(ctx), [0, 0, 0, 0],
+                        'GPU canvas should be unusable.');
+  } else {
+    assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                        'CPU canvas should still be usable.');
+  }
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    // The provider created while the GPU process was down still gets notified.
+    await waitForContextLost(ctx);
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should now be usable.');
+
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'GPU canvas should be restored with acceleration enabled.');
+}, 'Valid provider -> GPU crash -> resize -> create provider.',
+    // `chrome.gpuBenchmarking` is not available on workers.
+    {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Kill the GPU process and resize the canvas. The canvas can't be notified of
+ * the context loss. After the GPU process is restored, canvas can be created
+ * as if nothing happened.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas is initialized with valid resources.
+  drawAndReadBack(ctx);
+
+  // Kill the GPU process and reset the size before the canvas is notified of
+  // the GPU process loss.
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
+  canvas.width = 64;
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    // TODO: crbug.com/348445884 - `HTMLCanvasElement` and `OffscreenCanvas`
+    // behave differently. This test is merely testing existing behavior, but
+    // this should be fixed such that the two classes behave the same way.
+    if (HTML_CANVAS_ELEMENT_TEST_TYPES.includes(canvasType)) {
+      // Wait for the GPU process to be back. The canvas can't be notified
+      // because it doesn't have a provider.
+      await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
+      await waitFramesAndRejectOnContextEvents(ctx);
+
+      assert_false(ctx.isContextLost(),
+                  `Canvas shouldn't be lost because it has no resources.`);
+    } else {
+      // `OffscreenCanvas` rasterizes a blank frame after a resize, forcing
+      // the creation of a provider while the GPU context is lost.
+      await waitForContextLost(ctx);
+      await waitForContextRestored(ctx);
+    }
+  }
+
+  // Using the canvas now recreates a valid provider.
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Valid provider -> GPU crash -> resize -> GPU restored -> create provider.',
+    // `chrome.gpuBenchmarking` is not available on workers.
+    {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Crash the GPU process and give the canvas an invalid size before it's
+ * notified of the GPU context loss. The context will only restore after giving
+ * the canvas a valid size.
+ **/
+canvasPromiseTest(async (canvas, {test} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  // Set an invalid size before the canvas is notified of the GPU process loss.
+  drawAndReadBack(ctx);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  // Using the canvas now recreates a provider, which fails because of the
+  // invalid size.
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);  // Invalid size context lost.
+
+  // Wait for the GPU to be back. The canvas should not restore because the size
+  // is still invalid.
+  await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
+  await waitFramesAndRejectOnContextEvents(ctx);
+
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Valid provider -> GPU crash -> bad size -> invalid size contextlost -> ' +
+   'good size -> contextrestored.',
+    // `chrome.gpuBenchmarking` is not available on workers.
+    {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Kill the GPU process, cycle the canvas size as good -> bad -> good and
+ * recreate a provider before the canvas is notified of the context loss.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  drawAndReadBack(ctx);
+  terminateGpuProcess(test);
+  canvas.width = 100000000;
+  canvas.width = 64;
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  drawAndReadBack(ctx);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    await waitForContextLost(ctx);
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Valid provider -> GPU crash -> bad size -> good size -> create provider.',
+    // `chrome.gpuBenchmarking` is not available on workers.
+    {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Lose the GPU process and do good size -> bad size -> good size from inside
+ * the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  drawAndReadBack(ctx);
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should start with acceleration enabled.');
+  terminateGpuProcess(test);
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    await waitForContextLost(ctx);
+
+    canvas.width = 100000000;
+    canvas.width = 64;
+
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should be restored with GPU acceleration.');
+}, 'Valid provider -> GPU crash -> contextlost -> bad size -> ' +
+   'good size -> try restore scheduled -> try restore -> contextrestored.',
+   // `chrome.gpuBenchmarking` is not available on workers.
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Lose the GPU process and do good size -> bad size -> good size after the
+ * contextlost event handler but before contextrestored.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  drawAndReadBack(ctx);
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should start with acceleration enabled.');
+  terminateGpuProcess(test);
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    await waitForContextLost(ctx);
+    // We are now inside the contextlost event handler. Wait until the task is
+    // finished. A microtask is needed to make sure we regain control before the
+    // contextrestored event fires.
+    await new Promise(resolve => queueMicrotask(resolve));
+
+    canvas.width = 100000000;
+    canvas.width = 64;
+
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should be restored with GPU acceleration.');
+}, 'Valid provider -> GPU crash -> contextlost -> try restore scheduled -> ' +
+   'bad size -> good size -> try restore -> contextrestored.',
+   // `chrome.gpuBenchmarking` is not available on workers.
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Lose the GPU process and given the canvas an invalid size from inside
+ * contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  drawAndReadBack(ctx);
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should start with acceleration enabled.');
+  terminateGpuProcess(test);
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    await waitForContextLost(ctx);
+
+    canvas.width = 100000000;
+    // The context tries to restore after 500ms, which will fail because the
+    // canvas size is invalid. Wait a whole second to make sure this failure
+    // triggers.
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Now restore the size. The canvas should restore on next task.
+    canvas.width = 64;
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should be restored with GPU acceleration.');
+}, 'Valid provider -> GPU crash -> contextlost -> bad size -> try restore -> ' +
+   'good size -> contextrestored.',
+   // `chrome.gpuBenchmarking` is not available on workers.
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+/**
+ * Lose the GPU process and given the canvas an invalid size after the
+ * contextlost event handler ran.
+ **/
+canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+  const ctx = get2dContext(canvas);
+
+  // Make sure the canvas has a provider and kill the GPU process.
+  drawAndReadBack(ctx);
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should start with acceleration enabled.');
+  terminateGpuProcess(test);
+  assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
+
+  if (canvasType === CanvasTestType.OFFSCREEN &&
+      !internals.runtimeFlags.accelerated2dCanvasEnabled) {
+    // Unaccelerated `OffscreenCanvas` never lose the context.
+    await waitFramesAndRejectOnContextEvents(ctx);
+  } else {
+    await waitForContextLost(ctx);
+    // We are now inside the contextlost event handler. Wait until the task is
+    // finished. A microtask is needed to make sure we regain control before the
+    // contextrestored event fires.
+    await new Promise(resolve => queueMicrotask(resolve));
+
+    canvas.width = 100000000;
+    // The context tries to restore after 500ms, which will fail because the
+    // canvas size is invalid. Wait a whole second to make sure this failure
+    // triggers.
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Now restore the size. The canvas should restore on next task.
+    canvas.width = 64;
+    await waitForContextRestored(ctx);
+  }
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+  assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
+                internals.runtimeFlags.accelerated2dCanvasEnabled,
+                'Accelerated canvas should be restored with GPU acceleration.');
+}, 'Valid provider -> GPU crash -> contextlost -> try restore scheduled -> ' +
+   'bad size -> try restore -> good size -> contextrestored.',
+   // `chrome.gpuBenchmarking` is not available on workers.
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
 
 </script>

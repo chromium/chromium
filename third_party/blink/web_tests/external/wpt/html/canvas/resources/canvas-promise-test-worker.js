@@ -10,9 +10,10 @@ function canvasPromiseTest(
     {testTypes = Object.values(CanvasTestType)} = {}) {
   if (testTypes.includes(CanvasTestType.WORKER) &&
       isTestTypeEnabled(CanvasTestType.WORKER)) {
-    promise_test(() => testBody(new OffscreenCanvas(300, 150),
-                                {canvasType: CanvasTestType.WORKER}),
-                'Worker: ' + description);
+    promise_test((test) => {
+      return testBody(new OffscreenCanvas(300, 150),
+                      {test, canvasType: CanvasTestType.WORKER});
+    }, 'Worker: ' + description);
   }
 }
 
