@@ -1093,6 +1093,8 @@ std::unique_ptr<CanvasResourceProvider>
 CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   CHECK(!GetResourceProvider());
 
+  canvas()->GetOrCreateResourceDispatcher();
+
   std::unique_ptr<CanvasResourceProvider> provider;
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
