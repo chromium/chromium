@@ -655,7 +655,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
 TabHoverCardBubbleView::TabHoverCardBubbleView(
     HoverCardAnchorTarget* anchor_target,
     const InitParams& params)
-    : BubbleDialogDelegateView(anchor_target->GetAnchorView(),
+    : BubbleDialogDelegateView(anchor_target->GetAnchor(),
                                anchor_target->GetAnchorPosition(),
                                views::BubbleBorder::STANDARD_SHADOW),
       tab_style_(TabStyle::Get()),

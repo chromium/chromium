@@ -122,7 +122,7 @@ base::TimeDelta GetShowDelay(BrowserWindowInterface* browser,
   } else {
     // Use the largest tab in the tab strip when determining the delay so that
     // the delay is consistent for all tabs within the tab strip.
-    tab_width = anchor_target->GetAnchorView()->width();
+    tab_width = anchor_target->GetView()->width();
     for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
       tab_width =
           std::max(tab_width, tab_strip->GetTabAnchorViewAt(i)->width());
@@ -310,7 +310,7 @@ void TabHoverCardController::UpdateHoverCard(
       // If the hover card is transitioning between tabs, we need to do a
       // cross-fade.
       start_hover_card_fade_ = target_tab_ != nullptr;
-      target_tab_observation_.Observe(anchor_target->GetAnchorView());
+      target_tab_observation_.Observe(anchor_target->GetView());
     }
     target_tab_ = anchor_target;
   }
@@ -390,7 +390,7 @@ bool TabHoverCardController::UseAnimations() {
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
     OnCardClosing();
-  } else if (target_tab_ && target_tab_->GetAnchorView() == observed_view) {
+  } else if (target_tab_ && target_tab_->GetView() == observed_view) {
     UpdateHoverCard(nullptr,
                     TabSlotController::HoverCardUpdateType::kTabRemoved);
     // These postconditions should always be met after calling
@@ -404,7 +404,7 @@ void TabHoverCardController::OnViewVisibilityChanged(views::View* observed_view,
                                                      views::View* starting_view,
                                                      bool visible) {
   // Only care about target tab becoming invisible.
-  if (!target_tab_ || target_tab_->GetAnchorView() != observed_view) {
+  if (!target_tab_ || target_tab_->GetView() != observed_view) {
     return;
   }
   // If visibility anywhere in the hierarchy changed to false, then the target
@@ -622,7 +622,7 @@ void TabHoverCardController::UpdateOrShowCard(
                                      /* is_initial_show */ false);
     }
 
-    slide_animator_->UpdateTargetBounds();
+    slide_animator_->UpdateTargetBounds(anchor_target->GetAnchor());
     return;
   }
 
@@ -645,11 +645,11 @@ void TabHoverCardController::UpdateOrShowCard(
     // If widget is already visible and anchored to the correct tab we should
     // not try to reset the anchor view or reshow.
     if (!UseAnimations() ||
-        (hover_card_->GetAnchorView() == anchor_target->GetAnchorView() &&
+        (hover_card_->IsSameAnchor(anchor_target->GetAnchor()) &&
          !slide_animator_->is_animating())) {
-      slide_animator_->SnapToAnchorView(anchor_target->GetAnchorView());
+      slide_animator_->SnapToAnchor(anchor_target->GetAnchor());
     } else {
-      slide_animator_->AnimateToAnchorView(anchor_target->GetAnchorView());
+      slide_animator_->AnimateToAnchor(anchor_target->GetAnchor());
     }
     return;
   }
@@ -679,7 +679,7 @@ void TabHoverCardController::UpdateOrShowCard(
 
 void TabHoverCardController::ShowHoverCard(
     bool is_initial,
-    const HoverCardAnchorTarget* intended_target) {
+    HoverCardAnchorTarget* intended_target) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
   if (hover_card_ || target_tab_ != intended_target || !TargetTabIsValid()) {
@@ -703,7 +703,7 @@ void TabHoverCardController::ShowHoverCard(
     return;
   }
 
-  slide_animator_->UpdateTargetBounds();
+  slide_animator_->UpdateTargetBounds(intended_target->GetAnchor());
   MaybeStartThumbnailObservation(target_tab_, is_initial);
   GetCardWidget()->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
 
@@ -763,21 +763,10 @@ bool TabHoverCardController::ShouldShowImmediately(
   // buffer or if the tab or its children have focus which indicates that the
   // tab is keyboard focused.
   const views::FocusManager* const tab_focus_manager =
-      anchor_target->GetAnchorView()->GetFocusManager();
-  return within_delay_time_buffer ||
-         anchor_target->GetAnchorView()->HasFocus() ||
-         (tab_focus_manager && anchor_target->GetAnchorView()->Contains(
+      anchor_target->GetView()->GetFocusManager();
+  return within_delay_time_buffer || anchor_target->GetView()->HasFocus() ||
+         (tab_focus_manager && anchor_target->GetView()->Contains(
                                    tab_focus_manager->GetFocusedView()));
-}
-
-const views::View* TabHoverCardController::GetTargetAnchorView() const {
-  if (!hover_card_) {
-    return nullptr;
-  }
-  if (slide_animator_->is_animating()) {
-    return slide_animator_->desired_anchor_view();
-  }
-  return hover_card_->GetAnchorView();
 }
 
 bool TabHoverCardController::TargetTabIsValid() const {

@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/events/event_observer.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -156,6 +157,8 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
     ToolbarActionHoverCardUpdateType update_type) {
   DCHECK(action_view);
 
+  views::BubbleAnchor action_view_anchor = views::BubbleAnchor(action_view);
+
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
   if (hover_card_ && hover_card_->GetWidget()->IsClosed()) {
@@ -172,11 +175,11 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
 
     // If widget is already visible and anchored to the correct action view we
     // should not try to reset the anchor view or reshow.
-    if (!UseAnimations() || (hover_card_->GetAnchorView() == action_view &&
+    if (!UseAnimations() || (hover_card_->IsSameAnchor(action_view_anchor) &&
                              !slide_animator_->is_animating())) {
-      slide_animator_->SnapToAnchorView(action_view);
+      slide_animator_->SnapToAnchor(action_view_anchor);
     } else {
-      slide_animator_->AnimateToAnchorView(action_view);
+      slide_animator_->AnimateToAnchor(action_view_anchor);
     }
     return;
   }
@@ -266,7 +269,7 @@ void ToolbarActionHoverCardController::ShowHoverCard(
 
   CreateHoverCard(target_action_view_);
   UpdateHoverCardContent(target_action_view_);
-  slide_animator_->UpdateTargetBounds();
+  slide_animator_->UpdateTargetBounds(views::BubbleAnchor(target_action_view_));
   // TODO(crbug.com/40857356): Do we need to fix widget stack order? Revisit
   // this, specially after adding IPH.
 
@@ -326,7 +329,10 @@ const views::View* ToolbarActionHoverCardController::GetTargetAnchorView()
     return nullptr;
   }
   if (slide_animator_->is_animating()) {
-    return slide_animator_->desired_anchor_view();
+    views::BubbleAnchor desired_anchor = slide_animator_->desired_anchor();
+    views::View* anchor_view = desired_anchor.GetIfView();
+    CHECK(anchor_view);
+    return anchor_view;
   }
   return hover_card_->GetAnchorView();
 }

@@ -390,6 +390,10 @@ bool TabGroupHeader::IsValidHoverCardTarget() const {
          tab_slot_controller_->GetTabGroup(group().value()) != nullptr;
 }
 
+views::BubbleAnchor TabGroupHeader::GetAnchor() {
+  return views::BubbleAnchor(this);
+}
+
 views::BubbleBorder::Arrow TabGroupHeader::GetAnchorPosition() const {
   return views::BubbleBorder::TOP_LEFT;
 }

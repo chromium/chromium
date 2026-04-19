@@ -6,6 +6,10 @@
 
 #include <variant>
 
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/view.h"
+
 namespace views {
 
 BubbleAnchor::BubbleAnchor() = default;
@@ -26,5 +30,16 @@ BubbleAnchor::BubbleAnchor(const BubbleAnchor&) = default;
 BubbleAnchor::~BubbleAnchor() = default;
 
 BubbleAnchor& BubbleAnchor::operator=(const BubbleAnchor&) = default;
+
+gfx::Rect BubbleAnchor::GetAnchorRect() const {
+  if (const views::View* v = GetIfView()) {
+    return v->GetAnchorBoundsInScreen();
+
+  } else if (const ui::TrackedElement* e = GetIfElement()) {
+    return e->GetScreenBounds();
+  }
+
+  NOTREACHED();
+}
 
 }  // namespace views

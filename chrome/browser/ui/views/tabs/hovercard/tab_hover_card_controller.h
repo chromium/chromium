@@ -129,13 +129,10 @@ class TabHoverCardController : public views::ViewObserver,
 
   void UpdateOrShowCard(HoverCardAnchorTarget* anchor_target,
                         TabSlotController::HoverCardUpdateType update_type);
-  void ShowHoverCard(bool is_initial,
-                     const HoverCardAnchorTarget* intended_target);
+  void ShowHoverCard(bool is_initial, HoverCardAnchorTarget* intended_target);
   void HideHoverCard();
 
   bool ShouldShowImmediately(const HoverCardAnchorTarget* anchor_target) const;
-
-  const views::View* GetTargetAnchorView() const;
 
   // Determines if `target_tab_` is still valid. Call this when entering
   // TabHoverCardController from an asynchronous callback.

@@ -907,6 +907,10 @@ bool Tab::IsValidHoverCardTarget() const {
   return !closing() && !detached() && !dragging() && GetVisible();
 }
 
+views::BubbleAnchor Tab::GetAnchor() {
+  return views::BubbleAnchor(this);
+}
+
 views::BubbleBorder::Arrow Tab::GetAnchorPosition() const {
   return views::BubbleBorder::Arrow::TOP_LEFT;
 }

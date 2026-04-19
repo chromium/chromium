@@ -80,8 +80,8 @@ class VerticalTabView : public views::View,
   // HoverCardAnchorTarget:
   bool NeedsToShowThumbnail() const override;
   bool IsValidHoverCardTarget() const override;
+  views::BubbleAnchor GetAnchor() override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
-  const views::View* GetAnchorView() const override;
 
  private:
   // views::View

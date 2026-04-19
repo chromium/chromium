@@ -874,11 +874,11 @@ views::BubbleBorder::Arrow VerticalTabView::GetAnchorPosition() const {
   return views::BubbleBorder::Arrow::LEFT_TOP;
 }
 
-const views::View* VerticalTabView::GetAnchorView() const {
+views::BubbleAnchor VerticalTabView::GetAnchor() {
   if (split_ && !collapsed_) {
-    return parent();
+    return views::BubbleAnchor(parent());
   }
-  return HoverCardAnchorTarget::GetAnchorView();
+  return views::BubbleAnchor(this);
 }
 
 void VerticalTabView::ResetCollectionNode() {

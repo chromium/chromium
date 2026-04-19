@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/views/tabs/hovercard/fade_footer_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace tabs {
@@ -60,7 +62,7 @@ class HoverCardAnchorTarget {
  public:
   using CardData = std::variant<std::monostate, TabCardData, GroupCardData>;
 
-  explicit HoverCardAnchorTarget(views::View* anchor_view);
+  explicit HoverCardAnchorTarget(views::View* view);
   virtual ~HoverCardAnchorTarget();
 
   // Returns true if the anchor target should get a thumbnail on
@@ -72,8 +74,9 @@ class HoverCardAnchorTarget {
 
   const CardData& data() const { return hover_card_data_; }
 
-  virtual views::View* GetAnchorView();
-  virtual const views::View* GetAnchorView() const;
+  virtual views::BubbleAnchor GetAnchor() = 0;
+  views::View* GetView();
+  const views::View* GetView() const;
 
   virtual views::BubbleBorder::Arrow GetAnchorPosition() const = 0;
 
@@ -82,7 +85,7 @@ class HoverCardAnchorTarget {
   void SetHoverCardDataFrom(const tabs::TabGroupData& group_data);
 
  private:
-  raw_ptr<views::View> anchor_view_ = nullptr;
+  raw_ptr<views::View> view_ = nullptr;
   CardData hover_card_data_;
 };
 

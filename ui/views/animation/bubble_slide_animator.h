@@ -13,14 +13,15 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
 
+class BubbleAnchor;
 class BubbleDialogDelegateView;
-class View;
 
 // Animates a bubble between anchor views on demand. Must be used with
 // BubbleDialogDelegateView because of its reliance on the anchoring system.
@@ -55,28 +56,27 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   // Sets the animation duration (a default is used if not set).
   void SetSlideDuration(base::TimeDelta duration);
 
-  View* desired_anchor_view() { return desired_anchor_view_; }
-  const View* desired_anchor_view() const { return desired_anchor_view_; }
+  BubbleAnchor desired_anchor() const { return desired_anchor_; }
 
   gfx::Tween::Type tween_type() const { return tween_type_; }
   void set_tween_type(gfx::Tween::Type tween_type) { tween_type_ = tween_type; }
 
   // Animates to a new anchor view.
-  void AnimateToAnchorView(View* desired_anchor_view);
+  void AnimateToAnchor(const BubbleAnchor& desired_anchor);
 
   // Ends any ongoing animation and immediately snaps the bubble to its target
   // bounds.
-  void SnapToAnchorView(View* desired_anchor_view);
+  void SnapToAnchor(const BubbleAnchor& desired_anchor);
 
   // Retargets the current animation or snaps the bubble to its correct size
   // and position if there is no current animation.
   //
   // Call if the bubble contents change size in a way that would require the
   // bubble to be resized/repositioned. If you would like a new animation to
-  // always play to the new bounds, call AnimateToAnchorView() instead.
+  // always play to the new bounds, call AnimateToAnchor() instead.
   //
   // Note: This method expects the bubble to have a valid anchor view.
-  void UpdateTargetBounds();
+  void UpdateTargetBounds(const BubbleAnchor& desired_anchor);
 
   // Stops the animation without snapping the widget to a particular anchor
   // view.
@@ -100,7 +100,7 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   void OnWidgetDestroying(Widget* widget) override;
 
   // Determines where to animate the bubble to during an animation.
-  gfx::Rect CalculateTargetBounds(const View* desired_anchor_view) const;
+  gfx::Rect CalculateTargetBounds(const BubbleAnchor& desired_anchor) const;
 
   // Returns the current value of the animation based on tween type.
   double GetCurrentValue() const;
@@ -109,9 +109,9 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   gfx::LinearAnimation slide_animation_{this};
 
-  // The desired anchor view, which is valid during a slide animation. When not
-  // animating, this value is null.
-  raw_ptr<View> desired_anchor_view_ = nullptr;
+  // The desired anchor, which is valid during a slide animation. When not
+  // animating, this is null.
+  BubbleAnchor desired_anchor_;
 
   // The tween type to use when animating. The default should be aesthetically
   // pleasing for most applications.

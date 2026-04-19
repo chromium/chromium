@@ -14,6 +14,10 @@ namespace ui {
 class TrackedElement;
 }  // namespace ui
 
+namespace gfx {
+class Rect;
+}
+
 namespace views {
 
 class View;
@@ -49,20 +53,39 @@ class VIEWS_EXPORT BubbleAnchor {
     return std::holds_alternative<std::nullptr_t>(anchor_);
   }
 
-  View* GetIfView() const {
+  View* GetIfView() {
     if (auto* contents_ptr = std::get_if<raw_ptr<View>>(&anchor_)) {
       return *contents_ptr;
     }
     return nullptr;
   }
 
-  ui::TrackedElement* GetIfElement() const {
+  const View* GetIfView() const {
+    if (const raw_ptr<View>* contents_ptr =
+            std::get_if<raw_ptr<View>>(&anchor_)) {
+      return *contents_ptr;
+    }
+    return nullptr;
+  }
+
+  ui::TrackedElement* GetIfElement() {
     if (auto* contents_ptr =
             std::get_if<raw_ptr<ui::TrackedElement>>(&anchor_)) {
       return *contents_ptr;
     }
     return nullptr;
   }
+
+  const ui::TrackedElement* GetIfElement() const {
+    if (const raw_ptr<ui::TrackedElement>* contents_ptr =
+            std::get_if<raw_ptr<ui::TrackedElement>>(&anchor_)) {
+      return *contents_ptr;
+    }
+    return nullptr;
+  }
+
+  // Returns the anchor bounds in screen coordinates.
+  gfx::Rect GetAnchorRect() const;
 
  private:
   std::variant<std::nullptr_t, raw_ptr<View>, raw_ptr<ui::TrackedElement>>

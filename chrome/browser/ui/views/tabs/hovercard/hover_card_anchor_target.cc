@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/url_formatter/url_formatter.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -72,9 +73,8 @@ TabCardData::~TabCardData() = default;
 GroupCardData::GroupCardData() = default;
 GroupCardData::~GroupCardData() = default;
 
-HoverCardAnchorTarget::HoverCardAnchorTarget(views::View* anchor_view)
-    : anchor_view_(anchor_view) {
-  CHECK(anchor_view_);
+HoverCardAnchorTarget::HoverCardAnchorTarget(views::View* view) : view_(view) {
+  CHECK(view);
 }
 
 HoverCardAnchorTarget::~HoverCardAnchorTarget() = default;
@@ -165,6 +165,14 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
   card_data.is_crashed = tab_data.is_crashed;
 }
 
+views::View* HoverCardAnchorTarget::GetView() {
+  return view_;
+}
+
+const views::View* HoverCardAnchorTarget::GetView() const {
+  return view_;
+}
+
 void HoverCardAnchorTarget::SetHoverCardDataFrom(
     const tabs::TabGroupData& group_data) {
   hover_card_data_.emplace<GroupCardData>();
@@ -209,13 +217,4 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
   } else {
     card_data.excess_tab_data = {u""};
   }
-}
-
-views::View* HoverCardAnchorTarget::GetAnchorView() {
-  return const_cast<views::View*>(
-      static_cast<const HoverCardAnchorTarget*>(this)->GetAnchorView());
-}
-
-const views::View* HoverCardAnchorTarget::GetAnchorView() const {
-  return anchor_view_;
 }

@@ -714,9 +714,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
   EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_EndTabInSplit"), 1);
 }
 
-// Mouse over split tab. Check the content matches the hover card.
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
-                       HoverCardAnchorToSplitViewParentContainer) {
+                       SplitTabsAnchorHoverCardToParentSplitViewContainer) {
   AppendSplitTab();
 
   // Get the view for both tabs in the split.
@@ -732,11 +731,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
 
   VerticalTabView* tab_1_view = views::AsViewClass<VerticalTabView>(
       split_tab_node->GetNodeForHandle(tab_1->GetHandle())->view());
-  ASSERT_EQ(tab_1_view->GetAnchorView(), split_tab_view);
+  ASSERT_EQ(tab_1_view->GetAnchor().GetIfView(), split_tab_view);
 
   VerticalTabView* tab_2_view = views::AsViewClass<VerticalTabView>(
       split_tab_node->GetNodeForHandle(tab_2->GetHandle())->view());
-  ASSERT_EQ(tab_2_view->GetAnchorView(), split_tab_view);
+  ASSERT_EQ(tab_2_view->GetAnchor().GetIfView(), split_tab_view);
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,

@@ -434,6 +434,10 @@ bool VerticalTabGroupHeaderView::IsValidHoverCardTarget() const {
   return delegate_->IsValid();
 }
 
+views::BubbleAnchor VerticalTabGroupHeaderView::GetAnchor() {
+  return views::BubbleAnchor(this);
+}
+
 views::BubbleBorder::Arrow VerticalTabGroupHeaderView::GetAnchorPosition()
     const {
   return views::BubbleBorder::LEFT_TOP;

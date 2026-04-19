@@ -77,6 +77,7 @@ class TabGroupHeader : public TabSlotView,
   // HoverCardAnchorTarget:
   bool NeedsToShowThumbnail() const override;
   bool IsValidHoverCardTarget() const override;
+  views::BubbleAnchor GetAnchor() override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   void OnGroupContentsChanged();

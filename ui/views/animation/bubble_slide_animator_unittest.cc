@@ -13,6 +13,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -127,7 +128,7 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
 
 TEST_F(BubbleSlideAnimatorTest, InitiateSlide) {
   const auto bounds = widget_->GetWindowBoundsInScreen();
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   // Shouldn't animate from here yet.
   EXPECT_EQ(bounds, widget_->GetWindowBoundsInScreen());
   EXPECT_TRUE(delegate_->is_animating());
@@ -135,7 +136,7 @@ TEST_F(BubbleSlideAnimatorTest, InitiateSlide) {
 
 TEST_F(BubbleSlideAnimatorTest, SlideProgresses) {
   const auto starting_bounds = widget_->GetWindowBoundsInScreen();
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   const auto intermediate_bounds = widget_->GetWindowBoundsInScreen();
   EXPECT_TRUE(delegate_->is_animating());
@@ -151,7 +152,7 @@ TEST_F(BubbleSlideAnimatorTest, SlideProgresses) {
 
 TEST_F(BubbleSlideAnimatorTest, SnapToAnchorView) {
   const auto starting_bounds = widget_->GetWindowBoundsInScreen();
-  delegate_->SnapToAnchorView(view2_);
+  delegate_->SnapToAnchor(BubbleAnchor(view2_));
   const auto final_bounds = widget_->GetWindowBoundsInScreen();
   EXPECT_FALSE(delegate_->is_animating());
   EXPECT_EQ(final_bounds.y(), starting_bounds.y());
@@ -170,7 +171,7 @@ TEST_F(BubbleSlideAnimatorTest, SlideCallbacksCalled) {
   auto completed_sub =
       delegate_->AddSlideCompleteCallback(base::BindLambdaForTesting(
           [&](BubbleSlideAnimator*) { ++complete_count; }));
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   EXPECT_EQ(0, progress_count);
   EXPECT_EQ(0, complete_count);
   EXPECT_EQ(0.0, last_progress);
@@ -197,7 +198,7 @@ TEST_F(BubbleSlideAnimatorTest, SnapCallbacksCalled) {
   auto completed_sub =
       delegate_->AddSlideCompleteCallback(base::BindLambdaForTesting(
           [&](BubbleSlideAnimator*) { ++complete_count; }));
-  delegate_->SnapToAnchorView(view2_);
+  delegate_->SnapToAnchor(BubbleAnchor(view2_));
   EXPECT_EQ(1, progress_count);
   EXPECT_EQ(1, complete_count);
   EXPECT_EQ(1.0, last_progress);
@@ -215,11 +216,11 @@ TEST_F(BubbleSlideAnimatorTest, InterruptingWithSlideCallsCorrectCallbacks) {
   auto completed_sub =
       delegate_->AddSlideCompleteCallback(base::BindLambdaForTesting(
           [&](BubbleSlideAnimator*) { ++complete_count; }));
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   EXPECT_EQ(1, progress_count);
   EXPECT_EQ(0, complete_count);
-  delegate_->AnimateToAnchorView(view3_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view3_));
   EXPECT_EQ(1, progress_count);
   EXPECT_EQ(0, complete_count);
   delegate_->test_api()->IncrementTime(kSlideDuration);
@@ -239,11 +240,11 @@ TEST_F(BubbleSlideAnimatorTest, InterruptingWithSnapCallsCorrectCallbacks) {
   auto completed_sub =
       delegate_->AddSlideCompleteCallback(base::BindLambdaForTesting(
           [&](BubbleSlideAnimator*) { ++complete_count; }));
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   EXPECT_EQ(1, progress_count);
   EXPECT_EQ(0, complete_count);
-  delegate_->SnapToAnchorView(view3_);
+  delegate_->SnapToAnchor(BubbleAnchor(view3_));
   EXPECT_EQ(2, progress_count);
   EXPECT_EQ(1, complete_count);
   EXPECT_EQ(1.0, last_progress);
@@ -263,10 +264,10 @@ TEST_F(BubbleSlideAnimatorTest, CancelAnimation) {
           [&](BubbleSlideAnimator*) { ++complete_count; }));
 
   const auto initial_bounds = widget_->GetWindowBoundsInScreen();
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kSlideDuration);
   const auto second_bounds = widget_->GetWindowBoundsInScreen();
-  delegate_->AnimateToAnchorView(view1_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view1_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   const auto final_bounds = widget_->GetWindowBoundsInScreen();
   delegate_->StopAnimation();
@@ -281,13 +282,13 @@ TEST_F(BubbleSlideAnimatorTest, CancelAnimation) {
 
 TEST_F(BubbleSlideAnimatorTest, MultipleSlidesInSequence) {
   // First slide.
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kSlideDuration);
   const auto first_bounds = widget_->GetWindowBoundsInScreen();
   EXPECT_FALSE(delegate_->is_animating());
 
   // Second slide.
-  delegate_->AnimateToAnchorView(view3_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view3_));
   EXPECT_TRUE(delegate_->is_animating());
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
 
@@ -307,9 +308,9 @@ TEST_F(BubbleSlideAnimatorTest, MultipleSlidesInSequence) {
 
 TEST_F(BubbleSlideAnimatorTest, SlideBackToStartingPosition) {
   const auto first_bounds = widget_->GetWindowBoundsInScreen();
-  delegate_->AnimateToAnchorView(view3_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view3_));
   delegate_->test_api()->IncrementTime(kSlideDuration);
-  delegate_->AnimateToAnchorView(view1_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view1_));
   delegate_->test_api()->IncrementTime(kSlideDuration);
   const auto final_bounds = widget_->GetWindowBoundsInScreen();
   EXPECT_FALSE(delegate_->is_animating());
@@ -320,12 +321,12 @@ TEST_F(BubbleSlideAnimatorTest, InterruptingSlideAndReuseAnimation) {
   const auto starting_bounds = widget_->GetWindowBoundsInScreen();
 
   // Start the first slide.
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   EXPECT_TRUE(delegate_->is_animating());
 
   // Interrupt mid-slide with another slide (reusing existing animation).
-  delegate_->AnimateToAnchorView(view3_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view3_));
   EXPECT_TRUE(delegate_->is_animating());
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
 
@@ -340,13 +341,13 @@ TEST_F(BubbleSlideAnimatorTest, InterruptingSlideAndRestartAnimation) {
   const auto starting_bounds = widget_->GetWindowBoundsInScreen();
 
   // Start the first slide.
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kSlideDuration * 0.9);
   const auto intermediate_bounds1 = widget_->GetWindowBoundsInScreen();
   EXPECT_TRUE(delegate_->is_animating());
 
   // Interrupt neear end-slide with another slide (restarting new animation).
-  delegate_->AnimateToAnchorView(view3_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view3_));
   EXPECT_TRUE(delegate_->is_animating());
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
 
@@ -365,35 +366,35 @@ TEST_F(BubbleSlideAnimatorTest, InterruptingSlideAndRestartAnimation) {
 }
 
 TEST_F(BubbleSlideAnimatorTest, WidgetClosedDuringSlide) {
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   CloseWidget();
   EXPECT_FALSE(delegate_->is_animating());
 }
 
 TEST_F(BubbleSlideAnimatorTest, AnimatorDestroyedDuringSlide) {
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   delegate_.reset();
 }
 
 TEST_F(BubbleSlideAnimatorTest, AnimationSetsAnchorView) {
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kSlideDuration);
   EXPECT_EQ(view2_, bubble_->GetAnchorView());
-  delegate_->AnimateToAnchorView(view3_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view3_));
   delegate_->test_api()->IncrementTime(kSlideDuration);
   EXPECT_EQ(view3_, bubble_->GetAnchorView());
 }
 
 TEST_F(BubbleSlideAnimatorTest, SnapSetsAnchorView) {
-  delegate_->SnapToAnchorView(view2_);
+  delegate_->SnapToAnchor(BubbleAnchor(view2_));
   EXPECT_EQ(view2_, bubble_->GetAnchorView());
-  delegate_->SnapToAnchorView(view3_);
+  delegate_->SnapToAnchor(BubbleAnchor(view3_));
   EXPECT_EQ(view3_, bubble_->GetAnchorView());
 }
 
 TEST_F(BubbleSlideAnimatorTest, CancelDoesntSetAnchorView) {
-  delegate_->AnimateToAnchorView(view2_);
+  delegate_->AnimateToAnchor(BubbleAnchor(view2_));
   delegate_->test_api()->IncrementTime(kHalfSlideDuration);
   delegate_->StopAnimation();
   EXPECT_EQ(view1_, bubble_->GetAnchorView());

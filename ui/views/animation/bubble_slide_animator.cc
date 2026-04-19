@@ -28,13 +28,13 @@ void BubbleSlideAnimator::SetSlideDuration(base::TimeDelta duration) {
   slide_animation_.SetDuration(duration);
 }
 
-void BubbleSlideAnimator::AnimateToAnchorView(View* desired_anchor_view) {
+void BubbleSlideAnimator::AnimateToAnchor(const BubbleAnchor& desired_anchor) {
   constexpr double kResetAnimationThreshold = 0.8;
 
-  desired_anchor_view_ = desired_anchor_view;
+  desired_anchor_ = desired_anchor;
   starting_bubble_bounds_ =
       bubble_delegate_->GetWidget()->GetWindowBoundsInScreen();
-  target_bubble_bounds_ = CalculateTargetBounds(desired_anchor_view);
+  target_bubble_bounds_ = CalculateTargetBounds(desired_anchor);
 
   const double value = GetCurrentValue();
   if (!slide_animation_.is_animating() || value > kResetAnimationThreshold) {
@@ -46,32 +46,32 @@ void BubbleSlideAnimator::AnimateToAnchorView(View* desired_anchor_view) {
   }
 }
 
-void BubbleSlideAnimator::SnapToAnchorView(View* desired_anchor_view) {
+void BubbleSlideAnimator::SnapToAnchor(const BubbleAnchor& desired_anchor) {
   StopAnimation();
-  target_bubble_bounds_ = CalculateTargetBounds(desired_anchor_view);
+  target_bubble_bounds_ = CalculateTargetBounds(desired_anchor);
   starting_bubble_bounds_ = target_bubble_bounds_;
   bubble_delegate_->GetWidget()->SetBounds(target_bubble_bounds_);
-  bubble_delegate_->SetAnchorView(desired_anchor_view);
+  bubble_delegate_->SetAnchor(desired_anchor);
   slide_progressed_callbacks_.Notify(this, 1.0);
   slide_complete_callbacks_.Notify(this);
 }
 
-void BubbleSlideAnimator::UpdateTargetBounds() {
+void BubbleSlideAnimator::UpdateTargetBounds(
+    const BubbleAnchor& desired_anchor) {
   if (is_animating()) {
     // This will cause a mid-animation pop due to the fact that we're not
     // resetting the starting bounds but it's not clear that it's a better
     // solution than rewinding and/or changing the duration of the animation.
-    target_bubble_bounds_ = CalculateTargetBounds(desired_anchor_view_);
+    target_bubble_bounds_ = CalculateTargetBounds(desired_anchor);
   } else {
-    View* const anchor_view = bubble_delegate_->GetAnchorView();
-    DCHECK(anchor_view);
-    SnapToAnchorView(anchor_view);
+    DCHECK(!desired_anchor.IsNull());
+    SnapToAnchor(desired_anchor);
   }
 }
 
 void BubbleSlideAnimator::StopAnimation() {
   slide_animation_.Stop();
-  desired_anchor_view_ = nullptr;
+  desired_anchor_ = BubbleAnchor();
 }
 
 base::CallbackListSubscription BubbleSlideAnimator::AddSlideProgressedCallback(
@@ -91,8 +91,8 @@ void BubbleSlideAnimator::AnimationProgressed(const gfx::Animation* animation) {
 
   const gfx::Rect current_bounds = gfx::Tween::RectValueBetween(
       value, starting_bubble_bounds_, target_bubble_bounds_);
-  if (current_bounds == target_bubble_bounds_ && desired_anchor_view_) {
-    bubble_delegate_->SetAnchorView(desired_anchor_view_);
+  if (current_bounds == target_bubble_bounds_ && !desired_anchor_.IsNull()) {
+    bubble_delegate_->SetAnchor(desired_anchor_);
   }
 
   bubble_delegate_->GetWidget()->SetBounds(current_bounds);
@@ -100,12 +100,12 @@ void BubbleSlideAnimator::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void BubbleSlideAnimator::AnimationEnded(const gfx::Animation* animation) {
-  desired_anchor_view_ = nullptr;
+  desired_anchor_ = BubbleAnchor();
   slide_complete_callbacks_.Notify(this);
 }
 
 void BubbleSlideAnimator::AnimationCanceled(const gfx::Animation* animation) {
-  desired_anchor_view_ = nullptr;
+  desired_anchor_ = BubbleAnchor();
 }
 
 void BubbleSlideAnimator::OnWidgetDestroying(Widget* widget) {
@@ -114,9 +114,9 @@ void BubbleSlideAnimator::OnWidgetDestroying(Widget* widget) {
 }
 
 gfx::Rect BubbleSlideAnimator::CalculateTargetBounds(
-    const View* desired_anchor_view) const {
+    const BubbleAnchor& desired_anchor) const {
   return bubble_delegate_->GetBubbleFrameView()->GetUpdatedWindowBounds(
-      desired_anchor_view->GetAnchorBoundsInScreen(), bubble_delegate_->arrow(),
+      desired_anchor.GetAnchorRect(), bubble_delegate_->arrow(),
       bubble_delegate_->GetWidget()->client_view()->GetPreferredSize({}), true);
 }
 
