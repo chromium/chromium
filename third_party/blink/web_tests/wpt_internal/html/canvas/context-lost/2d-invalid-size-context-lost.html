@@ -1,14 +1,23 @@
 <!doctype html>
 <meta name="timeout" content="long">
+<meta name="variant" content="?desynchronized=false">
+<meta name="variant" content="?desynchronized=true">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-promise-test.js"></script>
 <script>
 runCanvasTestsInWorker();
 
+var isDesynchronized = false;
+(function parseVariants() {
+  const params = new URLSearchParams(self.location.search);
+  isDesynchronized = (params.get('desynchronized') === 'true');
+})();
+
 function get2dContext(canvas) {
   return canvas.getContext('2d', {
     willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+    desynchronized: isDesynchronized
   });
 };
 

@@ -144,7 +144,13 @@ function runCanvasTestsInWorker({dependencies = []} = {}) {
     const dependencyScripts =
        await Promise.all(allDeps.map(dep => fetch(dep).then(r => r.text())));
     const canvasTests = currentScript.textContent;
-    const allScripts = dependencyScripts.concat([canvasTests, 'done();']);
+    const allScripts = [
+      // Forward `location.search` to the worker so that it could run the right
+      // test variants. `location.search` is read-only in workers, so the whole
+      // object has to be replaced.
+      `var location = {search: '${self.location.search}'};`,
+    ].concat(dependencyScripts)
+     .concat([canvasTests, 'done();']);
 
     const workerBlob = new Blob(allScripts);
     const worker = new Worker(URL.createObjectURL(workerBlob));
