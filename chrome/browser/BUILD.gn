@@ -1841,6 +1841,7 @@ static_library("browser") {
 
   if (is_android) {
     deps += [
+      "//chrome/browser/ntp_customization",
       "//chrome/browser/webapps:android",
       "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:android",
@@ -2256,10 +2257,6 @@ static_library("browser") {
       "metrics/incognito_observer_android.cc",
       "metrics/page_load_metrics_provider.cc",
       "metrics/page_load_metrics_provider.h",
-      "ntp_customization/ntp_synced_theme_bridge.cc",
-      "ntp_customization/ntp_synced_theme_bridge.h",
-      "ntp_customization/ntp_theme_collection_bridge.cc",
-      "ntp_customization/ntp_theme_collection_bridge.h",
       "optimization_guide/android/optimization_guide_bridge.cc",
       "optimization_guide/android/optimization_guide_bridge.h",
       "optimization_guide/android/optimization_guide_tab_url_provider_android.cc",

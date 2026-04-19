@@ -5,6 +5,29 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+assert(is_android)
+
+source_set("ntp_customization") {
+  public = [
+    "ntp_synced_theme_bridge.h",
+    "ntp_theme_collection_bridge.h",
+  ]
+  sources = [
+    "ntp_synced_theme_bridge.cc",
+    "ntp_theme_collection_bridge.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search/background",
+    "//components/themes",
+  ]
+  deps = [
+    ":jni_headers",
+    "//url",
+  ]
+}
+
 android_library("public_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeStateProvider.java" ]
   deps = [
