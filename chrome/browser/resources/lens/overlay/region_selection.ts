@@ -99,6 +99,11 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
         type: Boolean,
         value: false,
       },
+      multiRegionSelectionEnabled: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableMultiRegionSelection'),
+      },
       screenshotDataUri: String,
       shaderLayerColorHexes: {
         type: Array,
@@ -155,6 +160,8 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   declare private selectionOverlayRect: DOMRect;
   // Whether keyboard selection should be displayed.
   declare private displayKeyboardSelection: boolean;
+  // Whether multi-region selection is enabled.
+  declare private multiRegionSelectionEnabled: boolean;
 
   // The colors used for the gradient stroke of the region selection.
   declare private regionStrokeColor1: string;
