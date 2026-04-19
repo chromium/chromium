@@ -40,6 +40,7 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/entry_write_buffer.h"
+#include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -89,7 +90,8 @@ class SqlPersistentStoreTest : public testing::Test {
     store_ = std::make_unique<SqlPersistentStore>(
         GetTempPath(), max_bytes, net::CacheType::DISK_CACHE,
         std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-            background_task_runners_));
+            background_task_runners_),
+        async_task_manager_);
   }
 
   // Initializes the store and waits for the operation to complete.
@@ -721,6 +723,7 @@ class SqlPersistentStoreTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::vector<scoped_refptr<base::SequencedTaskRunner>>
       background_task_runners_;
+  SqlAsyncTaskManager async_task_manager_;
   std::unique_ptr<SqlPersistentStore> store_;
   std::unique_ptr<base::FilePermissionRestorer> file_permissions_restorer_;
 };
@@ -794,7 +797,8 @@ TEST_F(SqlPersistentStoreTest, InitFailsWithCreationDirectoryFailure) {
   store_ = std::make_unique<SqlPersistentStore>(
       db_dir_path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-          background_task_runners_));
+          background_task_runners_),
+      async_task_manager_);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kFailedToCreateDirectory);
 }
 
@@ -4446,7 +4450,8 @@ int SqlPersistentStoreTest::GetNumberForWritesRequiredForCheckpoint(
   store_ = std::make_unique<SqlPersistentStore>(
       temp_dir.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-          background_task_runners_));
+          background_task_runners_),
+      async_task_manager_);
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
 
   const base::FilePath db_path =
@@ -4547,7 +4552,8 @@ void SqlPersistentStoreTest::RunWalCheckpointTest(bool serial_checkpoint,
   store_ = std::make_unique<SqlPersistentStore>(
       GetTempPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-          background_task_runners_));
+          background_task_runners_),
+      async_task_manager_);
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
   const base::FilePath db_path = GetDatabaseFilePath();
   int64_t previous_db_size = CheckedGetFileSize(db_path);

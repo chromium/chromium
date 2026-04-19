@@ -279,9 +279,7 @@ void DiskCacheTestWithCache::FlushQueueForTest() {
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
   if (sql_cache_impl_) {
-    net::TestCompletionCallback cb;
-    int rv = sql_cache_impl_->FlushQueueForTest(cb.callback());
-    EXPECT_THAT(cb.GetResult(rv), IsOk());
+    sql_cache_impl_->RunUntilAllTasksCompleteForTest();
     return;
   }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND

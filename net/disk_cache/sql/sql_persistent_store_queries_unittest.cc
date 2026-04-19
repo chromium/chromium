@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/cache_type.h"
+#include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "sql/database.h"
@@ -61,7 +62,8 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
     auto store = std::make_unique<disk_cache::SqlPersistentStore>(
         path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
         std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-            {background_task_runner}));
+            {background_task_runner}),
+        async_task_manager_);
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
     store->Initialize(future.GetCallback());
@@ -113,6 +115,7 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  disk_cache::SqlAsyncTaskManager async_task_manager_;
 };
 
 // This test verifies that critical SQL queries use the intended indexes by

@@ -30,8 +30,11 @@ SqlPersistentStore::BackendShard::BackendShard(
     const base::FilePath& path,
     net::CacheType type,
     scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : backend_(background_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    SqlAsyncTaskManager& async_task_manager)
+    : async_task_manager_(async_task_manager),
+      backend_(background_task_runner,
+               async_task_manager,
                shard_id,
                path,
                type,
@@ -295,7 +298,9 @@ void SqlPersistentStore::BackendShard::StartEviction(
   EvictionResultOrErrorAndStoreStatusCallback result_callback =
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BackendShard::OnEvictionFinished,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
+                         weak_factory_.GetWeakPtr(), std::move(callback))
+              .Then(base::OnceClosure(base::DoNothingWithBoundArgs(
+                  async_task_manager_->StartTask()))));
 
   std::vector<ResId> high_priority_res_ids;
   if (net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.Get()) {

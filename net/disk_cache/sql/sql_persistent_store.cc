@@ -101,7 +101,8 @@ SqlPersistentStore::CreateBackendShards(
     const base::FilePath& path,
     net::CacheType type,
     std::vector<scoped_refptr<base::SequencedTaskRunner>>
-        background_task_runners) {
+        background_task_runners,
+    SqlAsyncTaskManager& async_task_manager) {
   const size_t num_shards = background_task_runners.size();
   CHECK(num_shards < std::numeric_limits<ShardId::underlying_type>::max());
   std::vector<std::unique_ptr<BackendShard>> backend_shards;
@@ -112,7 +113,7 @@ SqlPersistentStore::CreateBackendShards(
   for (size_t i = 0; i < num_shards; ++i) {
     backend_shards.emplace_back(std::make_unique<BackendShard>(
         ShardId(i), path, type, read_cache_memory_monitor,
-        background_task_runners[i]));
+        background_task_runners[i], async_task_manager));
   }
   return backend_shards;
 }
@@ -122,10 +123,13 @@ SqlPersistentStore::SqlPersistentStore(
     int64_t max_bytes,
     net::CacheType type,
     std::vector<scoped_refptr<base::SequencedTaskRunner>>
-        background_task_runners)
+        background_task_runners,
+    SqlAsyncTaskManager& async_task_manager)
     : background_task_runners_(std::move(background_task_runners)),
-      backend_shards_(
-          CreateBackendShards(path, type, background_task_runners_)),
+      backend_shards_(CreateBackendShards(path,
+                                          type,
+                                          background_task_runners_,
+                                          async_task_manager)),
       user_max_bytes_(max_bytes) {}
 SqlPersistentStore::~SqlPersistentStore() = default;
 

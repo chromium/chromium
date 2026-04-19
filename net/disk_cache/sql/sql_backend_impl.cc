@@ -32,6 +32,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/disk_cache/sql/sql_async_task_token.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "sql_backend_constants.h"
@@ -395,7 +396,8 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
       store_(std::make_unique<SqlPersistentStore>(path,
                                                   max_bytes > 0 ? max_bytes : 0,
                                                   GetCacheType(),
-                                                  background_task_runners_)),
+                                                  background_task_runners_,
+                                                  async_task_manager_)),
       optimistic_write_buffer_monitor_(
           net::features::kSqlDiskCacheOptimisticWriteBufferSize.Get()),
       write_buffer_monitor_(
@@ -419,7 +421,8 @@ void SqlBackendImpl::Init(CompletionOnceCallback callback) {
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&CheckFakeIndexFile, path_),
-      base::OnceCallback<void(bool)>(barrier_callback));
+      base::OnceCallback<void(bool)>(barrier_callback)
+          .Then(OnceClosureWithBoundArgs(async_task_manager_.StartTask())));
 }
 
 void SqlBackendImpl::OnInitialized(CompletionOnceCallback callback,
@@ -432,6 +435,11 @@ void SqlBackendImpl::OnInitialized(CompletionOnceCallback callback,
     // impacting startup performance. This is especially important for Android
     // WebView where Performance Scenario Detection doesn't work. See
     // https://crbug.com/456009994 for more details.
+    // Note: Intentionally do not pass a SqlAsyncTaskToken to this
+    // PostDelayedTask. This allows tests (e.g.
+    // SqlBackendImplTest.DelayedPostInitializationTasks) to verify that the
+    // index is not loaded until this task runs when
+    // SqlDiskCacheLoadIndexOnInit is false.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SqlBackendImpl::RunDelayedPostInitializationTasks,
@@ -1460,33 +1468,8 @@ void SqlBackendImpl::ApplyInFlightEntryModifications(
   }
 }
 
-int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
-  // `FlushQueueForTest` posts an exclusive operation to wait for all queued
-  // operations to complete. However, if this operation sets the "has pending
-  // task" flag, it would pause the eviction process (which checks this flag)
-  // that we might be waiting for. To avoid this, post the operation with
-  // `low_priority=true`.
-  exclusive_operation_coordinator_.PostOrRunExclusiveOperation(
-      base::BindOnce(
-          [](std::vector<scoped_refptr<base::SequencedTaskRunner>>
-                 background_task_runners,
-             CompletionOnceCallback callback,
-             std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>
-                 handle) {
-            auto barrier_closure = base::BarrierClosure(
-                background_task_runners.size(),
-                base::BindOnce(std::move(callback), net::OK)
-                    .Then(OnceClosureWithBoundArgs(std::move(handle))));
-            for (auto& runner : background_task_runners) {
-              runner->PostTaskAndReply(
-                  // Post a no-op task to the background runner.
-                  FROM_HERE, base::BindOnce([]() {}), barrier_closure);
-            }
-          },
-          background_task_runners_, std::move(callback)),
-      /*low_priority=*/true);
-
-  return net::ERR_IO_PENDING;
+void SqlBackendImpl::RunUntilAllTasksCompleteForTest() {
+  async_task_manager_.RunUntilAllTasksCompleteForTest();  // IN-TEST
 }
 
 void SqlBackendImpl::MaybeTriggerEviction(bool is_idle_time_eviction) {

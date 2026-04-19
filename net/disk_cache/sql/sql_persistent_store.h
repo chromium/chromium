@@ -42,6 +42,8 @@ class IOBuffer;
 
 namespace disk_cache {
 
+class SqlAsyncTaskManager;
+
 // This class serves as the main entry point for the SQL-based disk cache's
 // persistence layer. It manages multiple database shards to improve
 // concurrency, distributing operations across them based on cache entry keys.
@@ -291,7 +293,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                      int64_t max_bytes,
                      net::CacheType type,
                      std::vector<scoped_refptr<base::SequencedTaskRunner>>
-                         background_task_runners);
+                         background_task_runners,
+                     SqlAsyncTaskManager& async_task_manager);
   ~SqlPersistentStore();
 
   SqlPersistentStore(const SqlPersistentStore&) = delete;
@@ -614,7 +617,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       const base::FilePath& path,
       net::CacheType type,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>
-          background_task_runners);
+          background_task_runners,
+      SqlAsyncTaskManager& async_task_manager);
 
   void OnInitializeFinished(ErrorCallback callback,
                             std::vector<InitResultOrError> results);

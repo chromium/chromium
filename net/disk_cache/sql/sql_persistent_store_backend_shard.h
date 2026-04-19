@@ -17,6 +17,7 @@
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 #include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
+#include "net/disk_cache/sql/sql_tracked_sequence_bound.h"
 
 namespace base {
 class FilePath;
@@ -30,6 +31,7 @@ class IOBuffer;
 namespace disk_cache {
 
 class EvictionCandidateAggregator;
+class SqlAsyncTaskManager;
 
 // SqlPersistentStoreBackendShard` manages a single shard of the cache,
 // including its own `Backend` instance and in-memory index. It forwards
@@ -41,7 +43,8 @@ class SqlPersistentStore::BackendShard {
       const base::FilePath& path,
       net::CacheType type,
       scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      SqlAsyncTaskManager& async_task_manager);
   ~BackendShard();
 
   // Kicks off the asynchronous initialization of the backend.
@@ -216,7 +219,8 @@ class SqlPersistentStore::BackendShard {
                           EvictionResultOrErrorAndStoreStatus result);
   void RecordIndexMismatch(IndexMismatchLocation location);
 
-  base::SequenceBound<Backend> backend_;
+  const raw_ref<SqlAsyncTaskManager> async_task_manager_;
+  SqlTrackedSequenceBound<Backend> backend_;
 
   // The in-memory summary of the store's status.
   StoreStatus store_status_;
