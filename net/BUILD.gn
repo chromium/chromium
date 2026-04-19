@@ -1895,6 +1895,7 @@ component("net") {
       "disk_cache/sql/sql_persistent_store_queries.h",
       "disk_cache/sql/sql_read_cache_memory_monitor.cc",
       "disk_cache/sql/sql_read_cache_memory_monitor.h",
+      "disk_cache/sql/sql_tracked_sequence_bound.h",
       "disk_cache/sql/sql_write_buffer_memory_monitor.cc",
       "disk_cache/sql/sql_write_buffer_memory_monitor.h",
     ]
@@ -3631,6 +3632,7 @@ target(_test_target_type, "net_unittests") {
       "disk_cache/sql/sql_backend_impl_unittest.cc",
       "disk_cache/sql/sql_persistent_store_in_memory_index_unittest.cc",
       "disk_cache/sql/sql_persistent_store_unittest.cc",
+      "disk_cache/sql/sql_tracked_sequence_bound_unittest.cc",
     ]
 
     deps += [ "//components/performance_manager/scenario_api:test_support" ]
