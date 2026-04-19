@@ -23,12 +23,7 @@
 }
 
 :host([is-refreshed-ui_]) #actionContainer {
-  <if expr="is_win">
   flex-direction: row;
-  </if>
-  <if expr="not is_win">
-  flex-direction: row-reverse;
-  </if>
   justify-content: center;
   gap: 8px;
   padding-bottom: 24px;
