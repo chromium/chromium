@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -771,6 +772,101 @@ TEST_F(CreditCardFormEventLoggerTest,
       BucketsInclude(
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+}
+
+TEST_F(CreditCardFormEventLoggerTest, ExternallySavedCardSuggestionShown) {
+  CreditCard externally_saved_card = test::GetMaskedServerCard();
+  externally_saved_card.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      externally_saved_card);
+
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate showing an externally-saved card.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTION_FOR_EXTERNALLY_SAVED_CARD_SHOWN, 1),
+          Bucket(FORM_EVENT_SUGGESTION_FOR_EXTERNALLY_SAVED_CARD_SHOWN_ONCE,
+                 1)));
+}
+
+TEST_F(CreditCardFormEventLoggerTest, ExternallySavedCardSuggestionSelected) {
+  CreditCard externally_saved_card = test::GetMaskedServerCard();
+  externally_saved_card.set_card_creation_source(
+      CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      externally_saved_card);
+
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate selecting an externally-saved card.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      &externally_saved_card, AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{});
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTION_FOR_EXTERNALLY_SAVED_CARD_SELECTED, 1),
+          Bucket(FORM_EVENT_SUGGESTION_FOR_EXTERNALLY_SAVED_CARD_SELECTED_ONCE,
+                 1)));
+}
+
+TEST_F(CreditCardFormEventLoggerTest, NeverUsedCardSuggestionShown) {
+  CreditCard never_used_card = test::GetMaskedServerCard();
+  never_used_card.usage_history().set_use_count(1);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      never_used_card);
+
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate showing a never before used card.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTION_FOR_NEVER_USED_CARD_SHOWN, 1),
+          Bucket(FORM_EVENT_SUGGESTION_FOR_NEVER_USED_CARD_SHOWN_ONCE, 1)));
+}
+
+TEST_F(CreditCardFormEventLoggerTest, NeverUsedCardSuggestionSelected) {
+  CreditCard never_used_card = test::GetMaskedServerCard();
+  never_used_card.usage_history().set_use_count(1);
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      never_used_card);
+
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate selecting a never before used card.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      &never_used_card, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTION_FOR_NEVER_USED_CARD_SELECTED, 1),
+          Bucket(FORM_EVENT_SUGGESTION_FOR_NEVER_USED_CARD_SELECTED_ONCE, 1)));
 }
 
 TEST_F(CreditCardFormEventLoggerTest,

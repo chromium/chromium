@@ -170,6 +170,15 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
         return card.card_info_retrieval_enrollment_state() ==
                CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
       });
+  summary.with_externally_saved_card =
+      std::ranges::any_of(cards_to_suggest, [](const CreditCard& card) {
+        return card.card_creation_source() ==
+               CreditCard::CardCreationSource::kCreationSourceNonChromePayments;
+      });
+  summary.with_never_used_card =
+      std::ranges::any_of(cards_to_suggest, [](const CreditCard& card) {
+        return card.usage_history().use_count() == 1;
+      });
   if (suggestions.empty()) {
     return suggestions;
   }
@@ -635,6 +644,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         suggestions, summary_.with_cvc,
         summary_.with_card_info_retrieval_enrolled,
         summary_.with_pay_later_tab_suggestion,
+        summary_.with_externally_saved_card, summary_.with_never_used_card,
         is_virtual_card_standalone_cvc_field,
         std::move(summary_.metadata_logging_context));
   }

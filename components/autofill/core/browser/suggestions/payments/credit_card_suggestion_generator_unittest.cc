@@ -4958,6 +4958,55 @@ TEST_P(DownstreamCardAwarenessIphTest,
   }
 }
 
+// Verify we correctly identify suggestions for externally-saved cards.
+TEST_P(DownstreamCardAwarenessIphTest, WithExternallySavedCard) {
+  CreditCard server_card = CreateServerCard();
+  server_card.set_card_creation_source(enrollment_source());
+  payments_data().AddServerCreditCard(server_card);
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+  const CreditCardSuggestionSummary summary =
+      credit_card_form_event_logger()
+          .GetCreditCardSuggestionSummaryForTesting();
+
+  EXPECT_EQ(
+      summary.with_externally_saved_card,
+      enrollment_source() ==
+          CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
+}
+
+// Verify we correctly identify suggestions for never used cards.
+TEST_P(DownstreamCardAwarenessIphTest, WithNeverUsedCard) {
+  CreditCard server_card = CreateServerCard();
+  server_card.usage_history().set_use_count(use_count());
+  payments_data().AddServerCreditCard(server_card);
+
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+  const CreditCardSuggestionSummary summary =
+      credit_card_form_event_logger()
+          .GetCreditCardSuggestionSummaryForTesting();
+
+  EXPECT_EQ(summary.with_never_used_card, use_count() == 1);
+}
+
 // Params of GetFilteredCardsToSuggestTest:
 // -- FieldType get_trigger_field_type: Indicates triggered field type.
 class GetFilteredCardsToSuggestTest

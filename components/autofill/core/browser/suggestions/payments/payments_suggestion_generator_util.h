@@ -46,6 +46,11 @@ struct CreditCardSuggestionSummary {
   bool with_card_info_retrieval_enrolled = false;
   // True if there is a pay later tab suggestion.
   bool with_pay_later_tab_suggestion = false;
+  // True if there is a card saved through other Google services outside of
+  // Chrome.
+  bool with_externally_saved_card = false;
+  // True if there is a card that has not been used before.
+  bool with_never_used_card = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
 };
