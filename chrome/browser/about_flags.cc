@@ -554,16 +554,28 @@ const FeatureEntry::FeatureParam kVerticalTabsExpandOnHover_AllowClickDelay[] =
      {"expand_on_hover_click_delay", "1500ms"},
      {"expand_on_hover_default_enabled", "true"}};
 const FeatureEntry::FeatureParam
-    kVerticalTabsExpandOnHover_VelocityHeuristic[] = {
+    kVerticalTabsExpandOnHover_VelocityHeuristic_100VelocityThreshold[] = {
         {"expand_on_hover_use_velocity_heuristic", "true"},
-        {"expand_on_hover_default_enabled", "true"}};
+        {"expand_on_hover_default_enabled", "true"},
+        {"expand_on_hover_velocity_heuristic_min_samples", "2"},
+        {"expand_on_hover_velocity_heuristic_threshold", "0.1"}};
+const FeatureEntry::FeatureParam
+    kVerticalTabsExpandOnHover_VelocityHeuristic_250VelocityThreshold[] = {
+        {"expand_on_hover_use_velocity_heuristic", "true"},
+        {"expand_on_hover_default_enabled", "true"},
+        {"expand_on_hover_velocity_heuristic_min_samples", "3"},
+        {"expand_on_hover_velocity_heuristic_threshold", "0.25"}};
 
 const FeatureEntry::FeatureVariation kVerticalTabsExpandOnHoverVariations[] = {
     {"with 350ms hover delay / 0 click delay",
      kVerticalTabsExpandOnHover_NoClickDelay, nullptr},
     {"with 400ms hover delay / 1500ms click delay",
      kVerticalTabsExpandOnHover_AllowClickDelay, nullptr},
-    {"with velocity heuristic", kVerticalTabsExpandOnHover_VelocityHeuristic,
+    {"with 100dp/s velocity heuristic",
+     kVerticalTabsExpandOnHover_VelocityHeuristic_100VelocityThreshold,
+     nullptr},
+    {"with 250dp/s velocity heuristic",
+     kVerticalTabsExpandOnHover_VelocityHeuristic_250VelocityThreshold,
      nullptr}};
 #endif
 
