@@ -74,8 +74,8 @@ void GlicRegionCaptureController::CaptureRegion(
             web_contents->GetBrowserContext());
     CHECK(glic_service);
     std::optional<GlicGetContextError> eligibility_error =
-        glic_service->sharing_manager().CheckContextSharingEligibility(
-            tab->GetHandle());
+        glic_service->sharing_manager()
+            .CheckPreliminaryContextSharingEligibility(tab->GetHandle());
     if (eligibility_error.has_value()) {
       mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),
