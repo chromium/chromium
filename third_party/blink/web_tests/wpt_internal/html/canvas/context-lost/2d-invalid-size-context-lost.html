@@ -1,7 +1,12 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<meta name="variant" content="?desynchronized=false">
-<meta name="variant" content="?desynchronized=true">
+<meta name="variant" content="?testType=html">
+<meta name="variant" content="?testType=html&desynchronized">
+<meta name="variant" content="?testType=detached_html">
+<meta name="variant" content="?testType=offscreen">
+<meta name="variant" content="?testType=offscreen&desynchronized">
+<meta name="variant" content="?testType=placeholder">
+<meta name="variant" content="?testType=worker">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-promise-test.js"></script>
@@ -11,7 +16,7 @@ runCanvasTestsInWorker();
 var isDesynchronized = false;
 (function parseVariants() {
   const params = new URLSearchParams(self.location.search);
-  isDesynchronized = (params.get('desynchronized') === 'true');
+  isDesynchronized = (params.get('desynchronized') !== null);
 })();
 
 function get2dContext(canvas) {
