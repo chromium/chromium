@@ -49,6 +49,10 @@ public interface PopupCreator {
     /**
      * Moves the given {@link WebContents} to a new Document Picture-in-Picture window.
      *
+     * <p>Note: The {@code windowBounds} specified in {@code windowOptions} may be overridden by
+     * cached user-resized bounds from a previous PiP window of the same origin if available, to
+     * provide size persistence.
+     *
      * @param srcActivity The {@link Activity} that initiated the Document Picture-in-Picture
      *     request.
      * @param webContents The {@link WebContents} to move.

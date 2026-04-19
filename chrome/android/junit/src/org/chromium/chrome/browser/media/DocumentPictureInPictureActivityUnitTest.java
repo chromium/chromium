@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.media;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -34,6 +37,7 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -45,6 +49,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
     @Mock private ActivityWindowAndroid mActivityWindowAndroid;
     @Mock private DisplayAndroid mDisplayAndroid;
+    @Mock private PictureInPictureBoundsCacheBridge.Natives mMockNatives;
     @Mock private WindowManager mWindowManager;
     @Mock private WindowMetrics mWindowMetrics;
     @Mock private FrameLayout mContentLayout;
@@ -60,6 +65,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
         DisplayAndroid.setNonMultiDisplayForTesting(mDisplayAndroid);
+        PictureInPictureBoundsCacheBridgeJni.setInstanceForTesting(mMockNatives);
 
         // Common Display setup
         when(mDisplayAndroid.getDipScale()).thenReturn(1.0f);
@@ -134,5 +140,35 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.resizeContents(100, 100);
 
         verifyNoInteractions(mAconfigFlaggedApiDelegate);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testSaveBoundsToCache() {
+        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
+
+        WebContents parentWebContents = mock(WebContents.class);
+        AutoPictureInPictureTabHelper helper = mock(AutoPictureInPictureTabHelper.class);
+        when(parentWebContents.isDestroyed()).thenReturn(false);
+        when(parentWebContents.getOrSetUserData(
+                        eq(AutoPictureInPictureTabHelper.USER_DATA_KEY), isNull()))
+                .thenReturn(helper);
+
+        mActivity.setParentWebContentsOnInstanceForTesting(parentWebContents);
+
+        final Rect windowBoundsPx = new Rect(100, 100, 300, 300); // 200x200
+        when(mWindowMetrics.getBounds()).thenReturn(windowBoundsPx);
+
+        mActivity.saveBoundsToCache();
+
+        verify(mMockNatives)
+                .updateCachedBounds(
+                        eq(parentWebContents),
+                        eq(50), // 100 / 2.0
+                        eq(50), // 100 / 2.0
+                        eq(150), // 300 / 2.0
+                        eq(150), // 300 / 2.0
+                        anyInt(),
+                        anyInt());
     }
 }

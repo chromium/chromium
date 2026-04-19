@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvid
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -110,6 +111,18 @@ public class PopupCreatorImpl implements PopupCreator {
             PictureInPictureWindowOptions windowOptions) {
         if (sMoveToNewDocumentPiPWindowResultForTesting != null) {
             return sMoveToNewDocumentPiPWindowResultForTesting;
+        }
+
+        WebContents opener = webContents.getDocumentPictureInPictureOpener();
+        AutoPictureInPictureTabHelper helper =
+                opener != null ? AutoPictureInPictureTabHelper.fromWebContents(opener) : null;
+        Rect cachedBounds =
+                helper != null ? helper.getCachedWindowBounds(windowOptions.windowBounds) : null;
+
+        if (cachedBounds != null) {
+            windowOptions =
+                    new PictureInPictureWindowOptions(
+                            cachedBounds, windowOptions.disallowReturnToOpener);
         }
 
         final ActivityOptions activityOptions =

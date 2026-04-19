@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.media;
 
+import static android.view.Display.INVALID_DISPLAY;
+
+import android.graphics.Rect;
+
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A tab helper that stores the state of Auto-PiP permissions for a specific WebContents. This
@@ -23,6 +28,9 @@ import org.chromium.content_public.browser.WebContentsObserver;
 public class AutoPictureInPictureTabHelper implements UserData {
     public static final Class<AutoPictureInPictureTabHelper> USER_DATA_KEY =
             AutoPictureInPictureTabHelper.class;
+
+    /** The WebContents this helper is attached to. */
+    private final WebContents mWebContents;
 
     /**
      * Observes {@link WebContents} events to clear the {@link #mHasAllowOnce} state when the
@@ -59,6 +67,7 @@ public class AutoPictureInPictureTabHelper implements UserData {
     }
 
     public AutoPictureInPictureTabHelper(WebContents webContents) {
+        mWebContents = webContents;
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override
@@ -101,6 +110,33 @@ public class AutoPictureInPictureTabHelper implements UserData {
     /** Returns the active permission controller, or null if none is showing. */
     public @Nullable AutoPictureInPicturePermissionController getPermissionController() {
         return mPermissionController;
+    }
+
+    /**
+     * Returns the cached window bounds from the native C++ cache.
+     *
+     * @param requestedBounds The bounds currently requested by the site.
+     * @return The cached user-resized window bounds in pixels, or null if there is no match.
+     */
+    public @Nullable Rect getCachedWindowBounds(@Nullable Rect requestedBounds) {
+        int openerDisplayId = INVALID_DISPLAY;
+        float dipScale = 1.0f;
+        WindowAndroid window = mWebContents.getTopLevelNativeWindow();
+        if (window != null) {
+            openerDisplayId = window.getDisplay().getDisplayId();
+            dipScale = window.getDisplay().getDipScale();
+        }
+
+        // Use a negative value to indicate that the site did not request a specific size.
+        // The C++ bridge will convert this to std::nullopt by checking if dimensions are > 0.
+        // Convert pixels to DIPs to match C++ cache expectations.
+        int requestedWidth =
+                requestedBounds != null ? (int) (requestedBounds.width() / dipScale) : -1;
+        int requestedHeight =
+                requestedBounds != null ? (int) (requestedBounds.height() / dipScale) : -1;
+
+        return PictureInPictureBoundsCacheBridge.getBoundsForNewWindow(
+                mWebContents, openerDisplayId, requestedWidth, requestedHeight);
     }
 
     @Override

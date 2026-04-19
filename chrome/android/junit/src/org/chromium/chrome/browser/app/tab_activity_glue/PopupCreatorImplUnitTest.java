@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
 
@@ -59,6 +61,8 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
+import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
@@ -601,6 +605,35 @@ public class PopupCreatorImplUnitTest {
                         null, mWebContents, windowOptions));
         verify(mFlaggedApiDelegate).setMovableTaskRequired(any());
         verify(mContext, never()).startActivity(any(), any());
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_appliesCachedBounds() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions =
+                new PictureInPictureWindowOptions(new Rect(0, 0, 100, 100), false);
+
+        WebContents opener = mock(WebContents.class);
+        when(mWebContents.getDocumentPictureInPictureOpener()).thenReturn(opener);
+
+        AutoPictureInPictureTabHelper helper = mock(AutoPictureInPictureTabHelper.class);
+        Rect cachedBounds = new Rect(0, 0, 200, 200);
+        when(helper.getCachedWindowBounds(any())).thenReturn(cachedBounds);
+        when(opener.getOrSetUserData(eq(AutoPictureInPictureTabHelper.USER_DATA_KEY), any()))
+                .thenReturn(helper);
+
+        mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                null, mWebContents, windowOptions);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        Intent sentIntent = captor.getValue();
+
+        Bundle optionsBundle =
+                sentIntent.getBundleExtra(DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY);
+        PictureInPictureWindowOptions options = new PictureInPictureWindowOptions(optionsBundle);
+
+        Assert.assertEquals("Cached bounds should be applied", cachedBounds, options.windowBounds);
     }
 
     @Test

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -72,6 +74,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -460,6 +463,46 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
     }
 
+    /**
+     * Saves the current window bounds to the cache if conditions are met.
+     *
+     * <p>This requires that the parent WebContents is still valid, we are not recreating the
+     * activity, and the API level is 30 or higher (required for {@code getCurrentWindowMetrics()}).
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void saveBoundsToCache() {
+        if (mParentWebContents != null
+                && !mParentWebContents.isDestroyed()
+                && !mIsRecreating
+                && getWindowAndroid() != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            DisplayAndroid display = getDisplayAndroid();
+            Rect currentWindowBounds =
+                    DisplayUtil.convertLocalPxToGlobalDipCoordinates(
+                            display,
+                            new Rect(getWindowManager().getCurrentWindowMetrics().getBounds()));
+
+            int openerDisplayId = INVALID_DISPLAY;
+            WindowAndroid openerWindow = mParentWebContents.getTopLevelNativeWindow();
+            if (openerWindow != null) {
+                openerDisplayId = openerWindow.getDisplay().getDisplayId();
+            }
+
+            int pipDisplayId = display.getDisplayId();
+
+            PictureInPictureBoundsCacheBridge.updateCachedBounds(
+                    mParentWebContents, currentWindowBounds, openerDisplayId, pipDisplayId);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        // Save bounds on stop rather than destroy, to ensure the window is still
+        // valid and its metrics can be fetched.
+        saveBoundsToCache();
+        super.onStop();
+    }
+
     @Override
     @SuppressWarnings("NullAway")
     protected final void onDestroy() {
@@ -592,9 +635,21 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         ResettersForTesting.register(() -> sWebContentsForTesting = null);
     }
 
+    /**
+     * Sets the parent WebContents to be used during activity startup for testing. Use this in
+     * integration tests before the activity is launched.
+     */
     public static void setParentWebContentsForTesting(WebContents webContents) {
         sParentWebContentsForTesting = webContents;
         ResettersForTesting.register(() -> sParentWebContentsForTesting = null);
+    }
+
+    /**
+     * Sets the parent WebContents directly on this instance for testing. Use this in unit tests
+     * where the activity is created without running the full startup flow.
+     */
+    void setParentWebContentsOnInstanceForTesting(WebContents webContents) {
+        mParentWebContents = webContents;
     }
 
     public static void setIgnoreSdkVersionForTesting(boolean ignore) {
