@@ -236,10 +236,9 @@ int MigrateExistingConfig(const HostConfig& src, const HostConfig& dst) {
 
 }  // namespace
 
-int StartHostAsRoot(int argc, char** argv) {
+int StartHostAsRoot() {
   DCHECK(getuid() == 0);
 
-  base::CommandLine::Init(argc, argv);
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if (!ValidateCommandLine(command_line)) {
     return 1;

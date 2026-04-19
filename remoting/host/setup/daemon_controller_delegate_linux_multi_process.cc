@@ -59,6 +59,80 @@ bool RunSystemctlCommand(const base::CommandLine::StringVector& args,
   return result;
 }
 
+bool WriteConfigs(const base::DictValue& full_config) {
+  // Ensure the configuration directory exists.
+  base::FilePath config_dir = GetMultiProcessHostGlobalConfigDir();
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(config_dir, &error)) {
+    if (error == base::File::FILE_ERROR_EXISTS) {
+      if (!base::DeleteFile(config_dir)) {
+        LOG(ERROR) << "Failed to delete file at path: " << config_dir.value();
+        return false;
+      }
+      if (!base::CreateDirectoryAndGetError(config_dir, &error)) {
+        LOG(ERROR) << "Failed to create config directory after deleting "
+                   << "the file at the same path: " << config_dir.value()
+                   << ", error: " << base::File::ErrorToString(error);
+        return false;
+      }
+    } else {
+      LOG(ERROR) << "Failed to create config directory " << config_dir.value()
+                 << ", error: " << base::File::ErrorToString(error);
+      return false;
+    }
+  }
+
+  // The config dir needs to be readable and executable by everyone so that
+  // other users can read the unprivileged config.
+  if (!base::SetPosixFilePermissions(config_dir, 0755)) {
+    PLOG(ERROR) << "Failed to set permissions on config directory: "
+                << config_dir.value();
+    base::DeletePathRecursively(config_dir);
+    return false;
+  }
+
+  // Write full config.
+  base::FilePath config_path = GetPrivilegedConfigPath();
+  if (!HostConfigToJsonFile(full_config, config_path)) {
+    LOG(ERROR) << "Failed to update config file: " << config_path.value();
+    return false;
+  }
+
+  // Implementation of HostConfigToJsonFile guarantees that the file has the
+  // permission 600 since it is renamed from a file created with mktemp(), but
+  // we explicitly set the permission here since it isn't documented.
+  if (!base::SetPosixFilePermissions(config_path, 0600)) {
+    PLOG(ERROR) << "Failed to set permissions on config file: "
+                << config_path.value();
+    base::DeleteFile(config_path);
+    return false;
+  }
+
+  // Sync unprivileged config.
+  base::DictValue unprivileged_config;
+  for (const auto& key : DaemonController::GetUnprivilegedConfigKeys()) {
+    if (const base::Value* value = full_config.Find(key)) {
+      unprivileged_config.Set(key, value->Clone());
+    }
+  }
+  base::FilePath unprivileged_path = GetUnprivilegedConfigPath();
+  if (!HostConfigToJsonFile(unprivileged_config, unprivileged_path)) {
+    LOG(ERROR) << "Failed to update unprivileged config file: "
+               << unprivileged_path.value();
+    return false;
+  }
+
+  // Ensure the unprivileged config is readable by everyone.
+  if (!base::SetPosixFilePermissions(unprivileged_path, 0644)) {
+    PLOG(ERROR) << "Failed to set permissions on unprivileged config file: "
+                << unprivileged_path.value();
+    base::DeleteFile(unprivileged_path);
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 DaemonControllerDelegateLinuxMultiProcess::
@@ -93,6 +167,9 @@ DaemonController::State DaemonControllerDelegateLinuxMultiProcess::GetState() {
 
 std::optional<base::DictValue>
 DaemonControllerDelegateLinuxMultiProcess::GetConfig() {
+  if (!base::PathExists(GetUnprivilegedConfigPath())) {
+    return std::nullopt;
+  }
   return HostConfigFromJsonFile(GetUnprivilegedConfigPath());
 }
 
@@ -106,23 +183,36 @@ void DaemonControllerDelegateLinuxMultiProcess::SetConfigAndStart(
     base::DictValue config,
     bool consent,
     DaemonController::CompletionCallback done) {
-  // TODO: b/502664397 - Support starting multi-process host for the start-host
-  // command.
-  NOTIMPLEMENTED();
-  std::move(done).Run(DaemonController::RESULT_FAILED);
+  if (!is_privileged()) {
+    LOG(ERROR) << "Root privileges required to set multi-process config.";
+    std::move(done).Run(DaemonController::RESULT_FAILED);
+    return;
+  }
+
+  if (!WriteConfigs(config)) {
+    std::move(done).Run(DaemonController::RESULT_FAILED);
+    return;
+  }
+
+  if (RunSystemctlCommand(
+          {"enable", "--now", "chrome-remote-desktop.service"})) {
+    std::move(done).Run(DaemonController::RESULT_OK);
+  } else {
+    LOG(ERROR) << "Failed to enable and start chrome-remote-desktop.service";
+    std::move(done).Run(DaemonController::RESULT_FAILED);
+  }
 }
 
 void DaemonControllerDelegateLinuxMultiProcess::UpdateConfig(
     base::DictValue config,
     DaemonController::CompletionCallback done) {
-  base::FilePath config_path = GetPrivilegedConfigPath();
-
   if (!is_privileged()) {
     LOG(ERROR) << "Root privileges required to update multi-process config.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
 
+  base::FilePath config_path = GetPrivilegedConfigPath();
   std::optional<base::DictValue> full_config(
       HostConfigFromJsonFile(config_path));
   if (!full_config.has_value()) {
@@ -134,31 +224,7 @@ void DaemonControllerDelegateLinuxMultiProcess::UpdateConfig(
 
   full_config->Merge(std::move(config));
 
-  if (!HostConfigToJsonFile(*full_config, config_path)) {
-    LOG(ERROR) << "Failed to update config file: " << config_path.value();
-    std::move(done).Run(DaemonController::RESULT_FAILED);
-    return;
-  }
-
-  // Sync unprivileged config.
-  base::DictValue unprivileged_config;
-  for (const auto& key : DaemonController::GetUnprivilegedConfigKeys()) {
-    if (const base::Value* value = full_config->Find(key)) {
-      unprivileged_config.Set(key, value->Clone());
-    }
-  }
-  base::FilePath unprivileged_path = GetUnprivilegedConfigPath();
-  if (!HostConfigToJsonFile(unprivileged_config, unprivileged_path)) {
-    LOG(ERROR) << "Failed to update unprivileged config file: "
-               << unprivileged_path.value();
-    std::move(done).Run(DaemonController::RESULT_FAILED);
-    return;
-  }
-
-  // Ensure the unprivileged config is readable by everyone.
-  if (!base::SetPosixFilePermissions(unprivileged_path, 0644)) {
-    LOG(ERROR) << "Failed to set permissions on unprivileged config file: "
-               << unprivileged_path.value();
+  if (!WriteConfigs(*full_config)) {
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }

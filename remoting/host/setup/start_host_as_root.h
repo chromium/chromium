@@ -7,7 +7,7 @@
 
 namespace remoting {
 
-int StartHostAsRoot(int argc, char** argv);
+int StartHostAsRoot();
 
 }  // namespace remoting
 
