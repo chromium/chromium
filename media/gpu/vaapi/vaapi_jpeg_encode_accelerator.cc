@@ -501,9 +501,17 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   }
 
   // Copy the real exif buffer into preserved space.
-  UNSAFE_TODO(
-      memcpy(request->output_mapping.GetMemoryAs<uint8_t>() + exif_offset,
-             exif_buffer, exif_buffer_size));
+  if (exif_buffer_size > 0) {
+    if (exif_offset + exif_buffer_size > request->output_mapping.size()) {
+      VLOGF(1) << "Output buffer size is too small for EXIF data";
+      notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+      return;
+    }
+
+    UNSAFE_TODO(
+        memcpy(request->output_mapping.GetMemoryAs<uint8_t>() + exif_offset,
+               exif_buffer, exif_buffer_size));
+  }
 
   video_frame_ready_cb_.Run(task_id, encoded_size);
 }
