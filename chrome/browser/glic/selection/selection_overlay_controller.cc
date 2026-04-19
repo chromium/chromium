@@ -354,6 +354,8 @@ SelectionOverlayController::GetPreselectionBubbleConfig() {
   return {
       .message_string_id = IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT,
       .show_cancel_button = true,
+      // TODO(b:503000173): Add a new color code alias for this.
+      .cancel_button_color = ui::kColorSysInversePrimary,
       .bubble_background_color = kColorGlicSelectionOverlayToast,
       .icon = &vector_icons::kCropFreeIcon};
 }

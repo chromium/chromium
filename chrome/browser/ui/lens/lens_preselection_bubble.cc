@@ -64,6 +64,7 @@ LensPreselectionBubble::LensPreselectionBubble(
     bool show_cancel_button,
     ui::ColorId bubble_background_color,
     const gfx::VectorIcon* icon,
+    std::optional<ui::ColorId> cancel_button_color,
     ExitClickedCallback exit_clicked_callback,
     base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
@@ -71,6 +72,7 @@ LensPreselectionBubble::LensPreselectionBubble(
                                views::BubbleBorder::NO_SHADOW),
       tab_handle_(tab_handle),
       show_cancel_button_(show_cancel_button),
+      cancel_button_color_(cancel_button_color),
       offline_(offline),
       bubble_background_color_(bubble_background_color),
       icon_(icon),
@@ -231,10 +233,14 @@ void LensPreselectionBubble::OnThemeChanged() {
 
   if (show_cancel_button_) {
     CHECK(cancel_button_);
+    ui::ColorId text_color_id =
+        cancel_button_color_.value_or(kColorLensOverlayToastForeground);
+    ui::ColorId border_color_id =
+        cancel_button_color_.value_or(kColorLensOverlayToastButtonBorder);
     cancel_button_->SetEnabledTextColors(
-        color_provider->GetColor(kColorLensOverlayToastForeground));
+        color_provider->GetColor(text_color_id));
     cancel_button_->SetBorder(views::CreateRoundedRectBorder(
-        1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
+        1, 48, color_provider->GetColor(border_color_id)));
     cancel_button_->SetBgColorIdOverride(bubble_background_color_);
   }
 }

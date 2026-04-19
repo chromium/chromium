@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_PRESELECTION_BUBBLE_H_
 #define CHROME_BROWSER_UI_LENS_LENS_PRESELECTION_BUBBLE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/tabs/public/tab_interface.h"
@@ -36,14 +38,16 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
 
   using ExitClickedCallback = views::Button::PressedCallback;
-  explicit LensPreselectionBubble(tabs::TabHandle tab_handle,
-                                  views::View* anchor_view,
-                                  bool offline,
-                                  bool show_cancel_button,
-                                  ui::ColorId bubble_background_color,
-                                  const gfx::VectorIcon* icon,
-                                  ExitClickedCallback exit_clicked_callback,
-                                  base::OnceClosure on_cancel_callback);
+  explicit LensPreselectionBubble(
+      tabs::TabHandle tab_handle,
+      views::View* anchor_view,
+      bool offline,
+      bool show_cancel_button,
+      ui::ColorId bubble_background_color,
+      const gfx::VectorIcon* icon,
+      std::optional<ui::ColorId> cancel_button_color,
+      ExitClickedCallback exit_clicked_callback,
+      base::OnceClosure on_cancel_callback);
   ~LensPreselectionBubble() override;
 
   // views::BubbleDialogDelegateView:
@@ -86,6 +90,8 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   const bool show_cancel_button_;
   // Button shown in bubble to cancel selection.
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
+  // Color for cancel button text and border.
+  const std::optional<ui::ColorId> cancel_button_color_;
   // Whether user is offline.
   bool offline_ = false;
   // Background color of the bubble.
