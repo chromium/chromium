@@ -1712,7 +1712,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   std::vector<autofill::EntityLabel> labels = autofill::GetLabelsForEntities(
       instances, /*attribute_types_to_ignore=*/{},
-      /*only_disambiguating_types=*/true, /*obfuscate_sensitive_types=*/true,
+      /*only_disambiguating_types=*/false, /*obfuscate_sensitive_types=*/true,
       locale);
 
   ItemType itemType = ItemTypeForEntitySection(sectionIdentifier);
