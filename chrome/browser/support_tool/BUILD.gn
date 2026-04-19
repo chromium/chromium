@@ -14,3 +14,80 @@ group("proto_lite") {
 proto_library("support_tool_proto") {
   sources = [ "data_collection_module.proto" ]
 }
+
+if (!is_android) {
+  source_set("support_tool") {
+    public = [
+      "data_collector.h",
+      "data_collector_utils.h",
+      "policy_data_collector.h",
+      "signin_data_collector.h",
+      "support_packet_metadata.h",
+      "support_tool_handler.h",
+      "support_tool_util.h",
+      "system_log_source_data_collector_adaptor.h",
+    ]
+
+    public_deps = [
+      ":proto_lite",
+      "//base",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles:profile",
+      "//components/feedback",
+      "//components/feedback/redaction_tool",
+      "//components/policy/core/browser",
+    ]
+
+    if (is_linux || is_win || is_mac) {
+      public += [ "updater_data_collector.h" ]
+      public_deps += [
+        "//chrome/updater:public_sources",
+        "//chrome/updater:public_util",
+      ]
+    }
+  }
+
+  source_set("impl") {
+    sources = [
+      "data_collector_utils.cc",
+      "policy_data_collector.cc",
+      "signin_data_collector.cc",
+      "support_packet_metadata.cc",
+      "support_tool_handler.cc",
+      "support_tool_util.cc",
+      "system_log_source_data_collector_adaptor.cc",
+    ]
+
+    public_deps = [
+      ":support_tool",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/feedback:feedback_impl",
+      "//components/feedback",
+      "//components/feedback/redaction_tool",
+      "//components/policy/core/browser",
+      "//components/signin/core/browser",
+      "//third_party/icu",
+      "//third_party/zlib/google:zip",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/system_logs",
+        "//chrome/browser/support_tool/ash",
+        "//chromeos/ash/components/browser_context_helper",
+        "//chromeos/ash/components/system",
+        "//chromeos/components/kiosk",
+        "//components/user_manager",
+      ]
+    }
+
+    if (is_linux || is_win || is_mac) {
+      sources += [ "updater_data_collector.cc" ]
+      deps += [ "//chrome/updater:public_sources" ]
+    }
+  }
+}

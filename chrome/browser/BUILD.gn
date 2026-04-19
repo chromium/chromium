@@ -2889,21 +2889,6 @@ static_library("browser") {
       "supervised_user/desktop/supervised_user_service_platform_delegate.h",
       "supervised_user/supervised_user_verification_controller_client.cc",
       "supervised_user/supervised_user_verification_controller_client.h",
-      "support_tool/data_collector.h",
-      "support_tool/data_collector_utils.cc",
-      "support_tool/data_collector_utils.h",
-      "support_tool/policy_data_collector.cc",
-      "support_tool/policy_data_collector.h",
-      "support_tool/signin_data_collector.cc",
-      "support_tool/signin_data_collector.h",
-      "support_tool/support_packet_metadata.cc",
-      "support_tool/support_packet_metadata.h",
-      "support_tool/support_tool_handler.cc",
-      "support_tool/support_tool_handler.h",
-      "support_tool/support_tool_util.cc",
-      "support_tool/support_tool_util.h",
-      "support_tool/system_log_source_data_collector_adaptor.cc",
-      "support_tool/system_log_source_data_collector_adaptor.h",
       "webauthn/authenticator_list_observer.h",
       "webauthn/authenticator_reference.cc",
       "webauthn/authenticator_reference.h",
@@ -3022,6 +3007,8 @@ static_library("browser") {
       "//chrome/browser/sharing_hub",
       "//chrome/browser/sharing_hub:impl",
       "//chrome/browser/smart_card",
+      "//chrome/browser/support_tool",
+      "//chrome/browser/support_tool:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_list_impl",
@@ -3381,6 +3368,10 @@ static_library("browser") {
 
       # Circular dependency on file_select_helper.h.
       "//chrome/browser/indigo/onboarding",
+
+      # support_tool's :impl includes chrome/browser/signin/
+      # about_signin_internals_factory.h from //chrome/browser.
+      "//chrome/browser/support_tool:impl",
     ]
 
     if (is_win || is_chromeos) {
@@ -4960,8 +4951,6 @@ static_library("browser") {
       "supervised_user/supervised_user_verification_page_blocked_sites.h",
       "supervised_user/supervised_user_verification_page_youtube.cc",
       "supervised_user/supervised_user_verification_page_youtube.h",
-      "support_tool/updater_data_collector.cc",
-      "support_tool/updater_data_collector.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",

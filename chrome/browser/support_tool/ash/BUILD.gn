@@ -22,7 +22,10 @@ static_library("ash") {
     "ui_hierarchy_data_collector.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/support_tool",
+  ]
 
   deps = [
     "//ash",
@@ -69,7 +72,6 @@ source_set("unit_tests") {
     "//components/user_manager",
     "//components/user_manager:test_support",
     "//content/test:test_support",
-    "//testing/gtest",
     "//testing/gtest",
   ]
 
