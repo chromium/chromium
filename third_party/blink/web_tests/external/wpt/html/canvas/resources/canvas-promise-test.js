@@ -134,6 +134,7 @@ function canvasPromiseTest(
       document.body.appendChild(placeholder);
       await testBody(placeholder.transferControlToOffscreen(),
                       {test, canvasType: CanvasTestType.PLACEHOLDER});
+      document.body.removeChild(placeholder);
     }, 'PlaceholderCanvas: ' + description);
   }
 }
