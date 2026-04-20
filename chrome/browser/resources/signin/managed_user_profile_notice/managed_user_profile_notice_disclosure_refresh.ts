@@ -5,10 +5,12 @@
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AppMode} from './managed_user_profile_notice_browser_proxy.js';
@@ -51,6 +53,7 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
         reflect: true,
         attribute: 'app-mode',
       },
+      isDarkMode_: {type: Boolean},
     };
   }
 
@@ -59,6 +62,46 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
   override accessor title: string = '';
   accessor subtitle: string = '';
   accessor appMode: AppMode = AppMode.FIRST_RUN;
+  protected accessor isDarkMode_: boolean = false;
+
+  private disableAnimations_: boolean =
+      loadTimeData.getBoolean('disableAnimations');
+  private isFirstRunDesktopRevampEnabled_: boolean =
+      loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
+  private darkModeListener_: (e: MediaQueryListEvent) => void;
+  private matchMedia_: MediaQueryList;
+
+  constructor() {
+    super();
+    this.matchMedia_ = window.matchMedia('(prefers-color-scheme: dark)');
+    this.isDarkMode_ = this.matchMedia_.matches;
+    this.darkModeListener_ = (e) => {
+      this.isDarkMode_ = e.matches;
+    };
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.matchMedia_.addEventListener('change', this.darkModeListener_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.matchMedia_.removeEventListener('change', this.darkModeListener_);
+  }
+
+  protected getAnimationUrl_(): string {
+    return `animations/avatar_animation${this.isDarkMode_ ? '_dark' : ''}.json`;
+  }
+
+  protected shouldShowAnimations_(): boolean {
+    return this.appMode === AppMode.FIRST_RUN &&
+        this.isFirstRunDesktopRevampEnabled_;
+  }
+
+  protected shouldDisableAnimations_(): boolean {
+    return this.disableAnimations_;
+  }
 
   override firstUpdated() {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');

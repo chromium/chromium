@@ -9,6 +9,13 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
   return html`<!--_html_template_start_-->
 <main>
   <div id="headerContainer">
+    ${this.shouldShowAnimations_() ? html`
+      <cr-lottie id="avatarAnimation"
+          animation-url="${this.getAnimationUrl_()}"
+          single-loop
+          ?autoplay="${!this.shouldDisableAnimations_()}">
+      </cr-lottie>
+    ` : ''}
     <div id="avatarContainer">
       <img id="avatar" alt="$i18n{avatarAccessibilityLabel}"
           src="${this.pictureUrl}">

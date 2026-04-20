@@ -29,18 +29,35 @@
 
 namespace {
 
+enum class ScreenVersion {
+  kOld,
+  kRefreshed,
+  kRevamped,
+};
+
 struct ManagedUserProfileNoticePixelTestParam {
   PixelTestParam pixel_test_param;
-  bool is_ui_refresh_enabled = false;
+  ScreenVersion screen_version = ScreenVersion::kOld;
   bool use_primary_and_tonal_buttons = false;
 };
 
 std::string ParamToTestSuffix(
     const testing::TestParamInfo<ManagedUserProfileNoticePixelTestParam>&
         info) {
+  std::string screen_version_suffix;
+  switch (info.param.screen_version) {
+    case ScreenVersion::kOld:
+      screen_version_suffix = "Old";
+      break;
+    case ScreenVersion::kRefreshed:
+      screen_version_suffix = "Refreshed";
+      break;
+    case ScreenVersion::kRevamped:
+      screen_version_suffix = "Revamped";
+      break;
+  }
   return base::StrCat(
-      {info.param.pixel_test_param.test_suffix,
-       info.param.is_ui_refresh_enabled ? "Refresh" : "",
+      {info.param.pixel_test_param.test_suffix, screen_version_suffix,
        info.param.use_primary_and_tonal_buttons ? "Tonal" : ""});
 }
 
@@ -71,10 +88,12 @@ const std::vector<ManagedUserProfileNoticePixelTestParam>& GetTestParams() {
 
         std::vector<ManagedUserProfileNoticePixelTestParam> params;
         for (const auto& window_param : kWindowTestParams) {
-          for (bool is_ui_refresh_enabled : {false, true}) {
+          for (ScreenVersion screen_version :
+               {ScreenVersion::kOld, ScreenVersion::kRefreshed,
+                ScreenVersion::kRevamped}) {
             for (bool use_primary_and_tonal_buttons : {false, true}) {
               params.push_back({.pixel_test_param = window_param,
-                                .is_ui_refresh_enabled = is_ui_refresh_enabled,
+                                .screen_version = screen_version,
                                 .use_primary_and_tonal_buttons =
                                     use_primary_and_tonal_buttons});
             }
@@ -153,7 +172,11 @@ class ManagedUserProfileNoticeUIWindowPixelTest
   ManagedUserProfileNoticeUIWindowPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     scoped_feature_list_.InitWithFeatureStates(
-        {{switches::kFirstRunDesktopRefresh, GetParam().is_ui_refresh_enabled},
+        {{switches::kFirstRunDesktopRefresh,
+          GetParam().screen_version == ScreenVersion::kRefreshed ||
+              GetParam().screen_version == ScreenVersion::kRevamped},
+         {switches::kFirstRunDesktopRevamp,
+          GetParam().screen_version == ScreenVersion::kRevamped},
          {switches::kUsePrimaryAndTonalButtonsForPromos,
           GetParam().use_primary_and_tonal_buttons}});
   }
@@ -171,6 +194,9 @@ class ManagedUserProfileNoticeUIWindowPixelTest
 
     AccountInfo account_info =
         SignInWithAccount(AccountManagementStatus::kManaged);
+    const bool is_ui_refresh_enabled =
+        GetParam().screen_version == ScreenVersion::kRefreshed ||
+        GetParam().screen_version == ScreenVersion::kRevamped;
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -184,12 +210,12 @@ class ManagedUserProfileNoticeUIWindowPixelTest
                       ManagedUserProfileNoticeStepControllerForTest>(
                       host, account_info, use_refreshed_ui));
             },
-            GetParam().is_ui_refresh_enabled, account_info));
+            is_ui_refresh_enabled, account_info));
     profile_picker_view_->views::View::AddObserver(this);
     profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
     if (ProfilePicker::GetWebViewForTesting()) {
       profiles::testing::WaitForPickerUrl(
-          GetParam().is_ui_refresh_enabled
+          is_ui_refresh_enabled
               ? GURL(chrome::kChromeUIManagedUserProfileNoticeRefreshURL)
               : GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
     }

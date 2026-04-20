@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -120,6 +121,10 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_IMAGES_ENROLLMENT_FAILURE_DARK_SVG},
       {"images/enrollment_timeout_dark.svg",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_IMAGES_ENROLLMENT_TIMEOUT_DARK_SVG},
+      {"animations/avatar_animation.json",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_ANIMATIONS_AVATAR_ANIMATION_JSON},
+      {"animations/avatar_animation_dark.json",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_ANIMATIONS_AVATAR_ANIMATION_DARK_JSON},
       {"images/profile_picker_light_background.svg",
        IDR_SIGNIN_IMAGES_PROFILE_PICKER_LIGHT_BACKGROUND_SVG},
       {"images/profile_picker_dark_background.svg",
@@ -231,6 +236,31 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
                      base::FeatureList::IsEnabled(
                          switches::kUsePrimaryAndTonalButtonsForPromos));
+
+  if (base::FeatureList::IsEnabled(
+          switches::kDisableFirstRunAnimationsForTesting)) {
+    CHECK_IS_TEST();
+    source->AddBoolean("disableAnimations", true);
+  } else {
+    source->AddBoolean("disableAnimations", false);
+  }
+
+  bool is_in_search_engine_choice_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(Profile::FromWebUI(web_ui)))
+          .IsInSearchEngineChoiceScreenRegion();
+  bool is_first_run_desktop_revamp_enabled =
+      switches::IsFirstRunDesktopRevampEnabled(
+          is_in_search_engine_choice_region);
+
+  source->AddBoolean("isFirstRunDesktopRevampEnabled",
+                     is_first_run_desktop_revamp_enabled);
+
+  if (is_first_run_desktop_revamp_enabled) {
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::WorkerSrc,
+        "worker-src blob: chrome://resources 'self';");
+  }
 }
 
 ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;

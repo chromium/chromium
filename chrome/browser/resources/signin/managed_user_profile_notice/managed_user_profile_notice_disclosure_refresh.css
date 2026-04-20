@@ -28,17 +28,38 @@ main {
 }
 
 #headerContainer {
-  padding-bottom: 24px;
   position: relative;
   width: 100%;
 }
 
+:host([app-mode='profile-picker']) #headerContainer {
+  padding-bottom: 24px;
+}
+
+:host([app-mode='first-run']) #headerContainer {
+  display: flex;
+  height: 200px;
+  justify-content: center;
+}
+
 #avatarContainer {
   height: 92px;
-  margin-inline: auto;
-  position: relative;
   width: 92px;
   z-index: 1;
+}
+
+:host([app-mode='profile-picker']) #avatarContainer {
+  margin-inline: auto;
+  position: relative;
+}
+
+:host([app-mode='first-run']) #avatarContainer {
+  position: absolute;
+  top: 40%;
+}
+
+#avatarAnimation {
+  pointer-events: none;
 }
 
 #avatar {
@@ -148,6 +169,10 @@ main {
   #avatarContainer {
     height: 64px;
     width: 64px;
+  }
+
+  :host([app-mode='first-run']) #headerContainer {
+    height: 140px;
   }
 
   .title {
