@@ -99,7 +99,7 @@ TEST_F(ProfileCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_CALL(*store_, Clear());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_CALL(*extension_install_store_, Clear());
 #endif
   manager_->DisconnectAndRemovePolicy();

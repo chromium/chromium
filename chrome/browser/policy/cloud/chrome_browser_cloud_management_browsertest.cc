@@ -497,7 +497,7 @@ class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
     policy_store->AddObserver(&observer);
 
     std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extension_install_store =
         MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
             browser_dm_token, client_id, user_data_dir,
@@ -505,7 +505,7 @@ class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 
     extension_install_store->AddObserver(&observer);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
     base::FilePath policy_dir = user_data_dir.Append(
         ChromeBrowserCloudManagementController::kPolicyDir);

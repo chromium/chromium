@@ -71,9 +71,9 @@ CloudPolicyManager::CloudPolicyManager(
             store_.get(),
             task_runner,
             std::move(network_connection_tracker_getter)) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   CHECK(!extension_install_store_.get());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 CloudPolicyManager::~CloudPolicyManager() = default;
@@ -230,11 +230,11 @@ bool CloudPolicyManager::CanPublishPolicy() const {
     return false;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!IsInitializationComplete(POLICY_DOMAIN_EXTENSION_INSTALL)) {
     return false;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   if (waiting_for_policy_refresh_count_ == 0) {
     return true;
@@ -277,13 +277,13 @@ void CloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
 }
 
 void CloudPolicyManager::GetExtensionInstallPolicy(PolicyMap* policy_map) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   *policy_map = extension_install_store()
                     ? extension_install_store()->policy_map().Clone()
                     : PolicyMap();
 #else
   *policy_map = PolicyMap();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void CloudPolicyManager::CreateComponentCloudPolicyService(

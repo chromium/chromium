@@ -59,7 +59,7 @@ class UserCloudPolicyManagerTest : public testing::Test {
     store_ =
         new MockUserCloudPolicyStore(dm_protocol::GetChromeUserPolicyType());
     EXPECT_CALL(*store_, Load());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extension_install_store_ = new MockUserCloudPolicyStore(
         dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
     // Never allowed unless explicitly initialized.
@@ -74,7 +74,7 @@ class UserCloudPolicyManagerTest : public testing::Test {
     manager_->Init(&schema_registry_);
     manager_->AddObserver(&observer_);
     Mock::VerifyAndClearExpectations(store_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     Mock::VerifyAndClearExpectations(extension_install_store_);
 #endif
   }
@@ -102,13 +102,13 @@ TEST_F(UserCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   store_->policy_map_ = policy_map_.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(2);
   store_->NotifyStoreLoaded();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_install_store_->NotifyStoreLoaded();
 #endif
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_CALL(*store_, Clear());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_CALL(*extension_install_store_, Clear());
 #endif
   manager_->DisconnectAndRemovePolicy();

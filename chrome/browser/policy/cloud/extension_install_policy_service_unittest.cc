@@ -101,7 +101,7 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
             dm_protocol::GetChromeUserPolicyType());
     std::unique_ptr<MockUserCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     mock_user_cloud_policy_extension_install_store =
         std::make_unique<MockUserCloudPolicyStore>(
             dm_protocol::kChromeExtensionInstallUserCloudPolicyType);

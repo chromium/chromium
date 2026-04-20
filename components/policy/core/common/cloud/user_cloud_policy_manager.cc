@@ -70,14 +70,14 @@ std::unique_ptr<UserCloudPolicyManager> UserCloudPolicyManager::Create(
       UserCloudPolicyStore::Create(profile_path, background_task_runner);
 
   std::unique_ptr<UserCloudPolicyStore> extension_install_store = nullptr;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (IsExtensionInstallPolicySupportedOnThisVersion() &&
       base::FeatureList::IsEnabled(
           features::kEnableExtensionInstallPolicyFetching)) {
     extension_install_store = UserCloudPolicyStore::CreateForExtensionInstall(
         profile_path, background_task_runner);
   }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   if (force_immediate_load) {
     store->LoadImmediately();

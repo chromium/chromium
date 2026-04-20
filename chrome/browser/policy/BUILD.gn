@@ -1166,7 +1166,7 @@ source_set("impl") {
     sources += [ "printing_restrictions_policy_handler.cc" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [
       "value_provider/extension_install_policies_value_provider.cc",
       "value_provider/extension_policies_value_provider.cc",

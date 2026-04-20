@@ -44,7 +44,7 @@ namespace policy {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 constexpr char kUserCanInstallPolicyFetchTime[] =
     "ExtensionInstall.UserCanInstall.PolicyFetchTime";
 constexpr char kUserCanInstallPolicyFetchResult[] =
@@ -189,7 +189,7 @@ void OnPolicyFetchDone(base::OnceCallback<void(bool, std::u16string)> callback,
   }
   std::move(callback).Run(can_install, std::move(blocked_message));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
@@ -308,7 +308,7 @@ ExtensionInstallPolicyServiceImpl::~ExtensionInstallPolicyServiceImpl() =
 void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
     const ExtensionIdAndVersion& extension_id_and_version,
     base::OnceCallback<void(bool, std::u16string)> callback) const {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::move(callback).Run(true, std::u16string());
   return;
 #else
@@ -346,12 +346,12 @@ void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
             info.policy_type, extension_id_and_version,
             PolicyFetchReason::kExtensionInstall, barrier_callback);
   }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
     const ExtensionIdAndVersion& extension_id_and_version) const {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return std::nullopt;
 #else
   if (auto early_result =
@@ -397,7 +397,7 @@ std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
   base::UmaHistogramEnumeration(kExtensionIsExtensionAllowedResult,
                                 IsExtensionAllowedResult::kExtensionAllowed);
   return true;
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void ExtensionInstallPolicyServiceImpl::AddObserver(
@@ -563,7 +563,7 @@ void ExtensionInstallPolicyServiceImpl::UserMayInstall(
 bool ExtensionInstallPolicyServiceImpl::UserMayLoad(
     const extensions::Extension* extension,
     std::u16string* error) const {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return false;
 #else
   // TODO(crbug.com/477545526): Refresh policies when new extensions are
@@ -573,13 +573,13 @@ bool ExtensionInstallPolicyServiceImpl::UserMayLoad(
           .value_or(true);
   base::UmaHistogramBoolean(kExtensionUserMayLoadResult, user_may_load);
   return user_may_load;
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 bool ExtensionInstallPolicyServiceImpl::MustRemainDisabled(
     const extensions::Extension* extension,
     extensions::disable_reason::DisableReason* reason) const {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return false;
 #else
   // TODO(crbug.com/477545526): Refresh policies when new extensions are
@@ -602,7 +602,7 @@ bool ExtensionInstallPolicyServiceImpl::MustRemainDisabled(
   base::UmaHistogramBoolean(kExtensionMustRemainDisabledResult,
                             must_remain_disabled);
   return must_remain_disabled;
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void ExtensionInstallPolicyServiceImpl::SetExtensionsForTesting(

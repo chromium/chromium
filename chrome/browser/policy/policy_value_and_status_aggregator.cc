@@ -47,11 +47,11 @@
 #include "chrome/browser/policy/status_provider/updater_status_and_value_provider.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/policy/value_provider/extension_install_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
@@ -161,7 +161,7 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
   // Add PolicyValueProviders.
   aggregator->AddPolicyValueProvider(
       std::make_unique<ChromePoliciesValueProvider>(profile));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (base::FeatureList::IsEnabled(
           policy::features::kEnableExtensionInstallPolicyFetching)) {
     if (auto* extension_install_policy_service =
@@ -174,7 +174,7 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
   }
   aggregator->AddPolicyValueProvider(
       std::make_unique<ExtensionPoliciesValueProvider>(profile));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Add PolicyStatusProviders.
   // User policies.

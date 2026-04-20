@@ -47,6 +47,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/signin/public/base/consent_level.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -253,7 +254,7 @@ class UserPolicyOidcSigninServiceTestBase
 
     std::unique_ptr<MockUserCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     mock_user_cloud_policy_extension_install_store =
         std::make_unique<MockUserCloudPolicyStore>(
             dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
@@ -287,7 +288,7 @@ class UserPolicyOidcSigninServiceTestBase
 
     std::unique_ptr<MockProfileCloudPolicyStore>
         mock_profile_cloud_policy_extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     mock_profile_cloud_policy_extension_install_store =
         std::make_unique<MockProfileCloudPolicyStore>(
             dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);

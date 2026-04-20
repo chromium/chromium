@@ -79,7 +79,7 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
           profile_path, background_task_runner, is_dasherless);
   std::unique_ptr<policy::ProfileCloudPolicyStore> extension_install_store =
       nullptr;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // This is not supported before M146.
   if (IsExtensionInstallPolicySupportedOnThisVersion() &&
       base::FeatureList::IsEnabled(
@@ -88,7 +88,7 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
         policy::ProfileCloudPolicyStore::CreateForExtensionInstall(
             profile_path, background_task_runner, is_dasherless);
   }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (force_immediate_load) {
     store->LoadImmediately();
     if (extension_install_store) {

@@ -51,7 +51,7 @@ UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
 UserCloudPolicyInvalidator::~UserCloudPolicyInvalidator() = default;
 
 void UserCloudPolicyInvalidator::StartExtensionInstallInvalidator() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   CHECK(base::FeatureList::IsEnabled(
       policy::features::kEnableExtensionInstallPolicyFetching));
 
@@ -77,7 +77,7 @@ void UserCloudPolicyInvalidator::StartExtensionInstallInvalidator() {
 void UserCloudPolicyInvalidator::Shutdown() {
   profile_observation_.Reset();
     invalidator_.reset();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extension_install_invalidator_.reset();
 #endif
 }

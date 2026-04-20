@@ -55,6 +55,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -480,7 +481,7 @@ class OidcAuthenticationSigninInterceptorTest
         .Times(testing::AnyNumber());
     std::unique_ptr<MockUserCloudPolicyStore>
         mock_user_cloud_policy_extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     mock_user_cloud_policy_extension_install_store =
         std::make_unique<MockUserCloudPolicyStore>(
             dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
@@ -508,7 +509,7 @@ class OidcAuthenticationSigninInterceptorTest
         .Times(testing::AnyNumber());
     std::unique_ptr<MockProfileCloudPolicyStore>
         mock_profile_cloud_policy_extension_install_store;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     mock_profile_cloud_policy_extension_install_store =
         std::make_unique<MockProfileCloudPolicyStore>(
             dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
