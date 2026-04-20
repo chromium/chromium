@@ -2126,6 +2126,32 @@ TEST_F(AutofillProfileTest, GetMatchingTypes_EmptyValuePlaceholder) {
   EXPECT_THAT(matching_types, IsEmpty());
 }
 
+// Verifies that merging profiles when one has an invalid country code does not
+// cause a crash in `MergePhoneNumbers` due to `libphonenumber` failing to
+// parse the number with the invalid region hint.
+// This is a regression test for crbug.com/498102888.
+TEST_F(AutofillProfileTest, ProfilesMerge_InvalidCountryCode) {
+  // Existing profile has a US-looking number but NO country set.
+  AutofillProfile existing(i18n_model_definition::kLegacyHierarchyCountryCode);
+  existing.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"6502530000");
+
+  // Incoming profile has the same number with formatting, and invalid country
+  // "XX".
+  AutofillProfile incoming(AddressCountryCode("XX"));
+  incoming.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650-253-0000");
+
+  AutofillProfileComparator comparator("en-US");
+
+  // They should be mergeable because:
+  // 1. Phone numbers match (6502530000 vs 650-253-0000)
+  // 2. Countries are mergeable because `existing` has no country.
+  ASSERT_TRUE(comparator.AreMergeable(existing, incoming));
+
+  // This will call `MergeDataFrom(incoming, "en-US")` region hint will be "US"
+  // (from app_locale).
+  ASSERT_TRUE(existing.MergeDataFrom(incoming, "en-US"));
+}
+
 }  // namespace
 
 }  // namespace autofill

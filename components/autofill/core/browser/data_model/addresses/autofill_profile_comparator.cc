@@ -31,28 +31,12 @@
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
-using i18n::phonenumbers::PhoneNumberUtil;
-
 namespace autofill {
 namespace {
 
-constexpr char16_t kSpace[] = u" ";
+using ::i18n::phonenumbers::PhoneNumberUtil;
 
-std::ostream& operator<<(std::ostream& os,
-                         const ::i18n::phonenumbers::PhoneNumber& n) {
-  os << "country_code: " << n.country_code() << " "
-     << "national_number: " << n.national_number();
-  if (n.has_italian_leading_zero()) {
-    os << " italian_leading_zero: " << n.italian_leading_zero();
-  }
-  if (n.has_number_of_leading_zeros()) {
-    os << " number_of_leading_zeros: " << n.number_of_leading_zeros();
-  }
-  if (n.has_raw_input()) {
-    os << " raw_input: \"" << n.raw_input() << "\"";
-  }
-  return os;
-}
+constexpr char16_t kSpace[] = u" ";
 
 }  // namespace
 
@@ -280,7 +264,9 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   std::string region = base::UTF16ToUTF8(GetNonEmptyOf(
       new_profile, old_profile,
       AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true)));
-  if (region.empty()) {
+  // TODO(crbug.com/503704299): Remove this validation once profiles with
+  // invalid country codes are cleaned up.
+  if (region.empty() || !data_util::IsValidCountryCode(region)) {
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
   }
 
@@ -341,11 +327,6 @@ bool AutofillProfileComparator::MergePhoneNumbers(
 
   std::string new_number;
   phone_util->Format(merged_number, format, &new_number);
-
-  DVLOG(2) << "n1 = {" << n1 << "}";
-  DVLOG(2) << "n2 = {" << n2 << "}";
-  DVLOG(2) << "merged_number = {" << merged_number << "}";
-  DVLOG(2) << "new_number = \"" << new_number << "\"";
 
   // Check if it's a North American number that's missing the area code.
   // Libphonenumber doesn't know how to format short numbers; it will still
