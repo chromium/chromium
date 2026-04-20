@@ -18,19 +18,19 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Bridge class for AccessibilityAnnotatorBottomSheet.
+ * Bridge class for AccessibilityAnnotatorFirstRunBottomSheet.
  *
  * <p>Objects of this type are created and owned by the corresponding native implementation.
  */
 @JNINamespace("accessibility_annotator")
 @NullMarked
-class AccessibilityAnnotatorBottomSheetBridge
-        implements AccessibilityAnnotatorBottomSheetCoordinator.Delegate {
+class AccessibilityAnnotatorFirstRunBottomSheetBridge
+        implements AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate {
     private long mNativeBridge;
-    private final AccessibilityAnnotatorBottomSheetCoordinator mCoordinator;
+    private final AccessibilityAnnotatorFirstRunBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
-    private static @Nullable AccessibilityAnnotatorBottomSheetBridge create(
+    private static @Nullable AccessibilityAnnotatorFirstRunBottomSheetBridge create(
             long nativeBridge, WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
@@ -40,15 +40,15 @@ class AccessibilityAnnotatorBottomSheetBridge
             return null;
         }
 
-        return new AccessibilityAnnotatorBottomSheetBridge(
+        return new AccessibilityAnnotatorFirstRunBottomSheetBridge(
                 nativeBridge, context, bottomSheetController);
     }
 
-    private AccessibilityAnnotatorBottomSheetBridge(
+    private AccessibilityAnnotatorFirstRunBottomSheetBridge(
             long nativeBridge, Context context, BottomSheetController bottomSheetController) {
         mNativeBridge = nativeBridge;
         mCoordinator =
-                new AccessibilityAnnotatorBottomSheetCoordinator(
+                new AccessibilityAnnotatorFirstRunBottomSheetCoordinator(
                         context, bottomSheetController, this);
     }
 
@@ -76,47 +76,54 @@ class AccessibilityAnnotatorBottomSheetBridge
     @Override
     public void onInfoAcknowledged() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorBottomSheetBridgeJni.get().onInfoAcknowledged(mNativeBridge);
+            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get()
+                    .onInfoAcknowledged(mNativeBridge);
         }
     }
 
     @Override
     public void onManageSettingsClicked() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorBottomSheetBridgeJni.get().onManageSettingsClicked(mNativeBridge);
+            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get()
+                    .onManageSettingsClicked(mNativeBridge);
         }
     }
 
     @Override
     public void onLearnMoreClicked() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorBottomSheetBridgeJni.get().onLearnMoreClicked(mNativeBridge);
+            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get()
+                    .onLearnMoreClicked(mNativeBridge);
         }
     }
 
     @Override
     public void onInfoDismissed() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorBottomSheetBridgeJni.get().onInfoDismissed(mNativeBridge);
+            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get().onInfoDismissed(mNativeBridge);
         }
     }
 
     @NativeMethods
     interface Natives {
         void onInfoAcknowledged(
-                @JniType("accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorBottomSheetBridge);
+                @JniType(
+                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
+                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
 
         void onManageSettingsClicked(
-                @JniType("accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorBottomSheetBridge);
+                @JniType(
+                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
+                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
 
         void onLearnMoreClicked(
-                @JniType("accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorBottomSheetBridge);
+                @JniType(
+                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
+                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
 
         void onInfoDismissed(
-                @JniType("accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorBottomSheetBridge);
+                @JniType(
+                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
+                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
     }
 }

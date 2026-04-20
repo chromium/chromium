@@ -16,8 +16,8 @@ source_set("first_run") {
 
   if (is_android) {
     sources += [
-      "android/accessibility_annotator_bottom_sheet_bridge.cc",
-      "android/accessibility_annotator_bottom_sheet_bridge.h",
+      "android/accessibility_annotator_first_run_bottom_sheet_bridge.cc",
+      "android/accessibility_annotator_first_run_bottom_sheet_bridge.h",
     ]
   }
 
@@ -47,8 +47,7 @@ source_set("unit_tests") {
   sources = []
 
   if (is_android) {
-    sources +=
-        [ "android/accessibility_annotator_bottom_sheet_bridge_unittest.cc" ]
+    sources += [ "android/accessibility_annotator_first_run_bottom_sheet_bridge_unittest.cc" ]
   }
 
   deps = [

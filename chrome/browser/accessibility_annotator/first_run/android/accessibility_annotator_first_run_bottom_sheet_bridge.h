@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_ACCESSIBILITY_ANNOTATOR_BOTTOM_SHEET_BRIDGE_H_
-#define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_ACCESSIBILITY_ANNOTATOR_BOTTOM_SHEET_BRIDGE_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
+#define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
 
 #include <jni.h>
 
@@ -21,18 +21,18 @@ namespace accessibility_annotator {
 // C++ side of the JNI bridge for the Accessibility Annotator First Run Bottom
 // Sheet. This class is responsible for creating and displaying the Java bottom
 // sheet and routing user actions back to the caller.
-class AccessibilityAnnotatorBottomSheetBridge {
+class AccessibilityAnnotatorFirstRunBottomSheetBridge {
  public:
-  AccessibilityAnnotatorBottomSheetBridge(
+  AccessibilityAnnotatorFirstRunBottomSheetBridge(
       content::WebContents* web_contents,
       base::OnceCallback<void(InfoResult)> callback);
 
-  AccessibilityAnnotatorBottomSheetBridge(
-      const AccessibilityAnnotatorBottomSheetBridge&) = delete;
-  AccessibilityAnnotatorBottomSheetBridge& operator=(
-      const AccessibilityAnnotatorBottomSheetBridge&) = delete;
+  AccessibilityAnnotatorFirstRunBottomSheetBridge(
+      const AccessibilityAnnotatorFirstRunBottomSheetBridge&) = delete;
+  AccessibilityAnnotatorFirstRunBottomSheetBridge& operator=(
+      const AccessibilityAnnotatorFirstRunBottomSheetBridge&) = delete;
 
-  virtual ~AccessibilityAnnotatorBottomSheetBridge();
+  virtual ~AccessibilityAnnotatorFirstRunBottomSheetBridge();
 
   // Requests to display the bottom sheet.
   void Show();
@@ -70,4 +70,4 @@ class AccessibilityAnnotatorBottomSheetBridge {
 
 }  // namespace accessibility_annotator
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_ACCESSIBILITY_ANNOTATOR_BOTTOM_SHEET_BRIDGE_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_

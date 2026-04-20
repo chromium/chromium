@@ -21,18 +21,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
-/** Tests for {@link AccessibilityAnnotatorBottomSheetMediator}. */
+/** Tests for {@link AccessibilityAnnotatorFirstRunBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccessibilityAnnotatorBottomSheetMediatorTest {
+public class AccessibilityAnnotatorFirstRunBottomSheetMediatorTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private AccessibilityAnnotatorBottomSheetContent mContent;
-    @Mock private AccessibilityAnnotatorBottomSheetCoordinator.Delegate mDelegate;
+    @Mock private AccessibilityAnnotatorFirstRunBottomSheetContent mContent;
+    @Mock private AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate mDelegate;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
-    private AccessibilityAnnotatorBottomSheetMediator mMediator;
+    private AccessibilityAnnotatorFirstRunBottomSheetMediator mMediator;
 
     private static final String MANAGE_SETTINGS_URL = "https://example.com/manage";
     private static final String LEARN_MORE_URL = "https://example.com/learn_more";
@@ -40,7 +40,7 @@ public class AccessibilityAnnotatorBottomSheetMediatorTest {
     @Before
     public void setUp() {
         mMediator =
-                new AccessibilityAnnotatorBottomSheetMediator(
+                new AccessibilityAnnotatorFirstRunBottomSheetMediator(
                         mContext, mBottomSheetController, mContent, mDelegate, mCustomTabLauncher);
     }
 

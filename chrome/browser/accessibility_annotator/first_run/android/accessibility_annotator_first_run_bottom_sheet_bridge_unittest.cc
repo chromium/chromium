@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_bottom_sheet_bridge.h"
+#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_first_run_bottom_sheet_bridge.h"
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -17,11 +17,11 @@ namespace accessibility_annotator {
 
 using testing::_;
 
-class TestAccessibilityAnnotatorBottomSheetBridge
-    : public AccessibilityAnnotatorBottomSheetBridge {
+class TestAccessibilityAnnotatorFirstRunBottomSheetBridge
+    : public AccessibilityAnnotatorFirstRunBottomSheetBridge {
  public:
-  using AccessibilityAnnotatorBottomSheetBridge::
-      AccessibilityAnnotatorBottomSheetBridge;
+  using AccessibilityAnnotatorFirstRunBottomSheetBridge::
+      AccessibilityAnnotatorFirstRunBottomSheetBridge;
 
   void SetShowResult(bool result) { show_result_ = result; }
 
@@ -32,11 +32,12 @@ class TestAccessibilityAnnotatorBottomSheetBridge
   bool show_result_ = false;
 };
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, ShowWithoutJava) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest, ShowWithoutJava) {
   base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
-  auto bridge = std::make_unique<AccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<AccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   EXPECT_CALL(callback, Run(InfoResult::kNotAcknowledged));
   bridge->Show();
@@ -45,12 +46,14 @@ TEST(AccessibilityAnnotatorBottomSheetBridgeTest, ShowWithoutJava) {
       "AccessibilityAnnotator.RemoteAnnotatorInfo", 0);
 }
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, ShowSuccessRecordsMetric) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest,
+     ShowSuccessRecordsMetric) {
   base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
 
-  auto bridge = std::make_unique<TestAccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<TestAccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   bridge->SetShowResult(true);
   bridge->Show();
@@ -60,11 +63,12 @@ TEST(AccessibilityAnnotatorBottomSheetBridgeTest, ShowSuccessRecordsMetric) {
       InfoShowRequestResult::kShown, 1);
 }
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnInfoAcknowledged) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest, OnInfoAcknowledged) {
   base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
-  auto bridge = std::make_unique<AccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<AccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   EXPECT_CALL(callback, Run(InfoResult::kAcknowledged));
   bridge->OnInfoAcknowledged(/*env=*/nullptr);
@@ -74,11 +78,12 @@ TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnInfoAcknowledged) {
       InfoShowRequestResult::kAccepted, 1);
 }
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnInfoDismissed) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest, OnInfoDismissed) {
   base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
-  auto bridge = std::make_unique<AccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<AccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   EXPECT_CALL(callback, Run(InfoResult::kNotAcknowledged));
   bridge->OnInfoDismissed(/*env=*/nullptr);
@@ -88,11 +93,13 @@ TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnInfoDismissed) {
       InfoShowRequestResult::kDismissed, 1);
 }
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnManageSettingsClicked) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest,
+     OnManageSettingsClicked) {
   base::UserActionTester user_action_tester;
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
-  auto bridge = std::make_unique<AccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<AccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   bridge->OnManageSettingsClicked(/*env=*/nullptr);
 
@@ -101,11 +108,12 @@ TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnManageSettingsClicked) {
              "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
 }
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnLearnMoreClicked) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest, OnLearnMoreClicked) {
   base::UserActionTester user_action_tester;
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
-  auto bridge = std::make_unique<AccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<AccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   bridge->OnLearnMoreClicked(/*env=*/nullptr);
 
@@ -114,10 +122,11 @@ TEST(AccessibilityAnnotatorBottomSheetBridgeTest, OnLearnMoreClicked) {
              "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
 }
 
-TEST(AccessibilityAnnotatorBottomSheetBridgeTest, HideWithoutJava) {
+TEST(AccessibilityAnnotatorFirstRunBottomSheetBridgeTest, HideWithoutJava) {
   base::MockCallback<base::OnceCallback<void(InfoResult)>> callback;
-  auto bridge = std::make_unique<AccessibilityAnnotatorBottomSheetBridge>(
-      /*web_contents=*/nullptr, callback.Get());
+  auto bridge =
+      std::make_unique<AccessibilityAnnotatorFirstRunBottomSheetBridge>(
+          /*web_contents=*/nullptr, callback.Get());
 
   bridge->Hide();
 }

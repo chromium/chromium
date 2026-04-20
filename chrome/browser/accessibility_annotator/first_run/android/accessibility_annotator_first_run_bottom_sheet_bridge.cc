@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_bottom_sheet_bridge.h"
+#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_first_run_bottom_sheet_bridge.h"
 
 #include <string>
 
@@ -11,15 +11,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/android/chrome_jni_headers/AccessibilityAnnotatorBottomSheetBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/AccessibilityAnnotatorFirstRunBottomSheetBridge_jni.h"
 #include "components/accessibility_annotator/core/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
 namespace accessibility_annotator {
 
-AccessibilityAnnotatorBottomSheetBridge::
-    AccessibilityAnnotatorBottomSheetBridge(
+AccessibilityAnnotatorFirstRunBottomSheetBridge::
+    AccessibilityAnnotatorFirstRunBottomSheetBridge(
         content::WebContents* web_contents,
         base::OnceCallback<void(InfoResult)> callback)
     : callback_(std::move(callback)) {
@@ -33,29 +33,30 @@ AccessibilityAnnotatorBottomSheetBridge::
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(Java_AccessibilityAnnotatorBottomSheetBridge_create(
+  java_obj_.Reset(Java_AccessibilityAnnotatorFirstRunBottomSheetBridge_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
 }
 
-AccessibilityAnnotatorBottomSheetBridge::
-    ~AccessibilityAnnotatorBottomSheetBridge() {
+AccessibilityAnnotatorFirstRunBottomSheetBridge::
+    ~AccessibilityAnnotatorFirstRunBottomSheetBridge() {
   if (java_obj_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AccessibilityAnnotatorBottomSheetBridge_destroy(env, java_obj_);
+    Java_AccessibilityAnnotatorFirstRunBottomSheetBridge_destroy(env,
+                                                                 java_obj_);
   }
 }
 
-bool AccessibilityAnnotatorBottomSheetBridge::PerformShowContent() {
+bool AccessibilityAnnotatorFirstRunBottomSheetBridge::PerformShowContent() {
   if (!java_obj_) {
     return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AccessibilityAnnotatorBottomSheetBridge_show(
+  return Java_AccessibilityAnnotatorFirstRunBottomSheetBridge_show(
       env, java_obj_, kAccessibilityAnnotatorSettingsURL,
       kAccessibilityAnnotatorLearnMoreURL);
 }
 
-void AccessibilityAnnotatorBottomSheetBridge::Show() {
+void AccessibilityAnnotatorFirstRunBottomSheetBridge::Show() {
   if (PerformShowContent()) {
     base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
                                   InfoShowRequestResult::kShown);
@@ -67,14 +68,15 @@ void AccessibilityAnnotatorBottomSheetBridge::Show() {
   }
 }
 
-void AccessibilityAnnotatorBottomSheetBridge::Hide() {
+void AccessibilityAnnotatorFirstRunBottomSheetBridge::Hide() {
   if (java_obj_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AccessibilityAnnotatorBottomSheetBridge_hide(env, java_obj_);
+    Java_AccessibilityAnnotatorFirstRunBottomSheetBridge_hide(env, java_obj_);
   }
 }
 
-void AccessibilityAnnotatorBottomSheetBridge::OnInfoAcknowledged(JNIEnv* env) {
+void AccessibilityAnnotatorFirstRunBottomSheetBridge::OnInfoAcknowledged(
+    JNIEnv* env) {
   if (callback_) {
     std::move(callback_).Run(InfoResult::kAcknowledged);
     base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
@@ -82,18 +84,20 @@ void AccessibilityAnnotatorBottomSheetBridge::OnInfoAcknowledged(JNIEnv* env) {
   }
 }
 
-void AccessibilityAnnotatorBottomSheetBridge::OnManageSettingsClicked(
+void AccessibilityAnnotatorFirstRunBottomSheetBridge::OnManageSettingsClicked(
     JNIEnv* env) {
   base::RecordAction(base::UserMetricsAction(
       "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
 }
 
-void AccessibilityAnnotatorBottomSheetBridge::OnLearnMoreClicked(JNIEnv* env) {
+void AccessibilityAnnotatorFirstRunBottomSheetBridge::OnLearnMoreClicked(
+    JNIEnv* env) {
   base::RecordAction(base::UserMetricsAction(
       "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
 }
 
-void AccessibilityAnnotatorBottomSheetBridge::OnInfoDismissed(JNIEnv* env) {
+void AccessibilityAnnotatorFirstRunBottomSheetBridge::OnInfoDismissed(
+    JNIEnv* env) {
   if (callback_) {
     std::move(callback_).Run(InfoResult::kNotAcknowledged);
     base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
@@ -101,8 +105,8 @@ void AccessibilityAnnotatorBottomSheetBridge::OnInfoDismissed(JNIEnv* env) {
   }
 }
 
-DEFINE_JNI(AccessibilityAnnotatorBottomSheetBridge)
+DEFINE_JNI(AccessibilityAnnotatorFirstRunBottomSheetBridge)
 
 }  // namespace accessibility_annotator
 
-using accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge;
+using accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge;

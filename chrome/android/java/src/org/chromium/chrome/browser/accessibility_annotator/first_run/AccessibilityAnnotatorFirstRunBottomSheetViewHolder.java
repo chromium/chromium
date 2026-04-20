@@ -20,9 +20,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View for the Accessibility Annotator bottom sheet. */
+/** View for the Accessibility Annotator first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorBottomSheetViewHolder {
+/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetViewHolder {
     final ViewGroup mContentView;
     final ScrollView mScrollView;
     final LottieAnimationView mIcon;
@@ -31,12 +31,12 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
     final Button mPrimaryButton;
     final Button mSecondaryButton;
 
-    AccessibilityAnnotatorBottomSheetViewHolder(Context context) {
+    AccessibilityAnnotatorFirstRunBottomSheetViewHolder(Context context) {
         mContentView =
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(
-                                        R.layout.accessibility_annotator_bottom_sheet,
+                                        R.layout.accessibility_annotator_first_run_bottom_sheet,
                                         /* root= */ null);
         mScrollView = mContentView.findViewById(R.id.accessibility_annotator_scroll_view);
         mIcon = mContentView.findViewById(R.id.accessibility_annotator_icon);

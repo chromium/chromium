@@ -12,13 +12,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Implements the content for the Accessibility Annotator bottom sheet. */
+/** Implements the content for the Accessibility Annotator first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorBottomSheetContent implements BottomSheetContent {
+/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final ScrollView mScrollView;
 
-    AccessibilityAnnotatorBottomSheetContent(View contentView, ScrollView scrollView) {
+    AccessibilityAnnotatorFirstRunBottomSheetContent(View contentView, ScrollView scrollView) {
         mContentView = contentView;
         mScrollView = scrollView;
     }

@@ -10,9 +10,9 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/** Properties for the Accessibility Annotator bottom sheet. */
+/** Properties for the Accessibility Annotator first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorBottomSheetProperties {
+/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetProperties {
     public static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
     static final ReadableIntPropertyKey ICON = new ReadableIntPropertyKey();
@@ -26,5 +26,5 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
         DESCRIPTION, ICON, PRIMARY_BUTTON_LABEL, SECONDARY_BUTTON_LABEL, TITLE
     };
 
-    private AccessibilityAnnotatorBottomSheetProperties() {}
+    private AccessibilityAnnotatorFirstRunBottomSheetProperties() {}
 }

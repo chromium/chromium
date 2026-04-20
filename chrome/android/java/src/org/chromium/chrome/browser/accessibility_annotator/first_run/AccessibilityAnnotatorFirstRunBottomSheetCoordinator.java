@@ -18,9 +18,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.SpanApplier;
 
-/** Coordinator for the Accessibility Annotator bottom sheet. */
+/** Coordinator for the Accessibility Annotator first-run bottom sheet. */
 @NullMarked
-public class AccessibilityAnnotatorBottomSheetCoordinator {
+public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
     /** Delegate interface for handling bottom sheet actions. */
     public interface Delegate {
         void onInfoAcknowledged();
@@ -32,27 +32,30 @@ public class AccessibilityAnnotatorBottomSheetCoordinator {
         void onInfoDismissed();
     }
 
-    private final AccessibilityAnnotatorBottomSheetViewHolder mView;
-    private final AccessibilityAnnotatorBottomSheetMediator mMediator;
+    private final AccessibilityAnnotatorFirstRunBottomSheetViewHolder mView;
+    private final AccessibilityAnnotatorFirstRunBottomSheetMediator mMediator;
     private final PropertyModel mModel;
 
-    public AccessibilityAnnotatorBottomSheetCoordinator(
+    public AccessibilityAnnotatorFirstRunBottomSheetCoordinator(
             Context context, BottomSheetController bottomSheetController, Delegate delegate) {
-        mView = new AccessibilityAnnotatorBottomSheetViewHolder(context);
+        mView = new AccessibilityAnnotatorFirstRunBottomSheetViewHolder(context);
         mModel =
-                new PropertyModel.Builder(AccessibilityAnnotatorBottomSheetProperties.ALL_KEYS)
+                new PropertyModel.Builder(
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties.ALL_KEYS)
                         .with(
-                                AccessibilityAnnotatorBottomSheetProperties.TITLE,
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties.TITLE,
                                 context.getString(
                                         R.string.accessibility_partial_custom_tab_bottom_sheet))
                         .with(
-                                AccessibilityAnnotatorBottomSheetProperties.DESCRIPTION,
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION,
                                 context.getString(R.string.ntp_learn_more_about_suggested_content))
                         .with(
-                                AccessibilityAnnotatorBottomSheetProperties.PRIMARY_BUTTON_LABEL,
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                        .PRIMARY_BUTTON_LABEL,
                                 context.getString(R.string.got_it))
                         .with(
-                                AccessibilityAnnotatorBottomSheetProperties.SECONDARY_BUTTON_LABEL,
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                        .SECONDARY_BUTTON_LABEL,
                                 context.getString(R.string.page_info_site_settings_button))
                         .build();
 
@@ -66,20 +69,20 @@ public class AccessibilityAnnotatorBottomSheetCoordinator {
 
         SpannableString description =
                 SpanApplier.applySpans(
-                        mModel.get(AccessibilityAnnotatorBottomSheetProperties.DESCRIPTION)
+                        mModel.get(AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION)
                                 .toString(),
                         new SpanApplier.SpanInfo("<link>", "</link>", learnMoreSpan));
 
-        mModel.set(AccessibilityAnnotatorBottomSheetProperties.DESCRIPTION, description);
+        mModel.set(AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION, description);
 
         PropertyModelChangeProcessor.create(
-                mModel, mView, AccessibilityAnnotatorBottomSheetViewBinder::bind);
+                mModel, mView, AccessibilityAnnotatorFirstRunBottomSheetViewBinder::bind);
 
         mMediator =
-                new AccessibilityAnnotatorBottomSheetMediator(
+                new AccessibilityAnnotatorFirstRunBottomSheetMediator(
                         context,
                         bottomSheetController,
-                        new AccessibilityAnnotatorBottomSheetContent(
+                        new AccessibilityAnnotatorFirstRunBottomSheetContent(
                                 mView.mContentView, mView.mScrollView),
                         delegate,
                         new SettingsCustomTabLauncherImpl());

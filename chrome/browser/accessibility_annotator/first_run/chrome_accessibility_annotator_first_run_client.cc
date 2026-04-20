@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_bottom_sheet_bridge.h"
+#include "chrome/browser/accessibility_annotator/first_run/android/accessibility_annotator_first_run_bottom_sheet_bridge.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -68,7 +68,7 @@ void ChromeAccessibilityAnnotatorFirstRunClient::ShowRemoteAnnotatorInfo(
       web_contents, base::BindOnce(&ToInfoResult).Then(std::move(callback)));
 #else
   android_bridge_ = std::make_unique<
-      accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge>(
+      accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge>(
       web_contents,
       base::BindOnce(&ChromeAccessibilityAnnotatorFirstRunClient::
                          OnRemoteAnnotatorInfoResult,

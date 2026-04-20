@@ -424,7 +424,7 @@ chrome_java_resources = [
   "java/res/drawable/xr_toolbar_rounded_rect.xml",
   "java/res/font/reader_mode_lexend.xml",
   "java/res/layout-sw600dp/find_toolbar.xml",
-  "java/res/layout/accessibility_annotator_bottom_sheet.xml",
+  "java/res/layout/accessibility_annotator_first_run_bottom_sheet.xml",
   "java/res/layout/account_chooser_dialog_item.xml",
   "java/res/layout/account_chooser_dialog_title.xml",
   "java/res/layout/account_management_account_row.xml",

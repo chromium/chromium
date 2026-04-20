@@ -17,7 +17,7 @@ class WebContents;
 
 #if BUILDFLAG(IS_ANDROID)
 namespace accessibility_annotator {
-class AccessibilityAnnotatorBottomSheetBridge;
+class AccessibilityAnnotatorFirstRunBottomSheetBridge;
 }
 #endif
 
@@ -45,7 +45,7 @@ class ChromeAccessibilityAnnotatorFirstRunClient
       accessibility_annotator::InfoResult result);
 
   std::unique_ptr<
-      accessibility_annotator::AccessibilityAnnotatorBottomSheetBridge>
+      accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge>
       android_bridge_;
 #endif
 };

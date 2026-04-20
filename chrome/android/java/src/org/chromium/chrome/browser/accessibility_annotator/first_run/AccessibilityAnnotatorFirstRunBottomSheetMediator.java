@@ -14,13 +14,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
-/** Mediator for the Accessibility Annotator bottom sheet. */
+/** Mediator for the Accessibility Annotator first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorBottomSheetMediator {
+/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetMediator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final AccessibilityAnnotatorBottomSheetContent mContent;
-    private final AccessibilityAnnotatorBottomSheetCoordinator.Delegate mDelegate;
+    private final AccessibilityAnnotatorFirstRunBottomSheetContent mContent;
+    private final AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate mDelegate;
     private final SettingsCustomTabLauncher mCustomTabLauncher;
 
     private @Nullable String mManageSettingsUrl;
@@ -37,11 +37,11 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
                 }
             };
 
-    AccessibilityAnnotatorBottomSheetMediator(
+    AccessibilityAnnotatorFirstRunBottomSheetMediator(
             Context context,
             BottomSheetController bottomSheetController,
-            AccessibilityAnnotatorBottomSheetContent content,
-            AccessibilityAnnotatorBottomSheetCoordinator.Delegate delegate,
+            AccessibilityAnnotatorFirstRunBottomSheetContent content,
+            AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate delegate,
             SettingsCustomTabLauncher customTabLauncher) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
