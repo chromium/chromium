@@ -59,6 +59,35 @@ namespace contextual_tasks {
 struct SiteExclusionDetail;
 class ContextualTasksContextModelHandler;
 
+// Represents a single turn in a thread.
+struct ThreadTurn {
+  ThreadTurn();
+  ThreadTurn(const ThreadTurn&);
+  ThreadTurn& operator=(const ThreadTurn&);
+  ~ThreadTurn();
+
+  // User query for this turn.
+  std::string query;
+
+  // Titles of shared (attached as context) tabs for this turn.
+  std::vector<std::string> shared_tab_titles;
+};
+
+// Represents a conversation thread, including current and previous turns.
+struct ConversationThread {
+  ConversationThread();
+  ConversationThread(const ConversationThread&);
+  ConversationThread& operator=(const ConversationThread&);
+  ~ConversationThread();
+
+  // The query from the current turn.
+  std::string query;
+
+  // Previous turns in the thread, in chronological order (oldest first).
+  // The first element in this vector is the first turn in the thread.
+  std::vector<ThreadTurn> previous_turns;
+};
+
 enum class ContextDeterminationStatus {
   kSuccess = 0,
   kEmbedderNotAvailable = 1,
@@ -115,6 +144,14 @@ class ContextualTasksContextService
   virtual void GetRelevantTabsForQuery(
       const TabSelectionOptions& options,
       const std::string& query,
+      const std::vector<GURL>& explicit_urls,
+      base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+          callback);
+
+  // Returns the relevant tabs for `conversation_thread`.
+  virtual void GetRelevantTabsForConversationThread(
+      const TabSelectionOptions& options,
+      const ConversationThread& conversation_thread,
       const std::vector<GURL>& explicit_urls,
       base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
           callback);

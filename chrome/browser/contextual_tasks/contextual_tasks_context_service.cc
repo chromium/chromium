@@ -346,6 +346,18 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
       std::make_unique<PendingRequest>(task_id, std::move(callback));
 }
 
+// TODO: crbug.com/503189770 - Integrate the multi-turn ML model. For now, just
+// use the query from the current turn with the existing single-turn model.
+void ContextualTasksContextService::GetRelevantTabsForConversationThread(
+    const TabSelectionOptions& options,
+    const ConversationThread& conversation_thread,
+    const std::vector<GURL>& explicit_urls,
+    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+        callback) {
+  GetRelevantTabsForQuery(options, conversation_thread.query, explicit_urls,
+                          std::move(callback));
+}
+
 void ContextualTasksContextService::OnTypedQuery() {
   if (!embedder_model_version_) {
     // Do not queue if embedder is not available.
@@ -866,5 +878,15 @@ ContextualTasksContextService::PendingRequest::~PendingRequest() = default;
 TabSelectionOptions::TabSelectionOptions() = default;
 TabSelectionOptions::~TabSelectionOptions() = default;
 TabSelectionOptions::TabSelectionOptions(const TabSelectionOptions&) = default;
+
+ThreadTurn::ThreadTurn() = default;
+ThreadTurn::~ThreadTurn() = default;
+ThreadTurn::ThreadTurn(const ThreadTurn&) = default;
+ThreadTurn& ThreadTurn::operator=(const ThreadTurn&) = default;
+
+ConversationThread::ConversationThread() = default;
+ConversationThread::~ConversationThread() = default;
+ConversationThread::ConversationThread(const ConversationThread&) = default;
+ConversationThread& ConversationThread::operator=(const ConversationThread&) = default;
 
 }  // namespace contextual_tasks

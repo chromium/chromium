@@ -485,6 +485,60 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
                                       0, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SuccessForConversationWithSingleTurnFlow) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {// Not match.
+       {std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(0.1f)},
+       // Match - active tab is added.
+       {std::make_pair(
+            "passage 2",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)},
+       // Match - should be skipped.
+       {std::make_pair(
+            "passage 3",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+
+  ConversationThread conversation_thread;
+  ThreadTurn turn1;
+  turn1.query = "history query";
+  turn1.shared_tab_titles = {"tab1"};
+  conversation_thread.previous_turns.push_back(turn1);
+
+  conversation_thread.query = "some text";
+
+  service()->GetRelevantTabsForConversationThread(options, conversation_thread,
+                                            /*explicit_urls=*/{valid_url()},
+                                            future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
+}
+
 class ContextualTasksContextServiceTaskFormattingTest
     : public ContextualTasksContextServiceTest {
  protected:
