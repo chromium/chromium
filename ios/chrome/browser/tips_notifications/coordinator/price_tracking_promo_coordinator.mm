@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/tips_notifications/ui/price_tracking_promo_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
@@ -67,10 +68,14 @@
 
 - (void)didTapPrimaryActionButton {
   _showNotificationSettingsOnDismiss = YES;
+  LogTipsNotificationPromoAction(TipsNotificationType::kPriceTracking,
+                                 TipsNotificationPromoAction::kPrimary);
   [self dismissScreen];
 }
 
 - (void)didTapSecondaryActionButton {
+  LogTipsNotificationPromoAction(TipsNotificationType::kPriceTracking,
+                                 TipsNotificationPromoAction::kSecondary);
   [self dismissScreen];
 }
 

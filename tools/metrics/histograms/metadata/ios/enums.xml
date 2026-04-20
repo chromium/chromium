@@ -1876,6 +1876,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h:IOSThemeSyncStopAction) -->
 
+<!-- LINT.IfChange(IOSTipsNotificationPromoAction) -->
+
+<enum name="IOSTipsNotificationPromoAction">
+  <int value="0" label="Primary Action"/>
+  <int value="1" label="Secondary Action"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/tips_notifications/model/utils.h:TipsNotificationPromoAction) -->
+
 <!-- LINT.IfChange(IOSTipsNotificationType) -->
 
 <enum name="IOSTipsNotificationType">

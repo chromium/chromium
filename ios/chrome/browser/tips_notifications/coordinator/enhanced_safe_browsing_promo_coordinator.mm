@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/tips_notifications/ui/enhanced_safe_browsing_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/enhanced_safe_browsing_promo_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
@@ -27,6 +28,7 @@
       _instructionsViewController;
   UINavigationController* _instructionsNavigationController;
   BOOL _showSettingsOnDismiss;
+  BOOL _actionLogged;
 }
 
 #pragma mark - ChromeCoordinator
@@ -70,10 +72,20 @@
 
 - (void)didTapPrimaryActionButton {
   _showSettingsOnDismiss = YES;
+  if (!_actionLogged) {
+    LogTipsNotificationPromoAction(TipsNotificationType::kEnhancedSafeBrowsing,
+                                   TipsNotificationPromoAction::kPrimary);
+    _actionLogged = YES;
+  }
   [self dismissScreen];
 }
 
 - (void)didTapSecondaryActionButton {
+  if (!_actionLogged) {
+    LogTipsNotificationPromoAction(TipsNotificationType::kEnhancedSafeBrowsing,
+                                   TipsNotificationPromoAction::kSecondary);
+    _actionLogged = YES;
+  }
   _instructionsViewController =
       [[EnhancedSafeBrowsingPromoInstructionsViewController alloc] init];
   _instructionsViewController.actionHandler = self;

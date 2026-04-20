@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
@@ -29,6 +30,7 @@
   UINavigationController* _instructionsNavigationController;
   BOOL _presentBubbleOnDismiss;
   BOOL _goToLensOnDismiss;
+  BOOL _actionLogged;
 }
 
 #pragma mark - ChromeCoordinator
@@ -83,10 +85,20 @@
 
 - (void)didTapPrimaryActionButton {
   _goToLensOnDismiss = YES;
+  if (!_actionLogged) {
+    LogTipsNotificationPromoAction(TipsNotificationType::kLens,
+                                   TipsNotificationPromoAction::kPrimary);
+    _actionLogged = YES;
+  }
   [self dismissScreen];
 }
 
 - (void)didTapSecondaryActionButton {
+  if (!_actionLogged) {
+    LogTipsNotificationPromoAction(TipsNotificationType::kLens,
+                                   TipsNotificationPromoAction::kSecondary);
+    _actionLogged = YES;
+  }
   _instructionsViewController =
       [[LensPromoInstructionsViewController alloc] init];
   _instructionsViewController.actionHandler = self;

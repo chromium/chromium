@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -26,6 +27,7 @@
   UINavigationController* _navigationController;
   SearchWhatYouSeePromoInstructionsViewController* _instructionsViewController;
   UINavigationController* _instructionsNavigationController;
+  BOOL _actionLogged;
 }
 
 #pragma mark - ChromeCoordinator
@@ -68,6 +70,11 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  if (!_actionLogged) {
+    LogTipsNotificationPromoAction(TipsNotificationType::kLensOverlay,
+                                   TipsNotificationPromoAction::kSecondary);
+    _actionLogged = YES;
+  }
   if (_viewController.presentedViewController &&
       _viewController.presentedViewController ==
           _instructionsNavigationController) {

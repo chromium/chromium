@@ -7428,6 +7428,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TipsNotification.{PromoType}.PromoAction"
+    enum="IOSTipsNotificationPromoAction" expires_after="2026-09-17">
+  <owner>bmcclure@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Logs when a user taps the primary or secondary action button in the
+    {PromoType} promo view triggered by a Tips Notification.
+  </summary>
+  <token key="PromoType">
+    <variant name="EnhancedSafeBrowsing" summary="Enhanced Safe Browsing"/>
+    <variant name="Lens" summary="Lens"/>
+    <variant name="PriceTracking" summary="Price Tracking"/>
+    <variant name="SearchWhatYouSee" summary="Search What You See"/>
+    <variant name="TabGroups" summary="Tab Groups"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Translate.PageLoad.LanguageDetectionMethod"
     enum="LanguageDetectionMethod" expires_after="2023-03-24">
   <owner>olivierrobin@chromium.org</owner>

@@ -95,6 +95,19 @@ enum class TrustedVaultNotificationEvents {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:TrustedVaultNotificationEvents)
 
+// Enum for Tips Notification Promo Actions.
+// LINT.IfChange(TipsNotificationPromoAction)
+enum class TipsNotificationPromoAction {
+  kPrimary = 0,
+  kSecondary = 1,
+  kMaxValue = kSecondary,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSTipsNotificationPromoAction)
+
+// Logs the promo action for a given notification type.
+void LogTipsNotificationPromoAction(TipsNotificationType type,
+                                    TipsNotificationPromoAction action);
+
 // Returns true if the given `notification` is a Tips notification.
 bool IsTipsNotification(UNNotificationRequest* request);
 
