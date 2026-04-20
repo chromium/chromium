@@ -1595,10 +1595,11 @@ chromium-metrics-reviews@google.com.
 <enum name="MediaNotificationSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Web"/>
-  <int value="2" label="Assistant"/>
+  <int value="2" label="(Obsolete) Assistant"/>
   <int value="3" label="Arc"/>
   <int value="4" label="Local Cast session"/>
   <int value="5" label="Non-local Cast session"/>
+  <int value="6" label="Cast device picker"/>
 </enum>
 
 <enum name="MediaOutputProtectionStatus">

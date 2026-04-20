@@ -37,9 +37,6 @@ media_message_center::Source GetSourceFromName(const std::string& name) {
   if (name == "arc")
     return media_message_center::Source::kArc;
 
-  if (name == "assistant")
-    return media_message_center::Source::kAssistant;
-
   return media_message_center::Source::kUnknown;
 }
 

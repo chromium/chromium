@@ -19,16 +19,18 @@ namespace media_message_center {
 
 // The source of the media item. This is used in metrics so new values must only
 // be added to the end.
+// LINT.IfChange(Source)
 enum class Source {
   kUnknown,
   kWeb,
-  kAssistant,
+  kAssistant,  // Obsolete.
   kArc,
   kLocalCastSession,
   kNonLocalCastSession,
   kCastDevicePicker,
   kMaxValue = kCastDevicePicker,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaNotificationSource)
 
 // The source type of the media item.
 enum class SourceType {
