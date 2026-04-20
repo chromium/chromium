@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsImportNothing,
                        ImportNothingAndShowNewTabPage) {
   EXPECT_EQ(AUTO_IMPORT_CALLED, auto_import_state());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   content::WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(WaitForLoadStop(tab));
 }

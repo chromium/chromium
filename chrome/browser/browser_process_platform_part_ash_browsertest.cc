@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   tab_strip_model = new_browser->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
 }
 
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   tab_strip_model = new_browser->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
 }
 

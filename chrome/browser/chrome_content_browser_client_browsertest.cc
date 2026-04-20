@@ -2030,7 +2030,7 @@ IN_PROC_BROWSER_TEST_P(BundledCodeCacheChromeContentBrowserClientTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL top_chrome_url1(chrome::kChromeUITabSearchURL);
   const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
-  const GURL non_top_chrome_url1(chrome::kChromeUINewTabPageURL);
+  const GURL& non_top_chrome_url1 = chrome::ChromeUINewTabPageURLAsGURL();
   const GURL non_top_chrome_url2(
       embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));

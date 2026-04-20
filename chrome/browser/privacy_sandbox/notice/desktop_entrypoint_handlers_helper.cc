@@ -28,7 +28,7 @@ bool IsChromeControlledNtpUrl(const GURL& url) {
   const auto ntp_origin = url::Origin::Create(url);
 
   return ntp_origin ==
-             url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL)) ||
+             url::Origin::Create(chrome::ChromeUINewTabPageURLAsGURL()) ||
          ntp_origin == url::Origin::Create(
                            GURL(chrome::kChromeUINewTabPageThirdPartyURL));
 }
@@ -55,7 +55,7 @@ bool IsUrlSuitableForPrompt(const GURL& url) {
   }
   // Only a Chrome controlled New Tab Page is valid. Third party NTP is still
   // Chrome controlled, but is without Google branding.
-  if (url == GURL(chrome::kChromeUINewTabPageURL) ||
+  if (url == chrome::ChromeUINewTabPageURLAsGURL() ||
       url == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
     return true;
   }
@@ -67,7 +67,8 @@ bool IsUrlSuitableForPrompt(const GURL& url) {
 void MaybeOpenAboutBlankOnChrome(content::NavigationHandle* navigation_handle,
                                  Profile* profile,
                                  content::WebContents* web_contents) {
-  if (web_contents->GetLastCommittedURL() == GURL(chrome::kChromeUINewTabURL)) {
+  if (web_contents->GetLastCommittedURL() ==
+      chrome::ChromeUINewTabURLAsGURL()) {
     const bool has_extention_override =
         HasExtensionNtpOverride(extensions::ExtensionRegistry::Get(profile));
 

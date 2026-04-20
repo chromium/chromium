@@ -425,7 +425,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
-  client.OverrideNavigationParams(GURL(chrome::kChromeUINewTabPageURL),
+  client.OverrideNavigationParams(chrome::ChromeUINewTabPageURLAsGURL(),
                                   &transition, &is_renderer_initiated,
                                   &referrer, &initiator_origin);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
@@ -435,7 +435,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
 
   // No change for transitions that are not PAGE_TRANSITION_LINK.
   transition = ui::PAGE_TRANSITION_TYPED;
-  client.OverrideNavigationParams(GURL(chrome::kChromeUINewTabPageURL),
+  client.OverrideNavigationParams(chrome::ChromeUINewTabPageURLAsGURL(),
                                   &transition, &is_renderer_initiated,
                                   &referrer, &initiator_origin);
   EXPECT_TRUE(
@@ -809,7 +809,7 @@ class InstantNTPURLRewriteTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(InstantNTPURLRewriteTest, UberURLHandler_InstantExtendedNewTabPage) {
-  const GURL url_original(chrome::kChromeUINewTabURL);
+  const GURL& url_original = chrome::ChromeUINewTabURLAsGURL();
   const GURL url_rewritten("https://www.example.com/newtab");
   InstallTemplateURLWithNewTabPage(url_rewritten);
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(

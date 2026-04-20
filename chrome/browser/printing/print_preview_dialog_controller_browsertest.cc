@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // preview dialog.
   content::WebContentsDestroyedWatcher watcher(preview_dialog);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   ASSERT_TRUE(watcher.IsDestroyed());
 
   // Try printing again.

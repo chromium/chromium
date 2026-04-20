@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
                        NoMatchingConfiguration_NewTabPage) {
   base::HistogramTester histogram_tester;
-  GURL url = GURL(chrome::kChromeUINewTabPageURL);
+  GURL url = chrome::ChromeUINewTabPageURLAsGURL();
   ConfigureAsPhishingURL(url);
 
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
