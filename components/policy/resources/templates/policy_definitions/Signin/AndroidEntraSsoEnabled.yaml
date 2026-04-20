@@ -13,8 +13,8 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-  - android
+supported_on:
+- android:149-
 items:
 - caption: Disable Microsoft® cloud authentication
   name: Disabled
