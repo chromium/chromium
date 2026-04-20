@@ -204,6 +204,11 @@ class MockLensSearchController : public LensSearchController {
               CloseLensAsync,
               (lens::LensOverlayDismissalSource dismissal_source),
               (override));
+  MOCK_METHOD(void,
+              CloseLensAsync,
+              (lens::LensOverlayDismissalSource dismissal_source,
+               bool side_panel_already_closing),
+              (override));
 
   lens::LensQueryFlowRouter* query_router() override {
     return mock_router_.get();

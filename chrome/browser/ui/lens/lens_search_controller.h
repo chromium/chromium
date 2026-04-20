@@ -159,6 +159,8 @@ class LensSearchController {
   // Step (1) is asynchronous.
   virtual void CloseLensAsync(
       lens::LensOverlayDismissalSource dismissal_source);
+  virtual void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source,
+                              bool side_panel_already_closing);
 
   // Instantly closes all Lens components currently opened.This may not look
   // nice if the overlay is visible when this is called.

@@ -553,6 +553,25 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
 
   ~LensSearchControllerFake() override = default;
 
+  void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source,
+                      bool side_panel_already_closing) override {
+    auto* const side_panel_ui = GetTabInterface()
+                                    ->GetBrowserWindowInterface()
+                                    ->GetFeatures()
+                                    .side_panel_ui();
+    if (!side_panel_already_closing && IsActive() &&
+        side_panel_ui->IsSidePanelEntryShowing(
+            SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults))) {
+      close_side_panel_call_count_++;
+    }
+    lens::TestLensSearchController::CloseLensAsync(dismissal_source,
+                                                   side_panel_already_closing);
+  }
+
+  int close_side_panel_call_count() const {
+    return close_side_panel_call_count_;
+  }
+
   // Helper function to force the fake query controller to return errors in its
   // responses to full image requests. This should be called before ShowUI.
   void SetFullImageRequestShouldReturnError() {
@@ -638,6 +657,7 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
   std::string last_search_url_;
   lens::LensOverlayUrlResponseCallback url_callback_;
   bool full_image_request_should_return_error_ = false;
+  int close_side_panel_call_count_ = 0;
 };
 
 namespace {
@@ -1417,6 +1437,41 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The overlay should have been notified of the closing.
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       CloseSidePanelNoReentrancy) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Open the side panel.
+  controller->OpenSidePanelForTesting();
+
+  // Ensure the side panel is showing.
+  EXPECT_TRUE(IsLensResultsSidePanelShowing());
+
+  // Close the side panel.
+  browser()->GetFeatures().side_panel_ui()->Close(
+      GetLensOverlaySidePanelCoordinator()->GetPanelType());
+
+  // Verify that the side panel close logic was not iteratively re-triggered
+  // by the notification loop, which prevents reentrancy on the ObserverList.
+  auto* search_controller = static_cast<LensSearchControllerFake*>(
+      controller->get_lens_search_controller_for_testing());
+  ASSERT_TRUE(search_controller);
+  EXPECT_EQ(search_controller->close_side_panel_call_count(), 0);
+
+  // Ensure the overlay closes smoothly after side panel teardown.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
 }
 
 // TODO(crbug.com/341383805): Enable once flakiness is fixed on all platforms.
