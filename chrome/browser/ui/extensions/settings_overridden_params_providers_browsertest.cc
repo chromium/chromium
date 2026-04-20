@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -645,6 +646,7 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
     NewExtensionOrPreviousGoogleSearch) {
+  base::HistogramTester histogram_tester;
   const extensions::Extension* extension = AddExtensionControllingSearch();
   ASSERT_TRUE(extension);
 
@@ -671,6 +673,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       new_setting.value().description,
       base::StrCat({u"Recently changed to by ", kSearchOverrideExtensionName}));
+
+  // Ensure that a fully-populated dialog was logged.
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.SettingsOverridden.MissingParams",
+      settings_overridden_params::MissingParams::kNone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
