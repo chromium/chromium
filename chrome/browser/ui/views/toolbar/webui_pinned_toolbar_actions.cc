@@ -16,12 +16,9 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
-#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/views/controls/menu/menu_runner.h"
 
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
     WebUIToolbarWebView* webui_toolbar_web_view)
@@ -70,9 +67,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     CHECK(mojo_id) << "Unsupported pinned action type " << id;
     auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
     state->action = *mojo_id;
-    state->highlighted =
-        highlighted || (menu_runner_ && menu_runner_->IsRunning() &&
-                        active_context_menu_action_ == id);
+    state->highlighted = highlighted;
     state->enabled = item->GetEnabled();
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();
@@ -218,130 +213,4 @@ void WebUIPinnedToolbarActions::Invoke(
                     SidePanelOpenTrigger::kPinnedEntryToolbarButton))
             .Build());
   }
-}
-
-void WebUIPinnedToolbarActions::HandleContextMenu(
-    toolbar_ui_api::mojom::ContextMenuType menu_type,
-    const gfx::Rect& screen_rect,
-    ui::mojom::MenuSourceType source_type) {
-  actions::ActionId action_id;
-  switch (menu_type) {
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionNewIncognitoWindow:
-      action_id = kActionNewIncognitoWindow;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionShowPasswordsBubbleOrPage:
-      action_id = kActionShowPasswordsBubbleOrPage;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionShowPaymentsBubbleOrPage:
-      action_id = kActionShowPaymentsBubbleOrPage;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionShowAddressesBubbleOrPage:
-      action_id = kActionShowAddressesBubbleOrPage;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowBookmarks:
-      action_id = kActionSidePanelShowBookmarks;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowReadingList:
-      action_id = kActionSidePanelShowReadingList;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowHistoryCluster:
-      action_id = kActionSidePanelShowHistoryCluster;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowDownloads:
-      action_id = kActionShowDownloads;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionClearBrowsingData:
-      action_id = kActionClearBrowsingData;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionPrint:
-      action_id = kActionPrint;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowLensOverlayResults:
-      action_id = kActionSidePanelShowLensOverlayResults;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowTranslate:
-      action_id = kActionShowTranslate;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionQrCodeGenerator:
-      action_id = kActionQrCodeGenerator;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionRouteMedia:
-      action_id = kActionRouteMedia;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowReadAnything:
-      action_id = kActionSidePanelShowReadAnything;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionCopyUrl:
-      action_id = kActionCopyUrl;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSendTabToSelf:
-      action_id = kActionSendTabToSelf;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTaskManager:
-      action_id = kActionTaskManager;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionDevTools:
-      action_id = kActionDevTools;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTabSearch:
-      action_id = kActionTabSearch;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowContextualTasks:
-      action_id = kActionSidePanelShowContextualTasks;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSidePanelShowLens:
-      action_id = kActionSidePanelShowLens;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowAboutThisSite:
-      action_id = kActionSidePanelShowAboutThisSite;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowCustomizeChrome:
-      action_id = kActionSidePanelShowCustomizeChrome;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowShoppingInsights:
-      action_id = kActionSidePanelShowShoppingInsights;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowMerchantTrust:
-      action_id = kActionSidePanelShowMerchantTrust;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSendSharedTabGroupFeedback:
-      action_id = kActionSendSharedTabGroupFeedback;
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::
-        kPinnedActionSidePanelShowComments:
-      action_id = kActionSidePanelShowComments;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  menu_runner_.reset();
-  menu_model_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
-      webui_toolbar_web_view_->browser_, action_id);
-  active_context_menu_action_ = action_id;
-
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), views::MenuRunner::HAS_MNEMONICS,
-      base::BindRepeating(&WebUIPinnedToolbarActions::OnActionsChanged,
-                          base::Unretained(this)));
-
-  menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
-                          screen_rect, views::MenuAnchorPosition::kTopLeft,
-                          source_type);
-  OnActionsChanged();
 }

@@ -8,18 +8,12 @@
 #include <map>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 
-class PinnedActionToolbarButtonMenuModel;
 class WebUIToolbarWebView;
-
-namespace views {
-class MenuRunner;
-}
 
 // The C++ side of a WebUI implementation of pinned toolbar actions.
 class WebUIPinnedToolbarActions : public PinnedToolbarActions,
@@ -34,24 +28,10 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
 
   void Init();
 
-  // Handle a context menu request from WebUI.
-  void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
-                         const gfx::Rect& screen_rect,
-                         ui::mojom::MenuSourceType source_type);
-
   // Invoke an action that is currently displaying.
   void Invoke(toolbar_ui_api::mojom::PinnedToolbarAction action_id);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
-                           CheckPinnedToolbarActionColor);
-  FRIEND_TEST_ALL_PREFIXES(WebUIPinnedToolbarActionsBrowserTest,
-                           RightClickPinnedAction);
-  FRIEND_TEST_ALL_PREFIXES(WebUIPinnedToolbarActionsInteractiveTest,
-                           RightClickPinnedAction);
-  FRIEND_TEST_ALL_PREFIXES(WebUIPinnedToolbarActionsBrowserTest,
-                           LongPressPinnedAction);
-
   // PinnedToolbarActionsModel::Observer:
   void OnActionsChanged() override;
 
@@ -86,12 +66,6 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   std::vector<actions::ActionId> popped_out_actions_;
   // Allow this class to observe actions for currently displaying buttons.
   std::vector<base::CallbackListSubscription> action_subscriptions_;
-  std::unique_ptr<PinnedActionToolbarButtonMenuModel> menu_model_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-  // The action ID associated with the most recently opened context menu.
-  // Note: This is unset initially, and is not cleared when the menu closes.
-  // It should only be evaluated when `menu_runner_->IsRunning()` is true.
-  std::optional<actions::ActionId> active_context_menu_action_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
