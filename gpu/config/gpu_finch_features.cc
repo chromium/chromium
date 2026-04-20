@@ -389,7 +389,7 @@ BASE_FEATURE_PARAM(bool,
                    kSkiaGraphiteDawnUsePersistentCache,
                    &kSkiaGraphite,
                    "dawn_use_persistent_cache",
-                   BUILDFLAG(IS_ANDROID));
+                   BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN));
 
 const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
     &kSkiaGraphite, "max_pending_recordings", 100};
