@@ -313,17 +313,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
         prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
   }
 
-  PromptSuppressedReason prompt_suppressed_reason =
-      static_cast<PromptSuppressedReason>(
-          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed));
-
-  // kRestricted prompt suppression reason must be cleared at startup when
-  // restricted notice feature is enabled.
-  if (IsRestrictedNoticeRequired() &&
-      prompt_suppressed_reason == PromptSuppressedReason::kRestricted) {
-    pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
-  }
-
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/40234448): Remove this logic when most users have run init.
   MaybeInitializeRelatedWebsiteSetsPref();
@@ -509,86 +498,9 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   const bool user_is_currently_unrestricted =
       privacy_sandbox_settings_->IsPrivacySandboxCurrentlyUnrestricted();
 
-  // Prompt suppressed cases.
-  PromptSuppressedReason prompt_suppressed_reason =
-      static_cast<PromptSuppressedReason>(
-          pref_service_->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed));
 
-  switch (prompt_suppressed_reason) {
-    // Prompt never suppressed.
-    case PromptSuppressedReason::kNone: {
-      break;
-    }
 
-    case PromptSuppressedReason::kRestricted: {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kPromptNotShownDueToPrivacySandboxRestricted);
-      return;
-    }
 
-    case PromptSuppressedReason::kThirdPartyCookiesBlocked: {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kPromptNotShownDueTo3PCBlocked);
-      return;
-    }
-
-    case PromptSuppressedReason::kTrialsConsentDeclined: {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kPromptNotShownDueToTrialConsentDeclined);
-      return;
-    }
-
-    case PromptSuppressedReason::kTrialsDisabledAfterNotice: {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::
-              kPromptNotShownDueToTrialsDisabledAfterNoticeShown);
-      return;
-    }
-
-    case PromptSuppressedReason::kPolicy: {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kPromptNotShownDueToManagedState);
-      return;
-    }
-
-    case PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration: {
-      RecordPromptStartupStateHistograms(
-          topics_enabled
-              ? PromptStartupState::kEEAFlowCompletedWithTopicsAccepted
-              : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
-      return;
-    }
-
-    case PromptSuppressedReason::
-        kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration: {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kROWNoticeFlowCompleted);
-      return;
-    }
-
-    case PromptSuppressedReason::kNoticeShownToGuardian: {
-      // Check for users waiting for graduation: If a user was ever reported
-      // as restricted and is currently unrestricted it means they are ready
-      // for graduation.
-      RecordPromptStartupStateHistograms(
-          user_reported_restricted && user_is_currently_unrestricted
-              ? PromptStartupState::
-                    kWaitingForGraduationRestrictedNoticeFlowNotCompleted
-              : PromptStartupState::
-                    kRestrictedNoticeNotShownDueToNoticeShownToGuardian);
-      return;
-    }
-  }
-
-  // Prompt was not suppressed explicitly at this point.
-  CHECK_EQ(prompt_suppressed_reason, PromptSuppressedReason::kNone);
-
-  // Check if prompt was suppressed implicitly.
-  if (IsM1PrivacySandboxEffectivelyManaged(pref_service_)) {
-    RecordPromptStartupStateHistograms(
-        PromptStartupState::kPromptNotShownDueToManagedState);
-    return;
-  }
 
   const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
       prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
@@ -1013,24 +925,6 @@ void PrivacySandboxServiceImpl::UpdateProtectedAudienceApiResult(bool value) {
 void PrivacySandboxServiceImpl::UpdateMeasurementApiResult(bool value) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                             value);
-}
-
-// static
-bool PrivacySandboxServiceImpl::IsM1PrivacySandboxEffectivelyManaged(
-    PrefService* pref_service) {
-  bool is_prompt_suppressed_by_policy =
-      pref_service->IsManagedPreference(
-          prefs::kPrivacySandboxM1PromptSuppressed) &&
-      static_cast<int>(PromptSuppressedReason::kPolicy) ==
-          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed);
-
-  return is_prompt_suppressed_by_policy ||
-         pref_service->IsManagedPreference(
-             prefs::kPrivacySandboxM1TopicsEnabled) ||
-         pref_service->IsManagedPreference(
-             prefs::kPrivacySandboxM1FledgeEnabled) ||
-         pref_service->IsManagedPreference(
-             prefs::kPrivacySandboxM1AdMeasurementEnabled);
 }
 
 bool PrivacySandboxServiceImpl::IsConsentRequired() {

@@ -332,10 +332,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // Returns a PrivacySandboxCountries reference.
   PrivacySandboxCountries* GetPrivacySandboxCountries();
 
-  // Returns true if _any_ of the k-API prefs are disabled via policy or
-  // the prompt was suppressed via policy.
-  static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
-
   bool force_chrome_build_for_tests_ = false;
 
   base::WeakPtrFactory<PrivacySandboxServiceImpl> weak_factory_{this};

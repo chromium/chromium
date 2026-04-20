@@ -22,35 +22,6 @@
 // Sandbox APIs.
 class PrivacySandboxService : public KeyedService {
  public:
-  // If during the trials a previous consent decision was made, or the notice
-  // was already acknowledged, and the privacy sandbox is disabled,
-  // `prefs::kPrivacySandboxM1PromptSuppressed` was set to either
-  // `kTrialsConsentDeclined` or `kTrialsDisabledAfterNotice` accordingly and
-  // the prompt is suppressed. This logic is now deprecated after launching GA.
-  enum class PromptSuppressedReason {
-    // Prompt has never been suppressed
-    kNone = 0,
-    // User had the Privacy Sandbox restricted at confirmation
-    kRestricted = 1,
-    // User was blocking 3PC when we attempted consent
-    kThirdPartyCookiesBlocked = 2,
-    // User declined the trials consent
-    kTrialsConsentDeclined = 3,
-    // User saw trials notice, and then disabled trials
-    kTrialsDisabledAfterNotice = 4,
-    // A policy is suppressing any prompt
-    kPolicy = 5,
-    // User migrated from EEA to ROW, and had already previously finished the
-    // EEA consent flow.
-    kEEAFlowCompletedBeforeRowMigration = 6,
-    // User migrated from ROW to EEA, but had already disabled Topics from
-    // settings.
-    kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration = 7,
-    // The user is restricted with a guardian, so a direct notice is shown.
-    kNoticeShownToGuardian = 8,
-    kMaxValue = kNoticeShownToGuardian,
-  };
-
   // Contains the possible states of the prompt start up states for m1.
   // LINT.IfChange(SettingsPrivacySandboxPromptStartupState)
   enum class PromptStartupState {

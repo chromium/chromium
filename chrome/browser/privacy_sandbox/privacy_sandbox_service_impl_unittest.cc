@@ -102,7 +102,6 @@ namespace {
 using ::browsing_topics::Topic;
 using ::privacy_sandbox::CanonicalTopic;
 
-using PromptSuppressedReason = ::PrivacySandboxService::PromptSuppressedReason;
 using EligibilityLevel = ::privacy_sandbox::EligibilityLevel;
 using ::testing::Combine;
 using ::testing::ElementsAre;
@@ -1560,131 +1559,9 @@ TEST_F(PrivacySandboxServiceTest,
       });
 }
 
-TEST_F(PrivacySandboxServiceTest,
-       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly) {
-  base::HistogramTester histogram_tester;
-  const std::string privacy_sandbox_prompt_startup_histogram =
-      "Settings.PrivacySandbox.PromptStartupState";
-  // TODO(crbug.com/385345006): Add support for multi profile testing.
-  const std::string privacy_sandbox_prompt_startup_histogram_profile_level =
-      "Settings.PrivacySandbox.Profile_1.PromptStartupState";
 
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kRestricted));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToPrivacySandboxRestricted),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToPrivacySandboxRestricted),
-      /*expected_count=*/1);
 
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxM1PromptSuppressed,
-      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueTo3PCBlocked),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueTo3PCBlocked),
-      /*expected_count=*/1);
 
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxM1PromptSuppressed,
-      static_cast<int>(PromptSuppressedReason::kTrialsConsentDeclined));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToTrialConsentDeclined),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToTrialConsentDeclined),
-      /*expected_count=*/1);
-
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxM1PromptSuppressed,
-      static_cast<int>(PromptSuppressedReason::kTrialsDisabledAfterNotice));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToTrialsDisabledAfterNoticeShown),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToTrialsDisabledAfterNoticeShown),
-      /*expected_count=*/1);
-
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kPolicy));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToManagedState),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToManagedState),
-      /*expected_count=*/1);
-
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxM1PromptSuppressed,
-      static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kRestrictedNoticeNotShownDueToNoticeShownToGuardian),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kRestrictedNoticeNotShownDueToNoticeShownToGuardian),
-      /*expected_count=*/1);
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Implicitly) {
-  base::HistogramTester histogram_tester;
-  const std::string privacy_sandbox_prompt_startup_histogram =
-      "Settings.PrivacySandbox.PromptStartupState";
-  const std::string privacy_sandbox_prompt_startup_histogram_profile_level =
-      "Settings.PrivacySandbox.Profile_1.PromptStartupState";
-
-  // Ensure prompt not suppressed.
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kNone));
-
-  // Disable one of the K-APIs.
-  prefs()->SetManagedPref(prefs::kPrivacySandboxM1TopicsEnabled,
-                          base::Value(false));
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToManagedState),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(PrivacySandboxServiceImpl::PromptStartupState::
-                           kPromptNotShownDueToManagedState),
-      /*expected_count=*/1);
-}
 
 TEST_F(PrivacySandboxServiceTest,
        RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed_EEA) {
@@ -1693,10 +1570,6 @@ TEST_F(PrivacySandboxServiceTest,
       "Settings.PrivacySandbox.PromptStartupState";
   const std::string privacy_sandbox_prompt_startup_histogram_profile_level =
       "Settings.PrivacySandbox.Profile_1.PromptStartupState";
-
-  // Ensure prompt not suppressed.
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kNone));
 
   base::test::ScopedFeatureList feature_list_consent_required;
   std::map<std::string, std::string> consent_required_feature_param = {
@@ -1779,8 +1652,6 @@ TEST_F(PrivacySandboxServiceTest,
   const std::string privacy_sandbox_prompt_startup_histogram_profile_level =
       "Settings.PrivacySandbox.Profile_1.PromptStartupState";
   // Ensure prompt not suppressed.
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kNone));
 
   base::test::ScopedFeatureList feature_list_notice_required;
   std::map<std::string, std::string> notice_required_feature_param = {
@@ -2031,37 +1902,7 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
       "foo");
 }
 
-TEST_F(PrivacySandboxServiceM1DelayCreation,
-       PromptSuppressReasonClearedWhenRestrictedNoticeEnabled) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "true"}});
 
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kRestricted));
-
-  CreateService();
-
-  EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
-            static_cast<int>(PromptSuppressedReason::kNone));
-}
-
-TEST_F(PrivacySandboxServiceM1DelayCreation,
-       PromptSuppressReasonNotClearedWhenRestrictedNoticeDisabled) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "false"}});
-
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kRestricted));
-
-  CreateService();
-
-  EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
-            static_cast<int>(PromptSuppressedReason::kRestricted));
-}
 
 class PrivacySandboxServiceM1DelayCreationRestricted
     : public PrivacySandboxServiceM1DelayCreation {
@@ -2192,8 +2033,6 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
       "Settings.PrivacySandbox.Profile_1.PromptStartupState";
 
   // Ensure prompt not suppressed.
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kNone));
 
   base::test::ScopedFeatureList feature_list_notice_required;
   std::map<std::string, std::string> notice_required_feature_param = {
@@ -2306,8 +2145,6 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
       "Settings.PrivacySandbox.Profile_1.PromptStartupState";
 
   // Ensure prompt not suppressed.
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kNone));
 
   // Restricted Notice flow NOT completed
   {
@@ -2357,38 +2194,7 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
   }
 }
 
-TEST_F(
-    PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
-    RecordPrivacySandbox4StartupMetrics_GraduationFlowWhenNoticeShownToGuardian) {
-  const std::string privacy_sandbox_prompt_startup_histogram =
-      "Settings.PrivacySandbox.PromptStartupState";
-  const std::string privacy_sandbox_prompt_startup_histogram_profile_level =
-      "Settings.PrivacySandbox.Profile_1.PromptStartupState";
 
-  base::HistogramTester histogram_tester;
-
-  // User was reported restricted
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
-
-  // Prompt is suppressed because direct notice was shown to guardian
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxM1PromptSuppressed,
-      static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
-
-  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram,
-      static_cast<int>(
-          PrivacySandboxServiceImpl::PromptStartupState::
-              kWaitingForGraduationRestrictedNoticeFlowNotCompleted),
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      privacy_sandbox_prompt_startup_histogram_profile_level,
-      static_cast<int>(
-          PrivacySandboxServiceImpl::PromptStartupState::
-              kWaitingForGraduationRestrictedNoticeFlowNotCompleted),
-      /*expected_count=*/1);
-}
 
 class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted
     : public PrivacySandboxServiceM1RestrictedNoticePromptTest {
@@ -2422,8 +2228,6 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted,
       "Settings.PrivacySandbox.Profile_1.PromptStartupState";
 
   // Ensure prompt not suppressed.
-  prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                      static_cast<int>(PromptSuppressedReason::kNone));
 
   // Restricted Notice flow completed
   {

@@ -193,8 +193,8 @@ enum class OutputKey {
   kTopicsConsentLastUpdateReason = 18,
   kTopicsConsentLastUpdateTime = 19,
   kTopicsConsentStringIdentifiers = 20,
-  // kPromptType is Obsolete.
-  // TODO(crbug.com/474716334): Remove this enum.
+  // kPromptType and kM1PromptSuppressedReason are Obsolete.
+  // TODO(crbug.com/474716334): Remove obsolete enums.
   kPromptType = 21,
   kM1PromptSuppressedReason = 22,
   kM1ConsentDecisionMade = 23,
