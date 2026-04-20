@@ -16,6 +16,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
@@ -145,6 +146,11 @@ UIImage* DefaultIconForType(FormSuggestion* suggestion,
     }
     case autofill::SuggestionType::kFillAutofillAi: {
       if (!web_state) {
+        return nil;
+      }
+
+      if (base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAiNoFillingIconsExperiment)) {
         return nil;
       }
 

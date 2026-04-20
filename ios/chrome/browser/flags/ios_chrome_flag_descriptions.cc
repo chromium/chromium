@@ -89,6 +89,11 @@ const char kAutofillAiDedupeEntitiesName[] = "Autofill AI dedupe entities";
 const char kAutofillAiDedupeEntitiesDescription[] =
     "Enables periodic deduplication of Autofill AI entities.";
 
+const char kAutofillAiNoFillingIconsExperimentName[] =
+    "Autofill AI no filling icons experiment";
+const char kAutofillAiNoFillingIconsExperimentDescription[] =
+    "If enabled, Autofill AI filling suggestions do not have an icon.";
+
 const char kAutofillAiReauthRequiredName[] = "Autofill AI Reauth Required";
 const char kAutofillAiReauthRequiredDescription[] =
     "Enables Autofill AI Reauth Required.";
