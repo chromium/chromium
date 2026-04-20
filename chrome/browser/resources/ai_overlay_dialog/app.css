@@ -16,7 +16,7 @@
 
 #mock-buttons-column {
   width: 100%;
-  max-height: 100px;
+  max-height: 200px;
   overflow-y: auto;
   scrollbar-width: none;
   display: flex;
@@ -118,15 +118,20 @@ video[hidden],
 
 .inject-audio {
   cursor: pointer;
+  flex-shrink: 0;
   max-width: 240px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  -webkit-text-stroke: 0.5px black;
-  text-shadow: 1px 1px 1px black;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: sans-serif;
+  font-size: 13px;
+  border: none;
 }
 
 .inject-audio:hover {
-  text-decoration: underline;
+  background-color: rgba(0, 0, 0, 0.9);
 }
