@@ -45,3 +45,11 @@ void FullscreenBrowserAgentObserverBridge::DidUpdateObscuredInsetRange(
     [observer_ fullscreenDidUpdateObscuredInsetRange:agent];
   }
 }
+
+void FullscreenBrowserAgentObserverBridge::FullscreenDidTransition(
+    FullscreenBrowserAgent* agent,
+    FullscreenTransition transition) {
+  if ([observer_ respondsToSelector:@selector(fullscreen:didTransition:)]) {
+    [observer_ fullscreen:agent didTransition:transition];
+  }
+}

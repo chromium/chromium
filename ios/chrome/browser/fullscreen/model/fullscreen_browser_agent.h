@@ -88,12 +88,17 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   explicit FullscreenBrowserAgent(Browser* browser);
 
   // Updates the progress and broadcasts the change to observers.
-  void UpdateProgressAndBroadcast(CGFloat top_progress,
-                                  CGFloat bottom_progress,
+  void UpdateProgressAndBroadcast(FullscreenTransition transition,
                                   bool animated);
 
   // Notifies all observers of an updated state.
   void NotifyObserversOfUpdatedState();
+
+  // Handles animation completion.
+  void AnimationDidComplete(FullscreenTransition transition, bool finished);
+
+  // Notifies observers of transition completion.
+  void NotifyFullscreenDidTransition(FullscreenTransition transition);
 
   base::ObserverList<FullscreenBrowserAgentObserver, true> observers_;
 

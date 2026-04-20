@@ -76,7 +76,7 @@ void FullscreenBrowserAgent::EnterFullscreen(
     bool animated) {
   base::UmaHistogramEnumeration(kEnterFullscreenModeTransitionTriggerHistogram,
                                 trigger);
-  UpdateProgressAndBroadcast(0.0, 0.0, animated);
+  UpdateProgressAndBroadcast(FullscreenTransition::kEnterFullscreen, animated);
 }
 
 void FullscreenBrowserAgent::ExitFullscreen(
@@ -85,12 +85,17 @@ void FullscreenBrowserAgent::ExitFullscreen(
     bool animated) {
   base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
                                 trigger);
-  UpdateProgressAndBroadcast(1.0, 1.0, animated);
+  UpdateProgressAndBroadcast(FullscreenTransition::kExitFullscreen, animated);
 }
 
-void FullscreenBrowserAgent::UpdateProgressAndBroadcast(CGFloat top_progress,
-                                                        CGFloat bottom_progress,
-                                                        bool animated) {
+void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
+    FullscreenTransition transition,
+    bool animated) {
+  CGFloat top_progress =
+      (transition == FullscreenTransition::kEnterFullscreen) ? 0.0 : 1.0;
+  CGFloat bottom_progress =
+      (transition == FullscreenTransition::kEnterFullscreen) ? 0.0 : 1.0;
+
   if (top_progress_ == top_progress && bottom_progress_ == bottom_progress) {
     return;
   }
@@ -101,9 +106,15 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(CGFloat top_progress,
     auto update_state = base::CallbackToBlock(
         base::BindOnce(&FullscreenBrowserAgent::NotifyObserversOfUpdatedState,
                        weak_ptr_factory_.GetWeakPtr()));
-    [UIView animateWithDuration:kMaterialDuration1 animations:update_state];
+    auto completion_block = base::CallbackToBlock(
+        base::BindOnce(&FullscreenBrowserAgent::AnimationDidComplete,
+                       weak_ptr_factory_.GetWeakPtr(), transition));
+    [UIView animateWithDuration:kMaterialDuration1
+                     animations:update_state
+                     completion:completion_block];
   } else {
     NotifyObserversOfUpdatedState();
+    NotifyFullscreenDidTransition(transition);
   }
 }
 
@@ -121,6 +132,21 @@ void FullscreenBrowserAgent::NotifyObserversOfUpdatedState() {
     for (auto& observer : observers_) {
       observer.DidUpdateState(this);
     }
+  }
+}
+
+void FullscreenBrowserAgent::AnimationDidComplete(
+    FullscreenTransition transition,
+    bool finished) {
+  if (finished) {
+    NotifyFullscreenDidTransition(transition);
+  }
+}
+
+void FullscreenBrowserAgent::NotifyFullscreenDidTransition(
+    FullscreenTransition transition) {
+  for (auto& observer : observers_) {
+    observer.FullscreenDidTransition(this, transition);
   }
 }
 
