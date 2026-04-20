@@ -31,6 +31,9 @@ private_ai::proto::FeatureName ToPrivateAiFeatureName(
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
       return private_ai::proto::FeatureName::
           FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION;
+    case ModelBasedCapabilityKey::kContextualCueing:
+      return private_ai::proto::FeatureName::
+          FEATURE_NAME_CHROME_CONTEXTUAL_CUEING;
     default:
       NOTREACHED() << feature;
   }

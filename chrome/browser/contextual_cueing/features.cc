@@ -64,4 +64,9 @@ const base::FeatureParam<int> kVisitedOriginsLimit(
     "ContextualCueingV2VisitedOriginsLimit",
     20);
 
+const base::FeatureParam<bool> kUsePrivateAi(
+    &kContextualCueingV2,
+    "ContextualCueingV2UsePrivateAi",
+    false);
+
 }  // namespace contextual_cueing

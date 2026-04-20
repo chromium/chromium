@@ -39,6 +39,9 @@ extern const base::FeatureParam<int> kCueCapCountPerOrigin;
 // used to implement nudge constraints per-origin per 24 hour period.
 extern const base::FeatureParam<int> kVisitedOriginsLimit;
 
+// If true, uses private AI to generate cues.
+extern const base::FeatureParam<bool> kUsePrivateAi;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_FEATURES_H_

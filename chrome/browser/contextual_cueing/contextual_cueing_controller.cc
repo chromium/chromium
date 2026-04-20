@@ -257,7 +257,10 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
                              request.background_tabs_size());
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextualCueing, request,
-      /*options=*/{},
+      {.service_type =
+           kUsePrivateAi.Get()
+               ? optimization_guide::ModelExecutionServiceType::kPrivateAi
+               : optimization_guide::ModelExecutionServiceType::kDefault},
       base::BindOnce(
           &ContextualCueingController::OnModelExecutionResponseReceived,
           weak_ptr_factory_.GetWeakPtr(),
