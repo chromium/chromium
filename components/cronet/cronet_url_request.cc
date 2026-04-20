@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -215,7 +216,8 @@ void CronetURLRequest::NetworkTasks::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     bool* defer_redirect) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  received_byte_count_from_redirects_ += request->GetTotalReceivedBytes();
+  received_byte_count_from_redirects_ +=
+      request->GetTotalReceivedBytes().InBytes();
   callback_->OnReceivedRedirect(
       redirect_info.new_url.spec(), redirect_info.status_code,
       request->response_headers()->GetStatusText(), request->response_headers(),
@@ -258,7 +260,8 @@ void CronetURLRequest::NetworkTasks::OnResponseStarted(net::URLRequest* request,
       request->response_headers(), request->response_info().was_cached,
       request->response_info().alpn_negotiated_protocol,
       metrics_util::GetProxy(request->response_info().proxy_chain),
-      received_byte_count_from_redirects_ + request->GetTotalReceivedBytes(),
+      received_byte_count_from_redirects_ +
+          request->GetTotalReceivedBytes().InBytes(),
       metrics_util::IsProxied(request->response_info().proxy_chain));
 }
 
@@ -275,11 +278,11 @@ void CronetURLRequest::NetworkTasks::OnReadCompleted(net::URLRequest* request,
     DCHECK(!error_reported_);
     MaybeReportMetrics();
     callback_->OnSucceeded(received_byte_count_from_redirects_ +
-                           request->GetTotalReceivedBytes());
+                           request->GetTotalReceivedBytes().InBytes());
   } else {
-    callback_->OnReadCompleted(
-        read_buffer_, bytes_read,
-        received_byte_count_from_redirects_ + request->GetTotalReceivedBytes());
+    callback_->OnReadCompleted(read_buffer_, bytes_read,
+                               received_byte_count_from_redirects_ +
+                                   request->GetTotalReceivedBytes().InBytes());
   }
   // Free the read buffer.
   read_buffer_ = nullptr;
@@ -418,10 +421,10 @@ void CronetURLRequest::NetworkTasks::ReportError(net::URLRequest* request,
   VLOG(1) << "Error " << net::ErrorToString(net_error)
           << " on chromium request: " << initial_url_.possibly_invalid_spec();
   MaybeReportMetrics();
-  callback_->OnError(
-      net_error, net_error_details.quic_connection_error,
-      net_error_details.source, net::ErrorToString(net_error),
-      received_byte_count_from_redirects_ + request->GetTotalReceivedBytes());
+  callback_->OnError(net_error, net_error_details.quic_connection_error,
+                     net_error_details.source, net::ErrorToString(net_error),
+                     received_byte_count_from_redirects_ +
+                         request->GetTotalReceivedBytes().InBytes());
 }
 
 void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
@@ -446,9 +449,9 @@ void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
       metrics.connect_timing.ssl_start, metrics.connect_timing.ssl_end,
       metrics.send_start, metrics.send_end, metrics.push_start,
       metrics.push_end, metrics.receive_headers_end, base::TimeTicks::Now(),
-      metrics.socket_reused, url_request_->GetTotalSentBytes(),
+      metrics.socket_reused, url_request_->GetTotalSentBytes().InBytes(),
       received_byte_count_from_redirects_ +
-          url_request_->GetTotalReceivedBytes(),
+          url_request_->GetTotalReceivedBytes().InBytes(),
       net_error_details.quic_connection_migration_attempted,
       net_error_details.quic_connection_migration_successful);
 }

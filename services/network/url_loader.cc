@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -1216,7 +1217,8 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(net::Error error) {
 
 void URLLoader::ContinueOnResponseStarted() {
   // Do not account header bytes when reporting received body bytes to client.
-  reported_total_encoded_bytes_ = url_request_->GetTotalReceivedBytes();
+  reported_total_encoded_bytes_ =
+      url_request_->GetTotalReceivedBytes().InBytes();
 
   if (upload_progress_tracker_) {
     upload_progress_tracker_->OnUploadCompleted();
@@ -1676,7 +1678,8 @@ void URLLoader::DidRead(int num_bytes,
     // Only notify client of download progress if we're done sniffing and
     // started sending response.
     if (!consumer_handle_.is_valid()) {
-      int64_t total_encoded_bytes = url_request_->GetTotalReceivedBytes();
+      int64_t total_encoded_bytes =
+          url_request_->GetTotalReceivedBytes().InBytes();
       if (ShouldSendTransferSizeUpdated()) {
         int64_t delta = total_encoded_bytes - reported_total_encoded_bytes_;
         DCHECK_LE(0, delta);
@@ -1980,9 +1983,10 @@ void URLLoader::NotifyCompleted(int error_code) {
 
   auto total_received = url_request_->GetTotalReceivedBytes();
   auto total_sent = url_request_->GetTotalSentBytes();
-  if (total_received > 0) {
+  if (total_received.is_positive()) {
     base::UmaHistogramCustomCounts("DataUse.BytesReceived3.Delegate",
-                                   total_received, 50, 10 * 1000 * 1000, 50);
+                                   total_received.InBytes(), 50,
+                                   10 * 1000 * 1000, 50);
     mojo_begin_write_count_for_uma_ =
         std::max(mojo_begin_write_count_for_uma_, 1);
     const int proportion = mojo_blocked_write_count_for_uma_ * 100 /
@@ -2006,20 +2010,20 @@ void URLLoader::NotifyCompleted(int error_code) {
     }
   }
 
-  if (total_sent > 0) {
-    UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
+  if (total_sent.is_positive()) {
+    UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate",
+                            total_sent.InBytes());
   }
 
   url_loader_util::MaybeRecordSharedDictionaryUsedResponseMetrics(
       error_code, request_destination_, url_request_->response_info(),
       shared_dictionary_allowed_check_passed_);
 
-  if ((total_received > 0 || total_sent > 0)) {
+  if ((total_received.is_positive() || total_sent.is_positive())) {
     if (url_loader_network_observer_ && provide_data_use_updates_) {
       url_loader_network_observer_->OnDataUseUpdate(
           url_request_->traffic_annotation().unique_id_hash_code,
-          base::ByteSize(base::checked_cast<uint64_t>(total_received)),
-          base::ByteSize(base::checked_cast<uint64_t>(total_sent)));
+          total_received, total_sent);
     }
   }
 
@@ -2040,7 +2044,8 @@ void URLLoader::NotifyCompleted(int error_code) {
     }
     status.exists_in_cache = url_request_->response_info().was_cached;
     status.completion_time = base::TimeTicks::Now();
-    status.encoded_data_length = url_request_->GetTotalReceivedBytes();
+    status.encoded_data_length =
+        url_request_->GetTotalReceivedBytes().InBytes();
     // For responses served from cache where the original encoded body size
     // is stored (e.g., shared dictionary compressed responses where the cache
     // stores the decompressed body), use the stored value. Otherwise, use the
@@ -2049,7 +2054,7 @@ void URLLoader::NotifyCompleted(int error_code) {
     if (resp_info.encoded_body_size.has_value()) {
       status.encoded_body_length = resp_info.encoded_body_size.value();
     } else {
-      status.encoded_body_length = url_request_->GetRawBodyBytes();
+      status.encoded_body_length = url_request_->GetRawBodyBytes().InBytes();
     }
     status.decoded_body_length = total_written_bytes_;
     status.resolve_error_info =

@@ -17,6 +17,7 @@
 #include "base/android/android_info.h"
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -8977,7 +8978,7 @@ TEST_F(URLRequestTestHTTP, RawBodyBytesNoContentEncoding) {
   req->Start();
   d.RunUntilComplete();
 
-  EXPECT_EQ(5, req->GetRawBodyBytes());
+  EXPECT_EQ(5, req->GetRawBodyBytes().InBytes());
 }
 
 TEST_F(URLRequestTestHTTP, RawBodyBytesGzipEncoding) {
@@ -8990,7 +8991,7 @@ TEST_F(URLRequestTestHTTP, RawBodyBytesGzipEncoding) {
   req->Start();
   d.RunUntilComplete();
 
-  EXPECT_EQ(30, req->GetRawBodyBytes());
+  EXPECT_EQ(30, req->GetRawBodyBytes().InBytes());
 }
 
 // Check that if NetworkDelegate::OnBeforeStartTransaction returns an error,

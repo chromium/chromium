@@ -13,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -486,19 +487,19 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // proxy handling. Pertains only to the last URLRequestJob issued by this
   // URLRequest, i.e., reset on redirects, but not reset when multiple round
   // trips are used for range requests or auth.
-  int64_t GetTotalReceivedBytes() const;
+  base::ByteSize GetTotalReceivedBytes() const;
 
   // Gets the total amount of data sent over the network before SSL encoding and
   // proxy handling. Pertains only to the last URLRequestJob issued by this
   // URLRequest, i.e., reset on redirects, but not reset when multiple round
   // trips are used for range requests or auth.
-  int64_t GetTotalSentBytes() const;
+  base::ByteSize GetTotalSentBytes() const;
 
   // The size of the response body before removing any content encodings.
   // Does not include redirects or sub-requests issued at lower levels (range
   // requests or auth). Only includes bytes which have been read so far,
   // including bytes from the cache.
-  int64_t GetRawBodyBytes() const;
+  base::ByteSize GetRawBodyBytes() const;
 
   // Returns the current load state for the request. The returned value's
   // |param| field is an optional parameter describing details related to the

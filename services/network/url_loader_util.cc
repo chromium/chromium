@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -719,7 +720,7 @@ mojom::URLResponseHeadPtr BuildResponseHead(
   response->request_cookies = request_cookies;
   response->request_start = url_request.creation_time();
   response->response_start = response_start;
-  response->encoded_data_length = url_request.GetTotalReceivedBytes();
+  response->encoded_data_length = url_request.GetTotalReceivedBytes().InBytes();
   response->auth_challenge_info = url_request.auth_challenge_info();
   response->has_range_requested = url_request.extra_request_headers().HasHeader(
       net::HttpRequestHeaders::kRange);

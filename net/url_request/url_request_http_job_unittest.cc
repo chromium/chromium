@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -259,8 +260,8 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
   EXPECT_THAT(delegate.request_status(), IsError(ERR_CONNECTION_RESET));
   EXPECT_EQ(ProxyChain::Direct(), request->proxy_chain());
   EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 // Tests that when one proxy chain is in use and the connection to a proxy
@@ -307,8 +308,8 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   // still be set on the `request`.
   EXPECT_EQ(proxy_chain, request->proxy_chain());
   EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(0, request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(base::ByteSize(0), request->GetTotalReceivedBytes());
 }
 
 // Tests that when two proxy chains are in use and the connection to a proxy
@@ -355,8 +356,8 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(ProxyChain::Direct(), request->proxy_chain());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 class URLRequestHttpJobTest : public TestWithTaskEnvironment {
@@ -430,8 +431,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 // Tests a successful HEAD request.
@@ -456,8 +457,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulHead) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 // Similar to above test but tests that even if response body is there in the
@@ -483,8 +484,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulHeadWithContent) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads) - 12, request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads) - base::ByteSize(12),
+            request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulCachedHeadRequest) {
@@ -515,8 +517,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulCachedHeadRequest) {
 
     EXPECT_THAT(delegate.request_status(), IsOk());
     EXPECT_EQ(12, request->received_response_content_length());
-    EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-    EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+    EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+    EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
   }
 
   // Send a HEAD request for the cached response.
@@ -544,8 +546,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestSuccessfulCachedHeadRequest) {
 
     EXPECT_THAT(delegate.request_status(), IsOk());
     EXPECT_EQ(0, request->received_response_content_length());
-    EXPECT_EQ(0, request->GetTotalSentBytes());
-    EXPECT_EQ(0, request->GetTotalReceivedBytes());
+    EXPECT_EQ(base::ByteSize(0), request->GetTotalSentBytes());
+    EXPECT_EQ(base::ByteSize(0), request->GetTotalReceivedBytes());
   }
 }
 
@@ -569,8 +571,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, TestContentLengthFailedRequest) {
@@ -594,8 +596,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, TestContentLengthFailedRequest) {
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_FAILED));
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -620,8 +622,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_ABORTED));
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -661,8 +663,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
   // Should not include the redirect.
-  EXPECT_EQ(CountWriteBytes(final_writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(final_reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(final_writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(final_reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -683,8 +685,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_ABORTED));
   EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -703,8 +705,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_ABORTED));
   EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(0, request->GetTotalSentBytes());
-  EXPECT_EQ(0, request->GetTotalReceivedBytes());
+  EXPECT_EQ(base::ByteSize(0), request->GetTotalSentBytes());
+  EXPECT_EQ(base::ByteSize(0), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, TestHttpTimeToFirstByte) {
@@ -951,8 +953,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, EncodingAdvertisementOnRange) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, RangeRequestOverrideEncoding) {
@@ -990,8 +992,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest, RangeRequestOverrideEncoding) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobTest, TestCancelWhileReadingCookies) {
@@ -2106,8 +2108,8 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, NoBrotliAdvertisementOverHttp) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
@@ -2140,8 +2142,8 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
 
   EXPECT_THAT(delegate.request_status(), IsOk());
   EXPECT_EQ(12, request->received_response_content_length());
-  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadByteSize(reads), request->GetTotalReceivedBytes());
 }
 
 TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
