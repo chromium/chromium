@@ -198,7 +198,9 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
 
     // Since we have mocked the MultipartUploadRequest, we don't need a
     // URLLoaderFactory, so pass nullptr here.
-    service_ = std::make_unique<CloudBinaryUploadService>(nullptr, &profile_);
+    service_ =
+        std::make_unique<enterprise_connectors::CloudBinaryUploadServiceBase>(
+            nullptr, std::make_unique<CloudBinaryUploadService>(&profile_));
     scoped_feature_list_.InitWithFeatures(
         {enterprise_connectors::kDlpScanPastedImages}, {});
   }
@@ -300,7 +302,7 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<CloudBinaryUploadService> service_;
+  std::unique_ptr<enterprise_connectors::CloudBinaryUploadServiceBase> service_;
   FakeConnectorUploadRequestFactory fake_factory_;
   base::RepeatingClosure request_done_closure_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1239,19 +1241,6 @@ TEST_F(CloudBinaryUploadServiceTest, UrlOverride) {
             request.GetUrlWithParams());
 }
 
-TEST_F(CloudBinaryUploadServiceTest, GetUploadUrl) {
-  // testing enterprise scenario
-  ASSERT_EQ(CloudBinaryUploadService::GetUploadUrl(
-                /*is_consumer_scan_eligible */ false),
-            GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan"));
-
-  // testing APP scenario with Deep Scanning for ESB Feature enabled
-  ASSERT_EQ(
-      CloudBinaryUploadService::GetUploadUrl(
-          /*is_consumer_scan_eligible */ true),
-      GURL("https://safebrowsing.google.com/safebrowsing/uploads/consumer"));
-}
-
 TEST_F(CloudBinaryUploadServiceTest, RequestQueue) {
   enterprise_connectors::ScanRequestUploadResult scanning_result =
       enterprise_connectors::ScanRequestUploadResult::kUnknown;
@@ -1263,7 +1252,9 @@ TEST_F(CloudBinaryUploadServiceTest, RequestQueue) {
   // Uploading 2*max requests before any response is received ensures that the
   // queue is populated and processed correctly.
   for (size_t i = 0;
-       i < 2 * CloudBinaryUploadService::GetParallelActiveRequestsMax(); ++i) {
+       i < 2 * enterprise_connectors::CloudBinaryUploadServiceBase::
+                   GetParallelActiveRequestsMax();
+       ++i) {
     std::unique_ptr<MockRequest> request = MakeRequest(
         &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
     request->add_tag("dlp");
@@ -1289,34 +1280,6 @@ TEST_F(CloudBinaryUploadServiceTest, RequestQueue) {
 
   EXPECT_EQ(scanning_result,
             enterprise_connectors::ScanRequestUploadResult::kSuccess);
-}
-
-TEST_F(CloudBinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
-  EXPECT_EQ(15UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        enterprise_connectors::kEnableNewUploadCountLimit,
-        {{"max_parallel_requests", "0"}});
-    EXPECT_EQ(15UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        enterprise_connectors::kEnableNewUploadCountLimit,
-        {{"max_parallel_requests", "twenty"}});
-    EXPECT_EQ(15UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        enterprise_connectors::kEnableNewUploadCountLimit,
-        {{"max_parallel_requests", "25"}});
-    EXPECT_EQ(25UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-  }
 }
 
 TEST_F(CloudBinaryUploadServiceTest, EmptyFileRequest) {
@@ -1436,8 +1399,9 @@ TEST_F(CloudBinaryUploadServiceTest,
 
   // Create enough requests to fill the active queue and spill over into the
   // pending queue
-  size_t num_requests =
-      CloudBinaryUploadService::GetParallelActiveRequestsMax() + 5;
+  size_t num_requests = enterprise_connectors::CloudBinaryUploadServiceBase::
+                            GetParallelActiveRequestsMax() +
+                        5;
   scanning_results.resize(
       num_requests, enterprise_connectors::ScanRequestUploadResult::kUnknown);
   scanning_responses.resize(num_requests);

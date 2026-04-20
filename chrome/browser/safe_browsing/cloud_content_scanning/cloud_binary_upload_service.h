@@ -28,8 +28,7 @@ namespace safe_browsing {
 // This class encapsulates the process of uploading a file for deep scanning,
 // and asynchronously retrieving a verdict.
 class CloudBinaryUploadService
-    : public enterprise_connectors::BinaryUploadService,
-      public enterprise_connectors::CloudBinaryUploadServiceBase {
+    : public enterprise_connectors::CloudBinaryUploadServiceBase::Delegate {
  public:
 
   explicit CloudBinaryUploadService(Profile* profile);
@@ -39,23 +38,6 @@ class CloudBinaryUploadService
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile);
   ~CloudBinaryUploadService() override;
-
-  // Upload the given file contents for deep scanning if the browser is
-  // authorized to upload data, otherwise queue the request.
-  void MaybeUploadForDeepScanning(
-      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
-      override;
-  void MaybeAcknowledge(
-      std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) override;
-  void MaybeCancelRequests(
-      std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
-      override;
-  base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
-
-  // Sets `can_upload_data_` for tests.
-  void SetAuthForTesting(
-      const std::string& dm_token,
-      enterprise_connectors::ScanRequestUploadResult auth_check_result);
 
   // Sets `token_fetcher_` for tests.
   void SetTokenFetcherForTesting(

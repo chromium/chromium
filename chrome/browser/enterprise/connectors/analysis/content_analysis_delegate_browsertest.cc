@@ -68,11 +68,12 @@ std::string image() {
   return std::string(50, 'a');
 }
 
-class FakeBinaryUploadService : public CloudBinaryUploadService {
+class FakeBinaryUploadService : public CloudBinaryUploadServiceBase {
  public:
   FakeBinaryUploadService()
-      : CloudBinaryUploadService(/*url_loader_factory=*/nullptr,
-                                 /*profile=*/nullptr) {}
+      : CloudBinaryUploadServiceBase(
+            /*url_loader_factory=*/nullptr,
+            std::make_unique<CloudBinaryUploadService>(nullptr)) {}
 
   // Sets whether the user is authorized to upload data for Deep Scanning.
   void SetAuthorized(bool authorized) {

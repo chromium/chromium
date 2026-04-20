@@ -403,7 +403,7 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   void AuthorizeForDeepScanning() {
-    static_cast<safe_browsing::CloudBinaryUploadService*>(
+    static_cast<enterprise_connectors::CloudBinaryUploadServiceBase*>(
         CloudBinaryUploadServiceFactory::GetForProfile(browser()->profile()))
         ->SetAuthForTesting("dm_token",
                             /*auth_check_result=*/enterprise_connectors::
@@ -438,10 +438,11 @@ class DownloadDeepScanningBrowserTestBase
   std::unique_ptr<KeyedService> CreateBinaryUploadService(
       content::BrowserContext* browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
-    return std::make_unique<safe_browsing::CloudBinaryUploadService>(
+    return std::make_unique<
+        enterprise_connectors::CloudBinaryUploadServiceBase>(
         g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
             profile),
-        profile);
+        std::make_unique<safe_browsing::CloudBinaryUploadService>(profile));
   }
 
   std::string GetDataPipeUploadData(const network::ResourceRequest& request) {
@@ -503,8 +504,9 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   void HandleConsumerRequest(const network::ResourceRequest& request) {
-    if (request.url == safe_browsing::CloudBinaryUploadService::GetUploadUrl(
-                           /*is_consumer_scan_eligible=*/true)) {
+    if (request.url ==
+        enterprise_connectors::CloudBinaryUploadServiceBase::GetUploadUrl(
+            /*is_consumer_scan_eligible=*/true)) {
       ASSERT_TRUE(GetMultipartUploadMetadata(GetDataPipeUploadData(request),
                                              &last_request_));
       if (waiting_for_upload_closure_) {
@@ -522,8 +524,9 @@ class DownloadDeepScanningBrowserTestBase
       return;
     }
 
-    if (request.url == safe_browsing::CloudBinaryUploadService::GetUploadUrl(
-                           /*is_consumer_scan_eligible=*/false)) {
+    if (request.url ==
+        enterprise_connectors::CloudBinaryUploadServiceBase::GetUploadUrl(
+            /*is_consumer_scan_eligible=*/false)) {
       ASSERT_TRUE(GetMultipartUploadMetadata(GetDataPipeUploadData(request),
                                              &last_request_));
       if (waiting_for_upload_closure_) {

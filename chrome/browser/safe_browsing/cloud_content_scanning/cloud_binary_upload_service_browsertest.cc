@@ -70,7 +70,8 @@ class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
   }
 };
 
-class TestCloudBinaryUploadService : public CloudBinaryUploadService {
+class TestCloudBinaryUploadService
+    : public enterprise_connectors::CloudBinaryUploadServiceBase {
  public:
   TestCloudBinaryUploadService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -78,10 +79,14 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
       enterprise::test::ManagementContext management_context,
       enterprise_connectors::AnalysisConnector connector,
       bool profile_request)
-      : CloudBinaryUploadService(url_loader_factory, profile),
+      : enterprise_connectors::CloudBinaryUploadServiceBase(
+            url_loader_factory,
+            std::make_unique<CloudBinaryUploadService>(profile)),
         management_context_(management_context),
         profile_request_(profile_request) {
-    SetTokenFetcherForTesting(std::make_unique<TestSafeBrowsingTokenFetcher>());
+    static_cast<CloudBinaryUploadService*>(GetDelegateForTesting())
+        ->SetTokenFetcherForTesting(
+            std::make_unique<TestSafeBrowsingTokenFetcher>());
   }
 
   void OnGetRequestData(BinaryUploadRequest::Id request_id,
@@ -179,8 +184,8 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
         profile, management_context(), connector_, profile_request());
   }
 
-  CloudBinaryUploadService* service() {
-    return static_cast<safe_browsing::CloudBinaryUploadService*>(
+  enterprise_connectors::CloudBinaryUploadServiceBase* service() {
+    return static_cast<enterprise_connectors::CloudBinaryUploadServiceBase*>(
         CloudBinaryUploadServiceFactory::GetForProfile(browser()->profile()));
   }
 

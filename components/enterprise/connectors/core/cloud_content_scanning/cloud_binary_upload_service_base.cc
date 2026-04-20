@@ -182,13 +182,18 @@ bool ValidateDataUploadRequest::IsAuthRequest() const {
 }  // namespace
 
 CloudBinaryUploadServiceBase::CloudBinaryUploadServiceBase(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory),
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)),
+      url_loader_factory_(url_loader_factory),
       ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 CloudBinaryUploadServiceBase::~CloudBinaryUploadServiceBase() = default;
 
-
+void CloudBinaryUploadServiceBase::MaybeAcknowledge(
+    std::unique_ptr<BinaryUploadAck> ack) {
+  // Nothing to do for cloud upload service.
+}
 
 void CloudBinaryUploadServiceBase::MaybeUploadForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
@@ -271,6 +276,28 @@ size_t CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax() {
   }
 
   return kDefaultMaxParallelActiveRequests;
+}
+
+base::WeakPtr<BinaryUploadService> CloudBinaryUploadServiceBase::AsWeakPtr() {
+  return weakptr_factory_.GetWeakPtr();
+}
+
+void CloudBinaryUploadServiceBase::SetAuthForTesting(
+    const std::string& dm_token,
+    ScanRequestUploadResult auth_check_result) {
+  for (AnalysisConnector connector : {
+           AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED,
+           AnalysisConnector::FILE_DOWNLOADED,
+           AnalysisConnector::FILE_ATTACHED,
+           AnalysisConnector::BULK_DATA_ENTRY,
+           AnalysisConnector::PRINT,
+#if BUILDFLAG(IS_CHROMEOS)
+           AnalysisConnector::FILE_TRANSFER,
+#endif
+       }) {
+    TokenAndConnector token_and_connector = {dm_token, connector};
+    can_upload_enterprise_data_[token_and_connector] = auth_check_result;
+  }
 }
 
 GURL CloudBinaryUploadServiceBase::GetUploadUrl(
@@ -388,7 +415,7 @@ void CloudBinaryUploadServiceBase::IsAuthorized(const GURL& url,
           base::BindOnce(&CloudBinaryUploadServiceBase::
                              ValidateDataUploadRequestConnectorCallback,
                          weakptr_factory_.GetWeakPtr(), dm_token, connector),
-          std::move(settings), BrowserPolicyConnectorGetter());
+          std::move(settings), delegate_->BrowserPolicyConnectorGetter());
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
       request->set_per_profile_request(per_profile_request);
@@ -399,7 +426,7 @@ void CloudBinaryUploadServiceBase::IsAuthorized(const GURL& url,
       // not the user has the BCE license.
       ClientMetadata client_metadata;
       client_metadata.set_is_chrome_os_managed_guest_session(
-          IsManagedGuestSession());
+          delegate_->IsManagedGuestSession());
       request->set_client_metadata(std::move(client_metadata));
 #endif
 
@@ -853,7 +880,7 @@ void CloudBinaryUploadServiceBase::PrepareRequestForUpload(
         base::BindOnce(&CloudBinaryUploadServiceBase::OnIpAddressesFetched,
                        weakptr_factory_.GetWeakPtr(), request_id));
   } else {
-    MaybeGetAccessToken(
+    delegate_->MaybeGetAccessToken(
         request, base::BindOnce(&CloudBinaryUploadServiceBase::OnGetAccessToken,
                                 weakptr_factory_.GetWeakPtr(), request_id));
   }
@@ -885,7 +912,7 @@ void CloudBinaryUploadServiceBase::OnIpAddressesFetched(
     request->add_local_ips(ip_address);
   }
 
-  MaybeGetAccessToken(
+  delegate_->MaybeGetAccessToken(
       request, base::BindOnce(&CloudBinaryUploadServiceBase::OnGetAccessToken,
                               weakptr_factory_.GetWeakPtr(), request_id));
 }
@@ -1028,7 +1055,7 @@ ScanRequestUploadResult CloudBinaryUploadServiceBase::GetConsumerAuthResult(
     const BinaryUploadRequest& request) {
   DCHECK(!request.IsAuthRequest());
 
-  return IsAdvancedProtection() || IsEnhancedProtection()
+  return delegate_->IsAdvancedProtection() || delegate_->IsEnhancedProtection()
              ? ScanRequestUploadResult::kSuccess
              : ScanRequestUploadResult::kUnauthorized;
 }

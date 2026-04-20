@@ -74,39 +74,16 @@ bool CanUseAccessToken(const BinaryUploadRequest& request, Profile* profile) {
 }  // namespace
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
-    : CloudBinaryUploadServiceBase(profile->GetURLLoaderFactory()),
-      profile_(profile) {}
+    : profile_(profile) {}
 
 CloudBinaryUploadService::CloudBinaryUploadService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile)
-    : CloudBinaryUploadServiceBase(url_loader_factory), profile_(profile) {}
+    : profile_(profile) {}
 
 CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 
-void CloudBinaryUploadService::MaybeUploadForDeepScanning(
-    std::unique_ptr<BinaryUploadRequest> request) {
-  // TODO(crbug.com/501456247): Clean up this indirection layer once
-  // CloudBinaryUploadServiceBase inherits from BinaryUploadService.
-  CloudBinaryUploadServiceBase::MaybeUploadForDeepScanning(std::move(request));
-}
 
-void CloudBinaryUploadService::MaybeAcknowledge(
-    std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) {
-  // Nothing to do for cloud upload service.
-}
-
-void CloudBinaryUploadService::MaybeCancelRequests(
-    std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel) {
-  // TODO(crbug.com/501456247): Clean up this indirection layer once
-  // CloudBinaryUploadServiceBase inherits from BinaryUploadService.
-  CloudBinaryUploadServiceBase::MaybeCancelRequests(std::move(cancel));
-}
-
-base::WeakPtr<enterprise_connectors::BinaryUploadService>
-CloudBinaryUploadService::AsWeakPtr() {
-  return weakptr_factory_.GetWeakPtr();
-}
 
 void CloudBinaryUploadService::MaybeGetAccessToken(
     BinaryUploadRequest* request,
@@ -120,9 +97,7 @@ void CloudBinaryUploadService::MaybeGetAccessToken(
     return;
   }
 
-  request->GetRequestData(
-      base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
-                     weakptr_factory_.GetWeakPtr(), request->id()));
+  std::move(access_token_callback).Run(std::string());
 }
 
 BinaryUploadRequest::BrowserPolicyConnectorGetter
@@ -145,25 +120,6 @@ bool CloudBinaryUploadService::IsManagedGuestSession() {
   return chromeos::IsManagedGuestSession();
 }
 #endif
-
-void CloudBinaryUploadService::SetAuthForTesting(
-    const std::string& dm_token,
-    enterprise_connectors::ScanRequestUploadResult auth_check_result) {
-  for (enterprise_connectors::AnalysisConnector connector : {
-           enterprise_connectors::AnalysisConnector::
-               ANALYSIS_CONNECTOR_UNSPECIFIED,
-           enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-           enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-           enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-           enterprise_connectors::AnalysisConnector::PRINT,
-#if BUILDFLAG(IS_CHROMEOS)
-           enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
-#endif
-       }) {
-    TokenAndConnector token_and_connector = {dm_token, connector};
-    can_upload_enterprise_data_[token_and_connector] = auth_check_result;
-  }
-}
 
 void CloudBinaryUploadService::SetTokenFetcherForTesting(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher) {

@@ -31,17 +31,8 @@ class FakeBinaryUploadRequest : public BinaryUploadRequest {
 };
 
 // A test class that exposes protected members of CloudBinaryUploadServiceBase.
-class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
+class FakeDelegate : public CloudBinaryUploadServiceBase::Delegate {
  public:
-  using CloudBinaryUploadServiceBase::active_requests_;
-  using CloudBinaryUploadServiceBase::received_connector_results_;
-  using CloudBinaryUploadServiceBase::RecordRequestMetrics;
-  using CloudBinaryUploadServiceBase::start_times_;
-
-  TestCloudBinaryUploadServiceBase()
-      : CloudBinaryUploadServiceBase(/*url_loader_factory=*/nullptr) {}
-
-  // CloudBinaryUploadServiceBase:
   void MaybeGetAccessToken(BinaryUploadRequest* request,
                            base::OnceCallback<void(const std::string&)>
                                access_token_callback) override {}
@@ -57,12 +48,40 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
 #endif
 };
 
+class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
+ public:
+  TestCloudBinaryUploadServiceBase()
+      : CloudBinaryUploadServiceBase(/*url_loader_factory=*/nullptr,
+                                     std::make_unique<FakeDelegate>()) {}
+};
+
 }  // namespace
 
 class CloudBinaryUploadServiceBaseTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  auto& GetActiveRequests(CloudBinaryUploadServiceBase& service) {
+    return service.active_requests_;
+  }
+  auto& GetReceivedConnectorResults(CloudBinaryUploadServiceBase& service) {
+    return service.received_connector_results_;
+  }
+  auto& GetStartTimes(CloudBinaryUploadServiceBase& service) {
+    return service.start_times_;
+  }
+  void CallRecordRequestMetrics(CloudBinaryUploadServiceBase& service,
+                                BinaryUploadRequest::Id id,
+                                ScanRequestUploadResult result) {
+    service.RecordRequestMetrics(id, result);
+  }
+  void CallRecordRequestMetrics(CloudBinaryUploadServiceBase& service,
+                                BinaryUploadRequest::Id id,
+                                ScanRequestUploadResult result,
+                                const ContentAnalysisResponse& response) {
+    service.RecordRequestMetrics(id, result, response);
+  }
 };
 
 // Tests that GetParallelActiveRequestsMax returns the correct value based on
@@ -105,18 +124,18 @@ TEST_F(CloudBinaryUploadServiceBaseTest, ResponseIsComplete) {
   auto request = std::make_unique<FakeBinaryUploadRequest>(base::DoNothing());
   request->add_tag("dlp");
   request->add_tag("malware");
-  service.active_requests_[id] = std::move(request);
+  GetActiveRequests(service)[id] = std::move(request);
 
   // No results yet.
   EXPECT_FALSE(service.ResponseIsComplete(id));
 
   // Only DLP result.
-  service.received_connector_results_[id]["dlp"] =
+  GetReceivedConnectorResults(service)[id]["dlp"] =
       ContentAnalysisResponse::Result();
   EXPECT_FALSE(service.ResponseIsComplete(id));
 
   // Both results.
-  service.received_connector_results_[id]["malware"] =
+  GetReceivedConnectorResults(service)[id]["malware"] =
       ContentAnalysisResponse::Result();
   EXPECT_TRUE(service.ResponseIsComplete(id));
 }
@@ -130,13 +149,13 @@ TEST_F(CloudBinaryUploadServiceBaseTest, ResponseIsComplete_SkipMalware) {
   request->add_tag("dlp");
   request->add_tag("malware");
   request->set_should_skip_malware_scan(true);
-  service.active_requests_[id] = std::move(request);
+  GetActiveRequests(service)[id] = std::move(request);
 
   // No results yet.
   EXPECT_FALSE(service.ResponseIsComplete(id));
 
   // Only DLP result, malware is skipped.
-  service.received_connector_results_[id]["dlp"] =
+  GetReceivedConnectorResults(service)[id]["dlp"] =
       ContentAnalysisResponse::Result();
   EXPECT_TRUE(service.ResponseIsComplete(id));
 }
@@ -150,7 +169,7 @@ TEST_F(CloudBinaryUploadServiceBaseTest, GetRequest) {
 
   auto request = std::make_unique<FakeBinaryUploadRequest>(base::DoNothing());
   BinaryUploadRequest* request_ptr = request.get();
-  service.active_requests_[id] = std::move(request);
+  GetActiveRequests(service)[id] = std::move(request);
 
   EXPECT_EQ(service.GetRequest(id), request_ptr);
 }
@@ -162,10 +181,10 @@ TEST_F(CloudBinaryUploadServiceBaseTest, RecordRequestMetrics) {
   TestCloudBinaryUploadServiceBase service;
   BinaryUploadRequest::Id id(1);
 
-  service.start_times_[id] = base::TimeTicks::Now();
+  GetStartTimes(service)[id] = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  service.RecordRequestMetrics(id, ScanRequestUploadResult::kSuccess);
+  CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
 
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.Result",
                                 ScanRequestUploadResult::kSuccess, 1);
@@ -180,7 +199,7 @@ TEST_F(CloudBinaryUploadServiceBaseTest, RecordRequestMetricsWithResponse) {
   TestCloudBinaryUploadServiceBase service;
   BinaryUploadRequest::Id id(1);
 
-  service.start_times_[id] = base::TimeTicks::Now();
+  GetStartTimes(service)[id] = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(2));
 
   ContentAnalysisResponse response;
@@ -192,7 +211,8 @@ TEST_F(CloudBinaryUploadServiceBaseTest, RecordRequestMetricsWithResponse) {
   dlp_result->set_tag("dlp");
   dlp_result->set_status(ContentAnalysisResponse::Result::FAILURE);
 
-  service.RecordRequestMetrics(id, ScanRequestUploadResult::kSuccess, response);
+  CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess,
+                           response);
 
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.Result",
                                 ScanRequestUploadResult::kSuccess, 1);
@@ -216,11 +236,11 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
   request->set_device_token("dm_token");
   request->set_analysis_connector(AnalysisConnector::FILE_DOWNLOADED);
 
-  service.active_requests_[id] = std::move(request);
-  service.start_times_[id] = base::TimeTicks::Now();
+  GetActiveRequests(service)[id] = std::move(request);
+  GetStartTimes(service)[id] = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(3));
 
-  service.RecordRequestMetrics(id, ScanRequestUploadResult::kSuccess);
+  CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
 
   histograms.ExpectUniqueSample("Enterprise.ResumableRequest.File.Result",
                                 ScanRequestUploadResult::kSuccess, 1);
@@ -240,16 +260,44 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
   request->set_device_token("dm_token");
   request->set_analysis_connector(AnalysisConnector::BULK_DATA_ENTRY);
 
-  service.active_requests_[id] = std::move(request);
-  service.start_times_[id] = base::TimeTicks::Now();
+  GetActiveRequests(service)[id] = std::move(request);
+  GetStartTimes(service)[id] = base::TimeTicks::Now();
   task_environment_.FastForwardBy(base::Seconds(4));
 
-  service.RecordRequestMetrics(id, ScanRequestUploadResult::kSuccess);
+  CallRecordRequestMetrics(service, id, ScanRequestUploadResult::kSuccess);
 
   histograms.ExpectUniqueSample("Enterprise.MultipartRequest.Text.Result",
                                 ScanRequestUploadResult::kSuccess, 1);
   histograms.ExpectUniqueTimeSample("Enterprise.MultipartRequest.Text.Duration",
                                     base::Seconds(4), 1);
+}
+
+TEST_F(CloudBinaryUploadServiceBaseTest, TestMaxParallelRequestsFlag) {
+  EXPECT_EQ(15UL, CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kEnableNewUploadCountLimit, {{"max_parallel_requests", "0"}});
+    EXPECT_EQ(15UL,
+              CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kEnableNewUploadCountLimit, {{"max_parallel_requests", "twenty"}});
+    EXPECT_EQ(15UL,
+              CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kEnableNewUploadCountLimit, {{"max_parallel_requests", "25"}});
+    EXPECT_EQ(25UL,
+              CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
+  }
 }
 
 }  // namespace enterprise_connectors

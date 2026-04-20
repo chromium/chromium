@@ -46,7 +46,9 @@ CloudBinaryUploadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // TODO(b/226679912): Add logic to select service based on analysis settings.
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<CloudBinaryUploadService>(profile);
+  return std::make_unique<enterprise_connectors::CloudBinaryUploadServiceBase>(
+      profile->GetURLLoaderFactory(),
+      std::make_unique<CloudBinaryUploadService>(profile));
 }
 
 }  // namespace safe_browsing
