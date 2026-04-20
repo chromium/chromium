@@ -1276,8 +1276,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
 
 void ContentSettingMediaStreamBubbleModel::UpdateSettings(
     ContentSetting setting) {
-  PageSpecificContentSettings* page_content_settings =
-      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
+  const GURL& url = bubble_content().radio_group.url;
   // The same urls must be used as in other places (e.g. the infobar) in
   // order to override the existing rule. Otherwise a new rule is created.
   // TODO(markusheintz): Extract to a helper so that there is only a single
@@ -1287,24 +1286,20 @@ void ContentSettingMediaStreamBubbleModel::UpdateSettings(
   if (MicrophoneAccessed()) {
     permissions::PermissionUmaUtil::ScopedRevocationReporter
         scoped_revocation_reporter(
-            GetProfile(), page_content_settings->media_stream_access_origin(),
-            GURL(), ContentSettingsType::MEDIASTREAM_MIC,
+            GetProfile(), url, GURL(), ContentSettingsType::MEDIASTREAM_MIC,
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
-        page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_MIC, setting,
+        url, GURL(), ContentSettingsType::MEDIASTREAM_MIC, setting,
         CreateConstraintsForAutoRevocation(ContentSettingsType::MEDIASTREAM_MIC,
                                            setting));
   }
   if (CameraAccessed()) {
     permissions::PermissionUmaUtil::ScopedRevocationReporter
         scoped_revocation_reporter(
-            GetProfile(), page_content_settings->media_stream_access_origin(),
-            GURL(), ContentSettingsType::MEDIASTREAM_CAMERA,
+            GetProfile(), url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA,
             permissions::PermissionSourceUI::PAGE_ACTION);
     map->SetContentSettingDefaultScope(
-        page_content_settings->media_stream_access_origin(), GURL(),
-        ContentSettingsType::MEDIASTREAM_CAMERA, setting,
+        url, GURL(), ContentSettingsType::MEDIASTREAM_CAMERA, setting,
         CreateConstraintsForAutoRevocation(
             ContentSettingsType::MEDIASTREAM_CAMERA, setting));
   }
