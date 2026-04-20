@@ -59,7 +59,8 @@ class TabStripModelExperimentalInjector
     : public ExperimentalPlatformAdaptersProvider {
  public:
   explicit TabStripModelExperimentalInjector(
-      BrowserWindowInterface* browser_window_interface);
+      BrowserWindowInterface* browser_window_interface,
+      TabStripModel* tab_strip_model);
   TabStripModelExperimentalInjector(const TabStripModelExperimentalInjector&&) =
       delete;
   TabStripModelExperimentalInjector operator=(

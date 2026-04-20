@@ -20,7 +20,8 @@ namespace tabs_api {
 class TabContextMenuAdapterImpl : public ContextMenuAdapter,
                                   public TabContextMenuController::Delegate {
  public:
-  explicit TabContextMenuAdapterImpl(BrowserWindowInterface* browser);
+  explicit TabContextMenuAdapterImpl(BrowserWindowInterface* browser,
+                                     TabStripModel* tab_strip_model);
   TabContextMenuAdapterImpl(const TabContextMenuAdapterImpl&) = delete;
   TabContextMenuAdapterImpl operator=(const TabContextMenuAdapterImpl&) =
       delete;
@@ -47,6 +48,7 @@ class TabContextMenuAdapterImpl : public ContextMenuAdapter,
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TabContextMenuController> context_menu_controller_;
 };
 

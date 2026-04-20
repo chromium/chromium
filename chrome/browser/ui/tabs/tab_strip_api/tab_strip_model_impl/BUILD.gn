@@ -27,6 +27,7 @@ source_set("tab_strip_model_impl") {
     "tree_builder",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/tab_strip_api",

@@ -147,7 +147,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
             browser(), browser()->tab_strip_model()),
         std::make_unique<
             tabs_api::tab_strip_model::TabStripModelExperimentalInjector>(
-            browser()));
+            browser(), browser()->tab_strip_model()));
   }
 
   void TearDownOnMainThread() override {
@@ -914,9 +914,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
       created_id, gfx::Point(100, 100),
       base::BindLambdaForTesting(
           [&](TabStripExperimentService::ShowTabContextMenuResult result) {
-            ASSERT_FALSE(result.has_value());
-            ASSERT_EQ(result.error()->code,
-                      mojo_base::mojom::Code::kUnimplemented);
+            EXPECT_TRUE(result.has_value());
             run_loop.Quit();
           }));
   run_loop.Run();

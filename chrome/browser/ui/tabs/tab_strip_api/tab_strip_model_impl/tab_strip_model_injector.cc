@@ -59,9 +59,11 @@ EventBridge& TabStripModelInjector::event_bridge() {
 }
 
 TabStripModelExperimentalInjector::TabStripModelExperimentalInjector(
-    BrowserWindowInterface* browser_window_interface)
-    : context_menu_adapter_(std::make_unique<TabContextMenuAdapterImpl>(
-          browser_window_interface)) {}
+    BrowserWindowInterface* browser_window_interface,
+    TabStripModel* tab_strip_model)
+    : context_menu_adapter_(
+          std::make_unique<TabContextMenuAdapterImpl>(browser_window_interface,
+                                                      tab_strip_model)) {}
 
 TabStripModelExperimentalInjector::~TabStripModelExperimentalInjector() =
     default;
