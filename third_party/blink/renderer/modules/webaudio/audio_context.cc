@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playout_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_sink_info.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
@@ -931,6 +932,12 @@ ScriptPromise<IDLUndefined> AudioContext::closeContext(
 
   // Stops the rendering, but it doesn't release the resources here.
   StopRendering();
+
+  // Explicitly release resources to avoid memory leaks.
+  permission_receiver_.reset();
+  if (audioWorklet()) {
+    audioWorklet()->TerminateProxies();
+  }
 
   // The promise from closing context resolves immediately after this function.
   DidClose();

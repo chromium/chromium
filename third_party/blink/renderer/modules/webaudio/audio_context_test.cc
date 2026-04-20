@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 
 #include <array>
@@ -1451,6 +1454,50 @@ TEST_F(AudioContextStatsTest, PlaybackStatsMicrophoneRestrictionStartsGranted) {
   // Since we have microphone permission, the stats will be updated.
   RenderAndCheckIfPlaybackStatsChanged(base::Seconds(1), renderer, script_state,
                                        /*expect_change=*/true);
+}
+
+// Test that HasPendingActivity returns false after closeContext() is called,
+// even if the permission receiver is bound (which previously caused a leak).
+TEST_F(AudioContextStatsTest, HasPendingActivityAfterClose) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  // Flush the permission service to ensure the receiver becomes bound.
+  FlushPermissionService(audio_context);
+  EXPECT_TRUE(audio_context->HasPendingActivity());
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  DummyExceptionStateForTesting exception_state;
+  audio_context->closeContext(script_state, exception_state);
+
+  EXPECT_FALSE(audio_context->HasPendingActivity());
+}
+
+// Test that AudioWorklet and its messaging proxy are signaled to terminate
+// when the AudioContext is closed.
+TEST_F(AudioContextTest, AudioWorkletTerminatedOnClose) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  // Trigger proxy creation directly via friend access.
+  auto* audio_worklet = audio_context->audioWorklet();
+  audio_worklet->proxies_.push_back(audio_worklet->CreateGlobalScope());
+
+  auto* proxy = audio_worklet->GetMessagingProxy();
+  ASSERT_TRUE(proxy);
+  // Ensure the proxy is not requested to terminate initially.
+  EXPECT_FALSE(proxy->AskedToTerminate());
+
+  DummyExceptionStateForTesting exception_state;
+  audio_context->closeContext(script_state, exception_state);
+
+  EXPECT_TRUE(proxy->AskedToTerminate());
 }
 
 TEST_F(AudioContextTest, ChannelCountRunning) {

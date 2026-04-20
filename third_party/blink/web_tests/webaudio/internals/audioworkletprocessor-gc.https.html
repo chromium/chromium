@@ -45,19 +45,20 @@ promise_test(async () => {
         node2.disconnect();
         node2 = null;
 
-        // Perform GC and force clean up tasks of AudioContext.
+        // Perform GC.
         await asyncGC();
-        await context.close();
 
         // Trigger GC on AudioWorkletGlobalScope via `node1` and its processor.
         node1.port.postMessage({command: 'gc'});
 
         node1.port.onmessage = async (event) => {
           if (event.data.status === 'collected') {
-            assert_equals(internals.audioHandlerCount(), 2,
-                          'the handler count after gc should be 2.');
+            // Verify processor count before closing context.
             assert_equals(internals.audioWorkletProcessorCount(), 1,
                           'the worklet processor after gc count should be 1.');
+
+            assert_equals(internals.audioHandlerCount(), 2,
+                          'the handler count after gc should be 2.');
             resolve();
           }
         };

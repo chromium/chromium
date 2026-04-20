@@ -69,6 +69,10 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
     return module_responses_map_.Get();
   }
 
+  // Aborts all pending module loading tasks. This should be called before
+  // terminating global scopes to prevent unresolved promises.
+  void AbortPendingTasks();
+
   // "A Worklet has a list of the worklet's WorkletGlobalScopes. Initially this
   // list is empty; it is populated when the user agent chooses to create its
   // WorkletGlobalScope."

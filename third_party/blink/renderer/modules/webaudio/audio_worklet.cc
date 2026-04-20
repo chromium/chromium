@@ -91,6 +91,14 @@ AudioWorkletMessagingProxy* AudioWorklet::GetMessagingProxy() {
                    FindAvailableGlobalScope());
 }
 
+void AudioWorklet::TerminateProxies() {
+  DCHECK(IsMainThread());
+  AbortPendingTasks();
+  for (const auto& proxy : proxies_) {
+    proxy->TerminateWorkletGlobalScope();
+  }
+}
+
 void AudioWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   Worklet::Trace(visitor);
