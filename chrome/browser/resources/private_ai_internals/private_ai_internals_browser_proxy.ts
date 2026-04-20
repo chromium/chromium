@@ -16,7 +16,8 @@ export interface PrivateAiInternalsBrowserProxy {
   close(): Promise<void>;
   sendRequest(featureName: string, request: string):
       Promise<PrivateAiResponseMojoType>;
-  sendZssRequest(url: string): Promise<PrivateAiResponseMojoType>;
+  sendZssRequest(innerText: string): Promise<PrivateAiResponseMojoType>;
+  sendFormsAiRequest(url: string): Promise<PrivateAiResponseMojoType>;
   getCallbackRouter(): PrivateAiInternalsPageCallbackRouter;
 }
 
@@ -50,6 +51,11 @@ export class PrivateAiInternalsBrowserProxyImpl implements
 
   async sendZssRequest(innerText: string): Promise<PrivateAiResponseMojoType> {
     const {response} = await this.handler.sendZssRequest(innerText);
+    return response;
+  }
+
+  async sendFormsAiRequest(url: string): Promise<PrivateAiResponseMojoType> {
+    const {response} = await this.handler.sendFormsAiRequest(url);
     return response;
   }
 

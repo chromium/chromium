@@ -45,4 +45,7 @@ interface PrivateAiInternalsPageHandler {
   // inner_text is the text to generate suggestions for.
   SendZssRequest(
       string inner_text) => (PrivateAiResponse response);
+  // Sends a FormsAI request over the current connection.
+  SendFormsAiRequest(
+      string url) => (PrivateAiResponse response);
 };

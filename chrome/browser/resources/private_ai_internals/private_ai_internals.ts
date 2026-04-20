@@ -116,10 +116,30 @@ function registerOnSendButtonListener() {
   sendZssButton?.addEventListener('click', () => {
     onZssRequestSend();
   });
+  const sendFormsAiButton = document.getElementById('send-forms-ai-button');
+  sendFormsAiButton?.addEventListener('click', () => {
+    onFormsAiRequestSend();
+  });
+}
+
+function addMsgToConsoleContainer(msg: string) {
+  const consoleContainer = document.getElementById('console-container');
+
+  const msgElement = document.createElement('div');
+  msgElement.textContent = msg;
+  consoleContainer?.appendChild(msgElement);
+}
+
+function addErrorToConsoleContainer(error: string) {
+  const consoleContainer = document.getElementById('console-container');
+
+  const errorElement = document.createElement('div');
+  errorElement.textContent = error;
+  errorElement.style.color = 'red';
+  consoleContainer?.appendChild(errorElement);
 }
 
 function onRequestSend() {
-  const consoleContainer = document.getElementById('console-container');
   const requestInput =
       document.getElementById('request-input') as HTMLInputElement;
 
@@ -129,16 +149,16 @@ function onRequestSend() {
   }
 
   // Display user's request.
-  const userRequestElement = document.createElement('div');
-  userRequestElement.textContent = 'Request: ' + request;
-  consoleContainer?.appendChild(userRequestElement);
+  addMsgToConsoleContainer('Request: ' + request);
 
   // Send request to the Private AI client and get a response.
   proxy.sendRequest(loadTimeData.getString('default_feature_name'), request)
       .then((response) => {
-        const serverResponseElement = document.createElement('div');
-        serverResponseElement.textContent = 'Response: ' + response.response;
-        consoleContainer?.appendChild(serverResponseElement);
+        if (response.response) {
+          addMsgToConsoleContainer('Response: ' + response.response);
+        } else {
+          addErrorToConsoleContainer('Error: ' + response.error);
+        }
       });
 
   // Clear the input field and refocus.
@@ -147,7 +167,6 @@ function onRequestSend() {
 }
 
 function onZssRequestSend() {
-  const consoleContainer = document.getElementById('console-container');
   const requestInput =
       document.getElementById('request-input') as HTMLInputElement;
 
@@ -157,20 +176,41 @@ function onZssRequestSend() {
   }
 
   // Display user's request.
-  const userRequestElement = document.createElement('div');
-  userRequestElement.textContent = 'ZSS Request: ' + text;
-  consoleContainer?.appendChild(userRequestElement);
+  addMsgToConsoleContainer('ZSS Request: ' + text);
 
   // Send ZSS request to the Private AI client and get a response.
   proxy.sendZssRequest(text).then((response) => {
-    const serverResponseElement = document.createElement('div');
-    if (response.error) {
-      serverResponseElement.textContent = 'Error: ' + response.error;
-      serverResponseElement.style.color = 'red';
+    if (response.response) {
+      addMsgToConsoleContainer('ZSS Response: ' + response.response);
     } else {
-      serverResponseElement.textContent = 'ZSS Response: ' + response.response;
+      addErrorToConsoleContainer('Error: ' + response.error);
     }
-    consoleContainer?.appendChild(serverResponseElement);
+  });
+
+  // Clear the input field and refocus.
+  requestInput.value = '';
+  requestInput.focus();
+}
+
+function onFormsAiRequestSend() {
+  const requestInput =
+      document.getElementById('request-input') as HTMLInputElement;
+
+  const url = requestInput.value;
+  if (url.trim() === '') {
+    return;
+  }
+
+  // Display user's request.
+  addMsgToConsoleContainer('FormsAI Request (URL): ' + url);
+
+  // Send FormsAI request to the Private AI client and get a response.
+  proxy.sendFormsAiRequest(url).then((response) => {
+    if (response.response) {
+      addMsgToConsoleContainer('FormsAI Response: ' + response.response);
+    } else {
+      addErrorToConsoleContainer('Error: ' + response.error);
+    }
   });
 
   // Clear the input field and refocus.

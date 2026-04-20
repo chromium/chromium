@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/private_ai/client.h"
@@ -176,6 +177,81 @@ void PrivateAiInternalsPageHandler::SendZssRequest(
             }
 
             result->response = base::JoinString(labels, ", ");
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(callback)),
+      /*options=*/{});
+}
+
+void PrivateAiInternalsPageHandler::SendFormsAiRequest(
+    const std::string& url,
+    SendFormsAiRequestCallback callback) {
+  if (!webui_client_) {
+    auto result = private_ai_internals::mojom::PrivateAiResponse::New();
+    result->error = std::string("Error: not connected");
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  optimization_guide::proto::AutofillAiTypeRequest forms_ai_request;
+  forms_ai_request.set_url(url);
+  auto* form_data = forms_ai_request.mutable_form_data();
+  form_data->set_form_name("webui_test_form");
+  auto* field = form_data->add_fields();
+  field->set_field_name("first_name");
+  field->set_field_label("First Name");
+
+  optimization_guide::proto::ExecuteRequest execute_request;
+  execute_request.set_feature(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_FORMS_CLASSIFICATIONS);
+  *execute_request.mutable_request_metadata() =
+      optimization_guide::AnyWrapProto(forms_ai_request);
+
+  private_ai::proto::PaicMessage paic_message;
+  paic_message.set_feature_name(
+      private_ai::proto::FEATURE_NAME_CHROME_FORMS_AI);
+  *paic_message.mutable_execute_request_ext() = execute_request;
+
+  webui_client_->SendPaicRequest(
+      private_ai::proto::FEATURE_NAME_CHROME_FORMS_AI, paic_message,
+      base::BindOnce(
+          [](SendFormsAiRequestCallback callback,
+             base::expected<private_ai::proto::PaicMessage,
+                            private_ai::StatusCode> response) {
+            auto result = private_ai_internals::mojom::PrivateAiResponse::New();
+            if (!response.has_value()) {
+              result->error =
+                  std::string("Error: ") +
+                  base::NumberToString(static_cast<int>(response.error()));
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
+            if (!response->has_execute_response_ext()) {
+              result->error = "Error: no execute_response_ext";
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
+            auto forms_ai_response = optimization_guide::ParsedAnyMetadata<
+                optimization_guide::proto::AutofillAiTypeResponse>(
+                response->execute_response_ext().response_metadata());
+
+            if (!forms_ai_response) {
+              result->error = "Error: failed to parse forms ai response";
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
+            std::vector<std::string> types;
+            for (const auto& field_response :
+                 forms_ai_response->field_responses()) {
+              types.push_back(
+                  base::NumberToString(field_response.field_type()));
+            }
+
+            result->response = base::JoinString(types, ", ");
             std::move(callback).Run(std::move(result));
           },
           std::move(callback)),
