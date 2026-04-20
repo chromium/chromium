@@ -1525,4 +1525,13 @@ GpuServiceImpl* FrameSinkManagerImpl::GetGpuService() {
   return gpu_service_;
 }
 
+bool FrameSinkManagerImpl::IsChildOf(const FrameSinkId& parent,
+                                     const FrameSinkId& child) const {
+  auto it = frame_sink_source_map_.find(parent);
+  if (it == frame_sink_source_map_.end()) {
+    return false;
+  }
+  return it->second.children.contains(child);
+}
+
 }  // namespace viz
