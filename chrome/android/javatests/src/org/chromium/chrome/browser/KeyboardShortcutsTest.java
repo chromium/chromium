@@ -590,6 +590,17 @@ public class KeyboardShortcutsTest {
                 .onMenuOrKeyboardAction(eq(R.id.toggle_caret_browsing), eq(false));
     }
 
+    /** Test that pressing F1 triggers the help action. */
+    @Test
+    @SmallTest
+    public void testOpenHelp() {
+        // Ensure we handle F1 key
+        assertTrue(keyDown(KeyEvent.KEYCODE_F1, 0, true));
+
+        // Ensure we trigger the help action
+        verify(mMenuOrKeyboardActionController).onMenuOrKeyboardAction(eq(R.id.help_id), eq(false));
+    }
+
     private void testOpenBookmarks(
             boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
         assertEquals(expectHandled, keyDown(KeyEvent.KEYCODE_O, metaState, isCurrentTabVisible));

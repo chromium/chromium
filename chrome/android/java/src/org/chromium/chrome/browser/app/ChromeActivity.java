@@ -2768,11 +2768,18 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         final Tab currentTab = getActivityTab();
 
         if (id == R.id.help_id) {
-            String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
-            startHelpAndFeedback(
-                    url,
-                    "MobileMenuFeedback",
-                    getTabModelSelector().getCurrentModel().getProfile());
+            if (fromMenu) {
+                String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
+                startHelpAndFeedback(
+                        url,
+                        "MobileMenuFeedback",
+                        getTabModelSelector().getCurrentModel().getProfile());
+            } else {
+                getTabCreator(getTabModelSelector().isIncognitoSelected())
+                        .launchUrl(
+                                "https://support.google.com/chrome?p=help&ctx=keyboard",
+                                TabLaunchType.FROM_CHROME_UI);
+            }
             return true;
         }
 

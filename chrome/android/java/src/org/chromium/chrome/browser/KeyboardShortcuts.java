@@ -1022,6 +1022,7 @@ public class KeyboardShortcuts {
             }
         } else if (!event.isCtrlPressed()
                 && !event.isAltPressed()
+                && keyCode != KeyEvent.KEYCODE_F1
                 && keyCode != KeyEvent.KEYCODE_F3
                 && keyCode != KeyEvent.KEYCODE_F5
                 && keyCode != KeyEvent.KEYCODE_F6
