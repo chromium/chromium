@@ -5007,9 +5007,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.Connection.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="ConnectionFailureReason" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for all connection attempts,
@@ -5018,9 +5018,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.Connection.Result" enum="BooleanSuccess"
-    expires_after="2026-10-04">
-  <owner>jonmann@chromium.org</owner>
+    expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of all connection attempts, manual or
@@ -5029,7 +5029,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.Hidden.Fixed" units="networks"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
+  <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -5042,9 +5043,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.ManualConnection.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="ConnectionFailureReason" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for manual connection
@@ -5053,9 +5054,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.ManualConnection.Result"
-    enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of manual connection attempts to
@@ -5064,9 +5065,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.TotalCount" units="units"
-    expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the total number of Wi-Fi networks which are
@@ -5075,9 +5076,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.UpdateOperation.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="ConnectionFailureReason" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for update attempts to synced
@@ -5088,9 +5089,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Wifi.Synced.UpdateOperation.GenerateLocalNetworkConfig.Result"
-    enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the success or failure to generate a local
@@ -5099,9 +5100,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.UpdateOperation.Result"
-    enum="BooleanSuccess" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of update attempts to synced Wi-Fi
@@ -5111,9 +5112,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason"
-    enum="NetworkEligibilityStatus" expires_after="2026-06-01">
-  <owner>jonmann@chromium.org</owner>
+    enum="NetworkEligibilityStatus" expires_after="2027-06-01">
   <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric logged for users who have the feature enabled but have zero
