@@ -6,10 +6,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -78,8 +74,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -225,8 +219,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private Profile mProfile;
     @Mock private AppMenuDelegate mAppMenuDelegate;
-    @Mock private AppMenuHandler mAppMenuHandler;
-    @Mock private WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     @Mock private ModalDialogManager mDialogManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private OfflinePageUtils.Internal mOfflinePageUtils;
@@ -367,7 +359,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         mAppMenuDelegate,
                         mLayoutStateProviderSupplier,
                         mBookmarkModelSupplier,
-                        mFeedLauncher,
                         mDialogManager,
                         mSnackbarManager,
                         mIncognitoReauthControllerSupplier,
@@ -2578,94 +2569,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void getFooterResourceId_incognito_doesNotReturnWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mTab.isIncognito()).thenReturn(true);
-
-        assertThat(
-                "Footer should not be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
-    }
-
-    @Test
-    public void getFooterResourceId_offlinePage_doesNotReturnWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(true);
-
-        assertThat(
-                "Footer should not be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
-    }
-
-    @Test
-    public void getFooterResourceId_nonHttpUrl_doesNotReturnWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-
-        assertThat(
-                "Footer should not be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
-    }
-
-    @Test
-    public void getFooterResourceId_signedOutUser_doesNotReturnWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
-
-        assertThat(
-                "Footer should not be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
-    }
-
-    @Test
-    public void getFooterResourceId_httpsUrl_returnsWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-
-        assertThat(
-                "Footer should be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                instanceOf(WebFeedMainMenuItem.class));
-    }
-
-    @Test
-    public void getFooterResourceId_dseOff_doesNotReturnWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
-
-        assertThat(
-                "Footer should not be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
-    }
-
-    @Test
-    public void getFooterResourceId_dseOn_returnsWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-
-        assertThat(
-                "Footer should be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                instanceOf(WebFeedMainMenuItem.class));
-    }
-
-    @Test
-    public void getFooterResourceId_signedOutUser_dseOn_doesNotReturnWebFeedMenuItem() {
-        setUpMocksForWebFeedFooter();
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
-
-        assertThat(
-                "Footer should not be a WebFeed footer",
-                mTabbedAppMenuPropertiesDelegate.buildFooterView(mAppMenuHandler),
-                anyOf(nullValue(), not(instanceOf(WebFeedMainMenuItem.class))));
-    }
-
-    @Test
     public void testAddToGroup() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
@@ -2691,15 +2594,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertFalse(isMenuVisible(modelList, R.id.add_to_group_menu_id));
-    }
-
-    private void setUpMocksForWebFeedFooter() {
-        mActivityTabProvider.setForTesting(mTab);
-        when(mTab.isIncognito()).thenReturn(false);
-        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
     }
 
     private void setUpMocksForPageMenu() {

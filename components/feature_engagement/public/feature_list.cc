@@ -133,10 +133,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHVideoTutorialNTPSummaryFeature,
     &kIPHVideoTutorialNTPVoiceSearchFeature,
     &kIPHVideoTutorialTryNowFeature,
-    &kIPHWebFeedAwarenessFeature,
-    &kIPHWebFeedFollowFeature,
-    &kIPHWebFeedPostFollowDialogFeature,
-    &kIPHWebFeedPostFollowDialogFeatureWithUIUpdate,
 // ALL_FEATURES_ANDROID_END
 // keep-sorted end
 #else

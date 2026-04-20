@@ -1284,28 +1284,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHWebFeedAwarenessFeature.name == feature->name) {
-    // A config that allows the web feed IPH to be shown up to three times
-    // total, no more than once per session.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-
-    config.session_rate = Comparator(LESS_THAN, 1);
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::ALL;
-    config.session_rate_impact = session_rate_impact;
-
-    // Keep the IPH trigger event for 10 years, which is a relatively long time
-    // period that we could consider as being "forever".
-    config.trigger =
-        EventConfig("iph_web_feed_awareness_triggered",
-                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
-    config.used = EventConfig("web_feed_awareness_used", Comparator(ANY, 0),
-                              k10YearsInDays, k10YearsInDays);
-    return config;
-  }
-
   if (kIPHFeedSwipeRefresh.name == feature->name) {
     // A config that allows the feed swipe refresh message IPH to be shown:
     // * Once per 15 days
@@ -1451,49 +1429,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 14, 90);
     config.snooze_params.snooze_interval = 7;
     config.snooze_params.max_limit = 3;
-    return config;
-  }
-  if (kIPHWebFeedFollowFeature.name == feature->name) {
-    // A config that allows the WebFeed follow intro to be shown up to 5x per
-    // week.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    config.trigger = EventConfig("web_feed_follow_intro_trigger",
-                                 Comparator(LESS_THAN, 5), 7, 360);
-    config.used = EventConfig("web_feed_follow_intro_clicked",
-                              Comparator(ANY, 0), 360, 360);
-    return config;
-  }
-
-  if (kIPHWebFeedPostFollowDialogFeature.name == feature->name) {
-    // A config that allows one of the WebFeed post follow dialogs to be
-    // presented 3 times.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    config.trigger = EventConfig("web_feed_post_follow_dialog_trigger",
-                                 Comparator(LESS_THAN, 3), 360, 360);
-    config.used = EventConfig("web_feed_post_follow_dialog_shown",
-                              Comparator(ANY, 0), 360, 360);
-    return config;
-  }
-
-  if (kIPHWebFeedPostFollowDialogFeatureWithUIUpdate.name == feature->name) {
-    // A config that allows one of the WebFeed post follow dialogs to be
-    // presented 3 times after the UI update.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    config.trigger =
-        EventConfig("web_feed_post_follow_dialog_trigger_with_ui_update",
-                    Comparator(LESS_THAN, 3), 360, 360);
-    config.used =
-        EventConfig("web_feed_post_follow_dialog_shown_with_ui_update",
-                    Comparator(ANY, 0), 360, 360);
     return config;
   }
 

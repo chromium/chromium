@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAcceleratorController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -247,13 +246,6 @@ public class SingleWebFeedStreamTest {
                         anyInt(),
                         eq(handler),
                         anyInt());
-
-        assertEquals(
-                "someWebFeedName",
-                new String(
-                        WebFeedRecommendationFollowAcceleratorController
-                                .getWebFeedNameIfInLoadUrlParams(mLoadUrlParamsCaptor.getValue()),
-                        StandardCharsets.UTF_8));
     }
 
     @Test
@@ -286,11 +278,6 @@ public class SingleWebFeedStreamTest {
                         anyInt(),
                         eq(handler),
                         anyInt());
-
-        assertEquals(
-                null,
-                WebFeedRecommendationFollowAcceleratorController.getWebFeedNameIfInLoadUrlParams(
-                        mLoadUrlParamsCaptor.getValue()));
     }
 
     @Test

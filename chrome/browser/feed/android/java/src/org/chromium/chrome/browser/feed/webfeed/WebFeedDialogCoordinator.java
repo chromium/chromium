@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -65,18 +64,15 @@ class WebFeedDialogCoordinator {
      * Initializes the {@link WebFeedDialogCoordinator}.
      *
      * @param context The {@link Context}.
-     * @param feedLauncher {@link FeedLauncher} for launching the NTP.
      * @param title The title of the Web Feed that was just followed.
      * @param isActive Whether the followed site is active (has content available).
      */
-    void initialize(
-            Context context, FeedLauncher feedLauncher, @Nullable String title, boolean isActive) {
+    void initialize(Context context, @Nullable String title, boolean isActive) {
         Runnable positiveAction =
                 () -> {
                     FeedServiceBridge.reportOtherUserAction(
                             StreamKind.UNKNOWN,
                             FeedUserActionType.TAPPED_GO_TO_FEED_POST_FOLLOW_ACTIVE_HELP);
-                    feedLauncher.openFollowingFeed();
                 };
         initializeInternal(
                 context,

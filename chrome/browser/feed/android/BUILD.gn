@@ -49,7 +49,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/SnapScrollHelper.java",
     "java/src/org/chromium/chrome/browser/feed/Stream.java",
     "java/src/org/chromium/chrome/browser/feed/componentinterfaces/SurfaceCoordinator.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/ClickableTextBubble.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogContents.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogCoordinator.java",
@@ -57,11 +56,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogProperties.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFaviconFetcher.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroController.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroView.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItem.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedRecommendationFollowAcceleratorController.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarController.java",
   ]
   deps = [
     ":feed_java_resources",
@@ -136,10 +130,7 @@ android_library("java") {
 
 android_resources("feed_java_resources") {
   sources = [
-    "java/res/color/chip_hairline_color_list.xml",
     "java/res/color/header_title_text_color_list.xml",
-    "java/res/color/menu_footer_chip_background_baseline_list.xml",
-    "java/res/color/menu_footer_chip_background_list.xml",
     "java/res/drawable/home_surface_background_rounded.xml",
     "java/res/drawable/home_surface_ui_background_bottom_rounded.xml",
     "java/res/drawable/home_surface_ui_background_bottomleft_rounded.xml",
@@ -157,7 +148,6 @@ android_resources("feed_java_resources") {
     "java/res/layout/no_connection.xml",
     "java/res/layout/no_content_v2.xml",
     "java/res/layout/web_feed_dialog.xml",
-    "java/res/layout/web_feed_main_menu_item.xml",
     "java/res/values-night/colors.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
@@ -256,10 +246,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/webfeed/TestWebFeedFaviconFetcher.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedDialogMediatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFaviconFetcherTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroViewTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
-    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
   ]
 
   deps = [

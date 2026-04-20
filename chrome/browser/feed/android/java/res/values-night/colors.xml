@@ -11,6 +11,4 @@ found in the LICENSE file.
     <color name="feed_placeholder_color">@color/white_alpha_5</color>
 
     <!-- Footer chip -->
-    <color name="menu_footer_chip_background_color_baseline">@color/menu_footer_chip_background_color_light</color>
-    <color name="menu_footer_chip_background_color_disabled">@color/menu_footer_chip_background_color_disabled_light</color>
 </resources>

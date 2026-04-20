@@ -79,7 +79,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_TAB_SWITCHER_XR,
     FeatureConstants.IPH_TAB_TEARING_XR,
     FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
-    FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
     FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE,
@@ -143,8 +142,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
-    FeatureConstants.WEB_FEED_AWARENESS_FEATURE,
+    FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE
     // FEATURE_CONSTANTS_JAVA_STRING_DEF_END
     // keep-sorted end
 })
@@ -324,9 +322,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users that the touch to search panel can be expanded. */
     String IPH_TOUCH_TO_SEARCH_CALLOUT = "IPH_TouchToSearchCallout";
-
-    /** An IPH feature to inform users about the WebFeed follow feature. */
-    String IPH_WEB_FEED_FOLLOW_FEATURE = "IPH_WebFeedFollow";
 
     /** A dialog IPH feature to inform users about the WebFeed post-follow. */
     String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE = "IPH_WebFeedPostFollowDialog";
@@ -542,8 +537,5 @@ public @interface FeatureConstants {
      * tutorial player.
      */
     String VIDEO_TUTORIAL_TRY_NOW_FEATURE = "IPH_VideoTutorial_TryNow";
-
-    /** An IPH used for web feed awareness to be shown on the NTP for the Web Feed tab. */
-    String WEB_FEED_AWARENESS_FEATURE = "IPH_WebFeedAwareness";
     // FEATURE_CONSTANTS_JAVA_INTERFACE_END
 }

@@ -200,9 +200,7 @@ import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeat
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
@@ -3673,15 +3671,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 this,
                 mLayoutStateProviderSupplier,
                 mBookmarkModelSupplier,
-                () -> {
-                    Profile originalProfile =
-                            getProfileProviderSupplier().get().getOriginalProfile();
-                    getTabCreator(/* incognito= */ false)
-                            .launchUrl(
-                                    NewTabPageUtils.encodeNtpUrl(
-                                            originalProfile, NewTabPageLaunchOrigin.WEB_FEED),
-                                    TabLaunchType.FROM_CHROME_UI);
-                },
                 getModalDialogManager(),
                 getSnackbarManager(),
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),

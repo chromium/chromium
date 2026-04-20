@@ -846,13 +846,6 @@ should be able to be added at any place in this file.
       summary="For voice search video tutorial."/>
   <variant name="_VideoTutorial_TryNow"
       summary="For video tutorial Try Now feature."/>
-  <variant name="_WebFeedAwareness" summary="For WebFeedAwareness feature."/>
-  <variant name="_WebFeedFollow"
-      summary="For Web Feed follow recommendations."/>
-  <variant name="_WebFeedPostFollowDialog"
-      summary="For Web Feed successful follow operations."/>
-  <variant name="_WebFeedPostFollowDialogWithUIUpdate"
-      summary="For Web Feed successful follow operations after the UI update."/>
   <variant name="_WebUiHelpBubbleTest"
       summary="For WebUiHelpBubbleTest feature."/>
   <variant name="_WhatsNewUpdated" summary="For what's new updated content."/>

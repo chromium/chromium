@@ -1046,25 +1046,8 @@ public final class ChromePreferenceKeys {
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";
 
-    /**
-     * Key used to save the time in milliseconds since epoch that the WebFeed intro was last shown.
-     */
-    public static final String WEB_FEED_INTRO_LAST_SHOWN_TIME_MS =
-            "Chrome.WebFeed.IntroLastShownTimeMs";
-
     public static final String WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT =
             "Chrome.AccountPickerBottomSheet.ConsecutiveActiveDismissalCount";
-
-    /**
-     * Key used to save the time in milliseconds since epoch that the WebFeed intro for the WebFeed
-     * ID was last shown.
-     */
-    public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX =
-            new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownTimeMs.*");
-
-    /** Key used to save the number of times the WebFeed intro for the WebFeed ID was shown. */
-    public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX =
-            new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownCount.*");
 
     /**
      * Key used to track the names of client packages that requested the Window Controls Overlay
@@ -1300,9 +1283,6 @@ public final class ChromePreferenceKeys {
                 UMA_ON_RESUME_COUNTER,
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
-                WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
-                WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
-                WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);
     }

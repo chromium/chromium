@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -37,10 +36,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAcceleratorController;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -249,15 +245,6 @@ public class FeedStream implements Stream {
                             if (updateCallback != null) {
                                 updateCallback.requestComplete(successfulFollow);
                             }
-                            if (successfulFollow && results.metadata != null) {
-                                mWebFeedSnackbarController.showPostSuccessfulFollowHelp(
-                                        results.metadata.title,
-                                        results.metadata.availabilityStatus
-                                                == WebFeedAvailabilityStatus.ACTIVE,
-                                        mStreamKind,
-                                        /* tab= */ null,
-                                        /* url= */ null);
-                            }
                         };
                 WebFeedBridge.followFromId(
                         webFeedId,
@@ -301,8 +288,12 @@ public class FeedStream implements Stream {
             mActionDelegate.openWebFeed(webFeedName, singleWebFeedEntryPoint);
         }
 
+        // TODO(crbug.com/407797637): Remove the unused parameter openOptions.
         private void openSuggestionUrl(
-                String url, int disposition, boolean inGroup, OpenUrlOptions openOptions) {
+                String url,
+                int disposition,
+                boolean inGroup,
+                @SuppressWarnings("unused") OpenUrlOptions openOptions) {
             int pageId = sPageId.incrementAndGet();
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mReliabilityLogger != null) {
@@ -312,11 +303,6 @@ public class FeedStream implements Stream {
             }
 
             LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
-            if (openOptions.shouldShowWebFeedAccelerator()) {
-                WebFeedRecommendationFollowAcceleratorController
-                        .updateUrlParamsForRecommendedWebFeed(
-                                params, openOptions.webFeedName().getBytes(StandardCharsets.UTF_8));
-            }
 
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
@@ -652,9 +638,6 @@ public class FeedStream implements Stream {
     private @Nullable UnreadContentObserver mUnreadContentObserver;
     @Nullable FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
     private final Stream.StreamsMediator mStreamsMediator;
-    // Snackbar (and post-Follow dialog) controller used exclusively for handling in-feed
-    // post-Follow and post-Unfollow UX.
-    WebFeedSnackbarController mWebFeedSnackbarController;
     InProgressWorkTracker mInProgressWorkTracker = new InProgressWorkTracker();
 
     // For loading more content.
@@ -740,24 +723,6 @@ public class FeedStream implements Stream {
         mRotationObserver = new RotationObserver();
         mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
         mStreamsMediator = streamsMediator;
-        WebFeedSnackbarController.FeedLauncher snackbarAction;
-        if (mStreamKind == StreamKind.FOLLOWING) {
-            snackbarAction =
-                    () -> {
-                        mStreamsMediator.refreshStream();
-                    };
-        } else {
-            snackbarAction =
-                    () -> {
-                        mStreamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
-                    };
-        }
-        mWebFeedSnackbarController =
-                new WebFeedSnackbarController(
-                        activity,
-                        snackbarAction,
-                        assertNonNull(windowAndroid.getModalDialogManager()),
-                        snackbarManager);
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
@@ -948,7 +913,6 @@ public class FeedStream implements Stream {
 
         dismissSnackbars();
         mSnackbarControllers.clear();
-        mWebFeedSnackbarController.dismissSnackbars();
 
         mSliceViewTracker.destroy();
         mSliceViewTracker = null;

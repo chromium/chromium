@@ -99,8 +99,6 @@ import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.extensions.ExtensionsUrlOverrideRegistryManagerFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -137,9 +135,7 @@ import org.chromium.chrome.browser.notifications.permissions.NotificationPermiss
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
 import org.chromium.chrome.browser.notifications.tips.TipsOptInCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
-import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLocationPolicyManager;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
@@ -174,7 +170,6 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
@@ -304,7 +299,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable ReadLaterIphController mReadLaterIphController;
     private @Nullable DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
     private @Nullable PdfPageIphController mPdfPageIphController;
-    private @Nullable WebFeedFollowIntroController mWebFeedFollowIntroController;
     private @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private @Nullable PwaBottomSheetController mPwaBottomSheetController;
@@ -743,10 +737,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mReadAloudIphController != null) {
             mReadAloudIphController.destroy();
-        }
-
-        if (mWebFeedFollowIntroController != null) {
-            mWebFeedFollowIntroController.destroy();
         }
 
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
@@ -1534,28 +1524,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     tab != null ? tab.getProfile() : profile,
                     tab != null ? tab.getWebContents() : null,
                     mMessageDispatcher);
-        }
-
-        if (WebFeedBridge.isWebFeedEnabled()) {
-            mWebFeedFollowIntroController =
-                    new WebFeedFollowIntroController(
-                            mActivity,
-                            profile,
-                            mAppMenuCoordinator.getAppMenuHandler(),
-                            mActivityTabProvider.asObservable(),
-                            mToolbarManager.getMenuButtonView(),
-                            () -> {
-                                mTabCreatorManagerSupplier
-                                        .asNonNull()
-                                        .get()
-                                        .getTabCreator(/* incognito= */ false)
-                                        .launchUrl(
-                                                NewTabPageUtils.encodeNtpUrl(
-                                                        profile, NewTabPageLaunchOrigin.WEB_FEED),
-                                                TabLaunchType.FROM_CHROME_UI);
-                            },
-                            mModalDialogManagerSupplier.get(),
-                            mSnackbarManagerSupplier.get());
         }
 
         if (!didTriggerPromo && PageZoomUtils.shouldShowZoomMenuItem()) {

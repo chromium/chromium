@@ -52,8 +52,6 @@ found in the LICENSE file.
     <!-- Menu footer chip measures -->
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(12dp) ) / 2 -->
     <dimen name="menu_footer_chip_end_padding">8dp</dimen>
-    <dimen name="menu_footer_chip_icon_size">16dp</dimen>
-    <dimen name="menu_footer_chip_vertical_inset">8dp</dimen>
 
     <!-- Custom menu -->
     <dimen name="menu_negative_software_vertical_offset">0dp</dimen>
