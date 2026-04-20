@@ -14,66 +14,15 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "library_loaders/remoting_libpipewire.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/audio_silence_detector.h"
+#include "remoting/host/linux/pipewire_utils.h"
 #include "remoting/proto/audio.pb.h"
 
 namespace remoting {
-
-namespace {
-
-RemotingPipewireLoader& GetPipewireLoader() {
-  static base::NoDestructor<RemotingPipewireLoader> pipewire_loader;
-  return *pipewire_loader;
-}
-
-bool EnsurePipewireLoaded() {
-  RemotingPipewireLoader& loader = GetPipewireLoader();
-  if (loader.loaded()) {
-    return true;
-  }
-
-  // Try to load the library with the default name. This will succeed if
-  // PipeWire is installed on the system and the library is in the standard
-  // search path.
-  if (loader.Load("libpipewire-0.3.so.0")) {
-    return true;
-  }
-
-  HOST_LOG << "Cannot load PipeWire library.";
-  return false;
-}
-
-// RAII helper to lock the PipeWire thread loop and unlock it when it goes out
-// of scope.
-class ScopedThreadLoopLock {
- public:
-  ScopedThreadLoopLock(const ScopedThreadLoopLock&) = delete;
-  ScopedThreadLoopLock& operator=(const ScopedThreadLoopLock&) = delete;
-
-  DISABLE_CFI_DLSYM
-  explicit ScopedThreadLoopLock(struct pw_thread_loop* loop) : loop_(loop) {
-    if (loop_) {
-      GetPipewireLoader().pw_thread_loop_lock(loop_);
-    }
-  }
-
-  DISABLE_CFI_DLSYM
-  ~ScopedThreadLoopLock() {
-    if (loop_) {
-      GetPipewireLoader().pw_thread_loop_unlock(loop_);
-    }
-  }
-
- private:
-  raw_ptr<struct pw_thread_loop> loop_;
-};
-
-}  // namespace
 
 // The core object is started and destroyed on the caller's sequence, while
 // HandleStreamProcess() and `callback` are called on the PipeWire thread.
@@ -110,8 +59,7 @@ class PipewireAudioCapturer::Core {
 
 DISABLE_CFI_DLSYM
 PipewireAudioCapturer::Core::Core() : silence_detector_(0) {
-  CHECK(EnsurePipewireLoaded()) << "PipeWire library is not loaded.";
-  pw_->pw_init(nullptr, nullptr);
+  CHECK(EnsurePipewireInitialized()) << "PipeWire library is not initialized.";
 }
 
 DISABLE_CFI_DLSYM
@@ -138,7 +86,6 @@ PipewireAudioCapturer::Core::~Core() {
     pw_->pw_thread_loop_destroy(pw_main_loop_);
     pw_main_loop_ = nullptr;
   }
-  pw_->pw_deinit();
 }
 
 DISABLE_CFI_DLSYM
@@ -328,7 +275,7 @@ std::unique_ptr<PipewireAudioCapturer> PipewireAudioCapturer::Create() {
 
 // static
 bool PipewireAudioCapturer::IsSupported() {
-  return EnsurePipewireLoaded();
+  return EnsurePipewireInitialized();
 }
 
 bool PipewireAudioCapturer::Start(const PacketCapturedCallback& callback) {
