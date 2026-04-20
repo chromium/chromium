@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "base/trace_event/trace_event.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
@@ -237,6 +238,18 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   BOOL _wasNTPInLandscape;
   // Whether the mediator has been set up.
   BOOL _mediatorSetUp;
+  // Callback for the thumbnail image fetch.
+  std::unique_ptr<base::CancelableOnceCallback<
+      void(const gfx::Image&, const image_fetcher::RequestMetadata&)>>
+      _thumbnailCallback;
+  // Callback for the high-resolution image fetch.
+  std::unique_ptr<base::CancelableOnceCallback<
+      void(const gfx::Image&, const image_fetcher::RequestMetadata&)>>
+      _imageCallback;
+  // The URL of the background image currently being fetched.
+  GURL _pendingBackgroundURL;
+  // Sequence number for fetch requests to generate unique flow IDs.
+  uint64_t _fetchSequenceNumber;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -750,6 +763,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Updates the background based on the current customization settings.
 // `initialLoad` is YES if this is the first time the background is being set.
 - (void)updateBackgroundForInitialLoad:(BOOL)initialLoad {
+  TRACE_EVENT("startup", "NewTabPageMediator::updateBackgroundForInitialLoad",
+              perfetto::Flow::ProcessScoped(reinterpret_cast<uintptr_t>(self)));
   CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
       initWithMutableTraits:self.consumer.traitOverrides];
 
@@ -823,6 +838,27 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Fetches and applies a custom background image.
 - (void)fetchCustomBackground:(sync_pb::NtpCustomBackground)background {
   GURL imageURL = GURL(background.url());
+  if (imageURL == _pendingBackgroundURL) {
+    return;
+  }
+
+  // Cancel any existing fetches.
+  if (_imageCallback) {
+    _imageCallback->Cancel();
+    _imageCallback.reset();
+  }
+  if (_thumbnailCallback) {
+    _thumbnailCallback->Cancel();
+    _thumbnailCallback.reset();
+  }
+
+  _pendingBackgroundURL = imageURL;
+
+  uint64_t flow_id =
+      reinterpret_cast<uint64_t>(self) ^ (++_fetchSequenceNumber);
+  TRACE_EVENT("ui", "NewTabPageMediator::fetchCustomBackground",
+              perfetto::Flow::ProcessScoped(flow_id));
+
   GURL thumbnailURL =
       AddOptionsToImageURL(RemoveOptionsFromImageURL(imageURL.spec()).spec(),
                            GetThumbnailImageOptions());
@@ -833,50 +869,68 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   __weak __typeof(self) weakSelf = self;
 
-  auto cancelable_thumbnail_callback =
-      std::make_shared<base::CancelableOnceCallback<void(
-          const gfx::Image&, const image_fetcher::RequestMetadata&)>>();
-
-  cancelable_thumbnail_callback->Reset(base::BindOnce(^(
-      const gfx::Image& image, const image_fetcher::RequestMetadata& metadata) {
-    if (!image.IsEmpty()) {
-      // Temporarily sets the thumbnail as the background until the
-      // high-resolution image is loaded.
-      [weakSelf setCustomBackground:background
-                              image:image.ToUIImage()
-                              cache:NO];
-      return;
-    }
-  }));
-
-  // Retrieving the thumbnail URL should hit the cache, so it returns almost
-  // instantly.
-  imageFetcher->FetchImage(thumbnailURL,
-                           cancelable_thumbnail_callback->callback(),
-                           image_fetcher::ImageFetcherParams(
-                               kTrafficAnnotation, kImageFetcherUmaClient));
-
-  imageFetcher->FetchImage(
-      imageURL,
+  _thumbnailCallback = std::make_unique<base::CancelableOnceCallback<void(
+      const gfx::Image&, const image_fetcher::RequestMetadata&)>>(
       base::BindOnce(^(const gfx::Image& image,
                        const image_fetcher::RequestMetadata& metadata) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        if (!image.IsEmpty()) {
+          // Temporarily sets the thumbnail as the background until the
+          // high-resolution image is loaded.
+          [strongSelf setCustomBackground:background
+                                    image:image.ToUIImage()
+                                    cache:NO];
+        }
+      }));
+
+  _imageCallback = std::make_unique<base::CancelableOnceCallback<void(
+      const gfx::Image&, const image_fetcher::RequestMetadata&)>>(
+      base::BindOnce(^(const gfx::Image& image,
+                       const image_fetcher::RequestMetadata& metadata) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        TRACE_EVENT(
+            "ui",
+            "NewTabPageMediator::fetchCustomBackground completion callback",
+            perfetto::Flow::ProcessScoped(flow_id));
+
         // Cancel the thumbnail URL fetch if the high-resolution fetch
         // finished first.
-        if (cancelable_thumbnail_callback) {
-          cancelable_thumbnail_callback->Cancel();
+        if (strongSelf->_thumbnailCallback) {
+          strongSelf->_thumbnailCallback->Cancel();
+          strongSelf->_thumbnailCallback.reset();
         }
+
         if (!image.IsEmpty()) {
-          [weakSelf setCustomBackground:background
-                                  image:image.ToUIImage()
-                                  cache:YES];
+          [strongSelf setCustomBackground:background
+                                    image:image.ToUIImage()
+                                    cache:YES];
         } else {
           base::UmaHistogramSparse(
               "IOS.HomeCustomization.Background.Ntp.ImageDownloadErrorCode",
               metadata.http_response_code);
         }
-      }),
-      image_fetcher::ImageFetcherParams(kTrafficAnnotation,
-                                        kImageFetcherUmaClient));
+
+        // Clear state.
+        strongSelf->_pendingBackgroundURL = GURL();
+      }));
+
+  imageFetcher->FetchImage(imageURL, _imageCallback->callback(),
+                           image_fetcher::ImageFetcherParams(
+                               kTrafficAnnotation, kImageFetcherUmaClient));
+
+  // Retrieving the thumbnail URL should hit the cache, so it returns almost
+  // instantly.
+  imageFetcher->FetchImage(thumbnailURL, _thumbnailCallback->callback(),
+                           image_fetcher::ImageFetcherParams(
+                               kTrafficAnnotation, kImageFetcherUmaClient));
 }
 
 - (void)markSafariDataImportSetupListItemAsComplete {

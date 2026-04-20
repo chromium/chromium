@@ -378,6 +378,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/image_fetcher/core:test_support",
     "//components/ntp_tiles",
     "//components/omnibox/browser:test_support",
     "//components/prefs",

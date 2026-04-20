@@ -14,8 +14,10 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
+#import "components/image_fetcher/core/mock_image_fetcher.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/protocol/theme_types.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
@@ -68,6 +70,28 @@
 
 using feed::FeedUserActionType;
 
+class MockImageFetcherService : public image_fetcher::ImageFetcherService {
+ public:
+  MockImageFetcherService() : image_fetcher::ImageFetcherService() {
+    mock_image_fetcher_ = std::make_unique<image_fetcher::MockImageFetcher>();
+  }
+  MOCK_METHOD(image_fetcher::ImageFetcher*,
+              GetImageFetcher,
+              (image_fetcher::ImageFetcherConfig),
+              (override));
+
+  image_fetcher::MockImageFetcher* mock_image_fetcher() {
+    return mock_image_fetcher_.get();
+  }
+
+ private:
+  std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
+};
+
+@interface NewTabPageMediator (Testing)
+- (void)fetchCustomBackground:(sync_pb::NtpCustomBackground)background;
+@end
+
 // Expects a URL to start with a prefix.
 #define EXPECT_URL_PREFIX(url, prefix) \
   EXPECT_STREQ(url.spec().substr(0, strlen(prefix)).c_str(), prefix);
@@ -103,6 +127,12 @@ class NewTabPageMediatorTest : public PlatformTest {
               return std::make_unique<NTPBackgroundImageCacheService>(
                   HomeBackgroundCustomizationServiceFactory::GetForProfile(
                       profile));
+            }));
+    test_profile_builder.AddTestingFactory(
+        ImageFetcherServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<MockImageFetcherService>();
             }));
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -514,4 +544,59 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleAfterSetUp) {
   EXPECT_OCMOCK_VERIFY(header_consumer_);
   EXPECT_OCMOCK_VERIFY(ntp_consumer);
   EXPECT_OCMOCK_VERIFY(ntp_content_delegate);
+}
+
+// Tests that fetchCustomBackground ignores duplicate requests for the same URL.
+TEST_F(NewTabPageMediatorTest, TestFetchCustomBackground_DuplicateRequest) {
+  CreateMediator();
+  [mediator_ setUp];
+
+  sync_pb::NtpCustomBackground background;
+  background.set_url("https://example.com/image.jpg");
+
+  MockImageFetcherService* mock_image_fetcher_service =
+      static_cast<MockImageFetcherService*>(
+          ImageFetcherServiceFactory::GetForProfile(profile_.get()));
+
+  image_fetcher::MockImageFetcher* mock_image_fetcher =
+      mock_image_fetcher_service->mock_image_fetcher();
+
+  EXPECT_CALL(*mock_image_fetcher_service, GetImageFetcher(testing::_))
+      .WillRepeatedly(testing::Return(mock_image_fetcher));
+
+  EXPECT_CALL(*mock_image_fetcher, FetchImageAndData_(testing::_, testing::_,
+                                                      testing::_, testing::_))
+      .Times(2);  // Once for full image, once for thumbnail.
+
+  [mediator_ fetchCustomBackground:background];
+  [mediator_ fetchCustomBackground:background];
+}
+
+// Tests that fetchCustomBackground reinitiates fetches when a new URL is
+// requested.
+TEST_F(NewTabPageMediatorTest, TestFetchCustomBackground_NewURL) {
+  CreateMediator();
+  [mediator_ setUp];
+
+  sync_pb::NtpCustomBackground background1;
+  background1.set_url("https://example.com/image1.jpg");
+  sync_pb::NtpCustomBackground background2;
+  background2.set_url("https://example.com/image2.jpg");
+
+  MockImageFetcherService* mock_image_fetcher_service =
+      static_cast<MockImageFetcherService*>(
+          ImageFetcherServiceFactory::GetForProfile(profile_.get()));
+
+  image_fetcher::MockImageFetcher* mock_image_fetcher =
+      mock_image_fetcher_service->mock_image_fetcher();
+
+  EXPECT_CALL(*mock_image_fetcher_service, GetImageFetcher(testing::_))
+      .WillRepeatedly(testing::Return(mock_image_fetcher));
+
+  EXPECT_CALL(*mock_image_fetcher, FetchImageAndData_(testing::_, testing::_,
+                                                      testing::_, testing::_))
+      .Times(4);  // Once for full image, once for thumbnail for each URL.
+
+  [mediator_ fetchCustomBackground:background1];
+  [mediator_ fetchCustomBackground:background2];
 }
