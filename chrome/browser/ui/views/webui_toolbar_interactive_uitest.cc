@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -236,6 +240,32 @@ class WebUIToolbarViewsInteractiveUiTest
                              pending_responses_.begin() + 1);
   }
 
+  // Step that calls SendDelayedResponse(). Better than using Do() inline,
+  // because it sets a useful step description for debugging.
+  StepBuilder DoSendDelayedResponse() {
+    StepBuilder step = Do(
+        base::BindOnce(&WebUIToolbarViewsInteractiveUiTest::SendDelayedResponse,
+                       base::Unretained(this)));
+    SetStepDescription(step, "DoSendDelayedResponse()");
+    return step;
+  }
+
+  // Waits for a load to stop. If no load is running, assumes load has already
+  // completed, and does nothing. That lack of waiting is the primary reason
+  // this may be preferred over WaitForWebContentsNavigation(), though if it's
+  // called too soon, it could theoretically return before the load has even
+  // started, so use with care.
+  StepBuilder DoWaitForLoadStop() {
+    StepBuilder step = Do(base::BindOnce(
+        [](Browser* browser) {
+          content::WaitForLoadStop(
+              browser->tab_strip_model()->GetActiveWebContents());
+        },
+        base::Unretained(browser())));
+    SetStepDescription(step, "DoWaitForLoadStop()");
+    return step;
+  }
+
   // Returns a URL that will hang until SendDelayedResponse() is invoked.
   GURL DelayedUrl() const {
     return embedded_test_server()->GetURL(kDelayedPath);
@@ -312,8 +342,8 @@ class WebUIToolbarViewsInteractiveUiTest
   }
 
   // Waits for the specified amount of time.
-  StepBuilder WaitForTime(base::TimeDelta delay) {
-    return Do(base::BindOnce(
+  StepBuilder DoWaitForTime(base::TimeDelta delay) {
+    StepBuilder step = Do(base::BindOnce(
         [](base::TimeDelta delay) {
           // Have to allow nestable tasks to use this within a RunTestSequence()
           // call.
@@ -323,6 +353,8 @@ class WebUIToolbarViewsInteractiveUiTest
           run_loop.Run();
         },
         delay));
+    SetStepDescription(step, "DoWaitForTime()");
+    return step;
   }
 
   ReloadControl& GetReloadControl() {
@@ -387,16 +419,32 @@ class WebUIToolbarViewsInteractiveUiTest
   // navigation to complete. Can't use ui_test_utils::NavigateToURL() because
   // that starts the navigation and blocks until it completes, not letting us
   // call SendDelayedResponse() in the middle of the navigation.
-  void NavigateToDelayedUrl() {
-    NavigateParams params(browser(), DelayedUrl(), ui::PAGE_TRANSITION_LINK);
-    Navigate(&params);
-    SendDelayedResponse();
-    EXPECT_TRUE(
-        content::WaitForLoadStop(params.navigated_or_inserted_contents));
+  StepBuilder DoNavigateToDelayedUrl() {
+    StepBuilder step = Do(base::BindOnce(
+        [](WebUIToolbarViewsInteractiveUiTest* test) {
+          NavigateParams params(test->browser(), test->DelayedUrl(),
+                                ui::PAGE_TRANSITION_LINK);
+          Navigate(&params);
+          test->SendDelayedResponse();
+          EXPECT_TRUE(
+              content::WaitForLoadStop(params.navigated_or_inserted_contents));
+        },
+        base::Unretained(this)));
+    SetStepDescription(step, "DoNavigateToDelayedUrl()");
+    return step;
+  }
+
+  void SetStepDescription(StepBuilder& step, std::string_view description) {
+    int count = ++step_with_description_counts_[std::string(description)];
+    step.SetDescription(base::StringPrintf("%s, call %i", description, count));
   }
 
  private:
   static constexpr std::string_view kDelayedPath = "/delayed";
+
+  // Number of steps with a particular description. Helps in debugging when
+  // there are multiple identical steps, which is not uncommon in these tests.
+  std::map<std::string, int> step_with_description_counts_;
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -444,21 +492,18 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   // Simulate having shift pressed for some of the loads, which should not make
   // a difference to the logic under test.
   RunTestSequence(
-      SetUpTest(), Do([&]() { NavigateToDelayedUrl(); }),
-      InstrumentReloadButton(), MoveMouseOverReloadButton(),
+      SetUpTest(), DoNavigateToDelayedUrl(), InstrumentReloadButton(),
+      MoveMouseOverReloadButton(),
       ExpectReloadButtonMode(ReloadControl::Mode::kReload), ClickMouse(),
       ClickMouse(ui_controls::LEFT, /*release=*/true, ui_controls::kShift),
       ClickMouse(), ExpectReloadButtonMode(ReloadControl::Mode::kReload),
-      WaitForTime(base::Milliseconds(100)),
+      DoWaitForTime(base::Milliseconds(100)),
       ExpectReloadButtonMode(ReloadControl::Mode::kReload),
       ClickMouse(ui_controls::LEFT, /*release=*/true, ui_controls::kShift),
       ClickMouse(),
       ClickMouse(ui_controls::LEFT, /*release=*/true, ui_controls::kShift),
       ExpectReloadButtonMode(ReloadControl::Mode::kReload),
-      Do([&]() { SendDelayedResponse(); }), Do([&]() {
-        content::WaitForLoadStop(
-            browser()->tab_strip_model()->GetActiveWebContents());
-      }),
+      DoSendDelayedResponse(), DoWaitForLoadStop(),
       ExpectReloadButtonMode(ReloadControl::Mode::kReload));
 
   EXPECT_EQ(observer.num_started_navigations(), 2u);
@@ -479,21 +524,15 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 
   // Simulate having shift pressed for some of the loads, which should not make
   // a difference to the logic under test.
-  RunTestSequence(SetUpTest(), Do([&]() { NavigateToDelayedUrl(); }),
+  RunTestSequence(SetUpTest(), DoNavigateToDelayedUrl(),
                   InstrumentReloadButton(), MoveMouseOverReloadButton(),
-                  ClickMouse(), Do([&]() { SendDelayedResponse(); }), Do([&]() {
-                    content::WaitForLoadStop(
-                        browser()->tab_strip_model()->GetActiveWebContents());
-                  }),
+                  ClickMouse(), DoSendDelayedResponse(), DoWaitForLoadStop(),
                   // The stop button should never be shown.
                   ExpectReloadButtonMode(ReloadControl::Mode::kReload),
                   // Wait until the reload timer has stopped, and click it
                   // again, which should trigger a new load.
                   WaitForReloadButtonReady(), ClickMouse(),
-                  Do([&]() { SendDelayedResponse(); }), Do([&]() {
-                    content::WaitForLoadStop(
-                        browser()->tab_strip_model()->GetActiveWebContents());
-                  }));
+                  DoSendDelayedResponse(), DoWaitForLoadStop());
 
   EXPECT_EQ(observer.num_started_navigations(), 3u);
   EXPECT_EQ(observer.num_finished_navigations(), 3u);
@@ -539,21 +578,15 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   ReloadButtonTestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
 
-  RunTestSequence(SetUpTest(), Do([&]() { NavigateToDelayedUrl(); }),
+  RunTestSequence(SetUpTest(), DoNavigateToDelayedUrl(),
                   InstrumentReloadButton(), MoveMouseOverReloadButton(),
                   ClickMouse(), WaitForReloadButtonStopIcon(),
-                  Do([&]() { SendDelayedResponse(); }), Do([&]() {
-                    content::WaitForLoadStop(
-                        browser()->tab_strip_model()->GetActiveWebContents());
-                  }),
+                  DoSendDelayedResponse(), DoWaitForLoadStop(),
                   // Make sure the reload button is ready before trying to load
                   // again, to avoid any races. This is not able to check that
                   // the exact interval is respected, unfortunately.
                   WaitForReloadButtonReady(), ClickMouse(),
-                  Do([&]() { SendDelayedResponse(); }), Do([&]() {
-                    content::WaitForLoadStop(
-                        browser()->tab_strip_model()->GetActiveWebContents());
-                  }));
+                  DoSendDelayedResponse(), DoWaitForLoadStop());
 
   EXPECT_EQ(observer.num_started_navigations(), 3u);
   EXPECT_EQ(observer.num_finished_navigations(), 3u);
