@@ -62,10 +62,7 @@ class BackgroundUploadTaskBrowserTest
     : public PlatformBrowserTest,
       public testing::WithParamInterface<MetricServiceType> {
  public:
-  BackgroundUploadTaskBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMetricsLogJobSchedulerUpload);
-  }
+  BackgroundUploadTaskBrowserTest() = default;
 
   ~BackgroundUploadTaskBrowserTest() override = default;
 
@@ -215,8 +212,6 @@ class BackgroundUploadTaskBrowserTest
   std::string_view expected_histogram_name_;
   std::unique_ptr<ReportingService> reporting_service_;
   raw_ptr<LogStore> log_store_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that on Android, the various metrics systems schedule upload tasks
