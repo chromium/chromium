@@ -695,7 +695,7 @@ class LocationBarViewAddContextButtonBrowserTest
         {{omnibox::internal::kWebUIOmniboxAimPopup,
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"}}},
-         {omnibox::kWebUIOmniboxPopup, {}},
+         {omnibox::internal::kWebUIOmniboxPopup, {}},
          {omnibox::kAimEnabled, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                omnibox::kAimFuseboxEligibilityCheckEnabled,

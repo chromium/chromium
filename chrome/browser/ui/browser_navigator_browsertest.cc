@@ -119,7 +119,7 @@ void ShowSettings(Browser* browser) {
 BrowserNavigatorTest::BrowserNavigatorTest() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features*/ {features::kFileSystemAccessPersistentPermissions,
-                            omnibox::kWebUIOmniboxPopup,
+                            omnibox::internal::kWebUIOmniboxPopup,
                             omnibox::internal::kWebUIOmniboxAimPopup},
       /*disabled_features*/ {});
 }

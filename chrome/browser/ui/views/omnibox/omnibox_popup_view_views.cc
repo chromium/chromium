@@ -715,7 +715,7 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
       -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
   content_rect.set_height(popup_height);
 
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
+  if (omnibox::IsWebUIOmniboxPopupEnabled() &&
       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
       !omnibox::IsAimPopupFeatureEnabled() &&
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug) &&

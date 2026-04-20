@@ -96,7 +96,7 @@ class OmniboxWebUiInteractiveTestBase
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
       bool force_enable_aim) {
     std::vector<base::test::FeatureRefAndParams> features = {
-        {omnibox::kWebUIOmniboxPopup, {}}};
+        {omnibox::internal::kWebUIOmniboxPopup, {}}};
     if (force_enable_aim) {
       base::FieldTrialParams aim_params = {
           {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,

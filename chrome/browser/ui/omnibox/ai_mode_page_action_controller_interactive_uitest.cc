@@ -90,7 +90,7 @@ class AiModePageActionControllerInteractiveUiTest
                                       },
                                   },
                               },
-                              {omnibox::kWebUIOmniboxPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {kHideAimEntrypointOnUserInput});
   }
@@ -214,7 +214,7 @@ class AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest
                                       },
                                   },
                               },
-                              {omnibox::kWebUIOmniboxPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features*/ {});
   }

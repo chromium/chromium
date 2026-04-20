@@ -371,7 +371,7 @@ void LocationBarView::Init() {
   }
 
   const bool web_ui_popup_dropdown_only =
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
+      omnibox::IsWebUIOmniboxPopupEnabled() &&
       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
 
   // Default to the legacy popup view for web apps and devtools windows since

@@ -41,7 +41,7 @@ OmniboxController::OmniboxController(
       popup_state_manager_(std::make_unique<OmniboxPopupStateManager>()) {
   AutocompleteControllerConfig autocomplete_controller_config{
       .provider_types = AutocompleteClassifier::DefaultOmniboxProviders()};
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+  if (omnibox::IsWebUIOmniboxPopupEnabled()) {
     autocomplete_controller_config.show_iph_matches = false;
   }
   if (autocomplete_stop_timer_duration.has_value()) {

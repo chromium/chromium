@@ -24,6 +24,7 @@ namespace omnibox {
 // Instead, use the helper functions defined below (e.g., `IsAimPopupEnabled`).
 namespace internal {
 
+BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopup);
 
 }  // namespace internal
@@ -42,7 +43,6 @@ BASE_DECLARE_FEATURE(kAiModeEntryPointAlwaysNavigates);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
-BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
@@ -79,6 +79,9 @@ extern const base::FeatureParam<bool> kShowSmartCompose;
 extern const base::FeatureParam<bool> kShowToolsAndModels;
 // Whether to show section headers in the context menu.
 extern const base::FeatureParam<bool> kShowContextMenuHeaders;
+
+// Returns true if `kWebUIOmniboxPopup` is enabled.
+bool IsWebUIOmniboxPopupEnabled();
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the

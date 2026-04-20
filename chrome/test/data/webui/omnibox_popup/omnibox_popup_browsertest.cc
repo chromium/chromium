@@ -16,7 +16,7 @@ class OmniboxPopupTest : public WebUIMochaBrowserTest {
   OmniboxPopupTest() {
     set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
     scoped_feature_list_.InitWithFeatures(
-        {omnibox::kWebUIOmniboxPopup},
+        {omnibox::internal::kWebUIOmniboxPopup},
         {omnibox::kWebUIOmniboxFullPopup, omnibox::kAimUsePecApi});
   }
 

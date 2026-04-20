@@ -472,14 +472,15 @@ class ContextMenuBrowserTest
            features::kGlic,
            media::kContextMenuSaveVideoFrameAs,
            media::kContextMenuSearchForVideoFrame},
-          {omnibox::kWebUIOmniboxPopup});
+          {omnibox::internal::kWebUIOmniboxPopup});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {
               features::kGlic,
               media::kContextMenuSaveVideoFrameAs,
               media::kContextMenuSearchForVideoFrame},
-          {blink::features::kLinkPreview, omnibox::kWebUIOmniboxPopup});
+          {blink::features::kLinkPreview,
+           omnibox::internal::kWebUIOmniboxPopup});
     }
   }
 
