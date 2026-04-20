@@ -1,20 +1,22 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "chrome/browser/nearby_sharing/text_attachment.h"
 
 #include <algorithm>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
-#include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "components/drive/drive_api_util.h"
 #include "url/gurl.h"
 
 namespace {
 
 // Tries to get a valid host name from the |text|. Returns nullopt otherwise.
-std::optional<std::string> GetHostFromText(const std::string& text) {
+std::optional<std::string> GetHostFromText(std::string_view text) {
   GURL url(text);
   if (!url.is_valid() || !url.has_host())
     return std::nullopt;
@@ -31,7 +33,7 @@ std::optional<std::string> GetHostFromText(const std::string& text) {
 // Note: We're assuming a formatted phone number and won't try to reformat to
 // E164 like on Android as there's no easy way of determining the intended
 // region for the phone number.
-std::string MaskPhoneNumber(const std::string& number) {
+std::string MaskPhoneNumber(std::string_view number) {
   constexpr int kMinMaskedDigits = 4;
   constexpr int kMaxLeadingDigits = 2;
   constexpr int kMaxTailingDigits = 4;
@@ -40,9 +42,9 @@ std::string MaskPhoneNumber(const std::string& number) {
       kMinMaskedDigits + kMaxLeadingDigits;
 
   if (number.empty())
-    return number;
+    return std::string();
 
-  std::string result = number;
+  std::string_view result = number;
   bool has_plus = false;
   if (number[0] == '+') {
     result = number.substr(1);
@@ -69,7 +71,7 @@ std::string MaskPhoneNumber(const std::string& number) {
                        result.substr(result.length() - tailing_digits)});
 }
 
-std::string GetTextTitle(const std::string& text_body,
+std::string GetTextTitle(std::string_view text_body,
                          TextAttachment::Type type) {
   constexpr size_t kMaxPreviewTextLength = 32;
 
@@ -90,7 +92,7 @@ std::string GetTextTitle(const std::string& text_body,
   if (text_body.size() > kMaxPreviewTextLength)
     return base::StrCat({text_body.substr(0, kMaxPreviewTextLength), "…"});
 
-  return text_body;
+  return std::string(text_body);
 }
 
 }  // namespace
