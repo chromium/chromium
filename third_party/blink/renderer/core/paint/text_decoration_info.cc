@@ -207,6 +207,7 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
 
   // Compute the |ComputedStyle| of the decorating box.
   const ComputedStyle* decorating_box_style;
+  const DecoratingBox* decorating_box = nullptr;
   if (use_decorating_box_) {
     DCHECK(inline_context_);
     DCHECK_EQ(inline_context_->DecoratingBoxes().size(),
@@ -216,8 +217,8 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
         inline_context_->DecoratingBoxes().size()) [[unlikely]] {
       disable_decorating_box = true;
     } else {
-      decorating_box_ = &inline_context_->DecoratingBoxes()[decoration_index_];
-      decorating_box_style = &decorating_box_->Style();
+      decorating_box = &inline_context_->DecoratingBoxes()[decoration_index_];
+      decorating_box_style = &decorating_box->Style();
 
       // Disable the decorating box when the baseline is central, because the
       // decorating box doesn't produce the ideal position.
@@ -230,11 +231,11 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
 
     if (disable_decorating_box) [[unlikely]] {
       use_decorating_box_ = false;
-      decorating_box_ = nullptr;
+      decorating_box = nullptr;
       decorating_box_style = &target_style_;
     }
   } else {
-    DCHECK(!decorating_box_);
+    DCHECK(!decorating_box);
     decorating_box_style = &target_style_;
   }
   DCHECK(decorating_box_style);
@@ -264,6 +265,11 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
   decoration.computed_font_size = font_->GetFontDescription().ComputedSize();
   decoration.ascent =
       font_data ? font_data->GetFontMetrics().FloatAscent() : 0.f;
+
+  decoration.offset_from_decorating_box =
+      decoration.HasUnderline() && decorating_box
+          ? OffsetFromDecoratingBox(*decorating_box)
+          : LayoutUnit();
 
   decoration.resolved_thickness = ComputeThickness(decoration);
   return decoration;
@@ -342,14 +348,14 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
 
 // Returns the offset of the target text/box (|local_origin_|) from the
 // decorating box.
-LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
+LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox(
+    const DecoratingBox& decorating_box) const {
   DCHECK(use_decorating_box_);
   DCHECK(inline_context_);
-  DCHECK(decorating_box_);
   // Compute the paint offset of the decorating box. The |local_origin_| is
   // already adjusted to the paint offset.
   const LayoutUnit decorating_box_paint_offset =
-      decorating_box_->ContentOffsetInContainer().top +
+      decorating_box.ContentOffsetInContainer().top +
       inline_context_->PaintOffset().top;
   return decorating_box_paint_offset - local_origin_.line_over;
 }
@@ -368,10 +374,8 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, decoration.computed_font_size,
       decoration.font_data, line_offset, decoration.resolved_thickness);
-  if (use_decorating_box_) {
-    // The offset is for the decorating box. Convert it for the target text/box.
-    paint_underline_offset += OffsetFromDecoratingBox();
-  }
+  // The offset is for the decorating box. Convert it for the target text/box.
+  paint_underline_offset += decoration.offset_from_decorating_box;
   return ComputeLineData(decoration, TextDecorationLine::kUnderline,
                          paint_underline_offset);
 }
