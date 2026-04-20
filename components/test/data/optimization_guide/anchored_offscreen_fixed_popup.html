@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anchored Offscreen Fixed Popup</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 200vh;
+    }
+
+    #trigger {
+      margin: 16px;
+    }
+
+    /*
+     * Keep the popup rendered but park it below the viewport where it cannot
+     * be reached by scrolling.
+     */
+    #popup {
+      position: fixed;
+      bottom: 0;
+      transform: translateY(100%);
+    }
+  </style>
+</head>
+<body>
+  <button id="trigger">Choose size</button>
+  <div id="popup">
+    <button id="size-option">Size 6.5</button>
+  </div>
+</body>
+</html>

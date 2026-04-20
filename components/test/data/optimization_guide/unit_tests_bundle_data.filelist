@@ -5,6 +5,7 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 //components/test/data/optimization_guide/actionable_elements.html
+//components/test/data/optimization_guide/anchored_offscreen_fixed_popup.html
 //components/test/data/optimization_guide/aria_disabled_button.html
 //components/test/data/optimization_guide/aria_role.html
 //components/test/data/optimization_guide/bert_page_topics_model.tflite

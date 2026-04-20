@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
@@ -445,6 +446,61 @@ gfx::Rect LocalToOuterBoundingBox(const LayoutObject& object,
     return gfx::Rect();
   }
   return outer_box;
+}
+
+// Return true if the LayoutObject is positioned offscreen in such a way that it
+// can never be scrolled to, effectively hiding it.
+bool IsAnchoredOffscreen(const LayoutObject& object,
+                         const mojom::blink::AIPageContentGeometry& geometry,
+                         bool is_in_fixed_to_view_subtree) {
+  // Any visible pixels mean the node is reachable right now.
+  if (!geometry.visible_bounding_box.IsEmpty()) {
+    return false;
+  }
+
+  // Without an outer box, APC does not know where the node would land after
+  // scrolling. That happens for fully clipped content, zero-size actionable
+  // nodes, and wrappers that keep interactive semantics but have no paint
+  // geometry of their own, so we cannot classify them as anchored offscreen.
+  if (geometry.outer_bounding_box.IsEmpty()) {
+    return false;
+  }
+
+  const LayoutView* layout_view = object.GetDocument().GetLayoutView();
+  if (!layout_view) {
+    return false;
+  }
+  const LocalFrameView* frame_view = object.GetDocument().View();
+  if (!frame_view) {
+    return false;
+  }
+
+  // Nodes in a viewport-fixed subtree must intersect the current viewport to
+  // be reachable. Other nodes only need to intersect the scrollable document
+  // bounds, because normal document scrolling can still bring them onscreen
+  // later.
+  //
+  // `outer_bounding_box` is viewport-relative, so the non-fixed path must use
+  // document bounds in the same coordinate space. A raw `DocumentRect()`
+  // starts at document-space origin (0, 0), which would wrongly classify
+  // nodes above or left of the current scroll position as anchored offscreen
+  // even though the user can scroll back to them.
+  //
+  // `DocumentToFrame()` removes layout-viewport scrolling, and
+  // `FrameToViewport()` then applies visual-viewport offset and scale. This
+  // keeps the document bounds aligned with `outer_bounding_box`, including
+  // cases like browser controls shifting the visible viewport.
+  const gfx::Rect document_bounds_in_viewport =
+      frame_view->FrameToViewport(frame_view->DocumentToFrame(
+          ToPixelSnappedRect(layout_view->DocumentRect())));
+  const gfx::Rect reachable_bounds =
+      is_in_fixed_to_view_subtree ? ComputeVisibleBoundingBox(*layout_view)
+                                  : document_bounds_in_viewport;
+  if (reachable_bounds.IsEmpty()) {
+    return false;
+  }
+
+  return !geometry.outer_bounding_box.Intersects(reachable_bounds);
 }
 
 // Processes fragment bounding boxes for layout objects that can be split.
@@ -1957,6 +2013,10 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
                                       html_names::kAriaDisabledAttr)) {
       child_recursion_data.is_aria_disabled = true;
     }
+    const auto* child_box = DynamicTo<LayoutBox>(child);
+    child_recursion_data.is_in_fixed_to_view_subtree =
+        recursion_data.is_in_fixed_to_view_subtree ||
+        (child_box && child_box->IsFixedToView());
 
     has_visible_content |= IsVisible(*child);
 
@@ -2207,6 +2267,17 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
 
   AddNodeGeometry(object, attributes,
                   recursion_data.accessibility_focused_node_id);
+  // Some popup patterns keep clickable content rendered but park it outside
+  // the area reachable by scrolling until another control changes state.
+  // We drop the actionable metadata so that downstream click generation does
+  // not chase nodes that scrolling can never reach.
+  if (RuntimeEnabledFeatures::
+          AIPageContentAnchoredOffscreenNonActionabilityEnabled() &&
+      attributes.node_interaction_info && attributes.geometry &&
+      IsAnchoredOffscreen(object, *attributes.geometry,
+                          recursion_data.is_in_fixed_to_view_subtree)) {
+    attributes.node_interaction_info.reset();
+  }
   AddLabel(object, attributes);
   attributes.is_ad_related = element && element->IsAdRelated();
 

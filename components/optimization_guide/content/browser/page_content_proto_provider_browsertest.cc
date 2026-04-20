@@ -119,6 +119,48 @@ const optimization_guide::proto::ContentNode* FindFirstInteractiveNode(
   return nullptr;
 }
 
+bool SubtreeContainsTextSubstring(
+    const optimization_guide::proto::ContentNode& node,
+    const std::string& substring) {
+  // Match against serialized text nodes so callers can find the owning APC
+  // node without depending on the exact child layout.
+  if (node.content_attributes().has_text_data() &&
+      node.content_attributes().text_data().text_content().find(substring) !=
+          std::string::npos) {
+    return true;
+  }
+
+  for (const auto& child : node.children_nodes()) {
+    if (SubtreeContainsTextSubstring(child, substring)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const optimization_guide::proto::ContentNode*
+FindFirstNodeWithAttributeTypeAndTextSubstring(
+    const optimization_guide::proto::ContentNode& root,
+    optimization_guide::proto::ContentAttributeType attribute_type,
+    const std::string& substring) {
+  std::vector<const optimization_guide::proto::ContentNode*> stack;
+  stack.push_back(&root);
+  while (!stack.empty()) {
+    const auto* current = stack.back();
+    stack.pop_back();
+    // Match the APC node by role first, then use descendant text to identify
+    // the specific control under test.
+    if (current->content_attributes().attribute_type() == attribute_type &&
+        SubtreeContainsTextSubstring(*current, substring)) {
+      return current;
+    }
+    for (const auto& child : current->children_nodes()) {
+      stack.push_back(&child);
+    }
+  }
+  return nullptr;
+}
+
 // This helper is only used by popup opener tests, and those tests are not
 // built on Android, Mac, or iOS. Keep the helper under the same guard to
 // avoid unused-function build failures on those bots.
@@ -810,6 +852,37 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ZOrder) {
                 .interaction_info()
                 .document_scoped_z_order(),
             1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AnchoredOffscreenFixedPopupLosesInteractionInfo) {
+  // The page models a fixed bottom popup that stays rendered below the
+  // viewport until another control changes state.
+  LoadPage(https_server()->GetURL("/anchored_offscreen_fixed_popup.html"),
+           nullptr);
+
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto& root = ActionableContentRootNode();
+  const auto* trigger = FindFirstNodeWithAttributeTypeAndTextSubstring(
+      root, optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL,
+      "Choose size");
+  ASSERT_TRUE(trigger);
+  ASSERT_TRUE(trigger->content_attributes().has_interaction_info());
+
+  const auto* size_option = FindFirstNodeWithAttributeTypeAndTextSubstring(
+      root, optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL,
+      "Size 6.5");
+  ASSERT_TRUE(size_option);
+
+  // The hidden option still exists in the DOM, but APC should stop presenting
+  // it as directly actionable because scrolling cannot bring it on screen.
+  const auto& option_geometry = size_option->content_attributes().geometry();
+  // The popup can start exactly at the bottom edge of the viewport and still
+  // be offscreen because there is no overlap with the viewport rect.
+  EXPECT_GE(option_geometry.outer_bounding_box().y(),
+            page_content().viewport_geometry().height());
+  EXPECT_FALSE(size_option->content_attributes().has_interaction_info());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

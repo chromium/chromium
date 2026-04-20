@@ -104,6 +104,7 @@ class MODULES_EXPORT AIPageContentAgent final
       RecursionData(const ComputedStyle& document_style);
 
       bool is_aria_disabled = false;
+      bool is_in_fixed_to_view_subtree = false;
       const ComputedStyle& document_style;
       int stack_depth = 0;
       DOMNodeId accessibility_focused_node_id = kInvalidDOMNodeId;
