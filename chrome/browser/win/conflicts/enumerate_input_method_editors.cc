@@ -76,7 +76,6 @@ void EnumerateImesOnBlockingSequence(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     OnImeEnumeratedCallback on_ime_enumerated,
     base::OnceClosure on_enumeration_finished) {
-  int nb_imes = 0;
   for (base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE, kImeRegistryKey);
        iter.Valid(); ++iter) {
     const wchar_t* guid = iter.Name();
@@ -96,16 +95,12 @@ void EnumerateImesOnBlockingSequence(
       continue;
     }
 
-    nb_imes++;
     task_runner->PostTask(
         FROM_HERE, base::BindOnce(on_ime_enumerated, dll_path, size_of_image,
                                   time_date_stamp));
   }
 
   task_runner->PostTask(FROM_HERE, std::move(on_enumeration_finished));
-
-  base::UmaHistogramCounts100("ThirdPartyModules.InputMethodEditorsCount",
-                              nb_imes);
 }
 
 }  // namespace

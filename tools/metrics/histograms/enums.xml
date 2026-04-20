@@ -1498,11 +1498,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Toggled on"/>
 </enum>
 
-<enum name="BooleanUninstallable">
-  <int value="0" label="Not uninstallable"/>
-  <int value="1" label="Uninstallable"/>
-</enum>
-
 <enum name="BooleanUsage">
   <int value="0" label="Not Used"/>
   <int value="1" label="Used"/>
