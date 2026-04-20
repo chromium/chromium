@@ -531,11 +531,11 @@ inline constexpr char kDocsOfflineExtensionId[] =
 inline constexpr char kId[] = "id";
 
 // The key name of extension request timestamp used by the
-// prefs::kCloudExtensionRequestIds preference.
+// enterprise_reporting::kCloudExtensionRequestIds preference.
 inline constexpr char kExtensionRequestTimestamp[] = "timestamp";
 
 // The key name of the extension workflow request justification used by the
-// prefs::kCloudExtensionRequestIds preference.
+// enterprise_reporting::kCloudExtensionRequestIds preference.
 inline constexpr char kExtensionWorkflowJustification[] = "justification";
 
 }  // namespace extension_misc

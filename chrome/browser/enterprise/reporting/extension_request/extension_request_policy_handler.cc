@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -63,7 +63,7 @@ void ExtensionRequestPolicyHandler::ApplyPolicySettings(
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
 
   if (extension_request_policy_value) {
-    prefs->SetValue(prefs::kCloudExtensionRequestEnabled,
+    prefs->SetValue(enterprise_reporting::kCloudExtensionRequestEnabled,
                     extension_request_policy_value->Clone());
   }
 }

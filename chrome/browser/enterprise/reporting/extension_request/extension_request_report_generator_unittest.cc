@@ -9,9 +9,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/common/proto/synced/extensions_workflow_events.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -54,7 +54,7 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
   void SetExtensionRequestsList(const std::vector<std::string>& pendings,
                                 const std::vector<std::string>& uploadeds,
                                 TestingProfile* profile) {
-    SetRequestPrefs(pendings, prefs::kCloudExtensionRequestIds,
+    SetRequestPrefs(pendings, enterprise_reporting::kCloudExtensionRequestIds,
                     extension_misc::kExtensionRequestTimestamp, profile);
     SetRequestPrefs(uploadeds, kCloudExtensionRequestUploadedIds,
                     "upload_timestamp", profile);
@@ -80,7 +80,7 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
     TestingProfile* profile =
         profile_manager_.CreateTestingProfile(profile_name);
     profile->GetTestingPrefService()->SetManagedPref(
-        prefs::kCloudExtensionRequestEnabled,
+        enterprise_reporting::kCloudExtensionRequestEnabled,
         std::make_unique<base::Value>(true));
     return profile;
   }

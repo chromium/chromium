@@ -19,10 +19,10 @@
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -119,8 +119,8 @@ struct ExtensionRequestData {
 void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
                            expected_pending_requests,
                        Profile* profile) {
-  const base::DictValue& actual_pending_requests =
-      profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
+  const base::DictValue& actual_pending_requests = profile->GetPrefs()->GetDict(
+      enterprise_reporting::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests.size());
   for (const auto& expected_request : expected_pending_requests) {
     const base::DictValue* actual_pending_request =
@@ -384,7 +384,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
 
   void EnableExtensionRequest(bool enable) {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kCloudExtensionRequestEnabled,
+        enterprise_reporting::kCloudExtensionRequestEnabled,
         std::make_unique<base::Value>(enable));
   }
 

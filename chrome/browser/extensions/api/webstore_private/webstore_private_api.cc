@@ -40,8 +40,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -314,7 +314,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
   }
 
   ScopedDictPrefUpdate pending_requests_update(
-      profile->GetPrefs(), prefs::kCloudExtensionRequestIds);
+      profile->GetPrefs(), enterprise_reporting::kCloudExtensionRequestIds);
   DCHECK(!pending_requests_update->Find(id));
   base::DictValue request_data;
   request_data.Set(extension_misc::kExtensionRequestTimestamp,

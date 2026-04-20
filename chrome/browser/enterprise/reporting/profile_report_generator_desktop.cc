@@ -14,7 +14,7 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -42,10 +42,12 @@ void ProfileReportGeneratorDesktop::GetExtensionInfo(
 void ProfileReportGeneratorDesktop::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled))
+  if (!profile_->GetPrefs()->GetBoolean(
+          enterprise_reporting::kCloudExtensionRequestEnabled)) {
     return;
-  const base::DictValue& pending_requests =
-      profile_->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
+  }
+  const base::DictValue& pending_requests = profile_->GetPrefs()->GetDict(
+      enterprise_reporting::kCloudExtensionRequestIds);
 
   // In case a corrupted profile prefs causing |pending_requests| to be null.
 

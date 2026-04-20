@@ -2847,17 +2847,6 @@ inline constexpr char kCryptAuthInstanceIdToken[] =
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
 
-// Boolean that indicates whether Chrome enterprise extension request is enabled
-// or not.
-inline constexpr char kCloudExtensionRequestEnabled[] =
-    "enterprise_reporting.extension_request.enabled";
-
-// A list of extension ids represents pending extension request. The ids are
-// stored once user sent the request until the request is canceled, approved or
-// denied.
-inline constexpr char kCloudExtensionRequestIds[] =
-    "enterprise_reporting.extension_request.ids";
-
 // Boolean pref indicating whether extension DOM activity logging is enabled
 // for enterprise telemetry.
 inline constexpr char kExtensionDOMActivityLoggingEnabled[] =

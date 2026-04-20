@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/browser/managed_installation_mode.h"
@@ -33,7 +33,7 @@ ExtensionRequestObserver::ExtensionRequestObserver(Profile* profile)
   OnExtensionManagementSettingsChanged();
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kCloudExtensionRequestIds,
+      enterprise_reporting::kCloudExtensionRequestIds,
       base::BindRepeating(&ExtensionRequestObserver::OnPendingListChanged,
                           weak_factory_.GetWeakPtr()));
 }
@@ -85,7 +85,8 @@ void ExtensionRequestObserver::OnPendingListChanged() {
 }
 
 void ExtensionRequestObserver::ShowAllNotifications() {
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled)) {
+  if (!profile_->GetPrefs()->GetBoolean(
+          enterprise_reporting::kCloudExtensionRequestEnabled)) {
     CloseAllNotifications();
     return;
   }
@@ -97,8 +98,8 @@ void ExtensionRequestObserver::ShowAllNotifications() {
 
 void ExtensionRequestObserver::ShowNotification(
     ExtensionRequestNotification::NotifyType type) {
-  const base::DictValue& pending_requests =
-      profile_->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
+  const base::DictValue& pending_requests = profile_->GetPrefs()->GetDict(
+      enterprise_reporting::kCloudExtensionRequestIds);
 
   ExtensionRequestNotification::ExtensionIds filtered_extension_ids;
   extensions::ExtensionManagement* extension_management =
@@ -161,7 +162,7 @@ void ExtensionRequestObserver::RemoveExtensionsFromPendingList(
     const std::vector<std::string>& extension_ids) {
   ScopedDictPrefUpdate pending_requests_update(
       Profile::FromBrowserContext(profile_)->GetPrefs(),
-      prefs::kCloudExtensionRequestIds);
+      enterprise_reporting::kCloudExtensionRequestIds);
   for (auto& id : extension_ids)
     pending_requests_update->Remove(id);
 

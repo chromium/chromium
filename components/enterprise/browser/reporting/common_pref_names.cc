@@ -74,4 +74,17 @@ const char kSaasUsageReport[] = "enterprise_reporting.saas_usage.report";
 const char kSaasUsageReportLastTriggerTime[] =
     "enterprise_reporting.saas_usage.last_trigger_time";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Boolean that indicates whether Chrome enterprise extension request is enabled
+// or not.
+const char kCloudExtensionRequestEnabled[] =
+    "enterprise_reporting.extension_request.enabled";
+
+// A list of extension ids represents pending extension request. The ids are
+// stored once user sent the request until the request is canceled, approved or
+// denied.
+const char kCloudExtensionRequestIds[] =
+    "enterprise_reporting.extension_request.ids";
+#endif
+
 }  // namespace enterprise_reporting

@@ -14,8 +14,8 @@
 #include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -116,8 +116,9 @@ class ExtensionRequestObserverTest : public InProcessBrowserTest {
           id, base::DictValue().Set(extension_misc::kExtensionRequestTimestamp,
                                     ::base::TimeToValue(base::Time::Now())));
     }
-    browser()->profile()->GetPrefs()->Set(prefs::kCloudExtensionRequestIds,
-                                          base::Value(std::move(id_values)));
+    browser()->profile()->GetPrefs()->Set(
+        enterprise_reporting::kCloudExtensionRequestIds,
+        base::Value(std::move(id_values)));
   }
 
   std::vector<std::optional<message_center::Notification>>
@@ -155,7 +156,7 @@ class ExtensionRequestObserverTest : public InProcessBrowserTest {
         browser()
             ->profile()
             ->GetPrefs()
-            ->GetDict(prefs::kCloudExtensionRequestIds)
+            ->GetDict(enterprise_reporting::kCloudExtensionRequestIds)
             .size();
 
     // Close the notification
@@ -170,7 +171,7 @@ class ExtensionRequestObserverTest : public InProcessBrowserTest {
     // Verify that only |expected_removed_requests| are removed from the pref.
     const base::DictValue& actual_pending_requests =
         browser()->profile()->GetPrefs()->GetDict(
-            prefs::kCloudExtensionRequestIds);
+            enterprise_reporting::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
               actual_pending_requests.size());
     for (auto it : actual_pending_requests) {
@@ -234,11 +235,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest,
   VerifyNotification(false);
 
   // No request removed when notification is not closed by user.
-  EXPECT_EQ(pending_list.size(), browser()
-                                     ->profile()
-                                     ->GetPrefs()
-                                     ->GetDict(prefs::kCloudExtensionRequestIds)
-                                     .size());
+  EXPECT_EQ(pending_list.size(),
+            browser()
+                ->profile()
+                ->GetPrefs()
+                ->GetDict(enterprise_reporting::kCloudExtensionRequestIds)
+                .size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
@@ -292,11 +294,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionRequestObserverTest,
   VerifyNotification(false);
 
   // And no pending requests are removed.
-  EXPECT_EQ(pending_list.size(), browser()
-                                     ->profile()
-                                     ->GetPrefs()
-                                     ->GetDict(prefs::kCloudExtensionRequestIds)
-                                     .size());
+  EXPECT_EQ(pending_list.size(),
+            browser()
+                ->profile()
+                ->GetPrefs()
+                ->GetDict(enterprise_reporting::kCloudExtensionRequestIds)
+                .size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 

@@ -12,8 +12,8 @@
 #include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -151,7 +151,7 @@ ExtensionInstallStatus PerformSynchronousChecks(
     // The ability to request extension installs is not available if the
     // extension request policy is disabled.
     if (!profile->GetPrefs()->GetBoolean(
-            prefs::kCloudExtensionRequestEnabled)) {
+            enterprise_reporting::kCloudExtensionRequestEnabled)) {
       return kBlockedByPolicy;
     }
 
@@ -184,7 +184,7 @@ ExtensionInstallStatus PerformSynchronousChecks(
   // extension.
   if (is_blocked_by_policy) {
     if (profile->GetPrefs()
-            ->GetDict(prefs::kCloudExtensionRequestIds)
+            ->GetDict(enterprise_reporting::kCloudExtensionRequestIds)
             .Find(extension_id)) {
       return kRequestPending;
     }

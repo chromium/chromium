@@ -7,10 +7,9 @@
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/reporting/real_time_report_generator_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/common/proto/synced/extensions_workflow_events.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,11 +38,11 @@ TEST_F(RealTimeReportGeneratorTest, ExtensionRequest) {
   TestingProfile* profile = profile_manager()->CreateTestingProfile("profile");
 
   profile->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled, base::Value(true));
+      enterprise_reporting::kCloudExtensionRequestEnabled, base::Value(true));
 
   auto requests = base::DictValue().Set(extension_id, base::DictValue());
   profile->GetTestingPrefService()->SetUserPref(
-      prefs::kCloudExtensionRequestIds, std::move(requests));
+      enterprise_reporting::kCloudExtensionRequestIds, std::move(requests));
 
   ReportingDelegateFactoryDesktop factory;
   RealTimeReportGenerator generator{&factory};

@@ -20,11 +20,11 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -183,7 +183,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
                    base::Value(kJustification)));
     }
     profile()->GetTestingPrefService()->SetUserPref(
-        prefs::kCloudExtensionRequestIds, std::move(id_values));
+        enterprise_reporting::kCloudExtensionRequestIds, std::move(id_values));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -278,7 +278,7 @@ TEST_F(ProfileReportGeneratorTest,
        SignalsOnlyMode_IncludesPoliciesAndExcludesExtensions) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   SetExtensionSettings(kBlockedExtensionSettings);
   extensions::ExtensionBuilder builder(
@@ -306,7 +306,7 @@ TEST_F(ProfileReportGeneratorTest,
        NoSignalsAndSignalsAttachedMode_IncludesPoliciesAndExtensions) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   SetExtensionSettings(kBlockedExtensionSettings);
   extensions::ExtensionBuilder builder(
@@ -493,7 +493,7 @@ TEST_F(ProfileReportGeneratorTest, NotAffiliated) {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   std::vector<std::string> ids = {kExtensionId};
   SetExtensionToPendingList(ids);
@@ -507,7 +507,7 @@ TEST_F(ProfileReportGeneratorTest, PendingRequest) {
 
 TEST_F(ProfileReportGeneratorTest, PendingRequestNotSupportProfileReporting) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   std::vector<std::string> ids = {kExtensionId};
   SetExtensionToPendingList(ids);
@@ -519,7 +519,7 @@ TEST_F(ProfileReportGeneratorTest, PendingRequestNotSupportProfileReporting) {
 
 TEST_F(ProfileReportGeneratorTest, NoPendingRequestWhenItsDisabled) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(false));
   std::vector<std::string> ids = {kExtensionId};
   SetExtensionToPendingList(ids);
@@ -530,7 +530,7 @@ TEST_F(ProfileReportGeneratorTest, NoPendingRequestWhenItsDisabled) {
 
 TEST_F(ProfileReportGeneratorTest, FilterOutApprovedPendingRequest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   SetExtensionSettings(kAllowedExtensionSettings);
   std::vector<std::string> ids = {kExtensionId, kExtensionId2};
@@ -543,7 +543,7 @@ TEST_F(ProfileReportGeneratorTest, FilterOutApprovedPendingRequest) {
 
 TEST_F(ProfileReportGeneratorTest, FilterOutBlockedPendingRequest) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   SetExtensionSettings(kBlockedExtensionSettings);
   std::vector<std::string> ids = {kExtensionId, kExtensionId2};
@@ -556,7 +556,7 @@ TEST_F(ProfileReportGeneratorTest, FilterOutBlockedPendingRequest) {
 
 TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
   profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
+      enterprise_reporting::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));
   const int extension_request_count = kMaxNumberOfExtensionRequest;
   std::vector<std::string> ids(extension_request_count);

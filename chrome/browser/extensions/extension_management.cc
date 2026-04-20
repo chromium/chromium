@@ -43,6 +43,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -118,8 +119,9 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   pref_change_registrar_.Add(pref_names::kAllowedTypes, pref_change_callback);
   pref_change_registrar_.Add(pref_names::kExtensionManagement,
                              pref_change_callback);
-  pref_change_registrar_.Add(prefs::kCloudExtensionRequestEnabled,
-                             pref_change_callback);
+  pref_change_registrar_.Add(
+      enterprise_reporting::kCloudExtensionRequestEnabled,
+      pref_change_callback);
 #if !BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(enterprise_reporting::kCloudReportingEnabled,
                              pref_change_callback);
@@ -714,8 +716,9 @@ void ExtensionManagement::Refresh() {
       LoadListPreference(pref_names::kAllowedTypes, true);
   const base::DictValue* dict_pref =
       LoadDictPreference(pref_names::kExtensionManagement, true);
-  const base::Value* extension_request_pref = LoadPreference(
-      prefs::kCloudExtensionRequestEnabled, false, base::Value::Type::BOOLEAN);
+  const base::Value* extension_request_pref =
+      LoadPreference(enterprise_reporting::kCloudExtensionRequestEnabled, false,
+                     base::Value::Type::BOOLEAN);
 
   const base::Value* manifest_v2_pref =
       LoadPreference(pref_names::kManifestV2Availability,
