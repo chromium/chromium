@@ -20,9 +20,6 @@ import java.util.Locale;
 /** Encapsulates information about the playback being requested. */
 @NullMarked
 public class PlaybackArgs {
-    /** TODO(basiaz): Delete after source lands e2e */
-    private final String mUrl;
-
     /* Can represent either page url or plain text */
     private final String mSource;
     /* if false, the surce is plain text rather than url of a website. */
@@ -257,12 +254,6 @@ public class PlaybackArgs {
             return mAccentRegionCode;
         }
 
-        // TODO(iwells): Remove this method when it is no longer called internally.
-
-        public @Nullable String getDescription() {
-            return mDisplayName;
-        }
-
         public @Nullable String getDisplayName() {
             return mDisplayName;
         }
@@ -328,19 +319,12 @@ public class PlaybackArgs {
             List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch,
             List<PlaybackMode> playbackModes) {
-        mUrl = source;
         mSource = source;
         mIsSourceUrl = isUrl;
         mLanguage = language;
         mVoices = voices;
         mDateModifiedMsSinceEpoch = dateModifiedMsSinceEpoch;
         mPlaybackModes = playbackModes;
-    }
-
-    /** Returns the URL of the playback page. */
-    @Deprecated
-    public String getUrl() {
-        return mUrl;
     }
 
     /** Returns the source which can either be an URL or plain text */
