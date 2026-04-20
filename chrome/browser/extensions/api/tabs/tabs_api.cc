@@ -1932,7 +1932,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   index_ = create_properties.index;
   original_url_ = std::move(create_properties.url);
 
-  validated_url_ = GURL(chrome::kChromeUINewTabURL);
+  validated_url_ = chrome::ChromeUINewTabURLAsGURL();
   if (original_url_) {
     base::expected<GURL, std::string> maybe_url =
         ExtensionTabUtil::PrepareURLForNavigation(*original_url_, extension(),

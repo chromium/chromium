@@ -48,7 +48,7 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideBrowserNetworkRequest) {
     WebRequestInfoInitParams request_params;
     request_params.url = GURL("https://example.com/script.js");
     request_params.initiator =
-        url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+        url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
     request_params.render_process_id = -1;
     request_params.web_request_type = web_request_type;
     return request_params;
