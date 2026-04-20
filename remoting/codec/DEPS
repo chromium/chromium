@@ -7,6 +7,7 @@ include_rules = [
   "+media/video",
   "+remoting/protocol",
   "+remoting/signaling",
+  "+remoting/test/frame_generator",
   "+ui/gfx/geometry",
   "+third_party/opus",
   "+third_party/webrtc",

@@ -30,12 +30,13 @@ source_set("encoder") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//third_party/libaom" ]
+
   deps = [
     ":vpx_codec",
     "//remoting/base",
     "//remoting/proto",
     "//remoting/signaling",
-    "//third_party/libaom",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/opus",
@@ -114,6 +115,22 @@ source_set("vpx_codec") {
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+}
+
+if (!is_component_build && (is_win || is_linux)) {
+  executable("webrtc_video_encoder_benchmark") {
+    testonly = true
+
+    sources = [ "webrtc_video_encoder_benchmark.cc" ]
+
+    deps = [
+      ":encoder",
+      "//base",
+      "//base/test:test_support",
+      "//remoting/test/frame_generator:frame_generator_test_support",
+      "//third_party/webrtc_overrides:webrtc_component",
+    ]
+  }
 }
 
 source_set("unit_tests") {
