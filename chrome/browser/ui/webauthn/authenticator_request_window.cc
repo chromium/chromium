@@ -88,6 +88,7 @@ class ReauthWebContentsObserver : public content::WebContentsObserver {
     }
 
     std::move(callback_).Run(std::move(rapt));
+    // `this` may have been destroyed.
   }
 
  private:
@@ -151,8 +152,13 @@ class PasskeyResetWebContentsObserver : public content::WebContentsObserver {
     }
     if (status_ == Status::kSuccess && ref == "success") {
       std::move(callback_).Run(true);
-    } else if (status_ == Status::kFail && ref == "fail") {
+      // `this` may have been destroyed.
+      return;
+    }
+    if (status_ == Status::kFail && ref == "fail") {
       std::move(callback_).Run(false);
+      // `this` may have been destroyed.
+      return;
     }
     status_ = Status::kNotStarted;
   }
