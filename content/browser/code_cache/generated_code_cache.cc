@@ -410,9 +410,6 @@ class GeneratedCodeCache::PendingOperation {
         }
         base::UmaHistogramBoolean("SiteIsolatedCodeCache.JS.Hit",
                                   code_cache_hit);
-        base::UmaHistogramBoolean(
-            "SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheHit",
-            in_memory_code_cache_hit);
       }
     }
     std::move(read_callback_).Run(response_time, std::move(data));

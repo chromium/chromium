@@ -7121,16 +7121,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheHit"
-    enum="Boolean" expires_after="2023-10-08">
-  <owner>yhirano@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    Represents whether fetching from the memory-backed code cache would succeed.
-    Recorded when the code cache result gets available.
-  </summary>
-</histogram>
-
 <histogram name="SiteIsolatedCodeCache.JS.WebUI.Behaviour"
     enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
   <owner>tluk@chromium.org</owner>
