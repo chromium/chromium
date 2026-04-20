@@ -7954,7 +7954,7 @@
                         "fre_promo_arm": "rmd_direct_invocation"
                     },
                     "enable_features": [
-                        "DefaultBrowserPromoFRE"
+                        "DefaultBrowserPromoFre"
                     ]
                 },
                 {
@@ -7963,7 +7963,7 @@
                         "fre_promo_arm": "primer_no_instructions"
                     },
                     "enable_features": [
-                        "DefaultBrowserPromoFRE"
+                        "DefaultBrowserPromoFre"
                     ]
                 },
                 {
@@ -7972,7 +7972,7 @@
                         "fre_promo_arm": "primer_promotional_text"
                     },
                     "enable_features": [
-                        "DefaultBrowserPromoFRE"
+                        "DefaultBrowserPromoFre"
                     ]
                 }
             ]
