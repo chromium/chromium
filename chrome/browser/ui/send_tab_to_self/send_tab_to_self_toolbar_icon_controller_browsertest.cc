@@ -8,8 +8,10 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
@@ -181,11 +183,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
                              "device a", "device b", PageContext(),
                              NavigationHistory());
 
-  int tab_count = browser()->tab_strip_model()->count();
+  const int original_tab_count = browser()->tab_strip_model()->count();
   controller()->DisplayNewEntries({&entry_1, &entry_2});
 
   EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
-  EXPECT_EQ(tab_count + 2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(original_tab_count + 2, browser()->tab_strip_model()->count());
   // The new tabs are opened in the foreground, with the first incoming tab
   // (index 1) being the active one.
   EXPECT_EQ(url_1, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
@@ -228,13 +230,19 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
                              "device a", "device b", PageContext(),
                              NavigationHistory());
 
-  int tab_count = browser()->tab_strip_model()->count();
+  const int original_tab_count = browser()->tab_strip_model()->count();
   controller()->DisplayNewEntries({&entry_1, &entry_2});
 
-  EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(original_tab_count, browser()->tab_strip_model()->count());
 
   histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome",
                                       AutoOpenOutcome::kPending, 2);
+
+  EXPECT_FALSE(browser()
+                   ->browser_window_features()
+                   ->toast_service()
+                   ->toast_controller()
+                   ->IsShowingToast());
 
   // Activate the browser and check that the entries are opened in the
   // background and the auto-open outcome is recorded.
@@ -243,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 
   EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
 
-  EXPECT_EQ(tab_count + 2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(original_tab_count + 2, browser()->tab_strip_model()->count());
   // The new tabs are opened in the background (indices 1 and 2), and the active
   // index remains 0.
   EXPECT_EQ(url_1, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
@@ -252,6 +260,197 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 
   histogram_tester.ExpectBucketCount("Sharing.SendTabToSelf.AutoOpenOutcome",
                                      AutoOpenOutcome::kOpenedPending, 2);
+
+  EXPECT_EQ(browser()
+                ->browser_window_features()
+                ->toast_service()
+                ->toast_controller()
+                ->GetCurrentToastId(),
+            ToastId::kSendTabToSelfTabsOpenedInBackground);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SendTabToSelfToolbarIconControllerAutoOpenTest,
+    ToastActionButtonSwitchesToLatestTabsOpenedInBackground) {
+  ASSERT_TRUE(browser()->IsActive());
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // Create an incognito browser and remove the current browser from focus.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  ASSERT_FALSE(browser()->IsActive());
+
+  GURL url_1("https://www.example-a.com");
+  SendTabToSelfEntry entry_1("new_entry_1", url_1, "a site", base::Time::Now(),
+                             "device a", "device b", PageContext(),
+                             NavigationHistory());
+  GURL url_2("https://www.example-b.com");
+  SendTabToSelfEntry entry_2("new_entry_2", url_2, "b site", base::Time::Now(),
+                             "device a", "device b", PageContext(),
+                             NavigationHistory());
+
+  const int original_tab_count = browser()->tab_strip_model()->count();
+  controller()->DisplayNewEntries({&entry_1, &entry_2});
+
+  ASSERT_FALSE(browser()
+                   ->browser_window_features()
+                   ->toast_service()
+                   ->toast_controller()
+                   ->IsShowingToast());
+
+  // Activate the browser and check that the entries are opened in the
+  // background and the auto-open outcome is recorded.
+  browser_view()->Activate();
+  WaitUntilBrowserBecomeActiveOrLastActive(browser());
+
+  ASSERT_EQ(original_tab_count + 2, browser()->tab_strip_model()->count());
+  // The new tabs are opened in the background (indices 1 and 2), and the active
+  // index remains 0.
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  ASSERT_EQ(browser()
+                ->browser_window_features()
+                ->toast_service()
+                ->toast_controller()
+                ->GetCurrentToastId(),
+            ToastId::kSendTabToSelfTabsOpenedInBackground);
+
+  // Simulate clicking the toast action button.
+  controller()->SwitchToLatestTabsOpenedInBackground(browser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+}
+
+// This test covers an edge case scenario where a previously opened tab is
+// closed before clicking the toast action button.
+IN_PROC_BROWSER_TEST_F(
+    SendTabToSelfToolbarIconControllerAutoOpenTest,
+    ToastActionButtonSwitchesToCorrectTabIfPreviousOneIsClosed) {
+  ASSERT_TRUE(browser()->IsActive());
+
+  // Add a new tab.
+  GURL url_1("https://www.example-a.com");
+  chrome::AddTabAt(browser(), url_1, -1, true);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Create an incognito browser and remove the current browser from focus.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  ASSERT_FALSE(browser()->IsActive());
+
+  GURL url_2("https://www.example-b.com");
+  SendTabToSelfEntry entry_2("new_entry_2", url_2, "b site", base::Time::Now(),
+                             "device a", "device b", PageContext(),
+                             NavigationHistory());
+  GURL url_3("https://www.example-c.com");
+  SendTabToSelfEntry entry_3("new_entry_3", url_3, "c site", base::Time::Now(),
+                             "device a", "device b", PageContext(),
+                             NavigationHistory());
+
+  const int original_tab_count = browser()->tab_strip_model()->count();
+  controller()->DisplayNewEntries({&entry_2, &entry_3});
+
+  ASSERT_FALSE(browser()
+                   ->browser_window_features()
+                   ->toast_service()
+                   ->toast_controller()
+                   ->IsShowingToast());
+
+  // Activate the browser and check that the entries are opened in the
+  // background and the auto-open outcome is recorded.
+  browser_view()->Activate();
+  WaitUntilBrowserBecomeActiveOrLastActive(browser());
+
+  ASSERT_EQ(original_tab_count + 2, browser()->tab_strip_model()->count());
+  // The new tabs are opened in the background (indices 2 and 3), and the active
+  // index remains 1.
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(url_1, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  ASSERT_EQ(url_2, browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
+  ASSERT_EQ(url_3, browser()->tab_strip_model()->GetWebContentsAt(3)->GetURL());
+
+  ASSERT_EQ(browser()
+                ->browser_window_features()
+                ->toast_service()
+                ->toast_controller()
+                ->GetCurrentToastId(),
+            ToastId::kSendTabToSelfTabsOpenedInBackground);
+
+  // Close the previously active tab (index 1).
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(), TabCloseTypes::CLOSE_NONE);
+  ASSERT_EQ(original_tab_count + 1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  // The newly added tabs are now at indices 1 and 2 respectively.
+  EXPECT_EQ(url_2, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(url_3, browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
+
+  // Simulate clicking the toast action button.
+  controller()->SwitchToLatestTabsOpenedInBackground(browser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(url_2,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+// This test covers an edge case scenario where the first of the newly opened
+// tabs is closed before clicking the toast action button.
+IN_PROC_BROWSER_TEST_F(
+    SendTabToSelfToolbarIconControllerAutoOpenTest,
+    ToastActionButtonSwitchesToFirstAvailableNewTabAddedToBackground) {
+  ASSERT_TRUE(browser()->IsActive());
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // Create an incognito browser and remove the current browser from focus.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  ASSERT_FALSE(browser()->IsActive());
+
+  GURL url_1("https://www.example-a.com");
+  SendTabToSelfEntry entry_1("new_entry_1", url_1, "a site", base::Time::Now(),
+                             "device a", "device b", PageContext(),
+                             NavigationHistory());
+  GURL url_2("https://www.example-b.com");
+  SendTabToSelfEntry entry_2("new_entry_2", url_2, "b site", base::Time::Now(),
+                             "device a", "device b", PageContext(),
+                             NavigationHistory());
+
+  const int original_tab_count = browser()->tab_strip_model()->count();
+  controller()->DisplayNewEntries({&entry_1, &entry_2});
+
+  ASSERT_FALSE(browser()
+                   ->browser_window_features()
+                   ->toast_service()
+                   ->toast_controller()
+                   ->IsShowingToast());
+
+  // Activate the browser and check that the entries are opened in the
+  // background and the auto-open outcome is recorded.
+  browser_view()->Activate();
+  WaitUntilBrowserBecomeActiveOrLastActive(browser());
+
+  ASSERT_EQ(original_tab_count + 2, browser()->tab_strip_model()->count());
+  // The new tabs are opened in the background (indices 1 and 2), and the active
+  // index remains 0.
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  ASSERT_EQ(browser()
+                ->browser_window_features()
+                ->toast_service()
+                ->toast_controller()
+                ->GetCurrentToastId(),
+            ToastId::kSendTabToSelfTabsOpenedInBackground);
+
+  // Close the first of the newly opened tabs.
+  browser()->tab_strip_model()->CloseWebContentsAt(1,
+                                                   TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(original_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // Simulate clicking the toast action button.
+  controller()->SwitchToLatestTabsOpenedInBackground(browser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(url_2,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 #endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 

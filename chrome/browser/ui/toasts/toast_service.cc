@@ -14,12 +14,15 @@
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -474,9 +477,33 @@ void ToastService::RegisterToasts(
 
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfTabOpened,
+      // TODO(crbug.com/488072250): Update the strings.
       ToastSpecification::Builder(
           vector_icons::kDevicesIcon,
           IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME)
+          .AddGlobalScoped()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSendTabToSelfTabsOpenedInBackground,
+      // TODO(crbug.com/488072250): Update the strings.
+      ToastSpecification::Builder(
+          vector_icons::kDevicesIcon,
+          IDS_SEND_TAB_PUSH_NOTIFICATION_TITLE_USER_GIVEN_DEVICE_NAME)
+          .AddCloseButton()
+          .AddActionButton(
+              IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON,
+              base::BindRepeating(
+                  [](BrowserWindowInterface* window) {
+                    send_tab_to_self::ReceivingUiHandler* handler =
+                        send_tab_to_self::SendTabToSelfClientServiceFactory::
+                            GetForProfile(window->GetProfile())
+                                ->GetReceivingUiHandler();
+                    send_tab_to_self::SendTabToSelfToolbarIconController::
+                        FromReceivingUiHandlerInstance(handler)
+                            ->SwitchToLatestTabsOpenedInBackground(window);
+                  },
+                  base::Unretained(browser_window_interface)))
           .AddGlobalScoped()
           .Build());
 }  // RegisterToasts() end.

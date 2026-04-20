@@ -28,9 +28,11 @@ namespace {
 
 // Opens the given `entry` in a new tab with the given `disposition` for the
 // given `profile`.
-void OpenEntryInNewTabWithDisposition(Profile* profile,
-                                      const SendTabToSelfEntry& entry,
-                                      WindowOpenDisposition disposition) {
+// Returns a weak pointer to the opened WebContents.
+base::WeakPtr<content::WebContents> OpenEntryInNewTabWithDisposition(
+    Profile* profile,
+    const SendTabToSelfEntry& entry,
+    WindowOpenDisposition disposition) {
   RecordHasScrollPositionOnOpened(
       !entry.GetPageContext().scroll_position.IsEmpty());
 
@@ -62,20 +64,26 @@ void OpenEntryInNewTabWithDisposition(Profile* profile,
   SendTabToSelfSyncServiceFactory::GetForProfile(profile)
       ->GetSendTabToSelfModel()
       ->MarkEntryOpened(entry.GetGUID());
+
+  return params.navigated_or_inserted_contents
+             ? params.navigated_or_inserted_contents->GetWeakPtr()
+             : nullptr;
 }
 
 }  // namespace
 
-void OpenEntryInNewForegroundTab(Profile* profile,
-                                 const SendTabToSelfEntry& entry) {
-  OpenEntryInNewTabWithDisposition(profile, entry,
-                                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
+base::WeakPtr<content::WebContents> OpenEntryInNewForegroundTab(
+    Profile* profile,
+    const SendTabToSelfEntry& entry) {
+  return OpenEntryInNewTabWithDisposition(
+      profile, entry, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
-void OpenEntryInNewBackgroundTab(Profile* profile,
-                                 const SendTabToSelfEntry& entry) {
-  OpenEntryInNewTabWithDisposition(profile, entry,
-                                   WindowOpenDisposition::NEW_BACKGROUND_TAB);
+base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
+    Profile* profile,
+    const SendTabToSelfEntry& entry) {
+  return OpenEntryInNewTabWithDisposition(
+      profile, entry, WindowOpenDisposition::NEW_BACKGROUND_TAB);
 }
 
 }  // namespace send_tab_to_self

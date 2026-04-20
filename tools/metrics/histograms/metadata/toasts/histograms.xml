@@ -67,6 +67,8 @@ found in the LICENSE file.
     <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
     <variant name="SendTabToSelfTabOpened"
         summary="send tab to self tab opened"/>
+    <variant name="SendTabToSelfTabsOpenedInBackground"
+        summary="send tab to self tab opened in background"/>
     <variant name="Translate" summary="translate"/>
   </token>
 </histogram>

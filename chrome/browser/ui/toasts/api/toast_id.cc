@@ -77,6 +77,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "SkillSavedWithoutInvokeButton";
     case ToastId::kSendTabToSelfTabOpened:
       return "SendTabToSelfOpened";
+    case ToastId::kSendTabToSelfTabsOpenedInBackground:
+      return "SendTabToSelfTabsOpenedInBackground";
   }
 
   NOTREACHED();

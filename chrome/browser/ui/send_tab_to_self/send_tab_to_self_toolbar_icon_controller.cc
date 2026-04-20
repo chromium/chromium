@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -17,21 +16,27 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
     Profile* profile)
     : profile_(profile) {}
+
+// static
+SendTabToSelfToolbarIconController*
+SendTabToSelfToolbarIconController::FromReceivingUiHandlerInstance(
+    send_tab_to_self::ReceivingUiHandler* ptr) {
+  return static_cast<SendTabToSelfToolbarIconController*>(ptr);
+}
 
 // static
 bool SendTabToSelfToolbarIconController::CanShowOnBrowser(
@@ -60,8 +65,6 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
       // Open the first tab in the foreground and all the others in the
       // background.
-      // TODO(crbug.com/488072250): Confirm the ordering of the tabs and which
-      // tab should be made active.
       OpenEntryInNewForegroundTab(profile_, *new_entries[0]);
       RecordAutoOpenOutcome(AutoOpenOutcome::kSuccess);
       for (size_t ii = 1; ii < new_entries.size(); ++ii) {
@@ -126,6 +129,11 @@ void SendTabToSelfToolbarIconController::DismissEntries(
 
 void SendTabToSelfToolbarIconController::OnBrowserActivated(
     BrowserWindowInterface* browser) {
+  if (!CanShowOnBrowser(browser)) {
+    // Skip if not on a normal browser window.
+    return;
+  }
+
   browser_collection_observer_.Reset();
 
   // Reset `pending_entries_` because it's used to determine if the
@@ -137,16 +145,36 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
     return;
   }
 
-  if (CanShowOnBrowser(browser)) {
-    if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-      // TODO(crbug.com/488072250): Show a toast.
-      for (const std::unique_ptr<SendTabToSelfEntry>& entry : entries) {
-        OpenEntryInNewBackgroundTab(profile_, *entry);
-        RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
+  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    for (const std::unique_ptr<SendTabToSelfEntry>& entry : entries) {
+      base::WeakPtr<content::WebContents> opened_contents =
+          OpenEntryInNewBackgroundTab(profile_, *entry);
+      if (opened_contents) {
+        latest_tabs_opened_in_background_.push_back(
+            tabs::TabInterface::GetFromContents(opened_contents.get())
+                ->GetWeakPtr());
       }
-    } else {
-      ShowToolbarButton(*entries.back(), browser);
+      RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
     }
+    // Show a toast (only if there are tabs that were successfully opened in
+    // the background).
+    if (!latest_tabs_opened_in_background_.empty()) {
+      ToastParams params(ToastId::kSendTabToSelfTabsOpenedInBackground);
+      // Only show the device name of the first tab. Note that the tabs might
+      // have been sent from different devices, but it's not worth the extra
+      // hassle to list them all.
+      params.body_string_replacement_params = {
+          base::UTF8ToUTF16(entries[0]->GetDeviceName())};
+      params.toast_close_callback = base::ScopedClosureRunner(
+          base::BindOnce(&SendTabToSelfToolbarIconController::OnToastClosed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      browser->GetFeatures()
+          .toast_service()
+          ->toast_controller()
+          ->MaybeShowToast(std::move(params));
+    }
+  } else {
+    ShowToolbarButton(*entries.back(), browser);
   }
 }
 
@@ -165,6 +193,29 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
       ->ShowBubble(entry, anchor);
 
   send_tab_to_self::RecordNotificationShown();
+}
+
+void SendTabToSelfToolbarIconController::SwitchToLatestTabsOpenedInBackground(
+    BrowserWindowInterface* browser) {
+  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
+  CHECK(browser);
+
+  for (const base::WeakPtr<tabs::TabInterface>& tab :
+       latest_tabs_opened_in_background_) {
+    int index = browser->GetTabStripModel()->GetIndexOfTab(tab.get());
+    if (index != TabStripModel::kNoTab) {
+      browser->GetTabStripModel()->ActivateTabAt(index);
+      return;
+    }
+  }
+}
+
+void SendTabToSelfToolbarIconController::OnToastClosed() {
+  // Clear all the tabs that were opened in the background. It is possible for
+  // another toast to be shown before this method is ever called for the first
+  // toast, but that is very very rare, because this toast is shown for the
+  // browser was not active when the tabs were received.
+  latest_tabs_opened_in_background_.clear();
 }
 
 SendTabToSelfToolbarIconController::~SendTabToSelfToolbarIconController() =

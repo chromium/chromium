@@ -67,6 +67,25 @@ if (!is_android) {
   }
 }
 
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "send_tab_to_self_toolbar_icon_controller_interactive_uitest.cc" ]
+
+  deps = [
+    ":send_tab_to_self",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/views/send_tab_to_self",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/send_tab_to_self",
+    "//content/test:test_support",
+    "//ui/base:ozone_buildflags",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "send_tab_to_self_context_menu_delegate_unittest.cc" ]

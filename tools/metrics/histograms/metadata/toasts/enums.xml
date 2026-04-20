@@ -93,6 +93,7 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="Filter Suggestion Recent"/>
   <int value="33" label="Saved Skill without Invoke Button"/>
   <int value="34" label="Send Tab To Self tab opened immediately"/>
+  <int value="35" label="Send Tab To Self tabs opened in background"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

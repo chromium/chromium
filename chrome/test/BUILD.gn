@@ -11612,6 +11612,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/read_anything:interactive_ui_tests",
       "//chrome/browser/ui/search:interactive_ui_tests",
       "//chrome/browser/ui/select_file_policy",
+      "//chrome/browser/ui/send_tab_to_self:interactive_ui_tests",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/startup:interactive_ui_tests",
       "//chrome/browser/ui/startup:startup_tab",

@@ -148,6 +148,7 @@ ScreenCaptureNotificationUiBrowserTest.*
 SearchEngineChoiceUIPixelTest.*
 SecurePaymentConfirmationDialogViewTest.InvokeUi_*
 *SendTabToSelfBubbleTest.*
+SendTabToSelfToolbarIconControllerInteractiveUiTest.*
 SessionCrashedBubbleViewTest.*
 SettingsOverriddenExplicitChoiceDialogInteractiveUiTest.*
 *SharedPasswordsNotificationBubbleInteractiveUiTest.*
