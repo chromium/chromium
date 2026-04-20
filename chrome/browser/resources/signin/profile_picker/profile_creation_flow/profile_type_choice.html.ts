@@ -29,17 +29,41 @@ export function getHtml(this: ProfileTypeChoiceElement) {
   <div class="subtitle">$i18n{profileTypeChoiceSubtitle}</div>
 </div>
 <div id="actionContainer">
-  <cr-button id="signInButton" class="action-button"
-      @click="${this.onSignInClick_}"
-      ?disabled="${this.profileCreationInProgress}">
-    $i18n{signInButtonLabel}
-  </cr-button>
-  <cr-button id="notNowButton"
-      class="${this.getNotNowButtonClass_()}"
-      @click="${this.onNotNowClick_}"
-      ?disabled="${this.profileCreationInProgress}">
-    $i18n{declineSignInButtonLabel}
-  </cr-button>
+  ${this.isRefreshedUi_ ? html`
+    <if expr="not is_win">
+      <cr-button id="notNowButton"
+          class="${this.getNotNowButtonClass_()}"
+          @click="${this.onNotNowClick_}"
+          ?disabled="${this.profileCreationInProgress}">
+        $i18n{declineSignInButtonLabel}
+      </cr-button>
+    </if>
+    <cr-button id="signInButton" class="action-button"
+        @click="${this.onSignInClick_}"
+        ?disabled="${this.profileCreationInProgress}">
+      $i18n{signInButtonLabel}
+    </cr-button>
+    <if expr="is_win">
+      <cr-button id="notNowButton"
+          class="${this.getNotNowButtonClass_()}"
+          @click="${this.onNotNowClick_}"
+          ?disabled="${this.profileCreationInProgress}">
+        $i18n{declineSignInButtonLabel}
+      </cr-button>
+    </if>
+  ` : html`
+    <cr-button id="signInButton" class="action-button"
+        @click="${this.onSignInClick_}"
+        ?disabled="${this.profileCreationInProgress}">
+      $i18n{signInButtonLabel}
+    </cr-button>
+    <cr-button id="notNowButton"
+        class="${this.getNotNowButtonClass_()}"
+        @click="${this.onNotNowClick_}"
+        ?disabled="${this.profileCreationInProgress}">
+      $i18n{declineSignInButtonLabel}
+    </cr-button>
+  `}
 </div>
 
 ${this.managedDeviceDisclaimer_ ? html`
