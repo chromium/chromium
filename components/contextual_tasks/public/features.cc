@@ -128,6 +128,11 @@ const base::FeatureParam<bool> kContextualTasksEnableCookieSync(
     "ContextualTasksEnableCookieSync",
     true);
 
+const base::FeatureParam<bool> kContextualTasksEnableCookiePrefetch(
+    &kContextualTasks,
+    "ContextualTasksEnableCookiePrefetch",
+    false);
+
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",
@@ -499,6 +504,10 @@ bool ShouldEnableBasicModeZOrder() {
 
 bool ShouldEnableCookieSync() {
   return kContextualTasksEnableCookieSync.Get();
+}
+
+bool ShouldEnableCookiePrefetch() {
+  return kContextualTasksEnableCookiePrefetch.Get();
 }
 
 bool ShouldEnableLockAndUnlockInputCapability() {

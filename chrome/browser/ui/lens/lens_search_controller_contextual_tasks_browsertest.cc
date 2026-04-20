@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -70,11 +71,14 @@ class TestingContextualTasksUiService
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       signin::IdentityManager* identity_manager,
       AimEligibilityService* aim_eligibility_service)
-      : ContextualTasksUiService(profile,
-                                 /*delegate=*/nullptr,
-                                 contextual_tasks_service,
-                                 identity_manager,
-                                 aim_eligibility_service),
+      : ContextualTasksUiService(
+            profile,
+            /*delegate=*/nullptr,
+            contextual_tasks_service,
+            identity_manager,
+            aim_eligibility_service,
+            std::unique_ptr<
+                contextual_tasks::ContextualTasksCookieSynchronizer>()),
         profile_(profile),
         contextual_tasks_service_(contextual_tasks_service) {}
   ~TestingContextualTasksUiService() override = default;
