@@ -304,6 +304,11 @@ PrefetchContainer::PrefetchContainer(
   TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kNotStarted",
                     request().preload_pipeline_info().GetTrack());
 
+  // `PrefetchContainer` is always added to `PrefetchService` upon construction
+  // in non-test code.
+  prefetch_container_metrics_.time_added_to_prefetch_service =
+      base::TimeTicks::Now();
+
   if (pre_prefetch_container) {
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
     pre_prefetch_loader_ = pre_prefetch_container->TakePendingURLLoaderOnUI();
@@ -764,14 +769,6 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
 
 PrefetchContainer::LoadState PrefetchContainer::GetLoadState() const {
   return load_state_;
-}
-
-void PrefetchContainer::OnAddedToPrefetchService() {
-  TRACE_EVENT("loading", "PrefetchContainer::OnAddedToPrefetchService",
-              request_->preload_pipeline_info().GetFlow());
-
-  prefetch_container_metrics_.time_added_to_prefetch_service =
-      base::TimeTicks::Now();
 }
 
 void PrefetchContainer::OnEligibilityCheckComplete(

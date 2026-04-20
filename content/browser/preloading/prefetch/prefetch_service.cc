@@ -453,8 +453,6 @@ base::WeakPtr<PrefetchContainer> PrefetchService::CreatePrefetchContainer(
                      std::move(owned_prefetch_container))
             .second);
 
-  prefetch_container->OnAddedToPrefetchService();
-
   prefetch_container->AddObserver(this);
 
   return prefetch_container;

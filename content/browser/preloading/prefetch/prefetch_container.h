@@ -359,9 +359,6 @@ class CONTENT_EXPORT PrefetchContainer
 
   const PrefetchRequest& request() const { return *request_; }
 
-  // Called when it is added to `PrefetchService::owned_prefetches_`.
-  void OnAddedToPrefetchService();
-
   // Whether or not the prefetch was determined to be eligibile.
   void OnEligibilityCheckComplete(PreloadingEligibility eligibility);
 
