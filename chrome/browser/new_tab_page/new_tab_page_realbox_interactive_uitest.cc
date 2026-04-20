@@ -7,8 +7,10 @@
 #include "base/check_deref.h"
 #include "base/containers/extend.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
@@ -33,6 +35,7 @@
 #include "components/search/ntp_features.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fake_speech_recognition_manager.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
@@ -1076,6 +1079,8 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
 class NtpRealboxDefaultExperienceInteractiveTest : public NtpRealboxUiTestBase {
  public:
   NtpRealboxDefaultExperienceInteractiveTest() {
+    content::SpeechRecognitionManager::SetManagerForTesting(
+        &fake_speech_recognition_manager_);
     std::vector<base::test::FeatureRef> disabled_features =
         GetDisabledFeatures();
     for (const auto& feature_ref_and_params : GetEnabledFeatures()) {
@@ -1085,6 +1090,9 @@ class NtpRealboxDefaultExperienceInteractiveTest : public NtpRealboxUiTestBase {
 
     feature_list_.InitWithFeaturesAndParameters({}, disabled_features);
   }
+
+ protected:
+  content::FakeSpeechRecognitionManager fake_speech_recognition_manager_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1115,6 +1123,40 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
       ClickElement(kNtpElementId, kComposeButton),
       // Wait for the page to navigate to Google SRP.
       WaitForGoogleSearch(kNtpElementId, {{"q", "t"}, {"udm", "50"}}));
+}
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
+                       VoiceSearchNavigatesToGoogleSearch) {
+  const std::string query = "testing";
+  const DeepQuery kVoiceSearchOverlayDialog = {
+      "ntp-app", "ntp-voice-search-overlay", "#dialog"};
+
+  // Configure the mock to pause before sending a response so we can verify
+  // the overlay UI.
+  fake_speech_recognition_manager_.set_should_send_fake_response(false);
+  fake_speech_recognition_manager_.SetFakeResult(query, /*is_final=*/true);
+
+  RunTestSequence(
+      // Load NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Wait for Realbox to render.
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      // Wait for Voice Search button to render.
+      WaitForElementToRender(kNtpElementId, kVoiceSearchButton),
+      // Click on Voice Search button.
+      ClickElement(kNtpElementId, kVoiceSearchButton),
+      // Verify that the voice search overlay dialog appears and is open.
+      WaitForElementToRender(kNtpElementId, kVoiceSearchOverlayDialog),
+      WaitForDialogStateChange(kVoiceSearchOverlayDialog,
+                               /*expected_open=*/true),
+      // Send the mock response.
+      Do([&]() {
+        fake_speech_recognition_manager_.SendFakeResponse(
+            /*end_recognition=*/true,
+            /*on_fake_response_sent=*/base::DoNothing());
+      }),
+      // Wait for the page to navigate to Google SRP.
+      WaitForGoogleSearch(kNtpElementId, {{"q", query}}));
 }
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
