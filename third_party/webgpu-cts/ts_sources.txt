@@ -213,6 +213,8 @@ src/webgpu/api/operation/render_pipeline/pipeline_output_targets.spec.ts
 src/webgpu/api/operation/render_pipeline/primitive_topology.spec.ts
 src/webgpu/api/operation/render_pipeline/sample_mask.spec.ts
 src/webgpu/api/operation/render_pipeline/vertex_only_render_pipeline.spec.ts
+src/webgpu/shader/validation/decl/util.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/api/operation/rendering/3d_texture_slices.spec.ts
 src/webgpu/api/operation/rendering/basic.spec.ts
 src/webgpu/api/operation/rendering/color_target_state.spec.ts
@@ -237,8 +239,6 @@ src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/storage_texture/read_only.spec.ts
 src/webgpu/api/operation/storage_texture/read_write.spec.ts
 src/webgpu/api/operation/texture_view/format_reinterpretation.spec.ts
-src/webgpu/shader/validation/decl/util.ts
-src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/api/validation/capability_checks/features/texture_component_swizzle_utils.ts
 src/webgpu/api/operation/texture_view/texture_component_swizzle.spec.ts
 src/webgpu/api/operation/texture_view/write.spec.ts
