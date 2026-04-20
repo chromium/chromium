@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -355,15 +356,18 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
 }
 
 void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
-  PrefService* prefs = browser_->GetProfile()->GetPrefs();
-  std::string_view pref_name;
   if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
-    pref_name = prefs::kTabSearchPinnedToTabstrip;
     if (!tabs::kHorizontalTabStripComboButtonShowStartOnly.Get()) {
       show_tab_search_ephemerally_ = false;
       hide_tab_search_timer_.Stop();
     }
-  } else if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
+    chrome::ExecuteCommand(browser_, command_id);
+    return;
+  }
+
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  std::string_view pref_name;
+  if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
     pref_name = prefs::kProjectsPanelPinnedToTabstrip;
   } else if (command_id == IDC_EVERYTHING_MENU_TOGGLE_PIN) {
     pref_name = prefs::kEverythingMenuPinnedToTabstrip;
@@ -372,11 +376,7 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   }
 
   const bool is_pinned = prefs->GetBoolean(pref_name);
-  if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
-    base::RecordAction(base::UserMetricsAction(
-        is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
-                  : "TabStripComboButton.TabSearch.Pinned"));
-  } else if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
+  if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
     base::RecordAction(base::UserMetricsAction(
         is_pinned ? "TabStripComboButton.ProjectsPanel.Unpinned"
                   : "TabStripComboButton.ProjectsPanel.Pinned"));
