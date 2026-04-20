@@ -365,7 +365,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEnforceIncognitoIsolation,
     &kEscCancelDrag,
     &kExperimentsForAgsa,
-    &kFaviconDisableHostFallback,
     &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
@@ -716,7 +715,6 @@ BASE_FEATURE(kEnableXAxisActivityTransition, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnforceIncognitoIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEscCancelDrag, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kExperimentsForAgsa, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kFaviconDisableHostFallback, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kForceTranslucentNotificationTrampoline, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFullscreenInsetsApiMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive, base::FEATURE_ENABLED_BY_DEFAULT);

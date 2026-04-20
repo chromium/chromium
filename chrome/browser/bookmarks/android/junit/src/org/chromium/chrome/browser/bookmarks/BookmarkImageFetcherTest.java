@@ -158,19 +158,17 @@ public class BookmarkImageFetcherTest {
                                     .when(mImageServiceBridge)
                                     .fetchImageFor(anyBoolean(), any(), anyInt(), any());
                             doCallback(
-                                            4,
+                                            3,
                                             (FaviconImageCallback callback) ->
                                                     callback.onFaviconAvailable(mBitmap, null))
                                     .when(mFaviconHelper)
-                                    .getForeignFaviconImageForURL(
-                                            any(), any(), anyInt(), anyBoolean(), any());
+                                    .getForeignFaviconImageForURL(any(), any(), anyInt(), any());
                             doCallback(
-                                            4,
+                                            3,
                                             (FaviconImageCallback callback) ->
                                                     callback.onFaviconAvailable(mBitmap, null))
                                     .when(mFaviconHelper)
-                                    .getLocalFaviconImageForURL(
-                                            any(), any(), anyInt(), anyBoolean(), any());
+                                    .getLocalFaviconImageForURL(any(), any(), anyInt(), any());
                             doReturn(true)
                                     .when(mImageServiceBridge)
                                     .hasConsentToFetchImages(anyBoolean());
@@ -219,7 +217,7 @@ public class BookmarkImageFetcherTest {
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         // There shouldn't be any interaction with favicon helper since an image was found.
         verify(mFaviconHelper, times(0))
-                .getForeignFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+                .getForeignFaviconImageForURL(any(), any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -246,7 +244,7 @@ public class BookmarkImageFetcherTest {
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         // There shouldn't be any interaction with favicon helper since an image was found.
         verify(mFaviconHelper, times(0))
-                .getForeignFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+                .getForeignFaviconImageForURL(any(), any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -264,8 +262,7 @@ public class BookmarkImageFetcherTest {
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, 100, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
-        verify(mFaviconHelper)
-                .getForeignFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+        verify(mFaviconHelper).getForeignFaviconImageForURL(any(), any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -276,8 +273,7 @@ public class BookmarkImageFetcherTest {
 
         mBookmarkImageFetcher.fetchFaviconForBookmark(mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
-        verify(mFaviconHelper)
-                .getForeignFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+        verify(mFaviconHelper).getForeignFaviconImageForURL(any(), any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }
@@ -288,8 +284,7 @@ public class BookmarkImageFetcherTest {
 
         mBookmarkImageFetcher.fetchFaviconForBookmark(mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
-        verify(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+        verify(mFaviconHelper).getLocalFaviconImageForURL(any(), any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }

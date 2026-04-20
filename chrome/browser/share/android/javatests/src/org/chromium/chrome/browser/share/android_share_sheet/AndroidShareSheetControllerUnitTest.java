@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.android_share_sheet;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -785,13 +784,12 @@ public class AndroidShareSheetControllerUnitTest {
     private void setFaviconToFetchForTest(Bitmap favicon) {
         doAnswer(
                         invocation -> {
-                            FaviconHelper.FaviconImageCallback callback = invocation.getArgument(5);
+                            FaviconHelper.FaviconImageCallback callback = invocation.getArgument(4);
                             callback.onFaviconAvailable(favicon, GURL.emptyGURL());
                             return null;
                         })
                 .when(mMockFaviconHelperJni)
-                .getLocalFaviconImageForURL(
-                        anyLong(), eq(mProfile), any(), anyInt(), anyBoolean(), any());
+                .getLocalFaviconImageForURL(anyLong(), eq(mProfile), any(), anyInt(), any());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

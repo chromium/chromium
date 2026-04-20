@@ -2173,11 +2173,6 @@ inline constexpr char kExperimentalWebPlatformFeaturesName[] =
 inline constexpr char kExperimentalWebPlatformFeaturesDescription[] =
     "Enables experimental Web Platform features that are in development.";
 
-inline constexpr char kFaviconDisableHostFallbackName[] =
-    "Disable host fallback for favicons";
-inline constexpr char kFaviconDisableHostFallbackDescription[] =
-    "Disables the host-level fallback when fetching favicons.";
-
 inline constexpr char kSafeBrowsingLocalListsUseSBv5Name[] =
     "Safe Browsing Local Lists use v5 API";
 inline constexpr char kSafeBrowsingLocalListsUseSBv5Description[] =

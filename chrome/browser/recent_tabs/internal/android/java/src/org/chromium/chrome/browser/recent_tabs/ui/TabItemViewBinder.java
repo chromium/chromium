@@ -128,11 +128,7 @@ public class TabItemViewBinder {
             // favicon to avoid a native crash.
             if (faviconHelper != null) {
                 faviconHelper.getForeignFaviconImageForURL(
-                        bindContext.getProfile(),
-                        tab.url,
-                        faviconSize,
-                        /* fallbackToHost= */ true,
-                        imageCallback);
+                        bindContext.getProfile(), tab.url, faviconSize, imageCallback);
             }
 
             Drawable image =

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.auxiliary_search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -358,14 +357,12 @@ public class AuxiliarySearchControllerImplUnitTest {
                         eq(mProfile),
                         eq(JUnitTestGURLs.URL_1),
                         anyInt(),
-                        anyBoolean(),
                         mFaviconImageCallbackCaptor1.capture());
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         eq(mProfile),
                         eq(JUnitTestGURLs.URL_2),
                         anyInt(),
-                        anyBoolean(),
                         mFaviconImageCallbackCaptor2.capture());
 
         mFakeTime.advanceMillis(timeDelta);

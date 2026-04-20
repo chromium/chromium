@@ -354,7 +354,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                         mProfile,
                         originUrl,
                         mSearchEngineLogoTargetSizePixels,
-                        /* fallbackToHost= */ true,
                         (image, iconUrl) -> {
                             if (image == null) {
                                 recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);

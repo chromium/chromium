@@ -318,7 +318,6 @@ public class MerchantTrustBottomSheetMediator {
                 profile,
                 url,
                 mFaviconSize,
-                /* fallbackToHost= */ true,
                 (bitmap, iconUrl) -> {
                     Drawable drawable;
                     if (mFaviconDrawableForTesting != null) {

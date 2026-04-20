@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -92,12 +91,7 @@ public class TabGroupListCoordinatorUnitTest {
         resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
-                        anyLong(),
-                        any(),
-                        any(),
-                        anyInt(),
-                        anyBoolean(),
-                        mFaviconImageCallbackCaptor.capture());
+                        anyLong(), any(), any(), anyInt(), mFaviconImageCallbackCaptor.capture());
 
         mFaviconImageCallbackCaptor.getValue().onFaviconAvailable(mBitmap, JUnitTestGURLs.URL_2);
         verify(mCallback).onResult(notNull());
@@ -111,12 +105,7 @@ public class TabGroupListCoordinatorUnitTest {
         resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
         verify(mFaviconHelperJniMock)
                 .getForeignFaviconImageForURL(
-                        anyLong(),
-                        any(),
-                        any(),
-                        anyInt(),
-                        anyBoolean(),
-                        mFaviconImageCallbackCaptor.capture());
+                        anyLong(), any(), any(), anyInt(), mFaviconImageCallbackCaptor.capture());
 
         mFaviconImageCallbackCaptor.getValue().onFaviconAvailable(null, JUnitTestGURLs.URL_2);
         verify(mCallback).onResult(notNull());

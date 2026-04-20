@@ -378,7 +378,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 mProfile,
                 url,
                 size,
-                /* fallbackToHost= */ true,
                 (image, iconUrl) -> {
                     if (image != null) {
                         callback.onResult(new BitmapDrawable(resources, image));

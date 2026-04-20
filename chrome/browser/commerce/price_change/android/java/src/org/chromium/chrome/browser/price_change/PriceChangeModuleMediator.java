@@ -162,7 +162,6 @@ public class PriceChangeModuleMediator implements TabModelSelectorObserver {
                             mProfile,
                             tab.getUrl(),
                             mFaviconSize,
-                            /* fallbackToHost= */ true,
                             (image, iconUrl) -> {
                                 if (image != null) {
                                     mModel.set(

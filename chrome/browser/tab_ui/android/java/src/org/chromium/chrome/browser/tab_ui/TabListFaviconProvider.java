@@ -25,7 +25,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -525,7 +524,6 @@ public class TabListFaviconProvider {
                     faviconCallback.onResult(favicon);
                 };
 
-        boolean fallbackToHost = !ChromeFeatureList.sFaviconDisableHostFallback.isEnabled();
         Profile profile = getProfile(isIncognito);
         if (metadata.isInTabGroup && !isIncognito) {
             // Case 3: The tab is in a tab group and is not incognito.
@@ -540,7 +538,7 @@ public class TabListFaviconProvider {
             // that would be repeated in native just call this method for all tab groups since they
             // are relatively rare.
             mFaviconHelper.getForeignFaviconImageForURL(
-                    profile, tabUrl, mFaviconSize, fallbackToHost, faviconImageCallback);
+                    profile, tabUrl, mFaviconSize, faviconImageCallback);
         } else {
             // Case 4: Standalone tabs and incognito mode.
             //
@@ -555,7 +553,7 @@ public class TabListFaviconProvider {
             // mode if Case 2 didn't provide one and there isn't a fallback with the same host in
             // the favicon database already.
             mFaviconHelper.getLocalFaviconImageForURL(
-                    profile, tabUrl, mFaviconSize, fallbackToHost, faviconImageCallback);
+                    profile, tabUrl, mFaviconSize, faviconImageCallback);
         }
     }
 

@@ -22,27 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Favicons.AndroidHostFallbackFetchResult.Disabled"
-    enum="BooleanSuccess" expires_after="2026-12-31">
-  <owner>zheliooo@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the success rate of favicon requests that have host fallback
-    disabled. (e.g. by the FaviconDisableHostFallback experiment). Used to
-    measure regression in find rates compared to the Enabled group.
-  </summary>
-</histogram>
-
-<histogram name="Favicons.AndroidHostFallbackFetchResult.Enabled"
-    enum="BooleanSuccess" expires_after="2026-12-31">
-  <owner>zheliooo@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the success rate of favicon requests that have host fallback
-    enabled.
-  </summary>
-</histogram>
-
 <histogram name="Favicons.DefaultResponse" enum="BooleanSuccess"
     expires_after="2026-05-17">
   <owner>mfacey@chromium.org</owner>

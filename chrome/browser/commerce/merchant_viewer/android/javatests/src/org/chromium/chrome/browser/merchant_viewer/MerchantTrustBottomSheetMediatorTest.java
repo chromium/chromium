@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.merchant_viewer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -124,7 +123,7 @@ public class MerchantTrustBottomSheetMediatorTest {
                         (Answer<Void>)
                                 invocation -> {
                                     FaviconImageCallback callback =
-                                            (FaviconImageCallback) invocation.getArguments()[4];
+                                            (FaviconImageCallback) invocation.getArguments()[3];
                                     callback.onFaviconAvailable(null, null);
                                     return null;
                                 })
@@ -133,7 +132,6 @@ public class MerchantTrustBottomSheetMediatorTest {
                         any(Profile.class),
                         any(GURL.class),
                         anyInt(),
-                        anyBoolean(),
                         any(FaviconImageCallback.class));
 
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
@@ -245,7 +243,6 @@ public class MerchantTrustBottomSheetMediatorTest {
                         any(Profile.class),
                         any(GURL.class),
                         anyInt(),
-                        anyBoolean(),
                         any(FaviconImageCallback.class));
         assertEquals(
                 mMockDrawable,

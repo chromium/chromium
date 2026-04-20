@@ -382,8 +382,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                         callback.onResult(drawable);
                     };
 
-            mFaviconHelper.getLocalFaviconImageForURL(
-                    profile, url, mFaviconSize, /* fallbackToHost= */ true, imageCallback);
+            mFaviconHelper.getLocalFaviconImageForURL(profile, url, mFaviconSize, imageCallback);
         }
     }
 }

@@ -1204,7 +1204,6 @@ public class PaymentUiService
                 Profile.fromWebContents(mWebContents),
                 mWebContents.getLastCommittedUrl(),
                 activity.getResources().getDimensionPixelSize(R.dimen.payments_favicon_size),
-                /* fallbackToHost= */ true,
                 (bitmap, iconUrl) -> {
                     if (bitmap == null) {
                         mDelegate.onPaymentRequestUiFaviconNotAvailable();

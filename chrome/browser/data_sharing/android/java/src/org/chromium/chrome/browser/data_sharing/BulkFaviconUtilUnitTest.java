@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.data_sharing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -80,8 +79,7 @@ public class BulkFaviconUtilUnitTest {
         Callback<List<Bitmap>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsBitmap(mContext, mProfile, Collections.emptyList(), 16, callback);
         verify(callback).onResult(Collections.emptyList());
-        verify(mFaviconHelper, never())
-                .getForeignFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+        verify(mFaviconHelper, never()).getForeignFaviconImageForURL(any(), any(), anyInt(), any());
     }
 
     @Test
@@ -94,11 +92,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl1),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl1), anyInt(), mCallbackCaptor.capture());
 
         Callback<List<Bitmap>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsBitmap(mContext, mProfile, Arrays.asList(mGurl1), 16, callback);
@@ -115,11 +109,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl1),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl1), anyInt(), mCallbackCaptor.capture());
 
         Bitmap mockBitmap2 = mock(Bitmap.class);
         doAnswer(
@@ -129,11 +119,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl2),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl2), anyInt(), mCallbackCaptor.capture());
 
         Callback<List<Bitmap>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsBitmap(mContext, mProfile, mGurlList, 16, callback);
@@ -149,11 +135,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl1),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl1), anyInt(), mCallbackCaptor.capture());
 
         Callback<List<Bitmap>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsBitmap(mContext, mProfile, Arrays.asList(mGurl1), 16, callback);
@@ -168,8 +150,7 @@ public class BulkFaviconUtilUnitTest {
         Callback<List<Drawable>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsDrawable(mContext, mProfile, Collections.emptyList(), 16, callback);
         verify(callback).onResult(Collections.emptyList());
-        verify(mFaviconHelper, never())
-                .getForeignFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+        verify(mFaviconHelper, never()).getForeignFaviconImageForURL(any(), any(), anyInt(), any());
     }
 
     @Test
@@ -182,11 +163,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl1),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl1), anyInt(), mCallbackCaptor.capture());
 
         Callback<List<Drawable>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsDrawable(mContext, mProfile, Arrays.asList(mGurl1), 16, callback);
@@ -207,11 +184,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl1),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl1), anyInt(), mCallbackCaptor.capture());
 
         Bitmap realBitmap2 = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         doAnswer(
@@ -221,11 +194,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl2),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl2), anyInt(), mCallbackCaptor.capture());
 
         Callback<List<Drawable>> callback = mock(Callback.class);
         mBulkFaviconUtil.fetchAsDrawable(mContext, mProfile, mGurlList, 16, callback);
@@ -246,11 +215,7 @@ public class BulkFaviconUtilUnitTest {
                         })
                 .when(mFaviconHelper)
                 .getForeignFaviconImageForURL(
-                        eq(mProfile),
-                        eq(mGurl1),
-                        anyInt(),
-                        anyBoolean(),
-                        mCallbackCaptor.capture());
+                        eq(mProfile), eq(mGurl1), anyInt(), mCallbackCaptor.capture());
 
         Bitmap realBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         doAnswer(

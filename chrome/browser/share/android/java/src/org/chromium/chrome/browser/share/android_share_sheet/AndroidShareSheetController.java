@@ -320,7 +320,6 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                 profile,
                 new GURL(pageUrl),
                 size,
-                /* fallbackToHost= */ true,
                 (Bitmap icon, GURL iconUrl) -> {
                     onFaviconRetrieved(context, icon, size, onUriReady);
                     faviconHelper.destroy();

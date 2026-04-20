@@ -149,7 +149,6 @@ class BulkFaviconUtil {
                             profile,
                             webPageUrlList.get(i),
                             size,
-                            /* fallbackToHost= */ true,
                             (Bitmap bitmap, GURL url) -> {
                                 request.onFaviconFetched(index, bitmap);
                             });

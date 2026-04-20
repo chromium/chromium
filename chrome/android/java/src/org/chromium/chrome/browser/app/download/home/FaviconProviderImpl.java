@@ -53,7 +53,7 @@ class FaviconProviderImpl implements FaviconProvider {
                 };
 
         mFaviconHelper.getLocalFaviconImageForURL(
-                mProfile, new GURL(url), faviconSizePx, /* fallbackToHost= */ true, imageCallback);
+                mProfile, new GURL(url), faviconSizePx, imageCallback);
     }
 
     /** An LRU cache for caching the favicons.*/

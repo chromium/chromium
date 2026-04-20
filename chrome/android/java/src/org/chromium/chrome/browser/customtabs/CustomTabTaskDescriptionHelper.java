@@ -253,7 +253,6 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
                 currentTab.getProfile(),
                 currentTab.getUrl(),
                 0,
-                /* fallbackToHost= */ true,
                 (image, iconUrl) -> {
                     if (mTabProvider.getTab() == null
                             || !currentUrl.equals(mTabProvider.getTab().getUrl())) {
