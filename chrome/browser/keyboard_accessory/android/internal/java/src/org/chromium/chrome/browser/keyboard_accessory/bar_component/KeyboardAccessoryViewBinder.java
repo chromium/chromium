@@ -220,8 +220,13 @@ class KeyboardAccessoryViewBinder {
                             mKeyboardAccessory.getFeatureEngagementTracker(),
                             item,
                             chipView,
-                            mRootViewForIPH);
-            mKeyboardAccessory.setAllowClicksWhileObscured(iphShown);
+                            mRootViewForIPH,
+                            () -> mKeyboardAccessory.setAllowClicksWhileObscured(false));
+            // Only set to true to prevent overriding a true value set during another view's bind
+            // call. An IPH bubble can be shown from different views (e.g., from a ChipView or
+            // KeyboardAccessoryButtonGroupView). The value is reset to false when the IPH is
+            // dismissed via the callback provided above.
+            if (iphShown) mKeyboardAccessory.setAllowClicksWhileObscured(true);
 
             // Credit card or IBAN chips never occupy the entire width of the window to allow for
             // other cards or IBANs (if they exist) to be seen. Their max width is set to 85% of
@@ -538,8 +543,13 @@ class KeyboardAccessoryViewBinder {
                                 FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
                                 swipingIphRectProvider,
                                 view.getContext(),
-                                view.mBarItemsView);
-                view.setAllowClicksWhileObscured(isIphShown);
+                                view.mBarItemsView,
+                                () -> view.setAllowClicksWhileObscured(false));
+                // Only set to true to prevent overriding a true value set during another view's bind
+                // call. An IPH bubble can be shown from different views (e.g., from a ChipView or
+                // KeyboardAccessoryButtonGroupView). The value is reset to false when the IPH is
+                // dismissed via the callback provided above.
+                if (isIphShown) view.setAllowClicksWhileObscured(true);
             }
         } else if (propertyKey == HAS_SUGGESTIONS) {
             view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
