@@ -21,11 +21,9 @@
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
-class BrowserWindowInterface;
 class PrefService;
 
 namespace content {
@@ -38,10 +36,6 @@ class CookieSettings;
 
 namespace browsing_topics {
 class BrowsingTopicsService;
-}
-
-namespace views {
-class Widget;
 }
 
 class PrivacySandboxServiceImpl : public PrivacySandboxService {
@@ -311,20 +305,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
-  raw_ptr<user_education::ProductMessagingController>
-      product_messaging_controller_;
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 
   PrefChangeRegistrar user_prefs_registrar_;
-
-  user_education::RequiredNoticePriorityHandle notice_handle_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // A map of Browser windows which have an open Privacy Sandbox prompt,
-  // to the Widget for that prompt.
-  std::map<BrowserWindowInterface*, raw_ptr<views::Widget, CtnExperimental>>
-      browsers_to_open_prompts_;
-#endif
 
   // Fake implementation for current and blocked topics.
   // TODO(crbug.com/409048902): Moved initialization to constructor to prevent

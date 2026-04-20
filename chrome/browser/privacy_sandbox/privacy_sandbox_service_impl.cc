@@ -337,7 +337,6 @@ PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 void PrivacySandboxServiceImpl::Shutdown() {
   user_prefs_registrar_.RemoveAll();
   privacy_sandbox_countries_ = nullptr;
-  product_messaging_controller_ = nullptr;
   first_party_sets_policy_service_ = nullptr;
   browsing_topics_service_ = nullptr;
   host_content_settings_map_ = nullptr;
