@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_ELEMENT_H_
 
+#include <limits>
 #include <memory>
 #include <optional>
 #include <variant>
@@ -810,11 +811,11 @@ class CORE_EXPORT HTMLMediaElement
   Member<TimeRanges> played_time_ranges_;
   Member<EventQueue> async_event_queue_;
 
-  double playback_rate_;
-  double default_playback_rate_;
-  NetworkState network_state_;
-  ReadyState ready_state_;
-  ReadyState ready_state_maximum_;
+  double playback_rate_ = 1.0;
+  double default_playback_rate_ = 1.0;
+  NetworkState network_state_ = kNetworkEmpty;
+  ReadyState ready_state_ = kHaveNothing;
+  ReadyState ready_state_maximum_ = kHaveNothing;
 
   SourceMetadata current_src_;
   KURL current_src_after_redirects_;
@@ -826,19 +827,20 @@ class CORE_EXPORT HTMLMediaElement
   // |error_| outside of constructor and SetError().
   Member<MediaError> error_;
 
-  double volume_;
-  double last_seek_time_;
+  double volume_ = 1.0;
+  double last_seek_time_ = 0;
 
   std::optional<base::ElapsedTimer> previous_progress_time_;
 
   // Cached duration to suppress duplicate events if duration unchanged.
-  double duration_;
+  double duration_ = std::numeric_limits<double>::quiet_NaN();
 
   // The last time a timeupdate event was sent in movie time.
-  double last_time_update_event_media_time_;
+  double last_time_update_event_media_time_ =
+      std::numeric_limits<double>::quiet_NaN();
 
   // The default playback start position.
-  double default_playback_start_position_;
+  double default_playback_start_position_ = 0;
 
   // Loading state.
   enum LoadState {
@@ -847,7 +849,7 @@ class CORE_EXPORT HTMLMediaElement
     kLoadingFromSrcAttr,
     kLoadingFromSourceElement
   };
-  LoadState load_state_;
+  LoadState load_state_ = kWaitingForSource;
   Member<HTMLSourceElement> current_source_node_;
   Member<Node> next_child_node_to_consider_;
 
@@ -864,13 +866,13 @@ class CORE_EXPORT HTMLMediaElement
     // delaying-the-load-event flag, after which the load will be executed.
     kExecuteOnStopDelayingLoadEventTask
   };
-  DeferredLoadState deferred_load_state_;
+  DeferredLoadState deferred_load_state_ = kNotDeferred;
   HeapTaskRunnerTimer<HTMLMediaElement> deferred_load_timer_;
 
   LazyMediaLoadState lazy_media_load_state_ = LazyMediaLoadState::kNone;
 
   std::unique_ptr<WebMediaPlayer> web_media_player_;
-  cc::Layer* cc_layer_;
+  cc::Layer* cc_layer_ = nullptr;
 
   // These two fields must be carefully set and reset: the actual derived type
   // of the attachment (same-thread vs cross-thread, for instance) must be the
@@ -884,36 +886,36 @@ class CORE_EXPORT HTMLMediaElement
   // Stores "official playback position", updated periodically from "current
   // playback position". Official playback position should not change while
   // scripts are running. See setOfficialPlaybackPosition().
-  mutable double official_playback_position_;
-  mutable bool official_playback_position_needs_update_;
+  mutable double official_playback_position_ = 0;
+  mutable bool official_playback_position_needs_update_ = true;
 
-  double fragment_end_time_;
+  double fragment_end_time_ = std::numeric_limits<double>::quiet_NaN();
 
   typedef unsigned PendingActionFlags;
-  PendingActionFlags pending_action_flags_;
+  PendingActionFlags pending_action_flags_ = 0;
 
   // FIXME: HTMLMediaElement has way too many state bits.
-  bool playing_ : 1;
-  bool should_delay_load_event_ : 1;
-  bool have_fired_loaded_data_ : 1;
-  bool can_autoplay_ : 1;
-  bool muted_ : 1;
-  bool paused_ : 1;
-  bool seeking_ : 1;
-  bool show_poster_flag_ : 1;
+  bool playing_ : 1 = false;
+  bool should_delay_load_event_ : 1 = false;
+  bool have_fired_loaded_data_ : 1 = false;
+  bool can_autoplay_ : 1 = true;
+  bool muted_ : 1 = false;
+  bool paused_ : 1 = true;
+  bool seeking_ : 1 = false;
+  bool show_poster_flag_ : 1 = true;
 
   // data has not been loaded since sending a "stalled" event
-  bool sent_stalled_event_ : 1;
+  bool sent_stalled_event_ : 1 = false;
 
-  bool ignore_preload_none_ : 1;
+  bool ignore_preload_none_ : 1 = false;
 
-  bool text_tracks_visible_ : 1;
-  bool should_perform_automatic_track_selection_ : 1;
+  bool text_tracks_visible_ : 1 = false;
+  bool should_perform_automatic_track_selection_ : 1 = true;
 
-  bool tracks_are_ready_ : 1;
-  bool processing_preference_change_ : 1;
+  bool tracks_are_ready_ : 1 = true;
+  bool processing_preference_change_ : 1 = false;
 
-  bool was_always_muted_ : 1;
+  bool was_always_muted_ : 1 = true;
 
   // Set if the user has used the context menu to set the visibility of the
   // controls.
@@ -931,8 +933,8 @@ class CORE_EXPORT HTMLMediaElement
   bool is_encrypted_media_ = false;
 
   WebString remote_device_friendly_name_;
-  std::optional<media::AudioCodec> audio_codec_ = std::nullopt;
-  std::optional<media::VideoCodec> video_codec_ = std::nullopt;
+  std::optional<media::AudioCodec> audio_codec_;
+  std::optional<media::VideoCodec> video_codec_;
 
   Member<AudioTrackList> audio_tracks_;
   Member<VideoTrackList> video_tracks_;
@@ -946,7 +948,7 @@ class CORE_EXPORT HTMLMediaElement
   TaskHandle play_promise_reject_task_handle_;
   HeapVector<Member<ScriptPromiseResolverBase>> play_promise_resolve_list_;
   HeapVector<Member<ScriptPromiseResolverBase>> play_promise_reject_list_;
-  PlayPromiseError play_promise_error_code_;
+  PlayPromiseError play_promise_error_code_ = PlayPromiseError::kNotSupported;
 
   // HTMLMediaElement and its MediaElementAudioSourceNode in case it is provided
   // die together.
