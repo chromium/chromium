@@ -1,0 +1,163 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_reauth") {
+  public = []
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/device_reauth",
+    "//ui/gfx",
+  ]
+
+  if (is_android || is_mac || is_win || is_chromeos) {
+    public += [ "chrome_device_authenticator_factory.h" ]
+  }
+
+  if (is_android) {
+    public += [
+      "android/device_authenticator_android.h",
+      "android/device_authenticator_bridge.h",
+      "android/reauthenticator_bridge.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [
+      "chromeos/authenticator_chromeos.h",
+      "chromeos/device_authenticator_chromeos.h",
+    ]
+  }
+
+  if (is_mac) {
+    public += [
+      "mac/authenticator_mac.h",
+      "mac/device_authenticator_mac.h",
+    ]
+  }
+
+  if (is_win) {
+    public += [
+      "win/authenticator_win.h",
+      "win/device_authenticator_win.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+
+  public_deps = [
+    ":device_reauth",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/ui/browser_window",
+    "//components/device_reauth",
+    "//content/public/browser",
+  ]
+
+  if (is_android || is_mac || is_win || is_chromeos) {
+    sources += [ "chrome_device_authenticator_factory.cc" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/device_authenticator_android.cc",
+      "android/device_authenticator_bridge_impl.cc",
+      "android/device_authenticator_bridge_impl.h",
+      "android/reauthenticator_bridge.cc",
+    ]
+    deps += [
+      "//chrome/browser/device_reauth/android:jni_headers",
+      "//components/password_manager/core/browser",
+      "//ui/android",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "chromeos/authenticator_chromeos.cc",
+      "chromeos/device_authenticator_chromeos.cc",
+    ]
+    deps += [
+      "//chrome/browser/ash/auth",
+      "//chromeos/ash/components/cryptohome",
+      "//chromeos/ash/components/dbus/userdataauth",
+      "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+      "//chromeos/ash/components/osauth/public",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac/authenticator_mac.mm",
+      "mac/device_authenticator_mac.mm",
+    ]
+    deps += [
+      "//components/password_manager/core/browser/features:password_features",
+      "//device/fido",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "win/authenticator_win.cc",
+      "win/device_authenticator_win.cc",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+
+  deps = [
+    ":device_reauth",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/browser/prefs",
+    "//chrome/test:test_support",
+    "//components/device_reauth",
+    "//components/device_reauth:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_win || is_mac || is_android) {
+    sources += [ "chrome_device_authenticator_factory_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources += [ "android/device_authenticator_android_unittest.cc" ]
+    deps += [ "//ui/android" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "chromeos/device_authenticator_chromeos_unittest.cc" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/components/cryptohome",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "mac/device_authenticator_mac_unittest.mm" ]
+    deps += [
+      "//device/fido",
+      "//device/fido:test_support",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "win/device_authenticator_win_unittest.cc" ]
+  }
+}

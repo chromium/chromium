@@ -148,6 +148,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser/affiliations",
     "//chrome/browser/autofill",
+    "//chrome/browser/device_reauth",
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/favicon",
     "//chrome/browser/glic",

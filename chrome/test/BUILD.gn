@@ -7023,6 +7023,8 @@ test("unit_tests") {
     "//chrome/browser/data_saver",
     "//chrome/browser/data_sharing",
     "//chrome/browser/data_sharing:unit_tests",
+    "//chrome/browser/device_reauth",
+    "//chrome/browser/device_reauth:unit_tests",
     "//chrome/browser/devtools",
     "//chrome/browser/diagnostics:unit_tests",
     "//chrome/browser/digital_credentials:unit_tests",
@@ -7658,7 +7660,6 @@ test("unit_tests") {
       "../browser/accessibility/live_caption/live_caption_unavailability_notifier_unittest.cc",
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
-      "../browser/device_reauth/win/device_authenticator_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_provider_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_utils_win_unittest.cc",
       "../browser/media/cdm_document_service_impl_test.cc",
@@ -7782,7 +7783,6 @@ test("unit_tests") {
       "../browser/app_controller_mac_unittest.mm",
       "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
       "../browser/chrome_browser_application_mac_unittest.mm",
-      "../browser/device_reauth/mac/device_authenticator_mac_unittest.mm",
       "../browser/enterprise/platform_auth/extensible_enterprise_sso_entra_unittest.mm",
       "../browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler_unittest.cc",
       "../browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory_unittest.cc",
@@ -7868,10 +7868,6 @@ test("unit_tests") {
 
   if (is_win || is_chromeos || is_mac) {
     deps += [ "//chrome/browser/webshare:unit_tests" ]
-  }
-
-  if (is_win || is_mac || is_android) {
-    sources += [ "../browser/device_reauth/chrome_device_authenticator_factory_unittest.cc" ]
   }
 
   if (enable_dice_support) {
@@ -7969,7 +7965,6 @@ test("unit_tests") {
       "../browser/autofill/android/save_update_address_profile_prompt_controller_unittest.cc",
       "../browser/bookmarks//android/bookmark_bridge_unittest.cc",
       "../browser/commerce/merchant_viewer/merchant_viewer_data_manager_unittest.cc",
-      "../browser/device_reauth/android/device_authenticator_android_unittest.cc",
       "../browser/download/android/download_controller_unittest.cc",
       "../browser/download/android/download_manager_service_unittest.cc",
       "../browser/enterprise/platform_auth/entra_provider_android_unittest.cc",
@@ -8934,7 +8929,6 @@ test("unit_tests") {
     sources += [
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
-      "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc",
       "../browser/download/notification/download_item_notification_unittest.cc",
       "../browser/enterprise/connectors/analysis/file_transfer_analysis_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",

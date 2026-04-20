@@ -1,3 +1,28 @@
 include_rules = [
-    "+components/device_reauth",
+    "-chrome/browser",
+    "+chrome/browser/device_reauth",  # Allow internal includes
+    "+components/device_reauth",      # Inherited but good to keep explicit
+
+    # Allowlisted monolith includes
+    "+chrome/browser/ash/auth/legacy_fingerprint_engine.h",
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/password_manager/password_manager_util_mac.h",
+    "+chrome/browser/password_manager/password_manager_util_win.h",
+    "+chrome/browser/prefs/browser_prefs.h",
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/profiles/profile_keyed_service_factory.h",
+    "+chrome/browser/profiles/profile_manager.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
 ]
+
+specific_include_rules = {
+  ".*_(unittest|browsertest|test)\\.(cc|mm)": [
+    "+ash/constants/ash_features.h",
+    "+chrome/test/base/testing_browser_process.h",
+    "+chrome/test/base/testing_profile_manager.h",
+    "+content/public/test/browser_task_environment.h",
+  ],
+}

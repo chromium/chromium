@@ -307,6 +307,8 @@ static_library("ui") {
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/data_sharing",
+    "//chrome/browser/device_reauth",
+    "//chrome/browser/device_reauth:impl",
     "//chrome/browser/devtools",
     "//chrome/browser/engagement",
     "//chrome/browser/enterprise",
@@ -792,6 +794,11 @@ static_library("ui") {
     "//chrome/browser/media:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
+
+    # TODO(crbug.com/502936350): Remove this circular dependency.
+    # device_reauth's :impl includes headers from //chrome/browser/ui
+    # that can't be split out yet.
+    "//chrome/browser/device_reauth:impl",
 
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
