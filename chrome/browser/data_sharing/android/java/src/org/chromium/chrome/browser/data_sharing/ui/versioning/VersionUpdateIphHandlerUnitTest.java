@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.data_sharing.ui.versioning;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -166,5 +168,58 @@ public class VersionUpdateIphHandlerUnitTest {
                 mProfile,
                 /* requiresAutoOpenSettingEnabled= */ true);
         verify(mUserEducationHelper, never()).requestShowIph(any());
+    }
+
+    @Test
+    public void testShouldShowVersioningIph_autoOpenEnabled() {
+        assertTrue(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ true));
+    }
+
+    @Test
+    public void testShouldShowVersioningIph_autoOpenDisabled() {
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
+        assertTrue(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ false));
+    }
+
+    @Test
+    public void testShouldShowVersioningIph_notShown() {
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
+        assertFalse(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ true));
+
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(true);
+        assertFalse(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ false));
+    }
+
+    @Test
+    public void testShouldShowVersioningIph_profileOffTheRecord() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        assertFalse(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ true));
+    }
+
+    @Test
+    public void testShouldShowVersioningIph_controllerNotInitialized() {
+        when(mVersioningMessageController.isInitialized()).thenReturn(false);
+        assertFalse(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ true));
+    }
+
+    @Test
+    public void testShouldShowVersioningIph_controllerShouldNotShow() {
+        when(mVersioningMessageController.shouldShowMessageUi(MessageType.VERSION_UPDATED_MESSAGE))
+                .thenReturn(false);
+        assertFalse(
+                VersionUpdateIphHandler.shouldShowVersioningIph(
+                        mProfile, /* requiresAutoOpenSettingEnabled= */ true));
     }
 }

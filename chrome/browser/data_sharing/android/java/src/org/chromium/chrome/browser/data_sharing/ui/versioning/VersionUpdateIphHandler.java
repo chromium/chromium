@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.versioning;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 
@@ -31,6 +33,26 @@ public class VersionUpdateIphHandler {
     private VersionUpdateIphHandler() {}
 
     /**
+     * Checks whether the versioning IPH should be shown.
+     *
+     * @param profile The current profile.
+     * @param requiresAutoOpenSettingEnabled The expected value of the "auto-open tab groups"
+     *     setting.
+     */
+    public static boolean shouldShowVersioningIph(
+            Profile profile, boolean requiresAutoOpenSettingEnabled) {
+        PrefService prefService = UserPrefs.get(profile);
+        if (wontShowIphForProfile(profile)
+                || requiresAutoOpenSettingEnabled
+                        != prefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) {
+            return false;
+        }
+        VersioningMessageController versioningMessageController =
+                getVersioningMessageController(profile);
+        return versioningMessageController != null && shouldShowIph(versioningMessageController);
+    }
+
+    /**
      * Attempts to show IPH on the anchor view if conditions for a version update message are met.
      *
      * @param userEducationHelper Helper for showing IPHs.
@@ -45,22 +67,28 @@ public class VersionUpdateIphHandler {
             View anchorView,
             Profile profile,
             boolean requiresAutoOpenSettingEnabled) {
-        PrefService prefService = UserPrefs.get(profile);
-        if (!wontShowIphForProfile(profile)
-                && requiresAutoOpenSettingEnabled
-                        == prefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) {
+        if (shouldShowVersioningIph(profile, requiresAutoOpenSettingEnabled)) {
             showIph(userEducationHelper, anchorView, profile);
         }
     }
 
-    private static void showIph(
+    /**
+     * Shows the versioning IPH on the anchor view.
+     *
+     * <p>Note: This method does not check whether the IPH should be shown. It assumes that {@link
+     * #shouldShowVersioningIph(Profile, boolean)} would return true. Calling this method without
+     * checking eligibility may result in a NullPointerException during the IPH show callback if the
+     * versioning message controller is missing.
+     *
+     * @param userEducationHelper Helper for showing IPHs.
+     * @param anchorView The view to anchor the IPH to.
+     * @param profile The current profile.
+     * @see #maybeShowVersioningIph(UserEducationHelper, View, Profile, boolean)
+     */
+    public static void showIph(
             UserEducationHelper userEducationHelper, View anchorView, Profile profile) {
         VersioningMessageController versioningMessageController =
-                getVersioningMessageController(profile);
-        if (versioningMessageController == null || !shouldShowIph(versioningMessageController)) {
-            return;
-        }
-
+                assumeNonNull(getVersioningMessageController(profile));
         Context context = anchorView.getContext();
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         if (tabGroupSyncService == null) return;

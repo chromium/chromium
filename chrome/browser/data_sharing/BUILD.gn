@@ -277,6 +277,7 @@ if (is_android) {
     deps = [
       "//base:callback_java",
       "//base:supplier_java",
+      "//build/android:build_java",
       "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
