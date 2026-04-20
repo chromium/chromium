@@ -13,6 +13,7 @@ PasswordForm ToPasswordForm(const StoredCredential& cred) {
   form.primary_key = cred.primary_key;
   form.scheme = cred.scheme;
   form.signon_realm = cred.signon_realm;
+  form.affiliated_web_realm = cred.affiliated_web_realm;
   form.url = cred.url;
   form.action = cred.action;
   form.federation_origin = cred.federation_origin;
@@ -60,6 +61,7 @@ PasswordForm ToPasswordForm(StoredCredential&& cred) {
   form.primary_key = cred.primary_key;
   form.scheme = cred.scheme;
   form.signon_realm = std::move(cred.signon_realm);
+  form.affiliated_web_realm = std::move(cred.affiliated_web_realm);
   form.url = std::move(cred.url);
   form.action = std::move(cred.action);
   form.federation_origin = std::move(cred.federation_origin);
@@ -107,6 +109,7 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.primary_key = std::move(form.primary_key);
   cred.scheme = form.scheme;
   cred.signon_realm = std::move(form.signon_realm);
+  cred.affiliated_web_realm = std::move(form.affiliated_web_realm);
   cred.url = std::move(form.url);
   cred.action = std::move(form.action);
   cred.federation_origin = std::move(form.federation_origin);
@@ -150,11 +153,21 @@ StoredCredential FromPasswordForm(PasswordForm form) {
 }
 
 std::vector<PasswordForm> ToPasswordForms(
-    std::vector<StoredCredential> credentials) {
+    std::vector<StoredCredential>&& credentials) {
   std::vector<PasswordForm> forms;
   forms.reserve(credentials.size());
   for (auto& cred : credentials) {
     forms.push_back(ToPasswordForm(std::move(cred)));
+  }
+  return forms;
+}
+
+std::vector<PasswordForm> ToPasswordForms(
+    const std::vector<StoredCredential>& credentials) {
+  std::vector<PasswordForm> forms;
+  forms.reserve(credentials.size());
+  for (const auto& cred : credentials) {
+    forms.push_back(ToPasswordForm(cred));
   }
   return forms;
 }
@@ -167,6 +180,13 @@ std::vector<StoredCredential> FromPasswordForms(
     credentials.push_back(FromPasswordForm(std::move(form)));
   }
   return credentials;
+}
+
+LoginsResultOrError ToLoginsResultOrError(BackendLoginsResultOrError result) {
+  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
+    return std::get<PasswordStoreBackendError>(result);
+  }
+  return ToPasswordForms(std::get<BackendLoginsResult>(std::move(result)));
 }
 
 }  // namespace password_manager

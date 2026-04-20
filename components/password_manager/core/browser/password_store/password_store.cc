@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -55,6 +56,16 @@ void InvokeCallbacksForSuspectedChanges(
   if (completion_callback) {
     std::move(completion_callback).Run(success);
   }
+}
+
+void ConsumerReplyConverter(base::WeakPtr<PasswordStoreConsumer> consumer,
+                            PasswordStoreInterface* store,
+                            BackendLoginsResultOrError result) {
+  if (!consumer) {
+    return;
+  }
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store, ToLoginsResultOrError(std::move(result)));
 }
 
 }  // namespace
@@ -115,7 +126,7 @@ void PasswordStore::AddLogins(const std::vector<PasswordForm>& forms,
   for (const PasswordForm& form : forms) {
     CHECK(!form.blocked_by_user ||
           (form.username_value.empty() && form.password_value.empty()));
-    backend_->AddLoginAsync(form, barrier_callback);
+    backend_->AddLoginAsync(FromPasswordForm(form), barrier_callback);
   }
 }
 
@@ -150,7 +161,7 @@ void PasswordStore::UpdateLogins(const std::vector<PasswordForm>& forms,
   for (const PasswordForm& form : forms) {
     CHECK(!form.blocked_by_user ||
           (form.username_value.empty() && form.password_value.empty()));
-    backend_->UpdateLoginAsync(form, barrier_callback);
+    backend_->UpdateLoginAsync(FromPasswordForm(form), barrier_callback);
   }
 }
 
@@ -195,9 +206,11 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
                  LoginsChangedTrigger::Update))
              .Then(std::move(completion)));
 
-  backend_->RemoveLoginAsync(FROM_HERE, old_primary_key, barrier_callback);
-  backend_->AddLoginAsync(new_form_with_correct_password_issues,
-                          barrier_callback);
+  backend_->RemoveLoginAsync(FROM_HERE, FromPasswordForm(old_primary_key),
+                             barrier_callback);
+  backend_->AddLoginAsync(
+      FromPasswordForm(new_form_with_correct_password_issues),
+      barrier_callback);
 }
 
 void PasswordStore::RemoveLogin(const base::Location& location,
@@ -215,7 +228,7 @@ void PasswordStore::RemoveLogin(const base::Location& location,
   }
 
   backend_->RemoveLoginAsync(
-      location, form,
+      location, FromPasswordForm(form),
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                      LoginsChangedTrigger::Deletion));
 }
@@ -287,11 +300,13 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
     return;
   }
 
-  backend_->FillMatchingLoginsAsync(
-      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
-          .Then(base::BindOnce(&PasswordStore::UnblocklistInternal, this,
-                               std::move(completion))),
-      /*include_psl=*/false, {form_digest});
+  auto adapter = base::BindOnce(&ToLoginsResultOrError)
+                     .Then(base::BindOnce(&GetLoginsOrEmptyListOnFailure))
+                     .Then(base::BindOnce(&PasswordStore::UnblocklistInternal,
+                                          this, std::move(completion)));
+
+  backend_->FillMatchingLoginsAsync(std::move(adapter), /*include_psl=*/false,
+                                    {form_digest});
 }
 
 void PasswordStore::GetLogins(const PasswordFormDigest& form,
@@ -309,9 +324,8 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   }
 
   backend_->GetGroupedMatchingLoginsAsync(
-      form, base::BindOnce(
-                &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,
-                consumer, base::RetainedRef(this)));
+      form, base::BindOnce(&ConsumerReplyConverter, consumer,
+                           base::RetainedRef(this)));
 }
 
 void PasswordStore::GetAutofillableLogins(
@@ -330,8 +344,7 @@ void PasswordStore::GetAutofillableLogins(
   }
 
   backend_->GetAutofillableLoginsAsync(base::BindOnce(
-      &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
-      base::RetainedRef(this)));
+      &ConsumerReplyConverter, consumer, base::RetainedRef(this)));
   UmaHistogramMediumTimes("PasswordManager.GetAutofillableLogins.TimeSinceInit",
                           base::Time::Now() - construction_time_);
 }
@@ -350,9 +363,8 @@ void PasswordStore::GetAllLogins(
     return;
   }
 
-  backend_->GetAllLoginsAsync(base::BindOnce(
-      &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
-      base::RetainedRef(this)));
+  backend_->GetAllLoginsAsync(base::BindOnce(&ConsumerReplyConverter, consumer,
+                                             base::RetainedRef(this)));
   UmaHistogramMediumTimes("PasswordManager.GetAllLogins.TimeSinceInit",
                           base::Time::Now() - construction_time_);
 }
@@ -374,9 +386,8 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
     return;
   }
 
-  auto consumer_reply = base::BindOnce(
-      &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom, consumer,
-      base::RetainedRef(this));
+  auto consumer_reply = base::BindOnce(&ConsumerReplyConverter, consumer,
+                                       base::RetainedRef(this));
   backend_->GetAllLoginsWithAffiliationAndBrandingAsync(
       std::move(consumer_reply));
   UmaHistogramMediumTimes(
@@ -518,7 +529,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
 }
 
 void PasswordStore::NotifyLoginsRetainedOnMainSequence(
-    LoginsResultOrError result) {
+    BackendLoginsResultOrError result) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   // Don't propagate reference to this store after its shutdown. No caller
   // should expect any notifications from a shut down store in any case.
@@ -532,9 +543,9 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   }
 
   std::vector<PasswordForm> retained_logins;
-  retained_logins.reserve(std::get<LoginsResult>(result).size());
-  for (auto& login : std::get<LoginsResult>(result)) {
-    retained_logins.push_back(std::move(login));
+  retained_logins.reserve(std::get<BackendLoginsResult>(result).size());
+  for (const auto& cred : std::get<BackendLoginsResult>(result)) {
+    retained_logins.push_back(ToPasswordForm(cred));
   }
 
   for (auto& observer : observers_) {
@@ -590,7 +601,8 @@ void PasswordStore::UnblocklistInternal(base::OnceClosure completion,
                                   .Then(std::move(notify_callback)));
 
   for (const auto& form : forms_to_remove) {
-    backend_->RemoveLoginAsync(FROM_HERE, form, barrier_callback);
+    backend_->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
+                               barrier_callback);
   }
 }
 

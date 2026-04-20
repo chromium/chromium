@@ -49,55 +49,58 @@ ActionableError PasswordStoreAndroidLocalBackend::GetError() {
 }
 
 void PasswordStoreAndroidLocalBackend::GetAllLoginsAsync(
-    LoginsOrErrorReply callback) {
-  GetAllLoginsInternal(std::string(), std::move(callback));
+    BackendLoginsOrErrorReply callback) {
+  GetAllLoginsInternal(std::string(),
+                       AdaptLoginsResultCallback(std::move(callback)));
 }
 
 void PasswordStoreAndroidLocalBackend::
-    GetAllLoginsWithAffiliationAndBrandingAsync(LoginsOrErrorReply callback) {
-  GetAllLoginsWithAffiliationAndBrandingInternal(std::string(),
-                                                 std::move(callback));
+    GetAllLoginsWithAffiliationAndBrandingAsync(
+        BackendLoginsOrErrorReply callback) {
+  GetAllLoginsWithAffiliationAndBrandingInternal(
+      std::string(), AdaptLoginsResultCallback(std::move(callback)));
 }
 
 void PasswordStoreAndroidLocalBackend::GetAutofillableLoginsAsync(
-    LoginsOrErrorReply callback) {
-  GetAutofillableLoginsInternal(std::string(), std::move(callback));
+    BackendLoginsOrErrorReply callback) {
+  GetAutofillableLoginsInternal(std::string(),
+                                AdaptLoginsResultCallback(std::move(callback)));
 }
 
 void PasswordStoreAndroidLocalBackend::FillMatchingLoginsAsync(
-    LoginsOrErrorReply callback,
+    BackendLoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  FillMatchingLoginsInternal(std::string(), std::move(callback), include_psl,
-                             forms);
+  FillMatchingLoginsInternal(std::string(),
+                             AdaptLoginsResultCallback(std::move(callback)),
+                             include_psl, forms);
 }
 
 void PasswordStoreAndroidLocalBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
-    LoginsOrErrorReply callback) {
-  GetGroupedMatchingLoginsInternal(std::string(), form_digest,
-                                   std::move(callback));
+    BackendLoginsOrErrorReply callback) {
+  GetGroupedMatchingLoginsInternal(
+      std::string(), form_digest,
+      AdaptLoginsResultCallback(std::move(callback)));
 }
 
 void PasswordStoreAndroidLocalBackend::AddLoginAsync(
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  AddLoginInternal(std::string(), FromPasswordForm(form), std::move(callback));
+  AddLoginInternal(std::string(), std::move(cred), std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::UpdateLoginAsync(
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  UpdateLoginInternal(std::string(), FromPasswordForm(form),
-                      std::move(callback));
+  UpdateLoginInternal(std::string(), std::move(cred), std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginAsync(
     const base::Location& location,
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  RemoveLoginInternal(std::string(), FromPasswordForm(form),
-                      std::move(callback));
+  RemoveLoginInternal(std::string(), std::move(cred), std::move(callback));
 }
 
 void PasswordStoreAndroidLocalBackend::RemoveLoginsCreatedBetweenAsync(

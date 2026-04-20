@@ -36,50 +36,51 @@ ActionableError PasswordStoreEmptyBackend::GetError() {
   return ActionableError::kInactionable;
 }
 
-void PasswordStoreEmptyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
-  ReplyWithEmptyList<LoginsResult>(std::move(callback));
+void PasswordStoreEmptyBackend::GetAllLoginsAsync(
+    BackendLoginsOrErrorReply callback) {
+  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
-    LoginsOrErrorReply callback) {
-  ReplyWithEmptyList<LoginsResult>(std::move(callback));
+    BackendLoginsOrErrorReply callback) {
+  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::GetAutofillableLoginsAsync(
-    LoginsOrErrorReply callback) {
-  ReplyWithEmptyList<LoginsResult>(std::move(callback));
+    BackendLoginsOrErrorReply callback) {
+  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::FillMatchingLoginsAsync(
-    LoginsOrErrorReply callback,
+    BackendLoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  ReplyWithEmptyList<LoginsResult>(std::move(callback));
+  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
-    LoginsOrErrorReply callback) {
-  ReplyWithEmptyList<LoginsResult>(std::move(callback));
+    BackendLoginsOrErrorReply callback) {
+  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::AddLoginAsync(
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
   NOTREACHED() << "The empty backend isn't able to save passwords.";
 }
 
 void PasswordStoreEmptyBackend::UpdateLoginAsync(
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
   NOTREACHED() << "The empty backend isn't able to save passwords.";
 }
 
 void PasswordStoreEmptyBackend::RemoveLoginAsync(
     const base::Location& location,
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  // There is no way to get a form from this backend to call
+  // There is no way to get a `StoredCredential` from this backend to call
   // `RemoveLoginAsync`, because it's an empty backend.
   NOTREACHED() << "The empty backend doesn't store any data.";
 }

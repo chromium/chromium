@@ -43,7 +43,8 @@ MATCHER_P(MatchesFormExceptStore, expected, "") {
 class TestPasswordStore : public PasswordStore {
  public:
   // TODO(crbug.com/40774158): Clean up all references using this.
-  using PasswordMap = password_manager::PasswordMap;
+  using PasswordMap =
+      std::map<std::string, std::vector<PasswordForm>, std::less<>>;
 
   // We need to qualify password_manager::IsAccountStore with the full
   // namespace, otherwise, it's confused with the method

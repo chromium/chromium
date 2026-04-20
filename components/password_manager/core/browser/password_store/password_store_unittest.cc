@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -67,6 +68,10 @@ using testing::WithArg;
 namespace password_manager {
 
 namespace {
+
+MATCHER_P(MatchesForm, expected_form, "") {
+  return ToPasswordForm(arg) == expected_form;
+}
 
 constexpr const char kTestAffiliatedRealm[] = "https://one.example/";
 constexpr const char kTestAffiliatedURL[] = "https://one.example/path";
@@ -1335,7 +1340,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
 
   // Expect that observers receive the removal when the backend invokes the
   // reply with a `PasswordStoreChangeList`.
-  EXPECT_CALL(*mock_backend, RemoveLoginAsync(_, Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, RemoveLoginAsync(_, MatchesForm(kTestForm), _))
       .WillOnce(WithArg<2>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(
             CreateChangeList(PasswordStoreChange::REMOVE, kTestForm));
@@ -1362,7 +1367,7 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfRemovalReturnsError) {
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the removal when backend fails.
-  EXPECT_CALL(*mock_backend, RemoveLoginAsync(_, Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, RemoveLoginAsync(_, MatchesForm(kTestForm), _))
       .WillOnce(WithArg<2>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
@@ -1390,7 +1395,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
 
   // Expect that observers receive the addition when the backend invokes the
   // reply with a `PasswordStoreChangeList`.
-  EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, AddLoginAsync(MatchesForm(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(
             CreateChangeList(PasswordStoreChange::ADD, kTestForm));
@@ -1418,7 +1423,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
 
   // Expect that observers receive the update when the backend invokes the
   // reply with a `PasswordStoreChangeList`.
-  EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, UpdateLoginAsync(MatchesForm(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(
             CreateChangeList(PasswordStoreChange::UPDATE, kTestForm));
@@ -1445,7 +1450,7 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfAdditionReturnsError) {
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the change when backend fails.
-  EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, AddLoginAsync(MatchesForm(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
@@ -1477,7 +1482,7 @@ TEST_F(PasswordStoreTest,
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the change when backend fails.
-  EXPECT_CALL(*mock_backend, AddLoginAsync(Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, AddLoginAsync(MatchesForm(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
@@ -1503,7 +1508,7 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfUpdateReturnsError) {
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the update when backend fails.
-  EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
+  EXPECT_CALL(*mock_backend, UpdateLoginAsync(MatchesForm(kTestForm), _))
       .WillOnce(WithArg<1>([&](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
@@ -1939,7 +1944,7 @@ TEST_F(PasswordStoreDelayedInitTest, GetAutofillableLogins) {
   RunUntilIdle();
 
   EXPECT_CALL(*backend(), GetAutofillableLoginsAsync)
-      .WillOnce(base::test::RunOnceCallback<0>(LoginsResult()));
+      .WillOnce(base::test::RunOnceCallback<0>(BackendLoginsResult()));
   EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsOrErrorFrom);
   std::move(init_callback).Run(true);
 }

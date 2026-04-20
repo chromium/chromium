@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +63,8 @@ TEST_F(PasswordStoreEmptyBackendTest, NotAbleToSavePasswords) {
 TEST_F(PasswordStoreEmptyBackendTest, GetAllLoginsAsyncReturnsEmpty) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
   base::test::TestFuture<LoginsResultOrError> future;
-  backend->GetAllLoginsAsync(future.GetCallback());
+  backend->GetAllLoginsAsync(
+      AdaptBackendLoginsResultCallback(future.GetCallback()));
   const LoginsResultOrError& result = future.Get();
   EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
@@ -71,7 +73,8 @@ TEST_F(PasswordStoreEmptyBackendTest,
        GetAllLoginsWithAffiliationAndBrandingAsyncReturnsEmpty) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
   base::test::TestFuture<LoginsResultOrError> future;
-  backend->GetAllLoginsWithAffiliationAndBrandingAsync(future.GetCallback());
+  backend->GetAllLoginsWithAffiliationAndBrandingAsync(
+      AdaptBackendLoginsResultCallback(future.GetCallback()));
   const LoginsResultOrError& result = future.Get();
   EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
@@ -81,8 +84,9 @@ TEST_F(PasswordStoreEmptyBackendTest, FillMatchingLoginsAsyncReturnsEmpty) {
   base::test::TestFuture<LoginsResultOrError> future;
   std::vector<PasswordFormDigest> forms = {PasswordFormDigest(
       PasswordForm::Scheme::kHtml, kTestUrl, GURL(kTestUrl))};
-  backend->FillMatchingLoginsAsync(future.GetCallback(), /*include_psl=*/false,
-                                   forms);
+  backend->FillMatchingLoginsAsync(
+      AdaptBackendLoginsResultCallback(future.GetCallback()),
+      /*include_psl=*/false, forms);
   const LoginsResultOrError& result = future.Get();
   EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
@@ -93,7 +97,8 @@ TEST_F(PasswordStoreEmptyBackendTest,
   base::test::TestFuture<LoginsResultOrError> future;
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, kTestUrl,
                                  GURL(kTestUrl));
-  backend->GetGroupedMatchingLoginsAsync(form_digest, future.GetCallback());
+  backend->GetGroupedMatchingLoginsAsync(
+      form_digest, AdaptBackendLoginsResultCallback(future.GetCallback()));
   const LoginsResultOrError& result = future.Get();
   EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }

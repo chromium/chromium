@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace base {
 class Location;
@@ -70,19 +71,20 @@ class PasswordStoreBackend {
   // Returns the last known error state.
   virtual ActionableError GetError() = 0;
 
-  // Returns the complete list of PasswordForms (regardless of their blocklist
+  // Returns the complete list of credentials (regardless of their blocklist
   // status). Callback is called on the main sequence.
-  virtual void GetAllLoginsAsync(LoginsOrErrorReply callback) = 0;
+  virtual void GetAllLoginsAsync(BackendLoginsOrErrorReply callback) = 0;
 
-  // Returns the complete list of PasswordForms and fills in affiliation and
+  // Returns the complete list of credentials and fills in affiliation and
   // branding information for Android credentials. Callback is called on the
   // main sequence.
   virtual void GetAllLoginsWithAffiliationAndBrandingAsync(
-      LoginsOrErrorReply callback) = 0;
+      BackendLoginsOrErrorReply callback) = 0;
 
-  // Returns the complete list of non-blocklist PasswordForms. Callback is
+  // Returns the complete list of non-blocklist credentials. Callback is
   // called on the main sequence.
-  virtual void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) = 0;
+  virtual void GetAutofillableLoginsAsync(
+      BackendLoginsOrErrorReply callback) = 0;
 
   // Returns all PasswordForms with the same signon_realm as a form in |forms|.
   // If |include_psl|==true, the PSL-matched forms are also included.
@@ -91,24 +93,24 @@ class PasswordStoreBackend {
   // TODO(crbug.com/40262259): Remove and replace with
   // GetGroupedMatchingLoginsAsync().
   virtual void FillMatchingLoginsAsync(
-      LoginsOrErrorReply callback,
+      BackendLoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) = 0;
 
-  // Returns all PasswordForms related to |form_digest.signon_realm|.
+  // Returns all credentials related to |form_digest.signon_realm|.
   // This includes:
-  // * PasswordForms exactly matching a given |signon_realm|,
-  // * PasswordForms matched through PSL,
-  // * PasswordForms with affiliated signon_realm (this might include android
+  // * Credentials exactly matching a given |signon_realm|,
+  // * Credentials matched through PSL,
+  // * Credentials with affiliated signon_realm (this might include android
   // apps).
-  // * PasswordForms with signon_realm from the same group (this might include
+  // * Credentials with signon_realm from the same group (this might include
   // android apps).
   // All the forms are unique meaning if PasswordForm was matched
   // through multiple sources all the sources will be mentioned.
   // Callback is called on the main sequence.
   virtual void GetGroupedMatchingLoginsAsync(
       const PasswordFormDigest& form_digest,
-      LoginsOrErrorReply callback) = 0;
+      BackendLoginsOrErrorReply callback) = 0;
 
   // For all methods below:
   // TODO(crbug.com/40185050): Make pure virtual.
@@ -123,12 +125,12 @@ class PasswordStoreBackend {
   // changes. The absence of the changelist indicates that the used backend
   // (e.g. on Android) cannot confirm of the execution and a re-fetch is
   // required to know the current state of the backend.
-  virtual void AddLoginAsync(const PasswordForm& form,
+  virtual void AddLoginAsync(StoredCredential cred,
                              PasswordChangesOrErrorReply callback) = 0;
-  virtual void UpdateLoginAsync(const PasswordForm& form,
+  virtual void UpdateLoginAsync(StoredCredential cred,
                                 PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginAsync(const base::Location& location,
-                                const PasswordForm& form,
+                                StoredCredential cred,
                                 PasswordChangesOrErrorReply callback) = 0;
   virtual void RemoveLoginsCreatedBetweenAsync(
       const base::Location& location,

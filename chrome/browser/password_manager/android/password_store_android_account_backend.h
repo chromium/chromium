@@ -41,22 +41,23 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
   ActionableError GetError() override;
-  void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
+  void GetAllLoginsAsync(BackendLoginsOrErrorReply callback) override;
   void GetAllLoginsWithAffiliationAndBrandingAsync(
-      LoginsOrErrorReply callback) override;
-  void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
+      BackendLoginsOrErrorReply callback) override;
+  void GetAutofillableLoginsAsync(BackendLoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
-      LoginsOrErrorReply callback,
+      BackendLoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
-  void GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
-                                     LoginsOrErrorReply callback) override;
-  void AddLoginAsync(const PasswordForm& form,
+  void GetGroupedMatchingLoginsAsync(
+      const PasswordFormDigest& form_digest,
+      BackendLoginsOrErrorReply callback) override;
+  void AddLoginAsync(StoredCredential cred,
                      PasswordChangesOrErrorReply callback) override;
-  void UpdateLoginAsync(const PasswordForm& form,
+  void UpdateLoginAsync(StoredCredential cred,
                         PasswordChangesOrErrorReply callback) override;
   void RemoveLoginAsync(const base::Location& location,
-                        const PasswordForm& form,
+                        StoredCredential cred,
                         PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
       const base::Location& location,
@@ -86,8 +87,8 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // invokes |callback| with it, as no forms could be fetched. Called on
   // the main sequence.
   void InjectAffiliationAndBrandingInformation(
-      LoginsOrErrorReply callback,
-      LoginsResultOrError forms_or_error);
+      BackendLoginsOrErrorReply callback,
+      BackendLoginsResultOrError forms_or_error);
 
   // Called when password sync flips from disabled to enabled and vice-versa.
   // If the sync status changes, all pending jobs should be replied to

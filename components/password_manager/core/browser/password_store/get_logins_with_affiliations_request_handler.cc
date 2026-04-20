@@ -20,7 +20,9 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "url/origin.h"
 
@@ -160,8 +162,9 @@ void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
     // If |affiliated_match_helper| is unavailable return only exact and PSL
     // matches.
     backend_->FillMatchingLoginsAsync(
-        base::BindOnce(&ProcessExactAndPSLForms, requested_digest_,
-                       base::flat_set<std::string>())
+        base::BindOnce(&ToLoginsResultOrError)
+            .Then(base::BindOnce(&ProcessExactAndPSLForms, requested_digest_,
+                                 base::flat_set<std::string>()))
             .Then(std::move(callback)),
         FormSupportsPSL(requested_digest_), {requested_digest_});
     return;
@@ -194,8 +197,9 @@ void GetLoginsHelper::OnPSLExtensionsReceived(
     return;
   }
   backend_->FillMatchingLoginsAsync(
-      base::BindOnce(&ProcessExactAndPSLForms, requested_digest_,
-                     psl_extensions)
+      base::BindOnce(&ToLoginsResultOrError)
+          .Then(base::BindOnce(&ProcessExactAndPSLForms, requested_digest_,
+                               psl_extensions))
           .Then(std::move(forms_received_callback)),
       FormSupportsPSL(requested_digest_), {requested_digest_});
 }
@@ -240,8 +244,9 @@ void GetLoginsHelper::HandleAffiliationsAndGroupsReceived(
                                       GURL(realm));
     }
   }
-  backend_->FillMatchingLoginsAsync(std::move(forms_received_callback),
-                                    /*include_psl=*/false, digests_to_request);
+  backend_->FillMatchingLoginsAsync(
+      base::BindOnce(&ToLoginsResultOrError).Then(forms_received_callback),
+      /*include_psl=*/false, digests_to_request);
 }
 
 LoginsResultOrError GetLoginsHelper::MergeResults(

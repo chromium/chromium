@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -139,7 +140,7 @@ class PasswordStore : public PasswordStoreInterface {
                                          PasswordChangesOrError);
 
   // Notifies observers with all logins remaining after a modifying operation.
-  void NotifyLoginsRetainedOnMainSequence(LoginsResultOrError result);
+  void NotifyLoginsRetainedOnMainSequence(BackendLoginsResultOrError result);
 
   // Called when the backend reports that sync has been enabled or disabled.
   void NotifySyncEnabledOrDisabledOnMainSequence();

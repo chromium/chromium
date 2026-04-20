@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -128,6 +129,16 @@ PasswordFormData CreateTestPasswordFormData() {
                            true,
                            1};
   return data;
+}
+
+MATCHER_P(MatchesFormsIgnoringPrimaryKey, expected_forms, "") {
+  std::vector<PasswordForm> actual_forms;
+  for (const auto& cred : arg) {
+    actual_forms.push_back(ToPasswordForm(cred));
+  }
+  return ExplainMatchResult(
+      UnorderedElementsAreArray(FormsIgnoringPrimaryKey(expected_forms)),
+      actual_forms, result_listener);
 }
 
 }  // anonymous namespace
@@ -376,11 +387,13 @@ TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
                                              1};
 
   PasswordForm expected_form(*FillPasswordFormWithData(form_data, GetParam()));
-  backend->AddLoginAsync(expected_form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(expected_form), base::DoNothing());
 
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(ElementsAre(
-                              HasPrimaryKeyAndEquals(expected_form)))));
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<BackendLoginsResult>(MatchesFormsIgnoringPrimaryKey(
+          std::vector<PasswordForm>{expected_form}))));
   backend->GetAutofillableLoginsAsync(mock_reply.Get());
 
   RunUntilIdle();
@@ -399,7 +412,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
-  backend->AddLoginAsync(form, mock_reply.Get());
+  backend->AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -409,7 +422,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   form.password_value = u"a different password";
@@ -420,7 +433,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
-  backend->UpdateLoginAsync(form, mock_reply.Get());
+  backend->UpdateLoginAsync(FromPasswordForm(form), mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -430,7 +443,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   PasswordStoreChange remove_change =
@@ -440,7 +453,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(remove_change)))));
-  backend->RemoveLoginAsync(FROM_HERE, form, mock_reply.Get());
+  backend->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
+                            mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -455,7 +469,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(
         FillPasswordFormWithData(test_credential, GetParam()));
-    backend->AddLoginAsync(*all_credentials.back(), reply.Get());
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           reply.Get());
   }
   RunUntilIdle();
 
@@ -464,10 +479,10 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
   for (const auto& credential : all_credentials) {
     expected_results.push_back(*credential);
   }
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
   EXPECT_CALL(mock_reply,
-              Run(VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                  FormsIgnoringPrimaryKey(expected_results)))));
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
   backend->GetAllLoginsAsync(mock_reply.Get());
 
   RunUntilIdle();
@@ -494,7 +509,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncMetrics) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
-  backend->AddLoginAsync(form, mock_reply.Get());
+  backend->AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   // Get the logins
   backend->GetAllLoginsAsync(base::DoNothing());
@@ -556,7 +571,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
-  backend->AddLoginAsync(form, mock_reply.Get());
+  backend->AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   // Get the logins
   backend->GetAutofillableLoginsAsync(base::DoNothing());
@@ -599,7 +614,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   // Fill the store
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
-  bad_backend->AddLoginAsync(form, base::DoNothing());
+  bad_backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
 
   // Get the logins
   bad_backend->GetAutofillableLoginsAsync(base::DoNothing());
@@ -633,7 +648,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   form.password_value = u"a different password";
@@ -644,7 +659,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
-  backend->UpdateLoginAsync(form, mock_reply.Get());
+  backend->UpdateLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -668,7 +683,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncFailsMetrics) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
-  bad_backend->UpdateLoginAsync(form, base::DoNothing());
+  bad_backend->UpdateLoginAsync(FromPasswordForm(form), base::DoNothing());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -691,13 +706,14 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncMetrics) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   PasswordStoreChange remove_change =
       PasswordStoreChange(PasswordStoreChange::REMOVE, form);
 
-  backend->RemoveLoginAsync(FROM_HERE, form, base::DoNothing());
+  backend->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
+                            base::DoNothing());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -719,13 +735,14 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncFailsMetrics) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
-  bad_backend->AddLoginAsync(form, base::DoNothing());
+  bad_backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   PasswordStoreChange remove_change =
       PasswordStoreChange(PasswordStoreChange::REMOVE, form);
 
-  bad_backend->RemoveLoginAsync(FROM_HERE, form, base::DoNothing());
+  bad_backend->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
+                                base::DoNothing());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -751,7 +768,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   form.date_created = base::Time::FromTimeT(1500);
-  backend->AddLoginAsync(form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   backend->RemoveLoginsCreatedBetweenAsync(
@@ -783,7 +800,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   form.date_created = base::Time::FromTimeT(300);
-  backend->AddLoginAsync(form, base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
   RunUntilIdle();
 
   backend->RemoveLoginsCreatedBetweenAsync(
@@ -842,7 +859,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, FillMatchingLoginsAsyncMetrics) {
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   const std::string kTestPasswordFormURL = form.signon_realm;
-  backend->AddLoginAsync(std::move(form), base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(std::move(form)), base::DoNothing());
   RunUntilIdle();
 
   std::vector<PasswordFormDigest> forms;
@@ -904,7 +921,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(
         FillPasswordFormWithData(test_credential, GetParam()));
-    backend->AddLoginAsync(*all_credentials.back(), base::DoNothing());
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
     RunUntilIdle();
   }
 
@@ -931,10 +949,10 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
       observed_form, affiliated_android_realms, grouped_realms);
   mock_affiliated_match_helper
       .ExpectCallToInjectAffiliationAndBrandingInformation({});
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
   EXPECT_CALL(mock_reply,
-              Run(VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                  FormsIgnoringPrimaryKey(expected_results)))));
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
 
   backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
   RunUntilIdle();
@@ -952,7 +970,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(FillPasswordFormWithData(
         test_credential, /*is_account_store=*/GetParam()));
-    backend->AddLoginAsync(*all_credentials.back(), base::DoNothing());
+    backend->AddLoginAsync(FromPasswordForm(*all_credentials.back()),
+                           base::DoNothing());
     RunUntilIdle();
   }
 
@@ -983,10 +1002,10 @@ TEST_P(PasswordStoreBuiltInBackendTest,
         affiliation_info_for_results[i].app_icon_url;
   }
 
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  base::MockCallback<BackendLoginsOrErrorReply> mock_reply;
   EXPECT_CALL(mock_reply,
-              Run(VariantWith<LoginsResult>(UnorderedElementsAreArray(
-                  FormsIgnoringPrimaryKey(expected_results)))));
+              Run(VariantWith<BackendLoginsResult>(
+                  MatchesFormsIgnoringPrimaryKey(expected_results))));
 
   backend->GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
@@ -1056,7 +1075,8 @@ TEST_P(PasswordStoreBuiltInBackendPasswordLossMetricsTest,
   PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData(),
                                                 test_case.is_account_store);
 
-  backend->AddLoginAsync(form, /*callback=*/base::DoNothing());
+  backend->AddLoginAsync(FromPasswordForm(form),
+                         /*callback=*/base::DoNothing());
   RunUntilIdle();
 
   PasswordStoreChangeList changes;

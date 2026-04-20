@@ -23,6 +23,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 
 namespace password_manager {

@@ -27,6 +27,8 @@ struct StoredCredential {
   StoredCredential();
   StoredCredential(StoredCredential&&);
   StoredCredential& operator=(StoredCredential&&);
+  StoredCredential(const StoredCredential&) = delete;
+  StoredCredential& operator=(const StoredCredential&) = delete;
   ~StoredCredential();
 
   // Identification & URLs
@@ -58,6 +60,7 @@ struct StoredCredential {
   bool blocked_by_user = false;
   PasswordForm::Type type = PasswordForm::Type::kFormSubmission;
   int times_used_in_html_form = 0;
+  std::string affiliated_web_realm;
   std::u16string display_name;
   GURL icon_url;
   std::string app_display_name;
@@ -95,6 +98,12 @@ struct StoredCredential {
                          const StoredCredential&) = default;
 #endif
 };
+
+using BackendLoginsResult = std::vector<StoredCredential>;
+using BackendLoginsResultOrError =
+    std::variant<BackendLoginsResult, PasswordStoreBackendError>;
+using BackendLoginsOrErrorReply =
+    base::OnceCallback<void(BackendLoginsResultOrError)>;
 
 }  // namespace password_manager
 

@@ -26,8 +26,9 @@ struct PasswordForm;
 
 class SmartBubbleStatsStore;
 
-using PasswordMap = std::
-    map<std::string /* signon_realm */, std::vector<PasswordForm>, std::less<>>;
+using PasswordMap = std::map<std::string /* signon_realm */,
+                             std::vector<StoredCredential>,
+                             std::less<>>;
 
 // Fake password store backend to be used in tests.
 class FakePasswordStoreBackend : public PasswordStoreBackend {
@@ -67,22 +68,23 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
   ActionableError GetError() override;
-  void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
+  void GetAllLoginsAsync(BackendLoginsOrErrorReply callback) override;
   void GetAllLoginsWithAffiliationAndBrandingAsync(
-      LoginsOrErrorReply callback) override;
-  void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
+      BackendLoginsOrErrorReply callback) override;
+  void GetAutofillableLoginsAsync(BackendLoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
-      LoginsOrErrorReply callback,
+      BackendLoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
-  void GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
-                                     LoginsOrErrorReply callback) override;
-  void AddLoginAsync(const PasswordForm& form,
+  void GetGroupedMatchingLoginsAsync(
+      const PasswordFormDigest& form_digest,
+      BackendLoginsOrErrorReply callback) override;
+  void AddLoginAsync(StoredCredential cred,
                      PasswordChangesOrErrorReply callback) override;
-  void UpdateLoginAsync(const PasswordForm& form,
+  void UpdateLoginAsync(StoredCredential cred,
                         PasswordChangesOrErrorReply callback) override;
   void RemoveLoginAsync(const base::Location& location,
-                        const PasswordForm& form,
+                        StoredCredential cred,
                         PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
       const base::Location& location,
@@ -103,18 +105,18 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   // `base::SequencedTaskRunner::GetCurrentDefault` if none is injected.
   const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() const;
 
-  LoginsResult GetAllLoginsInternal();
-  LoginsResult GetAutofillableLoginsInternal();
-  LoginsResult FillMatchingLoginsInternal(
+  BackendLoginsResult GetAllLoginsInternal();
+  BackendLoginsResult GetAutofillableLoginsInternal();
+  BackendLoginsResult FillMatchingLoginsInternal(
       const std::vector<PasswordFormDigest>& forms,
       bool include_psl);
-  LoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form,
-                                        bool include_psl);
-  PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
-  PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
+  BackendLoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form,
+                                               bool include_psl);
+  PasswordStoreChangeList AddLoginInternal(const StoredCredential& cred);
+  PasswordStoreChangeList UpdateLoginInternal(const StoredCredential& cred);
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
-  PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
+  PasswordStoreChangeList RemoveLoginInternal(const StoredCredential& cred);
   PasswordStoreChangeList RemoveLoginsCreatedBetweenInternal(
       base::Time delete_begin,
       base::Time delete_end);

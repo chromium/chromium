@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
@@ -28,16 +29,31 @@ namespace {
 
 void InjectAffiliationAndBrandingInformation(
     AffiliatedMatchHelper* match_helper,
-    LoginsOrErrorReply callback,
-    LoginsResultOrError forms_or_error) {
+    BackendLoginsOrErrorReply callback,
+    BackendLoginsResultOrError result) {
   if (!match_helper ||
-      std::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
-      std::get<LoginsResult>(forms_or_error).empty()) {
-    std::move(callback).Run(std::move(forms_or_error));
+      std::holds_alternative<PasswordStoreBackendError>(result) ||
+      std::get<BackendLoginsResult>(result).empty()) {
+    std::move(callback).Run(std::move(result));
     return;
   }
-  match_helper->InjectAffiliationAndBrandingInformation(
-      std::move(std::get<LoginsResult>(forms_or_error)), std::move(callback));
+
+  LoginsResult forms =
+      ToPasswordForms(std::get<BackendLoginsResult>(std::move(result)));
+
+  auto adapter = base::BindOnce(
+      [](BackendLoginsOrErrorReply callback, LoginsResultOrError result) {
+        if (std::holds_alternative<PasswordStoreBackendError>(result)) {
+          std::move(callback).Run(std::get<PasswordStoreBackendError>(result));
+        } else {
+          std::move(callback).Run(
+              FromPasswordForms(std::get<LoginsResult>(std::move(result))));
+        }
+      },
+      std::move(callback));
+
+  match_helper->InjectAffiliationAndBrandingInformation(std::move(forms),
+                                                        std::move(adapter));
 }
 
 }  // namespace
@@ -76,7 +92,7 @@ void FakePasswordStoreBackend::TriggerOnLoginsRetainedForAndroid(
                                ? PasswordForm::Store::kAccountStore
                                : PasswordForm::Store::kProfileStore;
     stored_passwords_[password_form.signon_realm].push_back(
-        std::move(stored_form));
+        FromPasswordForm(std::move(stored_form)));
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -150,7 +166,8 @@ ActionableError FakePasswordStoreBackend::GetError() {
   return actionable_error_;
 }
 
-void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
+void FakePasswordStoreBackend::GetAllLoginsAsync(
+    BackendLoginsOrErrorReply callback) {
   if (password_store_backend_error_.has_value()) {
     GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -165,14 +182,14 @@ void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
 }
 
 void FakePasswordStoreBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
-    LoginsOrErrorReply callback) {
+    BackendLoginsOrErrorReply callback) {
   auto injection = base::BindOnce(&InjectAffiliationAndBrandingInformation,
                                   match_helper_, std::move(callback));
   GetAllLoginsAsync(std::move(injection));
 }
 
 void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
-    LoginsOrErrorReply callback) {
+    BackendLoginsOrErrorReply callback) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::GetAutofillableLoginsInternal,
@@ -181,7 +198,7 @@ void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
 }
 
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
-    LoginsOrErrorReply callback,
+    BackendLoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -193,39 +210,41 @@ void FakePasswordStoreBackend::FillMatchingLoginsAsync(
 
 void FakePasswordStoreBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
-    LoginsOrErrorReply callback) {
+    BackendLoginsOrErrorReply callback) {
+  auto adapter = AdaptLoginsResultCallback(std::move(callback));
+
   GetLoginsWithAffiliationsRequestHandler(form_digest, this, match_helper_,
-                                          std::move(callback));
+                                          std::move(adapter));
 }
 
 void FakePasswordStoreBackend::AddLoginAsync(
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::AddLoginInternal,
-                     base::Unretained(this), form),
+                     base::Unretained(this), std::move(cred)),
       std::move(callback));
 }
 
 void FakePasswordStoreBackend::UpdateLoginAsync(
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::UpdateLoginInternal,
-                     base::Unretained(this), form),
+                     base::Unretained(this), std::move(cred)),
       std::move(callback));
 }
 
 void FakePasswordStoreBackend::RemoveLoginAsync(
     const base::Location& location,
-    const PasswordForm& form,
+    StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::RemoveLoginInternal,
-                     base::Unretained(this), form),
+                     base::Unretained(this), std::move(cred)),
       std::move(callback));
 }
 
@@ -276,91 +295,90 @@ base::WeakPtr<PasswordStoreBackend> FakePasswordStoreBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
-  LoginsResult result;
+BackendLoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
+  BackendLoginsResult result;
   for (const auto& elements : stored_passwords_) {
-    for (const auto& stored_form : elements.second) {
-      result.push_back(stored_form);
+    for (const auto& stored_cred : elements.second) {
+      result.push_back(FromPasswordForm(ToPasswordForm(stored_cred)));
     }
   }
   return result;
 }
 
-LoginsResult FakePasswordStoreBackend::GetAutofillableLoginsInternal() {
-  LoginsResult result;
+BackendLoginsResult FakePasswordStoreBackend::GetAutofillableLoginsInternal() {
+  BackendLoginsResult result;
   for (const auto& elements : stored_passwords_) {
-    for (const auto& stored_form : elements.second) {
-      if (!stored_form.blocked_by_user) {
-        result.push_back(stored_form);
+    for (const auto& stored_cred : elements.second) {
+      if (!stored_cred.blocked_by_user) {
+        result.push_back(FromPasswordForm(ToPasswordForm(stored_cred)));
       }
     }
   }
   return result;
 }
 
-LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
+BackendLoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
     const std::vector<PasswordFormDigest>& forms,
     bool include_psl) {
-  LoginsResult results;
+  BackendLoginsResult results;
   for (const auto& form : forms) {
-    LoginsResult matched_forms = FillMatchingLoginsHelper(form, include_psl);
+    BackendLoginsResult matched_creds =
+        FillMatchingLoginsHelper(form, include_psl);
     results.insert(results.end(),
-                   std::make_move_iterator(matched_forms.begin()),
-                   std::make_move_iterator(matched_forms.end()));
+                   std::make_move_iterator(matched_creds.begin()),
+                   std::make_move_iterator(matched_creds.end()));
   }
   return results;
 }
 
-LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
+BackendLoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     const PasswordFormDigest& form,
     bool include_psl) {
-  // Updating all matched forms is the equivalent of FillMatchingLogins();
-  LoginsResult matched_forms;
+  BackendLoginsResult matched_creds;
   for (const auto& elements : stored_passwords_) {
-    // The code below doesn't support PSL federated credential. It's doable but
-    // no tests need it so far.
     const bool realm_matches = elements.first == form.signon_realm;
     const bool realm_psl_matches =
         IsPublicSuffixDomainMatch(elements.first, form.signon_realm);
     if (realm_matches || (realm_psl_matches && include_psl) ||
         (form.scheme == PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(elements.first, form.url))) {
-      for (const auto& stored_form : elements.second) {
-        // Repeat the condition above with an additional check for origin.
+      for (const auto& stored_cred : elements.second) {
         if (realm_matches || realm_psl_matches ||
             (form.scheme == PasswordForm::Scheme::kHtml &&
-             stored_form.url.DeprecatedGetOriginAsURL() ==
+             stored_cred.url.DeprecatedGetOriginAsURL() ==
                  form.url.DeprecatedGetOriginAsURL() &&
-             password_manager::IsFederatedRealm(stored_form.signon_realm,
+             password_manager::IsFederatedRealm(stored_cred.signon_realm,
                                                 form.url))) {
-          matched_forms.push_back(stored_form);
+          matched_creds.push_back(
+              FromPasswordForm(ToPasswordForm(stored_cred)));
         }
       }
     }
   }
-  return matched_forms;
+  return matched_creds;
 }
 
 PasswordStoreChangeList FakePasswordStoreBackend::AddLoginInternal(
-    const PasswordForm& form) {
+    const StoredCredential& cred) {
   PasswordStoreChangeList changes;
-  auto& passwords_for_signon_realm = stored_passwords_[form.signon_realm];
+  auto& passwords_for_signon_realm = stored_passwords_[cred.signon_realm];
   auto iter = std::ranges::find_if(
-      passwords_for_signon_realm, [&form](const auto& password) {
-        return ArePasswordFormUniqueKeysEqual(form, password);
+      passwords_for_signon_realm, [&cred](const auto& password) {
+        return ArePasswordFormUniqueKeysEqual(ToPasswordForm(cred),
+                                              ToPasswordForm(password));
       });
 
   if (iter != passwords_for_signon_realm.end()) {
-    changes.emplace_back(PasswordStoreChange::REMOVE, *iter);
-    changes.emplace_back(PasswordStoreChange::ADD, form);
-    *iter = form;
+    changes.emplace_back(PasswordStoreChange::REMOVE, ToPasswordForm(*iter));
+    changes.emplace_back(PasswordStoreChange::ADD, ToPasswordForm(cred));
+    *iter = FromPasswordForm(ToPasswordForm(cred));
     iter->in_store = is_account_store() ? PasswordForm::Store::kAccountStore
                                         : PasswordForm::Store::kProfileStore;
     return changes;
   }
 
-  changes.emplace_back(PasswordStoreChange::ADD, form);
-  passwords_for_signon_realm.push_back(form);
+  changes.emplace_back(PasswordStoreChange::ADD, ToPasswordForm(cred));
+  passwords_for_signon_realm.push_back(FromPasswordForm(ToPasswordForm(cred)));
   passwords_for_signon_realm.back().in_store =
       is_account_store() ? PasswordForm::Store::kAccountStore
                          : PasswordForm::Store::kProfileStore;
@@ -368,34 +386,35 @@ PasswordStoreChangeList FakePasswordStoreBackend::AddLoginInternal(
 }
 
 PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
-    const PasswordForm& form) {
+    const StoredCredential& cred) {
   PasswordStoreChangeList changes;
-  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
-  for (auto& stored_form : forms) {
-    if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
-      bool password_changed = form.password_value != stored_form.password_value;
+  std::vector<StoredCredential>& creds = stored_passwords_[cred.signon_realm];
+  for (auto& stored_cred : creds) {
+    if (ArePasswordFormUniqueKeysEqual(ToPasswordForm(cred),
+                                       ToPasswordForm(stored_cred))) {
+      bool password_changed = cred.password_value != stored_cred.password_value;
       bool insecure_credentials_changed = false;
 
       for (auto insecure_type : {InsecureType::kLeaked, InsecureType::kPhished,
                                  InsecureType::kWeak, InsecureType::kReused}) {
-        if (form.password_issues.contains(insecure_type) !=
-            stored_form.password_issues.contains(insecure_type)) {
+        if (cred.password_issues.contains(insecure_type) !=
+            stored_cred.password_issues.contains(insecure_type)) {
           insecure_credentials_changed = true;
           break;
         }
       }
 
-      stored_form = form;
-      stored_form.in_store = is_account_store()
+      stored_cred = FromPasswordForm(ToPasswordForm(cred));
+      stored_cred.in_store = is_account_store()
                                  ? PasswordForm::Store::kAccountStore
                                  : PasswordForm::Store::kProfileStore;
       changes.emplace_back(
-          PasswordStoreChange::UPDATE, form, password_changed,
+          PasswordStoreChange::UPDATE, ToPasswordForm(cred), password_changed,
           InsecureCredentialsChanged(insecure_credentials_changed));
     }
   }
   if (changes.empty() && update_always_succeeds_) {
-    changes = AddLoginInternal(form);
+    changes = AddLoginInternal(cred);
   }
   return changes;
 }
@@ -412,20 +431,21 @@ void FakePasswordStoreBackend::DisableAutoSignInForOriginsInternal(
 }
 
 PasswordStoreChangeList FakePasswordStoreBackend::RemoveLoginInternal(
-    const PasswordForm& form) {
+    const StoredCredential& cred) {
   PasswordStoreChangeList changes;
-  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
-  auto it = forms.begin();
-  while (it != forms.end()) {
-    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
-      it = forms.erase(it);
-      changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+  std::vector<StoredCredential>& creds = stored_passwords_[cred.signon_realm];
+  auto it = creds.begin();
+  while (it != creds.end()) {
+    if (ArePasswordFormUniqueKeysEqual(ToPasswordForm(cred),
+                                       ToPasswordForm(*it))) {
+      it = creds.erase(it);
+      changes.emplace_back(PasswordStoreChange::REMOVE, ToPasswordForm(cred));
     } else {
       ++it;
     }
   }
-  if (forms.empty()) {
-    stored_passwords_.erase(form.signon_realm);
+  if (creds.empty()) {
+    stored_passwords_.erase(cred.signon_realm);
   }
   return changes;
 }
@@ -434,11 +454,11 @@ PasswordStoreChangeList
 FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal(
     base::Time delete_begin,
     base::Time delete_end) {
-  std::vector<PasswordForm> all_logins = GetAllLoginsInternal();
+  BackendLoginsResult all_logins = GetAllLoginsInternal();
   PasswordStoreChangeList list;
-  for (const auto& form : all_logins) {
-    if (delete_begin <= form.date_created && form.date_created < delete_end) {
-      std::ranges::move(RemoveLoginInternal(form), std::back_inserter(list));
+  for (const auto& cred : all_logins) {
+    if (delete_begin <= cred.date_created && cred.date_created < delete_end) {
+      std::ranges::move(RemoveLoginInternal(cred), std::back_inserter(list));
     }
   }
   return list;

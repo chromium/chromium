@@ -35,38 +35,38 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
   MOCK_METHOD(ActionableError, GetError, (), (override));
   MOCK_METHOD(void,
               GetAllLoginsAsync,
-              (LoginsOrErrorReply callback),
+              (BackendLoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               GetAllLoginsWithAffiliationAndBrandingAsync,
-              (LoginsOrErrorReply callback),
+              (BackendLoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               GetAutofillableLoginsAsync,
-              (LoginsOrErrorReply callback),
+              (BackendLoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               FillMatchingLoginsAsync,
-              (LoginsOrErrorReply callback,
+              (BackendLoginsOrErrorReply callback,
                bool include_psl,
                const std::vector<PasswordFormDigest>& forms),
               (override));
   MOCK_METHOD(void,
               GetGroupedMatchingLoginsAsync,
-              (const PasswordFormDigest&, LoginsOrErrorReply),
+              (const PasswordFormDigest&, BackendLoginsOrErrorReply),
               (override));
   MOCK_METHOD(void,
               AddLoginAsync,
-              (const PasswordForm& form, PasswordChangesOrErrorReply callback),
+              (StoredCredential cred, PasswordChangesOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               UpdateLoginAsync,
-              (const PasswordForm& form, PasswordChangesOrErrorReply callback),
+              (StoredCredential cred, PasswordChangesOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               RemoveLoginAsync,
               (const base::Location&,
-               const PasswordForm& form,
+               StoredCredential cred,
                PasswordChangesOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
