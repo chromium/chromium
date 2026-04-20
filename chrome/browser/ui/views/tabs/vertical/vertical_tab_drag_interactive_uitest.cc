@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
@@ -30,6 +31,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
@@ -950,6 +952,10 @@ class VerticalTabDragDetachTest : public VerticalTabDragTest {
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
                        MAYBE_DragToDetachIntoNewWindow) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See b/464087732.";
+  }
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1010,6 +1016,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
                        MAYBE_DragToDetachThenCancel) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See b/464087732.";
+  }
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1060,6 +1070,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
 #define MAYBE_DetachMultipleTabs DISABLED_DetachMultipleTabs
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachMultipleTabs) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See b/464087732.";
+  }
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1125,6 +1139,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachPinnedTab) {
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
                        MAYBE_DetachTabPreservesActiveTab) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See b/464087732.";
+  }
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
