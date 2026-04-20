@@ -470,7 +470,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, IsUrlSuitableForDialog) {
   EXPECT_FALSE(choice_dialog_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUIDevToolsURL)));
   EXPECT_TRUE(choice_dialog_service->IsUrlSuitableForDialog(
-      GURL(chrome::kChromeUINewTabPageURL)));
+      chrome::ChromeUINewTabPageURLAsGURL()));
   EXPECT_TRUE(
       choice_dialog_service->IsUrlSuitableForDialog(GURL(url::kAboutBlankURL)));
 }

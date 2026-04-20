@@ -406,7 +406,7 @@ bool SearchEngineChoiceDialogService::HasPendingDialog(Browser& browser) const {
 }
 
 bool SearchEngineChoiceDialogService::IsUrlSuitableForDialog(GURL url) {
-  if (url == chrome::kChromeUINewTabPageURL) {
+  if (url == chrome::ChromeUINewTabPageURLAsGURL()) {
     return true;  // NTP URL for regular profiles.
   }
 
