@@ -31,8 +31,7 @@ not actively used and will be deleted soon:
 
 ### Audio Codecs
 *   **Opus:** CRD exclusively uses Opus for audio streaming.
-*   * WebRTC is currently used for Opus encoding and decoding.
-*   **Deprecated Classes:** `AudioEncoderOpus` and `AudioDecoderOpus`.
+*   **Implementation:** WebRTC is currently used for Opus encoding and decoding.
 
 ### Utilities
 *   `VideoEncoderHelper`: Provides common functionality for managing active
@@ -46,4 +45,3 @@ not actively used and will be deleted soon:
     is the default and most commonly used video encoder implementation.
 *   `remoting/codec/webrtc_video_encoder_vpx.h`: Provides the VP8 and VP9
     encoders which are used for fallback or compatibility.
-*   `remoting/codec/audio_encoder.h`: The base interface for audio encoding.

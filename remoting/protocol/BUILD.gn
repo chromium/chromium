@@ -25,10 +25,6 @@ static_library("transport") {
 
 static_library("protocol") {
   sources = [
-    "audio_decode_scheduler.cc",
-    "audio_decode_scheduler.h",
-    "audio_reader.cc",
-    "audio_reader.h",
     "audio_stub.h",
     "auth_util.cc",
     "auth_util.h",
@@ -252,10 +248,6 @@ static_library("protocol") {
 
   if (enable_remoting_host) {
     sources += [
-      "audio_pump.cc",
-      "audio_pump.h",
-      "audio_writer.cc",
-      "audio_writer.h",
       "capture_scheduler.cc",
       "capture_scheduler.h",
       "video_frame_pump.cc",
@@ -346,7 +338,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "audio_decode_scheduler_unittest.cc",
     "authenticator_test_base.cc",
     "authenticator_test_base.h",
     "chromium_socket_factory_unittest.cc",
@@ -383,7 +374,6 @@ source_set("unit_tests") {
 
   if (enable_remoting_host) {
     sources += [
-      "audio_pump_unittest.cc",
       "capture_scheduler_unittest.cc",
       "connection_unittest.cc",
       "video_frame_pump_unittest.cc",

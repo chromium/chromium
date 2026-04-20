@@ -8,7 +8,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/codec/audio_encoder.h"
 #include "remoting/codec/video_encoder.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/proto/event.pb.h"

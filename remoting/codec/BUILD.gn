@@ -6,7 +6,6 @@ import("//remoting/remoting_options.gni")
 
 source_set("encoder") {
   sources = [
-    "audio_encoder.h",
     "encoder_bitrate_filter.cc",
     "encoder_bitrate_filter.h",
     "utils.cc",
@@ -39,7 +38,6 @@ source_set("encoder") {
     "//remoting/signaling",
     "//third_party/libvpx",
     "//third_party/libyuv",
-    "//third_party/opus",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
@@ -58,25 +56,10 @@ source_set("encoder") {
       "//media/gpu",
     ]
   }
-
-  # Opus depends on //media, which is not a supported include for iOS.
-  # Also disabled it on Android, to avoid dependency on //media.
-  # TODO(sergeyu): Cleanup host-only deps in client targets.
-  if (!is_ios && !is_android) {
-    sources += [
-      "audio_encoder_opus.cc",
-      "audio_encoder_opus.h",
-    ]
-    deps += [ "//media" ]
-  }
 }
 
 source_set("decoder") {
   sources = [
-    "audio_decoder.cc",
-    "audio_decoder.h",
-    "audio_decoder_opus.cc",
-    "audio_decoder_opus.h",
     "video_decoder.h",
     "video_decoder_verbatim.cc",
     "video_decoder_verbatim.h",
@@ -94,7 +77,6 @@ source_set("decoder") {
     "//remoting/signaling",
     "//third_party/libvpx",
     "//third_party/libyuv",
-    "//third_party/opus",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
@@ -137,7 +119,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "audio_encoder_opus_unittest.cc",
     "codec_test.cc",
     "codec_test.h",
     "encoder_bitrate_filter_unittest.cc",
@@ -157,8 +138,4 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx:color_space",
   ]
-
-  if (is_ios || is_android) {
-    sources -= [ "audio_encoder_opus_unittest.cc" ]
-  }
 }
