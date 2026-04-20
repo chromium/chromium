@@ -75,9 +75,6 @@ class AccessibilityAnnotatorBackend : public KeyedService {
 
   ~AccessibilityAnnotatorBackend() override = default;
 
-  // Initializes the database. Must be called before any other methods.
-  virtual void Init() = 0;
-
   // Returns DataTypeControllerDelegate for the accessibility annotation
   // datatype.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

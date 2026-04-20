@@ -60,6 +60,7 @@ class AccessibilityAnnotatorBackendTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
         /*history_service=*/nullptr,
+        /*os_crypt_async=*/nullptr,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }

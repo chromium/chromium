@@ -71,6 +71,7 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
                       accessibility_annotator::
                           AccessibilityAnnotatorBackendImpl>(
                       /*history_service=*/nullptr,
+                      /*os_crypt_async=*/nullptr,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
                       path.Append(

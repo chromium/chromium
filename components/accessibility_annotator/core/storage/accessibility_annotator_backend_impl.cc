@@ -25,6 +25,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/proto/features/content_annotation.to_value.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -42,6 +43,7 @@ std::string GetEtldPlusOne(const GURL& url) {
 
 AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
     history::HistoryService* history_service,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
     syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
     const base::FilePath& db_path)
     : db_path_(db_path),
@@ -61,6 +63,11 @@ AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
+  if (os_crypt_async) {
+    os_crypt_async->GetInstance(
+        base::BindOnce(&AccessibilityAnnotatorBackendImpl::OnInitWithEncryptor,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 AccessibilityAnnotatorBackendImpl::~AccessibilityAnnotatorBackendImpl() =
@@ -70,7 +77,10 @@ void AccessibilityAnnotatorBackendImpl::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void AccessibilityAnnotatorBackendImpl::Init() {
+void AccessibilityAnnotatorBackendImpl::OnInitWithEncryptor(
+    os_crypt_async::Encryptor encryptor) {
+  // TODO(crbug.com/496386554): Pass the encryptor to the database
+  // initialization.
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::Init)
       .WithArgs(db_path_)
       .Then(base::BindOnce([](bool status) {

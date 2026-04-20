@@ -27,6 +27,7 @@ source_set("storage") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/proto:optimization_guide_proto_extras",
+    "//components/os_crypt/async/browser",
     "//components/os_crypt/async/common",
     "//components/sync/base",
     "//components/sync/model",

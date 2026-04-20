@@ -38,7 +38,6 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
   TestAccessibilityAnnotatorBackend();
   ~TestAccessibilityAnnotatorBackend() override;
 
-  MOCK_METHOD(void, Init, (), (override));
   MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetAccessibilityAnnotationControllerDelegate,
               (),

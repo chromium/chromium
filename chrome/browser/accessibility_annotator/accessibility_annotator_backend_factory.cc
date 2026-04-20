@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 
 #include "base/files/file_path.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
@@ -54,12 +55,11 @@ AccessibilityAnnotatorBackendFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  auto backend = std::make_unique<
+  return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorBackendImpl>(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
+      g_browser_process->os_crypt_async(),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       profile->GetPath().Append(kAccessibilityAnnotatorDatabaseFileName));
-  backend->Init();
-  return backend;
 }

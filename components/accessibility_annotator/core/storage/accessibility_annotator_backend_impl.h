@@ -26,6 +26,11 @@
 #include "components/sync/protocol/accessibility_annotation_specifics.pb.h"
 #include "url/gurl.h"
 
+namespace os_crypt_async {
+class Encryptor;
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace syncer {
 class DataTypeControllerDelegate;
 }  // namespace syncer
@@ -47,6 +52,7 @@ class AccessibilityAnnotatorBackendImpl
  public:
   AccessibilityAnnotatorBackendImpl(
       history::HistoryService* history_service,
+      os_crypt_async::OSCryptAsync* os_crypt_async,
       syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
       const base::FilePath& db_path);
 
@@ -61,7 +67,6 @@ class AccessibilityAnnotatorBackendImpl
   void Shutdown() override;
 
   // AccessibilityAnnotatorBackend implementation.
-  void Init() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetAccessibilityAnnotationControllerDelegate() override;
   void AddObserver(AccessibilityAnnotatorBackend::Observer* observer) override;
@@ -107,6 +112,10 @@ class AccessibilityAnnotatorBackendImpl
       override;
 
  private:
+  // Called in the backend constructor if the encryptor is available.
+  // Initializes the database.
+  void OnInitWithEncryptor(os_crypt_async::Encryptor encryptor);
+
   // Performs a lookback through recent pages with the same tab and eTLD+1 to
   // join annotations that span across multiple pages. The function merges
   // structured data from recent entries in reverse chronological order and
@@ -144,6 +153,9 @@ class AccessibilityAnnotatorBackendImpl
   // Holds multi-page merged annotations during confirmed status lookback.
   base::circular_deque<optimization_guide::proto::ContentAnnotation>
       merged_multipage_annotations_;
+
+  base::WeakPtrFactory<AccessibilityAnnotatorBackendImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace accessibility_annotator

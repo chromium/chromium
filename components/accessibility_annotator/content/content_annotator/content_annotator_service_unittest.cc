@@ -159,6 +159,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     accessibility_annotator_backend_ =
         std::make_unique<AccessibilityAnnotatorBackendImpl>(
             /*history_service=*/nullptr,
+            /*os_crypt_async=*/nullptr,
             syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
             temp_dir_.GetPath().Append(
                 FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
