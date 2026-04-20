@@ -275,10 +275,8 @@ Suggestion::IdentityCredentialPayload::~IdentityCredentialPayload() = default;
 
 Suggestion::AtMemoryPayload::AtMemoryPayload() = default;
 
-Suggestion::AtMemoryPayload::AtMemoryPayload(
-    std::u16string value,
-    base::RepeatingCallback<std::u16string()> reveal_callback)
-    : value(std::move(value)), reveal_callback(std::move(reveal_callback)) {}
+Suggestion::AtMemoryPayload::AtMemoryPayload(std::u16string value)
+    : value(std::move(value)) {}
 
 Suggestion::AtMemoryPayload::AtMemoryPayload(const AtMemoryPayload&) = default;
 

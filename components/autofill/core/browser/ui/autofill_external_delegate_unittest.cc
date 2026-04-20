@@ -3334,8 +3334,7 @@ TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
   IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
-  suggestion.payload =
-      Suggestion::AtMemoryPayload{u"pasted text", base::NullCallback()};
+  suggestion.payload = Suggestion::AtMemoryPayload(u"pasted text");
 
   // 1. Test Preview
   EXPECT_CALL(
@@ -3353,6 +3352,36 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          std::u16string(u"pasted text"),
                          SuggestionType::kAtMemorySearchResult, _));
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
+// Tests that accepting an AtMemory suggestion for an IBAN attempts to fetch the
+// value from the IbanAccessManager.
+TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+
+  Iban iban = test::GetLocalIban();
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+
+  Suggestion::AtMemoryPayload at_memory_payload(
+      iban.GetIdentifierStringForAutofillDisplay());
+  at_memory_payload.identifier = Iban::Guid(iban.guid());
+  at_memory_payload.entry_type = accessibility_annotator::EntryType::kIban;
+  suggestion.payload = std::move(at_memory_payload);
+
+  EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(), FetchValue)
+      .WillOnce([iban](const Suggestion::Payload& payload,
+                       IbanAccessManager::OnIbanFetchedCallback callback) {
+        std::move(callback).Run(iban.value());
+      });
+
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                  iban.value(), SuggestionType::kAtMemorySearchResult, _));
+
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
 }

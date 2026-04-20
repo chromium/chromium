@@ -17,8 +17,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -184,14 +186,12 @@ struct Suggestion {
   };
 
   struct AtMemoryPayload final {
+    using Identifier =
+        std::variant<std::monostate, Iban::Guid, Iban::InstrumentId>;
+
     AtMemoryPayload();
-    // `value` is the value to be shown in the suggestion UI and the preview,
-    // whereas `reveal_callback` is used to reveal the actual value to be
-    // filled. They may be different if the entry is obfuscated (e.g. IBAN).
-    // TODO(crbug.com/497794390): Pass the `EntryType` to the payload, and
-    // trigger the authentication before revealing the value.
-    AtMemoryPayload(std::u16string value,
-                    base::RepeatingCallback<std::u16string()> reveal_callback);
+    // `value` is the value to be shown in the suggestion UI and the preview.
+    explicit AtMemoryPayload(std::u16string value);
     AtMemoryPayload(const AtMemoryPayload&);
     AtMemoryPayload(AtMemoryPayload&&);
     AtMemoryPayload& operator=(const AtMemoryPayload&);
@@ -204,9 +204,11 @@ struct Suggestion {
     // Text to fill in the trigger field upon accepting the suggestion.
     std::u16string value;
 
-    // Callback to reveal the actual value to be filled if the entry is
-    // obfuscated.
-    base::RepeatingCallback<std::u16string()> reveal_callback;
+    // The identifier for the entry (e.g. IBAN Guid or InstrumentId).
+    Identifier identifier;
+
+    // The type of the entry from accessibility annotator.
+    accessibility_annotator::EntryType entry_type;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;

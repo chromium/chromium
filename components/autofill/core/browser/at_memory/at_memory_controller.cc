@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/strings/grit/components_strings.h"
@@ -68,6 +69,21 @@ std::u16string GetSourceDescriptionText(
       l10n_util::GetStringUTF16(source_string_id));
 }
 
+Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
+    accessibility_annotator::EntryType type,
+    const std::variant<std::monostate, std::string, int64_t>& identifier) {
+  if (type != accessibility_annotator::EntryType::kIban) {
+    // TODO(crbug.com/497794390): Implement identifier support for other entry
+    // types.
+    return std::monostate();
+  }
+  if (const std::string* guid_str = std::get_if<std::string>(&identifier)) {
+    return Iban::Guid(*guid_str);
+  }
+  CHECK(std::holds_alternative<int64_t>(identifier));
+  return Iban::InstrumentId(*std::get_if<int64_t>(&identifier));
+}
+
 Suggestion TransformResultIntoSuggestion(
     const accessibility_annotator::MemorySearchResult& entry) {
   Suggestion suggestion(entry.value, SuggestionType::kAtMemorySearchResult);
@@ -87,9 +103,11 @@ Suggestion TransformResultIntoSuggestion(
     label_row.emplace_back(metadata.value);
   }
   suggestion.labels.emplace_back(std::move(label_row));
-  suggestion.payload = Suggestion::AtMemoryPayload(
-      entry.value,
-      entry.is_obfuscated ? entry.reveal_callback : base::NullCallback());
+  Suggestion::AtMemoryPayload at_memory_payload(entry.value);
+  at_memory_payload.identifier =
+      GetPayloadIdentifier(entry.type, entry.identifier);
+  at_memory_payload.entry_type = entry.type;
+  suggestion.payload = std::move(at_memory_payload);
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
   // Metadata are displayed as nested results in the flyout menu.
@@ -103,8 +121,9 @@ Suggestion TransformResultIntoSuggestion(
     if (!child_type_name.empty()) {
       child.labels = {{Suggestion::Text(child_type_name)}};
     }
-    child.payload =
-        Suggestion::AtMemoryPayload(metadata.value, base::NullCallback());
+    Suggestion::AtMemoryPayload child_at_memory_payload(metadata.value);
+    child_at_memory_payload.entry_type = metadata.type;
+    child.payload = std::move(child_at_memory_payload);
     suggestion.children.push_back(std::move(child));
   }
 
@@ -204,17 +223,35 @@ void AtMemoryController::FillOrPreviewSearchResult(
     const FormData& form,
     const FormFieldData& field,
     const Suggestion& suggestion) {
-  const std::u16string& replacement =
-      suggestion.GetPayload<Suggestion::AtMemoryPayload>().value;
+  const Suggestion::AtMemoryPayload& payload =
+      suggestion.GetPayload<Suggestion::AtMemoryPayload>();
 
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_->OnSuggestionAccepted();
+  switch (action_persistence) {
+    case mojom::ActionPersistence::kPreview:
+      manager_->FillOrPreviewField(
+          action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger,
+          form, field, payload.value, suggestion.type,
+          /*field_type_used=*/std::nullopt);
+      break;
+    case mojom::ActionPersistence::kFill:
+      switch (payload.entry_type) {
+        case accessibility_annotator::EntryType::kIban: {
+          CHECK(!std::holds_alternative<std::monostate>(payload.identifier));
+          FillIban(payload.identifier, form, field, suggestion);
+          break;
+        }
+        default:
+          if (at_memory_funnel_metrics_) {
+            at_memory_funnel_metrics_->OnSuggestionAccepted();
+          }
+          manager_->FillOrPreviewField(
+              action_persistence,
+              mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
+              payload.value, suggestion.type, /*field_type_used=*/std::nullopt);
+          break;
+      }
+      break;
   }
-
-  manager_->FillOrPreviewField(
-      action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger, form,
-      field, replacement, suggestion.type, /*field_type_used=*/std::nullopt);
 }
 
 void AtMemoryController::ExecuteQuery(const std::u16string& filter,
@@ -246,6 +283,46 @@ void AtMemoryController::OnSearchResultsReceived(
   update_callback_.Run(
       base::ToVector(result.entries, TransformResultIntoSuggestion),
       trigger_source_);
+}
+
+void AtMemoryController::FillIban(
+    const Suggestion::AtMemoryPayload::Identifier& identifier,
+    const FormData& form,
+    const FormFieldData& field,
+    const Suggestion& suggestion) {
+  Suggestion::Payload iban_payload;
+  if (const Iban::Guid* guid = std::get_if<Iban::Guid>(&identifier)) {
+    iban_payload = Suggestion::Guid(guid->value());
+  } else {
+    CHECK(std::holds_alternative<Iban::InstrumentId>(identifier));
+    iban_payload = Suggestion::InstrumentId(
+        std::get<Iban::InstrumentId>(identifier).value());
+  }
+
+  IbanAccessManager* iban_access_manager =
+      manager_->client().GetPaymentsAutofillClient()->GetIbanAccessManager();
+  if (!iban_access_manager) {
+    return;
+  }
+
+  iban_access_manager->FetchValue(
+      iban_payload,
+      base::BindOnce(
+          [](base::WeakPtr<AtMemoryController> controller, const FormData& form,
+             const FormFieldData& field, const Suggestion& suggestion,
+             const std::u16string& unmasked_value) {
+            if (controller) {
+              if (controller->at_memory_funnel_metrics_) {
+                controller->at_memory_funnel_metrics_->OnSuggestionAccepted();
+              }
+              controller->manager_->FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
+                  unmasked_value, suggestion.type,
+                  /*field_type_used=*/std::nullopt);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
 }
 
 }  // namespace autofill

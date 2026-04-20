@@ -251,8 +251,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_IbanData) {
                            UnorderedElementsAre(IsMetadata(
                                EntryType::kIbanNickname, u"My IBAN")),
                            /*is_obfuscated=*/true)));
-  ASSERT_FALSE(results[0].reveal_callback.is_null());
-  EXPECT_EQ(results[0].reveal_callback.Run(), iban.value());
+  ASSERT_TRUE(std::holds_alternative<std::string>(results[0].identifier));
+  EXPECT_EQ(std::get<std::string>(results[0].identifier), iban.guid());
 }
 
 // Tests that RetrieveAll correctly fetches and formats credit card data.
