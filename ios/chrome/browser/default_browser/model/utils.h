@@ -107,45 +107,6 @@ extern NSString* const kUserInteractedWithNonModalPromoCount;
 // already seen the promo.
 extern NSString* const kLastTimeUserInteractedWithFullscreenPromo;
 
-// Key in storage containing all the recent timestamps of browser cold starts up
-// to allowed maximum number of past events.
-extern NSString* const kAllTimestampsAppLaunchColdStart;
-
-// Key in storage containing all the recent timestamps of browser warm starts up
-// to allowed maximum number of past events.
-extern NSString* const kAllTimestampsAppLaunchWarmStart;
-
-// Key in storage containing all the recent timestamps of browser indirect
-// starts up to allowed maximum number of past events.
-extern NSString* const kAllTimestampsAppLaunchIndirectStart;
-
-// Key in storage containing an array of dates. Each date correspond to
-// a stay safe event of interest for Default Browser Promo modals.
-extern NSString* const kLastSignificantUserEventStaySafe;
-
-// Key in storage containing an array of dates. Each date correspond to
-// a omnibox copy-paste event up to allowed maximum number of past events.
-extern NSString* const kOmniboxUseCount;
-
-// Key in storage containing an array of dates. Each date correspond to
-// a bookmark or bookmark manager use event up to allowed maximum number of past
-// events.
-extern NSString* const kBookmarkUseCount;
-
-// Key in storage containing an array of dates. Each date correspond to
-// a autofill suggestion use event up to allowed maximum number of past
-// events.
-extern NSString* const kAutofillUseCount;
-
-// Key in storage containing an array of dates where each date correspond to
-// a pinned tab or remote tab use event.
-extern NSString* const kSpecialTabsUseCount;
-
-// Param names used for the default browser video promo.
-extern const char kVideoFullscreenPromo[];
-extern const char kVideoHalfscreenPromo[];
-extern const char kDefaultBrowserVideoPromoVariant[];
-
 // Key in storage containing a bool indicating if the user has
 // previously interacted with a regular fullscreen promo.
 extern NSString* const kUserHasInteractedWithFullscreenPromo;
@@ -170,35 +131,17 @@ extern NSString* const kGenericPromoInteractionCount;
 // promo has been displayed.
 extern NSString* const kTailoredPromoInteractionCount;
 
-// Key in storage containing the timestamp of when trigger criteria experiment
-// started.
-extern NSString* const kTimestampTriggerCriteriaExperimentStarted;
-
 // Specifies how long blue dot occurrence should last.
 extern base::TimeDelta const kBlueDotPromoDuration;
 
 // Specifies how often blue dot should reoccur.
 extern base::TimeDelta const kBlueDotPromoReoccurrancePeriod;
 
-// Loads from NSUserDefaults the time of the non-expired events for the
-// given promo type.
-std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type);
-
-// Stores the time of the last recorded events for `type`.
-void StoreTimestampsForPromoType(DefaultPromoType type,
-                                 std::vector<base::Time> times);
-
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
 // Logs the timestamp of opening an HTTP(S) link sent and opened by the app.
 void LogOpenHTTPURLFromExternalURL();
-
-// Logs the timestamp of user activity that is deemed to be an indication of
-// a user that would likely benefit from having Chrome set as their default
-// browser. Before logging the current activity, this method will also clear all
-// past expired logs for `type` that have happened too far in the past.
-void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
@@ -216,14 +159,6 @@ void RecordDefaultBrowserBlueDotFirstDisplay();
 // Returns true if the default browser blue dot should be shown.
 bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker);
-
-// Returns true if the default browser promo generic tailored experiment is
-// enabled.
-bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
-
-// Returns true if the only-generic arm of the default browser promo generic
-// tailored experiment is enabled.
-bool IsDefaultBrowserPromoOnlyGenericArmTrain();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
