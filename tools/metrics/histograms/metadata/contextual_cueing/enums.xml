@@ -168,6 +168,11 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but the contextual tasks side panel was
     open for the tab.
   </int>
+  <int value="17"
+      label="The nudge was not shown as the contextual cueing v2 is enabled">
+    The page was eligible for the nudge, but the contextual cueing v2 is
+    enabled.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/suggestions/contextual_cueing_enums.h:NudgeDecision) -->

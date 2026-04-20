@@ -7,6 +7,7 @@
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
@@ -74,26 +75,14 @@ class FakeGlicNudgeDelegate : public glic::GlicNudgeDelegate {
   base::test::TestFuture<void> future_;
 };
 
-class ContextualCueingHelperBrowserTest
+class ContextualCueingHelperBaseBrowserTest
     : public glic::test::InteractiveGlicTest {
  public:
-  ContextualCueingHelperBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        // Disable feature engagement logic.
-        {{glic::kContextualCueing,
-          {{"BackoffTime", "0h"},
-           {"BackoffMultiplierBase", "0.0"},
-           {"NudgeCapTime", "0h"},
-           {"NudgeCapCount", "10"},
-           {"MinPageCountBetweenNudges", "0"},
-           {"UseDynamicCues", "true"}}},
-         {page_content_annotations::features::kAnnotatedPageContentExtraction,
-          {}},
-         {contextual_tasks::kContextualTasks, {}}},
-        /*disabled_features=*/{});
-  }
+  virtual void InitializeFeatureList() = 0;
 
   void SetUp() override {
+    InitializeFeatureList();
+
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
@@ -141,6 +130,26 @@ class ContextualCueingHelperBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+class ContextualCueingHelperBrowserTest
+    : public ContextualCueingHelperBaseBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Disable feature engagement logic.
+        {{glic::kContextualCueing,
+          {{"BackoffTime", "0h"},
+           {"BackoffMultiplierBase", "0.0"},
+           {"NudgeCapTime", "0h"},
+           {"NudgeCapCount", "10"},
+           {"MinPageCountBetweenNudges", "0"},
+           {"UseDynamicCues", "true"}}},
+         {page_content_annotations::features::kAnnotatedPageContentExtraction,
+          {}},
+         {contextual_tasks::kContextualTasks, {}}},
+        /*disabled_features=*/{});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -741,6 +750,48 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeDecision.GlicContextualCueing",
       glic::NudgeDecision::kSuccess, 1);
+}
+
+class ContextualCueingHelperWithContextualCueingV2BrowserTest
+    : public ContextualCueingHelperBaseBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Disable feature engagement logic.
+        {{glic::kContextualCueing,
+          {{"BackoffTime", "0h"},
+           {"BackoffMultiplierBase", "0.0"},
+           {"NudgeCapTime", "0h"},
+           {"NudgeCapCount", "10"},
+           {"MinPageCountBetweenNudges", "0"},
+           {"UseDynamicCues", "true"}}},
+         {page_content_annotations::features::kAnnotatedPageContentExtraction,
+          {}},
+         {contextual_tasks::kContextualTasks, {}},
+         {contextual_cueing::kContextualCueingV2, {}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperWithContextualCueingV2BrowserTest,
+                       TestNudgeNotShownForContextualCueingV2) {
+  SetUpEnabledHints();
+
+  FakeGlicNudgeDelegate nudge_delegate;
+  SwapToFakeDelegate(nudge_delegate);
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeDecision.GlicContextualCueing",
+      glic::NudgeDecision::kNudgeNotShownContextualCueingV2, 1);
 }
 
 // Test fixture to verify that auto-open for PDF bypasses nudge caps.

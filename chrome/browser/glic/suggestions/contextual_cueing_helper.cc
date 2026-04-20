@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -379,6 +380,12 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
     return true;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (base::FeatureList::IsEnabled(::contextual_cueing::kContextualCueingV2)) {
+    recorder->set_nudge_decision(
+        NudgeDecision::kNudgeNotShownContextualCueingV2);
+    return true;
+  }
 
   return false;
 }
