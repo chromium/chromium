@@ -13,6 +13,7 @@ extern const char kPromiseAppTypeHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PromiseAppLifecycleEvent)
 enum class PromiseAppLifecycleEvent {
   // Tracks events in the PromiseAppRegistryCache.
   kCreatedInCache = 0,
@@ -24,23 +25,28 @@ enum class PromiseAppLifecycleEvent {
   kCreatedInShelf = 4,
   kMaxValue = kCreatedInShelf
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:PromiseAppLifecycleEvent)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PromiseAppIconType)
 enum class PromiseAppIconType {
   kPlaceholderIcon = 0,
   kRealIcon = 1,
   kMaxValue = kRealIcon
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:PromiseAppIconType)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PromiseAppType)
 enum class PromiseAppType {
   kUnknown = 0,
   kArc = 1,
   kTwa = 2,
   kMaxValue = kTwa
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:PromiseAppType)
 
 void RecordPromiseAppLifecycleEvent(const PromiseAppLifecycleEvent event);
 

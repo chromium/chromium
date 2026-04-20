@@ -644,10 +644,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Serialization error"/>
 </enum>
 
+<!-- LINT.IfChange(PromiseAppIconType) -->
+
 <enum name="PromiseAppIconType">
   <int value="0" label="Placeholder icon"/>
   <int value="1" label="Real app icon"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h:PromiseAppIconType) -->
+
+<!-- LINT.IfChange(PromiseAppLifecycleEvent) -->
 
 <enum name="PromiseAppLifecycleEvent">
   <int value="0" label="Promise app created in PromiseAppRegistryCache"/>
@@ -661,11 +667,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Promise icon created in the Shelf"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h:PromiseAppLifecycleEvent) -->
+
+<!-- LINT.IfChange(PromiseAppType) -->
+
 <enum name="PromiseAppType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Arc"/>
   <int value="2" label="Twa"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h:PromiseAppType) -->
 
 <enum name="RestoreSetting">
   <int value="0" label="Unknown"/>
