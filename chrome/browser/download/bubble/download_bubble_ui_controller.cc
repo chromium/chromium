@@ -234,6 +234,11 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
   return GetDownloadUIModels(/*is_main_view=*/true);
 }
 
+void DownloadBubbleUIController::SetLastPartialViewShownTimeForTesting(
+    std::optional<base::Time> time) {
+  last_partial_view_shown_time_ = time;
+}
+
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
   base::Time now = base::Time::Now();
   if (last_partial_view_shown_time_.has_value() &&
