@@ -11,6 +11,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import sys
 import unittest
 import re
 import subprocess
@@ -89,7 +90,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--generate-expected-files', action='store_true',
       help='Generate "-stdout.txt" and "-stderr.txt" for file in test_data')
-  args = parser.parse_args()
+  args, unknown_args = parser.parse_known_args()
 
   # Set directory for both test and gen command to the test_data folder.
   os.chdir(Path(__file__).resolve().parent / 'test_data')
