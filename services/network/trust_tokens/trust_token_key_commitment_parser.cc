@@ -83,30 +83,20 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
 
   auto result = mojom::TrustTokenKeyCommitmentResult::New();
 
-  const base::DictValue* dict = nullptr;
-  // Confirm that the protocol_version field is present. If the server supports
-  // multiple versions, we prefer the VOPRF version, since it's more efficient
-  // (and we're free to choose which version to use).
-  for (auto version :
-       {mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf,
-        mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Pmb,
-        mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf,
-        mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb}) {
-    std::string version_label = internal::ProtocolVersionToString(version);
-    if (commitments_dict.contains(version_label)) {
-      dict = commitments_dict.FindDict(version_label);
-      if (!dict)
-        return nullptr;
-      const std::string* maybe_version =
-          dict->FindString(kTrustTokenKeyCommitmentProtocolVersionField);
-      if (!maybe_version || *maybe_version != version_label)
-        return nullptr;
-      result->protocol_version = version;
-      break;
-    }
-  }
-  if (!dict)
+  const std::string version_label = internal::ProtocolVersionToString(
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf);
+  const base::DictValue* dict = commitments_dict.FindDict(version_label);
+  if (!dict) {
     return nullptr;
+  }
+  // Confirm that the protocol_version field is present.
+  if(const std::string* maybe_version =
+     dict->FindString(kTrustTokenKeyCommitmentProtocolVersionField);
+     !maybe_version || *maybe_version != version_label) {
+    return nullptr;
+  }
+  result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kPrivateStateTokenV1Voprf;
 
   // Confirm that the id field is present and type-safe.
   std::optional<int> maybe_id = dict->FindInt(kTrustTokenKeyCommitmentIDField);
