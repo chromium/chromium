@@ -421,13 +421,6 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
                         start_time);
 
   auto cluster_it = in_progress_clusters_.find(cluster_id);
-  // This is expected to emit an entry if a cluster was cleaned up  (i.e. erased
-  // from `in_progress_clusters_` instead of flagged as `cleaned_up = true`)
-  // when it had no unpersisted visits left and the first visit of a cluster was
-  // already sent for persistence AND persistence is taking a long time.
-  base::UmaHistogramBoolean(
-      "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
-      cluster_it == in_progress_clusters_.end());
   if (cluster_it == in_progress_clusters_.end()) {
     return;
   }

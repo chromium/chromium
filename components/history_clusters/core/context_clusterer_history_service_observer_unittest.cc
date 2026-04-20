@@ -321,8 +321,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   SetPersistenceExpectedConfig();
   history::ClusterId cluster_id = history::ClusterId(123);
 
-  base::HistogramTester histogram_tester;
-
   history::ClusterVisit got_cluster_visit;
   EXPECT_CALL(*history_service(), ReserveNextClusterIdWithVisit(
                                       _, base::test::IsNotNullCallback(), _))
@@ -342,9 +340,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   // Do not expect any calls to history service.
   history_service()->RunLastClusterIdCallbackWithClusterId(cluster_id);
 
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
-      true, 1);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
@@ -395,9 +390,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
     histogram_tester.ExpectTotalCount(
         "History.Clusters.ContextClusterer.DbLatency.AddVisitsToCluster", 1);
 
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
-        false, 1);
     histogram_tester.ExpectUniqueSample(
         "History.Clusters.ContextClusterer."
         "NumUnpersistedVisitsBeforeClusterPersisted",
