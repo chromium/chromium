@@ -76,10 +76,6 @@ BASE_FEATURE(kPdfInk2, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables text annotations.
 const base::FeatureParam<bool> kPdfInk2TextAnnotations{
     &kPdfInk2, "text-annotations", false};
-
-// Enables text highlighting with the Ink highlighter brush.
-const base::FeatureParam<bool> kPdfInk2TextHighlighting{
-    &kPdfInk2, "text-highlighting", true};
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)

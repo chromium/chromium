@@ -2962,10 +2962,10 @@ class PdfViewWebPluginInkTest
     // setup in PdfViewWebPluginTest::SetUp().
     feature_list_.InitAndEnableFeatureWithParameters(
         chrome_pdf::features::kPdfInk2,
-        {{features::kPdfInk2TextAnnotations.name,
-          base::ToString(UseTextAnnotations())},
-         {features::kPdfInk2TextHighlighting.name,
-          base::ToString(UseTextHighlighting())}});
+        {
+            {features::kPdfInk2TextAnnotations.name,
+             base::ToString(UseTextAnnotations())},
+        });
 
     PdfViewWebPluginTest::SetUp();
   }
@@ -2983,7 +2983,6 @@ class PdfViewWebPluginInkTest
   };
 
   bool UseTextAnnotations() const { return GetParam().use_text_annotations; }
-  bool UseTextHighlighting() const { return GetParam().use_text_highlighting; }
 
   void SetUpWithTrivialInkStrokes() {
     // Set up the engine so the plugin can draw strokes. The exact strokes do
@@ -3788,10 +3787,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfViewWebPluginInkMetricTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfViewWebPluginInkTextHighlightTest,
-    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfViewWebPluginInkTextHighlightTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 class PdfViewWebPluginAnnotationAgentContainerTest

@@ -1291,7 +1291,6 @@ void PDFiumEngine::SearchForFragment(
 }
 
 void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
-  CHECK(features::kPdfInk2TextHighlighting.Get());
   CHECK(!client_->IsPrintPreview());
 
   if (pages_.empty() || (caret_ && caret_->enabled() == enabled)) {

@@ -3316,8 +3316,7 @@ void PdfViewWebPlugin::LoadAccessibility() {
 }
 
 void PdfViewWebPlugin::ApplyAndObserveRendererPreferences() {
-  if (!features::kPdfInk2TextHighlighting.Get() || IsPrintPreview() ||
-      !Container()) {
+  if (IsPrintPreview() || !Container()) {
     return;
   }
 

@@ -3061,14 +3061,6 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
 
   MockTestClient& client() { return client_; }
 
-  void SetUp() override {
-    PDFiumDrawSelectionTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPdfInk2,
-        {{features::kPdfInk2TextHighlighting.name, "true"}});
-  }
-
   void TearDown() override {
     // Reset `engine_` before PDFium gets uninitialized.
     engine_.reset();
@@ -3103,7 +3095,6 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PDFiumEngine> engine_;
   NiceMock<MockTestClient> client_;
 };

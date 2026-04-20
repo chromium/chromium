@@ -629,6 +629,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, CaretBrowsingMode) {
+  RunTestsInJsModule("caret_browsing_mode_test.js", "test-bookmarks.pdf");
+}
+
 class PDFExtensionJSInk2TextTest : public PDFExtensionJSTest {
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -668,22 +672,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextSidePanel) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextStylesSelector) {
   RunTestsInJsModule("ink2_text_styles_selector_test.js", "test.pdf");
-}
-
-class PDFExtensionJSCaretBrowsingModeTest : public PDFExtensionJSTest {
- protected:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      const override {
-    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
-    enabled.push_back(
-        {chrome_pdf::features::kPdfInk2,
-         {{chrome_pdf::features::kPdfInk2TextHighlighting.name, "true"}}});
-    return enabled;
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSCaretBrowsingModeTest, CaretBrowsingMode) {
-  RunTestsInJsModule("caret_browsing_mode_test.js", "test-bookmarks.pdf");
 }
 
 class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
@@ -802,7 +790,6 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSNoInk2Test);
 #if BUILDFLAG(ENABLE_PDF_INK2)
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2Test);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2TextTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSCaretBrowsingModeTest);
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSSaveToDriveTest);

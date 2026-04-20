@@ -3113,24 +3113,12 @@ const FeatureEntry::FeatureVariation
 
 // Feature variation for kPdfInk2.
 #if BUILDFLAG(ENABLE_PDF_INK2)
-const FeatureEntry::FeatureParam kPdfInk2TextHighlighting[] = {
-    {"text-annotations", "false"},
-    {"text-highlighting", "true"},
-};
 const FeatureEntry::FeatureParam kPdfInk2TextAnnotations[] = {
     {"text-annotations", "true"},
-    {"text-highlighting", "false"},
-};
-const FeatureEntry::FeatureParam kPdfInk2TextHighlightingAndAnnotations[] = {
-    {"text-annotations", "true"},
-    {"text-highlighting", "true"},
 };
 
 const FeatureEntry::FeatureVariation kPdfInk2Variations[] = {
-    {"with text highlighting", kPdfInk2TextHighlighting, nullptr},
     {"with text annotations", kPdfInk2TextAnnotations, nullptr},
-    {"with text highlighting and annotations",
-     kPdfInk2TextHighlightingAndAnnotations, nullptr},
 };
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

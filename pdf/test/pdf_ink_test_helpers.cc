@@ -18,27 +18,15 @@ namespace {
 
 // All possible variations of Ink feature params.
 constexpr InkTestVariation kInkTestVariationNoTextSupport{
-    /*use_text_annotations=*/false,
-    /*use_text_highlighting=*/false};
-constexpr InkTestVariation kInkTestVariationTextHighlighting{
-    /*use_text_annotations=*/false,
-    /*use_text_highlighting=*/true};
-constexpr InkTestVariation kInkTestVariationTextHighlightingAndAnnotations{
-    /*use_text_annotations=*/true, /*use_text_highlighting=*/true};
+    /*use_text_annotations=*/false};
+constexpr InkTestVariation kInkTestVariationTextSupport{
+    /*use_text_annotations=*/true};
 
 // Variations of Ink tests to cover all features in development.
 constexpr auto kInkTestVariations = std::to_array<InkTestVariation>({
     kInkTestVariationNoTextSupport,
-    kInkTestVariationTextHighlighting,
-    kInkTestVariationTextHighlightingAndAnnotations,
+    kInkTestVariationTextSupport,
 });
-
-// Variations of Ink tests with text highlighting enabled.
-constexpr auto kInkTestVariationsWithTextHighlighting =
-    std::to_array<InkTestVariation>({
-        kInkTestVariationTextHighlighting,
-        kInkTestVariationTextHighlightingAndAnnotations,
-    });
 
 std::string GetAnnotationModeMessageString(InkAnnotationMode mode) {
   switch (mode) {
@@ -111,10 +99,6 @@ base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename) {
 
 base::span<const InkTestVariation> GetAllInkTestVariations() {
   return kInkTestVariations;
-}
-
-base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting() {
-  return kInkTestVariationsWithTextHighlighting;
 }
 
 }  // namespace chrome_pdf

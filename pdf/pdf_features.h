@@ -40,7 +40,6 @@ BASE_DECLARE_FEATURE(kPdfiumPerRequestFontMatchingWin);
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_DECLARE_FEATURE(kPdfInk2);
 extern const base::FeatureParam<bool> kPdfInk2TextAnnotations;
-extern const base::FeatureParam<bool> kPdfInk2TextHighlighting;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)

@@ -25,9 +25,10 @@ using SkColor = uint32_t;
 namespace chrome_pdf {
 
 // A possible configuration of Ink feature parameters.
+// This had multiple fields at one point. Keep the struct since it will be used
+// again in the future.
 struct InkTestVariation {
   bool use_text_annotations;
-  bool use_text_highlighting;
 };
 
 enum class TestAnnotationUndoRedoMessageType {
@@ -86,9 +87,6 @@ base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
 
 // Returns all variations of Ink tests to cover all features in development.
 base::span<const InkTestVariation> GetAllInkTestVariations();
-
-// Returns all variations of Ink tests that have text highlighting enabled.
-base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting();
 
 }  // namespace chrome_pdf
 

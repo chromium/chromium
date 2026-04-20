@@ -478,16 +478,15 @@ class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
         chrome_pdf::features::kPdfInk2,
-        {{features::kPdfInk2TextAnnotations.name,
-          base::ToString(UseTextAnnotations())},
-         {features::kPdfInk2TextHighlighting.name,
-          base::ToString(UseTextHighlighting())}});
+        {
+            {features::kPdfInk2TextAnnotations.name,
+             base::ToString(UseTextAnnotations())},
+        });
     ink_module_ = std::make_unique<PdfInkModule>(client_);
   }
 
  protected:
   bool UseTextAnnotations() const { return GetParam().use_text_annotations; }
-  bool UseTextHighlighting() const { return GetParam().use_text_highlighting; }
 
   void EnableDrawAnnotationMode() {
     EXPECT_TRUE(ink_module().OnMessage(
@@ -5359,25 +5358,20 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleMetricsTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfInkModuleTextHighlightTest,
-    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfInkModuleTextHighlightToolChangeTest,
-    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfInkModuleTextHighlightCaretTest,
-    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfInkModuleTextHighlightMetricsTest,
-    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PdfInkModuleTextHighlightCaretMetricsTest,
-    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfInkModuleTextHighlightTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfInkModuleTextHighlightToolChangeTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfInkModuleTextHighlightCaretTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfInkModuleTextHighlightMetricsTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfInkModuleTextHighlightCaretMetricsTest,
+                         testing::ValuesIn(GetAllInkTestVariations()));
 
 }  // namespace chrome_pdf
