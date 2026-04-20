@@ -148,7 +148,9 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   self.searchController.searchResultsUpdater = self;
   self.searchController.obscuresBackgroundDuringPresentation = NO;
   self.navigationItem.searchController = self.searchController;
-  self.navigationItem.hidesSearchBarWhenScrolling = YES;
+  // For iPad, the search bar does not show at the first time when the view
+  // appears. Set the search bar always visible.
+  self.navigationItem.hidesSearchBarWhenScrolling = NO;
 }
 
 // Updates the frame of the table header view to fit its content.
@@ -560,7 +562,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 - (void)setEmptyState:(BOOL)empty {
   if (empty) {
-    // Show empty view illustration and hide search bar.
+    // Show empty view illustration.
     if (!self.tableView.backgroundView) {
       UIImage* emptyImage = [UIImage imageNamed:@"download_list_empty"];
       TableViewIllustratedEmptyView* emptyView = [[TableViewIllustratedEmptyView
@@ -573,8 +575,11 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
       emptyView.delegate = self;
       self.tableView.backgroundView = emptyView;
     }
-    // Hide search bar when content is empty.
-    self.navigationItem.searchController = nil;
+    // Only hide search bar when genuinely empty, not during active search
+    // with no matching results.
+    if (!self.searchController.isActive) {
+      self.navigationItem.searchController = nil;
+    }
   } else {
     // Hide the empty view and show search bar.
     self.tableView.backgroundView = nil;
