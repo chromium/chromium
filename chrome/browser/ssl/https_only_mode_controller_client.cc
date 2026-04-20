@@ -36,7 +36,7 @@ HttpsOnlyModeControllerClient::HttpsOnlyModeControllerClient(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL),
+          chrome::ChromeUINewTabURLAsGURL(),
           std::move(settings_page_helper)),
       web_contents_(web_contents),
       request_url_(request_url) {}

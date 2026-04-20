@@ -31,7 +31,7 @@ InsecureFormControllerClient::InsecureFormControllerClient(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL),
+          chrome::ChromeUINewTabURLAsGURL(),
           /*settings_page_helper=*/nullptr),
       web_contents_(web_contents) {}
 

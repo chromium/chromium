@@ -308,7 +308,7 @@ void AskBeforeHttpDialogController::OnGoBackButtonClicked() {
   if (controller.CanGoBack()) {
     controller.GoBack();
   } else {
-    controller.LoadURL(GURL(chrome::kChromeUINewTabURL), content::Referrer(),
+    controller.LoadURL(chrome::ChromeUINewTabURLAsGURL(), content::Referrer(),
                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   }
   // LINT.ThenChange(components/security_interstitials/content/security_interstitial_controller_client.cc:InterstitialGoBackLogic)

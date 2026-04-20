@@ -66,7 +66,7 @@ SSLErrorControllerClient::SSLErrorControllerClient(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL),
+          chrome::ChromeUINewTabURLAsGURL(),
           std::move(settings_page_helper)),
       ssl_info_(ssl_info),
       request_url_(request_url),
