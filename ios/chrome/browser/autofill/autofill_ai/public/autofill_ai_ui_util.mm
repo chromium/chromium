@@ -22,14 +22,16 @@ constexpr CGFloat kWalletLogoSpacing = 6.0;
 namespace autofill {
 
 UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
-                                            CGFloat symbol_point_size) {
+                                            CGFloat symbol_point_size,
+                                            UIColor* tint_color) {
   NSString* symbol_name = nil;
+  UIColor* color = tint_color ?: [UIColor colorNamed:kTextPrimaryColor];
+
   switch (entity_type_name) {
     case EntityTypeName::kPassport:
       return SymbolWithPalette(
-          CustomSymbolWithPointSize(kPassportSymbol, symbol_point_size), @[
-            [UIColor colorNamed:kTextPrimaryColor],
-          ]);
+          CustomSymbolWithPointSize(kPassportSymbol, symbol_point_size),
+          @[ color ]);
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
       symbol_name = kPersonTextRectangleSymbol;
@@ -56,9 +58,7 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
   }
 
   return SymbolWithPalette(
-      DefaultSymbolWithPointSize(symbol_name, symbol_point_size), @[
-        [UIColor colorNamed:kTextPrimaryColor],
-      ]);
+      DefaultSymbolWithPointSize(symbol_name, symbol_point_size), @[ color ]);
 }
 
 NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type) {
@@ -203,16 +203,21 @@ GURL GetGoogleWalletPassesURL() {
   return GURL("https://wallet.google.com/wallet/passes");
 }
 
+UIImage* GetWalletLogo(CGFloat point_size, UIColor* tint_color) {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  return MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGoogleWalletIconSymbol, point_size));
+#else
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(kSparklesSymbol, point_size),
+      @[ tint_color ?: [UIColor colorNamed:kBlue600Color] ]);
+#endif
+}
+
 UIView* CreateBrandedTitleForWalletSave(NSString* title) {
   BrandedNavigationItemTitleView* titleView =
       [[BrandedNavigationItemTitleView alloc] init];
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  titleView.imageLogo = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGoogleWalletIconSymbol, kWalletLogoHeight));
-#else
-  titleView.imageLogo =
-      CustomSymbolWithPointSize(kSparklesSymbol, kWalletLogoHeight);
-#endif
+  titleView.imageLogo = GetWalletLogo(kWalletLogoHeight, nil);
   titleView.title = title;
   titleView.titleLogoSpacing = kWalletLogoSpacing;
   titleView.accessibilityLabel = title;

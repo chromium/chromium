@@ -436,7 +436,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   }
 
   item.icon = autofill::DefaultIconForAutofillAiEntityType(
-      instance.type().name(), kEntityIconPointSize);
+      instance.type().name(), kEntityIconPointSize, /*tint_color=*/nil);
   return item;
 }
 

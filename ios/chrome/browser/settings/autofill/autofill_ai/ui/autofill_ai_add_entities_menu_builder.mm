@@ -38,7 +38,7 @@
   for (const auto& entityType : types) {
     NSString* title = base::SysUTF16ToNSString(entityType.GetNameForI18n());
     UIImage* image = autofill::DefaultIconForAutofillAiEntityType(
-        entityType.name(), kSymbolActionPointSize);
+        entityType.name(), kSymbolActionPointSize, /*tint_color=*/nil);
 
     autofill::EntityType capturedType = entityType;
     UIAction* uiAction = [UIAction

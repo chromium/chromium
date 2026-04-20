@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
+#import "ui/base/models/image_model.h"
 
 namespace autofill {
 
@@ -40,6 +41,7 @@ class AutofillAiSaveEntityInfoBarDelegateIOS : public ConfirmInfoBarDelegate {
   std::u16string GetTitleText() const override;
   std::u16string GetMessageText() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
+  bool UseIconBackgroundTint() const override;
   bool Accept() override;
   bool Cancel() override;
   void InfoBarDismissed() override;
@@ -52,6 +54,7 @@ class AutofillAiSaveEntityInfoBarDelegateIOS : public ConfirmInfoBarDelegate {
 
   SaveEntityParams params_;
   base::OnceClosure accept_callback_;
+  ui::ImageModel icon_;
 };
 
 }  // namespace autofill

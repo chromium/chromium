@@ -12,10 +12,15 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
 #import "ui/gfx/image/image.h"
+
+namespace {
+constexpr CGFloat kAutofillAiInfobarSymbolPointSize = 24.0;
+}  // namespace
 
 namespace autofill {
 
@@ -23,7 +28,24 @@ AutofillAiSaveEntityInfoBarDelegateIOS::AutofillAiSaveEntityInfoBarDelegateIOS(
     SaveEntityParams params,
     base::OnceClosure on_accept_action)
     : params_(std::move(params)),
-      accept_callback_(std::move(on_accept_action)) {}
+      accept_callback_(std::move(on_accept_action)) {
+  UIImage* image = nil;
+  if (params.new_entity.record_type() ==
+      EntityInstance::RecordType::kServerWallet) {
+    image = GetWalletLogo(kAutofillAiInfobarSymbolPointSize,
+                          [UIColor colorNamed:kBlue600Color]);
+  } else {
+    image = DefaultIconForAutofillAiEntityType(
+        params.new_entity.type().name(), kAutofillAiInfobarSymbolPointSize,
+        [UIColor colorNamed:kBlue600Color]);
+  }
+
+  if (image) {
+    icon_ = ui::ImageModel::FromImage(gfx::Image(image));
+  } else {
+    icon_ = ui::ImageModel::FromResourceId(GetIconId());
+  }
+}
 
 AutofillAiSaveEntityInfoBarDelegateIOS::
     ~AutofillAiSaveEntityInfoBarDelegateIOS() {
@@ -44,21 +66,7 @@ int AutofillAiSaveEntityInfoBarDelegateIOS::GetIconId() const {
 }
 
 ui::ImageModel AutofillAiSaveEntityInfoBarDelegateIOS::GetIcon() const {
-  if (params_.new_entity.record_type() ==
-      EntityInstance::RecordType::kServerWallet) {
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    return ui::ImageModel::FromImage(gfx::Image(CustomSymbolWithPointSize(
-        kGoogleWalletIconSymbol, kInfobarSymbolPointSize)));
-#endif
-  }
-
-  UIImage* image = DefaultIconForAutofillAiEntityType(
-      params_.new_entity.type().name(), kInfobarSymbolPointSize);
-  if (image) {
-    return ui::ImageModel::FromImage(gfx::Image(image));
-  }
-
-  return ui::ImageModel::FromResourceId(GetIconId());
+  return icon_;
 }
 
 std::u16string AutofillAiSaveEntityInfoBarDelegateIOS::GetTitleText() const {
@@ -120,6 +128,10 @@ bool AutofillAiSaveEntityInfoBarDelegateIOS::ShouldExpire(
 infobars::InfoBarDelegate::InfobarPriority
 AutofillAiSaveEntityInfoBarDelegateIOS::GetPriority() const {
   return InfobarPriority::kDefault;
+}
+
+bool AutofillAiSaveEntityInfoBarDelegateIOS::UseIconBackgroundTint() const {
+  return false;
 }
 
 }  // namespace autofill
