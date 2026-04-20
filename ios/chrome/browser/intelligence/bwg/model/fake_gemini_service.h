@@ -20,6 +20,7 @@ class FakeGeminiService : public GeminiService {
   bool IsProfileEligibleForGemini() override;
   std::optional<gemini::IneligibilityReasons> GeminiIneligibilityForProfile()
       override;
+  bool IsWorkspacePolicyCheckPending() override;
 
   // Test helpers:
   void SetIsEligible(bool is_eligible) {
@@ -37,8 +38,13 @@ class FakeGeminiService : public GeminiService {
     ineligibility_reasons_ = reasons;
   }
 
+  void SetWorkspacePolicyCheckPending(bool pending) {
+    workspace_policy_check_pending_ = pending;
+  }
+
  private:
   std::optional<gemini::IneligibilityReasons> ineligibility_reasons_;
+  bool workspace_policy_check_pending_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_FAKE_GEMINI_SERVICE_H_

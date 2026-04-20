@@ -57,6 +57,16 @@ class WebState;
 // Command handler for contextual sheet commands.
 @property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;
 
+// Returns YES if the workspace policy check has not yet completed.
+- (BOOL)isGeminiEligibilityLoading;
+
+// Returns YES if the signed-in user's Gemini ineligibility can be resolved
+// by switching accounts (workspace restriction on personal account).
+- (BOOL)isIneligibleGeminiAccountSwitchable;
+
+// Returns YES if the signed-in user has a managed (enterprise) account.
+- (BOOL)isManagedAccount;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_COORDINATOR_PAGE_ACTION_MENU_MEDIATOR_H_

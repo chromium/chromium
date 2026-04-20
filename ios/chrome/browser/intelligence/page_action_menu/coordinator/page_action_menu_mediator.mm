@@ -54,6 +54,15 @@ namespace {
 // The size of icons displayed in feature rows.
 const CGFloat kFeatureRowIconSize = 20;
 
+// Returns whether it is possible to start a sign-in.
+bool SigninIsPossible(AuthenticationService* auth_service) {
+  if (!auth_service) {
+    return false;
+  }
+  return !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+         auth_service->SigninEnabled();
+}
+
 }  // namespace
 
 @interface PageActionMenuMediator () <CRWWebStateObserver>
@@ -156,7 +165,11 @@ const CGFloat kFeatureRowIconSize = 20;
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
   }
 
+  // Signed-out users see an enabled button; tap routes to sign-in.
   if (IsPageActionMenuAuthFlowEnabled() && ![self isUserSignedIn]) {
+    if (!SigninIsPossible(_authenticationService)) {
+      return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+    }
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:YES];
   }
 
@@ -732,6 +745,43 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   }
   return _authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin);
+}
+
+- (BOOL)isManagedAccount {
+  if (!_authenticationService) {
+    return NO;
+  }
+  return _authenticationService->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin);
+}
+
+- (BOOL)isGeminiEligibilityLoading {
+  if (!_geminiService) {
+    return NO;
+  }
+  return _geminiService->IsWorkspacePolicyCheckPending();
+}
+
+// Returns YES if the signed-in user is ineligible due to workspace
+// restriction specifically. This is the only ineligibility that can be
+// resolved by switching accounts without triggering a profile switch.
+// Enterprise managed accounts trigger a profile switch on sign-in, and
+// account capability (U13/U18) applies to all accounts the user owns.
+- (BOOL)isIneligibleGeminiAccountSwitchable {
+  if (![self isUserSignedIn] || !_geminiService ||
+      !_authenticationService->SigninEnabled()) {
+    return NO;
+  }
+
+  std::optional<gemini::IneligibilityReasons> result =
+      _geminiService->GeminiIneligibilityForProfile();
+
+  if (!result.has_value()) {
+    return NO;
+  }
+
+  return !result.value().chrome_enterprise &&
+         !result.value().account_capability && result.value().workspace;
 }
 
 @end

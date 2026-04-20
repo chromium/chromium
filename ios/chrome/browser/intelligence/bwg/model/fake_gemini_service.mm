@@ -12,3 +12,7 @@ std::optional<gemini::IneligibilityReasons>
 FakeGeminiService::GeminiIneligibilityForProfile() {
   return ineligibility_reasons_;
 }
+
+bool FakeGeminiService::IsWorkspacePolicyCheckPending() {
+  return workspace_policy_check_pending_;
+}
