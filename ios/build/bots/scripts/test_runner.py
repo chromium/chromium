@@ -466,6 +466,32 @@ class TestRunner(object):
     """Restart a device or relaunch a simulator."""
     pass
 
+  def delete_cached_simulator(self):
+    """Deletes the cached simulator for this run's ios version and device
+    type."""
+
+    # Only delete for simulator based runs
+    if not iossim_util.is_device_with_udid_simulator(self.udid):
+      return
+
+    # Only delete if caching enabled
+    if not self.use_simulator_cache:
+      return
+
+    LOGGER.info('Detected a possible bad state in cached simulator, '
+                'purging simulator from the cache.')
+
+    cache_udids = iossim_util.get_simulator_udids_by_platform_and_version(
+        self.platform,
+        self.version,
+        path=iossim_util.SIMULATOR_CACHE_PATH,
+    )
+
+    for cache_udid in cache_udids:
+      iossim_util.delete_simulator_by_udid(cache_udid,
+                                           iossim_util.SIMULATOR_CACHE_PATH)
+    measures.data_points('simulator_cache_purged').record(True)
+
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
     raise NotImplementedError
@@ -640,6 +666,14 @@ class TestRunner(object):
 
     try:
       result = self._run(cmd=cmd, clones=self.clones or 1)
+
+      # If result represents a crash and simulator caching is enabled, purge the
+      # simulator from the cache to ensure the cached simulator's state is not
+      # the source of the crash.
+      if result.crashed and iossim_util.is_device_with_udid_simulator(
+          self.udid):
+        self.delete_cached_simulator()
+
       if (result.crashed and not result.spawning_test_launcher and
           not result.crashed_tests()):
         # If the app crashed but not during any particular test case, assume

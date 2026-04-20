@@ -210,6 +210,13 @@ class LaunchCommand(object):
           result, overwrite_crash=not tests_selected_at_runtime)
       result.report_to_result_sink()
 
+      # If result represents a crash and simulator caching is enabled, purge the
+      # simulator from the cache to ensure the cached simulator's state is not
+      # the source of the crash.
+      if result.crashed and iossim_util.is_device_with_udid_simulator(
+          self.udid):
+        self.delete_cached_simulator()
+
       tests_to_include = set()
       # |running_tests| are compiled tests in target intersecting with swarming
       # sharding. For some suites, they are more than what's needed to run.
