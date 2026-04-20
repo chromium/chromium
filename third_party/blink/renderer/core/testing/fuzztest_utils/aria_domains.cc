@@ -102,11 +102,14 @@ fuzztest::Domain<QualifiedName> AnyAriaAttribute() {
 
 fuzztest::Domain<QualifiedName> AnyAriaTableAttribute() {
   static const base::NoDestructor<std::vector<QualifiedName>> attributes([]() {
-    return std::vector(
-        {html_names::kAriaColcountAttr, html_names::kAriaColindexAttr,
-         html_names::kAriaColindextextAttr, html_names::kAriaColspanAttr,
-         html_names::kAriaRowcountAttr, html_names::kAriaRowindexAttr,
-         html_names::kAriaRowindextextAttr, html_names::kAriaRowspanAttr});
+    return std::vector({html_names::kAriaColcountAttr.ToQualifiedName(),
+                        html_names::kAriaColindexAttr.ToQualifiedName(),
+                        html_names::kAriaColindextextAttr.ToQualifiedName(),
+                        html_names::kAriaColspanAttr.ToQualifiedName(),
+                        html_names::kAriaRowcountAttr.ToQualifiedName(),
+                        html_names::kAriaRowindexAttr.ToQualifiedName(),
+                        html_names::kAriaRowindextextAttr.ToQualifiedName(),
+                        html_names::kAriaRowspanAttr.ToQualifiedName()});
   }());
   return fuzztest::ElementOf(*attributes);
 }
@@ -212,7 +215,8 @@ AnyAriaTableRoleNameValuePair() {
        "columnheader", "rowheader", "none"});
   return fuzztest::Map(
       [](std::string_view role) {
-        return std::pair(html_names::kRoleAttr, std::string(role));
+        return std::pair<QualifiedName, std::string>(
+            html_names::kRoleAttr.ToQualifiedName(), std::string(role));
       },
       fuzztest::ElementOf(kTableRoles));
 }

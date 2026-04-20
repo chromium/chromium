@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class {{namespace}}QualifiedName : public QualifiedName { };
+class {{namespace}}QualifiedName : public QualifiedNameWithHash { };
 
 namespace {{cpp_namespace}} {
 
@@ -41,7 +41,7 @@ enum class {{namespace}}Tag {
 
 // Attributes
 {% for attr in attrs|sort(attribute='name') %}
-{{symbol_export}}extern const blink::QualifiedName& {{attr|symbol}}Attr;
+{{symbol_export}}extern const blink::QualifiedNameWithHash& {{attr|symbol}}Attr;
 {% endfor %}
 
 {% if tags %}

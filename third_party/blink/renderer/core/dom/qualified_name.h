@@ -148,6 +148,10 @@ class CORE_EXPORT QualifiedName {
   QualifiedName(QualifiedName&& other) = default;
   QualifiedName& operator=(QualifiedName&& other) = default;
 
+  // Mostly used for tests.
+  explicit QualifiedName(scoped_refptr<QualifiedNameImpl> impl)
+      : impl_(std::move(impl)) {}
+
   bool operator==(const QualifiedName& other) const {
     return impl_ == other.impl_;
   }
@@ -213,7 +217,7 @@ class CORE_EXPORT QualifiedName {
                            StringImpl* name,
                            const AtomicString& name_namespace);
 
- private:
+ protected:
   friend struct HashTraits<QualifiedName>;
 
   // This constructor is used only to create global/static QNames that don't
@@ -224,6 +228,27 @@ class CORE_EXPORT QualifiedName {
                 bool is_static);
 
   scoped_refptr<QualifiedNameImpl> impl_;
+};
+
+class CORE_EXPORT QualifiedNameWithHash : public QualifiedName {
+ public:
+  QualifiedNameWithHash(const AtomicString& prefix,
+                        const AtomicString& local_name,
+                        const AtomicString& namespace_uri,
+                        bool is_static);
+
+  // Precalculated filter for use with Element::CouldHaveAttribute().
+  // The type is really Element::TinyBloomFilter, but we do not want
+  // to pull in element.h from this header.
+  const uint32_t bloom_filter;
+
+  static void CreateStatic(void* target_address, StringImpl* name);
+  static void CreateStatic(void* target_address,
+                           StringImpl* name,
+                           const AtomicString& name_namespace);
+
+  // Mostly used for tests.
+  QualifiedName ToQualifiedName() const { return QualifiedName{impl_}; }
 };
 
 inline const QualifiedName& AnyQName() {

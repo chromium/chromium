@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -150,11 +151,31 @@ void QualifiedName::CreateStatic(void* target_address, StringImpl* name) {
       QualifiedName(g_null_atom, AtomicString(name), g_null_atom, true);
 }
 
+void QualifiedNameWithHash::CreateStatic(void* target_address,
+                                         StringImpl* name,
+                                         const AtomicString& name_namespace) {
+  new (target_address) QualifiedNameWithHash(g_null_atom, AtomicString(name),
+                                             name_namespace, true);
+}
+
+void QualifiedNameWithHash::CreateStatic(void* target_address,
+                                         StringImpl* name) {
+  new (target_address)
+      QualifiedNameWithHash(g_null_atom, AtomicString(name), g_null_atom, true);
+}
+
 std::ostream& operator<<(std::ostream& ostream, const QualifiedName& qname) {
   ostream << "QualifiedName(local=" << qname.LocalName()
           << " ns=" << qname.NamespaceURI() << " prefix=" << qname.Prefix()
           << ")";
   return ostream;
 }
+
+QualifiedNameWithHash::QualifiedNameWithHash(const AtomicString& prefix,
+                                             const AtomicString& local_name,
+                                             const AtomicString& namespace_uri,
+                                             bool is_static)
+    : QualifiedName(prefix, local_name, namespace_uri, is_static),
+      bloom_filter(Element::FilterForAttribute(*this)) {}
 
 }  // namespace blink

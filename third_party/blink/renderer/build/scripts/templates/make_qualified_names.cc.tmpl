@@ -27,7 +27,7 @@ const {{namespace}}QualifiedName& {{tag|symbol}}Tag = reinterpret_cast<{{namespa
 base::HeapArray<const QualifiedName*> GetTags() {
   auto tags = base::HeapArray<const QualifiedName*>::Uninit(kTagsCount);
   for (size_t i = 0; i < kTagsCount; ++i) {
-    tags[i] = reinterpret_cast<QualifiedName*>(&tag_storage) + i;
+    tags[i] = reinterpret_cast<QualifiedNameWithHash*>(&tag_storage) + i;
   }
   return tags;
 }
@@ -35,16 +35,16 @@ base::HeapArray<const QualifiedName*> GetTags() {
 {% endif %}
 // Attributes
 
-void* attr_storage[kAttrsCount * ((sizeof(QualifiedName) + sizeof(void *) - 1) / sizeof(void *))];
+void* attr_storage[kAttrsCount * ((sizeof(QualifiedNameWithHash) + sizeof(void *) - 1) / sizeof(void *))];
 
 {% for attr in attrs|sort(attribute='name', case_sensitive=True) %}
-const QualifiedName& {{attr|symbol}}Attr = reinterpret_cast<QualifiedName*>(&attr_storage)[{{loop.index0}}];
+const QualifiedNameWithHash& {{attr|symbol}}Attr = reinterpret_cast<QualifiedNameWithHash*>(&attr_storage)[{{loop.index0}}];
 {% endfor %}
 
 base::HeapArray<const QualifiedName*> GetAttrs() {
   auto attrs = base::HeapArray<const QualifiedName*>::Uninit(kAttrsCount);
   for (size_t i = 0; i < kAttrsCount; ++i) {
-    attrs[i] = reinterpret_cast<QualifiedName*>(&attr_storage) + i;
+    attrs[i] = reinterpret_cast<QualifiedNameWithHash*>(&attr_storage) + i;
   }
   return attrs;
 }
@@ -76,21 +76,32 @@ void Init() {
   size_t attr_i = 0;
   for (const NameEntry& name : kNames) {
     StringImpl* impl = StringImpl::CreateStatic(base::span(name.name, name.length));
+
+    // We need a static version of the uppercase string, since the QualifiedNameWithHash
+    // constructor will call LocalNameUpper(), and we cannot insert non-static strings
+    // before we are done inserting static strings.
+    char upper_buf[256];
+    for (unsigned i = 0; i < name.length; ++i) {
+      CHECK_LT(i, sizeof(upper_buf));
+      upper_buf[i] = ToAsciiUpper(name.name[i]);
+    }
+    AtomicString upper(StringImpl::CreateStatic(base::span(upper_buf, name.length)));
+
     {% if tags %}
     if (name.is_tag) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;
-      QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
+      QualifiedNameWithHash::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
       ++tag_i;
     }
 
     if (!name.is_attr)
       continue;
     {% endif %}
-    void* address = reinterpret_cast<QualifiedName*>(&attr_storage) + attr_i;
+    void* address = reinterpret_cast<QualifiedNameWithHash*>(&attr_storage) + attr_i;
     {% if use_namespace_for_attrs %}
-    QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
+    QualifiedNameWithHash::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
     {% else %}
-    QualifiedName::CreateStatic(address, impl);
+    QualifiedNameWithHash::CreateStatic(address, impl);
     {% endif %}
     ++attr_i;
   }
