@@ -2065,7 +2065,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
-    enum="BooleanEnabled" expires_after="2026-06-01">
+    enum="BooleanEnabled" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2076,7 +2076,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.CaptionBubbleError"
-    enum="CaptionBubbleErrorType" expires_after="2026-10-04">
+    enum="CaptionBubbleErrorType" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2086,7 +2086,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
-    units="ms" expires_after="2026-10-04">
+    units="ms" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2103,7 +2103,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2026-10-04">
+    enum="BooleanEnabled" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2119,7 +2119,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.ExpandBubble"
-    enum="LiveCaptionExpandBubbleEvent" expires_after="2026-06-01">
+    enum="LiveCaptionExpandBubbleEvent" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2128,7 +2128,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled2"
-    enum="BooleanEnabled" expires_after="2026-06-01">
+    enum="BooleanEnabled" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2138,7 +2138,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LanguageCount" units="count"
-    expires_after="2026-08-02">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2148,7 +2148,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaErrorCode"
-    enum="WinGetLastError" expires_after="2026-06-01">
+    enum="WinGetLastError" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2159,7 +2159,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
-    enum="LoadSodaResult" expires_after="2026-10-04">
+    enum="LoadSodaResult" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2169,7 +2169,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.MaskOffensiveWords" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2179,14 +2179,14 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.PinBubble" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>Records when a user pins or unpins the Live Caption bubble.</summary>
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session2"
-    enum="LiveCaptionSessionEvent" expires_after="2026-10-04">
+    enum="LiveCaptionSessionEvent" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2201,7 +2201,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.LiveCaption.SodaVerificationFailureMissingIndicatorFile"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2212,7 +2212,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.SpeechRecognitionServiceLanguage"
-    enum="SodaLanguageCode" expires_after="2026-06-01">
+    enum="SodaLanguageCode" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2224,7 +2224,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
-    enum="BooleanEnabled" expires_after="2026-10-04">
+    enum="BooleanEnabled" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2236,7 +2236,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption2" enum="BooleanEnabled"
-    expires_after="2026-10-04">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3945,7 +3945,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.CanRenderFrameUseOnDevice"
-    enum="Boolean" expires_after="2026-05-30">
+    enum="Boolean" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3956,7 +3956,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.Duration" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3966,7 +3966,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.ErrorOccurred"
-    enum="SpeechRecognitionErrorCode" expires_after="2026-05-30">
+    enum="SpeechRecognitionErrorCode" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3976,7 +3976,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionInstalled"
-    enum="Boolean" expires_after="2026-05-30">
+    enum="Boolean" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3987,7 +3987,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.IsOnDeviceSpeechRecognitionSupported"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3998,7 +3998,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.OnDeviceAvailable" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -4008,7 +4008,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.SetProcessLocally" enum="Boolean"
-    expires_after="2026-05-30">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -4018,7 +4018,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.UseAudioForwarder" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -4028,7 +4028,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.UseOnDevice" enum="Boolean"
-    expires_after="2026-10-04">
+    expires_after="2027-04-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -4519,7 +4519,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
-    expires_after="2026-10-04">
+    expires_after="2027-04-20">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -4532,7 +4532,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallation{Result}Time" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2027-04-20">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -4549,7 +4549,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
-    enum="BooleanSuccess" expires_after="2026-10-04">
+    enum="BooleanSuccess" expires_after="2027-04-20">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -4565,7 +4565,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="SodaInstaller.Language.{SodaLanguageCode}.Installation{Result}Time"
-    units="ms" expires_after="2026-06-01">
+    units="ms" expires_after="2027-04-20">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
