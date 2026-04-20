@@ -152,14 +152,14 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
   // Points close to `shape`, that still do not intersect.
   EXPECT_FALSE(ink::Intersects(ink::Point{139, 51}, shape, no_transform));
   EXPECT_FALSE(ink::Intersects(ink::Point{139, 51}, saved_shape, no_transform));
-  EXPECT_FALSE(ink::Intersects(ink::Point{128, 63}, shape, no_transform));
-  EXPECT_FALSE(ink::Intersects(ink::Point{128, 63}, saved_shape, no_transform));
+  EXPECT_FALSE(ink::Intersects(ink::Point{127, 63}, shape, no_transform));
+  EXPECT_FALSE(ink::Intersects(ink::Point{127, 63}, saved_shape, no_transform));
 
   // Points that do intersect.
   EXPECT_TRUE(ink::Intersects(ink::Point{139, 53}, shape, no_transform));
   EXPECT_TRUE(ink::Intersects(ink::Point{139, 53}, saved_shape, no_transform));
-  EXPECT_TRUE(ink::Intersects(ink::Point{129, 63}, shape, no_transform));
-  EXPECT_TRUE(ink::Intersects(ink::Point{129, 63}, saved_shape, no_transform));
+  EXPECT_TRUE(ink::Intersects(ink::Point{128, 63}, shape, no_transform));
+  EXPECT_TRUE(ink::Intersects(ink::Point{128, 63}, saved_shape, no_transform));
 }
 
 TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
@@ -224,10 +224,10 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
   // of 92, that object's position in the PDF page is relative to the MediaBox,
   // not the CropBox.  So its bounding box should be 55 points to the right of
   // that.
-  EXPECT_FLOAT_EQ(147.3787f, bounds.left());
-  EXPECT_FLOAT_EQ(49.520641f, bounds.bottom());
-  EXPECT_FLOAT_EQ(159.91898f, bounds.right());
-  EXPECT_FLOAT_EQ(61.169273f, bounds.top());
+  EXPECT_NEAR(147.39908f, bounds.left(), 0.001f);
+  EXPECT_NEAR(49.52425f, bounds.bottom(), 0.001f);
+  EXPECT_NEAR(159.8443f, bounds.right(), 0.001f);
+  EXPECT_NEAR(61.155205f, bounds.top(), 0.001f);
 }
 
 TEST_P(PDFiumInkWriterTest, EmptyStroke) {

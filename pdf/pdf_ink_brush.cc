@@ -116,8 +116,9 @@ ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
       ink::ColorFunction::OpacityMultiplier{.multiplier = GetOpacity(type)});
 
   // TODO(crbug.com/353942923): Use real `client_brush_family_id` here.
-  auto family = ink::BrushFamily::Create(tip, paint,
-                                         /*client_brush_family_id=*/"");
+  absl::StatusOr<ink::BrushFamily> family = ink::BrushFamily::Create(
+      tip, paint,
+      /*client_brush_family_id=*/"", ink::BrushFamily::SlidingWindowModel{});
   CHECK(family.ok());
 
   auto brush = ink::Brush::Create(*family,
@@ -175,11 +176,20 @@ PdfInkBrush::PdfInkBrush(Type brush_type, SkColor color, float size)
 
 PdfInkBrush::~PdfInkBrush() = default;
 
-std::optional<ink::Brush> PdfInkBrush::CloneWithSize(float size) const {
+std::optional<ink::Brush> PdfInkBrush::CloneToPassthroughModelWithSize(
+    float size) const {
   ink::Brush cloned_brush = ink_brush();
   if (!cloned_brush.SetSize(size).ok()) {
     return std::nullopt;
   }
+
+  // TODO(crbug.com/353942923): Use real `client_brush_family_id` here.
+  absl::StatusOr<ink::BrushFamily> family =
+      ink::BrushFamily::Create(cloned_brush.GetCoats(),
+                               /*client_brush_family_id=*/"",
+                               ink::BrushFamily::ExperimentalNaiveModel{});
+  CHECK(family.ok());
+  cloned_brush.SetFamily(family.value());
   return cloned_brush;
 }
 

@@ -1274,9 +1274,12 @@ std::optional<ink::Stroke> PdfInkModule::GetHighlightStrokeFromSelectionRect(
     }
   }
 
-  // Make a copy of the ink brush to avoid modifying the drawing highlighter.
+  // Make a copy of the brush to avoid modifying the drawing highlighter.
+  // The copy uses a pass-through input model to accurately draw highlighter
+  // strokes based on `selection_rect`.
   std::optional<ink::Brush> ink_brush =
-      highlighter_brush_.CloneWithSize(stroke_data.brush_size);
+      highlighter_brush_.CloneToPassthroughModelWithSize(
+          stroke_data.brush_size);
   if (!ink_brush.has_value()) {
     return std::nullopt;
   }

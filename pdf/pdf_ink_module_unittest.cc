@@ -79,6 +79,8 @@ namespace chrome_pdf {
 
 namespace {
 
+constexpr base::TimeDelta kInputTimeIncrement = base::Milliseconds(4);
+
 // Some commonly used points with InitializeSimpleSinglePageBasicLayout().
 constexpr gfx::PointF kLeftVerticalStrokePoint1(10.0f, 15.0f);
 constexpr gfx::PointF kLeftVerticalStrokePoint2(10.0f, 35.0f);
@@ -144,17 +146,17 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
 constexpr auto kTwoPageVerticalLayoutHorzLinePage0Inputs =
     std::to_array<PdfInkInputData>({
         {kTwoPageVerticalLayoutHorzLinePoint0Canonical, base::Seconds(0)},
-        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, kInputTimeIncrement},
     });
 constexpr auto kTwoPageVerticalLayoutVertLinePage0Inputs =
     std::to_array<PdfInkInputData>({
         {kTwoPageVerticalLayoutVertLinePoint0Canonical, base::Seconds(0)},
-        {kTwoPageVerticalLayoutVertLinePoint1Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutVertLinePoint1Canonical, kInputTimeIncrement},
     });
 constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
     std::to_array<PdfInkInputData>({
         {kTwoPageVerticalLayoutHorzLinePoint0Canonical, base::Seconds(0)},
-        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, kInputTimeIncrement},
     });
 
 // Commonly used test brush color. The color corresponds to "Yellow 1" for pen
@@ -1341,16 +1343,20 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         CreateLeftClickWebMouseEventAtPosition(mouse_down_point);
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_down_event));
-
+    base::TimeTicks time = mouse_down_event.TimeStamp();
     for (const gfx::PointF& mouse_move_point : mouse_move_points) {
       blink::WebMouseEvent mouse_move_event =
           CreateLeftClickWebMouseMoveEventAtPosition(mouse_move_point);
+      time += kInputTimeIncrement;
+      mouse_move_event.SetTimeStamp(time);
       EXPECT_EQ(expect_mouse_events_handled,
                 ink_module().HandleInputEvent(mouse_move_event));
     }
 
     blink::WebMouseEvent mouse_up_event =
         CreateLeftClickWebMouseUpEventAtPosition(mouse_up_point);
+    time += kInputTimeIncrement;
+    mouse_up_event.SetTimeStamp(time);
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
   }
@@ -1364,15 +1370,20 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         blink::WebInputEvent::Type::kTouchStart, touch_start_points);
     EXPECT_EQ(expect_touch_events_handled,
               ink_module().HandleInputEvent(touch_start_event));
+    base::TimeTicks time = touch_start_event.TimeStamp();
     for (const auto& touch_move_points : all_touch_move_points) {
       blink::WebTouchEvent touch_move_event = CreateTouchEvent(
           blink::WebInputEvent::Type::kTouchMove, touch_move_points);
+      time += kInputTimeIncrement;
+      touch_move_event.SetTimeStamp(time);
       EXPECT_EQ(expect_touch_events_handled,
                 ink_module().HandleInputEvent(touch_move_event));
     }
 
     blink::WebTouchEvent touch_end_event = CreateTouchEvent(
         blink::WebInputEvent::Type::kTouchEnd, touch_end_points);
+    time += kInputTimeIncrement;
+    touch_end_event.SetTimeStamp(time);
     EXPECT_EQ(expect_touch_events_handled,
               ink_module().HandleInputEvent(touch_end_event));
   }
@@ -1386,15 +1397,20 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         blink::WebInputEvent::Type::kTouchStart, pen_start_points);
     EXPECT_EQ(expect_pen_events_handled,
               ink_module().HandleInputEvent(pen_start_event));
+    base::TimeTicks time = pen_start_event.TimeStamp();
     for (const auto& pen_move_points : all_pen_move_points) {
       blink::WebTouchEvent pen_move_event = CreatePenEvent(
           blink::WebInputEvent::Type::kTouchMove, pen_move_points);
+      time += kInputTimeIncrement;
+      pen_move_event.SetTimeStamp(time);
       EXPECT_EQ(expect_pen_events_handled,
                 ink_module().HandleInputEvent(pen_move_event));
     }
 
     blink::WebTouchEvent pen_end_event =
         CreatePenEvent(blink::WebInputEvent::Type::kTouchEnd, pen_end_points);
+    time += kInputTimeIncrement;
+    pen_end_event.SetTimeStamp(time);
     EXPECT_EQ(expect_pen_events_handled,
               ink_module().HandleInputEvent(pen_end_event));
   }
@@ -1670,7 +1686,8 @@ TEST_P(PdfInkModuleStrokeTest, BasicLayoutInvalidationsFromStroke) {
                                                  gfx::Size(14, 14));
   constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
                                                gfx::Size(14, 12));
-  constexpr gfx::Rect kInvalidationAreaFinishedStroke(7, 12, 27, 9);
+  constexpr gfx::Rect kInvalidationAreaFinishedStroke(gfx::Point(7, 12),
+                                                      gfx::Size(27, 12));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1699,7 +1716,8 @@ TEST_P(PdfInkModuleStrokeTest, TransformedLayoutInvalidationsFromStroke) {
                                                  gfx::Size(14, 14));
   constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
                                                gfx::Size(14, 12));
-  constexpr gfx::Rect kInvalidationAreaFinishedStroke(6, 11, 29, 11);
+  constexpr gfx::Rect kInvalidationAreaFinishedStroke(gfx::Point(6, 11),
+                                                      gfx::Size(29, 15));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1905,13 +1923,14 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
 
   // Draw a second stroke.
   constexpr gfx::PointF kMouseDownPoint2 = gfx::PointF(10.0f, 30.0f);
+  constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(20.0f, 30.0f);
   constexpr gfx::PointF kMouseUpPoint2 = gfx::PointF(30.0f, 30.0f);
   ApplyStrokeWithMouseAtPoints(
-      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint), kMouseUpPoint2);
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
 
   // Check that there are now some visible strokes.
   const auto kStroke2Matcher =
-      ElementsAre(kMouseDownPoint2, kMouseMovePoint, kMouseUpPoint2);
+      ElementsAre(kMouseDownPoint2, kMouseMovePoint2, kMouseUpPoint2);
   const auto kVisibleStrokesMatcher = ElementsAre(
       Pair(0, ElementsAre(ElementsAreArray(kMousePoints), kStroke2Matcher)));
   EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
@@ -1919,12 +1938,12 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
                      /*unmodified_finished=*/0);
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0, 0));
 
-  // Stroke with the eraser tool at `kMouseMovePoint`, where it should
-  // intersect with both strokes, but does not because InkStrokeModeler modeled
-  // the "V" shaped input into an input with a much gentler line slope.
+  // Stroke with the eraser tool at `kEraseMissPoint`, where it should not
+  // intersect with either stroke.
+  static constexpr gfx::PointF kEraseMissPoint = gfx::PointF(1.0f, 1.0f);
   SelectEraserTool();
   ApplyStrokeWithMouseAtPoints(
-      kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
+      kEraseMissPoint, base::span_from_ref(kEraseMissPoint), kEraseMissPoint);
 
   // Check that the visible strokes are still there since the eraser tool missed
   // the strokes. This third stroke causes the unmodified stroke finished count
@@ -1943,7 +1962,7 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
   ApplyStrokeWithMouseAtPoints(
-      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint), kMouseUpPoint2);
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
 
   // Check that there are now no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
@@ -2787,11 +2806,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
                                                  gfx::Size(14, 14));
   constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
                                                gfx::Size(14, 12));
-  // This size is smaller than the area of the merged invalidation constants
-  // above because InkStrokeModeler modeled the "V" shaped input into an input
-  // with a much gentler line slope.
   constexpr gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7, 12),
-                                                    gfx::Size(27, 9));
+                                                    gfx::Size(27, 12));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -2827,11 +2843,8 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
                                                  gfx::Size(14, 14));
   constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
                                                gfx::Size(14, 12));
-  // This size is smaller than the area of the merged invalidation constants
-  // above because InkStrokeModeler modeled the "V" shaped input into an input
-  // with a much gentler line slope.
   constexpr gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(6, 11),
-                                                    gfx::Size(29, 11));
+                                                    gfx::Size(29, 15));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -3552,7 +3565,7 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
   static ink::Brush CreateTextHighlighterBrushWithSize(float size) {
     const PdfInkBrush brush(PdfInkBrush::Type::kHighlighter, kOrangeColor,
                             /*size=*/1);
-    return brush.CloneWithSize(size).value();
+    return brush.CloneToPassthroughModelWithSize(size).value();
   }
 
   // Helper method for running a simple text highlighting test using text
@@ -3705,9 +3718,9 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
   // The stroke inputs should match exactly.
-  std::optional<ink::StrokeInputBatch> expected_batch =
-      CreateInkInputBatch({PdfInkInputData(kStartPointInsidePage0),
-                           PdfInkInputData(kEndPointInsidePage0)});
+  std::optional<ink::StrokeInputBatch> expected_batch = CreateInkInputBatch(
+      {PdfInkInputData(kStartPointInsidePage0, base::Seconds(0)),
+       PdfInkInputData(kEndPointInsidePage0, kInputTimeIncrement)});
   ASSERT_TRUE(expected_batch.has_value());
 
   // The stroke should be a pen stroke.
