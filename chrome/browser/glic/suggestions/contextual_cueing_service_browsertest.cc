@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
 
   base::test::TestFuture<std::vector<std::string>> future;
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
