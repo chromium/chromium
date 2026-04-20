@@ -54,7 +54,7 @@ const base::FeatureParam<std::string> kDesktopAndroidPolicyBlocklist{
 
 // Used to enable extension install policy support.
 BASE_FEATURE(kEnableExtensionInstallPolicyFetching,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, uses ManagementService to determine whether to honor sensitive
 // policies. When disabled, falls back to the original ShouldHonorPolicies()

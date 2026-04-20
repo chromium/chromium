@@ -9542,23 +9542,6 @@
             ]
         }
     ],
-    "EnableExtensionInstallPolicyFetching": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableExtensionInstallPolicyFetching"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableExtensionsForCorpDesktopAndroid": [
         {
             "platforms": [
