@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.BlurTransitionAnimation.ExitReason"
-    enum="BlurTransitionExitReason" expires_after="2026-06-01">
+    enum="BlurTransitionExitReason" expires_after="2027-06-01">
   <owner>evanluo@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
