@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
 
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(1, new_browser->tab_strip_model()->count());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             new_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL());
 }
 
@@ -1514,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SplitVisualDataRestored) {
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, StartupPagesWithOnlyNtp) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   content::WebContentsDestroyedWatcher original_tab_destroyed_watcher(
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
@@ -2191,7 +2191,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ClobberRestoreTest) {
   ASSERT_EQ(0, new_browser->tab_strip_model()->active_index());
   // Use the existing tab to navigate to the NTP.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser,
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   content::WebContentsDestroyedWatcher existing_tab_destroyed_watcher(
       new_browser->tab_strip_model()->GetWebContentsAt(0));
 
@@ -4699,7 +4699,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
                        UnsavedGroupDefaultSavedAfterBrowserRestart) {
   // Add a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      browser(), chrome::ChromeUINewTabPageURLAsGURL(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
@@ -4741,7 +4741,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
                        NoDuplicatesOfDefaultSavedGroupAfterBrowserRestart) {
   // Add a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      browser(), chrome::ChromeUINewTabPageURLAsGURL(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
@@ -4777,13 +4777,13 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupSessionRestoreTest,
                        MultipleSavedGroupsAfterBrowserRestart) {
   // Add a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      browser(), chrome::ChromeUINewTabPageURLAsGURL(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Add a third tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      browser(), chrome::ChromeUINewTabPageURLAsGURL(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 

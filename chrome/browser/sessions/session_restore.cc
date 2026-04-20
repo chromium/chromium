@@ -134,7 +134,7 @@ bool HasSingleNewTabPage(Browser* browser) {
   }
   content::WebContents* active_tab =
       browser->tab_strip_model()->GetWebContentsAt(0);
-  return active_tab->GetURL() == chrome::kChromeUINewTabURL ||
+  return active_tab->GetURL() == chrome::ChromeUINewTabURLAsGURL() ||
          search::IsInstantNTP(active_tab);
 }
 
@@ -475,7 +475,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         // No tab browsers were created and no URLs were supplied on the command
         // line, or only the What's New page is specified at startup and may or
         // may not add a tab. Open the new tab page.
-        startup_tabs_.emplace_back(GURL(chrome::kChromeUINewTabURL));
+        startup_tabs_.emplace_back(chrome::ChromeUINewTabURLAsGURL());
       }
       AppendURLsToBrowser(browser, startup_tabs_);
       browser->window()->Show();

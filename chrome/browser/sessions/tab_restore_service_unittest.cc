@@ -1234,7 +1234,7 @@ TEST_F(TabRestoreServiceImplTest, PruneEntries) {
   EXPECT_EQ(max_entries + 1, service_->entries().size());
   PruneEntries();
   EXPECT_EQ(max_entries, service_->entries().size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             static_cast<Tab*>(service_->entries().front().get())
                 ->navigations[0]
                 .virtual_url());
@@ -1250,7 +1250,7 @@ TEST_F(TabRestoreServiceImplTest, PruneEntries) {
   EXPECT_EQ(max_entries, service_->entries().size());
   PruneEntries();
   EXPECT_EQ(max_entries, service_->entries().size());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             static_cast<Tab*>(service_->entries().front().get())
                 ->navigations[1]
                 .virtual_url());
