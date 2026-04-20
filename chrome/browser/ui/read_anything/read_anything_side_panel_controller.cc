@@ -261,7 +261,9 @@ void ReadAnythingSidePanelController::ReturnWebUIToController() {
       ReadAnythingSidePanelControllerGlue::UserDataKey());
   auto* controller = ReadAnythingController::From(tab_);
   CHECK(controller);
-  controller->TransferWebUiOwnership(web_view_->TakeContentsWrapper());
+  controller->TransferWebUiOwnership(
+      web_view_->TakeContentsWrapper(),
+      ReadAnythingController::PresentationState::kInSidePanel);
 }
 
 std::unique_ptr<views::View>

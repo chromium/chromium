@@ -730,7 +730,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // TransferWebUiOwnership_ForcesRecreationIfUiNotShown).
   controller->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
 
-  controller->TransferWebUiOwnership(std::move(wrapper));
+  controller->TransferWebUiOwnership(
+      std::move(wrapper),
+      ReadAnythingController::PresentationState::kInSidePanel);
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInactive);
 }
@@ -753,7 +755,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // 2. Transfer ownership back to the controller.
   // Because `has_shown_ui_` is false, this should trigger
   // `RecreateWebUIWrapper()`.
-  controller->TransferWebUiOwnership(std::move(wrapper));
+  controller->TransferWebUiOwnership(
+      std::move(wrapper),
+      ReadAnythingController::PresentationState::kInSidePanel);
 
   // 3. Request the wrapper again.
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> new_wrapper =
@@ -949,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(
 // presentation state back to kInactive, improperly closing the Immersive UI.
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingControllerBrowserTest,
-    DISABLED_ShowImmersiveUIImmediatelyFollowedByShowSidePanelUI_DoesNotCrash) {
+    ShowImmersiveUIImmediatelyFollowedByShowSidePanelUI_DoesNotCrash) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1289,9 +1293,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInSidePanel);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingControllerBrowserTest,
-    DISABLED_TogglePresentation_FromSidePanel_OpensImmersive) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       TogglePresentation_FromSidePanel_OpensImmersive) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);

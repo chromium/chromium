@@ -100,7 +100,9 @@ void ReadAnythingImmersiveOverlayView::OnCloseImmersive() {
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
       CloseUI();
   if (wrapper && controller_) {
-    controller_->TransferWebUiOwnership(std::move(wrapper));
+    controller_->TransferWebUiOwnership(
+        std::move(wrapper),
+        ReadAnythingController::PresentationState::kInImmersiveOverlay);
   }
 }
 

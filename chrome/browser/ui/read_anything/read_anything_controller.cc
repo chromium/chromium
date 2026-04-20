@@ -310,7 +310,13 @@ void ReadAnythingController::SetWebUIWrapperForTest(
 
 void ReadAnythingController::TransferWebUiOwnership(
     std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-        web_ui_wrapper) {
+        web_ui_wrapper,
+    PresentationState from_presentation) {
+  // Ignore the returned wrapper if it's coming from a UI that is no longer
+  // the active presentation.
+  if (GetPresentationState() != from_presentation) {
+    return;
+  }
   CHECK(web_ui_wrapper);
   CHECK(!web_ui_wrapper_);
   web_ui_wrapper_ = std::move(web_ui_wrapper);

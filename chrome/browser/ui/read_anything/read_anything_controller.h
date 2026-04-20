@@ -178,7 +178,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // the WebUIContentsWrapper to this controller.
   void TransferWebUiOwnership(
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-          web_ui_wrapper);
+          web_ui_wrapper,
+      PresentationState from_presentation);
 
   // Recreates the WebUI on the next GetOrCreateWebUIWrapper() call. This should
   // be called if Reading mode crashes so that we don't get stuck in a crashed
