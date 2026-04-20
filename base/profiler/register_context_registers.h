@@ -11,6 +11,7 @@
 #include <ptrauth.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
