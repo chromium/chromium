@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
 
   // Add and activate the non-actuation tab.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1,
-                                     GURL(chrome::kChromeUINewTabURL),
+                                     chrome::ChromeUINewTabURLAsGURL(),
                                      ui::PAGE_TRANSITION_LINK));
   auto* tab_two = browser()->GetTabStripModel()->GetTabAtIndex(1);
   browser()->GetTabStripModel()->ActivateTabAt(1);

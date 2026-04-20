@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0,
-                                     GURL(chrome::kChromeUINewTabURL),
+                                     chrome::ChromeUINewTabURLAsGURL(),
                                      ::ui::PAGE_TRANSITION_LINK));
   auto* tab_one = browser()->GetTabStripModel()->GetTabAtIndex(0);
   base::RunLoop loop;
