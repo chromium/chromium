@@ -4,13 +4,17 @@
 
 #include <memory>
 
+#include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "base/auto_reset.h"
 #include "base/test/gtest_tags.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom-shared.h"
-#include "extensions/shell/test/shell_apitest.h"
 
 namespace extensions {
 
@@ -20,7 +24,7 @@ constexpr char kChromeAppVirtualKeyboardTag[] =
     "screenplay-1194f129-d36c-4a43-adc6-aa8166f7781d";
 }  // namespace
 
-class VirtualKeyboardApiTest : public ShellApiTest {
+class VirtualKeyboardApiTest : public ExtensionApiTest {
  public:
   VirtualKeyboardApiTest() = default;
 
@@ -32,12 +36,12 @@ class VirtualKeyboardApiTest : public ShellApiTest {
   void SetUp() override {
     feature_session_type_ =
         ScopedCurrentFeatureSessionType(mojom::FeatureSessionType::kKiosk);
-    ShellApiTest::SetUp();
+    ExtensionApiTest::SetUp();
   }
 
   void TearDown() override {
     feature_session_type_.reset();
-    ShellApiTest::TearDown();
+    ExtensionApiTest::TearDown();
   }
 
  private:
@@ -48,11 +52,22 @@ class VirtualKeyboardApiTest : public ShellApiTest {
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardApiTest, Test) {
   base::AddFeatureIdTagToTestResult(kChromeAppVirtualKeyboardTag);
   VirtualKeyboardAPI* api =
-      BrowserContextKeyedAPIFactory<VirtualKeyboardAPI>::Get(browser_context());
+      BrowserContextKeyedAPIFactory<VirtualKeyboardAPI>::Get(profile());
   ASSERT_TRUE(api);
   ASSERT_TRUE(api->delegate());
 
-  EXPECT_TRUE(RunAppTest("api_test/virtual_keyboard"));
+  // Start with a keyboard with all features turned off.
+  keyboard::KeyboardConfig config = {
+      .auto_complete = false,
+      .auto_correct = false,
+      .auto_capitalize = false,
+      .handwriting = false,
+      .spell_check = false,
+      .voice_input = false,
+  };
+  ChromeKeyboardControllerClient::Get()->SetKeyboardConfig(config);
+
+  EXPECT_TRUE(RunExtensionTest("virtual_keyboard"));
 }
 
 }  // namespace extensions

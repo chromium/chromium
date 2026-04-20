@@ -1315,7 +1315,6 @@ if (enable_extensions) {
       "//extensions:test_support",
       "//extensions/browser:test_support",
       "//extensions/browser/api/system_display:display_info_provider",
-      "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
       "//extensions/common",
       "//extensions/common/api",
       "//extensions/shell:app_shell_lib",
@@ -1332,13 +1331,11 @@ if (enable_extensions) {
 
     if (is_chromeos) {
       sources += [
-        # TODO(michaelpg): bluetooth_appshell_test.cc is a crutch until we have
-        # a better system for testing APIs in both app_shell and chrome. See
-        # crbug.com/650835.
+        # TODO(crbug.com/650835): bluetooth_appshell_test.cc is a crutch until
+        # we have a better system for testing APIs in both app_shell and chrome.
         "api/bluetooth/bluetooth_appshell_test.cc",
         "api/bluetooth_socket/bluetooth_socket_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
-        "api/virtual_keyboard/virtual_keyboard_apitest.cc",
         "guest_view/app_view/app_view_apitest.cc",
       ]
 

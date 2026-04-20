@@ -4950,6 +4950,7 @@ if (!is_android) {
           "../browser/extensions/api/usb/usb_apitest.cc",
           "../browser/extensions/api/usb/usb_manual_apitest.cc",
           "../browser/extensions/api/video_capture/video_capture_apitest_chromeos.cc",
+          "../browser/extensions/api/virtual_keyboard/virtual_keyboard_apitest.cc",
           "../browser/extensions/api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
           "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
@@ -4983,6 +4984,7 @@ if (!is_android) {
           "//chromeos/dbus/power",
           "//components/device_event_log",
           "//components/file_access:test_support",
+          "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
         ]
 
         data += [
