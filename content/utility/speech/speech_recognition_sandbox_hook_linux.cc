@@ -55,7 +55,6 @@ bool SpeechRecognitionPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
 #if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
   base::FilePath test_binary_path = GetSodaTestBinaryPath();
-  DVLOG(0) << "SODA test binary path: " << test_binary_path.value().c_str();
   DCHECK(base::PathExists(test_binary_path));
   void* soda_test_library = dlopen(GetSodaTestBinaryPath().value().c_str(),
                                    RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
