@@ -584,12 +584,9 @@ def _CheckUsageOfSystemColors(input_api, output_api):
     if not errors:
         return []
 
-    plural_suffix = '' if len(errors) == 1 else 's'
-    warning_message = ('Found forbidden usage%(plural)s of system colors. '
-                       'Only white, black and clear colors are accepted. '
-                     'Prefer semantic colors in ios code instead of the system ones:' % {
-                         'plural': plural_suffix
-                     })
+    warning_message = 'Found forbidden usage of system colors. '
+    'Only white, black and clear colors are accepted.'
+    'Prefer semantic colors in ios code instead of the system ones:'
 
     return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
