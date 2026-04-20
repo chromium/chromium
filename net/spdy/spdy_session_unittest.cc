@@ -2686,6 +2686,124 @@ TEST_F(SpdySessionTest, CloseActivatedStreamThatClosesSession) {
   EXPECT_TRUE(data.AllReadDataConsumed());
 }
 
+// Tests that the session drains when the number of queued capped frames
+// exceeds the limit during a window update. This is a regression test for
+// crbug.com/503420443.
+TEST_F(SpdySessionTest, WindowUpdateExceedsCappedFramesLimit) {
+  // Set the capped frames limit to 1.
+  session_deps_.session_max_queued_capped_frames = 1;
+
+  spdy::SpdySerializedFrame req1(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, LOWEST));
+  spdy::SpdySerializedFrame req2(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 3, LOWEST));
+  spdy::SpdySerializedFrame req3(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 5, LOWEST));
+
+  spdy::SpdySerializedFrame rst1(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  spdy::SpdySerializedFrame rst2(
+      spdy_util_.ConstructSpdyRstStream(3, spdy::ERROR_CODE_CANCEL));
+
+  spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(
+      0, spdy::ERROR_CODE_PROTOCOL_ERROR, "Exceeded max queued capped frames"));
+
+  MockWrite writes[] = {
+      CreateMockWrite(req1, 0), CreateMockWrite(req2, 1),
+      CreateMockWrite(req3, 2), CreateMockWrite(rst1, 3),
+      CreateMockWrite(rst2, 4), CreateMockWrite(goaway, 5),
+  };
+
+  MockRead reads[] = {
+      MockRead(ASYNC, ERR_IO_PENDING, 6), MockRead(ASYNC, 0, 7)  // EOF
+  };
+
+  SequencedSocketData data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // Create three streams.
+  base::WeakPtr<SpdyStream> stream1 =
+      CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_,
+                                test_url_, LOWEST, NetLogWithSource());
+  ASSERT_TRUE(stream1);
+
+  base::WeakPtr<SpdyStream> stream2 =
+      CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_,
+                                test_url_, LOWEST, NetLogWithSource());
+  ASSERT_TRUE(stream2);
+
+  base::WeakPtr<SpdyStream> stream3 =
+      CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_,
+                                test_url_, LOWEST, NetLogWithSource());
+  ASSERT_TRUE(stream3);
+
+  test::StreamDelegateDoNothing delegate1(stream1);
+  stream1->SetDelegate(&delegate1);
+
+  test::StreamDelegateDoNothing delegate2(stream2);
+  stream2->SetDelegate(&delegate2);
+
+  // Custom delegate to wait for headers sent on stream3 (last one).
+  class HeadersSentDelegate : public test::StreamDelegateDoNothing {
+   public:
+    HeadersSentDelegate(const base::WeakPtr<SpdyStream>& stream,
+                        base::OnceClosure quit_closure)
+        : StreamDelegateDoNothing(stream),
+          quit_closure_(std::move(quit_closure)) {}
+
+    void OnHeadersSent() override {
+      test::StreamDelegateDoNothing::OnHeadersSent();
+      if (quit_closure_) {
+        std::move(quit_closure_).Run();
+      }
+    }
+
+   private:
+    base::OnceClosure quit_closure_;
+  };
+
+  base::RunLoop run_loop;
+  HeadersSentDelegate delegate3(stream3, run_loop.QuitClosure());
+  stream3->SetDelegate(&delegate3);
+
+  quiche::HttpHeaderBlock headers1(
+      spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
+  stream1->SendRequestHeaders(std::move(headers1), NO_MORE_DATA_TO_SEND);
+
+  quiche::HttpHeaderBlock headers2(
+      spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
+  stream2->SendRequestHeaders(std::move(headers2), NO_MORE_DATA_TO_SEND);
+
+  quiche::HttpHeaderBlock headers3(
+      spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
+  stream3->SendRequestHeaders(std::move(headers3), NO_MORE_DATA_TO_SEND);
+
+  // Wait for headers to be sent for all streams.
+  run_loop.Run();
+
+  EXPECT_EQ(1u, stream1->stream_id());
+  EXPECT_EQ(3u, stream2->stream_id());
+  EXPECT_EQ(5u, stream3->stream_id());
+
+  // Cancel stream1 and stream2 to enqueue 2 capped frames (RST_STREAM).
+  // This fills the queue up to count 2 (limit is 1).
+  stream1->Cancel(ERR_ABORTED);
+  stream2->Cancel(ERR_ABORTED);
+
+  // Trigger a window update on stream3. This will try to enqueue a third
+  // capped frame (WINDOW_UPDATE). Since count (2) > limit (1), this should
+  // trigger session draining.
+  stream3->IncreaseRecvWindowSize(40000);
+
+  // Wait for stream3 to close due to session drain.
+  EXPECT_THAT(delegate3.WaitForClose(), IsError(ERR_CONNECTION_CLOSED));
+}
+
 TEST_F(SpdySessionTest, VerifyDomainAuthentication) {
   SequencedSocketData data;
   session_deps_.socket_factory->AddSocketDataProvider(&data);

@@ -276,8 +276,15 @@ void SpdyStream::IncreaseRecvWindowSize(int32_t delta_window_size) {
   if (unacked_recv_window_bytes_ > max_recv_window_size_ / 2 ||
       elapsed >= session_->TimeToBufferSmallWindowUpdates()) {
     last_recv_window_update_ = base::TimeTicks::Now();
+    // SendStreamWindowUpdate() can result in session draining and stream
+    // destruction if the number of queued capped frames exceeds the limit.
+    // Check weak_this after the call to detect this.
+    base::WeakPtr<SpdyStream> weak_this = weak_ptr_factory_.GetWeakPtr();
     session_->SendStreamWindowUpdate(
         stream_id_, static_cast<uint32_t>(unacked_recv_window_bytes_));
+    if (!weak_this) {
+      return;
+    }
     unacked_recv_window_bytes_ = 0;
   }
 }
