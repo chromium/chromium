@@ -142,9 +142,9 @@ def GenerateToolsJson(header_paths):
                  "Live API based on the\n")
     output.write(" * AiOverlayTools mojom interfaces.\n")
     output.write(" */\n")
-    output.write("export const kBuiltInToolDefinitions = `\n")
+    output.write("export const kBuiltInToolDefinitions = JSON.stringify(\n")
     output.write(json_str)
-    output.write("\n`;\n")
+    output.write("\n);\n")
 
     return output.getvalue()
 

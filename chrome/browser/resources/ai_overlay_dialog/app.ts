@@ -4,7 +4,6 @@
 
 import '/strings.m.js';
 
-import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -167,15 +166,15 @@ export class AppElement extends CrLitElement {
         return;
       }
       this.usePersona = usePersona;
-      if (this.conversation?.connected) {
+      if (this.conversation?.connected || this.initializationState === InitializationState.ERROR) {
         log(FILE, 'Restarting conversation for persona change');
         // TODO(gklassen): Make it so that conversation can trigger and block on
         // an initial page context, instead of pulling it out of the old
         // conversation or having AppElement proxy it during initialization.
-        this.initialPageContext = this.conversation.pageContext ?? undefined;
+        this.initialPageContext = this.conversation?.pageContext ?? undefined;
         this.stopConversation();
         this.conversation = null;
-        assert(this.initializationState === InitializationState.UNINITIALIZED);
+        this.initializationState = InitializationState.UNINITIALIZED;
         this.startConversation();
       }
     });
@@ -420,6 +419,7 @@ export class AppElement extends CrLitElement {
 
     const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 
+    const signal = AbortSignal.timeout(10000);
     const [
       personaResponse,
       apiConfigResponse,
@@ -427,11 +427,11 @@ export class AppElement extends CrLitElement {
       listeningResponse,
       instructionResponse,
     ] = await Promise.all([
-      fetch(base + 'persona.json'),
-      fetch(base + 'api_config.json'),
-      fetch(base + 'talking.webm'),
-      fetch(base + 'listening.webm'),
-      fetch(base + 'instruction.tmpl'),
+      fetch(base + 'persona.json', {signal}),
+      fetch(base + 'api_config.json', {signal}),
+      fetch(base + 'talking.webm', {signal}),
+      fetch(base + 'listening.webm', {signal}),
+      fetch(base + 'instruction.tmpl', {signal}),
     ]);
 
     const personaConfig: PersonaConfig = await personaResponse.json();
