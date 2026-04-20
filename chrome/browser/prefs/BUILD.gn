@@ -130,6 +130,7 @@ source_set("impl") {
     "//components/contextual_search:public",
     "//components/custom_handlers",
     "//components/domain_reliability:prefs",
+    "//components/enterprise/browser/groups:prefs",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/promotion:prefs",
     "//components/enterprise/connectors/core",

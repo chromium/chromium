@@ -49,6 +49,7 @@ namespace policy {
 class ChromeBrowserCloudManagementRegistrar;
 class ClientDataDelegate;
 class ConfigurationPolicyProvider;
+class EnterpriseGroupsBrowserHandler;
 class MachineLevelUserCloudPolicyManager;
 class MachineLevelUserCloudPolicyFetcher;
 
@@ -330,6 +331,8 @@ class ChromeBrowserCloudManagementController
   std::unique_ptr<ChromeBrowserCloudManagementRegistrar>
       cloud_management_registrar_;
   std::unique_ptr<MachineLevelUserCloudPolicyFetcher> policy_fetcher_;
+
+  std::unique_ptr<EnterpriseGroupsBrowserHandler> enterprise_groups_handler_;
 
   // Time at which the enrollment process was started.  Used to log UMA metric.
   base::Time enrollment_start_time_;

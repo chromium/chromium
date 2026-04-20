@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("groups") {
+  sources = [
+    "enterprise_groups_handler.cc",
+    "enterprise_groups_handler.h",
+  ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+  ]
+  public_deps = [ ":prefs" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "groups_prefs.cc",
+    "groups_prefs.h",
+  ]
+  deps = [ "//components/prefs" ]
+}
+
+source_set("features") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  sources = [ "groups_features.cc" ]
+  public = [ "groups_features.h" ]
+  public_deps = [ "//base" ]
+}

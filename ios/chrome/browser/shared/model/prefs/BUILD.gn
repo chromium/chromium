@@ -44,6 +44,7 @@ source_set("browser_prefs") {
     "//components/contextual_search:public",
     "//components/dom_distiller/core",
     "//components/enterprise",
+    "//components/enterprise/browser/groups:prefs",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/connectors/core",
     "//components/enterprise/data_controls/core/browser",

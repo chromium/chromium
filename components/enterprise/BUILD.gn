@@ -138,7 +138,10 @@ static_library("enterprise") {
       "browser/device_trust/device_trust_key_manager.h",
     ]
 
-    deps += [ "//third_party/abseil-cpp:absl" ]
+    deps += [
+      "//components/enterprise/browser/groups",
+      "//third_party/abseil-cpp:absl",
+    ]
   }
 
   if (enterprise_client_certificates) {
@@ -242,13 +245,17 @@ source_set("unit_tests") {
   if (!is_chromeos) {
     sources += [
       "browser/controller/browser_dm_token_storage_unittest.cc",
+      "browser/groups/enterprise_groups_handler_unittest.cc",
       "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
     ]
 
     deps += [
       ":test_support",
       "//base",
+      "//components/enterprise/browser/groups",
+      "//components/enterprise/browser/groups:features",
       "//components/policy/core/browser:test_support",
+      "//components/policy/core/common:test_support",
     ]
   }
 

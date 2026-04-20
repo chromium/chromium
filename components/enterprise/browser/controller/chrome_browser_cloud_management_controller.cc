@@ -22,6 +22,7 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "components/enterprise/browser/enterprise_switches.h"
+#include "components/enterprise/browser/groups/enterprise_groups_handler.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
@@ -263,6 +264,10 @@ void ChromeBrowserCloudManagementController::Init(
         policy_manager, local_state, device_management_service,
         url_loader_factory);
     policy_fetcher_->AddClientObserver(this);
+    enterprise_groups_handler_ =
+        std::make_unique<EnterpriseGroupsBrowserHandler>(policy_manager->core(),
+                                                         local_state);
+    enterprise_groups_handler_->Init();
     return;
   }
 
@@ -284,6 +289,10 @@ void ChromeBrowserCloudManagementController::Init(
     delegate_->StartWatchingRegistration(this);
 
     enrollment_start_time_ = base::Time::Now();
+
+    enterprise_groups_handler_ =
+        std::make_unique<EnterpriseGroupsBrowserHandler>(policy_manager->core(),
+                                                         local_state);
 
     // Not registered already, so do it now.
     LOG_POLICY(INFO, CBCM_ENROLLMENT)
@@ -372,6 +381,11 @@ void ChromeBrowserCloudManagementController::InvalidatePolicies() {
     policy_fetcher_->Disconnect();
   }
 
+  if (enterprise_groups_handler_) {
+    enterprise_groups_handler_->ClearGroups();
+    enterprise_groups_handler_.reset();
+  }
+
   // This causes the scheduler to stop refreshing itself since the DM token is
   // no longer valid.
   if (report_scheduler_)
@@ -417,6 +431,7 @@ void ChromeBrowserCloudManagementController::OnServiceAccountSet(
 void ChromeBrowserCloudManagementController::ShutDown() {
   NotifyShutdown();
   delegate_->ShutDown();
+  enterprise_groups_handler_.reset();
   report_scheduler_.reset();
   saas_usage_report_scheduler_.reset();
 }
@@ -533,7 +548,9 @@ void ChromeBrowserCloudManagementController::
   if (report_scheduler_) {
     report_scheduler_->OnDMTokenUpdated();
   }
-
+  if (enterprise_groups_handler_) {
+    enterprise_groups_handler_->Init();
+  }
   NotifyPolicyRegisterFinished(true);
 }
 
