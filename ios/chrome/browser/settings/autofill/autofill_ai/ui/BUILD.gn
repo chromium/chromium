@@ -47,14 +47,6 @@ source_set("edit_items") {
     "autofill_ai_entity_edit_item_factory.h",
     "autofill_ai_entity_edit_item_factory.mm",
     "autofill_ai_entity_field_item.h",
-    "date_picker_content_configuration.h",
-    "date_picker_content_configuration.mm",
-    "date_picker_content_view.h",
-    "date_picker_content_view.mm",
-    "label_content_configuration.h",
-    "label_content_configuration.mm",
-    "label_content_view.h",
-    "label_content_view.mm",
   ]
   deps = [
     "//base",
@@ -64,9 +56,9 @@ source_set("edit_items") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/cells:generic_cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
   ]
 }
 

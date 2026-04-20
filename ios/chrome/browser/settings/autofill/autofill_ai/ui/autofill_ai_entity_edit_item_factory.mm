@@ -101,11 +101,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   AutofillAIEntityEditDateItem* item =
       [[AutofillAIEntityEditDateItem alloc] initWithType:ItemTypeAttribute];
-  item.text = displayName;
-  item.detailText = value;
+  item.fieldNameLabelText = displayName;
+  item.textFieldValue = value;
   item.attributeType = attributeType.name();
   item.dateValue = dateValue;
   item.selectionStyle = UITableViewCellSelectionStyleNone;
+  item.hasValidValueStatus = YES;
   return item;
 }
 
