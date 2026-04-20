@@ -30,8 +30,7 @@ class DevtoolsUIController {
 
   void TearDown();
 
-  bool UpdateDevtools(ContentsContainerView* contents_container,
-                      content::WebContents* web_contents,
+  bool UpdateDevtools(content::WebContents* web_contents,
                       bool update_devtools_web_contents);
 
  private:

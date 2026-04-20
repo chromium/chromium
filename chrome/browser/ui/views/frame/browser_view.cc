@@ -1853,14 +1853,8 @@ void BrowserView::OnBookmarkBarStateChanged(
 }
 
 void BrowserView::UpdateDevTools(content::WebContents* inspected_web_contents) {
-  ContentsContainerView* contents_container_view =
-      multi_contents_view_->GetContentsContainerViewFor(inspected_web_contents);
-  if (!contents_container_view) {
-    return;
-  }
   browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
-      contents_container_view, inspected_web_contents, true);
-  DeprecatedLayoutImmediately();
+      inspected_web_contents, true);
 }
 
 bool BrowserView::CanDockDevTools() const {
@@ -5599,18 +5593,15 @@ bool BrowserView::MaybeUpdateDevtools(content::WebContents* contents) {
     split_tabs::SplitTabData* split_data =
         browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
     std::vector<tabs::TabInterface*> split_tabs = split_data->ListTabs();
-    for (size_t i = 0; tabs::TabInterface* tab : split_tabs) {
-      ContentsContainerView* contents_container_view =
-          multi_contents_view_->contents_container_views()[i++];
-      bool updated =
+    for (tabs::TabInterface* tab : split_tabs) {
+      devtools_layout_updated |=
           browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
-              contents_container_view, tab->GetContents(), false);
-      devtools_layout_updated |= updated;
+              tab->GetContents(), false);
     }
   } else {
     devtools_layout_updated =
         browser_->GetFeatures().devtools_ui_controller()->UpdateDevtools(
-            GetActiveContentsContainerView(), contents, false);
+            contents, false);
   }
   return devtools_layout_updated;
 }

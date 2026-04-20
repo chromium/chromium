@@ -26,17 +26,29 @@ void DevtoolsUIController::TearDown() {
 }
 
 bool DevtoolsUIController::UpdateDevtools(
-    ContentsContainerView* contents_container,
     content::WebContents* web_contents,
     bool update_devtools_web_contents) {
-  DevtoolsWebViewController* controller =
-      devtools_web_view_controllers_[contents_container].get();
-  CHECK(controller);
+  auto it = std::ranges::find_if(
+      devtools_web_view_controllers_, [&web_contents](const auto& entry) {
+        return entry.first->contents_view()->web_contents() == web_contents;
+      });
+  if (it == devtools_web_view_controllers_.end()) {
+    return false;
+  }
+
+  DevtoolsWebViewController* controller = it->second.get();
   if (update_devtools_web_contents &&
       !DevToolsWindow::GetInTabWebContents(web_contents, nullptr)) {
     controller->RestoreFocus();
   }
-  return controller->UpdateDevtools(web_contents, update_devtools_web_contents);
+
+  const bool requires_layout =
+      controller->UpdateDevtools(web_contents, update_devtools_web_contents);
+  if (requires_layout) {
+    ContentsContainerView* container_view = it->first;
+    container_view->InvalidateLayout();
+  }
+  return requires_layout;
 }
 
 DevtoolsUIController::DevtoolsWebViewController::DevtoolsWebViewController(
