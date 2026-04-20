@@ -187,11 +187,8 @@ up to date, and whether the build was an official one.
     // Possible values include:
     //
     // base:
-    //  - Restriction.RESTRICTION_TYPE_LOW_END_DEVICE
-    //    Restricts the test to low-end devices as determined by SysUtils.isLowEndDevice().
-    //
-    //  - Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-    //    Restricts the test to non-low-end devices as determined by SysUtils.isLowEndDevice().
+
+
     //
     //  - Restriction.RESTRICTION_TYPE_INTERNET
     //    Restricts the test to devices that have an internet connection.

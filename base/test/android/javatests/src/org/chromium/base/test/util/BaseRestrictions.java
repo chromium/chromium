@@ -39,10 +39,8 @@ public class BaseRestrictions {
     }
 
     public static void registerChecks(RestrictionSkipCheck restrictionSkipCheck) {
-        restrictionSkipCheck.addHandler(
-                Restriction.RESTRICTION_TYPE_LOW_END_DEVICE, () -> !SysUtils.isLowEndDevice());
-        restrictionSkipCheck.addHandler(
-                Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, SysUtils::isLowEndDevice);
+
+
         restrictionSkipCheck.addHandler(
                 Restriction.RESTRICTION_TYPE_INTERNET, () -> !isNetworkAvailable());
         restrictionSkipCheck.addHandler(

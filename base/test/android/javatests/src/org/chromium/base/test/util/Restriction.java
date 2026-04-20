@@ -20,11 +20,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Restriction {
-    /** Specifies the test is only valid on low end devices that have less memory. */
-    String RESTRICTION_TYPE_LOW_END_DEVICE = "Low_End_Device";
 
-    /** Specifies the test is only valid on non-low end devices. */
-    String RESTRICTION_TYPE_NON_LOW_END_DEVICE = "Non_Low_End_Device";
 
     /** Specifies the test is only valid on a device that can reach the internet. */
     String RESTRICTION_TYPE_INTERNET = "Internet";
