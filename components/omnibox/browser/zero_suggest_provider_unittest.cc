@@ -665,10 +665,40 @@ TEST_F(ZeroSuggestProviderTest, SendRequestWithAimToolMode) {
   EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
 }
 
-TEST_F(ZeroSuggestProviderTest, SendRequestForThreadsSuggestion) {
+TEST_F(ZeroSuggestProviderTest,
+       SendRequestForThreadsSuggestionOmniboxComposebox) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
   AutocompleteInput input = ZeroPrefixInputForOmniboxComposebox();
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_loader_factory()->NumPending());
+
+  std::string json_response(
+      R"(["",["", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300,)"
+      R"("google:suggestdetail": [)"
+      R"({"google:suggesttemplate": "CAIQCRobChlWaWV3IHlvdXIgQUkgTW9kZSBoaXN0b3J5MgoKA2FlcBIDMTMxMgkKBGF0dm0SATM="},)"
+      R"({}, {}]}])");
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      json_response);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // Expect no matches were dropped even though the query/suggestion is empty.
+  EXPECT_EQ(3U, provider_->matches().size());
+}
+
+TEST_F(ZeroSuggestProviderTest, SendRequestForThreadsSuggestionNtpComposebox) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+  AutocompleteInput input = ZeroPrefixInputForComposebox();
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the
