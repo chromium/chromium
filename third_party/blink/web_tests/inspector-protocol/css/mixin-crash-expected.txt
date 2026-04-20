@@ -1,0 +1,4 @@
+The test verifies that fetching styles for an element using mixins and contents does not crash.
+Fetching styles for body...
+Successfully fetched styles.
+

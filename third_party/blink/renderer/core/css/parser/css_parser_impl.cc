@@ -2686,13 +2686,17 @@ StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(
     CSSParserTokenStream& stream) {
   wtf_size_t header_start = stream.LookAheadOffset();
   stream.ConsumeWhitespace();
-  if (stream.AtEnd()) {
-    // Implicit semicolon at end of block.
-    return MakeGarbageCollected<StyleRuleContentsStatement>(nullptr);
-  }
-  if (stream.UncheckedPeek().GetType() == kSemicolonToken) {
-    // No block, just a semicolon.
-    stream.UncheckedConsume();  // kSemicolonToken
+  if (stream.AtEnd() || stream.UncheckedPeek().GetType() == kSemicolonToken) {
+    // No block, just a semicolon (possibly implicit).
+    if (observer_) {
+      observer_->StartRuleHeader(StyleRule::kContents, header_start);
+      observer_->EndRuleHeader(stream.Offset());
+      observer_->StartRuleBody(stream.Offset());
+      observer_->EndRuleBody(stream.Offset());
+    }
+    if (!stream.AtEnd()) {
+      stream.UncheckedConsume();  // kSemicolonToken
+    }
     return MakeGarbageCollected<StyleRuleContentsStatement>(nullptr);
   }
 
@@ -2705,14 +2709,10 @@ StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kContents, header_start);
     observer_->EndRuleHeader(header_end);
-    observer_->StartRuleBody(stream.Offset());
   }
 
   // Parse the actual block.
   StyleRule* fake_parent_rule = ConsumeDeclarationListForMixins(stream);
-  if (observer_) {
-    observer_->EndRuleBody(stream.Offset());
-  }
   return MakeGarbageCollected<StyleRuleContentsStatement>(fake_parent_rule);
 }
 
