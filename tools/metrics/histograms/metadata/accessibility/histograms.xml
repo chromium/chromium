@@ -2247,7 +2247,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage"
-    enum="LocaleCodeBCP47" expires_after="2026-06-01">
+    enum="LocaleCodeBCP47" expires_after="2026-12-01">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
