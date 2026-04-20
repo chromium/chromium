@@ -287,6 +287,18 @@ bool IsForceSaveToCloud(download::DownloadDangerType danger_type) {
 std::string GetMimeType(const base::FilePath& path) {
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
+    // Here we should determine the MIME type from the display name of the
+    // content URI. GetContentUriMimeType() will return the current MIME type
+    // that is registered with the URI. As a result, calling it will not change
+    // the MIME type if it is incorrect.
+    std::u16string display_name;
+    if (base::MaybeGetFileDisplayName(path, &display_name)) {
+      std::string mime_type;
+      if (net::GetMimeTypeFromFile(
+              base::FilePath::FromUTF16Unsafe(display_name), &mime_type)) {
+        return mime_type;
+      }
+    }
     return base::GetContentUriMimeType(path);
   }
 #endif
