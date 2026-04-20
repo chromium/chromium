@@ -52,3 +52,37 @@ export class OnBeforeSendHeadersParams {
     };
   }
 }
+
+export class OriginCheckParams {
+  constructor(
+      public types: string[],
+      public allowedOrigins: string[],
+  ) {}
+
+  toValue(): Value {
+    return {
+      dictionaryValue: {
+        storage: {
+          resourceTypes: {
+            listValue: {
+              storage: this.types.map((type) => {
+                return {
+                  stringValue: type,
+                };
+              }),
+            },
+          },
+          allowedOrigins: {
+            listValue: {
+              storage: this.allowedOrigins.map((origin) => {
+                return {
+                  stringValue: origin,
+                };
+              }),
+            },
+          },
+        },
+      },
+    };
+  }
+}

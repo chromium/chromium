@@ -9,7 +9,7 @@ import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/valu
 
 import {EventDispatcher} from './event_dispatcher.js';
 import type {EventDict, EventMap} from './event_dispatcher.js';
-import type {OnBeforeSendHeadersParams} from './request_throttlers.js';
+import type {OnBeforeSendHeadersParams, OriginCheckParams} from './request_throttlers.js';
 import {getCss} from './slim_webview.css.js';
 import {getHtml} from './slim_webview.html.js';
 import {BrowserProxyImpl, PermissionResponseAction} from './slim_webview_browser_proxy.js';
@@ -286,7 +286,6 @@ export class SlimWebviewElement extends CrLitElement {
       minheight: {type: Number, reflect: true},
       maxheight: {type: Number, reflect: true},
       partition: {type: String, reflect: true},
-      allowedOrigins: {type: Array},
     };
   }
 
@@ -297,7 +296,6 @@ export class SlimWebviewElement extends CrLitElement {
   accessor minheight: number = 0;
   accessor maxheight: number = 0;
   accessor partition: string = '';
-  accessor allowedOrigins: string[] = [];
 
   private contentWindow_: WindowProxy|null = null;
 
@@ -311,6 +309,7 @@ export class SlimWebviewElement extends CrLitElement {
   private eventDispatcher: EventDispatcher|null = null;
   private onBeforeSendHeadersParamsInternal: OnBeforeSendHeadersParams|null =
       null;
+  private allowedOriginsParamsInternal: OriginCheckParams|null = null;
 
   constructor() {
     super();
@@ -329,6 +328,16 @@ export class SlimWebviewElement extends CrLitElement {
     this.onBeforeSendHeadersParamsInternal = params;
   }
 
+  get allowedOriginsParams(): OriginCheckParams|null {
+    return this.allowedOriginsParamsInternal;
+  }
+
+  set allowedOriginsParams(params: OriginCheckParams) {
+    assert(
+        this.guestInstanceId === null,
+        'Cannot set allowedOriginsParams once the guest is created');
+    this.allowedOriginsParamsInternal = params;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -347,15 +356,6 @@ export class SlimWebviewElement extends CrLitElement {
     if (changedProperties.has('partition')) {
       if (!this.validatePartitionUpdate(changedProperties.get('partition'))) {
         changedProperties.delete('partition');
-      }
-    }
-    if (changedProperties.has('allowedOrigins')) {
-      if (this.guestInstanceId !== null) {
-        this.allowedOrigins =
-            changedProperties.get('allowedOrigins') as string[] || [];
-        console.error(
-            'allowedOrigins can\'t be changed after the guest was created');
-        changedProperties.delete('allowedOrigins');
       }
     }
     return super.shouldUpdate(changedProperties);
@@ -402,16 +402,15 @@ export class SlimWebviewElement extends CrLitElement {
         minheight: {intValue: this.minheight},
         maxheight: {intValue: this.maxheight},
         partition: {stringValue: this.partition},
-        allowedOrigins: {
-          listValue: {
-            storage: this.allowedOrigins.map(o => ({stringValue: o})),
-          },
-        },
       },
     };
     if (this.onBeforeSendHeadersParams !== null) {
       createParams.storage['beforeSendHeaders'] =
           this.onBeforeSendHeadersParams.toValue();
+    }
+    if (this.allowedOriginsParams !== null) {
+      createParams.storage['allowedOrigins'] =
+          this.allowedOriginsParams.toValue();
     }
     const result =
         await BrowserProxyImpl.getInstance().handler.createGuest(createParams);

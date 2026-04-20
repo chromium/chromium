@@ -25,6 +25,7 @@
 
 namespace {
 constexpr char kCrossOrigin[] = "cross.origin";
+constexpr char kSubCrossOrigin[] = "sub.cross.origin";
 }
 
 class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
@@ -53,6 +54,7 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
     // Add a domain name that resolves to the local server. This is used for
     // cross-origin tests.
     host_resolver()->AddRule(kCrossOrigin, "127.0.0.1");
+    host_resolver()->AddRule(kSubCrossOrigin, "127.0.0.1");
   }
 
  protected:

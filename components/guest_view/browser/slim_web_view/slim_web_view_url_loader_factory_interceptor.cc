@@ -119,9 +119,10 @@ class URLLoaderFactoryProxy
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
+    auto type = RequestResourceTypeFromResourceRequest(request);
     if (guest_) {
       const GURL& url = request.url;
-      if (auto result = guest_->IsUrlAllowed(url); !result.has_value()) {
+      if (auto result = guest_->IsUrlAllowed(type, url); !result.has_value()) {
         DVLOG(2) << "Blocked SlimWebView request: " << result.error();
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
             ->OnComplete(
@@ -130,7 +131,6 @@ class URLLoaderFactoryProxy
       }
     }
 
-    auto type = RequestResourceTypeFromResourceRequest(request);
     bool should_add_headers = false;
     if (guest_) {
       const auto& params = guest_->before_send_headers_params();

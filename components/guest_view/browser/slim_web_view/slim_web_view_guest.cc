@@ -19,6 +19,7 @@
 #include "components/guest_view/browser/slim_web_view/grit/slim_web_view_strings.h"
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_constants.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -37,7 +38,6 @@ namespace guest_view {
 namespace {
 
 const char kStoragePartitionId[] = "partition";
-const char kAllowedOrigins[] = "allowedOrigins";
 
 const char kPersistPrefix[] = "persist:";
 
@@ -137,6 +137,55 @@ ParseBeforeSendHeadersParams(const base::DictValue& create_params) {
   return base::ok(std::move(params));
 }
 
+base::expected<std::optional<OriginCheckParams>, std::string>
+ParseOriginCheckParams(const base::DictValue& create_params) {
+  const base::DictValue* allowed_origins_dict =
+      create_params.FindDict("allowedOrigins");
+  if (!allowed_origins_dict) {
+    return base::ok(std::nullopt);
+  }
+  std::optional<OriginCheckParams> params;
+  params.emplace();
+  const auto* resource_types = allowed_origins_dict->FindList("resourceTypes");
+  if (resource_types) {
+    for (const auto& resource_type : *resource_types) {
+      if (!resource_type.is_string()) {
+        return base::unexpected("resourceTypes elements must be strings.");
+      }
+      auto parsed_resource_type =
+          ParseRequestResourceType(resource_type.GetString());
+      if (!parsed_resource_type) {
+        return base::unexpected("Invalid resourceType provided.");
+      }
+      params->resource_types.insert(*parsed_resource_type);
+    }
+  }
+  const auto* allowed_origins =
+      allowed_origins_dict->FindList("allowedOrigins");
+  if (allowed_origins) {
+    for (const auto& allowed_origin : *allowed_origins) {
+      if (!allowed_origin.is_string()) {
+        return base::unexpected("allowedOrigins elements must be strings.");
+      }
+      auto allowed_origin_string = allowed_origin.GetString();
+      allowed_origin_string +=
+          allowed_origin_string.ends_with("/") ? "*" : "/*";
+      auto pattern = url_pattern::SimpleUrlPatternMatcher::Create(
+          allowed_origin_string, nullptr);
+      if (!pattern.has_value()) {
+        return base::unexpected("Invalid url pattern provided: " +
+                                allowed_origin_string);
+      }
+      params->allowed_origin_patterns.push_back(std::move(pattern.value()));
+    }
+  }
+  if (params->IsEmpty()) {
+    // These params have no effect, so we can ignore them.
+    return base::ok(std::nullopt);
+  }
+  return base::ok(std::move(params));
+}
+
 std::string WindowOpenDispositionToString(
     WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
@@ -220,10 +269,11 @@ void SlimWebViewGuest::Navigate(const GURL& url) {
 }
 
 bool SlimWebViewGuest::HasAllowedOrigins() const {
-  return !allowed_origins_.empty();
+  return !!allowed_origins_params_;
 }
 
 base::expected<void, std::string> SlimWebViewGuest::IsUrlAllowed(
+    RequestResourceType resource_type,
     const GURL& url) const {
   if (!url.is_valid()) {
     return base::unexpected("URL is not valid.");
@@ -234,16 +284,20 @@ base::expected<void, std::string> SlimWebViewGuest::IsUrlAllowed(
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return base::unexpected("URL must be https, http, or about:blank.");
   }
-  if (allowed_origins_.empty()) {
+  if (!allowed_origins_params_) {
+    return base::ok();
+  }
+  if (!allowed_origins_params_->resource_types.contains(resource_type)) {
     return base::ok();
   }
   url::Origin candidate_origin = url::Origin::Create(url);
-  for (const auto& origin : allowed_origins_) {
-    if (origin.IsSameOriginWith(candidate_origin)) {
+  for (const auto& pattern : allowed_origins_params_->allowed_origin_patterns) {
+    if (pattern->Match(url)) {
       return base::ok();
     }
   }
-  return base::unexpected("URL origin is not allowed.");
+  return base::unexpected("URL origin is not allowed: " +
+                          candidate_origin.Serialize());
 }
 
 SlimWebViewGuest::SlimWebViewGuest(
@@ -463,22 +517,14 @@ void SlimWebViewGuest::CreateInnerPage(
   }
   before_send_headers_params_ = std::move(parse_result.value());
 
-  // Parse the origin allowlist if provided.
-  if (const base::ListValue* origins =
-          create_params.FindList(kAllowedOrigins)) {
-    for (const auto& origin_value : *origins) {
-      if (!origin_value.is_string()) {
-        RejectGuestCreation(std::move(owned_this), std::move(callback));
-        return;
-      }
-      GURL allowed_origin_url(origin_value.GetString());
-      if (!allowed_origin_url.is_valid()) {
-        RejectGuestCreation(std::move(owned_this), std::move(callback));
-        return;
-      }
-      allowed_origins_.push_back(url::Origin::Create(allowed_origin_url));
-    }
+  auto origin_check_params_result = ParseOriginCheckParams(create_params);
+  if (!origin_check_params_result.has_value()) {
+    DVLOG(2) << "Failed to parse allowedOrigins: "
+             << origin_check_params_result.error();
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
+    return;
   }
+  allowed_origins_params_ = std::move(origin_check_params_result.value());
 
   std::string storage_partition_id;
   bool persist_storage = false;

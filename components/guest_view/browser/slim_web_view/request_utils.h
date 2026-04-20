@@ -8,12 +8,18 @@
 #include <cstdint>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "net/http/http_request_headers.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/origin.h"
 
 namespace network {
 struct ResourceRequest;
+}
+
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
 }
 
 namespace guest_view {
@@ -52,6 +58,23 @@ struct BeforeSendHeadersParams {
 
   bool IsEmpty() const {
     return resource_types.empty() || add_headers.IsEmpty();
+  }
+};
+
+struct OriginCheckParams {
+  OriginCheckParams();
+  ~OriginCheckParams();
+  OriginCheckParams(const OriginCheckParams&) = delete;
+  OriginCheckParams(OriginCheckParams&& other);
+  OriginCheckParams& operator=(const OriginCheckParams&) = delete;
+  OriginCheckParams& operator=(OriginCheckParams&& other);
+
+  absl::flat_hash_set<RequestResourceType> resource_types;
+  std::vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
+      allowed_origin_patterns;
+
+  bool IsEmpty() const {
+    return resource_types.empty() || allowed_origin_patterns.empty();
   }
 };
 

@@ -16,7 +16,6 @@
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_permission_helper.h"
 #include "net/base/net_errors.h"
-#include "url/origin.h"
 
 class GURL;
 
@@ -58,7 +57,9 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   // Returns an error message if the URL is not allowed, based on scheme and
   // allowed origins.
-  base::expected<void, std::string> IsUrlAllowed(const GURL& url) const;
+  base::expected<void, std::string> IsUrlAllowed(
+      RequestResourceType resource_type,
+      const GURL& url) const;
 
  private:
   explicit SlimWebViewGuest(content::RenderFrameHost* owner_render_frame_host);
@@ -124,7 +125,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   SlimWebViewPermissionHelper permission_helper_{this};
 
-  std::vector<url::Origin> allowed_origins_;
+  std::optional<OriginCheckParams> allowed_origins_params_;
 
   base::WeakPtrFactory<SlimWebViewGuest> weak_ptr_factory_{this};
 };

@@ -5,6 +5,7 @@
 #include "components/guest_view/browser/slim_web_view/request_utils.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace guest_view {
@@ -15,6 +16,12 @@ BeforeSendHeadersParams::BeforeSendHeadersParams(
 BeforeSendHeadersParams& BeforeSendHeadersParams::operator=(
     BeforeSendHeadersParams&& other) = default;
 BeforeSendHeadersParams::~BeforeSendHeadersParams() = default;
+
+OriginCheckParams::OriginCheckParams() = default;
+OriginCheckParams::OriginCheckParams(OriginCheckParams&& other) = default;
+OriginCheckParams& OriginCheckParams::operator=(OriginCheckParams&& other) =
+    default;
+OriginCheckParams::~OriginCheckParams() = default;
 
 std::optional<RequestResourceType> ParseRequestResourceType(
     std::string_view text) {

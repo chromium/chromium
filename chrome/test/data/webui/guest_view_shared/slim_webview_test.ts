@@ -4,7 +4,7 @@
 
 import '//glic/shared/guest_view/slim_webview.js';
 
-import {OnBeforeSendHeadersParams} from '//glic/shared/guest_view/request_throttlers.js';
+import {OnBeforeSendHeadersParams, OriginCheckParams} from '//glic/shared/guest_view/request_throttlers.js';
 import {PermissionRequestEvent} from '//glic/shared/guest_view/slim_webview.js';
 import type {LoadAbortEvent, LoadEvent, NewWindowEvent, SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,8 +41,15 @@ function getTestUrl(url: string): string {
   return resolved.href;
 }
 
-function getCrossOriginUrl(url: string): string {
-  const baseUrl = window.crossOriginUrl;
+function getCrossOriginSubDomain(subDomain: string): string {
+  const url = URL.parse(window.crossOriginUrl);
+  assertTrue(url !== null);
+  return `${url.protocol}//${subDomain}.${url.host}`;
+}
+
+function getCrossOriginUrl(url: string, useSubDomain = false): string {
+  const baseUrl =
+      useSubDomain ? getCrossOriginSubDomain('sub') : window.crossOriginUrl;
   assertTrue(baseUrl.length > 0);
   const resolved = URL.parse(url, baseUrl);
   assertTrue(resolved !== null);
@@ -168,7 +175,8 @@ suite('Loading', function() {
     const origin = getOrigin(webviewUrl);
 
     const webview = document.createElement('webview');
-    webview.allowedOrigins = [origin];
+    webview.allowedOriginsParams =
+        new OriginCheckParams(['main_frame'], [origin]);
     document.body.appendChild(webview);
 
     const loadStartPromise = eventToPromise<LoadEvent>('loadstart', webview);
@@ -192,7 +200,8 @@ suite('Loading', function() {
   test('InvalidAllowedOriginPatternFailsCreation', async function() {
     const webview = document.createElement('webview');
     // An invalid pattern that should fail parsing in SimpleUrlPatternMatcher.
-    webview.allowedOrigins = ['invalid pattern'];
+    webview.allowedOriginsParams =
+        new OriginCheckParams(['main_frame'], ['invalid pattern']);
 
     const failurePromise = new Promise<void>((resolve) => {
       window.addEventListener('unhandledrejection', function listener(e) {
@@ -288,7 +297,8 @@ suite('Requests', function() {
     const webview = document.createElement('webview');
     const origin = getOrigin(getTestUrl('/'));
     // Only allow the test origin.
-    webview.allowedOrigins = [origin];
+    webview.allowedOriginsParams =
+        new OriginCheckParams(['main_frame'], [origin]);
     document.body.appendChild(webview);
 
     await navigateAndWaitForContentLoad(
@@ -307,9 +317,13 @@ suite('Requests', function() {
     assertEquals('ERR_BLOCKED_BY_CLIENT', loadAbortEvent.reason);
   });
 
-  test('FetchAllowedCrossOriginSucceeds', async function() {
+  test('FetchAllowedCrossOriginSubDomainSucceeds', async function() {
     const webview = document.createElement('webview');
-    webview.allowedOrigins = [window.testServerUrl, window.crossOriginUrl];
+    const subDomainCrossOriginPattern = getCrossOriginSubDomain('*');
+    console.info('subDomainCrossOriginPattern: ', subDomainCrossOriginPattern);
+    webview.allowedOriginsParams = new OriginCheckParams(
+        ['xmlhttprequest'],
+        [window.testServerUrl, subDomainCrossOriginPattern]);
     document.body.appendChild(webview);
 
     await navigateAndWaitForContentLoad(
@@ -322,14 +336,15 @@ suite('Requests', function() {
       } catch (error: any) {
         return {success: false};
       }
-    }, getCrossOriginUrl('/capture-headers'));
+    }, getCrossOriginUrl('/capture-headers', /*useSubDomain=*/ true));
 
     assertTrue(fetchResult.success);
   });
 
   test('FetchDisallowedOriginFails', async function() {
     const webview = document.createElement('webview');
-    webview.allowedOrigins = [window.testServerUrl];
+    webview.allowedOriginsParams =
+        new OriginCheckParams(['xmlhttprequest'], [window.testServerUrl]);
     document.body.appendChild(webview);
 
     await navigateAndWaitForContentLoad(
