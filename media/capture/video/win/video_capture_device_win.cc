@@ -421,11 +421,14 @@ void VideoCaptureDeviceWin::AllocateAndStart(
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceWin::AllocateAndStart");
+  {
+    base::AutoLock lock(lock_);
+    if (state_ != kIdle) {
+      return;
+    }
 
-  if (state_ != kIdle)
-    return;
-
-  client_ = std::move(client);
+    client_ = std::move(client);
+  }
 
   // Get the camera capability that best match the requested format.
   const CapabilityWin found_capability =
@@ -548,8 +551,12 @@ void VideoCaptureDeviceWin::StopAndDeAllocate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceWin::StopAndDeAllocate");
-  if (state_ != kCapturing)
-    return;
+  {
+    base::AutoLock lock(lock_);
+    if (state_ != kCapturing) {
+      return;
+    }
+  }
 
   HRESULT hr = media_control_->Stop();
   if (FAILED(hr)) {
@@ -571,6 +578,7 @@ void VideoCaptureDeviceWin::StopAndDeAllocate() {
 
 void VideoCaptureDeviceWin::TakePhoto(TakePhotoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  base::AutoLock lock(lock_);
   // DirectShow has other means of capturing still pictures, e.g. connecting a
   // SampleGrabber filter to a PIN_CATEGORY_STILL of |capture_filter_|. This
   // way, however, is not widespread and proves too cumbersome, so we just grab
@@ -877,30 +885,31 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
   if (!camera_rotation_.has_value() || IsAutoRotationEnabled())
     camera_rotation_ = GetCameraRotation(device_descriptor_.facing);
 
-  {
-    base::AutoLock lock(lock_);
-    if (state_ != kCapturing)
-      return;
-
-    if (first_ref_time_.is_null())
-      first_ref_time_ = base::TimeTicks::Now();
-
-    // There is a chance that the platform does not provide us with the
-    // timestamp, in which case, we use reference time to calculate a timestamp.
-    if (timestamp == kNoTimestamp)
-      timestamp = base::TimeTicks::Now() - first_ref_time_;
-
-    // TODO(julien.isorce): retrieve the color space information using the
-    // DirectShow api, AM_MEDIA_TYPE::VIDEOINFOHEADER2::dwControlFlags. If
-    // AMCONTROL_COLORINFO_PRESENT, then reinterpret dwControlFlags as a
-    // DXVA_ExtendedFormat. Then use its fields DXVA_VideoPrimaries,
-    // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
-    // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
-    client_->OnIncomingCapturedData(
-        buffer, length, format, gfx::ColorSpace(), camera_rotation_.value(),
-        flip_y, base::TimeTicks::Now(), timestamp,
-        /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
+  base::AutoLock lock(lock_);
+  if (state_ != kCapturing) {
+    return;
   }
+
+  if (first_ref_time_.is_null()) {
+    first_ref_time_ = base::TimeTicks::Now();
+  }
+
+  // There is a chance that the platform does not provide us with the
+  // timestamp, in which case, we use reference time to calculate a timestamp.
+  if (timestamp == kNoTimestamp) {
+    timestamp = base::TimeTicks::Now() - first_ref_time_;
+  }
+
+  // TODO(julien.isorce): retrieve the color space information using the
+  // DirectShow api, AM_MEDIA_TYPE::VIDEOINFOHEADER2::dwControlFlags. If
+  // AMCONTROL_COLORINFO_PRESENT, then reinterpret dwControlFlags as a
+  // DXVA_ExtendedFormat. Then use its fields DXVA_VideoPrimaries,
+  // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
+  // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
+  client_->OnIncomingCapturedData(
+      buffer, length, format, gfx::ColorSpace(), camera_rotation_.value(),
+      flip_y, base::TimeTicks::Now(), timestamp,
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 
   while (!take_photo_callbacks_.empty()) {
     TakePhotoCallback cb = std::move(take_photo_callbacks_.front());
@@ -914,6 +923,10 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
 }
 
 void VideoCaptureDeviceWin::FrameDropped(VideoCaptureFrameDropReason reason) {
+  base::AutoLock lock(lock_);
+  if (state_ != kCapturing) {
+    return;
+  }
   client_->OnFrameDropped(reason);
 }
 
@@ -959,6 +972,7 @@ void VideoCaptureDeviceWin::SetErrorState(media::VideoCaptureError error,
                                           const std::string& reason,
                                           HRESULT hr) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  base::AutoLock lock(lock_);
   DLOG_IF_FAILED_WITH_HRESULT(reason, hr);
   state_ = kError;
   client_->OnError(error, from_here, reason);
