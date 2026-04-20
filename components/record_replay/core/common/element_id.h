@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/unguessable_token.h"
 #include "components/record_replay/core/common/aliases.h"
 
 namespace record_replay {
@@ -15,21 +16,20 @@ namespace record_replay {
 // Uniquely identifies a DOM element in the browser process.
 class ElementId {
  public:
-  // Note: We use std::unique_ptr<ElementId> in collections to avoid slicing
-  // when using derived classes like ContentElementId.
-  explicit ElementId(DomNodeId dom_node_id);
+  ElementId(base::UnguessableToken token, DomNodeId dom_node_id);
   ElementId(const ElementId&);
   ElementId& operator=(const ElementId&);
-  virtual ~ElementId();
+  ~ElementId();
 
+  const base::UnguessableToken& token() const { return token_; }
   DomNodeId dom_node_id() const { return dom_node_id_; }
 
-  virtual std::string ToString() const;
 
   friend bool operator==(const ElementId& lhs, const ElementId& rhs);
   friend auto operator<=>(const ElementId& lhs, const ElementId& rhs);
 
  private:
+  base::UnguessableToken token_;
   DomNodeId dom_node_id_{};
 };
 

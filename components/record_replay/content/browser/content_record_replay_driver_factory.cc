@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/containers/map_util.h"
-#include "components/record_replay/content/browser/content_element_id.h"
+#include "components/record_replay/content/browser/content_record_replay_driver.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_driver.h"
 #include "components/record_replay/core/common/element_id.h"
@@ -36,9 +36,7 @@ ContentRecordReplayDriver* ContentRecordReplayDriverFactory::GetOrCreateDriver(
 
 RecordReplayDriver* ContentRecordReplayDriverFactory::GetDriver(
     const ElementId& element_id) {
-  const auto& content_element_id =
-      static_cast<const ContentElementId&>(element_id);
-  return GetDriver(content_element_id.frame_token());
+  return GetDriver(element_id.token());
 }
 
 RecordReplayDriver* ContentRecordReplayDriverFactory::GetDriver(

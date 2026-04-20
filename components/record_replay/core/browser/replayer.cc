@@ -182,8 +182,7 @@ void Replayer::GetUniqueMatchingElementsAndDo(
           [](base::WeakPtr<Replayer> self,
              base::OnceCallback<void(RecordReplayDriver&, const ElementId&,
                                      SuccessCallback)> action_cb,
-             SuccessCallback result_cb,
-             std::vector<std::unique_ptr<ElementId>> matches) {
+             SuccessCallback result_cb, std::vector<ElementId> matches) {
             if (!self) {
               std::move(result_cb).Run(false);
               return;
@@ -195,7 +194,7 @@ void Replayer::GetUniqueMatchingElementsAndDo(
               std::move(result_cb).Run(false);
               return;
             }
-            const ElementId& match = *matches.front();
+            const ElementId& match = matches.front();
             RecordReplayDriver* driver =
                 self->owner_->client().GetDriverFactory().GetDriver(match);
             if (!driver) {

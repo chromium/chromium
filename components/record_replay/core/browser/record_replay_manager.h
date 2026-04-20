@@ -82,9 +82,8 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
       base::OnceCallback<void(std::optional<Recording>)> cb);
 
   // Retrieves all elements in all active frames that match `element_selector`.
-  void GetMatchingElements(
-      Selector element_selector,
-      base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb);
+  void GetMatchingElements(Selector element_selector,
+                           base::OnceCallback<void(std::vector<ElementId>)> cb);
 
   // Displays a message to the user, typically via the browser's UI or console.
   void ReportToUser(std::string_view message);

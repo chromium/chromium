@@ -204,8 +204,7 @@ void RecordReplayManager::GetMatchingRecording(
 
         auto invoke_only_with_exact_match = base::BindOnce(
             [](base::OnceCallback<void(std::optional<Recording>)> cb,
-               Recording recording,
-               std::vector<std::unique_ptr<ElementId>> matches) {
+               Recording recording, std::vector<ElementId> matches) {
               if (matches.size() != 1) {
                 std::move(cb).Run(std::nullopt);
                 return;
@@ -251,18 +250,16 @@ void RecordReplayManager::StopReplay() {
 
 void RecordReplayManager::GetMatchingElements(
     Selector element_selector,
-    base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb) {
+    base::OnceCallback<void(std::vector<ElementId>)> cb) {
   std::vector<RecordReplayDriver*> drivers =
       client_->GetDriverFactory().GetActiveDrivers();
 
-  base::RepeatingCallback<void(std::vector<std::unique_ptr<ElementId>>)> bcb =
-      base::BarrierCallback<std::vector<std::unique_ptr<ElementId>>>(
+  base::RepeatingCallback<void(std::vector<ElementId>)> bcb =
+      base::BarrierCallback<std::vector<ElementId>>(
           drivers.size(),
-          base::BindOnce([](std::vector<std::vector<std::unique_ptr<ElementId>>>
-                                elements_vecs) {
-            std::vector<std::unique_ptr<ElementId>> all_elements;
-            for (std::vector<std::unique_ptr<ElementId>>& elements :
-                 elements_vecs) {
+          base::BindOnce([](std::vector<std::vector<ElementId>> elements_vecs) {
+            std::vector<ElementId> all_elements;
+            for (std::vector<ElementId>& elements : elements_vecs) {
               base::Extend(all_elements, std::move(elements));
             }
             return all_elements;

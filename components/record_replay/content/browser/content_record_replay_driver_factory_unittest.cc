@@ -11,12 +11,12 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/record_replay/content/browser/content_element_id.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_driver.h"
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
 #include "components/record_replay/core/common/aliases.h"
+#include "components/record_replay/core/common/element_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
@@ -119,15 +119,15 @@ class RecordReplayDriverFactoryTest
 
 // Tests that a GetOrCreateDriver() creates a driver.
 TEST_F(RecordReplayDriverFactoryTest, CreateAndGetDriver) {
-  EXPECT_EQ(factory().GetDriver(ContentElementId(
-                blink::LocalFrameToken().value(), DomNodeId(0))),
+  EXPECT_EQ(factory().GetDriver(
+                ElementId(blink::LocalFrameToken().value(), DomNodeId(0))),
             nullptr);
   content::RenderFrameHost* child_rfh = CreateChildFrame();
   ASSERT_TRUE(child_rfh);
   RecordReplayDriver* driver = factory().GetOrCreateDriver(child_rfh);
   EXPECT_EQ(factory().GetOrCreateDriver(child_rfh), driver);
-  EXPECT_EQ(factory().GetDriver(ContentElementId(
-                child_rfh->GetFrameToken().value(), DomNodeId(0))),
+  EXPECT_EQ(factory().GetDriver(
+                ElementId(child_rfh->GetFrameToken().value(), DomNodeId(0))),
             driver);
 }
 
@@ -135,8 +135,8 @@ TEST_F(RecordReplayDriverFactoryTest, CreateAndGetDriver) {
 TEST_F(RecordReplayDriverFactoryTest, RenderFrameCreated) {
   content::RenderFrameHost* child_rfh = CreateChildFrame();
   ASSERT_TRUE(child_rfh);
-  EXPECT_NE(factory().GetDriver(ContentElementId(
-                child_rfh->GetFrameToken().value(), DomNodeId(0))),
+  EXPECT_NE(factory().GetDriver(
+                ElementId(child_rfh->GetFrameToken().value(), DomNodeId(0))),
             nullptr);
 }
 
@@ -145,10 +145,10 @@ TEST_F(RecordReplayDriverFactoryTest, RenderFrameDeleted) {
   ASSERT_TRUE(child_rfh);
   blink::LocalFrameToken token = child_rfh->GetFrameToken();
 
-  EXPECT_NE(factory().GetDriver(ContentElementId(token.value(), DomNodeId(0))),
+  EXPECT_NE(factory().GetDriver(ElementId(token.value(), DomNodeId(0))),
             nullptr);
   content::RenderFrameHostTester::For(child_rfh)->Detach();
-  EXPECT_EQ(factory().GetDriver(ContentElementId(token.value(), DomNodeId(0))),
+  EXPECT_EQ(factory().GetDriver(ElementId(token.value(), DomNodeId(0))),
             nullptr);
 }
 

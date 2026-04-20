@@ -37,7 +37,7 @@ class RecordReplayDriver {
                                   base::OnceCallback<void(Selector)> cb) = 0;
   virtual void GetMatchingElements(
       Selector element_selector,
-      base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb) = 0;
+      base::OnceCallback<void(std::vector<ElementId>)> cb) = 0;
   virtual void DoClick(DomNodeId dom_node_id,
                        base::OnceCallback<void(bool)> cb) = 0;
   virtual void DoPaste(DomNodeId dom_node_id,

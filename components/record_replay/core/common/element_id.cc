@@ -9,7 +9,8 @@
 
 namespace record_replay {
 
-ElementId::ElementId(DomNodeId dom_node_id) : dom_node_id_(dom_node_id) {}
+ElementId::ElementId(base::UnguessableToken token, DomNodeId dom_node_id)
+    : token_(std::move(token)), dom_node_id_(dom_node_id) {}
 
 ElementId::ElementId(const ElementId&) = default;
 
@@ -17,17 +18,11 @@ ElementId& ElementId::operator=(const ElementId&) = default;
 
 ElementId::~ElementId() = default;
 
-std::string ElementId::ToString() const {
-  std::ostringstream ss;
-  ss << dom_node_id_;
-  return ss.str();
-}
-
 bool operator==(const ElementId& lhs, const ElementId& rhs) = default;
 auto operator<=>(const ElementId& lhs, const ElementId& rhs) = default;
 
 std::ostream& operator<<(std::ostream& os, const ElementId& element_id) {
-  return os << element_id.ToString();
+  return os << element_id.token() << "_" << element_id.dom_node_id();
 }
 
 }  // namespace record_replay

@@ -5,7 +5,6 @@
 #include "components/record_replay/content/browser/content_record_replay_driver.h"
 
 #include "base/functional/callback.h"
-#include "components/record_replay/content/browser/content_element_id.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
 #include "components/record_replay/core/common/aliases.h"
@@ -63,19 +62,17 @@ void ContentRecordReplayDriver::GetElementSelector(
 
 void ContentRecordReplayDriver::GetMatchingElements(
     Selector element_selector,
-    base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)> cb) {
+    base::OnceCallback<void(std::vector<ElementId>)> cb) {
   GetRecordReplayAgent()->GetMatchingElements(
       std::move(element_selector),
       base::BindOnce(
           [](base::UnguessableToken frame_token,
-             base::OnceCallback<void(std::vector<std::unique_ptr<ElementId>>)>
-                 cb,
+             base::OnceCallback<void(std::vector<ElementId>)> cb,
              const std::vector<DomNodeId>& dom_node_ids) {
-            std::vector<std::unique_ptr<ElementId>> elements;
+            std::vector<ElementId> elements;
             elements.reserve(dom_node_ids.size());
             for (DomNodeId dom_node_id : dom_node_ids) {
-              elements.push_back(
-                  std::make_unique<ContentElementId>(frame_token, dom_node_id));
+              elements.emplace_back(frame_token, dom_node_id);
             }
             std::move(cb).Run(std::move(elements));
           },
@@ -107,8 +104,7 @@ void ContentRecordReplayDriver::SetRecordReplayAgentForTesting(
 
 void ContentRecordReplayDriver::OnClick(DomNodeId dom_node_id,
                                         Selector element_selector) {
-  client_->GetManager().OnClick(*this,
-                                ContentElementId{GetFrameToken(), dom_node_id},
+  client_->GetManager().OnClick(*this, ElementId{GetFrameToken(), dom_node_id},
                                 std::move(element_selector), GetPassKey());
 }
 
@@ -116,7 +112,7 @@ void ContentRecordReplayDriver::OnSelectChanged(DomNodeId dom_node_id,
                                                 Selector element_selector,
                                                 FieldValue value) {
   client_->GetManager().OnSelectChanged(
-      *this, ContentElementId{GetFrameToken(), dom_node_id},
+      *this, ElementId{GetFrameToken(), dom_node_id},
       std::move(element_selector), std::move(value), GetPassKey());
 }
 
@@ -124,7 +120,7 @@ void ContentRecordReplayDriver::OnTextChange(DomNodeId dom_node_id,
                                              Selector element_selector,
                                              FieldValue text) {
   client_->GetManager().OnTextChange(
-      *this, ContentElementId{GetFrameToken(), dom_node_id},
+      *this, ElementId{GetFrameToken(), dom_node_id},
       std::move(element_selector), std::move(text), GetPassKey());
 }
 
