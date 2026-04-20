@@ -198,7 +198,9 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnOutputMuteChanged) {
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(AudioApiTest, OnInputMuteChanged) {
+// TODO(crbug.com/504560326): Flaky on ASAN and debug builds. Re-enable this
+// test.
+IN_PROC_BROWSER_TEST_F(AudioApiTest, DISABLED_OnInputMuteChanged) {
   AudioNodeList audio_nodes = {CreateAudioNode(kJabraMic1, 2),
                                CreateAudioNode(kUSBCameraMic, 2)};
   ChangeAudioNodes(audio_nodes);
