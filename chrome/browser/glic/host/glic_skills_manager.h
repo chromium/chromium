@@ -47,6 +47,9 @@ class GlicSkillsManager {
   // Shows the Manage Skills UI.
   virtual void ShowManageSkillsUi() = 0;
 
+  // Shows the Browse Skills UI.
+  virtual void ShowBrowseSkillsUi() = 0;
+
   // Notify that a glic panel associated with the skill manager is being opened.
   virtual void NotifyPanelOpenedOrActivated() = 0;
 };

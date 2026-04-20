@@ -862,6 +862,16 @@ class NewGlicApiTestWithSkills : public NewGlicApiTest {
 
   skills::SkillsService* SkillsService() { return service_; }
 
+  void WaitForSkillsTab(const std::string& path) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      tabs::TabInterface* tab =
+          InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+      return tab && base::StartsWith(
+                        tab->GetContents()->GetLastCommittedURL().spec(),
+                        GURL(chrome::kChromeUISkillsURL).Resolve(path).spec());
+    }));
+  }
+
  private:
   raw_ptr<skills::SkillsService> service_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -912,12 +922,12 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testShowManageSkillsUi) {
   ExecuteJsTest();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-    return tab &&
-           base::StartsWith(tab->GetContents()->GetLastCommittedURL().spec(),
-                            chrome::kChromeUISkillsURL);
-  }));
+  WaitForSkillsTab(chrome::kChromeUISkillsYourSkillsPath);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testShowBrowseSkillsUi) {
+  ExecuteJsTest();
+  WaitForSkillsTab(chrome::kChromeUISkillsBrowsePath);
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,

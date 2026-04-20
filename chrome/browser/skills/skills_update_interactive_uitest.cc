@@ -25,6 +25,19 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, ShowManageSkillsUi) {
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, ShowBrowseSkillsUi) {
+  const DeepQuery kBrowseSkillsBtn{{"#browseSkillsBtn"}};
+  RunTestSequence(
+      InstrumentTab(kFirstTabId), OpenGlicAcceptFreAndInstrument(),
+      ClickOnGlicClientElement(kBrowseSkillsBtn),
+      WaitForTabOpenedTo(1, GURL("chrome://skills/browse")), ActivateTabAt(0),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      // Click the browse skills button again and verify that it activates the
+      // existing tab on chrome://skills/browse without opening a new tab.
+      ClickOnGlicClientElement(kBrowseSkillsBtn), WaitForActiveTabChange(1));
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
+}
+
 IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, UpdateUserSkill) {
   // Used to initially create the skill and verify the dialog
   // contents when update is triggered.

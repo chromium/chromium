@@ -1128,6 +1128,9 @@ interface WebClientHandler {
   // Requests that the browser show skill management UI.
   ShowManageSkillsUi();
 
+  // Requests that the browser show skill browsing UI.
+  ShowBrowseSkillsUi();
+
   // Gets a skill by its id. Returns null if the skill does not exist.
   GetSkill(string id) => (Skill? skill);
 

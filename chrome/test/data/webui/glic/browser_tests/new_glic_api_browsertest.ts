@@ -570,6 +570,12 @@ class SkillsApiTests extends ApiTests {
     this.host.showManageSkillsUi();
   }
 
+  async testShowBrowseSkillsUi() {
+    assertDefined(this.host.showBrowseSkillsUi);
+    this.host.showBrowseSkillsUi();
+  }
+
+
   async testDisplaySkillInDialogSuccess() {
     assertDefined(this.host.createSkill);
     const request = {

@@ -895,6 +895,10 @@ export declare interface GlicBrowserHost {
    */
   showManageSkillsUi?(): void;
 
+  /**
+   * Requests that the browser open skill browsing UI.
+   */
+  showBrowseSkillsUi?(): void;
 
   /**
    * Logs metrics for UI interactions and state transitions specific to the

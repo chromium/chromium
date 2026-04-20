@@ -721,6 +721,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.createSkill = undefined;
       this.updateSkill = undefined;
       this.showManageSkillsUi = undefined;
+      this.showBrowseSkillsUi = undefined;
       this.getSkill = undefined;
     }
 
@@ -1318,6 +1319,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   showManageSkillsUi?(): void {
     this.sender.requestNoResponse('glicBrowserShowManageSkillsUi', undefined);
+  }
+
+  showBrowseSkillsUi?(): void {
+    this.sender.requestNoResponse('glicBrowserShowBrowseSkillsUi', undefined);
   }
 
   async getSkill?(id: string): Promise<Skill> {
