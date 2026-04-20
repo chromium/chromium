@@ -1159,3 +1159,30 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !view->is_expanded_on_hover(); }));
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       LogExpandOnHoverShowDurationMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Set up collapsed vertical tab strip with expand on hover enabled.
+  VerticalTabStripRegionView* view = region_view();
+  state_controller()->SetExpandOnHoverEnabled(true);
+  state_controller()->RequestCollapse(true);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+
+  // Request focus so that the tab strip initiates expand on hover.
+  view->RequestFocus();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return view->is_expanded_on_hover(); }));
+
+  // Force collapse of the the tab strip.
+  auto force_collapse_lock =
+      view->GetExpandOnHoverLock(ExpandOnHoverLockType::kForceCollapse);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !view->is_expanded_on_hover(); }));
+
+  histogram_tester.ExpectTotalCount(
+      "Tabs.VerticalTabs.ExpandOnHover.ShowDuration", 1);
+}
