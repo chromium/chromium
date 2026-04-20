@@ -199,7 +199,6 @@ per-file third_party/highway/src=*
 per-file third_party/hunspell_dictionaries=*
 per-file third_party/icu=*
 per-file third_party/ink/src=*
-per-file third_party/ink_stroke_modeler/src=*
 per-file third_party/instrumented_libs=*
 per-file third_party/javalang/src=*
 per-file third_party/jetstream/main=*
