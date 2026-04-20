@@ -329,7 +329,14 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowClosed) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowOpen) {
+// TODO(crbug.com/503936424): Re-enable the test.
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_testInitializeFailsWindowOpen \
+  DISABLED_testInitializeFailsWindowOpen
+#else
+#define MAYBE_testInitializeFailsWindowOpen testInitializeFailsWindowOpen
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInitializeFailsWindowOpen) {
   ToggleGlicForActiveTab();
   ASSERT_OK(WaitForGlicOpen());
 
