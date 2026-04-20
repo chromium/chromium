@@ -121,7 +121,6 @@ component("google_apis") {
     "gaia/gaia_auth_util.h",
     "gaia/gaia_config.cc",
     "gaia/gaia_config.h",
-    "gaia/gaia_constants.cc",
     "gaia/gaia_constants.h",
     "gaia/gaia_features.cc",
     "gaia/gaia_features.h",
