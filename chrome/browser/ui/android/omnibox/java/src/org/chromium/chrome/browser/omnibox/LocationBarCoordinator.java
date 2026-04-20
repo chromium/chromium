@@ -603,6 +603,11 @@ public class LocationBarCoordinator
     }
 
     @Override
+    public void setScrimHandler(LocationBarFocusScrimHandler scrimHandler) {
+        mLocationBarMediator.setScrimHandler(scrimHandler);
+    }
+
+    @Override
     public void requestUrlBarAccessibilityFocus() {
         mUrlCoordinator.requestAccessibilityFocus();
     }

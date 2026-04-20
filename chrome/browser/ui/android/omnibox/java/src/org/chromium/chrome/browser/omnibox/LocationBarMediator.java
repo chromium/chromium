@@ -224,6 +224,7 @@ class LocationBarMediator
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
     private final @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
+    private @Nullable LocationBarFocusScrimHandler mScrimHandler;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedWithoutAnimations;
@@ -397,6 +398,11 @@ class LocationBarMediator
         updateSearchEngineStatusIconShownState();
     }
 
+    /*package */ void setScrimHandler(LocationBarFocusScrimHandler scrimHandler) {
+        mScrimHandler = scrimHandler;
+        addUrlFocusChangeListener(mScrimHandler);
+    }
+
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
         mCallbackController.destroy();
@@ -415,6 +421,10 @@ class LocationBarMediator
         mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
+        if (mScrimHandler != null) {
+            removeUrlFocusChangeListener(mScrimHandler);
+            mScrimHandler = null;
+        }
         mUrlFocusChangeListeners.clear();
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(null);

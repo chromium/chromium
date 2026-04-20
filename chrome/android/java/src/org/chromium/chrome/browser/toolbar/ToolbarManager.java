@@ -1352,8 +1352,8 @@ public class ToolbarManager
             mOmniboxStubSupplier.set(omnibox);
             omnibox.addUrlFocusChangeListener(this);
             omnibox.addUrlFocusChangeListener(mStatusBarColorController);
-            omnibox.addUrlFocusChangeListener(mLocationBarFocusHandler);
         }
+        mLocationBar.setScrimHandler(mLocationBarFocusHandler);
         mLocationBar.addOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         mProgressBarCoordinator =
@@ -2717,7 +2717,6 @@ public class ToolbarManager
         if (omnibox != null) {
             omnibox.removeUrlFocusChangeListener(this);
             omnibox.removeUrlFocusChangeListener(mStatusBarColorController);
-            omnibox.removeUrlFocusChangeListener(mLocationBarFocusHandler);
         }
         mLocationBar.removeOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
