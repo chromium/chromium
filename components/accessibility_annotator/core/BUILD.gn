@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core/annotation_reducer:unit_tests",
+    "//components/accessibility_annotator/core/content_annotator:unit_tests",
     "//components/accessibility_annotator/core/data_models:unit_tests",
     "//components/accessibility_annotator/core/storage:test_support",
     "//components/accessibility_annotator/core/storage:unit_tests",

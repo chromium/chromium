@@ -19,8 +19,8 @@
 #endif
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
-#include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"

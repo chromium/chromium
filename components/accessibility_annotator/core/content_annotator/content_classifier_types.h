@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_TYPES_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_TYPES_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_TYPES_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_TYPES_H_
 
 #include <optional>
 #include <string>
@@ -57,7 +57,7 @@ struct ContentClassificationInput {
       annotated_page_content;
   std::optional<passage_embeddings::Embedding> page_title_embedding;
   std::optional<history::VisitID> visit_id;
-  // LINT.ThenChange(//components/accessibility_annotator/content/content_annotator/content_classifier_types.cc:ContentClassificationInputIsComplete)
+  // LINT.ThenChange(//components/accessibility_annotator/core/content_annotator/content_classifier_types.cc:ContentClassificationInputIsComplete)
 
   // Returns true if all fields are populated.
   bool IsComplete() const;
@@ -98,4 +98,4 @@ struct ContentClassificationResult {
 
 }  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_TYPES_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_TYPES_H_

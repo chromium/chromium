@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/accessibility_annotator/content/content_annotator",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core/content_annotator",
     "//components/accessibility_annotator/core/storage",
     "//components/accessibility_annotator/core/storage:test_support",
     "//components/history/core/browser",

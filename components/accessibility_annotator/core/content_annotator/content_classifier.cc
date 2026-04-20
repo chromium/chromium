@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 
 #include <string_view>
 
@@ -11,12 +11,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_semantic_match_classifier.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_url_matcher_classifier.h"
-#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_classifier_rules_parser.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_rule_based_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_semantic_match_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_url_matcher_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
 #include "components/variations/hashing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

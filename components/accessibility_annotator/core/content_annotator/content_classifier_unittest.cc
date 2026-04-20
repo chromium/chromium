@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"

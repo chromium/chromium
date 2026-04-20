@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
 
 #include <memory>
 #include <optional>
@@ -16,10 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_semantic_match_classifier.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_url_matcher_classifier.h"
-#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_rule_based_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_semantic_match_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_url_matcher_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
 #include "url/gurl.h"
 
 namespace ukm::builders {
@@ -145,4 +145,4 @@ class ContentClassifier {
 
 }  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CONTENT_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_CONTENT_ANNOTATOR_CONTENT_CLASSIFIER_H_

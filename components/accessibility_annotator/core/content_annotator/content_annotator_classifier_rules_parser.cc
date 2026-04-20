@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_classifier_rules_parser.h"
 
 #include <optional>
 #include <utility>

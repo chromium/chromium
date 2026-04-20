@@ -1,0 +1,59 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_annotator") {
+  sources = [
+    "content_annotator_classifier_rules_parser.cc",
+    "content_annotator_classifier_rules_parser.h",
+    "content_annotator_rule_based_classifier.cc",
+    "content_annotator_rule_based_classifier.h",
+    "content_annotator_semantic_match_classifier.cc",
+    "content_annotator_semantic_match_classifier.h",
+    "content_annotator_url_matcher_classifier.cc",
+    "content_annotator_url_matcher_classifier.h",
+    "content_classifier.cc",
+    "content_classifier.h",
+    "content_classifier_types.cc",
+    "content_classifier_types.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/accessibility_annotator/core:features",
+    "//components/history/core/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/passage_embeddings/core:passage_embeddings_types",
+    "//components/url_matcher",
+    "//components/variations",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/re2",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "content_annotator_classifier_rules_parser_unittest.cc",
+    "content_annotator_rule_based_classifier_unittest.cc",
+    "content_annotator_semantic_match_classifier_unittest.cc",
+    "content_annotator_url_matcher_classifier_unittest.cc",
+    "content_classifier_unittest.cc",
+  ]
+
+  deps = [
+    ":content_annotator",
+    "//base/test:test_support",
+    "//components/accessibility_annotator/core:features",
+    "//components/passage_embeddings/core:passage_embeddings_types",
+    "//components/passage_embeddings/core:test_support",
+    "//components/ukm:test_support",
+    "//components/variations",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

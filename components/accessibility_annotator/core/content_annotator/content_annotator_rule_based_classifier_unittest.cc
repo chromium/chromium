@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_rule_based_classifier.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

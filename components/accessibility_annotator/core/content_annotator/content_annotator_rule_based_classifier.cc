@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_rule_based_classifier.h"
 
 #include <utility>
 
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_classifier_rules_parser.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace accessibility_annotator {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_semantic_match_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_semantic_match_classifier.h"
 
 #include <limits>
 #include <memory>
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_classifier_rules_parser.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace accessibility_annotator {

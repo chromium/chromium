@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
+#include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"

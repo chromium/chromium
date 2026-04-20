@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_url_matcher_classifier.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_url_matcher_classifier.h"
 
 #include <string>
 #include <utility>
@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotator_classifier_rules_parser.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
