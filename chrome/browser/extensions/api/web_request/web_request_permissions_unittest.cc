@@ -127,7 +127,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalWebUINTPRequests) {
       };
 
   url::Origin ntp_origin =
-      url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL));
+      url::Origin::Create(chrome::ChromeUINewTabPageURLAsGURL());
 
   // Sub-resource browser initiated requests are hidden from extensions.
   WebRequestInfoInitParams info_params_1 = create_request_params(
