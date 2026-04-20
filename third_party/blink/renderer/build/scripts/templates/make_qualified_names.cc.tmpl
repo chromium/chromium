@@ -74,16 +74,16 @@ void Init() {
   size_t tag_i = 0;
   {% endif %}
   size_t attr_i = 0;
-  for (size_t i = 0; i < std::size(kNames); ++i) {
-    StringImpl* impl = StringImpl::CreateStatic(base::span(kNames[i].name, kNames[i].length));
+  for (const NameEntry& name : kNames) {
+    StringImpl* impl = StringImpl::CreateStatic(base::span(name.name, name.length));
     {% if tags %}
-    if (kNames[i].is_tag) {
+    if (name.is_tag) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;
       QualifiedName::CreateStatic(address, impl, {{namespace_prefix}}NamespaceURI);
       ++tag_i;
     }
 
-    if (!kNames[i].is_attr)
+    if (!name.is_attr)
       continue;
     {% endif %}
     void* address = reinterpret_cast<QualifiedName*>(&attr_storage) + attr_i;
