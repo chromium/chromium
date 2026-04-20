@@ -60,6 +60,13 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
     return std::make_unique<FrameStats>(*this);
   }
 
+  void ResetTimestamps(base::TimeTicks now) override {
+    WebrtcVideoEncoder::FrameStats::ResetTimestamps(now);
+    // Clear the input event timestamps, as there's no input event associated
+    // with the frame stats after a reset.
+    input_event_timestamps = InputEventTimestamps();
+  }
+
   // The input-event fields are only valid for the frame after an input event.
   InputEventTimestamps input_event_timestamps;
 

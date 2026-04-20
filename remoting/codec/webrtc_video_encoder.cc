@@ -19,6 +19,12 @@ WebrtcVideoEncoder::FrameStats::Clone() const {
   return std::make_unique<FrameStats>(*this);
 }
 
+void WebrtcVideoEncoder::FrameStats::ResetTimestamps(base::TimeTicks now) {
+  capture_started_time = now;
+  capture_ended_time = now;
+  encode_started_time = now;
+}
+
 WebrtcVideoEncoder::EncodedFrame::EncodedFrame() = default;
 WebrtcVideoEncoder::EncodedFrame::~EncodedFrame() = default;
 WebrtcVideoEncoder::EncodedFrame::EncodedFrame(

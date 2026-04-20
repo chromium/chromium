@@ -64,6 +64,10 @@ class WebrtcVideoEncoder {
     // Creates a copy of the frame stats.
     virtual std::unique_ptr<FrameStats> Clone() const;
 
+    // Resets any timestamps. This is called for top-up frames which are not
+    // caused by input.
+    virtual void ResetTimestamps(base::TimeTicks now);
+
     // TODO(crbug.com/40175068): Consolidate all the per-frame statistics
     // into a single struct in remoting/protocol.
     base::TimeTicks capture_started_time;

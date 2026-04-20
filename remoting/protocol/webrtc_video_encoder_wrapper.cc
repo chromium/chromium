@@ -652,9 +652,7 @@ void WebrtcVideoEncoderWrapper::ExtrapolateFrame() {
     return;
   }
   latest_frame_encode_start_time_ = base::TimeTicks::Now();
-  frame_stats_->capture_started_time = latest_frame_encode_start_time_;
-  frame_stats_->capture_ended_time = latest_frame_encode_start_time_;
-  frame_stats_->encode_started_time = latest_frame_encode_start_time_;
+  frame_stats_->ResetTimestamps(latest_frame_encode_start_time_);
   // WebRTC requires the RTP timestamp be increasing, so we just add 1.
   rtp_timestamp_++;
   EncodeDesktopFrame(last_capturer_fed_frame_->Share());
