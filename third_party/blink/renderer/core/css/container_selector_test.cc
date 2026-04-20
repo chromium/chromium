@@ -17,7 +17,7 @@ namespace blink {
 
 class ContainerSelectorTest : public testing::Test {
  protected:
-  ContainerQuery* ParseContainerQuery(Document& document, String query) {
+  const ContainerQuery* ParseContainerQuery(Document& document, String query) {
     String rule = "@container " + query + " {}";
     auto* style_rule = DynamicTo<StyleRuleContainer>(
         css_test_helpers::ParseRule(document, rule));
@@ -35,8 +35,9 @@ TEST_F(ContainerSelectorTest, ContainerSelectorHashing) {
       Document::CreateForTest(execution_context.GetExecutionContext());
 
   ContainerSelectorCache cache;
-  ContainerQuery* query1 = ParseContainerQuery(*document, "style(--foo: bar)");
-  ContainerQuery* query2 = ParseContainerQuery(
+  const ContainerQuery* query1 =
+      ParseContainerQuery(*document, "style(--foo: bar)");
+  const ContainerQuery* query2 = ParseContainerQuery(
       *document, "style(--foo: bar) and scroll-state(snapped)");
   ASSERT_TRUE(query1);
   ASSERT_TRUE(query2);
@@ -52,7 +53,7 @@ TEST_F(ContainerSelectorTest, NameOnlyContainerSelector) {
       Document::CreateForTest(execution_context.GetExecutionContext());
 
   ContainerSelectorCache cache;
-  ContainerQuery* query = ParseContainerQuery(*document, "--foo");
+  const ContainerQuery* query = ParseContainerQuery(*document, "--foo");
   ASSERT_TRUE(query);
   EXPECT_TRUE(query->Selector().SelectsNamedContainers());
   EXPECT_FALSE(query->Selector().SelectsStyleContainers());

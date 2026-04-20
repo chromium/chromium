@@ -58,7 +58,7 @@ class ContainerQueryTest : public PageTestBase {
     return rule;
   }
 
-  ContainerQuery* ParseContainerQuery(
+  const ContainerQuery* ParseContainerQuery(
       String query,
       UnknownHandling unknown_handling = UnknownHandling::kError) {
     String rule = "@container " + query + " {}";
@@ -71,7 +71,7 @@ class ContainerQueryTest : public PageTestBase {
 
   std::optional<ContainerSelector::FeatureFlags> FeatureFlagsFrom(
       String query_string) {
-    ContainerQuery* query =
+    const ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
     if (!query) {
       return std::nullopt;
@@ -80,7 +80,7 @@ class ContainerQueryTest : public PageTestBase {
   }
 
   ContainerSelector ContainerSelectorFrom(String query_string) {
-    ContainerQuery* query =
+    const ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
     if (!query) {
       return ContainerSelector();
@@ -95,7 +95,8 @@ class ContainerQueryTest : public PageTestBase {
     return container->GetContainerQuery().ToString();
   }
 
-  const ConditionalExpNode& GetInnerQuery(ContainerQuery& container_query) {
+  const ConditionalExpNode& GetInnerQuery(
+      const ContainerQuery& container_query) {
     return *container_query.Query();
   }
 

@@ -1064,7 +1064,7 @@ void StyleRuleSupports::SetConditionText(
   }
 }
 
-StyleRuleContainer::StyleRuleContainer(ContainerQuery& container_query,
+StyleRuleContainer::StyleRuleContainer(const ContainerQuery& container_query,
                                        HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleCondition(kContainer,
                          container_query.ToString(),

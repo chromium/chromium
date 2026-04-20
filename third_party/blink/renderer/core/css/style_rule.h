@@ -547,12 +547,13 @@ class StyleRuleSupports : public StyleRuleCondition {
 
 class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
  public:
-  StyleRuleContainer(ContainerQuery&, HeapVector<Member<StyleRuleBase>> rules);
+  StyleRuleContainer(const ContainerQuery&,
+                     HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleContainer(const StyleRuleContainer&) = delete;
   StyleRuleContainer(const StyleRuleContainer&,
                      HeapVector<Member<StyleRuleBase>> rules);
 
-  ContainerQuery& GetContainerQuery() const { return *container_query_; }
+  const ContainerQuery& GetContainerQuery() const { return *container_query_; }
 
   void SetConditionText(const ExecutionContext*,
                         StyleSheetContents* parent_contents,
@@ -561,7 +562,7 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<ContainerQuery> container_query_;
+  Member<const ContainerQuery> container_query_;
 };
 
 class StyleRuleNavigation : public StyleRuleCondition {
