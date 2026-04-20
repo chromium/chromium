@@ -8433,8 +8433,12 @@ void NavigationRequest::Resume(NavigationThrottle* resuming_throttle) {
 void NavigationRequest::CancelDeferredNavigation(
     NavigationThrottle* cancelling_throttle,
     NavigationThrottle::ThrottleCheckResult result) {
-  CHECK(cancelling_throttle);
-  CHECK(throttle_registry_->GetDeferringThrottles().contains(
+  // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(cancelling_throttle);
+  // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(throttle_registry_->GetDeferringThrottles().contains(
       cancelling_throttle));
   CancelDeferredNavigationInternal(result);
 }
@@ -9930,7 +9934,9 @@ NavigationRequest::GetAssociatedRFHType() const {
   // we only update the value for non-pending commit navigations (i.e. the
   // NavigationRequest owned by the FrameTreeNode). See the comments in
   // `RenderFrameHostManager::CommitPendingIfNecessary()` for more details.
-  CHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST)
+  // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST)
       << "Use GetRenderFrameHost() instead when the final RenderFrameHost "
          "for the navigation has been picked";
   return associated_rfh_type_;
