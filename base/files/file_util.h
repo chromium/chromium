@@ -98,8 +98,8 @@ BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 // Returns true if successful, false otherwise. It is considered successful to
 // attempt to delete a file that does not exist.
 //
-// In POSIX environment and if |path| is a symbolic link, this deletes only
-// the symlink. (even if the symlink points to a non-existent file)
+// It does not traverse symlinks or Windows reparse points (e.g., directory
+// junctions), but instead deletes the link or reparse point itself.
 BASE_EXPORT bool DeleteFile(const FilePath& path);
 
 // Deletes the given path, whether it's a file or a directory.
@@ -108,8 +108,8 @@ BASE_EXPORT bool DeleteFile(const FilePath& path);
 // Returns true if successful, false otherwise. It is considered successful
 // to attempt to delete a file that does not exist.
 //
-// In POSIX environment and if |path| is a symbolic link, this deletes only
-// the symlink. (even if the symlink points to a non-existent file)
+// It does not traverse symlinks or Windows reparse points (e.g., directory
+// junctions), but instead deletes the link or reparse point itself.
 //
 // WARNING: USING THIS EQUIVALENT TO "rm -rf", SO USE WITH CAUTION.
 BASE_EXPORT bool DeletePathRecursively(const FilePath& path);
