@@ -26,10 +26,6 @@ virtual/indexeddb_sqlite/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.
-external/wpt/accname/name/comp_host_language_label.html
-external/wpt/accname/name/comp_label.html
-external/wpt/accname/name/comp_name_from_content.html
-external/wpt/accname/name/comp_text_node.html
 external/wpt/background-fetch/abort.https.window.html
 external/wpt/background-fetch/fetch.https.window.html
 external/wpt/background-fetch/fetch-uploads.https.window.html

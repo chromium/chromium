@@ -4201,7 +4201,6 @@ crbug.com/332370892 virtual/produce-compile-hints/external/wpt/fetch/api/request
 crbug.com/332370892 virtual/produce-compile-hints/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
 crbug.com/332372552 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-fetch.tentative.https.sub.html [ Failure Pass Timeout ]
 crbug.com/332345856 [ Win11-arm64 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Timeout ]
-crbug.com/331851044 [ Win11-arm64 ] external/wpt/accname/name/comp_label.html [ Failure Timeout ]
 crbug.com/331835714 [ Win11-arm64 ] external/wpt/webaudio/the-audio-api/the-audionode-interface/audionode.html [ Failure Timeout ]
 crbug.com/331711029 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-success.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-004.html [ Failure ]
@@ -9401,7 +9400,10 @@ crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
 
 # Gardener 2025-09-05
 crbug.com/443161677 [ Win11-arm64 ] http/tests/inspector-protocol/network/get-durable-response-gzip-body.js [ Failure Timeout ]
-crbug.com/443203688 external/wpt/accname/name/comp_name_from_content.html [ Failure Pass ]
+crbug.com/443203688 external/wpt/accname/name/comp_host_language_label.html [ Failure Pass Timeout ]
+crbug.com/443203688 external/wpt/accname/name/comp_label.html [ Failure Timeout ]
+crbug.com/443203688 external/wpt/accname/name/comp_name_from_content.html [ Failure Pass Timeout ]
+crbug.com/443203688 external/wpt/accname/name/comp_text_node.html [ Failure Pass ]
 crbug.com/443229243 [ Release ] inspector-protocol/page/reload-with-script.js [ Failure Pass ]
 crbug.com/443229243 [ Debug ] inspector-protocol/page/reload-with-script.js [ Failure Pass Timeout ]
 
