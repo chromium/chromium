@@ -170,8 +170,7 @@ public class TabPersistentStoreFactory {
                             ModelTrackingOrchestrator::new,
                             ActiveTabCache::new,
                             /* isAuthoritative= */ false);
-            buildShadowTabStateStoreCatchupTracker(
-                    authoritativeStore, tabStateStore, migrationManager);
+            buildShadowTabStateStoreCatchupTracker(authoritativeStore, tabStateStore);
             shadowTabPersistentStore = tabStateStore;
         } else if (shadowStoreType == StoreType.LEGACY) {
             shadowTabPersistentStore =
@@ -236,15 +235,12 @@ public class TabPersistentStoreFactory {
     }
 
     private static void buildShadowTabStateStoreCatchupTracker(
-            TabPersistentStore authoritativeStore,
-            TabStateStore shadowStore,
-            PersistentStoreMigrationManager manager) {
+            TabPersistentStore authoritativeStore, TabStateStore shadowStore) {
         authoritativeStore.addObserver(
                 new TabPersistentStoreObserver() {
                     @Override
                     public void onStateLoaded() {
                         authoritativeStore.removeObserver(this);
-                        manager.onShadowStoreCaughtUp();
                         shadowStore.onAuthoritativeStateLoaded();
                     }
                 });

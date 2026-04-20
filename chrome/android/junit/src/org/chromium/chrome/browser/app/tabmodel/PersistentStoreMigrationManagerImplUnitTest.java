@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.app.tabmodel.PersistentStoreMigrationManagerImpl.MANAGER_VERSION;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_SHADOW_WRITTEN_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_STORE_MANAGER_VERSION;
@@ -672,7 +673,7 @@ public class PersistentStoreMigrationManagerImplUnitTest {
                 ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
         assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
         assertEquals(
-                1,
+                MANAGER_VERSION,
                 ChromeSharedPreferences.getInstance()
                         .readInt(TAB_PERSISTENCE_STORE_MANAGER_VERSION, 0));
     }
@@ -680,7 +681,7 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     @Test
     public void testVersionNotUpgradedDoesNotClearPrefs() {
         ChromeSharedPreferences.getInstance()
-                .writeIntSync(TAB_PERSISTENCE_STORE_MANAGER_VERSION, 1);
+                .writeIntSync(TAB_PERSISTENCE_STORE_MANAGER_VERSION, MANAGER_VERSION);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
         ChromeSharedPreferences.getInstance()
