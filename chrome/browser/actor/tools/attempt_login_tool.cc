@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/actor_features.h"
 #include "components/favicon/core/favicon_service.h"
@@ -59,6 +60,10 @@ mojom::ActionResultCode LoginErrorToActorError(
     case actor_login::ActorLoginError::kFeatureDisabled:
       return mojom::ActionResultCode::kLoginFeatureDisabled;
   }
+}
+
+std::string MaybeTargetDebugString(const std::optional<PageTarget>& target) {
+  return target ? DebugString(*target) : "null";
 }
 
 }  // namespace
@@ -180,6 +185,14 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
   main_rfh_token_ = main_rfh->GetGlobalFrameToken();
 
   invoke_callback_ = std::move(callback);
+
+  journal().Log(
+      JournalURL(), task_id(), "LoginTargets",
+      JournalDetailsBuilder()
+          .Add("password_button", MaybeTargetDebugString(password_button_))
+          .Add("sign_in_with_google_button",
+               MaybeTargetDebugString(sign_in_with_google_button_))
+          .Build());
 
   // First check if there is a user selected credential for the current request
   // origin. If so, use it immediately.
