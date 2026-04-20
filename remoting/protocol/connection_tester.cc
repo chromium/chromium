@@ -13,7 +13,6 @@
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_serialization.h"
-#include "remoting/protocol/p2p_datagram_socket.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
