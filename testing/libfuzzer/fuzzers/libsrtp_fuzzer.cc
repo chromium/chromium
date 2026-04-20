@@ -39,8 +39,9 @@ enum CryptoPolicy {
 static size_t GetKeyLength(LibSrtpFuzzer::CryptoPolicy crypto_policy) {
   switch (crypto_policy) {
     case LibSrtpFuzzer::NUMBER_OF_POLICIES:
-    case LibSrtpFuzzer::NONE:
       return SRTP_AES_ICM_128_KEY_LEN_WSALT;
+    case LibSrtpFuzzer::NONE:
+      return 0;  // Null-auth.
     case LibSrtpFuzzer::LIKE_WEBRTC:
     case LibSrtpFuzzer::LIKE_WEBRTC_SHORT_AUTH:
     case LibSrtpFuzzer::LIKE_WEBRTC_WITHOUT_AUTH:
