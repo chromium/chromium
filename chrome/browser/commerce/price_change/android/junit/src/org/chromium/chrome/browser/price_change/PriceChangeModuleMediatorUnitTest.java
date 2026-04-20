@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_change;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -206,6 +207,7 @@ public class PriceChangeModuleMediatorUnitTest {
                         eq(mProfile),
                         eq(PRODUCT_URL),
                         eq(mFaviconSize),
+                        anyBoolean(),
                         faviconCallbackCaptor.capture());
         faviconCallbackCaptor.getValue().onFaviconAvailable(mFaviconBitmap, new GURL(""));
 
@@ -240,6 +242,7 @@ public class PriceChangeModuleMediatorUnitTest {
                         eq(mProfile),
                         eq(PRODUCT_URL),
                         eq(mFaviconSize),
+                        anyBoolean(),
                         faviconCallbackCaptor.capture());
         faviconCallbackCaptor.getValue().onFaviconAvailable(null, new GURL(""));
 

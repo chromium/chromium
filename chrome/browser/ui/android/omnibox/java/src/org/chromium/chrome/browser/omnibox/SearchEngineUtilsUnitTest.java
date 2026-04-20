@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.clearInvocations;
@@ -108,14 +109,15 @@ public class SearchEngineUtilsUnitTest {
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true)
                 .when(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), any());
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
         LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
 
         lenient()
                 .doReturn(true)
                 .when(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(
+                        any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
 
         // Used when creating bitmaps, needs to be greater than 0.
         doReturn(1).when(mResources).getDimensionPixelSize(anyInt());
@@ -184,7 +186,8 @@ public class SearchEngineUtilsUnitTest {
         reset(mEngineIconObserver);
 
         // SearchEngineUtils retrieves logo when it's first created, and whenever the DSE changes.
-        verify(mFaviconHelper).getLocalFaviconImageForURL(any(), any(), anyInt(), any());
+        verify(mFaviconHelper)
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
         mCallbackCaptor.getValue().onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
 
         histograms.assertExpected();
@@ -412,7 +415,8 @@ public class SearchEngineUtilsUnitTest {
         verify(mEngineIconObserver).onSearchEngineIconChanged(null);
         reset(mEngineIconObserver);
 
-        verify(mFaviconHelper).getLocalFaviconImageForURL(any(), any(), anyInt(), any());
+        verify(mFaviconHelper)
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
         mCallbackCaptor.getValue().onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
 
         verify(mEngineIconObserver).onSearchEngineIconChanged(isNotNull());
@@ -458,7 +462,8 @@ public class SearchEngineUtilsUnitTest {
         // Simulate FaviconFetcher failure on the next TemplateUrl change.
         doReturn(false)
                 .when(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(
+                        any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
         var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         searchEngineUtils.addIconObserver(mEngineIconObserver);
 
@@ -485,7 +490,8 @@ public class SearchEngineUtilsUnitTest {
         reset(mEngineIconObserver);
 
         verify(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(
+                        any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(null, new GURL(LOGO_URL));
 

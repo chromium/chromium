@@ -9856,6 +9856,7 @@ from previous Chrome versions.
   <int value="-1411837515" label="RendererSideContentDecoding:enabled"/>
   <int value="-1411777757" label="WebRtcSendPacketBatch:enabled"/>
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
+  <int value="-1411540386" label="FaviconDisableHostFallback:disabled"/>
   <int value="-1411459387" label="EnterprisePolicyOnSignin:enabled"/>
   <int value="-1411125890" label="AutofillAiServerModel:disabled"/>
   <int value="-1411007611" label="FedCmShowFilteredAccounts:disabled"/>
@@ -15430,6 +15431,7 @@ from previous Chrome versions.
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="442898264"
       label="CrOSLateBootChromeboxUsbPassthroughRestrictions:disabled"/>
+  <int value="443132861" label="FaviconDisableHostFallback:enabled"/>
   <int value="443826886" label="EdgeToEdgeTablet:enabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444461915" label="LogoPolish:enabled"/>

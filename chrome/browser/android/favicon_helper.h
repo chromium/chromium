@@ -31,18 +31,21 @@ class FaviconHelper {
       Profile* profile,
       const GURL& page_url,
       int32_t j_desired_size_in_pixel,
+      bool fallback_to_host,
       const base::android::JavaRef<jobject>& j_favicon_image_callback);
   bool GetForeignFaviconImageForURL(
       JNIEnv* env,
       Profile* profile,
       const GURL& page_url,
       int32_t j_desired_size_in_pixel,
+      bool fallback_to_host,
       const base::android::JavaRef<jobject>& j_favicon_image_callback);
 
   void GetLocalFaviconImageForURLInternal(
       favicon::FaviconService* favicon_service,
       GURL url,
       int desired_size_in_pixel,
+      bool fallback_to_host,
       favicon_base::FaviconRawBitmapCallback callback_runner);
   void OnJobFinished(int job_id);
 
@@ -54,6 +57,7 @@ class FaviconHelper {
   // |j_favicon_image_callback| isn't executed in that case.
   void OnFaviconBitmapResultAvailable(
       const base::android::JavaRef<jobject>& j_favicon_image_callback,
+      bool original_fallback_to_host,
       const favicon_base::FaviconRawBitmapResult& result);
 
   std::unique_ptr<base::CancelableTaskTracker> cancelable_task_tracker_;

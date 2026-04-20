@@ -187,6 +187,7 @@ BASE_DECLARE_FEATURE(kEnableXAxisActivityTransition);
 BASE_DECLARE_FEATURE(kEnforceIncognitoIsolation);
 BASE_DECLARE_FEATURE(kEscCancelDrag);
 BASE_DECLARE_FEATURE(kExperimentsForAgsa);
+BASE_DECLARE_FEATURE(kFaviconDisableHostFallback);
 BASE_DECLARE_FEATURE(kForceTranslucentNotificationTrampoline);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);

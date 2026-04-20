@@ -9,8 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -76,16 +74,17 @@ public class TabGroupListFaviconResolverFactory {
     private static void resolveForeignFavicon(
             Profile profile, GURL url, int faviconSizePx, FaviconImageCallback callback) {
         FaviconHelper faviconHelper = new FaviconHelper();
-        faviconHelper.getForeignFaviconImageForURL(profile, url, faviconSizePx, callback);
+        faviconHelper.getForeignFaviconImageForURL(
+                profile, url, faviconSizePx, /* fallbackToHost= */ true, callback);
     }
 
     private static void resolveLocalFavicon(
             Profile profile, GURL url, int faviconSizePx, FaviconImageCallback callback) {
         FaviconHelper faviconHelper = new FaviconHelper();
-        faviconHelper.getLocalFaviconImageForURL(profile, url, faviconSizePx, callback);
+        faviconHelper.getLocalFaviconImageForURL(
+                profile, url, faviconSizePx, /* fallbackToHost= */ true, callback);
     }
 
-    @NonNull
     private static FaviconResolver buildResolver(
             Context context,
             Profile profile,

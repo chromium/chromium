@@ -212,6 +212,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                     profile,
                     entryUrl,
                     faviconSize,
+                    /* fallbackToHost= */ true,
                     (bitmap, url) -> {
                         if (bitmap != null) {
                             entriesToFaviconMap.put(entry, bitmap);
