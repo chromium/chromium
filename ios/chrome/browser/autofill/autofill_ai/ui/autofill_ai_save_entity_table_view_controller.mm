@@ -119,6 +119,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   [super viewDidLoad];
 
   self.tableView.accessibilityIdentifier = kAutofillAISaveEntityTableViewId;
+  self.tableView.allowsSelection = NO;
 
   RegisterCells(self.tableView);
 
