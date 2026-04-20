@@ -515,7 +515,7 @@ SafeBrowsingUIManager* SafeBrowsingServiceImpl::CreateUIManager() {
   return new SafeBrowsingUIManager(
       std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
       std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-      GURL(chrome::kChromeUINewTabURL));
+      chrome::ChromeUINewTabURLAsGURL());
 }
 
 void SafeBrowsingServiceImpl::RegisterAllDelayedAnalysis() {

@@ -199,7 +199,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
       : SafeBrowsingUIManager(
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-            GURL(chrome::kChromeUINewTabURL)),
+            chrome::ChromeUINewTabURLAsGURL()),
         report_sent_(false) {}
   MOCK_METHOD2(AttachThreatDetailsAndLaunchSurvey,
                void(content::BrowserContext* browser_context,

@@ -383,7 +383,7 @@ class ChromePasswordProtectionServiceTest
         new SafeBrowsingUIManager(
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-            GURL(chrome::kChromeUINewTabURL)),
+            chrome::ChromeUINewTabURLAsGURL()),
         sync_password_hash_provider, cache_manager_.get(),
         mock_add_callback_.Get(), mock_remove_callback_.Get());
 #else
@@ -395,7 +395,7 @@ class ChromePasswordProtectionServiceTest
         new SafeBrowsingUIManager(
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-            GURL(chrome::kChromeUINewTabURL)),
+            chrome::ChromeUINewTabURLAsGURL()),
         sync_password_hash_provider, cache_manager_.get(),
         mock_add_callback_.Get(), mock_remove_callback_.Get(),
         std::move(checkup_launcher));

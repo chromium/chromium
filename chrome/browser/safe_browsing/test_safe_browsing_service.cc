@@ -223,14 +223,14 @@ TestSafeBrowsingUIManager::TestSafeBrowsingUIManager()
     : SafeBrowsingUIManager(
           std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
           std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-          GURL(chrome::kChromeUINewTabURL)) {}
+          chrome::ChromeUINewTabURLAsGURL()) {}
 
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
     : SafeBrowsingUIManager(
           std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
           std::move(blocking_page_factory),
-          GURL(chrome::kChromeUINewTabURL)) {}
+          chrome::ChromeUINewTabURLAsGURL()) {}
 
 void TestSafeBrowsingUIManager::SendThreatDetails(
     content::BrowserContext* browser_context,

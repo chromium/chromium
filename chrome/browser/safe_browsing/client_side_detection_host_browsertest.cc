@@ -165,7 +165,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
       : SafeBrowsingUIManager(
             std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
-            GURL(chrome::kChromeUINewTabURL)) {}
+            chrome::ChromeUINewTabURLAsGURL()) {}
 
   MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
   MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
