@@ -6,6 +6,8 @@ Unlike general context files, skills are shared, "on-demand" expertise that
 multiple AI agents (such as Gemini CLI, Claude, GitHub Copilot, etc.) can
 activate when relevant to your request.
 
+See https://agentskills.io/ for general information about the agent skills.
+
 ## How to Use
 
 To use a skill, you must first install it into your workspace. Creating a
