@@ -78,6 +78,12 @@ scoped_refptr<base::RefCountedMemory> GetResource(
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   scoped_refptr<base::RefCountedMemory> bytes =
       rb.LoadDataResourceBytes(resource_id);
+
+  // This function is only called for known resource ids, so null means empty.
+  if (!bytes) {
+    return base::MakeRefCounted<base::RefCountedBytes>();
+  }
+
   auto* replacements =
       ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager()
           ? ExtensionsBrowserClient::Get()
