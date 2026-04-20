@@ -8,8 +8,8 @@ import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
-import type {ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {ContextType, GlifAnimationState, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeShown, recordToolModeShown} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -407,7 +407,7 @@ export class NtpSearchboxElement extends SearchboxElement implements
     return this.searchboxLayoutMode === 'Compact';
   }
 
-  protected override openComposebox_(
+  protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified) {
     if (this.ntpRealboxNextEnabled) {
@@ -417,7 +417,48 @@ export class NtpSearchboxElement extends SearchboxElement implements
       assert(context);
       context.closeMenu();
     }
-    super.openComposebox_(uploads, mode, model);
+
+    if (mode !== ToolMode.kUnspecified) {
+      recordToolModeSelection(mode, this.composeboxSource, 'ClassicPopup');
+    }
+    if (model !== ModelMode.kUnspecified) {
+      recordModelModeSelection(model, this.composeboxSource, 'ClassicPopup');
+    }
+
+    this.fire<ComposeboxState>('open-composebox', {
+      text: this.$.input.inputElement.value,
+      files: uploads,
+      mode: mode,
+      model: model,
+    });
+    this.setInputText('');
+  }
+
+  protected onSearchboxInputFilesPasted_(
+      e: CustomEvent<{files: FileList}>) {
+    this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
+  }
+
+  protected processFiles_(
+      files: FileList|null,
+      contextAdditionMethod: ComposeboxContextAddedMethod) {
+    if (!files || files.length === 0) {
+      return;
+    }
+    recordContextAdditionMethod(contextAdditionMethod, this.composeboxSource);
+
+    if (contextAdditionMethod === ComposeboxContextAddedMethod.CONTEXT_MENU) {
+      // In practice, the `files` list will only contain a single file when
+      // using the CONTEXT_MENU context addition method in the searchbox.
+      for (const file of files) {
+        const contextType =
+            file.type.includes('image') ? ContextType.IMAGE : ContextType.FILE;
+        recordContextualElementClickedMetric(
+            this.composeboxSource, 'ClassicPopup', contextType);
+      }
+    }
+
+    this.openComposebox_(Array.from(files, (file) => ({file})));
   }
 }
 

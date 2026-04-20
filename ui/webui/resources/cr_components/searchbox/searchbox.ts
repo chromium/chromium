@@ -6,9 +6,6 @@ import './searchbox_dropdown.js';
 import './searchbox_icon.js';
 import './searchbox_input.js';
 
-import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
-import {ContextType, recordContextAdditionMethod, recordContextualElementClickedMetric, recordModelModeSelection, recordToolModeSelection} from '//resources/cr_components/composebox/common.js';
-import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -16,7 +13,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './searchbox.css.js';
 import {getHtml} from './searchbox.html.js';
@@ -287,31 +283,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.onSearchboxInputTextUpdated(e, /*is_composing=*/ false);
   }
 
-  protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
-    this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
-  }
-
   override onInputWrapperFocusout(e: FocusEvent) {
     super.onInputWrapperFocusout(e);
-  }
-
-  /**
-   * @param e Event containing index of the match that received focus.
-   */
-  protected async onMatchFocusin_(e: CustomEvent<number>) {
-    // Select the match that received focus.
-    await this.getDropdownElement().selectIndex(e.detail);
-    // Input selection (if any) likely drops due to focus change. Simply fill
-    // the input with the match and move the cursor to the end.
-    this.$.input.setInput({
-      text: this.selectedMatch!.fillIntoEdit,
-      inline: '',
-      moveCursorToEnd: true,
-    });
-  }
-
-  protected onMatchClick_() {
-    this.clearAutocompleteMatches();
   }
 
   protected onVoiceSearchClick_() {
@@ -321,25 +294,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected onLensSearchClick_() {
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
-  }
-
-  protected openComposebox_(
-      uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
-    if (mode !== ToolMode.kUnspecified) {
-      recordToolModeSelection(mode, this.composeboxSource, 'ClassicPopup');
-    }
-    if (model !== ModelMode.kUnspecified) {
-      recordModelModeSelection(model, this.composeboxSource, 'ClassicPopup');
-    }
-
-    this.fire<ComposeboxState>('open-composebox', {
-      text: this.$.input.inputElement.value,
-      files: uploads,
-      mode: mode,
-      model: model,
-    });
-    this.setInputText('');
   }
 
   //============================================================================
@@ -375,28 +329,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
     this.hasSecondarySide = e.detail.value;
-  }
-
-  protected processFiles_(
-      files: FileList|null,
-      contextAdditionMethod: ComposeboxContextAddedMethod) {
-    if (!files || files.length === 0) {
-      return;
-    }
-    recordContextAdditionMethod(contextAdditionMethod, this.composeboxSource);
-
-    if (contextAdditionMethod === ComposeboxContextAddedMethod.CONTEXT_MENU) {
-      // In practice, the `files` list will only contain a single file when
-      // using the CONTEXT_MENU context addition method in the searchbox.
-      for (const file of files) {
-        const contextType =
-            file.type.includes('image') ? ContextType.IMAGE : ContextType.FILE;
-        recordContextualElementClickedMetric(
-            this.composeboxSource, 'ClassicPopup', contextType);
-      }
-    }
-
-    this.openComposebox_(Array.from(files, (file) => ({file})));
   }
 }
 
