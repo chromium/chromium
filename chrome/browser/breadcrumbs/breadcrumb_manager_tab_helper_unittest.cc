@@ -182,7 +182,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
 TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
   ASSERT_EQ(0u, GetNumEvents());
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL(chrome::kChromeUINewTabURL), web_contents());
+      chrome::ChromeUINewTabURLAsGURL(), web_contents());
   simulator->Start();
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
@@ -353,7 +353,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
 TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
   ASSERT_EQ(0u, GetNumEvents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(chrome::kChromeUINewTabURL));
+      web_contents(), chrome::ChromeUINewTabURLAsGURL());
   const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(std::string::npos,
