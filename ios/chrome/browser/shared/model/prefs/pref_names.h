@@ -72,9 +72,6 @@ inline constexpr char kLegacyProfileMap[] = "profile.legacy_profiles.map";
 // A boolean recording whether the legacy profiles have been marked as such.
 inline constexpr char kLegacyProfileHidden[] = "profile.legacy_profiles.hidden";
 
-inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
-    "browser.clear_data.history_notice_shown_times";
-
 // A dictionary mapping content notification enrollment eligibilities. This is
 // stored in Profile prefs.
 inline constexpr char kContentNotificationsEnrollmentEligibility[] =
@@ -710,11 +707,6 @@ inline constexpr char kUserAgentWasChanged[] = "UserAgentWasChanged";
 // were logged.
 inline constexpr char kLastApplicationStorageMetricsLogTime[] =
     "LastApplicationStorageMetricsLogTime";
-
-// Count the number of times the Search Engine Choice Screen was skipped
-// because the application was started via an external Intent.
-inline constexpr char kChoiceScreenSkippedCount[] =
-    "ios.search_engine_choice_screen.skip_count";
 
 // Prefs indicating whether Home surface modules are enabled.
 inline constexpr char kHomeCustomizationMostVisitedEnabled[] =
