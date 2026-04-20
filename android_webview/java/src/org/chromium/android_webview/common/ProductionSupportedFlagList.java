@@ -706,10 +706,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.THROTTLE_UNIMPORTANT_FRAME_TIMERS,
                 "Throttles Javascript timer wake ups of unimportant frames."),
         Flag.baseFeature(
-                NetworkServiceFeatures.REDUCE_TRANSFER_SIZE_UPDATED_IPC,
-                "When enabled, the network service will send TransferSizeUpdatedIPC IPC only when"
-                        + " DevTools is attached or the request is for an ad request."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_BACK_FORWARD_CACHE,
                 "Controls if back/forward cache is enabled. Note that it's also possible"
                         + " to enable BFCache through AwSettings as well. If either of"

@@ -321,11 +321,6 @@ BASE_FEATURE(kCompressionDictionaryTTL, base::FEATURE_DISABLED_BY_DEFAULT);
 // integrity enforced.
 BASE_FEATURE(kIntegrityPolicyScript, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This feature will reduce TransferSizeUpdated IPC from the network service.
-// When enabled, the network service will send the IPC only when DevTools is
-// attached or the request is for an ad request.
-BASE_FEATURE(kReduceTransferSizeUpdatedIPC, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables content decoding in the renderer process.
 // See https://crbug.com/391950057 and this doc for more details.
 // https://docs.google.com/document/d/1LwgPlrtQtUhGz_ilTsRun-7o4TuHo9jbXll6FRq-dKk/edit?usp=sharing

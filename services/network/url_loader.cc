@@ -2636,8 +2636,7 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
 }
 
 bool URLLoader::ShouldSendTransferSizeUpdated() const {
-  return devtools_request_id() || url_request_->ad_tagged() ||
-         !base::FeatureList::IsEnabled(features::kReduceTransferSizeUpdatedIPC);
+  return devtools_request_id() || url_request_->ad_tagged();
 }
 
 bool URLLoader::ShouldSetLoadWithStorageAccess() const {

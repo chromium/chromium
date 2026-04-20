@@ -3954,12 +3954,6 @@ inline constexpr char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
-inline constexpr char kReduceTransferSizeUpdatedIPCName[] =
-    "Reduce TransferSizeUpdated IPC";
-inline constexpr char kReduceTransferSizeUpdatedIPCDescription[] =
-    "When enabled, the network service will send TransferSizeUpdatedIPC IPC "
-    "only when DevTools is attached or the request is for an ad request.";
-
 inline constexpr char kReduceUserAgentDataLinuxPlatformVersionName[] =
     "Reduce Linux platform version Client Hint";
 inline constexpr char kReduceUserAgentDataLinuxPlatformVersionDescription[] =

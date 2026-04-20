@@ -8051,11 +8051,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "reduce-transfer-size-updated-ipc",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "reduce-user-agent-data-linux-platform-version",
     "owners": [ "bershanskyi@gmail.com", "miketaylr@chromium.org", "victortan@chromium.org" ],
     "expiry_milestone": 150

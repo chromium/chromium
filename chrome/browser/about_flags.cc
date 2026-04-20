@@ -9112,11 +9112,6 @@ const FeatureEntry kFeatureEntries[] = {
          kIsolateSandboxedIframesGroupingVariations,
          "IsolateSandboxedIframes" /* trial name */)},
 
-    {"reduce-transfer-size-updated-ipc",
-     flag_descriptions::kReduceTransferSizeUpdatedIPCName,
-     flag_descriptions::kReduceTransferSizeUpdatedIPCDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kReduceTransferSizeUpdatedIPC)},
-
 #if BUILDFLAG(IS_LINUX)
     {"reduce-user-agent-data-linux-platform-version",
      flag_descriptions::kReduceUserAgentDataLinuxPlatformVersionName,

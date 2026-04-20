@@ -1822,15 +1822,10 @@ IN_PROC_BROWSER_TEST_F(
 
 // This test harness does not start the test server and allows
 // ControllableHttpResponses to be declared.
-class AdsPageLoadMetricsObserverResourceBrowserTestBase
+class AdsPageLoadMetricsObserverResourceBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
-  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
-    return info.param ? "ReduceTransferSizeUpdatedIPCEnabled"
-                      : "ReduceTransferSizeUpdatedIPCDisabled";
-  }
-
-  ~AdsPageLoadMetricsObserverResourceBrowserTestBase() override = default;
+  ~AdsPageLoadMetricsObserverResourceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -1855,8 +1850,6 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 
-  virtual bool IsReduceTransferSizeUpdatedIPCEnabled() const { return false; }
-
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const {
     std::vector<base::test::FeatureRefAndParams> enabled{
@@ -1868,18 +1861,11 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
          {}},
         {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
          {{"host-threshold", "3"}}}};
-    if (IsReduceTransferSizeUpdatedIPCEnabled()) {
-      enabled.push_back({network::features::kReduceTransferSizeUpdatedIPC, {}});
-    }
     return enabled;
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
-    std::vector<base::test::FeatureRef> disabled;
-    if (!IsReduceTransferSizeUpdatedIPCEnabled()) {
-      disabled.push_back(network::features::kReduceTransferSizeUpdatedIPC);
-    }
-    return disabled;
+    return {};
   }
 
   // This function loads a |large_resource| and if |will_block| is set, then
@@ -1928,22 +1914,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class AdsPageLoadMetricsObserverResourceBrowserTest
-    : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
-      public ::testing::WithParamInterface<bool> {
- public:
-  bool IsReduceTransferSizeUpdatedIPCEnabled() const override {
-    return GetParam();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AdsPageLoadMetricsObserverResourceBrowserTest,
-    testing::Bool(),
-    &AdsPageLoadMetricsObserverResourceBrowserTest::DescribeParams);
-
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedAdResources) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1957,7 +1928,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 }
 
 // Main resources for adframes are counted as ad resources.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedMainResourceAds) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1978,7 +1949,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 }
 
 // Subframe navigations report ad resources correctly.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedSubframeNavigationAds) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2005,7 +1976,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verify that privacy sensitive permissions policy use counters are recorded
 // correctly when ad script is in the stack.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedPrivacyPermissionsUseCounters) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
@@ -2087,7 +2058,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 }
 
 // Verify that per-resource metrics are recorded correctly.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedAdResourceMetrics) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("ad.html"),
@@ -2169,7 +2140,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       "PageLoad.Clients.Ads.Bytes.MainFrame.Total2", 2, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        IncompleteResourcesRecordedToFrameMetrics) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -2241,7 +2212,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verifies that the ad unloaded by the heavy ad intervention receives an
 // intervention report prior to being unloaded.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        HeavyAdInterventionFired_ReportSent) {
   base::HistogramTester histogram_tester;
   auto incomplete_resource_response =
@@ -2303,7 +2274,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   EXPECT_TRUE(got_report);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverResourceBrowserTest,
     HeavyAdInterventionFired_ReportSentToEmbedderOfSameOriginIframe) {
   base::HistogramTester histogram_tester;
@@ -2357,7 +2328,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(report_message, testing::HasSubstr("(id=;url=)"));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverResourceBrowserTest,
     HeavyAdInterventionFired_ReportSentToEmbedderOfCrossOriginIframe) {
   base::HistogramTester histogram_tester;
@@ -2447,7 +2418,7 @@ IN_PROC_BROWSER_TEST_P(
 #define MAYBE_HeavyAdInterventionFired_ReportsToAllChildren \
   HeavyAdInterventionFired_ReportsToAllChildren
 #endif
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        MAYBE_HeavyAdInterventionFired_ReportsToAllChildren) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("frame_factory.html")});
@@ -2506,7 +2477,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verifies that the frame is navigated to the intervention page when a
 // heavy ad intervention triggers.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        HeavyAdInterventionEnabled_ErrorPageLoaded) {
   base::HistogramTester histogram_tester;
   auto incomplete_resource_response =
@@ -2566,15 +2537,9 @@ class AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention,
-    testing::Bool(),
-    AdsPageLoadMetricsObserverResourceBrowserTest::DescribeParams);
-
 // Check that when the heavy ad feature is disabled we don't navigate
 // the frame.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention,
     ErrorPageNotLoaded) {
   base::HistogramTester histogram_tester;
@@ -2611,7 +2576,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Check that we don't activate a HeavyAdIntervention field trial if we don't
 // have a heavy ad.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        HeavyAdInterventionNoHeavyAd_FieldTrialNotActive) {
   base::HistogramTester histogram_tester;
 
@@ -2650,7 +2615,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 // Framework takes over for future navigations.
 
 // TODO(crbug.com/361671258): Flaky on multiple platforms
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverResourceBrowserTest,
     DISABLED_HeavyAdInterventionBlocklistFull_InterventionBlocked) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
@@ -2749,7 +2714,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verifies that the blocklist is setup correctly and the intervention triggers
 // in incognito mode.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        HeavyAdInterventionIncognitoMode_InterventionFired) {
   base::HistogramTester histogram_tester;
   auto incomplete_resource_response =
@@ -2789,29 +2754,19 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
 
 class AdsPageLoadMetricsObserverRecordedUKMMetricsTest
-    : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+    : public AdsPageLoadMetricsObserverResourceBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    std::string reduce_ipc_description =
-        std::get<0>(info.param) ? "ReduceTransferSizeUpdatedIPCEnabled"
-                                : "ReduceTransferSizeUpdatedIPCDisabled";
-    std::string oopif_pdf_description =
-        std::get<1>(info.param) ? "_OopifPdf" : "_GuestViewPdf";
-    return base::StrCat({reduce_ipc_description, "_", oopif_pdf_description});
+  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
+    return info.param ? "OopifPdf" : "GuestViewPdf";
   }
 
-  bool IsReduceTransferSizeUpdatedIPCEnabled() const override {
-    return std::get<0>(GetParam());
-  }
-
-  bool UseOopif() const { return std::get<1>(GetParam()); }
+  bool UseOopif() const { return GetParam(); }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     auto enabled =
-        AdsPageLoadMetricsObserverResourceBrowserTestBase::GetEnabledFeatures();
+        AdsPageLoadMetricsObserverResourceBrowserTest::GetEnabledFeatures();
     if (UseOopif()) {
       enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
     }
@@ -2819,8 +2774,8 @@ class AdsPageLoadMetricsObserverRecordedUKMMetricsTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    auto disabled = AdsPageLoadMetricsObserverResourceBrowserTestBase::
-        GetDisabledFeatures();
+    auto disabled =
+        AdsPageLoadMetricsObserverResourceBrowserTest::GetDisabledFeatures();
     if (!UseOopif()) {
       disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
@@ -2878,7 +2833,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
+    testing::Bool(),
     &AdsPageLoadMetricsObserverRecordedUKMMetricsTest::DescribeParams);
 
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -3187,10 +3142,8 @@ struct SurfaceTestCase {
 };
 
 class AdsPageLoadMetricsObserverSurfaceBrowserTest
-    : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
+    : public AdsPageLoadMetricsObserverResourceBrowserTest,
       public ::testing::WithParamInterface<std::tuple<SurfaceTestCase, bool>> {
- public:
-  bool IsReduceTransferSizeUpdatedIPCEnabled() const override { return false; }
 };
 
 // The ad script requests an image via various methods. We
