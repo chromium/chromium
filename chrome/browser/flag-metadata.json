@@ -3006,11 +3006,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-clipboardchange-event",
-    "owners": ["roraja@microsoft.com", "ragoulik@microsoft.com", "zgroza@chromium.org"],
-    "expiry_milestone": 149
-  },
-  {
     "name": "enable-command-line-on-non-rooted-devices",
     "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium

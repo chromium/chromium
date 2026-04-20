@@ -341,11 +341,6 @@ inline constexpr char kClickToCallName[] = "Click-To-Call";
 inline constexpr char kClickToCallDescription[] =
     "Enable the click-to-call feature.";
 
-inline constexpr char kClipboardChangeEventName[] = "ClipboardChangeEvent";
-inline constexpr char kClipboardChangeEventDescription[] =
-    "Enables the `clipboardchange` event API. See: "
-    "https://chromestatus.com/feature/5085102657503232";
-
 inline constexpr char kConnectionAllowlistsName[] = "Connection Allowlists";
 inline constexpr char kConnectionAllowlistsDescription[] =
     "Enables a prototype implementation of `Connection-Allowlist` header "

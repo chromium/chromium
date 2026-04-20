@@ -4,8 +4,7 @@
 
 [
     Exposed=Window,
-    SecureContext,
-    RuntimeEnabled=ClipboardChangeEvent
+    SecureContext
 ] interface ClipboardChangeEvent : Event {
     constructor(optional ClipboardChangeEventInit eventInitDict = {});
     [MeasureAs=ClipboardChangeEventTypesAttribute] readonly attribute FrozenArray<DOMString> types;

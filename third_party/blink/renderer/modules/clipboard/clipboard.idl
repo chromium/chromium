@@ -44,5 +44,5 @@ dictionary ClipboardReadOptions {
      RaisesException
     ] Promise<undefined> writeText(DOMString data);
 
-    [RuntimeEnabled=ClipboardChangeEvent] attribute EventHandler onclipboardchange;
+    attribute EventHandler onclipboardchange;
 };

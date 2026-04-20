@@ -10869,10 +10869,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAXTreeFixingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAXTreeFixing)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-    {"enable-clipboardchange-event",
-     flag_descriptions::kClipboardChangeEventName,
-     flag_descriptions::kClipboardChangeEventDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kClipboardChangeEvent)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"devtools-project-settings",

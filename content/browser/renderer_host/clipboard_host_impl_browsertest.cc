@@ -216,10 +216,6 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
         shell(), embedded_https_test_server().GetURL("/title1.html")));
     shell()->web_contents()->Focus();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kClipboardChangeEvent};
 };
 
 IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {

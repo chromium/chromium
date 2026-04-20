@@ -1123,14 +1123,6 @@
       name: "ClickFocusDoesntPersistStatusBubble",
       status: "stable",
     },
-    {
-      // Enables clipboardchange event API for listening for changes to the
-      // system clipboard
-      // https://chromestatus.com/feature/5085102657503232
-      name: "ClipboardChangeEvent",
-      origin_trial_feature_name: "ClipboardChangeEvent",
-      status: "stable",
-    },
     // This ensures that clipboard event fires on a target node which is
     // focused in case no visible selection is present.
     // crbug.com/40735783
