@@ -193,6 +193,16 @@ export class Conversation implements ApiSessionDelegate {
     this.session?.sendAudio(sampleRate, data);
   }
 
+  sendText(text: string) {
+    if (!this.connected) {
+      return;
+    }
+
+    log(FILE, `Sending text: ${text}`);
+    this.session?.sendText(text);
+    this.journal.updateCurrentTurn(text, undefined);
+  }
+
   /**
    * Connects to the server and establishes a new session, moves the
    * conversation into a live state once the connection is ready.

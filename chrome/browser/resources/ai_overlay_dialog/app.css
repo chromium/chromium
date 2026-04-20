@@ -135,3 +135,11 @@ video[hidden],
 .inject-audio:hover {
   background-color: rgba(0, 0, 0, 0.9);
 }
+
+.inject-audio.sequence {
+  background-color: rgba(0, 50, 100, 0.7);
+}
+
+.inject-audio.sequence:hover {
+  background-color: rgba(0, 70, 140, 0.9);
+}

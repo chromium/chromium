@@ -4,7 +4,9 @@
     <span id="transcription-text">${this.transcription}</span>
   </div>
   <div id="main-content">
-    <div id="mock-buttons-column" ?hidden="${this.mockButtons.length === 0}">
+    <div id="mock-buttons-column"
+        ?hidden="${this.mockButtons.length === 0 &&
+                   this.sequences.length === 0}">
       <!--
         If there's no microphone present, show a button to inject a pre-canned
         audio message to make development easier.
@@ -13,6 +15,12 @@
         <div class="inject-audio" data-index="${index}"
             @click="${this.onInjectAudioClick}">
           ${button.name}
+        </div>
+      `)}
+      ${this.sequences.map((sequence, index) => html`
+        <div class="inject-audio sequence" data-index="${index}"
+            @click="${this.onSequenceClick}">
+          Seq: ${sequence.name}
         </div>
       `)}
     </div>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+
 import {debugLog, DebugLogTag, errorLog, log, warnLog} from './logging.js';
 
 const FILE = 'ApiSession';
@@ -56,6 +57,17 @@ interface RealtimeInputMessage {
   realtimeInput: {audio: {data: string, mimeType: string}};
 }
 
+interface ClientContentMessage {
+  clientContent: {
+    turns: Array<{
+      role: string,
+      parts:
+          Array<{text?: string, inlineData?: {data: string, mimeType: string}}>,
+    }>,
+    turnComplete?: boolean,
+  };
+}
+
 interface ServerContentMessage {
   serverContent?: {
     modelTurn?: {
@@ -97,9 +109,9 @@ export class ApiSession {
 
   private ws: WebSocket|null = null;
 
-  // Buffers audio messages that are sent while the WebSocket is still in the
+  // Buffers messages that are sent while the WebSocket is still in the
   // CONNECTING state. These are flushed as soon as the connection opens.
-  private audioQueue: RealtimeInputMessage[] = [];
+  private messageQueue: string[] = [];
 
   private delegate: ApiSessionDelegate;
 
@@ -133,14 +145,14 @@ export class ApiSession {
       log(FILE, 'WebSocket Opened');
       this.sendSetup();
 
-      if (this.audioQueue.length > 0) {
-        log(FILE, `Flushing ${this.audioQueue.length} queued audio chunks`);
-        for (const msg of this.audioQueue) {
+      if (this.messageQueue.length > 0) {
+        log(FILE, `Flushing ${this.messageQueue.length} queued messages`);
+        for (const msg of this.messageQueue) {
           if (this.ws) {
-            this.ws.send(JSON.stringify(msg));
+            this.ws.send(msg);
           }
         }
-        this.audioQueue = [];
+        this.messageQueue = [];
       }
     };
 
@@ -215,7 +227,7 @@ export class ApiSession {
     log(FILE, 'stop()');
     this.ws?.close();
     this.ws = null;
-    this.audioQueue = [];
+    this.messageQueue = [];
   }
 
   private sendSetup() {
@@ -257,10 +269,35 @@ export class ApiSession {
         },
       },
     };
+    const json = JSON.stringify(msg);
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(msg));
+      this.ws.send(json);
     } else if (this.ws?.readyState === WebSocket.CONNECTING) {
-      this.audioQueue.push(msg);
+      this.messageQueue.push(json);
+    }
+  }
+
+  sendText(text: string) {
+    const msg: ClientContentMessage = {
+      clientContent: {
+        turns: [{
+          role: 'user',
+          parts: [{text}],
+        }],
+        turnComplete: true,
+      },
+    };
+    log(FILE, 'Sending Text Message', msg);
+    const json = JSON.stringify(msg);
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(json);
+    } else if (this.ws?.readyState === WebSocket.CONNECTING) {
+      this.messageQueue.push(json);
+    } else {
+      warnLog(
+          FILE,
+          '[ApiSession] Dropping text message because WebSocket is not OPEN ' +
+              'or CONNECTING');
     }
   }
 
