@@ -824,7 +824,7 @@ AutofillAiManager::GetMigratePromptCandidates(
   for (const EntityInstance& entity : saved_entities) {
     switch (entity.record_type()) {
       case EntityInstance::RecordType::kLocal:
-        //  Do not add entity types that cannot be upstreamed.
+        // Do not add entity types that cannot be upstreamed.
         if (MayPerformAutofillAiAction(
                 *client_, AutofillAiAction::kImportToWallet, entity.type())) {
           saved_local_entities.push_back(&entity);
