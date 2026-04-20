@@ -71,7 +71,7 @@ std::vector<ink::BrushBehavior> GetTipBehaviors(PdfInkBrush::Type type) {
               ink::BrushBehavior::ToolTypeFilterNode{{.stylus = true}},
               ink::BrushBehavior::DampingNode{
                   .damping_source =
-                      ink::BrushBehavior::DampingSource::kTimeInSeconds,
+                      ink::BrushBehavior::ProgressDomain::kTimeInSeconds,
                   .damping_gap = 0.025,
               },
               ink::BrushBehavior::TargetNode{
@@ -81,9 +81,8 @@ std::vector<ink::BrushBehavior> GetTipBehaviors(PdfInkBrush::Type type) {
           }},
           ink::BrushBehavior{{
               ink::BrushBehavior::SourceNode{
-                  .source =
-                      ink::BrushBehavior::Source::kPredictedTimeElapsedInMillis,
-                  .source_value_range = {0, 24},
+                  .source = ink::BrushBehavior::Source::kTimeOfInputInSeconds,
+                  .source_value_range = {0, 0.024},
               },
               ink::BrushBehavior::SourceNode{
                   .source = ink::BrushBehavior::Source::
@@ -115,10 +114,8 @@ ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
   paint.color_functions.emplace_back(
       ink::ColorFunction::OpacityMultiplier{.multiplier = GetOpacity(type)});
 
-  // TODO(crbug.com/353942923): Use real `client_brush_family_id` here.
   absl::StatusOr<ink::BrushFamily> family = ink::BrushFamily::Create(
-      tip, paint,
-      /*client_brush_family_id=*/"", ink::BrushFamily::SlidingWindowModel{});
+      tip, paint, ink::BrushFamily::SlidingWindowModel{});
   CHECK(family.ok());
 
   auto brush = ink::Brush::Create(*family,
@@ -183,11 +180,8 @@ std::optional<ink::Brush> PdfInkBrush::CloneToPassthroughModelWithSize(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/353942923): Use real `client_brush_family_id` here.
-  absl::StatusOr<ink::BrushFamily> family =
-      ink::BrushFamily::Create(cloned_brush.GetCoats(),
-                               /*client_brush_family_id=*/"",
-                               ink::BrushFamily::ExperimentalNaiveModel{});
+  absl::StatusOr<ink::BrushFamily> family = ink::BrushFamily::Create(
+      cloned_brush.GetCoats(), ink::BrushFamily::PassthroughModel{});
   CHECK(family.ok());
   cloned_brush.SetFamily(family.value());
   return cloned_brush;
