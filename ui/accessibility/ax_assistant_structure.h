@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_split.h"
@@ -80,7 +81,7 @@ struct AssistantTree {
 
 std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update);
 
-std::u16string AXUrlBaseText(std::u16string url);
+std::u16string AXUrlBaseText(std::u16string_view url);
 const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent);
 
 }  // namespace ui
