@@ -485,8 +485,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
-                       TabContentsDaisyChainingSuppressedWhenUnifiedFreShown) {
+// Flaky test. crbug.com/498990943
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorBrowserTest,
+    DISABLED_TabContentsDaisyChainingSuppressedWhenUnifiedFreShown) {
   auto* instance = OpenGlicForActiveTab();
   ASSERT_TRUE(instance);
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
@@ -523,9 +525,10 @@ class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky test. crbug.com/498990943
 IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
-    TabContentsDaisyChainingNotSuppressedWhenTrustFirstArm1Shown) {
+    DISABLED_TabContentsDaisyChainingNotSuppressedWhenTrustFirstArm1Shown) {
   // Open FRE.
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,
