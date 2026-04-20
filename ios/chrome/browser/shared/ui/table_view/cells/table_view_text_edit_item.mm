@@ -248,6 +248,7 @@ const CGFloat kSymbolSize = 15;
 
     // Edit icon.
     _iconView = [[UIImageView alloc] initWithImage:[self editImage]];
+    _iconView.contentMode = UIViewContentModeScaleAspectFit;
     _iconView.tintColor = [UIColor colorNamed:kGrey400Color];
     _iconView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_iconView];
