@@ -7988,9 +7988,6 @@ crbug.com/40230609 external/wpt/html/canvas/element/manual/wide-gamut-canvas/can
 # Gardener 2023-03-08
 crbug.com/328719549 [ Linux ] inspector-protocol/memory/sampling-native-snapshot.js [ Failure Pass Timeout ]
 
-# Gardener 2023-03-18 (EMEA)
-crbug.com/330126415 [ Win ] http/tests/devtools/console/console-stack-overflow.js [ Failure Pass ]
-
 # Gardener 2023-03-18 (EST)
 crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/same-document-traverse-immediate.html [ Failure Pass ]
 
