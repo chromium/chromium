@@ -196,10 +196,7 @@ public final class AdMeasurementFragmentTest {
 
     @Test
     @SmallTest
-    @Policies.Add({
-        @Policies.Item(key = "PrivacySandboxAdMeasurementEnabled", string = "false"),
-        @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
-    })
+    @Policies.Add({@Policies.Item(key = "PrivacySandboxAdMeasurementEnabled", string = "false")})
     public void testAdMeasurementManaged() {
         startAdMeasuremenSettings();
 

@@ -498,10 +498,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @Policies.Add({
-        @Policies.Item(key = "PrivacySandboxAdTopicsEnabled", string = "false"),
-        @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
-    })
+    @Policies.Add({@Policies.Item(key = "PrivacySandboxAdTopicsEnabled", string = "false")})
     public void testTopicsManaged() {
         startTopicsSettings();
 

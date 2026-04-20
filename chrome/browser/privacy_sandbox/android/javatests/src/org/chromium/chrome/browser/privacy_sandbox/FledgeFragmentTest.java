@@ -511,10 +511,7 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
-    @Policies.Add({
-        @Policies.Item(key = "PrivacySandboxSiteEnabledAdsEnabled", string = "false"),
-        @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
-    })
+    @Policies.Add({@Policies.Item(key = "PrivacySandboxSiteEnabledAdsEnabled", string = "false")})
     public void testFledgeManaged() {
         startFledgeSettings();
 

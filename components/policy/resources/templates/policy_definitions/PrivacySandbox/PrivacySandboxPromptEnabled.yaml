@@ -1,6 +1,9 @@
 caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> prompt can be shown to your users
 default: true
+deprecated: true
 desc: |-
+  This policy is deprecated because the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> prompt configuration is no longer supported.
+
   A policy to control whether your users see the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> prompt.
   The prompt is a user-blocking flow which informs your users of the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> settings. See <ph name="PRIVACY_SANDBOX_URL">https://privacysandbox.com</ph> for details about Chrome’s effort to deprecate third-party cookies.
 
@@ -27,6 +30,7 @@ owners:
 - file://components/privacy_sandbox/OWNERS
 schema:
   type: boolean
+# TODO(crbug.com/474716334): Remove support after M149 branches.
 supported_on:
  - chrome.*:111-
  - chrome_os:111-
