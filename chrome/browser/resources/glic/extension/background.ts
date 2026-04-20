@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const allowedUrlPatterns = ['https://*gemini*.google.com/*'];
+const allowedUrlPatterns = [
+  'https://gemini.google.com/*',
+  'https://*.google.com/*',
+];
 chrome.runtime.onMessageExternal.addListener(
     async (message: any, sender: chrome.runtime.MessageSender) => {
       const urlMatchesAllowList = function(url: string) {
@@ -17,9 +20,14 @@ chrome.runtime.onMessageExternal.addListener(
       }
 
       if (message && message.type === 'glicPrivate.getState') {
-        const state = await chrome.glicPrivate.getState();
-        return {state};
-      } else {
-        throw new Error(`Unhandled message: ${JSON.stringify(message)}`);
+        return await chrome.glicPrivate.getState();
       }
+
+      if (message && message.type === 'glicPrivate.invoke' && message.args &&
+          message.args.length > 0) {
+        return await chrome.glicPrivate.invoke.apply(
+            chrome.glicPrivate, message.args);
+      }
+
+      throw new Error(`Unhandled message: ${JSON.stringify(message)}`);
     });

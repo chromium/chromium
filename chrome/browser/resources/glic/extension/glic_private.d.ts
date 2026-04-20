@@ -10,6 +10,8 @@
  * regenerate.
  */
 
+
+
 declare namespace chrome {
   export namespace glicPrivate {
 
@@ -30,7 +32,39 @@ declare namespace chrome {
       actuationAllowed: boolean;
     }
 
+    export enum InvocationSource {
+      INVOCATION_SOURCE_UNKNOWN = 'INVOCATION_SOURCE_UNKNOWN',
+      INVOCATION_SOURCE_UNIVERSAL_CART = 'INVOCATION_SOURCE_UNIVERSAL_CART',
+    }
+
+    export interface InvokeDetails {
+      promptId: string;
+      invocationSource: InvocationSource;
+      inNewTab?: boolean;
+    }
+
+    export enum StatusCode {
+      SUCCESS = 'SUCCESS',
+      LOCAL_INVALID_INVOCATION_SOURCE = 'LOCAL_INVALID_INVOCATION_SOURCE',
+      LOCAL_MISSING_PROMPT_ID = 'LOCAL_MISSING_PROMPT_ID',
+      SERVER_MISSING_PROMPT = 'SERVER_MISSING_PROMPT',
+      HTTP_ERROR = 'HTTP_ERROR',
+      PARSE_ERROR = 'PARSE_ERROR',
+      LOCAL_BROWSER_CONTEXT_UNAVAILABLE = 'LOCAL_BROWSER_CONTEXT_UNAVAILABLE',
+      LOCAL_NO_ACTIVE_TAB = 'LOCAL_NO_ACTIVE_TAB',
+      LOCAL_GLIC_NOT_ENABLED = 'LOCAL_GLIC_NOT_ENABLED',
+      LOCAL_GLIC_NOT_READY = 'LOCAL_GLIC_NOT_READY',
+      LOCAL_GLIC_ACTUATION_NOT_ALLOWED = 'LOCAL_GLIC_ACTUATION_NOT_ALLOWED',
+      LOCAL_GLIC_NOT_ENABLED_AND_CONSENTED =
+          'LOCAL_GLIC_NOT_ENABLED_AND_CONSENTED',
+    }
+
+    export interface GlicInvokeResult {
+      statusCode: StatusCode;
+    }
+
     export function getState(): Promise<ProfileState>;
 
+    export function invoke(details: InvokeDetails): Promise<GlicInvokeResult>;
   }
 }

@@ -9,11 +9,13 @@
     "type": "module"
   },
   "permissions": [
-    "glicPrivate"
+    "glicPrivate",
+    "glicPrivate.invoke"
   ],
   "externally_connectable": {
     "matches": [
-      "https://gemini.google.com/*"
+      "https://gemini.google.com/*",
+      "https://*.google.com/*"
     ]
   }
 }

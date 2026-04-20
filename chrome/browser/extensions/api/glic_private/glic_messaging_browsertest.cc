@@ -24,7 +24,10 @@ namespace extensions {
 class GlicMessagingBrowserTest : public ExtensionApiTest {
  public:
   GlicMessagingBrowserTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kApiGlicPrivate);
+    feature_list_.InitWithFeatures(
+        {extensions_features::kApiGlicPrivate,
+         extensions_features::kApiGlicAccessFromGoogleWebpage},
+        {});
     UseHttpsTestServer();
 
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
@@ -121,5 +124,47 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, ExternalConnectable) {
     }
   }
 }
+
+// Invoke is not supported in Android yet.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, InvokeAPI) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  std::string script = base::StringPrintf(
+      R"(
+      (async () => {
+        if (!chrome.runtime || !chrome.runtime.sendMessage) {
+          return 'no_runtime';
+        }
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {type: 'glicPrivate.invoke', args: [{
+                promptId: '',
+                invocationSource: 'universal-cart'
+              }]}, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve(chrome.runtime.lastError.message);
+                } else {
+                  resolve(response.statusCode);
+                }
+              });
+        });
+      })()
+      )",
+      extension_misc::kGlicExtensionId);
+
+  content::EvalJsResult result =
+      content::EvalJs(GetActiveWebContents(), script);
+
+  std::string result_string = result.ExtractString();
+  EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
