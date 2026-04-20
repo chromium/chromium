@@ -7241,16 +7241,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.DarkMode.InDarkModeVsLightTheme"
-    enum="WebViewInDarkModeVsLightTheme" expires_after="2023-06-01">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records if the application has light theme and if WebView applies the
-    algorithmic darkening on each main frame navigation entry committed.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.DarkMode.InDarkModeVsNightMode"
     enum="WebViewInDarkModeVsNightMode" expires_after="2023-06-01">
   <owner>michaelbai@chromium.org</owner>

@@ -71,12 +71,6 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                 AwSettings.FORCE_DARK_STRATEGY_COUNT);
         RecordHistogram.recordBooleanHistogram(
                 "Android.WebView.DarkMode.InDarkMode", isForceDarkApplied);
-        // Refer to WebViewInDarkModeVsLightTheme in enums.xml.
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.DarkMode.InDarkModeVsLightTheme",
-                (isForceDarkApplied ? 0 : 1) * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT
-                        + lightTheme,
-                2 * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
         // Refer to WebViewInDarkModeVsNightMode in enums.xml.
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.DarkMode.InDarkModeVsNightMode",

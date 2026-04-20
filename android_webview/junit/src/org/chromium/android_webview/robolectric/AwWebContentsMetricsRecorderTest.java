@@ -65,15 +65,6 @@ public class AwWebContentsMetricsRecorderTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.WebView.DarkMode.InDarkModeVsLightTheme"));
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.DarkMode.InDarkModeVsLightTheme",
-                        2 /*isDarkMode=true && LIGHT_THEME_TRUE*/));
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.WebView.DarkMode.InDarkModeVsNightMode"));
         Assert.assertEquals(
                 1,
