@@ -6,6 +6,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -63,6 +65,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   } else {
     config.features_enabled_and_params.push_back(
         {kAskGeminiChip, {{kAskGeminiChipIgnoreCriteria, "true"}}});
+  }
+
+  if ([self isRunningTest:@selector
+            (testAskGeminiChipAppearsWithReaderModeLargeEntrypoint)]) {
+    config.iph_feature_enabled =
+        feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name;
+    config.features_enabled.push_back(kEnableReaderModeInUS);
   }
 
   return config;
@@ -112,7 +121,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                                    GLIC_CONTEXTUAL_CUEING];
 
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
-  metadata.add_cueing_configurations()->set_cue_label("Ask Gemini");
+  metadata.add_cueing_configurations()->set_cue_label(base::SysNSStringToUTF8(
+      l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL)));
   NSData* metadata_data =
       [NSData dataWithBytes:metadata.SerializeAsString().c_str()
                      length:metadata.ByteSizeLong()];
@@ -216,6 +226,17 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:"/echo"];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:AskGeminiChipMatcher()];
+}
+// Tests that the Ask Gemini chip appears even when the Reader Mode large
+// entrypoint is enabled.
+- (void)testAskGeminiChipAppearsWithReaderModeLargeEntrypoint {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"/echo"];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AskGeminiChipMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
