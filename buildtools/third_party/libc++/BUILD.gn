@@ -15,13 +15,6 @@ if (is_mac) {
 # Used by libc++ and libc++abi.
 # See //build/config/c++:runtime_library for the config used by users of libc++.
 config("config") {
-  configs = [
-    ":extra_flags",
-    ":stdver",
-  ]
-}
-
-config("extra_flags") {
   cflags = [
     "-fstrict-aliasing",
     "-Wundef",
@@ -32,13 +25,8 @@ config("extra_flags") {
       # in its implementation.
       "-Wno-macro-redefined",
     ]
-  } else {
-    cflags += [ "-fPIC" ]
   }
-  defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
-}
 
-config("stdver") {
   if (is_win) {
     cflags_cc = [
       # We want to use a uniform C++ version across all of chromium, but
@@ -47,8 +35,11 @@ config("stdver") {
       "-std:c++23preview",
     ]
   } else {
+    cflags += [ "-fPIC" ]
     cflags_cc = [ "-std=c++23" ]
   }
+
+  defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
 }
 
 # Explicitly set version macros to Windows 7 to prevent libc++ from adding a
@@ -601,6 +592,7 @@ target(libcxx_target_type, "libc++") {
   configs += configs_to_add + [
                "//build/config/compiler:exceptions",
                "//build/config/compiler:rtti",
+               "//buildtools/third_party/libc++:config",
              ]
 
   deps = [

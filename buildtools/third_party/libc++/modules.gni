@@ -14,11 +14,7 @@ if (is_win) {
   import("//build/toolchain/win/win_toolchain_data.gni")
 }
 
-configs_to_add = [
-  "//buildtools/third_party/libc++:extra_flags",
-  "//buildtools/third_party/libc++:stdver",
-  "//build/config/compiler:no_chromium_code",
-]
+configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
 
 configs_to_remove = [
   "//build/config/compiler:chromium_code",
@@ -84,13 +80,7 @@ if (use_clang_modules) {
       # some warnings are not triggered if we use no_chromium_code config for
       # modules compiles.
       configs -= configs_to_remove - [ "//build/config/compiler:chromium_code" ]
-
-      # The module needs to use the same version of -std that is used by the
-      # libraries depending on it. Otherwise we get a module config mismatch.
-      configs += configs_to_add - [
-                   "//build/config/compiler:no_chromium_code",
-                   "//buildtools/third_party/libc++:stdver",
-                 ]
+      configs += configs_to_add - [ "//build/config/compiler:no_chromium_code" ]
 
       # Any complex target-specific logic needs to go in here.
       # The modularize tool supports simple attributes, but not conditional
