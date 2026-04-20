@@ -1,5 +1,5 @@
 # Copyright 2026 The Chromium Authors
-# Use of this source code is governed by a BSD - style license that can be
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
@@ -16,11 +16,16 @@ build_webui("build") {
     "manifest.json",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "motion_overlay.css",
+  ]
 
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "motion_overlay.html.ts",
+    "motion_overlay.ts",
   ]
 
   ts_deps = [ "//third_party/lit/v3_0:build_ts" ]

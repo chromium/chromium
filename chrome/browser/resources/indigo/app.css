@@ -7,8 +7,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  background: indigo;
-  color: white;
   position: absolute;
   height: 100%;
   width: 100%;

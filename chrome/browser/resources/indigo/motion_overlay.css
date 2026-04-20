@@ -1,0 +1,240 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --indigo-swipe-ellipse-color: white;
+  --indigo-swipe-color-red: rgb(229, 98, 98);
+  --indigo-swipe-color-orange: rgb(255, 182, 131);
+  --indigo-swipe-color-green: rgb(58, 182, 81);
+  --indigo-swipe-color-blue: rgb(63, 128, 233);
+  --indigo-blur-layer-bg-color: rgba(229, 236, 242, 0.6);
+  --indigo-loading-circle-dark-rgb: 41, 124, 241;
+  --indigo-loading-circle-light-rgb: 183, 203, 255;
+  --indigo-mask-color: black;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* --- Swipe Effect --- */
+@keyframes swipe-entry {
+  0% {
+    transform: translate(-40%, -115%) rotate(-20deg);
+  }
+
+  100% {
+    transform: translate(-40%, -60%) rotate(-20deg);
+  }
+}
+
+@keyframes swipe-exit {
+  0% {
+    transform: translate(-40%, -60%) rotate(-20deg);
+  }
+
+  100% {
+    transform: translate(-40%, -115%) rotate(-20deg);
+  }
+}
+
+@keyframes swipeColorTransition-entry {
+  0% {
+    border-color: var(--indigo-swipe-color-red);
+  }
+
+  40% {
+    border-color: var(--indigo-swipe-color-red);
+  }
+
+  50% {
+    border-color: var(--indigo-swipe-color-orange);
+  }
+
+  60% {
+    border-color: var(--indigo-swipe-color-green);
+  }
+
+  70% {
+    border-color: var(--indigo-swipe-color-blue);
+  }
+
+  100% {
+    border-color: var(--indigo-swipe-color-blue);
+  }
+}
+
+@keyframes swipeColorTransition-exit {
+  0% {
+    border-color: var(--indigo-swipe-color-blue);
+  }
+
+  40% {
+    border-color: var(--indigo-swipe-color-blue);
+  }
+
+  50% {
+    border-color: var(--indigo-swipe-color-green);
+  }
+
+  60% {
+    border-color: var(--indigo-swipe-color-orange);
+  }
+
+  70% {
+    border-color: var(--indigo-swipe-color-red);
+  }
+
+  100% {
+    border-color: var(--indigo-swipe-color-red);
+  }
+}
+
+/* --- Blur Effect --- */
+@keyframes blurDiagonalTransition-entry {
+  0% {
+    transform: translate(-40%, -115%) rotate(-20deg);
+  }
+
+  100% {
+    transform: translate(-40%, -40%) rotate(-20deg);
+  }
+}
+
+@keyframes blurDiagonalTransition-exit {
+  0% {
+    transform: translate(-40%, -40%) rotate(-20deg);
+  }
+
+  100% {
+    transform: translate(-40%, -115%) rotate(-20deg);
+  }
+}
+
+@keyframes blurOpacityTransition {
+  0% {
+    backdrop-filter: blur(20px) brightness(1.0);
+  }
+
+  100% {
+    backdrop-filter: blur(100px) brightness(1.0);
+  }
+}
+
+/* --- Loading Effect --- */
+@keyframes pendulumSwing {
+  /* 50% distance is the left edge of the ellipse, 0% is the right edge */
+  0% {
+    offset-distance: 0%;
+    animation-timing-function: ease-in-out;
+  }
+
+  50% {
+    offset-distance: 50%;
+    animation-timing-function: ease-in-out;
+  }
+
+  100% {
+    offset-distance: 0%;
+  }
+}
+
+#swipeEllipse1,
+#swipeEllipse2 {
+  position: absolute;
+  border-style: solid;
+  border-color: var(--indigo-swipe-ellipse-color);
+  opacity: 0.4;
+  border-radius: 50%;
+  left: 0;
+  top: 0;
+  width: var(--major-axis);
+  height: var(--minor-axis);
+  border-width: var(--border-width);
+  filter: blur(calc(var(--border-width) / 3));
+}
+
+:host([animation-state='entry']) #swipeEllipse1,
+:host([animation-state='entry']) #swipeEllipse2 {
+  animation: swipe-entry 2s ease-in-out forwards,
+            swipeColorTransition-entry 2s linear forwards;
+}
+
+:host([animation-state='exit']) #swipeEllipse1,
+:host([animation-state='exit']) #swipeEllipse2 {
+  animation: swipe-exit 1.8s ease-in-out forwards,
+            swipeColorTransition-exit 2s linear forwards;
+}
+
+#swipeEllipse2 {
+  margin-top: calc(var(--minor-axis) + var(--gap));
+  margin-left: 10vw;
+}
+
+
+#blurLayer {
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  top: 0;
+  left: 0;
+  backdrop-filter: blur(20px) brightness(1.0);
+  background-color: var(--indigo-blur-layer-bg-color);
+  mask-image: linear-gradient(to bottom,
+      transparent 0%,
+        var(--indigo-mask-color) 15%,
+        var(--indigo-mask-color) 85%,
+      transparent 100%);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+:host([animation-state='entry']) #blurLayer {
+  animation: blurDiagonalTransition-entry 2s ease-in-out forwards,
+             blurOpacityTransition 4s ease-in-out 2s forwards;
+}
+
+:host([animation-state='exit']) #blurLayer {
+  animation: blurDiagonalTransition-exit 2s ease-in-out forwards;
+}
+
+#loadingCircleDark,
+#loadingCircleLight {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+  width: 400vw;
+  height: 150vh;
+  animation: pendulumSwing 3s infinite;
+}
+
+:host([show-loading-circles]) #loadingCircleDark,
+:host([show-loading-circles]) #loadingCircleLight {
+  opacity: 1;
+}
+
+#loadingCircleDark {
+  background: radial-gradient(closest-side,
+      rgba(var(--indigo-loading-circle-dark-rgb), 0.6) 0%,
+        rgba(var(--indigo-loading-circle-dark-rgb), 0) 60%);
+  offset-path: ellipse(50% 10% at 50% 110%);
+  offset-rotate: 0deg;
+}
+
+#loadingCircleLight {
+  background: radial-gradient(closest-side,
+      rgba(var(--indigo-loading-circle-light-rgb), 0.7) 0%,
+        rgba(var(--indigo-loading-circle-light-rgb), 0) 60%);
+  offset-path: ellipse(60% 20% at 50% 115%);
+  offset-rotate: 0deg;
+}

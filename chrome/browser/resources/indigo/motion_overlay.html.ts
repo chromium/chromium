@@ -4,17 +4,16 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {IndigoImageReplacementAppElement} from './app.js';
+import type {IndigoMotionOverlayElement} from './motion_overlay.js';
 
-export function getHtml(this: IndigoImageReplacementAppElement) {
+export function getHtml(this: IndigoMotionOverlayElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<h1>$i18n{indigoTitle}</h1>
-
-${this.showOverlay_ ? html`
-  <indigo-motion-overlay @motion-complete="${this.onMotionComplete_}">
-  </indigo-motion-overlay>
-` : ''}
+<div id="blurLayer"></div>
+<div id="swipeEllipse1"></div>
+<div id="swipeEllipse2"></div>
+<div id="loadingCircleDark"></div>
+<div id="loadingCircleLight"></div>
 <!--_html_template_end_-->`;
   // clang-format on
 }
