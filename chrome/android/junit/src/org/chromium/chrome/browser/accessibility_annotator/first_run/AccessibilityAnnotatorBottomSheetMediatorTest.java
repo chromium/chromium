@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator;
+package org.chromium.chrome.browser.accessibility_annotator.first_run;
 
 import static org.mockito.Mockito.verify;
 

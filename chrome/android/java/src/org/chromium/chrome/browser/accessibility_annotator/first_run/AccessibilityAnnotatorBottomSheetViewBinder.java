@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator;
+package org.chromium.chrome.browser.accessibility_annotator.first_run;
 
-import static org.chromium.chrome.browser.accessibility_annotator.AccessibilityAnnotatorBottomSheetProperties.DESCRIPTION;
-import static org.chromium.chrome.browser.accessibility_annotator.AccessibilityAnnotatorBottomSheetProperties.ICON;
-import static org.chromium.chrome.browser.accessibility_annotator.AccessibilityAnnotatorBottomSheetProperties.PRIMARY_BUTTON_LABEL;
-import static org.chromium.chrome.browser.accessibility_annotator.AccessibilityAnnotatorBottomSheetProperties.SECONDARY_BUTTON_LABEL;
-import static org.chromium.chrome.browser.accessibility_annotator.AccessibilityAnnotatorBottomSheetProperties.TITLE;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorBottomSheetProperties.DESCRIPTION;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorBottomSheetProperties.ICON;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorBottomSheetProperties.PRIMARY_BUTTON_LABEL;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorBottomSheetProperties.SECONDARY_BUTTON_LABEL;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorBottomSheetProperties.TITLE;
 
 import android.view.View;
 import android.widget.TextView;
