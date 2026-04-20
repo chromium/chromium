@@ -745,6 +745,9 @@ extern const char kNativeFindInPageDescription[];
 extern const char kNewTabPageFieldTrialName[];
 extern const char kNewTabPageFieldTrialDescription[];
 
+extern const char kNoAccountWebSigninName[];
+extern const char kNoAccountWebSigninDescription[];
+
 extern const char kNonModalSignInPromoName[];
 extern const char kNonModalSignInPromoDescription[];
 

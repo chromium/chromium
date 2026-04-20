@@ -6601,6 +6601,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "no-accounts-web-signin",
+    "owners": [
+      "mlbipin@google.com",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "notification-collision-management",
     "owners": [
       "gujen@google.com",

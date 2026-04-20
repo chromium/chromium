@@ -1209,6 +1209,12 @@ const char kNewTabPageFieldTrialDescription[] =
     "Enables new tab page features that are available on first run for new "
     "Chrome iOS users.";
 
+const char kNoAccountWebSigninName[] =
+    "Enable no account web sigin bottom sheet";
+const char kNoAccountWebSigninDescription[] =
+    "Surfaces the web sign in bottom sheet when the user attempts to sign in "
+    "to the web.";
+
 const char kNonModalSignInPromoName[] = "Non-modal sign-in promo";
 const char kNonModalSignInPromoDescription[] =
     "Enables a non-modal sign-in promo that prompts users to sign in.";
