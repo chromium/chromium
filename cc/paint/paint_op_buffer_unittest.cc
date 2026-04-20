@@ -135,6 +135,10 @@ class PaintOpSerializationTestUtils {
                        {0.0f, 0.5f, 0.9f, 0.1f}};
     shader->positions_ = {0.f, 0.4f, 1.f};
   }
+
+  static void ResetShaderType(PaintShader* shader, PaintShader::Type type) {
+    shader->shader_type_ = type;
+  }
 };
 
 TEST(PaintOpBufferTest, Empty) {
@@ -4748,6 +4752,39 @@ TEST(PaintOpBufferTest, ContentColorUsageFromFilter) {
   buffer2.push<DrawRectOp>(SkRect::MakeWH(10, 20), flags2);
   EXPECT_EQ(gfx::ContentColorUsage::kWideColorGamut,
             buffer2.content_color_usage());
+}
+
+TEST(PaintOpBufferTest, SkSLShaderPrivilegeEnforcement) {
+  // Create an sksl shader masquerading as a different type.
+  static constexpr char kSkSLCommand[] =
+      "half4 main(float2 coord) { return half4(0.5); }";
+  auto shader =
+      PaintShader::MakeSkSLCommand(kSkSLCommand, {}, {}, {}, {}, nullptr);
+  PaintOpSerializationTestUtils::ResetShaderType(shader.get(),
+                                                 PaintShader::Type::kColor);
+
+  PaintFlags flags;
+  flags.setShader(std::move(shader));
+
+  PaintOpBuffer buffer;
+  buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
+
+  auto memory = AllocateSerializedBuffer();
+  TestOptionsProvider options_provider;
+  SimpleBufferSerializer serializer(memory.data(), kDefaultSerializedBufferSize,
+                                    options_provider.serialize_options());
+  serializer.Serialize(buffer);
+  ASSERT_TRUE(serializer.valid());
+
+  PaintOp::DeserializeOptions d_options(options_provider.deserialize_options());
+  // Simulation of unprivileged renderer process.
+  d_options.is_privileged = false;
+
+  auto deserialized_buffer = PaintOpBuffer::MakeFromMemory(
+      memory.first(serializer.written()), d_options);
+
+  // SkSL deserialization should always fail for unprivileged processes.
+  EXPECT_FALSE(deserialized_buffer);
 }
 
 }  // namespace cc
