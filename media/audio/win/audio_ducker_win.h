@@ -58,7 +58,8 @@ class MEDIA_EXPORT AudioDuckerWin {
   void DuckNewAudioSessionsIfNecessary();
 
   // Listens for audio session creation notifications from the OS.
-  std::unique_ptr<AudioSessionCreationObserverWin> session_creation_observer_;
+  Microsoft::WRL::ComPtr<AudioSessionCreationObserverWin>
+      session_creation_observer_;
 
   // Used to determine which applications we should duck.
   ShouldDuckProcessCallback should_duck_process_callback_;

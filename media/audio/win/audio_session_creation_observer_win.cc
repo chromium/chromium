@@ -16,25 +16,6 @@ AudioSessionCreationObserverWin::AudioSessionCreationObserverWin(
 
 AudioSessionCreationObserverWin::~AudioSessionCreationObserverWin() = default;
 
-ULONG AudioSessionCreationObserverWin::AddRef() {
-  return 1;
-}
-
-ULONG AudioSessionCreationObserverWin::Release() {
-  return 1;
-}
-
-HRESULT AudioSessionCreationObserverWin::QueryInterface(REFIID iid,
-                                                        void** object) {
-  if (iid == IID_IUnknown || iid == __uuidof(IAudioSessionNotification)) {
-    *object = static_cast<IAudioSessionNotification*>(this);
-    return S_OK;
-  }
-
-  *object = nullptr;
-  return E_NOINTERFACE;
-}
-
 HRESULT AudioSessionCreationObserverWin::OnSessionCreated(
     IAudioSessionControl* session) {
   session_created_cb_.Run();

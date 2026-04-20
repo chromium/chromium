@@ -121,13 +121,13 @@ void AudioDuckerWin::StartDuckingOtherWindowsApplications() {
 
   if (!session_creation_observer_) {
     session_creation_observer_ =
-        std::make_unique<AudioSessionCreationObserverWin>(
+        Microsoft::WRL::Make<AudioSessionCreationObserverWin>(
             base::BindPostTaskToCurrentDefault(base::BindRepeating(
                 &AudioDuckerWin::DuckNewAudioSessionsIfNecessary,
                 weak_factory_.GetWeakPtr())));
   }
   ducked_audio_session_manager_->RegisterSessionNotification(
-      session_creation_observer_.get());
+      session_creation_observer_.Get());
 
   // `base::Unretained()` is safe here because this callback is called
   // synchronously.
@@ -151,7 +151,7 @@ void AudioDuckerWin::StopDuckingOtherWindowsApplications() {
     if (ducked_audio_session_manager_) {
       CHECK(session_creation_observer_);
       ducked_audio_session_manager_->UnregisterSessionNotification(
-          session_creation_observer_.get());
+          session_creation_observer_.Get());
       ducked_audio_session_manager_.Reset();
     }
     return;
@@ -174,7 +174,7 @@ void AudioDuckerWin::StopDuckingOtherWindowsApplications() {
 
   ducked_applications_.clear();
   ducked_audio_session_manager_->UnregisterSessionNotification(
-      session_creation_observer_.get());
+      session_creation_observer_.Get());
   ducked_audio_session_manager_.Reset();
 }
 
