@@ -1,0 +1,51 @@
+python_version: "3.11"
+
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.15.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/zipp-py3"
+  version: "version:3.17.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/importlib-metadata-py3"
+  version: "version:6.0.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/wrapt-py3"
+  version: "version:1.15.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/deprecated-py3"
+  version: "version:1.2.13"
+>
+
+wheel: <
+  name: "infra/python/wheels/opentelemetry-semantic-conventions-py3"
+  version: "version:0.39b0"
+>
+
+wheel: <
+  name: "infra/python/wheels/opentelemetry-api-py3"
+  version: "version:1.18.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/opentelemetry-sdk-py3"
+  version: "version:1.18.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:4.25.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.69.2"
+>
