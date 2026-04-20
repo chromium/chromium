@@ -2,3 +2,9 @@ include_rules = [
   "+components/favicon_base",
   "+components/ntp_tiles",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+third_party/fuzztest",
+  ],
+}

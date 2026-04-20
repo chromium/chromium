@@ -12,6 +12,7 @@
 
 #include "chrome/common/search/instant_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
 namespace {
@@ -70,6 +71,14 @@ bool ParseIconRestrictedUrl(const GURL& url,
 void TranslateIconRestrictedUrl(const GURL& transient_url,
                                 const SearchBox::IconURLHelper& helper,
                                 GURL* url);
+
+void ParseFrameTokenAndRestrictedIdDoesNotCrash(const std::string& id_part) {
+  std::string frame_token;
+  InstantRestrictedID rid = -1;
+  ParseFrameTokenAndRestrictedId(id_part, &frame_token, &rid);
+}
+
+FUZZ_TEST(SearchBoxUtilFuzzTest, ParseFrameTokenAndRestrictedIdDoesNotCrash);
 
 TEST(SearchBoxUtilTest, ParseFrameTokenAndRestrictedIdSuccess) {
   std::string frame_token;
