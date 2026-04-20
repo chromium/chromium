@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -89,11 +91,22 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "prevent it to shown and then trigger a show request."));
 #endif
 
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kDevTools, /*name=*/"DevTools",
+      /*description=*/
+      "The DevTools infobar is used to confirm that the user wants to "
+      "allow DevTools to be used. This trigger shows the infobar."));
+
   std::move(callback).Run(std::move(infobar_list));
 }
 
 bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
   switch (type) {
+    case InfoBarType::kDevTools: {
+      DevToolsInfoBarDelegate::Create(u"DevTools Infobar test",
+                                      base::DoNothing());
+      return true;
+    }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kDefaultBrowser: {
       BrowserWindowInterface* const bwi =

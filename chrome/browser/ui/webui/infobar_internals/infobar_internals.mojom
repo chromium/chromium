@@ -12,6 +12,9 @@ enum InfoBarType {
   [EnableIf=is_win|is_mac|is_linux]
   kDefaultBrowser,
 
+  // DevTools infobar.
+  kDevTools,
+
   // Installer downloader infobar. Can only be triggered on Windows.
   [EnableIf=is_win_and_chrome_branded]
   kInstallerDownloader,

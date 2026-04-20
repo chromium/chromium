@@ -44,6 +44,7 @@ source_set("impl") {
     ":mojo_bindings",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/infobar_internals:resources",
     "//chrome/browser/ui/browser_window",
