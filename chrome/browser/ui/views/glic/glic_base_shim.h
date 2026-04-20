@@ -138,7 +138,7 @@ class GlicBaseShim
 
   ui::PropertyHandler* GetPropertyHandler() override { return this; }
 
- private:
+ protected:
   // True if the button is showing a nudge.
   bool is_showing_nudge_ = false;
 };

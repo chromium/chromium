@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_ACTOR_TASK_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_TAB_STRIP_GLIC_ACTOR_TASK_ICON_H_
 
-#include <string>
-
 #include "base/callback_list.h"
+#include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 
@@ -15,7 +14,8 @@ class BrowserWindowInterface;
 
 namespace glic {
 
-class TabStripGlicActorTaskIcon : public TabStripNudgeButton {
+class TabStripGlicActorTaskIcon
+    : public GlicActorTaskIcon<TabStripNudgeButton> {
   METADATA_HEADER(TabStripGlicActorTaskIcon, TabStripNudgeButton)
 
  public:
@@ -27,48 +27,12 @@ class TabStripGlicActorTaskIcon : public TabStripNudgeButton {
       delete;
   ~TabStripGlicActorTaskIcon() override;
 
-  // TabStripControlButton:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
-
-  // views::View:
-  void AddedToWidget() override;
-  void RemovedFromWidget() override;
-
   // TabStripNudgeButton:
+  bool GetIsShowingNudge() const override;
   void SetIsShowingNudge(bool is_showing) override;
 
   // Sets the task icon back to its default colors.
-  void SetDefaultColors();
-
-  // Set whether the button is currently pressed or not.
-  void SetPressedState(bool is_pressed);
-  // Sets the task icon's color to its pressed state color if `is_pressed` is
-  // true, or to its default color otherwise.
-  void SetPressedColor(bool is_pressed);
-  // Lock or unlock the task icon based on bubble visibility.
-  void SetOrResetPressedLock(bool is_pressed);
-  // Get whether the button is currently pressed. The button should be pressed
-  // when the task list bubble is showing.
-  bool GetIsPressed() { return pressed_lock_.get(); }
-
-  // Show the task nudge with the given text.
-  void ShowNudgeLabel(const std::u16string nudge_label);
-
-  // Sets the task icon to its default colors, label, and tooltip text.
-  void SetTaskIconToDefault();
-
-  // Updates the background painter to match the current border insets.
-  void RefreshBackground();
-
-  // Defines how the button calculates its width during animation.
-  enum class AnimationMode {
-    kEntry,  // Animating from 0 width -> icon width
-    kNudge   // Animating from icon width -> full nudge width
-  };
-
-  void SetAnimationMode(AnimationMode mode);
-  AnimationMode GetAnimationMode() const { return animation_mode_; }
+  void SetDefaultColors() override;
 
   // GetBoundsInScreen() gives a rect with some padding that extends beyond the
   // visible edges of the button. This function returns a rect without that
@@ -77,22 +41,12 @@ class TabStripGlicActorTaskIcon : public TabStripNudgeButton {
   gfx::Rect GetAnchorBoundsInScreen() const override;
 
  private:
-  void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi);
-  void OnBrowserWindowDidBecomeInactive(BrowserWindowInterface* bwi);
-  void UpdateInkdropHoverColor(bool is_frame_active);
-
   void NotifyClick(const ui::Event& event) override;
 
   // Whether or not to use the same background as the alt icon, which may be
   // enabled as part of GlicEntrypointVariations. Should be kept in sync with
   // TapStripGlicButton::ShouldUseAltIcon.
   bool ShouldUseGlicButtonAltIconBackgroundColor();
-
-  AnimationMode animation_mode_ = AnimationMode::kEntry;
-  base::CallbackListSubscription window_did_become_active_subscription_;
-  base::CallbackListSubscription window_did_become_inactive_subscription_;
-
-  std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };

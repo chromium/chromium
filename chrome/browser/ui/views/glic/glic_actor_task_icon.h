@@ -57,15 +57,6 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
                                                        kActorNudgeLabelMargin,
                                                        kActorNudgeLabelMargin));
 
-    SetTaskIconToDefault();
-
-    // The task icon will only ever be shown with the GlicButton, so can always
-    // set the corner radii for split button styling.
-    SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
-    SetInkdropHoverColorId(kColorTabBackgroundInactiveHoverFrameActive);
-
-    UpdateColors();
-
     this->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
     auto* const layout_manager =
@@ -139,7 +130,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   }
 
   // Sets the task icon back to its default colors.
-  void SetDefaultColors() {
+  virtual void SetDefaultColors() {
     SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
     SetForegroundFrameInactiveColorId(
         kColorNewTabButtonForegroundFrameInactive);
@@ -232,17 +223,17 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
     GlicBaseShim<T>::SetBackgroundFrameInactiveColorId(new_color_id);
   }
 
- private:
   void SetLeftRightCornerRadii(int left, int right) override {
     GlicBaseShim<T>::SetLeftRightCornerRadii(left, right);
   }
+
+  void UpdateColors() override { GlicBaseShim<T>::UpdateColors(); }
 
   void SetInkdropHoverColorId(const ChromeColorIds new_color_id) override {
     GlicBaseShim<T>::SetInkdropHoverColorId(new_color_id);
   }
 
-  void UpdateColors() override { GlicBaseShim<T>::UpdateColors(); }
-
+ private:
   void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi) {
     UpdateInkdropHoverColor(true);
   }

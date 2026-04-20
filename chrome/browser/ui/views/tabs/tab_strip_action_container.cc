@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_and_actor_buttons_container.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
@@ -111,7 +112,7 @@ void EstablishPrivateAiConnection(Profile* profile) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-using TaskIconAnimationMode = glic::TabStripGlicActorTaskIcon::AnimationMode;
+using TaskIconAnimationMode = glic::AnimationMode;
 }  // namespace
 
 TabStripActionContainer::TabStripNudgeAnimationSession::

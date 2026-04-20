@@ -16,7 +16,16 @@ ToolbarGlicActorTaskIcon::ToolbarGlicActorTaskIcon(
     BrowserWindowInterface* browser_window_interface,
     PressedCallback pressed_callback)
     : GlicActorTaskIcon<ToolbarButton>(browser_window_interface,
-                                       pressed_callback) {}
+                                       pressed_callback) {
+  SetTaskIconToDefault();
+
+  // The task icon will only ever be shown with the GlicButton, so can always
+  // set the corner radii for split button styling.
+  SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
+  SetInkdropHoverColorId(kColorTabBackgroundInactiveHoverFrameActive);
+
+  UpdateColors();
+}
 
 ToolbarGlicActorTaskIcon::~ToolbarGlicActorTaskIcon() = default;
 
