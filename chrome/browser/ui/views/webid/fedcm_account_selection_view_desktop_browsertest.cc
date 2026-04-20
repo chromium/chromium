@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,13 +17,16 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace webid {
@@ -411,6 +417,139 @@ class FedCmBrowserTest : public InProcessBrowserTest, public FedCmMixin {
         blink::mojom::RpMode::kActive);
   }
 };
+
+class FedCmActorBrowserTest : public FedCmBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    FedCmBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void TearDownOnMainThread() override {
+    Reset();
+    FedCmBrowserTest::TearDownOnMainThread();
+  }
+
+  // Starts an actor task that does nothing meaningful. It just puts the tab
+  // under the control of the actor framework.
+  void StartTask(tabs::TabInterface* task_tab) {
+    actor::ActorKeyedService* actor_keyed_service =
+        actor::ActorKeyedService::Get(GetProfile());
+    actor::TaskId task_id = actor_keyed_service->CreateTask(
+        actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+    actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
+
+    std::unique_ptr<actor::ToolRequest> click_on_nothing_action =
+        actor::MakeClickRequest(*task_tab, gfx::Point(1, 1));
+    actor::ActResultFuture click_result;
+    task->Act(actor::ToRequestList(click_on_nothing_action),
+              click_result.GetCallback());
+    actor::ExpectOkResult(click_result);
+  }
+
+  // Have the given tab trigger a continuation popup that we expect to not be
+  // created until the task tab is activated.
+  base::test::TestFuture<content::WebContents*> TriggerWithheldPopup(
+      tabs::TabInterface* source_tab,
+      const GURL& popup_url) {
+    delegate_ = std::make_unique<FakeDelegate>(source_tab->GetContents());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate_.get(), source_tab);
+
+    base::test::TestFuture<content::WebContents*> future_popup_contents;
+    content::WebContents* synchronous_contents =
+        account_selection_view_->ShowModalDialog(
+            popup_url, blink::mojom::RpMode::kPassive,
+            future_popup_contents.GetCallback());
+    EXPECT_FALSE(synchronous_contents);
+    return future_popup_contents;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kFedCmEmbedderInitiatedLogin};
+};
+
+IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
+                       BackgroundActorTaskWithholdsPopup) {
+  const GURL task_url =
+      embedded_https_test_server().GetURL("a.com", "/title1.html");
+  const GURL popup_url =
+      embedded_https_test_server().GetURL("b.com", "/title2.html");
+  const GURL other_url =
+      embedded_https_test_server().GetURL("c.com", "/title3.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), task_url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  StartTask(tab);
+
+  // Open a new unrelated tab in the foreground.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<content::WebContents*> future_popup_contents =
+      TriggerWithheldPopup(tab, popup_url);
+
+  // Now reactivate the tab with the task. This should create the popup.
+  content::WebContents* tab_contents = tab->GetContents();
+  tab_contents->GetDelegate()->ActivateContents(tab_contents);
+
+  content::WebContents* popup_contents = future_popup_contents.Get();
+  ASSERT_TRUE(popup_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
+  EXPECT_EQ(popup_contents->GetLastCommittedURL(), popup_url);
+}
+
+// Similar to `BackgroundActorTaskWithholdsPopup`, but we have the task tab
+// create an intermediate tab/popup and then that triggers the continuation
+// popup. We should still attribute the continuation popup to a backgrounded
+// task.
+IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
+                       BackgroundTaskWithIntermediatePopup) {
+  const GURL task_url =
+      embedded_https_test_server().GetURL("a.com", "/title1.html");
+  const GURL popup_url =
+      embedded_https_test_server().GetURL("b.com", "/title2.html");
+  const GURL other_url =
+      embedded_https_test_server().GetURL("c.com", "/title3.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), task_url));
+  tabs::TabInterface* task_tab = browser()->GetActiveTabInterface();
+
+  // Realistically, the window.open would occur during the task, but for ease of
+  // testing, we set up the opener relationship now.
+  tabs::TabInterface* source_tab = [&]() {
+    content::WebContentsAddedObserver web_contents_added_observer;
+    EXPECT_TRUE(content::ExecJs(task_tab->GetContents(),
+                                "window.open('/simple.html');"));
+    content::WebContents* source_contents =
+        web_contents_added_observer.GetWebContents();
+    EXPECT_TRUE(source_contents);
+    return tabs::TabInterface::GetFromContents(source_contents);
+  }();
+
+  StartTask(task_tab);
+
+  // Open a new unrelated tab in the foreground.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  base::test::TestFuture<content::WebContents*> future_popup_contents =
+      TriggerWithheldPopup(source_tab, popup_url);
+
+  // Now reactivate the tab with the task. This should create the popup.
+  content::WebContents* task_tab_contents = task_tab->GetContents();
+  task_tab_contents->GetDelegate()->ActivateContents(task_tab_contents);
+
+  content::WebContents* popup_contents = future_popup_contents.Get();
+  ASSERT_TRUE(popup_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
+  EXPECT_EQ(popup_contents->GetLastCommittedURL(), popup_url);
+}
 
 IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabledForModalDialog) {
   // Check that input is enabled by default.
