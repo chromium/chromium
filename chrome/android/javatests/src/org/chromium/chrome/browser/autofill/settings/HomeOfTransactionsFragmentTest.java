@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -38,12 +39,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncherFactory;
@@ -52,6 +56,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -72,6 +77,7 @@ public class HomeOfTransactionsFragmentTest {
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private Profile mProfileMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+    @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private final FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
             new FakeCredentialManagerLauncherFactoryImpl();
@@ -93,6 +99,23 @@ public class HomeOfTransactionsFragmentTest {
                         123,
                         new Intent(context, MainSettings.class),
                         PendingIntent.FLAG_IMMUTABLE));
+
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
+    }
+
+    @Test
+    @SmallTest
+    public void testHelpMenuTriggersAutofillHelp() {
+        SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.menu_id_targeted_help)).perform(click());
+
+        verify(mHelpAndFeedbackLauncher)
+                .show(
+                        settingsActivity,
+                        ContextUtils.getApplicationContext()
+                                .getString(org.chromium.chrome.R.string.help_context_autofill),
+                        /* url= */ null);
     }
 
     @Test
