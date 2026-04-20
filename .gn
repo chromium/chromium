@@ -170,3 +170,5 @@ exec_script_allowlist =
 
       "//third_party/blink/renderer/build/scripts/scripts.gni",
     ]
+
+expand_directory_allowlist = build_dotfile_settings.expand_directory_allowlist

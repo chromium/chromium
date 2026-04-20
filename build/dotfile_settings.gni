@@ -38,4 +38,25 @@ build_dotfile_settings = {
     "//build/toolchain/zos/BUILD.gn",
     "//build/util/branding.gni",
   ]
+
+  # These are the list of GN files that run expand_directory. This allowlist
+  # exists to force additional review for new uses of expand_directory, which
+  # is strongly discouraged.
+  #
+  # Listing individual files should generally be preferred over calling expand
+  # directory. The only reason things will be approved in this allowlist is if
+  # it is either difficult or impossible to keep the list of files in sync with
+  # reality.
+  # This generally only occurs when the build files are in chromium/src.git, and
+  # the code is in a different directory (either one not tracked by version
+  # control, or in a git submodule)
+  #
+  # Each entry in this list must have a justification.
+  expand_directory_allowlist = [
+    # We need to access libc++ as a monolithic entity, so we want access to all
+    # the files contained within.
+    # And the files contained within are outside of our control since it's in
+    # third_party.
+    "//buildtools/third_party/libc++/libcxx_headers.gni",
+  ]
 }
