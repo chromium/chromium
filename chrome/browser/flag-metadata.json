@@ -8831,12 +8831,8 @@
     "expiry_milestone": 155
   },
   {
-    "name": "sync-search-engines-android",
-    "owners": [
-      "ender@google.com",
-      "kaiyilin@google.com",
-      "oka@google.com"
-    ],
+    "name": "sync-search-engines-android-lff",
+    "owners": ["ender@google.com", "kaiyilin@google.com", "oka@google.com"],
     "expiry_milestone": 160
   },
   {

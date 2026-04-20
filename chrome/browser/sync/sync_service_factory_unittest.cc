@@ -136,7 +136,7 @@ class SyncServiceFactoryTest : public testing::Test {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroid)) {
+    if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF)) {
       datatypes.Put(syncer::SEARCH_ENGINES);
     }
 #else

@@ -72,6 +72,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/common_controller_builder.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -121,6 +122,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#include "ui/base/device_form_factor.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/sync/android/jni_headers/SyncServiceFactory_jni.h"
@@ -160,11 +162,16 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
 }
 
 // Returns TemplateURLService or nullptr if the feature is disabled. Currently,
-// only on Android we have a separate feature flag for template url sync.
+// only on Android we have a separate feature flag for template url sync, and
+// it's only enabled for LFF.
 TemplateURLService* GetTemplateURLService(Profile* profile) {
   CHECK(profile);
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroid)) {
+  const ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
+  if ((form_factor == ui::DEVICE_FORM_FACTOR_TABLET ||
+       form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP) &&
+      base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF) &&
+      base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)) {
     return TemplateURLServiceFactory::GetForProfile(profile);
   }
   return nullptr;

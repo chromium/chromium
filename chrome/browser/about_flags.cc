@@ -12972,10 +12972,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"sync-search-engines-android",
-     flag_descriptions::kSyncSearchEnginesAndroidName,
-     flag_descriptions::kSyncSearchEnginesAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kSyncSearchEnginesAndroid)},
+    {"sync-search-engines-android-lff",
+     flag_descriptions::kSyncSearchEnginesAndroidLFFName,
+     flag_descriptions::kSyncSearchEnginesAndroidLFFDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kSyncSearchEnginesAndroidLFF)},
 #endif
 
     {"bookmarks-encryption", flag_descriptions::kBookmarksEncryptionName,

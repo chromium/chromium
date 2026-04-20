@@ -4304,10 +4304,10 @@ inline constexpr char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 inline constexpr char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
-inline constexpr char kSyncSearchEnginesAndroidName[] =
-    "Sync search engines on Android";
-inline constexpr char kSyncSearchEnginesAndroidDescription[] =
-    "Enables syncing search engines on Android.";
+inline constexpr char kSyncSearchEnginesAndroidLFFName[] =
+    "Sync search engines on Android LFF devices";
+inline constexpr char kSyncSearchEnginesAndroidLFFDescription[] =
+    "Enables syncing search engines on Android LFF devices.";
 
 inline constexpr char kSystemKeyboardLockName[] =
     "Experimental system keyboard lock";

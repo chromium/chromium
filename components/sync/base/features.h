@@ -233,8 +233,8 @@ BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
 BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, search engines and site search will be synced on Android.
-BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroid);
+// If enabled, search engines and site search will be synced on Android LFF.
+BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroidLFF);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace syncer
