@@ -420,6 +420,11 @@ bool IsReadAnythingLineFocusEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingLineFocus);
 }
 
+BASE_FEATURE(kHatsReadingModeSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsHatsReadingModeSurveyEnabled() {
+  return base::FeatureList::IsEnabled(::features::kHatsReadingModeSurvey);
+}
+
 BASE_FEATURE(kReadAnythingImagesViaAlgorithm,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingImagesViaAlgorithmEnabled() {

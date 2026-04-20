@@ -339,6 +339,10 @@ AX_BASE_EXPORT bool IsReadAnythingOmniboxChipEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLineFocus);
 AX_BASE_EXPORT bool IsReadAnythingLineFocusEnabled();
 
+// Enable HaTS survey for Reading Mode.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kHatsReadingModeSurvey);
+AX_BASE_EXPORT bool IsHatsReadingModeSurveyEnabled();
+
 // Enable images to be distilled via algorithm. Should be disabled by
 // default.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingImagesViaAlgorithm);
