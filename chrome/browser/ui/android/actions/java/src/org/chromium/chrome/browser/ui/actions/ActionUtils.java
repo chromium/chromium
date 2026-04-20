@@ -12,6 +12,10 @@ import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 /** Helper methods for working with Action buttons. */
 @NullMarked
 public class ActionUtils {
+
+    // Avoid instantiation.
+    private ActionUtils() {}
+
     /**
      * Applies the given {@link ButtonState} to the view. This is currently unrelated to the view's
      * visibility state, and only affects the view's alpha, clickable, and enabled states.
@@ -20,7 +24,8 @@ public class ActionUtils {
      * @param state The {@link ButtonState} to apply.
      * @param canPress Whether the button can be pressed.
      */
-    public static void applyButtonState(View view, @ButtonState int state, boolean canPress) {
+    /* package */ static void applyButtonState(
+            View view, @ButtonState int state, boolean canPress) {
         if (state == ButtonState.DEFAULT) {
             view.setAlpha(1.0f);
             view.setClickable(canPress);
