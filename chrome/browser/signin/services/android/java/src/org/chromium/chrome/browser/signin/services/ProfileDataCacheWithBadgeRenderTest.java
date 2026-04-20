@@ -125,14 +125,6 @@ public class ProfileDataCacheWithBadgeRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testProfileDataWithSyncErrorBadge() throws IOException {
-        setUpProfileDataCache(R.drawable.ic_sync_badge_error_20dp);
-        mRenderTestRule.render(mImageView, "profile_data_cache_with_sync_error_badge");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
     public void testProfileDataWithoutBadge() throws IOException {
         setUpProfileDataCache(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
@@ -164,8 +156,6 @@ public class ProfileDataCacheWithBadgeRenderTest {
     public void testProfileDataWithExistingBadge() throws IOException {
         setUpProfileDataCache(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
-        setBadge(R.drawable.ic_sync_badge_error_20dp);
-        mRenderTestRule.render(mImageView, "profile_data_cache_with_sync_error_badge");
     }
 
     private void setUpProfileDataCache(@DrawableRes int badgeResId) {

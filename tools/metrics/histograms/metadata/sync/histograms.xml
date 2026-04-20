@@ -2367,23 +2367,6 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
-<histogram name="Sync.SyncErrorCard{SyncErrorReason}" enum="SyncErrorUiAction"
-    expires_after="2026-07-12">
-  <owner>ankushkush@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Android only.
-
-    Sync error card is shown to syncing users, whenever the user navigates to
-    the manage sync settings page and there exists a {SyncErrorReason} sync
-    error.
-
-    Recorded whenever an error card is shown to the user, and if the user
-    interacts with the card (i.e. presses the button to resolve the error).
-  </summary>
-  <token key="SyncErrorReason" variants="SyncErrorReason"/>
-</histogram>
-
 <histogram name="Sync.SyncErrorInfobarDismissed" enum="SyncErrorInfobarTypes"
     expires_after="2026-08-30">
   <owner>rgod@google.com</owner>

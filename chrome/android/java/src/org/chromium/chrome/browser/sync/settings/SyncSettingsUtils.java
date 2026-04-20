@@ -176,36 +176,6 @@ public class SyncSettingsUtils {
         }
     }
 
-    public static @Nullable String getSyncErrorCardButtonLabel(
-            Context context, @UserActionableError int error) {
-        switch (error) {
-            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-            case UserActionableError.UNRECOVERABLE_ERROR:
-                // Both these errors should be resolved by signing the user again.
-                return context.getString(R.string.auth_error_card_button);
-            case UserActionableError.NEEDS_CLIENT_UPGRADE:
-                return context.getString(
-                        R.string.client_out_of_date_error_card_button,
-                        ApkInfo.getHostPackageLabel());
-            case UserActionableError.NEEDS_PASSPHRASE:
-                return context.getString(R.string.passphrase_required_error_card_button);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.trusted_vault_error_card_button);
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                return context.getString(R.string.sync_promo_turn_on_sync);
-            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
-                return context.getString(R.string.password_manager_outdated_gms_positive_button);
-            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                return context.getString(R.string.learn_more);
-            case UserActionableError.NONE:
-            default:
-                return null;
-        }
-    }
-
     /** Return a short summary of the current sync status. */
     public static String getSyncStatusSummary(Context context, Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);

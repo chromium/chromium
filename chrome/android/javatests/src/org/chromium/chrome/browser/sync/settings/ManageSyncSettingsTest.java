@@ -108,7 +108,6 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TransportState;
-import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -647,46 +646,6 @@ public class ManageSyncSettingsTest {
 
         // Native client should fetch new keys and get out of TrustedVaultKeyRequired state.
         SyncTestUtil.waitForTrustedVaultKeyRequired(false);
-    }
-
-    /**
-     * Test the trusted vault recoverability fix flow, which involves launching an intent and
-     * finally calling TrustedVaultClient.notifyRecoverabilityChanged().
-     */
-    @Test
-    @LargeTest
-    @Feature({"Sync"})
-    @DisabledTest(message = "crbug.com/386744084")
-    public void testTrustedVaultRecoverabilityFix() {
-        final byte[] trustedVaultKey = new byte[] {1, 2, 3, 4};
-
-        mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(trustedVaultKey);
-
-        // Mimic retrieval having completed earlier.
-        SyncTestRule.FakeTrustedVaultClientBackend.get()
-                .setKeys(Collections.singletonList(trustedVaultKey));
-        SyncTestRule.FakeTrustedVaultClientBackend.get().startPopulateKeys();
-
-        SyncTestRule.FakeTrustedVaultClientBackend.get().setRecoverabilityDegraded(true);
-
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        // Initially recoverability should be reported as degraded.
-        SyncTestUtil.waitForTrustedVaultRecoverabilityDegraded(true);
-
-        // Mimic the user tapping on the error card's button. This should start
-        // FakeRecoverabilityDegradedFixActivity and notify native client that recoverability has
-        // changed. Right before FakeRecoverabilityDegradedFixActivity completion
-        // FakeTrustedVaultClientBackend will exit the recoverability degraded state.
-        final ManageSyncSettings fragment = startManageSyncPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    fragment.onSyncErrorCardPrimaryButtonClicked();
-                });
-
-        // Native client should fetch the new recoverability state and get out of the
-        // degraded-recoverability state.
-        SyncTestUtil.waitForTrustedVaultRecoverabilityDegraded(false);
     }
 
     @Test
@@ -1321,38 +1280,6 @@ public class ManageSyncSettingsTest {
         // Mimic the user tapping on the positive(submit) button with an empty(wrong) passphrase.
         onView(withText(R.string.submit)).perform(click());
         onView(withId(R.id.verifying)).check(matches(withText(R.string.sync_passphrase_incorrect)));
-    }
-
-    // TODO(crbug.com/330438265): Extend this test for the identity error card.
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    @DisabledTest(message = "crbug.com/386744084")
-    public void testSyncErrorCardForUpmBackendOutdatedUpdatedDynamically() {
-        setupMockSyncService();
-        when(mSyncService.getUserActionableError())
-                .thenReturn(UserActionableError.NEEDS_UPM_BACKEND_UPGRADE);
-
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
-        SyncErrorCardPreference preference =
-                (SyncErrorCardPreference)
-                        fragment.findPreference(ManageSyncSettings.PREF_SYNC_ERROR_CARD_PREFERENCE);
-
-        // The error card exists.
-        Assert.assertTrue(preference.isShown());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(mSyncService.getUserActionableError())
-                            .thenReturn(UserActionableError.NONE);
-                    // TODO(crbug.com/327623232): Observe such changes instead.
-                    preference.syncStateChanged();
-                });
-        // The error card is now hidden.
-        Assert.assertFalse(preference.isShown());
     }
 
     @Test
