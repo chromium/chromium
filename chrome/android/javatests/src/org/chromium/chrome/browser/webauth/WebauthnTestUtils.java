@@ -353,6 +353,11 @@ public class WebauthnTestUtils {
             return Origin.create(mLastUrl);
         }
 
+        @Override
+        public RenderFrameHost getMainFrame() {
+            return this;
+        }
+
         public void setLastCommittedUrl(GURL url) {
             mLastUrl = url;
         }

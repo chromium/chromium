@@ -457,6 +457,20 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     @SuppressWarnings("NewApi")
     private void handlePasswordOnlyImmediateRequest(GetCredentialOptions options, Origin origin) {
         assert options.password && options.mediation == Mediation.IMMEDIATE;
+
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
+        if (frameHost == null || frameHost.getMainFrame() != frameHost) {
+            logError(
+                    TAG,
+                    "Password-only immediate mediation requests can only be issued from the main"
+                            + " frame");
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
+            return;
+        }
+
         final String originString = convertOriginToString(origin);
         if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
             if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
@@ -557,6 +571,13 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             if (webContents != null && webContents.isIncognito()) {
                 log(TAG, "Immediate Get called in Incognito mode");
                 mBarrier.setImmediateIncognito();
+            }
+            if (frameHost.getMainFrame() != frameHost && options.password) {
+                log(
+                        TAG,
+                        "Immediate Get request in an iframe cannot access passwords. Only passkeys"
+                                + " will be available.");
+                options.password = false;
             }
         }
 

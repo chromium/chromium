@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -768,6 +769,69 @@ public class Fido2CredentialRequestRobolectricTest {
         handleGetCredentialRequest();
 
         verify(mBarrierMock).onFido2ApiCancelled(eq(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+    }
+
+    @Test
+    @SmallTest
+    public void testImmediateGetCredential_passwordOnly_subframe_fails() {
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.publicKey = null;
+        options.password = true;
+        options.mediation = Mediation.IMMEDIATE;
+
+        RenderFrameHost subframe = Mockito.mock(RenderFrameHost.class);
+        doReturn(subframe).when(mAuthenticationContextProviderMock).getRenderFrameHost();
+        doReturn(mFrameHost).when(subframe).getMainFrame();
+
+        setUpGetCredentialCallback();
+        mRequest.handleGetCredentialRequest(options, mOrigin, mOrigin, /* payment= */ null);
+
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+    }
+
+    @Test
+    @SmallTest
+    public void testImmediateGetCredential_iframeWithPassword_passwordDisabled() {
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestOptions.password = true;
+
+        RenderFrameHost subframe = Mockito.mock(RenderFrameHost.class);
+
+        // `doReturn` overrides the existing stub from setUp.
+        doReturn(subframe).when(mAuthenticationContextProviderMock).getRenderFrameHost();
+        doReturn(mFrameHost).when(subframe).getMainFrame();
+
+        GURL gurl =
+                new GURL(
+                        "https://subdomain.example.test:443/content/test/data/android/authenticator.html");
+        doReturn(gurl).when(subframe).getLastCommittedURL();
+        doReturn(mOrigin).when(subframe).getLastCommittedOrigin();
+
+        doAnswer(
+                        (invocation) -> {
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
+                                    .onResult(
+                                            new WebAuthSecurityChecksResults(
+                                                    AuthenticatorStatus.SUCCESS, false));
+                            return null;
+                        })
+                .when(subframe)
+                .performGetAssertionWebAuthSecurityChecks(
+                        any(), any(), anyBoolean(), any(), any(), any());
+
+        CredManSupportProvider.setupForTesting(Build.VERSION_CODES.UPSIDE_DOWN_CAKE, true);
+
+        mRequest.handleGetCredentialRequest(mRequestOptions, mOrigin, mOrigin, /* payment= */ null);
+
+        ArgumentCaptor<GetCredentialOptions> optionsCaptor =
+                ArgumentCaptor.forClass(GetCredentialOptions.class);
+        verify(mCredManHelperMock)
+                .startPrefetchRequest(
+                        optionsCaptor.capture(), any(), any(), any(), any(), any(), anyBoolean());
+
+        assertThat(optionsCaptor.getValue().password).isFalse();
     }
 
     @Test
