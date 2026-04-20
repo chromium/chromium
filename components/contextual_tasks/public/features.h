@@ -71,6 +71,10 @@ BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
 // Enables updating the model from URL parameters on every inner navigation.
 BASE_DECLARE_FEATURE(kContextualTasksUpdateModelOnNavigation);
 
+// Enables intercepting YouTube links with timestamps to seek video instead of
+// navigating.
+BASE_DECLARE_FEATURE(kContextualTasksVideoCitations);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
 
 // Enum denoting which entry point can show when enabled.

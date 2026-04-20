@@ -48,6 +48,10 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
+namespace lens {
+class LensMediaLinkHandler;
+}  // namespace lens
+
 namespace contextual_tasks {
 class ContextualTasksService;
 class ContextualTasksUIInterface;
@@ -301,6 +305,13 @@ class ContextualTasksUiService : public KeyedService {
   virtual void LoadUrlInWebContents(const GURL& url,
                                     content::WebContents* web_contents);
 
+  // Creates a LensMediaLinkHandler for the given WebContents.
+  // Virtual to allow overriding in tests to mock the handler.
+#if !BUILDFLAG(IS_ANDROID)
+  virtual std::unique_ptr<lens::LensMediaLinkHandler> CreateMediaLinkHandler(
+      content::WebContents* web_contents);
+#endif
+
  private:
   void StartAccessTokenFetch();
 
@@ -325,6 +336,12 @@ class ContextualTasksUiService : public KeyedService {
   tabs::TabInterface* MaybeFocusExistingOpenTab(const GURL& url,
                                                 TabListInterface* tab_list,
                                                 const base::Uuid& task_id);
+
+  // Handles video citation links by seeking existing video if applicable.
+  // Returns true if handled.
+  bool MaybeHandleVideoCitation(const GURL& url,
+                                tabs::TabInterface* tab,
+                                const base::Uuid& task_id);
 
   // A callback for checking whether text fragments from a URL are on a page.
   void OnTextFinderLookupComplete(
