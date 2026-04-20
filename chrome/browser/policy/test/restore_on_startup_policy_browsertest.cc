@@ -97,7 +97,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                  base::Value(SessionStartupPref::kPrefValueNewTab), nullptr);
     provider_.UpdateChromePolicy(policies);
-    expected_urls_.push_back(GURL(chrome::kChromeUINewTabURL));
+    expected_urls_.push_back(chrome::ChromeUINewTabURLAsGURL());
   }
 
   void Last() {
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
       content::WebContents* web_contents = model->GetWebContentsAt(i);
       if (blocked_) {
         CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
-      } else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL)) {
+      } else if (expected_urls_[i] == chrome::ChromeUINewTabURLAsGURL()) {
         EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
                   web_contents->GetLastCommittedURL());
       } else {

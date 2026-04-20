@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
   if (promotions_disabled) {
     // Only the NTP should show.
     EXPECT_EQ(tab_strip->count(), 1);
-    if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+    if (url != chrome::ChromeUINewTabURLAsGURL()) {
       EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
     }
   } else {
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
     // The second tab should be the NTP.
     const auto& url_tab1 =
         tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
-    EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
+    EXPECT_EQ(url_tab1, chrome::ChromeUINewTabURLAsGURL());
   }
 }
 
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
   // Only the NTP should show. There are no other relevant tabs since
   // What's New has already been shown or promotional tabs are disabled.
   EXPECT_EQ(tab_strip->count(), 1);
-  if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+  if (url != chrome::ChromeUINewTabURLAsGURL()) {
     EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
   }
 }
