@@ -461,6 +461,15 @@ TEST(HttpChunkedDecoderTest, LongLengthLengthLine) {
   RunTestUntilFailure(inputs, 1);
 }
 
+// Test when a chunk is too big but it spans multiple reads.
+TEST(HttpChunkedDecoderTest, LongChunkLengthLineBypass) {
+  const int kLimit = HttpChunkedDecoder::kMaxLineBufLen;
+  std::string part1(kLimit - 1, 'A');
+  std::string part2 = "BC\n";
+  const std::vector<std::string_view> inputs = {part1, part2};
+  RunTestUntilFailure(inputs, 1);
+}
+
 }  // namespace
 
 }  // namespace net

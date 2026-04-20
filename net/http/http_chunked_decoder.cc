@@ -111,6 +111,10 @@ int HttpChunkedDecoder::ScanForChunkRemaining(base::span<const uint8_t> buf) {
 
     // Make buf point to the full line buffer to parse.
     if (!line_buf_.empty()) {
+      if (line_buf_.size() + buf.size() > kMaxLineBufLen) {
+        DVLOG(1) << "Chunked line length too long";
+        return ERR_INVALID_CHUNKED_ENCODING;
+      }
       line_buf_.append(base::as_string_view(buf));
       buf = base::as_byte_span(line_buf_);
     }
@@ -123,7 +127,7 @@ int HttpChunkedDecoder::ScanForChunkRemaining(base::span<const uint8_t> buf) {
       }
     } else if (chunk_terminator_remaining_) {
       if (!buf.empty()) {
-        DLOG(ERROR) << "chunk data not terminated properly";
+        DVLOG(1) << "chunk data not terminated properly";
         return ERR_INVALID_CHUNKED_ENCODING;
       }
       chunk_terminator_remaining_ = false;
@@ -135,14 +139,14 @@ int HttpChunkedDecoder::ScanForChunkRemaining(base::span<const uint8_t> buf) {
       }
 
       if (!ParseChunkSize(buf, &chunk_remaining_)) {
-        DLOG(ERROR) << "Failed parsing HEX from: " << base::as_string_view(buf);
+        DVLOG(1) << "Failed parsing HEX from: " << base::as_string_view(buf);
         return ERR_INVALID_CHUNKED_ENCODING;
       }
 
       if (chunk_remaining_ == 0)
         reached_last_chunk_ = true;
     } else {
-      DLOG(ERROR) << "missing chunk-size";
+      DVLOG(1) << "missing chunk-size";
       return ERR_INVALID_CHUNKED_ENCODING;
     }
     line_buf_.clear();
@@ -156,7 +160,7 @@ int HttpChunkedDecoder::ScanForChunkRemaining(base::span<const uint8_t> buf) {
     }
 
     if (line_buf_.length() + buf.size() > kMaxLineBufLen) {
-      DLOG(ERROR) << "Chunked line length too long";
+      DVLOG(1) << "Chunked line length too long";
       return ERR_INVALID_CHUNKED_ENCODING;
     }
 
