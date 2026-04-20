@@ -142,6 +142,7 @@
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/tracing_support.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -727,23 +728,15 @@ base::debug::CrashKeyString* GetNavigationRequestIsSameDocumentCrashKey() {
 }
 
 // Start a new nested async event with the given name.
-void EnterChildTraceEvent(perfetto::StaticString name,
-                          NavigationRequest* request) {
-  TRACE_EVENT_END("navigation", perfetto::Track(request->GetNavigationId()));
-  TRACE_EVENT_BEGIN("navigation", name,
-                    perfetto::Track(request->GetNavigationId()));
-}
-
-// Start a new nested async event with the given name and args.
-template <typename ArgType>
+template <class... Args>
 void EnterChildTraceEvent(perfetto::StaticString name,
                           NavigationRequest* request,
-                          const char* arg_name,
-                          ArgType arg_value) {
-  TRACE_EVENT_END("navigation", perfetto::Track(request->GetNavigationId()));
-  TRACE_EVENT_BEGIN("navigation", name,
-                    perfetto::Track(request->GetNavigationId()), arg_name,
-                    arg_value);
+                          Args... args) {
+  TRACE_EVENT_END(
+      "navigation",
+      request->GetNavigationTracingTrack());  // Closes the previous child event
+  TRACE_EVENT_BEGIN("navigation", name, request->GetNavigationTracingTrack(),
+                    args...);
 }
 
 network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
@@ -1770,6 +1763,18 @@ NavigationRequest::NavigationRequest(
                                 common_params_->should_replace_current_entry)),
       prefetched_signed_exchange_cache_(
           std::move(prefetched_signed_exchange_cache)),
+      navigation_trace_track_(
+          "NavigationRequest",
+          navigation_id_,
+          frame_tree_node->current_frame_host()->GetTracingTrack()),
+      breakdown_trace_track_(
+          "NavigationRequest:Breakdown",
+          navigation_id_,
+          frame_tree_node->current_frame_host()->GetTracingTrack()),
+      async_before_unload_trace_track_(
+          "NavigationRequest:AsyncBeforeUnload",
+          navigation_id_,
+          frame_tree_node->current_frame_host()->GetTracingTrack()),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       is_back_forward_cache_restore_(
@@ -1806,7 +1811,10 @@ NavigationRequest::NavigationRequest(
           GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)),
       network_restrictions_id_(std::nullopt) {
   TRACE_EVENT("navigation", "NavigationRequest::NavigationRequest",
-              perfetto::Flow::FromPointer(this), "navigation_request", this);
+              perfetto::Flow::FromPointer(this),
+              perfetto::protos::pbzero::ChromeTrackEvent::kNavigation, this);
+  TRACE_EVENT_BEGIN("navigation", "StartToCommit", breakdown_trace_track_,
+                    common_params_->navigation_start);
   CHECK(!common_params_->initiator_base_url ||
         !common_params_->initiator_base_url->is_empty());
   CHECK(!blink::IsRendererDebugURL(common_params_->url));
@@ -1865,11 +1873,10 @@ NavigationRequest::NavigationRequest(
   // Ensure the blink::RuntimeFeatureStateContext is initialized.
   runtime_feature_state_context_ = blink::RuntimeFeatureStateContext();
 
-  TRACE_EVENT_BEGIN("navigation", "NavigationRequest",
-                    perfetto::Track(navigation_id_), "navigation_request",
-                    this);
-  TRACE_EVENT_BEGIN("navigation", "Initializing",
-                    perfetto::Track(navigation_id_));
+  TRACE_EVENT_BEGIN(
+      "navigation", "NavigationRequest", GetNavigationTracingTrack(),
+      perfetto::protos::pbzero::ChromeTrackEvent::kNavigation, this);
+  TRACE_EVENT_BEGIN("navigation", "Initializing", GetNavigationTracingTrack());
 
   if (GetInitiatorFrameToken().has_value()) {
     RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
@@ -2315,9 +2322,10 @@ NavigationRequest::~NavigationRequest() {
 
   // Close "Initializing", or the last child event emitted in
   // EnterChildTraceEvent().
-  TRACE_EVENT_END("navigation", perfetto::Track(navigation_id_));
   TRACE_EVENT_END("navigation",
-                  /* NavigationRequest */ perfetto::Track(navigation_id_));
+                  navigation_trace_track_);  // Closes the last child event
+                                             // (e.g. Initializing)
+  TRACE_EVENT_END("navigation", navigation_trace_track_);  // NavigationRequest
 
   // If navigation has started but not finished, mark it as aborted for
   // Navigation callbacks.
@@ -2425,14 +2433,9 @@ NavigationRequest::~NavigationRequest() {
     GetDelegate()->DidFinishNavigation(this);
     ProcessOriginAgentClusterEndResult();
     if (IsInMainFrame()) {
-      // Navigation StartToCommit
-      TRACE_EVENT_END("navigation",
-                      perfetto::NamedTrack("StartToCommit",
-                                           reinterpret_cast<uintptr_t>(this)),
-                      "URL", common_params_->url.spec(), "Net Error Code",
-                      net_error_);
       MaybeRecordTraceEventsAndHistograms();
     }
+
     MaybeRecordNavigationStartAdjustments();
 
     // Abandon the prerender host reserved for activation if it exists.
@@ -2475,6 +2478,12 @@ NavigationRequest::~NavigationRequest() {
     }
   } else {
     GetDelegate()->DidCancelNavigationBeforeStart(this);
+  }
+
+  if (!navigation_start_to_commit_ended_) {
+    TRACE_EVENT_END("navigation",
+                    breakdown_trace_track_);  // Navigation StartToCommit
+    navigation_start_to_commit_ended_ = true;
   }
 }
 
@@ -3352,16 +3361,6 @@ void NavigationRequest::StartNavigation() {
   navigation_handle_proxy_->DidStart();
 #endif
 
-  if (IsInMainFrame()) {
-    CHECK(!common_params_->navigation_start.is_null());
-    CHECK(!blink::IsRendererDebugURL(common_params_->url));
-    TRACE_EVENT_BEGIN("navigation", "Navigation StartToCommit",
-                      perfetto::NamedTrack("StartToCommit",
-                                           reinterpret_cast<uintptr_t>(this)),
-                      common_params_->navigation_start, "Initial URL",
-                      common_params_->url.spec());
-  }
-
   if (IsSameDocument()) {
     EnterChildTraceEvent("Same document", this);
   }
@@ -3406,14 +3405,10 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   // |navigation_handle_proxy_|. See https://crbug.com/958396.
   if (IsNavigationStarted()) {
     GetDelegate()->DidFinishNavigation(this);
-    if (IsInMainFrame()) {
-      // Navigation StartToCommit
-      TRACE_EVENT_END("navigation",
-                      perfetto::NamedTrack("StartToCommit",
-                                           reinterpret_cast<uintptr_t>(this)),
-                      "URL", common_params_->url.spec(), "Net Error Code",
-                      net_error_);
-    }
+    TRACE_EVENT_END("navigation", breakdown_trace_track_, "URL",
+                    common_params_->url.spec(), "Net Error Code",
+                    net_error_);  // Navigation StartToCommit
+    navigation_start_to_commit_ended_ = true;
   }
 
   // Reset the state of the NavigationRequest, and the navigation_handle_id.
@@ -12084,8 +12079,7 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   CHECK(!blink::IsRendererDebugURL(common_params_->url));
   base::TimeTicks navigation_start_time = common_params_->navigation_start;
   CHECK(!navigation_start_time.is_null());
-  const auto trace_id =
-      perfetto::NamedTrack("NavigationBreakdown", navigation_id_);
+  const auto& trace_id = breakdown_trace_track_;
   const base::TimeTicks loader_start_time =
       navigation_handle_timing_.loader_start_time;
   const base::TimeTicks first_request_start_time =
@@ -12157,6 +12151,10 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   MAYBE_RECORD_TRACE_AND_HISTOGRAM0("ReceiveResponseToCommitNavigation",
                                     receive_response_time_,
                                     navigation_commit_sent_time);
+
+  TRACE_EVENT_END("navigation", breakdown_trace_track_,
+                  navigation_commit_sent_time);  // Navigation StartToCommit
+  navigation_start_to_commit_ended_ = true;
 
   // UKM data is sampled at a frequency of `kUkmSamplingRate`.
   if (record_metrics && base::RandDouble() < kUkmSamplingRate &&
@@ -12281,11 +12279,12 @@ void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
   base::UmaHistogramPercentage(histogram_name + ".Percentage", percentage);
 
   // Show trace events indicating where the adjustment occurred in time.
-  const auto trace_id =
-      perfetto::NamedTrack("NavigationStartAdjustment", navigation_id_);
-  TRACE_EVENT_BEGIN("navigation", "NavigationStartAdjustment", trace_id,
-                    original_navigation_start_, "Percentage", percentage);
-  TRACE_EVENT_END("navigation", trace_id, common_params().navigation_start);
+  TRACE_EVENT_BEGIN("navigation", "NavigationStartAdjustment",
+                    breakdown_trace_track_, original_navigation_start_,
+                    "Percentage", percentage);
+  TRACE_EVENT_END(
+      "navigation", breakdown_trace_track_,
+      common_params().navigation_start);  // NavigationStartAdjustment
 }
 
 void NavigationRequest::WillStartBeforeUnload() {
@@ -12558,10 +12557,12 @@ void NavigationRequest::SetAsyncBeforeUnloadCommitResumeClosure(
 
 void NavigationRequest::StartAsyncBeforeUnloadTimer() {
   CHECK(!async_before_unload_pending_replies_.empty());
-  TRACE_EVENT_BEGIN(
-      "navigation", "AsyncBeforeUnload",
-      perfetto::NamedTrack::FromPointer("AsyncBeforeUnload", this),
-      "Initial URL", common_params_->url.spec());
+  // Note: The AsyncBeforeUnload event runs in parallel with the navigation
+  // setup and is guaranteed to complete before commit. It is shown on a
+  // separate track to avoid overlapping with sequential breakdown phases.
+  TRACE_EVENT_BEGIN("navigation", "AsyncBeforeUnload",
+                    async_before_unload_trace_track_, "Initial URL",
+                    common_params_->url.spec());
   async_before_unload_timeout_.Start(
       FROM_HERE, features::kAsyncBeforeUnloadTimeout.Get(),
       base::BindOnce(
@@ -12602,7 +12603,7 @@ void NavigationRequest::MaybeResumeAsyncBeforeUnloadCommit(
     return;
   }
   TRACE_EVENT_END("navigation",
-                  perfetto::NamedTrack::FromPointer("AsyncBeforeUnload", this));
+                  async_before_unload_trace_track_);  // AsyncBeforeUnload
   // Proceed with navigation commit.
   async_before_unload_timeout_.Stop();
   if (async_before_unload_commit_resume_closure_) {
@@ -12626,6 +12627,10 @@ bool NavigationRequest::IsInitialWebUINavigation() {
 #else
   return false;
 #endif
+}
+
+perfetto::NamedTrack NavigationRequest::GetNavigationTracingTrack() const {
+  return navigation_trace_track_;
 }
 
 }  // namespace content

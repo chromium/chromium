@@ -61,6 +61,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -516,6 +517,10 @@ class CONTENT_EXPORT NavigationRequest
   bool IsInitialWebUISyncNavigation() override;
   bool IsInitialWebUINavigation() override;
   // End of NavigationHandle implementation.
+
+  // Returns a perfetto Track that represents this navigation, nested under the
+  // frame track.
+  perfetto::NamedTrack GetNavigationTracingTrack() const;
 
   // mojom::NavigationRendererCancellationListener implementation:
   void RendererCancellationWindowEnded() override;
@@ -2964,6 +2969,20 @@ class CONTENT_EXPORT NavigationRequest
   // Unique id that identifies the navigation for which this NavigationRequest
   // is created.
   const int64_t navigation_id_ = ++unique_id_counter_;
+
+  // The tracing track for this navigation, parented to the frame track.
+  // Stored to ensure all events for this navigation use the same track ID.
+  perfetto::NamedTrack navigation_trace_track_;
+
+  // The track used for breakdown events of this navigation.
+  perfetto::NamedTrack breakdown_trace_track_;
+
+  // The track used for AsyncBeforeUnload events of this navigation.
+  perfetto::NamedTrack async_before_unload_trace_track_;
+
+  // True if "Navigation StartToCommit" trace event has been ended.
+  bool navigation_start_to_commit_ended_ = false;
+
   // static member for generating the unique id above.
   static int64_t unique_id_counter_;
 
