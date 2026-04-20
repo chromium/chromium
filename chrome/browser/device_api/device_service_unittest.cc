@@ -30,9 +30,12 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -50,9 +53,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -415,6 +420,17 @@ class DeviceAPIServiceIwaTest
     feature_list_.InitAndEnableFeature(param);
   }
 
+  void AddScopeExtension(const webapps::AppId& app_id,
+                         const std::string& origin_str,
+                         bool has_wildcard = false) {
+    web_app::ScopedRegistryUpdate update =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    web_app::WebApp* app = update->UpdateApp(app_id);
+    app->SetValidatedScopeExtensions(
+        {web_app::ScopeExtensionInfo::CreateForOrigin(
+            url::Origin::Create(GURL(origin_str)), has_wildcard)});
+  }
+
  private:
   enum class InstallType { kPolicy, kDevMode, kGraphicalInstaller };
   web_app::IsolatedWebAppUrlInfo InstallIWA(InstallType install_type) {
@@ -537,6 +553,17 @@ TEST_P(DeviceAPIServiceIwaTest, CheckDevModeInstalledAppsWithIwaDevModeFlag) {
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
               "Permissions policy blocks access to Device Attributes.");
   }
+}
+
+TEST_P(DeviceAPIServiceIwaTest,
+       HttpsScopeExtensionOriginDoesNotInheritIwaTrust) {
+  auto url_info = InstallTrustedIWA();
+  AddScopeExtension(url_info.app_id(), "https://partner.example");
+
+  TryCreatingService(GURL("https://partner.example/path"),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  EXPECT_FALSE(remote()->is_connected());
 }
 
 INSTANTIATE_TEST_SUITE_P(

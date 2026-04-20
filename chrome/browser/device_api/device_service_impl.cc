@@ -93,22 +93,13 @@ Profile* GetProfile(content::RenderFrameHost& host) {
 }
 
 std::optional<std::reference_wrapper<const web_app::WebAppRegistrar>>
-GetRegistrar(content::RenderFrameHost& host, const url::Origin& origin) {
+GetRegistrar(content::RenderFrameHost& host) {
   const web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForWebApps(GetProfile(host));
   if (!web_app_provider) {
     return std::nullopt;
   }
-  // In this case we will not modify any data so it is safe to access registrar
-  // without lock
   return web_app_provider->registrar_unsafe();
-}
-
-std::optional<webapps::AppId> GetAppId(
-    const web_app::WebAppRegistrar& registrar,
-    const url::Origin& origin) {
-  return registrar.FindBestAppWithUrlInScope(
-      origin.GetURL(), web_app::WebAppFilter::InstalledInChrome());
 }
 
 // Check whether an app with the target origin is in the WebAppRegistrar and is
@@ -116,23 +107,12 @@ std::optional<webapps::AppId> GetAppId(
 bool IsDevModeInstalledIwaOrigin(content::RenderFrameHost& host,
                                  const url::Origin& origin) {
   ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
-                   GetRegistrar(host, origin), [] { return false; });
-  ASSIGN_OR_RETURN(webapps::AppId app_id, GetAppId(registrar, origin),
-                   [] { return false; });
-  return registrar.AppMatches(app_id,
-                              web_app::WebAppFilter::IsDevModeIsolatedApp());
-}
-
-// Check whether an app with the target origin is in the WebAppRegistrar and is
-// a force installed IWA.
-bool IsForceInstalledIwaOrigin(content::RenderFrameHost& host,
-                               const url::Origin& origin) {
-  ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
-                   GetRegistrar(host, origin), [] { return false; });
-  ASSIGN_OR_RETURN(webapps::AppId app_id, GetAppId(registrar, origin),
-                   [] { return false; });
-  return registrar.AppMatches(
-      app_id, web_app::WebAppFilter::PolicyInstalledIsolatedWebApp());
+                   GetRegistrar(host), [] { return false; });
+  return registrar
+      .FindBestAppWithUrlInScope(origin.GetURL(),
+                                 web_app::WebAppFilter::IsDevModeIsolatedApp(),
+                                 {.exclude_scope_extensions = true})
+      .has_value();
 }
 
 bool IsAffiliatedUser() {
@@ -165,8 +145,16 @@ bool IsTrustedContext(content::RenderFrameHost& host,
     return IsEqualToKioskOrigin(origin);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return IsForceInstalledIwaOrigin(host, origin) ||
-         IsDevModeInstalledIwaOrigin(host, origin);
+
+  ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
+                   GetRegistrar(host), [] { return false; });
+  return registrar
+      .FindBestAppWithUrlInScope(
+          origin.GetURL(),
+          web_app::WebAppFilter::PolicyInstalledIsolatedWebApp() |
+              web_app::WebAppFilter::IsDevModeIsolatedApp(),
+          {.exclude_scope_extensions = true})
+      .has_value();
 }
 
 bool IsAllowedByPermissionsPolicy(content::RenderFrameHost& host) {
