@@ -4,6 +4,7 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
@@ -37,6 +38,16 @@ const char kPageHtml[] =
     "  </p>"
     "</div>"
     "</body></html>";
+
+const char kScrollPageHtml[] =
+    "<html><body>"
+    "<div style='height: 2000px;'></div>"
+    "  <p id='target'>"
+    "    This is a long and unique text that should be easy to generate a text "
+    "fragment for without any ambiguity."
+    "  </p>"
+    "</body></html>";
+
 NSString* const kTargetDeviceName = @"My other device";
 NSString* const kSendTabToSelfModalCancelButtonId =
     @"kSendTabToSelfModalCancelButton";
@@ -46,10 +57,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
   http_response->set_content_type("text/html");
-  http_response->set_content(kPageHtml);
+  http_response->set_content(request.relative_url == "/scroll" ? kScrollPageHtml
+                                                               : kPageHtml);
   return http_response;
 }
-
 }  // namespace
 
 @interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
@@ -200,7 +211,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // Verify that the text fragment was successfully captured and attached to the
   // STTS entry in the model.
   NSString* urlString =
-      base::SysUTF8ToNSString(self.testServer->GetURL("/").spec());
+      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
   NSString* textFragment =
       [ChromeEarlGrey textFragmentForSendTabToSelfEntryWithURL:urlString];
   GREYAssertTrue(
@@ -209,6 +220,88 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       @"Text fragment should be captured. Expected '%s' (case-insensitive) but "
       @"got %@",
       kPageText, textFragment);
+}
+
+// Tests that a text fragment is correctly consumed and scrolls the page
+// when passed internally during an OpenNewTabCommand, without highlighting.
+- (void)testRestoreScrollPosition {
+  NSString* urlString =
+      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+
+  // Use the known text fragment for the page content.
+  NSString* textFragment = @"This%20is%20a%20long,without%20any%20ambiguity.";
+
+  // Open the new tab with the text fragment.
+  [ChromeEarlGrey openNewTabWithURL:urlString textFragment:textFragment];
+
+  // Wait for the new tab to load and the fragment to be applied.
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+
+  // Verify that the page has scrolled down to the fragment.
+  NSString* checkScrollJS = @"window.scrollY > 0;";
+  [ChromeEarlGrey waitForJavaScriptCondition:checkScrollJS];
+
+  // Verify that the polyfill did not leave any highlight marks.
+  NSString* checkHighlightJS =
+      @"document.getElementsByTagName('mark').length === 0;";
+  BOOL noHighlight =
+      [ChromeEarlGrey evaluateJavaScript:checkHighlightJS].GetBool();
+  GREYAssertTrue(noHighlight, @"Text fragment should not be highlighted.");
+}
+
+// Tests that an invalid text fragment is safely ignored and doesn't crash or
+// highlight.
+- (void)testRestoreScrollPositionInvalidFragment {
+  NSString* urlString =
+      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+
+  // Use an invalid text fragment.
+  NSString* textFragment = @"InvalidFragmentThatDoesNotMatchAnything";
+
+  // Open the new tab with the text fragment.
+  [ChromeEarlGrey openNewTabWithURL:urlString textFragment:textFragment];
+
+  // Wait for the new tab to load.
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+
+  // Verify that the page has NOT scrolled down. We wait for a short duration
+  // to ensure any pending async scrolls do not occur.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  NSString* checkScrollJS = @"window.scrollY === 0;";
+  BOOL hasNotScrolled =
+      [ChromeEarlGrey evaluateJavaScript:checkScrollJS].GetBool();
+  GREYAssertTrue(hasNotScrolled, @"Page should not have scrolled.");
+
+  // Verify that the polyfill did not leave any highlight marks.
+  NSString* checkHighlightJS =
+      @"document.getElementsByTagName('mark').length === 0;";
+  BOOL noHighlight =
+      [ChromeEarlGrey evaluateJavaScript:checkHighlightJS].GetBool();
+  GREYAssertTrue(noHighlight, @"Text fragment should not be highlighted.");
+}
+
+// Tests that an empty text fragment is safely ignored.
+- (void)testRestoreScrollPositionEmptyFragment {
+  NSString* urlString =
+      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+
+  // Use an empty text fragment.
+  NSString* textFragment = @"";
+
+  // Open the new tab with the text fragment.
+  [ChromeEarlGrey openNewTabWithURL:urlString textFragment:textFragment];
+
+  // Wait for the new tab to load.
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+
+  // Verify that the page has NOT scrolled down. We wait for a short duration
+  // to ensure any pending async scrolls do not occur.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  NSString* checkScrollJS = @"window.scrollY === 0;";
+  BOOL hasNotScrolled =
+      [ChromeEarlGrey evaluateJavaScript:checkScrollJS].GetBool();
+  GREYAssertTrue(hasNotScrolled,
+                 @"Page should not have scrolled for empty fragment.");
 }
 
 @end

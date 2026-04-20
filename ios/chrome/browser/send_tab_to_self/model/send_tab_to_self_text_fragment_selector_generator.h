@@ -59,6 +59,10 @@ class SendTabToSelfTextFragmentSelectorGenerator
       base::OnceCallback<void(std::optional<SendTabToSelfTextFragment>)>
           callback);
 
+  // Attempts to scroll the page to the given text fragment.
+  void ScrollToTextFragment(web::WebState* web_state,
+                            std::string_view text_fragment);
+
  private:
   friend class base::NoDestructor<SendTabToSelfTextFragmentSelectorGenerator>;
 

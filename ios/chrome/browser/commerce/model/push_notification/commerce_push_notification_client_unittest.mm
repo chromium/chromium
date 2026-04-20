@@ -235,9 +235,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
         action_identifier, user_info, std::move(completion));
   }
 
-  std::vector<std::pair<GURL, base::OnceCallback<void(Browser*)>>>&
-  GetUrlsDelayedForLoading() {
-    return commerce_push_notification_client_->urls_delayed_for_loading_;
+  base::OnceCallbackList<void(Browser*)>& GetActionsDelayedForLoading() {
+    return commerce_push_notification_client_->actions_delayed_for_loading_;
   }
 
   void OnSceneActiveForegroundBrowserReady() {
@@ -431,12 +430,12 @@ TEST_F(CommercePushNotificationClientTest, DISABLED_TestBrowserInitialization) {
   // Simulate user clicking 'visit site'.
   HandleNotificationInteraction(kVisitSiteActionId, user_info,
                                 base::DoNothing());
-  EXPECT_EQ(1u, GetUrlsDelayedForLoading().size());
+  EXPECT_FALSE(GetActionsDelayedForLoading().empty());
   CommercePushNotificationClient* commerce_push_notification_client =
       GetCommercePushNotificationClient();
   browser_list_->AddBrowser(GetBrowser());
   commerce_push_notification_client->OnSceneActiveForegroundBrowserReady();
-  EXPECT_EQ(0u, GetUrlsDelayedForLoading().size());
+  EXPECT_TRUE(GetActionsDelayedForLoading().empty());
 
   // Check PriceDropNotification Destination URL loaded.
   OCMExpect([application_handler_

@@ -4,6 +4,7 @@
 
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {generateFragment, GenerateFragmentStatus, isValidRangeForFragmentGeneration} from '//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js';
+import * as utils from '//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js';
 
 /**
  * @fileoverview Interface for Send Tab To Self to use the
@@ -90,6 +91,64 @@ function getLinkToTextForViewportCenter() {
   };
 }
 
+/**
+ * Inserts a temporary span at the start of the matched range to scroll to it,
+ * without modifying the text content with visible highlights.
+ */
+function scrollRangeIntoView(range: Range) {
+  try {
+    const span = document.createElement('span');
+    span.id = 'stts-scroll-target';
+    range.insertNode(span);
+
+    // Find scrollable parent and scroll it into view, starting from the span.
+    span.scrollIntoView({
+      behavior: 'auto',
+      block: 'center',
+      inline: 'nearest',
+    });
+
+    // Delay removal to allow native scroll to complete in WKWebView.
+    window.setTimeout(() => {
+      span.remove();
+    }, 1000);
+  } catch (e: any) {
+    // Ignore errors during scroll; we don't want to crash page scripts.
+  }
+}
+
+/**
+ * Scrolls the page to the target text fragment.
+ */
+async function scrollToTextFragment(fragment: string) {
+  try {
+    const parsedFragmentDirectives =
+        utils.parseFragmentDirectives({text: [fragment]});
+    const parsed = parsedFragmentDirectives['text']?.[0];
+    if (!parsed) {
+      return;
+    }
+
+    // Modern sites often render content asynchronously after PageLoaded.
+    // Retry searching for the text fragment for up to 1 second to give the
+    // page time to populate its DOM.
+    const maxAttempts = 10;
+    for (let attempts = 0; attempts < maxAttempts; attempts++) {
+      const ranges = utils.processTextFragmentDirective(parsed);
+      if (ranges && ranges.length > 0) {
+        scrollRangeIntoView(ranges[0]);
+        return;
+      }
+      await new Promise(resolve => window.setTimeout(resolve, 100));
+    }
+  } catch (e: any) {
+    // Ignore errors during parse or processing.
+  }
+}
+
 const sttsApi = new CrWebApi('stts');
+
 sttsApi.addFunction('getLinkToText', getLinkToTextForViewportCenter);
+sttsApi.addFunction('scrollToTextFragment', scrollToTextFragment);
 gCrWeb.registerApi(sttsApi);
+

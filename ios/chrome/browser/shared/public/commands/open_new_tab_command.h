@@ -107,6 +107,12 @@ enum class OpenPosition {
 // Referrer for the URL.
 @property(nonatomic, readonly, assign) const web::Referrer& referrer;
 
+// A text fragment to be attached to the NavigationItem's internal state so
+// that the page scrolls to the matched text upon loading. The string should
+// contain only the selector value (the part after "text=" in a URL directive).
+// See https://wicg.github.io/scroll-to-text-fragment/ for details.
+@property(nonatomic, copy) NSString* textFragment;
+
 // Whether or not this URL command comes from a chrome context (e.g., settings),
 // as opposed to a web page context.
 @property(nonatomic, readonly, assign) BOOL fromChrome;

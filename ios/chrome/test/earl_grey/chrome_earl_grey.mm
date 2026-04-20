@@ -2069,4 +2069,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ReaderModeAppInterface hideReaderMode];
 }
 
+- (void)openNewTabWithURL:(NSString*)URL textFragment:(NSString*)textFragment {
+  [ChromeEarlGreyAppInterface openNewTabWithURL:URL textFragment:textFragment];
+}
+
 @end

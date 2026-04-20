@@ -155,6 +155,10 @@ enum class TipsNotificationType;
 // Opens a new tab, and does not wait for animations to complete.
 + (void)openNewTab;
 
+// Opens a new tab with the given URL and attaches the text fragment to its
+// internal NavigationItem to trigger scroll restoration upon page load.
++ (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment;
+
 // Simulates opening a custom `URL` from another application.
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL;
 

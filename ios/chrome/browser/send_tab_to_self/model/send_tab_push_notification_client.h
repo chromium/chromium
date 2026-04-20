@@ -37,8 +37,14 @@ class SendTabPushNotificationClient : public PushNotificationClient {
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
 
  private:
-  // Handles the completion of URL loads.
-  void OnURLLoadedInNewTab(std::string guid, Browser* browser);
+  // Extracts the scroll text fragment if present and opens the URL in a new
+  // tab.
+  void LoadSendTabUrlInNewTab(const GURL& url,
+                              std::string_view identifier,
+                              Browser* browser);
+
+  // Subscriptions for delayed actions.
+  std::vector<base::CallbackListSubscription> delayed_actions_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<SendTabPushNotificationClient> weak_ptr_factory_{this};

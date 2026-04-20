@@ -21,6 +21,7 @@
 namespace {
 const char kScriptName[] = "send_tab_to_self_fragments";
 const char kGetLinkToTextFunction[] = "stts.getLinkToText";
+const char kScrollToTextFragmentFunction[] = "stts.scrollToTextFragment";
 
 // Translates the JS-layer result into a SendTabToSelfTextFragment struct.
 void OnGetTextFragmentResult(
@@ -131,4 +132,19 @@ void SendTabToSelfTextFragmentSelectorGenerator::GetTextFragment(
   if (!called) {
     std::move(callback2).Run(std::nullopt);
   }
+}
+
+void SendTabToSelfTextFragmentSelectorGenerator::ScrollToTextFragment(
+    web::WebState* web_state,
+    std::string_view text_fragment) {
+  web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  if (!main_frame) {
+    return;
+  }
+
+  base::ListValue parameters;
+  parameters.Append(text_fragment);
+
+  CallJavaScriptFunction(main_frame, kScrollToTextFragmentFunction, parameters,
+                         base::DoNothing(), base::TimeDelta());
 }

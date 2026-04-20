@@ -647,6 +647,10 @@ void OnListFamilyMembersResponse(
 - (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
   DCHECK([command fromChrome]);
   UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
+  if (command.textFragment.length) {
+    params.web_params.internal_scroll_to_text_fragment =
+        base::SysNSStringToUTF8(command.textFragment);
+  }
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
   id<TabOpening> tabOpener = _tabOpener;
   ProceduralBlock completion = ^{
@@ -756,6 +760,10 @@ void OnListFamilyMembersResponse(
 
   UrlLoadParams params =
       UrlLoadParams::InNewTab(command.URL, command.virtualURL);
+  if (command.textFragment.length) {
+    params.web_params.internal_scroll_to_text_fragment =
+        base::SysNSStringToUTF8(command.textFragment);
+  }
   params.SetInBackground(command.inBackground);
   params.web_params.referrer = command.referrer;
   params.web_params.extra_headers = [command.extraHeaders copy];

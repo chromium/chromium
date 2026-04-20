@@ -13,6 +13,8 @@ source_set("model") {
     "send_tab_push_notification_client.mm",
     "send_tab_to_self_browser_agent.h",
     "send_tab_to_self_browser_agent.mm",
+    "send_tab_to_self_tab_helper.h",
+    "send_tab_to_self_tab_helper.mm",
     "send_tab_to_self_text_fragment_selector_generator.h",
     "send_tab_to_self_text_fragment_selector_generator.mm",
     "send_tab_to_self_util.h",
@@ -28,6 +30,7 @@ source_set("model") {
     "//components/shared_highlighting/core/common",
     "//components/sync",
     "//components/sync_device_info",
+    "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme:theme_grit",
     "//ios/chrome/browser/infobars/model",
@@ -87,6 +90,7 @@ source_set("unit_tests") {
     "ios_send_tab_to_self_infobar_delegate_unittest.mm",
     "send_tab_push_notification_client_unittest.mm",
     "send_tab_to_self_browser_agent_unittest.mm",
+    "send_tab_to_self_tab_helper_unittest.mm",
     "send_tab_to_self_text_fragment_selector_generator_unittest.mm",
   ]
   deps = [

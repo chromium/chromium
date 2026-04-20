@@ -341,6 +341,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // exists or no fragment is set.
 - (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
 
+// Opens a new tab with the given URL and attaches the text fragment to its
+// internal NavigationItem to trigger scroll restoration upon page load.
+- (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment;
+
 // Triggers a sync cycle for a `type`.
 - (void)triggerSyncCycleForType:(syncer::DataType)type;
 

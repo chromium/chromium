@@ -17,6 +17,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/webauthn/ios/features.h"
@@ -98,6 +99,7 @@
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -219,6 +221,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState()));
 
   attacher.Create<AnnotationsTabHelper>();
+  attacher.CreateWhen<SendTabToSelfTabHelper>(base::FeatureList::IsEnabled(
+      send_tab_to_self::kSendTabToSelfPropagateScrollPosition));
 
   SafeBrowsingClient* client =
       SafeBrowsingClientFactory::GetForProfile(profile);

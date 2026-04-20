@@ -21,6 +21,7 @@
 @synthesize appendTo = _appendTo;
 @synthesize userInitiated = _userInitiated;
 @synthesize shouldFocusOmnibox = _shouldFocusOmnibox;
+@synthesize textFragment = _textFragment;
 
 - (instancetype)initInIncognito:(BOOL)inIncognito
                    inBackground:(BOOL)inBackground {
