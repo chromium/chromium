@@ -65,7 +65,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
                              content::BrowserContext* browser_context) override;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override;
 #endif

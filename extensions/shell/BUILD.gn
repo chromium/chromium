@@ -104,8 +104,6 @@ source_set("app_shell_lib") {
     "browser/desktop_controller.h",
     "browser/shell_app_delegate.cc",
     "browser/shell_app_delegate.h",
-    "browser/shell_app_view_guest_delegate.cc",
-    "browser/shell_app_view_guest_delegate.h",
     "browser/shell_app_window_client.cc",
     "browser/shell_app_window_client.h",
     "browser/shell_browser_context.cc",
@@ -180,6 +178,8 @@ source_set("app_shell_lib") {
 
   if (is_chromeos) {
     sources += [
+      "browser/shell_app_view_guest_delegate.cc",
+      "browser/shell_app_view_guest_delegate.h",
       "browser/shell_audio_controller_chromeos.cc",
       "browser/shell_audio_controller_chromeos.h",
       "browser/shell_network_controller_chromeos.cc",

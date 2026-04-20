@@ -162,7 +162,7 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
     const char* name = nullptr;
     int id = 0;
   } js_resources[] = {
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(IS_CHROMEOS)
       {"appView", IDR_APP_VIEW_JS},
       {"appViewDeny", IDR_APP_VIEW_DENY_JS},
       {"appViewElement", IDR_APP_VIEW_ELEMENT_JS},

@@ -25,9 +25,13 @@
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
-#include "extensions/shell/browser/shell_app_view_guest_delegate.h"
 #include "extensions/shell/browser/shell_web_view_guest_delegate.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "extensions/shell/browser/shell_app_view_guest_delegate.h"
 #endif
+
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 namespace extensions {
 
@@ -41,10 +45,13 @@ void ShellExtensionsAPIClient::AttachWebContentsHelpers(
 }
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<AppViewGuestDelegate>
 ShellExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return std::make_unique<ShellAppViewGuestDelegate>();
 }
+#endif
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
 ShellExtensionsAPIClient::CreateGuestViewManagerDelegate() const {

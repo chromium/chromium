@@ -28,8 +28,10 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
   void AttachWebContentsHelpers(content::WebContents* web_contents) const
       override;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override;
+#endif
   std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const override;
   std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(

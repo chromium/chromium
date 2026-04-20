@@ -66,7 +66,6 @@ if (enable_extensions) {
   extensions_api_schema_files_ += [
     "app_current_window_internal.webidl",
     "app_runtime.webidl",
-    "app_view_guest_internal.json",
     "app_window.webidl",
     "audio.webidl",
     "automation_internal.webidl",
@@ -94,6 +93,7 @@ if (enable_extensions) {
 
   if (is_chromeos) {
     extensions_api_schema_files_ += [
+      "app_view_guest_internal.json",
       "bluetooth_low_energy.webidl",
       "bluetooth_private.webidl",
       "bluetooth_socket.webidl",

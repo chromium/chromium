@@ -22,7 +22,7 @@ source_set("guest_view") {
 
   if (enable_extensions) {
     sources += [ "mime_handler_view/chrome_mime_handler_view_guest_delegate.h" ]
-    if (!is_android) {
+    if (is_chromeos) {
       sources += [ "app_view/chrome_app_view_guest_delegate.h" ]
     }
   }
@@ -53,7 +53,7 @@ source_set("impl") {
   if (enable_extensions) {
     sources +=
         [ "mime_handler_view/chrome_mime_handler_view_guest_delegate.cc" ]
-    if (!is_android) {
+    if (is_chromeos) {
       sources += [ "app_view/chrome_app_view_guest_delegate.cc" ]
     }
   }

@@ -67,7 +67,7 @@
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/guest_view/app_view/chrome_app_view_guest_delegate.h"
 #endif
 
@@ -332,7 +332,7 @@ void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<AppViewGuestDelegate>
 ChromeExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return std::make_unique<ChromeAppViewGuestDelegate>();

@@ -165,7 +165,7 @@ bool ExtensionsGuestViewManagerDelegate::IsOwnedByControlledFrameEmbedder(
 
 void ExtensionsGuestViewManagerDelegate::RegisterAdditionalGuestViewTypes(
     GuestViewManager* manager) {
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(IS_CHROMEOS)
   manager->RegisterGuestViewType(AppViewGuest::Type,
                                  base::BindRepeating(&AppViewGuest::Create),
                                  base::NullCallback());

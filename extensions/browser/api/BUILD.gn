@@ -98,7 +98,7 @@ group("api_implementations") {
       "//extensions/browser/api/guest_view",
       "//extensions/browser/api/guest_view/web_view",
     ]
-    if (enable_platform_apps) {
+    if (is_chromeos) {
       public_deps += [ "//extensions/browser/api/guest_view/app_view" ]
     }
   }

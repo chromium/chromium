@@ -80,7 +80,7 @@ bool ShouldBlockNavigationToPlatformAppResource(
       return false;
     }
 
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Platform apps can be embedded by other platform apps using an <appview>
     // tag.
     auto* app_view = AppViewGuest::FromGuestViewBase(guest);

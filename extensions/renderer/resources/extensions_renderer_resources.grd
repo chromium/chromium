@@ -9,9 +9,11 @@
   <release seq="1">
     <includes>
       <!-- Extension libraries. -->
-      <include name="IDR_APP_VIEW_JS" file="guest_view/app_view/app_view.js" type="BINDATA" />
-      <include name="IDR_APP_VIEW_DENY_JS" file="guest_view/app_view/app_view_deny.js" type="BINDATA" />
-      <include name="IDR_APP_VIEW_ELEMENT_JS" file="guest_view/app_view/app_view_element.js" type="BINDATA" />
+      <if expr="is_chromeos">
+        <include name="IDR_APP_VIEW_JS" file="guest_view/app_view/app_view.js" type="BINDATA" />
+        <include name="IDR_APP_VIEW_DENY_JS" file="guest_view/app_view/app_view_deny.js" type="BINDATA" />
+        <include name="IDR_APP_VIEW_ELEMENT_JS" file="guest_view/app_view/app_view_element.js" type="BINDATA" />
+      </if>
       <include name="IDR_BROWSER_TEST_ENVIRONMENT_SPECIFIC_BINDINGS_JS" file="browser_test_environment_specific_bindings.js" type="BINDATA" />
       <include name="IDR_ENTRY_ID_MANAGER" file="entry_id_manager.js" type="BINDATA" />
       <include name="IDR_EXTENSIONS_WEB_VIEW_ELEMENT_JS" file="guest_view/web_view/extensions_web_view_element.js" type="BINDATA" />

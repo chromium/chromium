@@ -76,8 +76,7 @@
   "appview": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "platforms": ["chromeos"]
   },
   "audio": [
     {
