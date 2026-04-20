@@ -1132,7 +1132,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                      completion:^(NSData* transcodedData) {
                        UIImage* imageFromData = nil;
                        if (transcodedData) {
-                         imageFromData = [UIImage imageWithData:imageData];
+                         imageFromData = [UIImage imageWithData:transcodedData];
                        }
 
                        [weakSelf openGeminiWithImage:imageFromData];
