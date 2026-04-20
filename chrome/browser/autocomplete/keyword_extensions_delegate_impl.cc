@@ -202,6 +202,10 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
 }
 
 void KeywordExtensionsDelegateImpl::OnOmniboxDefaultSuggestionChanged() {
+  if (provider_->done()) {
+    return;
+  }
+
   TemplateURLService* model = provider_->GetTemplateURLService();
   DCHECK(model);
 
