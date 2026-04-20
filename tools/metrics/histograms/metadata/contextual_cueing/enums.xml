@@ -87,9 +87,26 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Cue not generated / shown: history sync off">
     Cue could not be generated or shown because history sync is off.
   </int>
+  <int value="16" label="Cue not shown: not enough page loads since last cue">
+    Cue could not be shown because not enough page loads have occurred since the
+    last cue was shown.
+  </int>
+  <int value="17" label="Cue not shown: not enough time since last cue">
+    Cue could not be shown because not enough time has passed since the last cue
+    was shown.
+  </int>
+  <int value="18" label="Cue not shown: too many cues shown to the user">
+    Cue could not be shown because too many cues were shown to the user
+    recently.
+  </int>
+  <int value="19"
+      label="Cue not shown: too many cues shown to the user for origin">
+    Cue could not be shown because too many cues were shown to the user for this
+    specific origin recently.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_controller.h:ContextualCueingDecision) -->
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->
 
 <!-- LINT.IfChange(NudgeDecision) -->
 

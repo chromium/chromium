@@ -5,8 +5,10 @@
 source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_controller.h",
+    "contextual_cueing_enums.h",
     "contextual_cueing_service.h",
     "contextual_cueing_service_factory.h",
+    "contextual_cueing_web_contents_observer.h",
     "cue_target.h",
     "features.h",
     "nudge_cap_tracker.h",
@@ -19,6 +21,7 @@ source_set("contextual_cueing") {
     "//components/page_content_annotations/core",
     "//components/sessions",
     "//components/tabs:public",
+    "//url",
   ]
 }
 
@@ -32,6 +35,7 @@ source_set("impl") {
     "contextual_cueing_controller.cc",
     "contextual_cueing_service.cc",
     "contextual_cueing_service_factory.cc",
+    "contextual_cueing_web_contents_observer.cc",
     "cue_target.cc",
     "features.cc",
     "nudge_cap_tracker.cc",
@@ -88,7 +92,10 @@ if (!is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "nudge_cap_tracker_unittest.cc" ]
+  sources = [
+    "contextual_cueing_service_unittest.cc",
+    "nudge_cap_tracker_unittest.cc",
+  ]
   deps = [
     ":contextual_cueing",
     ":impl",

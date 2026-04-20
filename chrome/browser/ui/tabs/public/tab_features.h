@@ -85,7 +85,7 @@ class WebContents;
 }  // namespace content
 
 namespace contextual_cueing {
-class ContextualCueingHelper;
+class ContextualCueingWebContentsObserver;
 }  // namespace contextual_cueing
 
 namespace contextual_tasks {
@@ -519,6 +519,9 @@ class TabFeatures {
   std::unique_ptr<TabAlertController> tab_alert_controller_;
 
   std::unique_ptr<ContextHighlightTabFeature> context_highlight_tab_feature_;
+
+  std::unique_ptr<contextual_cueing::ContextualCueingWebContentsObserver>
+      contextual_cueing_web_contents_observer_;
 
   std::unique_ptr<TabUIHelper> tab_ui_helper_;
 

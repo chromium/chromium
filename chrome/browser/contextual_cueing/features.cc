@@ -23,4 +23,40 @@ const base::FeatureParam<int> kMaxNumBackgroundTabs(
     "ContextualCueingV2MaxNumBackgroundTabs",
     10);
 
+const base::FeatureParam<int> kMinPageCountBetweenNudges(
+    &kContextualCueingV2,
+    "ContextualCueingV2MinPageCountBetweenNudges",
+    10);
+
+const base::FeatureParam<base::TimeDelta> kMinTimeBetweenNudges(
+    &kContextualCueingV2,
+    "ContextualCueingV2MinTimeBetweenNudges",
+    base::Minutes(10));
+
+// Cap number of cues shown to a user to be at most `kCueCapCount` in
+// `kCueCapTime` duration.
+const base::FeatureParam<base::TimeDelta> kCueCapTime(
+    &kContextualCueingV2,
+    "ContextualCueingV2CueCapTime",
+    base::Hours(8));
+const base::FeatureParam<int> kCueCapCount(&kContextualCueingV2,
+                                           "ContextualCueingV2CueCapCount",
+                                           5);
+
+// Cap number of cues for an origin to be at most `kCueCapCountPerOrigin` in
+// `kCueCapTimePerOrigin` duration.
+const base::FeatureParam<base::TimeDelta> kCueCapTimePerOrigin(
+    &kContextualCueingV2,
+    "ContextualCueingV2CueCapTimePerOrigin",
+    base::Hours(4));
+const base::FeatureParam<int> kCueCapCountPerOrigin(
+    &kContextualCueingV2,
+    "ContextualCueingV2CueCapCountPerOrigin",
+    3);
+
+const base::FeatureParam<int> kVisitedOriginsLimit(
+    &kContextualCueingV2,
+    "ContextualCueingV2VisitedOriginsLimit",
+    20);
+
 }  // namespace contextual_cueing

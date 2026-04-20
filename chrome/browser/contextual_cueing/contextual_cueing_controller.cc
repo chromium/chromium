@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -178,6 +179,17 @@ void ContextualCueingController::OnPageContentAnnotated(
         active_web_contents->GetLastCommittedURL().spec()));
     RecordContextualCueingDecision(
         ContextualCueingDecision::kFailedCategoryClassification);
+    return;
+  }
+
+  if (auto decision = contextual_cueing_service_->CanShowCue(
+          active_web_contents->GetLastCommittedURL());
+      decision != ContextualCueingDecision::kSuccess) {
+    MODEL_EXECUTION_LOG(
+        base::StringPrintf("%s ineligible for cue with reason: %d.",
+                           active_web_contents->GetLastCommittedURL().spec(),
+                           static_cast<int>(decision)));
+    RecordContextualCueingDecision(decision);
     return;
   }
 
@@ -402,7 +414,11 @@ void ContextualCueingController::ShowCue(
   MODEL_EXECUTION_LOG(base::StringPrintf(
       "Showing cue for CUJ %s: %s [%s]", response.suggested_cuj(),
       strings.anchored_message_text(), strings.action_text()));
+
+  contextual_cueing_service_->OnCueShown(
+      tab->GetContents()->GetLastCommittedURL());
 #endif
+
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
 }
 
@@ -416,7 +432,7 @@ void ContextualCueingController::OnCueClicked(
   if (CueTarget* target = GetTarget(cue_type)) {
     target->OnClick(std::move(data));
   }
-  contextual_cueing_service_->OnClick(cue_type);
+  contextual_cueing_service_->OnCueClicked(cue_type);
 }
 
 CueTarget* ContextualCueingController::GetTarget(CueTargetType type) {

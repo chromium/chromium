@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -509,6 +510,42 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.NumRequestedBackgroundTabs",
       kMaxNumBackgroundTabs.Get(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       NotEnoughPageLoadsSinceLastCue) {
+  {
+    base::HistogramTester histogram_tester;
+
+    // Navigate to a valid URL.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("https://www.activetab.com")));
+
+    SeedExecutionResult(MakeCompleteResponse());
+    SimulateFilterPassed();
+
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester, "ContextualCueing.V2.Decision", 1);
+    histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                        ContextualCueingDecision::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Simulate a new page load.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("https://www.activetab.com")));
+    SimulateFilterPassed();
+
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+    // Should not be shown.
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.V2.Decision",
+        ContextualCueingDecision::kNotEnoughPageLoadsSinceLastCue, 1);
+  }
 }
 
 }  // namespace
