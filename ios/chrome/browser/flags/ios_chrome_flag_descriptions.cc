@@ -404,6 +404,11 @@ const char kComposeboxImmersiveSRPDescription[] =
 const char kComposeboxIpadName[] = "ComposeboxIpad";
 const char kComposeboxIpadDescription[] = "Enables the composeboxIpad feature.";
 
+const char kComposeboxPlusButtonBottomSheetName[] =
+    "Enable the bottom sheet for plus button in Composebox";
+const char kComposeboxPlusButtonBottomSheetDescription[] =
+    "Uses the updated bottom sheet for the plus button multimodal menu.";
+
 const char kComposeboxServerSideStateName[] =
     "Enable server side state in Composebox";
 extern const char kComposeboxServerSideStateDescription[] =

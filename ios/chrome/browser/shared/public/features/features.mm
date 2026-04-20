@@ -968,6 +968,13 @@ bool IsComposeboxIpadEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxIpad);
 }
 
+BASE_FEATURE(kComposeboxPlusButtonBottomSheet,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxPlusButtonBottomSheet() {
+  return base::FeatureList::IsEnabled(kComposeboxPlusButtonBottomSheet);
+}
+
 BASE_FEATURE(kChromeNextIa, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kChromeNextIaLensIconVisible{
