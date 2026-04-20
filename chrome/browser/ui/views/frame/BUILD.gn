@@ -44,13 +44,18 @@ static_library("test_support") {
 }
 
 source_set("toolbar_button_provider") {
-  sources = [ "toolbar_button_provider.h" ]
+  public = [ "toolbar_button_provider.h" ]
+
+  sources = [ "toolbar_button_provider.cc" ]
 
   public_deps = [
     "//chrome/browser/ui/page_action:icon_type",
     "//ui/actions:actions_headers",
+    "//ui/base/unowned_user_data",
     "//ui/views",
   ]
+
+  deps = [ "//chrome/browser/ui/browser_window" ]
 }
 
 source_set("frame") {

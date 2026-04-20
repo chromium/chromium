@@ -436,12 +436,8 @@ class BrowserView : public BrowserWindow,
   // FullscreenController. This method does any processing which was skipped.
   void FullscreenStateChanged();
 
-  // Sets the button provider for this BrowserView. Must be called before
-  // InitViews() which sets the ToolbarView as the default button provider.
-  void SetToolbarButtonProvider(ToolbarButtonProvider* provider);
-  ToolbarButtonProvider* toolbar_button_provider() {
-    return toolbar_button_provider_;
-  }
+  // TODO(tluk): Replace this accessor with `ToolbarButtonProvider::From()`.
+  ToolbarButtonProvider* toolbar_button_provider();
 
   // Callback for listening for link-opening-from-gesture events (i.e. only
   // those resulting from direct user action).
@@ -1323,10 +1319,6 @@ class BrowserView : public BrowserWindow,
   // Conceptually this member should exist if and only if the
   // side_panel_coordinator is created.
   raw_ptr<SidePanel> contents_height_side_panel_ = nullptr;
-
-  // Provides access to the toolbar buttons this browser view uses. Buttons may
-  // appear in a hosted app frame or in a tabbed UI toolbar.
-  raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;

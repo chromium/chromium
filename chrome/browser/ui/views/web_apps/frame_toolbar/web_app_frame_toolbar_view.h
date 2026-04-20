@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_VIEW_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -134,6 +135,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
   // The containing browser view.
   const raw_ptr<BrowserView> browser_view_;
+  ui::ScopedUnownedUserData<ToolbarButtonProvider> scoped_unowned_user_data_;
 
   // Button and text colors.
   bool paint_as_active_ = true;

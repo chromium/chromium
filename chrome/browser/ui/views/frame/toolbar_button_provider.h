@@ -9,10 +9,12 @@
 
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "ui/actions/action_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class AppMenuControl;
 class AvatarToolbarButtonInterface;
+class BrowserWindowInterface;
 class PinnedToolbarActions;
 class ExtensionsToolbarDesktop;
 class IconLabelBubbleView;
@@ -36,6 +38,10 @@ class AccessiblePaneView;
 // buttons in a BrowserView.
 class ToolbarButtonProvider {
  public:
+  DECLARE_USER_DATA(ToolbarButtonProvider);
+
+  static ToolbarButtonProvider* From(BrowserWindowInterface* browser);
+
   // Gets the ExtensionsToolbarDesktop.
   virtual ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() = 0;
 

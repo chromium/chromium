@@ -258,6 +258,12 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
       browser_view_(browser_view),
       app_menu_icon_controller_(browser->profile(), this),
       display_mode_(GetDisplayMode(browser)) {
+  // WebApp type-browsers set their own ToolbarButtonProvider.
+  if (!web_app::AppBrowserController::IsWebApp(browser)) {
+    scoped_unowned_user_data_.emplace(browser_->GetUnownedUserDataHost(),
+                                      *this);
+  }
+
   SetID(VIEW_ID_TOOLBAR);
   SetProperty(views::kElementIdentifierKey, kToolbarElementId);
 

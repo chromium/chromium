@@ -1155,7 +1155,6 @@ BrowserView::~BrowserView() {
   projects_panel_container_ = nullptr;
   toolbar_height_side_panel_ = nullptr;
   contents_height_side_panel_ = nullptr;
-  toolbar_button_provider_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -1226,7 +1225,7 @@ gfx::Rect BrowserView::GetFindBarBoundingBox() const {
   if (!immersive_mode_controller->IsEnabled() ||
       immersive_mode_controller->IsRevealed()) {
     const gfx::Rect bounding_box =
-        toolbar_button_provider_->GetFindBarBoundingBox(
+        ToolbarButtonProvider::From(browser_)->GetFindBarBoundingBox(
             contents_bounds.bottom());
     if (!bounding_box.IsEmpty()) {
       return bounding_box;
@@ -1925,7 +1924,7 @@ void BrowserView::SetStarredState(bool is_starred) {
   }
 
   PageActionIconView* star_icon =
-      toolbar_button_provider_->GetPageActionIconView(
+      ToolbarButtonProvider::From(browser_)->GetPageActionIconView(
           PageActionIconType::kBookmarkStar);
   if (star_icon) {
     star_icon->SetActive(is_starred);
@@ -2302,12 +2301,8 @@ void BrowserView::FullscreenStateChanged() {
   }
 }
 
-void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
-  toolbar_button_provider_ = provider;
-  // Recreate the autofill bubble handler when toolbar button provider changes.
-  autofill_bubble_handler_ =
-      std::make_unique<autofill::AutofillBubbleHandlerImpl>(
-          toolbar_button_provider_);
+ToolbarButtonProvider* BrowserView::toolbar_button_provider() {
+  return ToolbarButtonProvider::From(browser_);
 }
 
 void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
@@ -2319,7 +2314,7 @@ void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
   }
 
   PageActionIconView* icon =
-      toolbar_button_provider_->GetPageActionIconView(type);
+      ToolbarButtonProvider::From(browser_)->GetPageActionIconView(type);
   if (icon) {
     icon->Update();
   }
@@ -2330,7 +2325,9 @@ autofill::AutofillBubbleHandler* BrowserView::GetAutofillBubbleHandler() {
 }
 
 void BrowserView::ExecutePageActionIconForTesting(PageActionIconType type) {
-  toolbar_button_provider_->GetPageActionIconView(type)->ExecuteForTesting();
+  ToolbarButtonProvider::From(browser_)
+      ->GetPageActionIconView(type)
+      ->ExecuteForTesting();
 }
 
 LocationBar* BrowserView::GetLocationBar() const {
@@ -2360,7 +2357,8 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
 void BrowserView::UpdateReloadStopState(bool is_loading, bool force) {
   ReloadControl::Mode mode =
       is_loading ? ReloadControl::Mode::kStop : ReloadControl::Mode::kReload;
-  ReloadControl* reload_button = toolbar_button_provider_->GetReloadButton();
+  ReloadControl* reload_button =
+      ToolbarButtonProvider::From(browser_)->GetReloadButton();
   if (reload_button) {
     reload_button->ChangeMode(mode, force);
   }
@@ -2414,7 +2412,7 @@ void BrowserView::FocusToolbar() {
 
   // Start the traversal within the main toolbar. SetPaneFocus stores
   // the current focused view before changing focus.
-  toolbar_button_provider_->FocusToolbar();
+  ToolbarButtonProvider::From(browser_)->FocusToolbar();
 }
 
 void BrowserView::ToolbarSizeChanged(bool is_animating) {
@@ -2853,7 +2851,8 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
   // anchored in the views hierarchy.
   if (toolbar_) {
     views::DialogDelegate* bubble = nullptr;
-    if (auto* control = toolbar_button_provider_->GetAppMenuControl()) {
+    auto* toolbar_button_provider = ToolbarButtonProvider::From(browser_);
+    if (auto* control = toolbar_button_provider->GetAppMenuControl()) {
       auto* dialog = control->GetDialogDelegate();
       if (dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
         bubble = dialog;
@@ -2861,8 +2860,8 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
     }
 
     if (!bubble) {
-      if (auto* avatar =
-              toolbar_button_provider_->GetAvatarToolbarButtonInterface()) {
+      if (auto* avatar = ToolbarButtonProvider::From(browser_)
+                             ->GetAvatarToolbarButtonInterface()) {
         auto* dialog = avatar->GetDialogDelegate();
         if (dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
           bubble = dialog;
@@ -2870,7 +2869,7 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
       }
       for (auto* view : std::initializer_list<views::View*>{
                GetLocationBarView(),
-               toolbar_button_provider_->GetDownloadButton(), top_container_}) {
+               toolbar_button_provider->GetDownloadButton(), top_container_}) {
         if (view) {
           if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
               dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
@@ -3358,7 +3357,7 @@ void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
 }
 
 void BrowserView::ShowAppMenu() {
-  auto* control = toolbar_button_provider_->GetAppMenuControl();
+  auto* control = ToolbarButtonProvider::From(browser_)->GetAppMenuControl();
   if (!control) {
     return;
   }
@@ -4689,7 +4688,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
     }
   }
 
-  panes->push_back(toolbar_button_provider_->GetAsAccessiblePaneView());
+  panes->push_back(
+      ToolbarButtonProvider::From(browser_)->GetAsAccessiblePaneView());
   if (horizontal_tab_strip_region_view_) {
     panes->push_back(horizontal_tab_strip_region_view_);
   }
@@ -5217,11 +5217,16 @@ void BrowserView::AddedToWidget() {
 
   EnsureFocusOrder();
 
-  // This browser view may already have a custom button provider set (e.g the
-  // hosted app frame).
-  if (!toolbar_button_provider_) {
-    SetToolbarButtonProvider(toolbar_);
-  }
+  // At this point a ToolbarButtonProvider must have been set. It is set only
+  // once per browser instance.
+  auto* toolbar_button_provider = ToolbarButtonProvider::From(browser_);
+  CHECK(toolbar_button_provider);
+
+  // `AutofillBubbleHandlerImpl` depends on the ToolbarButtonProvider so it must
+  // be constructed following the check above.
+  autofill_bubble_handler_ =
+      std::make_unique<autofill::AutofillBubbleHandlerImpl>(
+          toolbar_button_provider);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (auto* controller = DownloadToolbarUIController::From(browser_.get())) {
@@ -5482,9 +5487,7 @@ bool BrowserView::ShouldShowAvatarToolbarIPH() {
     return false;
   }
   AvatarToolbarButtonInterface* avatar_button =
-      toolbar_button_provider_
-          ? toolbar_button_provider_->GetAvatarToolbarButtonInterface()
-          : nullptr;
+      ToolbarButtonProvider::From(browser_)->GetAvatarToolbarButtonInterface();
   return avatar_button != nullptr;
 }
 
@@ -5970,9 +5973,8 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
   // just showing the avatar bubble since the action can be modified within the
   // button itself, like dismissing some other bubbles.
   if (AvatarToolbarButtonInterface* avatar_button =
-          toolbar_button_provider_
-              ? toolbar_button_provider_->GetAvatarToolbarButtonInterface()
-              : nullptr) {
+          ToolbarButtonProvider::From(browser_)
+              ->GetAvatarToolbarButtonInterface()) {
     avatar_button->ButtonPressed(is_source_accelerator);
     return;
   }
@@ -5986,7 +5988,8 @@ void BrowserView::MaybeShowProfileSwitchIPH() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+  ToolbarButtonProvider::From(browser_)
+      ->GetAvatarToolbarButtonInterface()
       ->MaybeShowProfileSwitchIPH();
 }
 
@@ -5995,7 +5998,8 @@ void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+  ToolbarButtonProvider::From(browser_)
+      ->GetAvatarToolbarButtonInterface()
       ->MaybeShowSupervisedUserSignInIPH();
 #endif
 }
@@ -6005,7 +6009,8 @@ void BrowserView::MaybeShowSignInBenefitsIPH() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+  ToolbarButtonProvider::From(browser_)
+      ->GetAvatarToolbarButtonInterface()
       ->MaybeShowSignInBenefitsIPH();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
@@ -6026,23 +6031,25 @@ void BrowserView::ShowHatsDialog(
 }
 
 void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
-  CHECK(toolbar_button_provider_);
+  CHECK(ToolbarButtonProvider::From(browser_));
   browser()
       ->GetFeatures()
       .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble,
-             toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+             ToolbarButtonProvider::From(browser_)
+                 ->GetAvatarToolbarButtonInterface()
                  ->GetBubbleAnchor(*browser()));
 }
 
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
-  CHECK(toolbar_button_provider_);
+  CHECK(ToolbarButtonProvider::From(browser_));
   browser()
       ->GetFeatures()
       .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::
                  kHistoryDisclaimerBubble,
-             toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+             ToolbarButtonProvider::From(browser_)
+                 ->GetAvatarToolbarButtonInterface()
                  ->GetBubbleAnchor(*browser()));
 }
 

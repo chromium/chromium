@@ -96,7 +96,10 @@ class WebAppFrameToolbarView::ViewTargeter
 };
 
 WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
-    : browser_view_(browser_view) {
+    : browser_view_(browser_view),
+      scoped_unowned_user_data_(
+          browser_view_->browser()->GetUnownedUserDataHost(),
+          *this) {
   DCHECK(browser_view_);
   DCHECK(web_app::AppBrowserController::IsWebApp(browser_view_->browser()));
   SetID(VIEW_ID_WEB_APP_FRAME_TOOLBAR);
@@ -140,14 +143,6 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
       views::FlexSpecification(right_container_->GetFlexRule()).WithOrder(1));
 
   UpdateStatusIconsVisibility();
-
-  DCHECK(
-      !browser_view_->toolbar_button_provider() ||
-      views::IsViewClass<WebAppFrameToolbarView>(
-          browser_view_->toolbar_button_provider()->GetAsAccessiblePaneView()))
-      << "This should be the first ToolbarButtorProvider or a replacement for "
-         "an existing instance of this class during a window frame refresh.";
-  browser_view_->SetToolbarButtonProvider(this);
 
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
     OnWindowControlsOverlayEnabledChanged();

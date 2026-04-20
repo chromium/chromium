@@ -416,6 +416,13 @@ class ToolbarView : public views::AccessiblePaneView,
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;
 
+  // ToolbarView may or may not serve as the `ToolbarButtonProvider` for a given
+  // browser instance depending on the browser type (e.g. WebApp browsers set
+  // their own in `WebAppFrameToolbarView`). Make this optional to allow
+  // conditionally configuring this as the `ToolbarButtonProvider`.
+  std::optional<ui::ScopedUnownedUserData<ToolbarButtonProvider>>
+      scoped_unowned_user_data_;
+
   raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
 
   AppMenuIconController app_menu_icon_controller_;
