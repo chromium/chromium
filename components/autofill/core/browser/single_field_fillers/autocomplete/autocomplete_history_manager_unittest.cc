@@ -187,6 +187,27 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
       /*is_autocomplete_enabled=*/true);
 }
 
+// Tests that IBANs are not sent to the WebDatabase to be saved.
+TEST_F(AutocompleteHistoryManagerTest, IbanValue) {
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("http://myform.com/form.html"));
+  form.set_action(GURL("http://myform.com/submit.html"));
+
+  FormFieldData iban;
+  iban.set_label(u"International Bank Account Number");
+  iban.set_name(u"iban");
+  iban.set_value(u"DE75512108001245126199");
+  iban.set_properties_mask(iban.properties_mask() | kUserTyped);
+  iban.set_form_control_type(FormControlType::kInputText);
+  form.set_fields({iban});
+
+  EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields(),
+      /*is_autocomplete_enabled=*/true);
+}
+
 // Tests that SSNs are not sent to the WebDatabase to be saved.
 TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   FormData form;

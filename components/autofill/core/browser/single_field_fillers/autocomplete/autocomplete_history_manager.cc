@@ -183,7 +183,7 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
 //  - neither empty nor whitespace-only value
 //  - text field
 //  - autocomplete is not disabled
-//  - value is not a credit card number
+//  - value is not a credit card number nor IBAN
 //  - field has user typed input or is focusable (this is a mild criteria but
 //    this way it is consistent for all platforms)
 //  - not a presentation field
@@ -198,7 +198,9 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
          !field.IsPasswordInputElement() &&
          field.form_control_type() != FormControlType::kInputNumber &&
          field.should_autocomplete() &&
-         !IsValidCreditCardNumber(field.value()) && !IsSSN(field.value()) &&
+         !IsValidCreditCardNumber(field.value()) &&
+         !IsInternationalBankAccountNumber(field.value()) &&
+         !IsSSN(field.value()) &&
          (field.properties_mask() & kUserTyped || field.is_focusable()) &&
          field.role() != FormFieldData::RoleAttribute::kPresentation;
 }
