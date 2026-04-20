@@ -349,7 +349,8 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
             render_frame_host,
             pending_remote.InitWithNewEndpointAndPassReceiver(),
             factory.InitWithNewEndpointAndPassRemote(),
-            js_object->factory.get(), js_object->allowed_origin_rules);
+            js_object->factory.get(), js_object->allowed_origin_rules,
+            js_object->name, js_object->world_id);
     js_objects.push_back(mojom::JsObject::New(
         js_object->name, std::move(pending_remote), std::move(factory),
         js_object->allowed_origin_rules, js_object->world_id));

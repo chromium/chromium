@@ -40,7 +40,9 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
           browser_to_js_factory,
       WebMessageHostFactory* factory,
-      const origin_matcher::OriginMatcher& origin_matcher);
+      const origin_matcher::OriginMatcher& origin_matcher,
+      const std::u16string& name,
+      int32_t world_id);
 
   JsToBrowserMessaging(const JsToBrowserMessaging&) = delete;
   JsToBrowserMessaging& operator=(const JsToBrowserMessaging&) = delete;
@@ -64,6 +66,8 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   raw_ptr<WebMessageHostFactory, AcrossTasksDanglingUntriaged>
       connection_factory_;
   origin_matcher::OriginMatcher origin_matcher_;
+  std::u16string name_;
+  int32_t world_id_;
   mojo::AssociatedReceiver<mojom::JsToBrowserMessaging> receiver_{this};
   std::unique_ptr<WebMessageHost> host_;
   mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory>

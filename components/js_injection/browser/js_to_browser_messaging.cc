@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/js_injection/browser/web_message.h"
@@ -50,19 +51,36 @@ class JsToBrowserMessagingDocumentUserData
  public:
   ~JsToBrowserMessagingDocumentUserData() override = default;
 
-  std::vector<std::unique_ptr<WebMessage>>& queued_messages() {
-    return queued_messages_;
+  std::vector<std::unique_ptr<WebMessage>> TakeQueuedMessages(
+      const std::u16string& name,
+      int32_t world_id) {
+    auto it = queued_messages_.find({name, world_id});
+    if (it == queued_messages_.end()) {
+      return {};
+    }
+    std::vector<std::unique_ptr<WebMessage>> messages = std::move(it->second);
+    queued_messages_.erase(it);
+    return messages;
+  }
+
+  void QueueMessage(const std::u16string& name,
+                    int32_t world_id,
+                    std::unique_ptr<WebMessage> message) {
+    queued_messages_[{name, world_id}].push_back(std::move(message));
   }
 
  private:
   friend class DocumentUserData<JsToBrowserMessagingDocumentUserData>;
+  using WebMessageListenerKey = std::pair<std::u16string, int32_t>;
 
   explicit JsToBrowserMessagingDocumentUserData(
       content::RenderFrameHost* render_frame_host)
       : content::DocumentUserData<JsToBrowserMessagingDocumentUserData>(
             render_frame_host) {}
 
-  std::vector<std::unique_ptr<WebMessage>> queued_messages_;
+  base::flat_map<WebMessageListenerKey,
+                 std::vector<std::unique_ptr<WebMessage>>>
+      queued_messages_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 };
@@ -158,10 +176,14 @@ JsToBrowserMessaging::JsToBrowserMessaging(
     mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
         browser_to_js_factory,
     WebMessageHostFactory* factory,
-    const origin_matcher::OriginMatcher& origin_matcher)
+    const origin_matcher::OriginMatcher& origin_matcher,
+    const std::u16string& name,
+    int32_t world_id)
     : render_frame_host_(render_frame_host),
       connection_factory_(factory),
       origin_matcher_(origin_matcher),
+      name_(name),
+      world_id_(world_id),
       browser_to_js_factory_(std::move(browser_to_js_factory)) {
   receiver_.Bind(std::move(receiver));
 }
@@ -180,10 +202,11 @@ void JsToBrowserMessaging::OnRenderFrameHostActivated() {
     return;
   }
 
-  for (auto& message : data->queued_messages()) {
+  std::vector<std::unique_ptr<WebMessage>> queued_messages =
+      data->TakeQueuedMessages(name_, world_id_);
+  for (auto& message : queued_messages) {
     host_->OnPostMessage(std::move(message));
   }
-  data->queued_messages().clear();
 }
 
 void JsToBrowserMessaging::PostMessage(
@@ -257,7 +280,7 @@ void JsToBrowserMessaging::PostMessage(
     JsToBrowserMessagingDocumentUserData* data =
         JsToBrowserMessagingDocumentUserData::GetOrCreateForCurrentDocument(
             render_frame_host_);
-    data->queued_messages().push_back(std::move(web_message));
+    data->QueueMessage(name_, world_id_, std::move(web_message));
     return;
   }
 
