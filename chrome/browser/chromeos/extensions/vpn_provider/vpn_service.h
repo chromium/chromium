@@ -121,7 +121,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void SendOnConfigRemovedToExtension(const std::string& extension_id,
                                       const std::string& configuration_name);
 
-  VpnConfiguration* CreateConfigurationInternal(
+  VpnConfiguration* GetOrCreateConfigurationInternal(
       const std::string& extension_id,
       const std::string& configuration_name);
 
