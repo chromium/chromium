@@ -497,19 +497,14 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 - (TableViewItem*)enhancedAutofillItem {
   NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
-  NSString* detailText =
-      autofill::IsEnhancedAutofillEnabled(_browser->GetProfile())
-          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
 
   _enhancedAutofillItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeEnhancedAutofill];
   _enhancedAutofillItem.text = text;
-  _enhancedAutofillItem.detailText = detailText;
-  _enhancedAutofillItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
   _enhancedAutofillItem.accessibilityTraits |= UIAccessibilityTraitButton;
   _enhancedAutofillItem.accessibilityIdentifier = kEnhancedAutofillTableViewId;
+
+  [self configureEnhancedAutofillItem];
 
   return _enhancedAutofillItem;
 }
@@ -662,6 +657,38 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   return autofill::CanPerformAutofillAiAction(
       _browser->GetProfile(),
       autofill::AutofillAiAction::kWalletDataSharingPromotion);
+}
+
+// Returns YES if the user can modify the Enhanced Autofill setting.
+- (BOOL)canModifyEnhancedAutofill {
+  return autofill::CanPerformAutofillAiAction(
+      _browser->GetProfile(),
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiAvailableByDefault)
+          ? autofill::AutofillAiAction::kEnableOrDisable
+          : autofill::AutofillAiAction::kOptIn);
+}
+
+// Configures the enhancedAutofillItem based on capability to modify the
+// setting.
+- (void)configureEnhancedAutofillItem {
+  bool canModify = [self canModifyEnhancedAutofill];
+
+  _enhancedAutofillItem.detailText =
+      canModify && autofill::IsEnhancedAutofillEnabled(_browser->GetProfile())
+          ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+          : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+
+  if (canModify) {
+    _enhancedAutofillItem.accessoryType =
+        UITableViewCellAccessoryDisclosureIndicator;
+    _enhancedAutofillItem.accessibilityTraits &=
+        ~UIAccessibilityTraitNotEnabled;
+  } else {
+    _enhancedAutofillItem.accessoryType = UITableViewCellAccessoryNone;
+    _enhancedAutofillItem.selectionStyle = UITableViewCellSelectionStyleNone;
+    _enhancedAutofillItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
 }
 
 // Returns the verification (reauthentication) switch item.
@@ -904,6 +931,10 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       return;
     }
     case ItemTypeEnhancedAutofill: {
+      if (![self canModifyEnhancedAutofill]) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        return;
+      }
       CHECK(self.navigationController);
       base::RecordAction(base::UserMetricsAction("Settings.EnhancedAutofill"));
       EnhancedAutofillTableViewController* controller =
@@ -1219,12 +1250,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   }
 
   if (preferenceName == autofill::prefs::kAutofillAiOptInStatus) {
-    NSString* detailText =
-        autofill::IsEnhancedAutofillEnabled(_browser->GetProfile())
-            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    _enhancedAutofillItem.detailText = detailText;
-
+    [self configureEnhancedAutofillItem];
     [self reconfigureCellsForItems:@[ _enhancedAutofillItem ]];
 
     [self updateAddButtonInToolbar];
