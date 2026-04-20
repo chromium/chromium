@@ -305,6 +305,14 @@ struct VideoCaptureFormat {
   VideoCapturePixelFormat pixel_format;
 };
 
+// The request type of the capture source.
+[Extensible]
+enum CaptureSourceRequestType {
+  [Default] kUnknown,
+  kGetUserMedia,
+  kGetDisplayMedia
+};
+
 struct VideoCaptureParams {
   VideoCaptureFormat requested_format;
   VideoCaptureBufferType buffer_type;
@@ -320,6 +328,8 @@ struct VideoCaptureParams {
   // whenever the target of the capture is dynamically changed,
   // as for example when using share-this-tab-instead.
   uint32 capture_version_source;
+
+  CaptureSourceRequestType request_type;
 };
 
 struct VideoCaptureFeedback {

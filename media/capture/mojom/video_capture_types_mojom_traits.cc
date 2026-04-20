@@ -15,6 +15,38 @@
 namespace mojo {
 
 // static
+media::mojom::CaptureSourceRequestType EnumTraits<
+    media::mojom::CaptureSourceRequestType,
+    media::CaptureSourceRequestType>::ToMojom(media::CaptureSourceRequestType
+                                                  input) {
+  switch (input) {
+    case media::CaptureSourceRequestType::kUnknown:
+      return media::mojom::CaptureSourceRequestType::kUnknown;
+    case media::CaptureSourceRequestType::kGetUserMedia:
+      return media::mojom::CaptureSourceRequestType::kGetUserMedia;
+    case media::CaptureSourceRequestType::kGetDisplayMedia:
+      return media::mojom::CaptureSourceRequestType::kGetDisplayMedia;
+  }
+  NOTREACHED();
+}
+
+// static
+media::CaptureSourceRequestType
+EnumTraits<media::mojom::CaptureSourceRequestType,
+           media::CaptureSourceRequestType>::
+    FromMojom(media::mojom::CaptureSourceRequestType input) {
+  switch (input) {
+    case media::mojom::CaptureSourceRequestType::kUnknown:
+      return media::CaptureSourceRequestType::kUnknown;
+    case media::mojom::CaptureSourceRequestType::kGetUserMedia:
+      return media::CaptureSourceRequestType::kGetUserMedia;
+    case media::mojom::CaptureSourceRequestType::kGetDisplayMedia:
+      return media::CaptureSourceRequestType::kGetDisplayMedia;
+  }
+  NOTREACHED();
+}
+
+// static
 media::mojom::ResolutionChangePolicy
 EnumTraits<media::mojom::ResolutionChangePolicy,
            media::ResolutionChangePolicy>::ToMojom(media::ResolutionChangePolicy
@@ -1722,6 +1754,9 @@ bool StructTraits<media::mojom::VideoCaptureParamsDataView,
     return false;
   if (!data.ReadPowerLineFrequency(&out->power_line_frequency))
     return false;
+  if (!data.ReadRequestType(&out->request_type)) {
+    return false;
+  }
   out->enable_face_detection = data.enable_face_detection();
   out->is_high_dpi_enabled = data.is_high_dpi_enabled();
   out->capture_version_source = data.capture_version_source();

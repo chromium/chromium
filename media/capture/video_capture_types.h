@@ -301,6 +301,13 @@ struct CAPTURE_EXPORT VideoCaptureFormat {
 
 typedef std::vector<VideoCaptureFormat> VideoCaptureFormats;
 
+// Identifies the type of request that created this capture.
+enum class CaptureSourceRequestType {
+  kUnknown = 0,
+  kGetUserMedia = 1,
+  kGetDisplayMedia = 2
+};
+
 // Parameters for starting video capture.
 // This class is used by the client of a video capture device to specify the
 // format of frames in which the client would like to have captured frames
@@ -365,6 +372,9 @@ struct CAPTURE_EXPORT VideoCaptureParams {
   // of the capture is dynamically changed, as for example when using
   // share-this-tab-instead.
   uint32_t capture_version_source = 0;
+
+  // The request type of the capture source.
+  CaptureSourceRequestType request_type = CaptureSourceRequestType::kUnknown;
 };
 
 CAPTURE_EXPORT std::ostream& operator<<(

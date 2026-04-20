@@ -60,6 +60,20 @@ MediaStreamVideoCapturerSource::MediaStreamVideoCapturerSource(
   SetStopCallback(std::move(stop_callback));
   SetDevice(device);
   SetDeviceRotationDetection(true /* enabled */);
+  switch (device.type) {
+    case mojom::blink::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      capture_params_.request_type =
+          media::CaptureSourceRequestType::kGetUserMedia;
+      break;
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+      capture_params_.request_type =
+          media::CaptureSourceRequestType::kGetDisplayMedia;
+      break;
+    default:
+      capture_params_.request_type = media::CaptureSourceRequestType::kUnknown;
+      break;
+  }
 }
 
 MediaStreamVideoCapturerSource::~MediaStreamVideoCapturerSource() {

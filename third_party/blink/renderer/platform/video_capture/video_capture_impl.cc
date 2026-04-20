@@ -1187,6 +1187,15 @@ void VideoCaptureImpl::RecordStartOutcomeUMA(
     base::UmaHistogramEnumeration("Media.VideoCapture.StartOutcome", outcome);
     base::UmaHistogramEnumeration("Media.VideoCapture.StartErrorCode",
                                   error_code);
+    if (params_.request_type ==
+        media::CaptureSourceRequestType::kGetUserMedia) {
+      base::UmaHistogramEnumeration(
+          "Media.VideoCapture.StartErrorCode.GetUserMedia", error_code);
+    } else if (params_.request_type ==
+               media::CaptureSourceRequestType::kGetDisplayMedia) {
+      base::UmaHistogramEnumeration(
+          "Media.VideoCapture.StartErrorCode.GetDisplayMedia", error_code);
+    }
     start_outcome_reported_ = true;
   }
 }

@@ -975,4 +975,33 @@ TEST_F(VideoCaptureImplTest, WinCameraBusyErrorUpdatesCorrectState) {
   StopCapture(0);
 }
 
+TEST_F(VideoCaptureImplTest, LoggingErrorCodeForGetUserMediaRequestWorks) {
+  base::HistogramTester histogram_tester;
+  media::VideoCaptureParams camera_params = params_small_;
+  camera_params.request_type = media::CaptureSourceRequestType::kGetUserMedia;
+  StartCapture(0, camera_params);
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoCapture.StartErrorCode.GetUserMedia",
+      media::VideoCaptureError::kNone, 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.StartErrorCode.GetDisplayMedia", 0);
+  StopCapture(0);
+}
+
+TEST_F(VideoCaptureImplTest, LoggingErrorCodeForGetDisplayMediaRequestWorks) {
+  base::HistogramTester histogram_tester;
+  media::VideoCaptureParams screen_params = params_large_;
+  screen_params.request_type =
+      media::CaptureSourceRequestType::kGetDisplayMedia;
+  StartCapture(0, screen_params);
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoCapture.StartErrorCode.GetDisplayMedia",
+      media::VideoCaptureError::kNone, 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.VideoCapture.StartErrorCode.GetUserMedia", 0);
+  StopCapture(0);
+}
+
 }  // namespace blink

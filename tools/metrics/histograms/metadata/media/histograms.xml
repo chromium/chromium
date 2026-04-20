@@ -41,6 +41,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".LatencyUnknown" summary="Latency tag is Unknown"/>
 </variants>
 
+<variants name="CaptureApiType">
+  <variant name="" summary="any video capture"/>
+  <variant name=".GetDisplayMedia" summary="screen capture (getDisplayMedia)"/>
+  <variant name=".GetUserMedia" summary="camera capture (getUserMedia)"/>
+</variants>
+
 <variants name="CastStreamingSender">
   <variant name="Audio"/>
   <variant name="Remoting.Audio"/>
@@ -8046,17 +8052,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.StartErrorCode" enum="VideoCaptureError"
-    expires_after="2026-09-06">
+<histogram name="Media.VideoCapture.StartErrorCode{ApiType}"
+    enum="VideoCaptureError" expires_after="2026-09-06">
+  <owner>agpalak@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
-    Counts detailed outcomes of first starting video capture, as a breakdown of
+    Counts detailed outcomes of first starting {ApiType}, as a breakdown of
     Media.VideoCapture.StartOutcome based on the error codes which caused
     failures, or kNone if we started successfully. Can also be viewed as the
     subset of reports to Media.VideoCapture.Error which occur before
-    VideoCaptureImpl first transitions to STARTED.
+    VideoCaptureImpl first transitions to STARTED. Recorded in
+    VideoCaptureImpl::OnStateChanged() when a video capture attempt finishes,
+    either successfully transitioning to STARTED or failing.
   </summary>
+  <token key="ApiType" variants="CaptureApiType"/>
 </histogram>
 
 <histogram name="Media.VideoCapture.StartOutcome"

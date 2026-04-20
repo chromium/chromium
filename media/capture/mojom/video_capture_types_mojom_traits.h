@@ -18,6 +18,16 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::CaptureSourceRequestType,
+               media::CaptureSourceRequestType> {
+  static media::mojom::CaptureSourceRequestType ToMojom(
+      media::CaptureSourceRequestType input);
+  static media::CaptureSourceRequestType FromMojom(
+      media::mojom::CaptureSourceRequestType input);
+};
+
+template <>
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     EnumTraits<media::mojom::ResolutionChangePolicy,
                media::ResolutionChangePolicy> {
   static media::mojom::ResolutionChangePolicy ToMojom(
@@ -188,6 +198,11 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static uint32_t capture_version_source(
       const media::VideoCaptureParams& params) {
     return params.capture_version_source;
+  }
+
+  static media::CaptureSourceRequestType request_type(
+      const media::VideoCaptureParams& params) {
+    return params.request_type;
   }
 
   static bool Read(media::mojom::VideoCaptureParamsDataView data,
