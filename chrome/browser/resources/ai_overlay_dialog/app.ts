@@ -299,6 +299,18 @@ export class AppElement extends CrLitElement {
     this.runButtonByIndex(index);
   };
 
+  protected onTextInputKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const input = e.target as HTMLInputElement;
+      const text = input.value.trim();
+      if (text) {
+        log(FILE, `Injecting text: ${text}`);
+        this.conversation?.sendText(text);
+        input.value = '';
+      }
+    }
+  };
+
   protected onSequenceClick = async (e: Event) => {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const sequence = this.sequences[index];

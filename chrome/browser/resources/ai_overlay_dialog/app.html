@@ -23,6 +23,8 @@
           Seq: ${sequence.name}
         </div>
       `)}
+      <input type="text" id="text-input" placeholder="Type instructions..."
+          @keydown="${this.onTextInputKeydown}">
     </div>
     ${this.initializationState !== 'initialized' || !this.usePersona
     ? html`

@@ -198,9 +198,7 @@ export class Conversation implements ApiSessionDelegate {
       return;
     }
 
-    log(FILE, `Sending text: ${text}`);
     this.session?.sendText(text);
-    this.journal.updateCurrentTurn(text, undefined);
   }
 
   /**
