@@ -4903,6 +4903,9 @@ targets.bundle(
     targets = [
         targets.bundle(
             targets = "ios_common_tests",
+            mixins = [
+                "use-ios-simulator-cache",
+            ],
             variants = [
                 "SIM_IPHONE_15_18_5",
             ],
@@ -4911,6 +4914,7 @@ targets.bundle(
             targets = "ios_crash_xcuitests",
             mixins = [
                 "xcodebuild_sim_runner",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPHONE_15_18_5",
@@ -4921,6 +4925,7 @@ targets.bundle(
             mixins = [
                 "xcodebuild_sim_runner",
                 "record_failed_tests",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
@@ -4932,6 +4937,7 @@ targets.bundle(
             mixins = [
                 "xcodebuild_sim_runner",
                 "record_failed_tests",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
@@ -4940,6 +4946,9 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
+            mixins = [
+                "use-ios-simulator-cache",
+            ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_18_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
@@ -4951,6 +4960,7 @@ targets.bundle(
             targets = "ios_swift_interop_xcuitests",
             mixins = [
                 "xcodebuild_sim_runner",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
@@ -5028,6 +5038,9 @@ targets.bundle(
     targets = [
         targets.bundle(
             targets = "ios_common_tests",
+            mixins = [
+                "use-ios-simulator-cache",
+            ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_26_5",
                 "SIM_IPHONE_16_26_5",
@@ -5037,6 +5050,7 @@ targets.bundle(
             targets = "ios_eg2_cq_tests",
             mixins = [
                 "xcodebuild_sim_runner",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_26_5",
@@ -5047,6 +5061,7 @@ targets.bundle(
             targets = "ios_eg2_tests",
             mixins = [
                 "xcodebuild_sim_runner",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_26_5",
@@ -5055,6 +5070,9 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
+            mixins = [
+                "use-ios-simulator-cache",
+            ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_26_5",
                 "SIM_IPHONE_16_26_5",
@@ -5065,6 +5083,7 @@ targets.bundle(
             targets = "ios_swift_interop_xcuitests",
             mixins = [
                 "xcodebuild_sim_runner",
+                "use-ios-simulator-cache",
             ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_26_5",

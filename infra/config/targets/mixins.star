@@ -1861,6 +1861,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "use-ios-simulator-cache",
+    args = [
+        "--use-simulator-cache",
+    ],
+)
+
+targets.mixin(
     name = "vaapi_unittest_args",
     args = [
         "--stop-ui",
