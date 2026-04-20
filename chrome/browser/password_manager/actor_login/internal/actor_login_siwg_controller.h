@@ -32,18 +32,9 @@ enum class FederatedLoginResult;
 
 namespace actor_login {
 
-// Controller for Sign-in with Google (SiwG) detection and interaction.
-// The flow is as follows:
-// 1. The controller is created and `StartFederatedLogin` is called.
-// 2. The controller starts capturing the annotated page content.
-// 3. Once captured, the controller goes through all frames and calls the
-//    renderers to extract potential SiwG buttons.
-// 4. The potential buttons are narrowed down using the page content and
-//    heuristics on the attributes from DOM.
-// 5. The controller clicks the first button that satisfies all requirements.
-// When `kActorLoginFederatedClickFromActor` is enabled, most of this logic is
-// skipped in favour of having the actor framework trigger the button click
-// based on server identification of the correct button.
+// Controller for Sign-in with Google interaction.
+// This class manages the federated login flow when user selects a federated
+// credential.
 class ActorLoginSiwgController : public content::WebContentsObserver {
  public:
   using GetPageContentProvider =

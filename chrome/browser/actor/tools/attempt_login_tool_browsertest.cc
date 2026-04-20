@@ -804,11 +804,8 @@ class ActorAttemptLoginToolTestWithFaviconService
 class ActorAttemptLoginToolFederatedTest : public ActorAttemptLoginToolTest {
  public:
   ActorAttemptLoginToolFederatedTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {password_manager::features::kActorLoginFederatedClickFromActor,
-         features::kFedCmEmbedderInitiatedLogin},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFedCmEmbedderInitiatedLogin);
   }
 
   ~ActorAttemptLoginToolFederatedTest() override = default;

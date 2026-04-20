@@ -456,9 +456,7 @@ void AttemptLoginTool::OnAttemptLogin(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginFederatedClickFromActor) &&
-      login_status.value() ==
+  if (login_status.value() ==
           actor_login::LoginStatusResult::kRequiresButtonClick &&
       selected_credential.type == actor_login::CredentialType::kFederated &&
       selected_credential.federation_detail->idp_origin ==
@@ -475,8 +473,6 @@ void AttemptLoginTool::OnAttemptLogin(
   // The availability of the password submit target is bundled with federated
   // support.
   if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginFederatedClickFromActor) &&
       (login_status.value() ==
            actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled ||
        login_status.value() ==

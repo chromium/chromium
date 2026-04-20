@@ -14,8 +14,6 @@ namespace password_manager::features {
 BASE_FEATURE(kActorLogin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginConflictingPermissionCleanup,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kActorLoginFederatedClickFromActor,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginFieldVisibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginLocalClassificationModel,
              base::FEATURE_ENABLED_BY_DEFAULT);

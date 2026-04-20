@@ -1234,8 +1234,7 @@ TEST_F(ActorLoginDelegateImplTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {password_manager::features::kActorLogin,
-       password_manager::features::kActorLoginConflictingPermissionCleanup,
-       password_manager::features::kActorLoginFederatedClickFromActor},
+       password_manager::features::kActorLoginConflictingPermissionCleanup},
       /*disabled_features=*/{});
 
   // Setup mock cleaning service
@@ -1345,8 +1344,7 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {password_manager::features::kActorLogin,
-       password_manager::features::kActorLoginConflictingPermissionCleanup,
-       password_manager::features::kActorLoginFederatedClickFromActor},
+       password_manager::features::kActorLoginConflictingPermissionCleanup},
       /*disabled_features=*/{});
 
   // Setup mock cleaning service
