@@ -429,6 +429,12 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
+    if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+      // Note that on builds that use DBus, TearDown after GTEST_SKIP may crash
+      // in a way that does not register as a build failure. See b/490133826 and
+      // b/462607324 tracking the root cause.
+      GTEST_SKIP();
+    }
     ChromeRenderViewHostTestHarness::SetUp();
 
     observer_ = std::make_unique<WebContentsObserver>(this, web_contents());
@@ -481,9 +487,13 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
 
     testing::DefaultValue<CSDModelType>::Set(CSDModelType::kFlatbuffer);
+    setup_called_ = true;
   }
 
   void TearDown() override {
+    if (!setup_called_) {
+      return;
+    }
     raw_token_fetcher_ = nullptr;
     raw_delegate_ = nullptr;
 
@@ -696,6 +706,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<base::RunLoop> pre_classification_run_loop_;
   std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
       pre_classification_histogram_observer_;
+  bool setup_called_ = false;
 };
 
 class ClientSideDetectionHostTest : public ClientSideDetectionHostTestBase {
@@ -740,10 +751,6 @@ class ClientSideDetectionHostOnlyESBTest
 
 TEST_P(ClientSideDetectionHostOnlyESBTest,
        TestPreClassificationCheckOnlyESBClassification) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
 
@@ -779,10 +786,6 @@ INSTANTIATE_TEST_SUITE_P(
                                                  /*is_feature_enabled=*/true}));
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Case 0: renderer sends an invalid protobuf that we're unable to
   // parse. This has the same behavior as providing nullopt.
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
@@ -791,10 +794,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Case 1: client thinks the page is phishing.  The server does not agree.
   // No interstitial is shown.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
@@ -817,10 +816,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   // Case 2: client thinks the page is phishing and so does the server.
@@ -864,10 +859,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
 }
 
 TEST_F(ClientSideDetectionHostTest, UserReportSkipsAllowlist) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://allowlisted.com/");
 
   // Set the URL as allowlisted.
@@ -904,10 +895,6 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsAllowlist) {
 }
 
 TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://example.com/");
 
   // Set that we are at the phishing report limit.
@@ -941,10 +928,6 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Case 3 & 4: client thinks a page is phishing then navigates to
   // another page which is also considered phishing by the client
   // before the server responds with a verdict.  After a while the
@@ -1020,10 +1003,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Case 5: renderer sends a verdict string that isn't phishing.
   ClientPhishingRequest verdict;
   verdict.set_url("http://not-phishing.com/");
@@ -1038,10 +1017,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
 TEST_F(
     ClientSideDetectionHostTest,
     PhishingDetectionDoneServerModelPhishyAndExistsInHighConfidenceAllowlist) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   // Client thinks the page is phishing and so does the server.
@@ -1091,10 +1066,6 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneVerdictNotPhishingButSBMatchOnNewRVH) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // When navigating to a different host (thus creating a pending RVH) which
   // matches regular malware list, and after navigation the renderer sends a
   // verdict string that isn't phishing, we should still send the report.
@@ -1125,10 +1096,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneEnhancedProtectionShouldHaveToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   ClientPhishingRequest verdict;
@@ -1157,10 +1124,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneCalledTwiceShouldSucceed) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   ClientPhishingRequest verdict;
@@ -1207,10 +1170,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostIncognitoTest,
        PhishingDetectionDoneIncognitoShouldNotHaveToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   ClientPhishingRequest verdict;
@@ -1232,10 +1191,6 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneNoEnhancedProtectionShouldNotHaveToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   ClientPhishingRequest verdict;
   verdict.set_url("http://example.com/");
   verdict.set_client_score(1.0f);
@@ -1259,10 +1214,6 @@ TEST_F(ClientSideDetectionHostTest,
 // TODO(clamy): Fix the test and re-enable. See crbug.com/41338215.
 TEST_F(ClientSideDetectionHostTest,
        DISABLED_NavigationCancelsShouldClassifyUrl) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Test that canceling pending should classify requests works as expected.
   GURL first_url("http://first.phishy.url.com");
   GURL second_url("http://second.url.com/");
@@ -1287,10 +1238,6 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
@@ -1316,10 +1263,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckPassAlternateObserverOrder) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
@@ -1347,10 +1290,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckMatchCSDAllowlist) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr,
@@ -1361,10 +1300,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckMatchHighConfidenceAllowlist) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
   base::HistogramTester histogram_tester;
 
@@ -1384,10 +1319,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlist) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(0.0f);
   base::HistogramTester histogram_tester;
 
@@ -1406,10 +1337,6 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Check that XHTML is supported, in addition to the default HTML type.
   GURL url("http://host.com/xhtml");
   auto navigation =
@@ -1431,10 +1358,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Navigate to two hosts, which should cause two IPCs.
   GURL url1("http://host1.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url1, false);
@@ -1456,9 +1379,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckCancelActor) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
   base::HistogramTester histogram_tester;
 
   // Although we'll navigate to url1 and keep loading, we will not complete the
@@ -1498,10 +1418,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckCancelActor) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckPrivateIpAddress) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // If IsPrivateIPAddress returns true, no IPC should be triggered.
   GURL url("http://host3.com/");
   ExpectPreClassificationChecks(url, &kTrue, nullptr, nullptr, nullptr,
@@ -1513,10 +1429,6 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // If IsLocalResource returns true, no IPC should be triggered.
   GURL url("http://host3.com/");
   ExpectPreClassificationChecks(url, nullptr, nullptr, nullptr, nullptr,
@@ -1528,9 +1440,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckErrorDocument) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
   base::HistogramTester histogram_tester;
   feature_list_.InitAndEnableFeature(kClientSideDetectionSkipErrorPage);
 
@@ -1568,10 +1477,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckErrorDocument) {
 
 TEST_F(ClientSideDetectionHostIncognitoTest,
        TestPreClassificationCheckIncognito) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // If the tab is incognito there should be no IPC.  Also, we shouldn't
   // even check the csd-allowlist.
   GURL url("http://host4.com/");
@@ -1586,10 +1491,6 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckOverPhishingReportingLimit) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // If the url isn't in the cache and we are over the reporting limit, we
   // don't do classification.
   GURL url("http://host7.com/");
@@ -1603,10 +1504,6 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("https://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
@@ -1619,10 +1516,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckNoneHttpOrHttpsUrl) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("file://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
                                 &kFalse);
@@ -1633,10 +1526,6 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // If result is cached, we will try and display the blocking page directly
   // with no start classification message.
   GURL url("http://host8.com/");
@@ -1657,10 +1546,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Configures enterprise allowlist.
   ScopedListPrefUpdate update(profile()->GetPrefs(),
                               prefs::kSafeBrowsingAllowlistDomains);
@@ -1677,10 +1562,6 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   {
     ClientPhishingRequest verdict;
     verdict.set_url("http://not-phishing.com/");
@@ -1728,10 +1609,6 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectionDuration.TriggerModel", 0);
@@ -1772,10 +1649,6 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://phishing.example.com/");
   ClientPhishingRequest verdict;
   verdict.set_client_score(1.0);
@@ -1797,10 +1670,6 @@ TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
 
 TEST_F(ClientSideDetectionHostTest,
        CSDFeaturesCacheContainsVerdictAndFullDebuggingMetadata) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   ClientPhishingRequest* verdict_from_cache = nullptr;
@@ -1870,10 +1739,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        RTLookupResponseForceRequestSendsCSPPPingWhenVerdictNotPhishing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -1955,10 +1820,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        RTLookupResponseOnFirstURLInRedirectChainTriggersForceRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -2056,10 +1917,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        NoRTLookupResponseInRedirectChainContainsForceRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -2111,10 +1968,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        RedirectChainKillswitchDoesNotTriggersForceRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({kClientSideDetectionRedirectChainKillswitch}, {});
 
   base::HistogramTester histogram_tester;
@@ -2193,10 +2046,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   base::HistogramTester histogram_tester;
@@ -2226,10 +2075,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        ClipboardCopyApiCallDoesNotProceedWithClassification) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {kClientSideDetectionClipboardCopyApi});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   base::HistogramTester histogram_tester;
@@ -2267,10 +2112,6 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        ClipboardCopyApiCallProceedsWithClassification) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionClipboardCopyApi,
       {{kCsdClipboardCopyApiSampleRate.name, "1.0"}});
@@ -2312,10 +2153,6 @@ TEST_F(ClientSideDetectionHostTest,
 TEST_F(
     ClientSideDetectionHostTest,
     ClipboardCopyApiCallDoesNotProceedWithClassificationWithHighHCAcceptanceRate) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionClipboardCopyApi,
       {{kCsdClipboardCopyApiHCAcceptanceRate.name, "1.0"},
@@ -2357,10 +2194,6 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostTest,
        ClipboardCopyApiCallDoesNotProceedWithClassificationWithZeroSampleRate) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({kClientSideDetectionClipboardCopyApi}, {});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   base::HistogramTester histogram_tester;
@@ -2397,9 +2230,6 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithForcedRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -2450,9 +2280,6 @@ TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithForcedRequest) {
 }
 
 TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithTfliteMatch) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -2501,9 +2328,6 @@ TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithTfliteMatch) {
 }
 
 TEST_F(ClientSideDetectionHostTest, ImageEmbeddingMatch) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -2553,9 +2377,6 @@ TEST_F(ClientSideDetectionHostTest, ImageEmbeddingMatch) {
 
 TEST_F(ClientSideDetectionHostTest,
        NoImageEmbeddingMatchWithNoTfliteMatchAndNoForceRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
   base::HistogramTester histogram_tester;
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -2615,6 +2436,9 @@ class ClientSideDetectionHostCreditCardFormTest
   }
 
   void TearDown() override {
+    if (!setup_called_) {
+      return;
+    }
     DCHECK(history_service_);
 
     csd_host_->HistoryServiceBeingDeleted(history_service_.get());
@@ -2699,10 +2523,6 @@ class ClientSideDetectionHostCreditCardFormTest
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        NonCreditCardFormDoesNotTriggerPreclassificationChecks) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormEnableInteractionTrigger.name, "true"}});
@@ -2733,10 +2553,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        UnclassifiedFormDoesNotTriggerPreclassificationChecks) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormEnableInteractionTrigger.name, "true"}});
@@ -2767,10 +2583,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        WhenESBDisabledDoesNotTriggerPreclassificationChecks) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormEnableInteractionTrigger.name, "true"}});
@@ -2801,10 +2613,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        DoesNotProceedWithClassificationOnHCAcceptance) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormHCAcceptanceRate.name, "1.0"},
@@ -2851,10 +2659,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest, DoesNotProceedDueToSampling) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
@@ -2905,10 +2709,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest, DoesNotProceedDueToSampling) {
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        ProceedsWithClassificationOnNewSiteVisit) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
@@ -2956,10 +2756,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        DoesNotStartPreclassificationOnRepeatSiteVisit) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
@@ -3013,10 +2809,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        IgnoresVisitsInLookbackPeriod) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
@@ -3110,10 +2902,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        ProceedsWithClassificationOnLocalHeuristic) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
@@ -3156,10 +2944,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        DoesNotStartPreclassificationOnServerHeuristic) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
@@ -3205,10 +2989,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        PreclassificationIsDedupedByURL) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormSampleRate.name, "1.0"},
@@ -3269,10 +3049,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        InteractionTriggerDisabledDoesNotTrigger) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormSampleRate.name, "1.0"},
@@ -3305,10 +3081,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        DetectionTriggerTriggersOnFieldTypesDetermined) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormSampleRate.name, "1.0"},
@@ -3346,10 +3118,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
        DetectionAndInteractionTriggersOnlyTriggerOnce) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {{kCsdCreditCardFormSampleRate.name, "1.0"},
@@ -3472,13 +3240,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
        ProceedsToClassification) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   const CreditCardFormReferringAppTestCase& test_case = GetParam();
 
   if (!test_case.should_pass_filter) {
+    // Note that on builds that use DBus, TearDown after GTEST_SKIP may crash in
+    // a way that does not register as a build failure. See b/490133826 and
+    // b/462607324 tracking the root cause.
     GTEST_SKIP();
   }
 
@@ -3533,13 +3300,12 @@ TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
 
 TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
        DoesNotStartPreclassificationBecauseOfReferringAppFilter) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   const CreditCardFormReferringAppTestCase& test_case = GetParam();
 
   if (test_case.should_pass_filter) {
+    // Note that on builds that use DBus, TearDown after GTEST_SKIP may crash in
+    // a way that does not register as a build failure. See b/490133826 and
+    // b/462607324 tracking the root cause.
     GTEST_SKIP();
   }
 
@@ -3625,10 +3391,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
        NeverSkipWhenFeatureDisabled) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   const ClientSideDetectionType& request_type = GetParamType();
   base::HistogramTester histogram_tester;
 
@@ -3663,14 +3425,13 @@ TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
 
 TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
        TriggerModelsDoesNotSkipWhenFeatureIsEnabled) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   const ClientSideDetectionType& request_type = GetParamType();
   base::HistogramTester histogram_tester;
 
   if (request_type != ClientSideDetectionType::TRIGGER_MODELS) {
+    // Note that on builds that use DBus, TearDown after GTEST_SKIP may crash in
+    // a way that does not register as a build failure. See b/490133826 and
+    // b/462607324 tracking the root cause.
     GTEST_SKIP();
   }
 
@@ -3705,14 +3466,13 @@ TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
 
 TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
        AllOtherTypesSkipWhenFeatureIsEnabled) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   const ClientSideDetectionType& request_type = GetParamType();
   base::HistogramTester histogram_tester;
 
   if (request_type == ClientSideDetectionType::TRIGGER_MODELS) {
+    // Note that on builds that use DBus, TearDown after GTEST_SKIP may crash in
+    // a way that does not register as a build failure. See b/490133826 and
+    // b/462607324 tracking the root cause.
     GTEST_SKIP();
   }
 
@@ -3770,6 +3530,9 @@ class ClientSideDetectionHostNotificationTest
   }
 
   void TearDown() override {
+    if (!setup_called_) {
+      return;
+    }
     prompt_factory_.reset();
     ClientSideDetectionHostTest::TearDown();
   }
@@ -3802,10 +3565,6 @@ class ClientSideDetectionHostNotificationTest
 
 TEST_F(ClientSideDetectionHostNotificationTest,
        NotificationPermissionPromptTriggersClassificationRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   // First navigate to a page, which should trigger preclassification check.
@@ -3885,10 +3644,6 @@ TEST_F(ClientSideDetectionHostNotificationTest,
 
 TEST_F(ClientSideDetectionHostNotificationTest,
        NotPhishingVerdictSendsPingFromNotificationPermissionPrompt) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   ClientPhishingRequest verdict;
@@ -4001,10 +3756,6 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
        AsyncCheckTrackerTriggersClassificationRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   NavigateAndCommit(example_url_);
   // Force request should not be triggered, because RTLookupResponse hasn't
   // been cached.
@@ -4040,10 +3791,6 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
        AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   NavigateAndCommit(example_url_);
   // Force request should not be triggered, because RTLookupResponse hasn't
   // been cached.
@@ -4090,10 +3837,6 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
        AsyncCheckTrackerNotTriggerClassificationRequestNoEnforcedPing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   NavigateAndCommit(example_url_);
 
   SetRTResponseInCacheManager(/*is_enforced=*/false);
@@ -4114,10 +3857,6 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
        AsyncCheckTrackerTriggersClassificationRequestOnLocalModelPhishing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   NavigateAndCommit(example_url_);
 
   ClientPhishingRequest verdict;
@@ -4168,10 +3907,6 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 TEST_F(
     ClientSideDetectionRTLookupResponseForceRequestTest,
     AsyncCheckTrackerNotTriggerClassificationRequestOnTriggerModelPingConvertedToForceRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   NavigateAndCommit(example_url_);
 
   // Setup RTResponse in cache prior to calling PhishingDetectionDone.
@@ -4221,10 +3956,6 @@ class ClientSideDetectionHostNewObserversForceRequestTest
 
 TEST_F(ClientSideDetectionHostNewObserversForceRequestTest,
        TestTriggerModelsConvertedToForceRequestAtLoad) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Expectations for classifications. Using AtLeast(1) inside
   // ExpectPreClassificationChecks is not easy, so we'll just call it once
   // and hope for the best, or use our own expectations if needed.
@@ -4299,10 +4030,6 @@ TEST_F(ClientSideDetectionHostNewObserversForceRequestTest,
 
 TEST_F(ClientSideDetectionHostNewObserversForceRequestTest,
        TestTriggerModelsConvertedToForceRequestAtRequest) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetRTResponseInCacheManager(/*is_enforced=*/true);
   // Generally, this never happens unless a sampled RTLookupResponse contains
@@ -4382,10 +4109,6 @@ class ClientSideDetectionHostDebugFeaturesTest
 
 TEST_F(ClientSideDetectionHostDebugFeaturesTest,
        SkipsAllowlistWhenDumpingFeatures) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
@@ -4398,10 +4121,6 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
 TEST_F(ClientSideDetectionHostDebugFeaturesTest,
        SkipsCacheWhenDumpingFeatures) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
@@ -4414,10 +4133,6 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
 TEST_F(ClientSideDetectionHostDebugFeaturesTest,
        SkipsReportLimitWhenDumpingFeatures) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
@@ -4687,10 +4402,6 @@ class ClientSideDetectionHostScamDetectionTest
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        IntelligentScanDisabledByDelegate) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   EXPECT_CALL(*intelligent_scan_delegate_, ShouldRequestIntelligentScan(_))
       .WillOnce(Return(false));
   // Because the delegate has disabled intelligent scan, we will
@@ -4722,10 +4433,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        IntelligentScanWithEmptyResponse) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetIntelligentScanCallback(/*should_return_response=*/false);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -4752,10 +4459,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        IntelligentScanWithFullResponse) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetIntelligentScanCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
@@ -4784,10 +4487,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        EmptyInnerTextDoesNotTriggersIntelligentScan) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT start the intelligent scan.
   EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
@@ -4815,10 +4514,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        ShortInnerTextDoesNotTriggersIntelligentScan) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // The current inner text is too short. Threshold is set at
   // ClientSideDetectionHost::kInnerTextMinThresholdBytes.
   raw_delegate_->SetInnerText("text");
@@ -4849,10 +4544,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        AllowlistedOnHCDoesNotTriggersIntelligentScan) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   // Because the URL is on the HC allowlist, we will NOT start the intelligent
   // scan.
   EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
@@ -4882,10 +4573,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        NoIntelligentScanDoesNotTriggersIntelligentScan) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   EXPECT_CALL(*intelligent_scan_delegate_, GetIntelligentScanModelType(_))
       .WillOnce(
           Return(IntelligentScanDelegate::ModelType::kNotSupportedOnDevice));
@@ -4917,10 +4604,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        ScamExperimentVerdictOnClientPhishingResponseAndShowBlockingPage) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetIntelligentScanCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
@@ -4963,10 +4646,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        RTLookupResponseLlamaForcedTriggerInfoTriggersIntelligentScan) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {});
   CacheForcedTriggerInfo(
       /*has_llama_forced_trigger_info=*/true,
@@ -5009,10 +4688,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 TEST_F(
     ClientSideDetectionHostScamDetectionTest,
     RedirectChainContainsRTLookupResponseLlamaForcedTriggerInfoSoItTriggersIntelligentScan) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {});
 
   GURL first_url_redirect("http://firsturlsuspicious.com/");
@@ -5081,10 +4756,6 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        RedirectChainDoesNotContainRTLookupResponseLlamaForcedTriggerInfo) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {});
 
   GURL first_url_redirect("http://firsturlnotsuspicious.com/");
@@ -5156,10 +4827,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 TEST_F(
     ClientSideDetectionHostScamDetectionTest,
     RedirectChainDoesContainRTLookupResponseLlamaForcedTriggerInfoButKillswitchIsEnabled) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({kClientSideDetectionForcedLlamaRedirectChainKillswitch}, {});
 
   GURL first_url_redirect("http://firsturlnotsuspicious.com/");
@@ -5234,10 +4901,6 @@ TEST_F(
 TEST_F(
     ClientSideDetectionHostScamDetectionTest,
     RTLookupResponseLlamaForcedTriggerInfoTriggersIntelligentScanAndShowWarning) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {});
   CacheForcedTriggerInfo(
       /*has_llama_forced_trigger_info=*/true,
@@ -5287,10 +4950,6 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        CatchAllScamExperimentVerdictDoesNotShowWarning) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {});
 
   SetIntelligentScanCallback(/*should_return_response=*/true);
@@ -5330,10 +4989,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        CatchAllEnforcementScamExperimentVerdictDoesShowWarning) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
   SetFeatures({}, {});
   SetIntelligentScanCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
