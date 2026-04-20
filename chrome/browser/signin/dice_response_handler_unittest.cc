@@ -1112,37 +1112,50 @@ TEST_F(DiceResponseHandlerTest, SigninFailure) {
   EXPECT_EQ(GoogleServiceAuthError::SERVICE_UNAVAILABLE, auth_error_.state());
 }
 
-// Checks that a second token for the same account is not requested when a
-// request is already in flight.
+// Checks that a second token for the same account is requested when a
+// request is already in flight. Both requests should succeed.
 TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       dice_params.signin_info()->GetInitiator()->account_info.gaia_id,
       dice_params.signin_info()->GetInitiator()->account_info.email);
   ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
+
+  // Start first request.
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
-  // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_1, testing::NotNull());
+
   // Start a second request for the same account.
   dice_params = MakeDiceParams(DiceAction::SIGNIN);
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
-  // Check that there is no new request.
+  // Check that a NEW request IS created.
   GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
-  ASSERT_THAT(consumer_2, testing::IsNull());
+  ASSERT_THAT(consumer_2, testing::NotNull());
+
   // Simulate GaiaAuthFetcher success for the first request.
   consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
-      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      "refresh_token_1", "access_token_1", 10, /*is_child_account=*/false,
       /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
-  // Check that the token has been inserted in the token service.
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
   EXPECT_FALSE(identity_manager()
                    ->FindExtendedAccountInfoByAccountId(account_id)
                    .is_under_advanced_protection);
+
+  // Simulate GaiaAuthFetcher success for the second request (overwriting).
+  // We set is_under_advanced_protection to true to verify that the second
+  // request overwrites the first one.
+  consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_2", "access_token_2", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/false));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_TRUE(identity_manager()
+                  ->FindExtendedAccountInfoByAccountId(account_id)
+                  .is_under_advanced_protection);
 }
 
 // Checks that two SIGNIN requests can happen concurrently.

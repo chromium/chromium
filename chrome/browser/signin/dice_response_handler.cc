@@ -76,9 +76,8 @@ enum DiceResponseHeader {
 enum DiceTokenFetchResult {
   // The token fetch succeeded.
   kFetchSuccess = 0,
-  // The token fetch was aborted. For example, if another request for the same
-  // account is already in flight.
-  kFetchAbort = 1,
+  // The token fetch was aborted. Deprecated.
+  // kFetchAbort = 1,
   // The token fetch failed because Gaia responsed with an error.
   kFetchFailure = 2,
   // The token fetch failed because no response was received from Gaia.
@@ -366,15 +365,6 @@ bool DiceResponseHandler::DiceSigninSession::MarkEnableSyncIfFetching(
   return false;
 }
 
-bool DiceResponseHandler::DiceSigninSession::IsFetchingFor(
-    const GaiaId& gaia_id,
-    const std::string& email,
-    const std::string& authorization_code) const {
-  return token_fetcher_ && token_fetcher_->gaia_id() == gaia_id &&
-         token_fetcher_->email() == email &&
-         token_fetcher_->authorization_code() == authorization_code;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // DiceResponseHandler
 ////////////////////////////////////////////////////////////////////////////////
@@ -467,20 +457,6 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
         base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
                        base::Unretained(this)));
     return;
-  }
-
-  const signin::DiceResponseParams::AccountInfo& info = initiator->account_info;
-  for (const auto& current_session : sessions_) {
-    if (current_session->IsFetchingFor(info.gaia_id, info.email,
-                                       initiator->authorization_code)) {
-      RecordDiceFetchTokenResult(kFetchAbort);
-      // TODO(crbug.com/320650263): Aborting here ignores potential new
-      // secondary accounts in the header. This is fine for now as we only
-      // fetch the initiator account, but will need to be addressed for
-      // concurrent fetching.
-      return;  // There is already a request in flight with the same
-               // parameters.
-    }
   }
 
   auto session = std::make_unique<DiceSigninSession>(this, std::move(delegate),

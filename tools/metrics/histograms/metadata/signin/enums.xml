@@ -1067,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SigninDiceTokenFetchResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Abort"/>
+  <int value="1" label="Abort (deprecated)"/>
   <int value="2" label="Failure">Failed with Gaia error.</int>
   <int value="3" label="Timeout"/>
 </enum>

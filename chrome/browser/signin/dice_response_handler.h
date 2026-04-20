@@ -244,10 +244,6 @@ class DiceResponseHandler : public KeyedService {
     bool MarkEnableSyncIfFetching(const GaiaId& gaia_id,
                                   const std::string& email);
 
-    bool IsFetchingFor(const GaiaId& gaia_id,
-                       const std::string& email,
-                       const std::string& authorization_code) const;
-
    private:
     const raw_ptr<DiceResponseHandler> handler_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
