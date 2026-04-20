@@ -227,129 +227,28 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
 
 class ExtensionTelemetryEventInstallLocationTest
     : public ExtensionTelemetryEventRouterTest,
-      public testing::WithParamInterface<
-          std::tuple<ExtensionInfo::InstallLocation, bool>> {
+      public testing::WithParamInterface<ExtensionInfo::InstallLocation> {
  public:
   ExtensionTelemetryEventInstallLocationTest() = default;
 
-  bool use_proto_format() const { return std::get<1>(GetParam()); }
-
  protected:
-  ExtensionInfo::InstallLocation install_location_ = std::get<0>(GetParam());
+  ExtensionInfo::InstallLocation install_location_ = GetParam();
 };
 
 TEST_P(ExtensionTelemetryEventInstallLocationTest,
        CheckTelemetryEventReported) {
-  // Initialize the dictionary outside of the if/else block below, so that the
-  // variable won't be destroyed by the time the `EXPECT_CALL` is executed.
-  base::DictValue expected_event;
+  chrome::cros::reporting::proto::Event expected_proto_event;
+  auto* extension_telemetry_event =
+      expected_proto_event.mutable_extension_telemetry_event();
+  *extension_telemetry_event->mutable_extension_telemetry_report() =
+      *GenerateTelemetryReportRequest(install_location_);
+  extension_telemetry_event->set_profile_user_name(
+      profile_->GetProfileUserName());
+  extension_telemetry_event->set_profile_identifier(
+      profile_->GetPath().AsUTF8Unsafe());
 
-  if (use_proto_format()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::kUploadRealtimeReportingEventsUsingProto);
-
-    chrome::cros::reporting::proto::Event expected_proto_event;
-    auto* extension_telemetry_event =
-        expected_proto_event.mutable_extension_telemetry_event();
-    *extension_telemetry_event->mutable_extension_telemetry_report() =
-        *GenerateTelemetryReportRequest(install_location_);
-    extension_telemetry_event->set_profile_user_name(
-        profile_->GetProfileUserName());
-    extension_telemetry_event->set_profile_identifier(
-        profile_->GetPath().AsUTF8Unsafe());
-
-    EXPECT_CALL(*mock_realtime_reporting_client_,
-                ReportEvent(base::test::EqualsProto(expected_proto_event), _));
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(
-        policy::kUploadRealtimeReportingEventsUsingProto);
-
-    const std::string event_json = base::StringPrintf(
-        R"({
-    "extension_telemetry_report": {
-      "creation_timestamp_msec": "1718811019088",
-      "reports": [{
-        "extension": {%s
-          "id": "fake-extension-id",
-          "name": "Foo extension",
-          "install_location": "%s",
-          "is_from_store": false,
-          "version": "1"
-        },
-        "signals": {
-          "cookies_get_all_info": {
-            "get_all_args_info": [ {
-              "count": 1,
-              "secure": true,
-              "is_session": true,
-              "name": "cookie-1",
-              "path": "/path1",
-              "store_id": "store-1",
-              "domain": "example-domain",
-              "url": "www.example1.com/"
-            }]
-          },
-          "cookies_get_info": {
-            "get_args_info": [{
-              "count": 2,
-              "name": "cookie-1",
-              "store_id": "store-1",
-              "url": "www.example1.com/"
-            }]
-          },
-          "remote_host_contacted_info": {
-            "remote_host": [ {
-                "connection_protocol": "HTTP_HTTPS",
-                "contact_count": 3,
-                "contacted_by": "CONTENT_SCRIPT",
-                "url": "www.youtube.com/"
-            } ]
-          },
-          "tabs_api_info": {
-            "call_details": [ {
-                "count": 4,
-                "new_url": "www.gogle.com/",
-                "current_url": "www.google.com/",
-                "method": "UPDATE"
-            } ]
-          },
-          "dom_access_info": {
-            "dom_accesses": [ {
-              "api_name": "dom-api",
-              "url": "www.dom.com/",
-              "access_type": "READ",
-              "count": 5,
-              "timestamp_ms": "1718811019088"
-            } ]
-          },
-          "script_injection_info": {
-            "script_injections": [ {
-              "api_name": "script-api",
-              "url": "www.script.com/",
-              "count": 6,
-              "timestamp_ms": "1718811019088",
-              "args_list": [ "arg1", "arg2" ],
-              "arg_url": "www.arg.com/"
-            } ]
-          }
-        }
-      }]
-    }
-  })",
-        install_location_ == ExtensionInfo::UNPACKED ? R"(
-        "file_infos": [ {
-          "hash": "",
-          "name": ""
-        } ],
-      )"
-                                                     : "",
-        ExtensionInfo::InstallLocation_Name(install_location_).c_str());
-    expected_event = base::test::ParseJsonDict(event_json);
-
-    EXPECT_CALL(*mock_realtime_reporting_client_,
-                ReportRealtimeEvent(kExtensionTelemetryEvent, _,
-                                    Eq(ByRef(expected_event))));
-  }
+  EXPECT_CALL(*mock_realtime_reporting_client_,
+              ReportEvent(base::test::EqualsProto(expected_proto_event), _));
 
   extension_telemetry_event_router_->UploadTelemetryReport(
       GenerateTelemetryReportRequest(install_location_));
@@ -358,18 +257,17 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
 INSTANTIATE_TEST_SUITE_P(
     ExtensionTelemetryEventInstallLocationTest,
     ExtensionTelemetryEventInstallLocationTest,
-    testing::Combine(testing::Values(ExtensionInfo::UNKNOWN_LOCATION,
-                                     ExtensionInfo::INTERNAL,
-                                     ExtensionInfo::EXTERNAL_PREF,
-                                     ExtensionInfo::EXTERNAL_REGISTRY,
-                                     ExtensionInfo::UNPACKED,
-                                     ExtensionInfo::COMPONENT,
-                                     ExtensionInfo::EXTERNAL_PREF_DOWNLOAD,
-                                     ExtensionInfo::EXTERNAL_POLICY_DOWNLOAD,
-                                     ExtensionInfo::COMMAND_LINE,
-                                     ExtensionInfo::EXTERNAL_POLICY,
-                                     ExtensionInfo::EXTERNAL_COMPONENT),
-                     testing::Bool()));
+    testing::Values(ExtensionInfo::UNKNOWN_LOCATION,
+                    ExtensionInfo::INTERNAL,
+                    ExtensionInfo::EXTERNAL_PREF,
+                    ExtensionInfo::EXTERNAL_REGISTRY,
+                    ExtensionInfo::UNPACKED,
+                    ExtensionInfo::COMPONENT,
+                    ExtensionInfo::EXTERNAL_PREF_DOWNLOAD,
+                    ExtensionInfo::EXTERNAL_POLICY_DOWNLOAD,
+                    ExtensionInfo::COMMAND_LINE,
+                    ExtensionInfo::EXTERNAL_POLICY,
+                    ExtensionInfo::EXTERNAL_COMPONENT));
 
 TEST_F(ExtensionTelemetryEventRouterTest, CheckIsPolicyEnabled) {
   // Feature disabled by default, and set reportiing to false.
