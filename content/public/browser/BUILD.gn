@@ -318,6 +318,7 @@ source_set("browser_sources") {
     "preconnect_request.cc",
     "preconnect_request.h",
     "prefetch_deduplication_utils.h",
+    "prefetch_handle.cc",
     "prefetch_handle.h",
     "prefetch_metrics.h",
     "prefetch_priority.h",

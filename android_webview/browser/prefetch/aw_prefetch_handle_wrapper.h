@@ -23,10 +23,8 @@ namespace android_webview {
 //
 // - Can be created on any thread, and then owned by `AwPrefetchManager`.
 // - All non-special member functions (currently getter only) can be called from
-//   any thread. Note that `prefetch_handle_` is UI thread bound, not thread
-//   safe, and won't be accessed after construction.
-// - Can be destroyed on any thread, but `prefetch_handle_` should be properly
-//   destroyed on the UI thread.
+//   any thread.
+// - Can be destroyed on any thread.
 //
 // Under `kWebViewPrefetchOffTheMainThread` being enabled, the deduplication is
 // performed solely by `AwPrefetchManager`'s `url_` and
@@ -122,10 +120,8 @@ class AwPrefetchHandleWrapper final
   const GURL url_;
   const std::optional<net::HttpNoVarySearchData> expected_no_vary_search_;
 
-  // Must be destructed and dereferenced only on the UI thread.
-  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
+  std::unique_ptr<content::CrossThreadPrefetchHandle> prefetch_handle_;
 
-  // Can be destructed on any thread.
   std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle_;
 
   State state_;

@@ -5,9 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PREFETCH_HANDLE_H_
 #define CONTENT_PUBLIC_BROWSER_PREFETCH_HANDLE_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "content/common/content_export.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace network {
@@ -49,6 +51,34 @@ class PrefetchHandle {
 
   // Returns true if the underlying `PrefetchContainer` is alive.
   virtual bool IsAlive() const = 0;
+};
+
+// The cross-thread version of `PrefetchHandle` that can be owned by any thread.
+// Due to the cross-thread nature, currently this is only for keep-alive, and
+// other methods of `PrefetchHandle` are intentionally dropped as they can't be
+// trivially called from non-UI thread.
+//
+// Threading model:
+// - Can be created, destroyed or moved on any thread.
+class CONTENT_EXPORT CrossThreadPrefetchHandle final {
+ public:
+  static std::unique_ptr<CrossThreadPrefetchHandle> Create(
+      std::unique_ptr<content::PrefetchHandle> prefetch_handle);
+  ~CrossThreadPrefetchHandle();
+
+  CrossThreadPrefetchHandle(const CrossThreadPrefetchHandle& other) = delete;
+  CrossThreadPrefetchHandle& operator=(const CrossThreadPrefetchHandle& other) =
+      delete;
+  CrossThreadPrefetchHandle(CrossThreadPrefetchHandle&& other);
+  CrossThreadPrefetchHandle& operator=(CrossThreadPrefetchHandle&& other);
+
+ private:
+  explicit CrossThreadPrefetchHandle(
+      std::unique_ptr<content::PrefetchHandle> prefetch_handle);
+  void Reset();
+
+  // Must be destructed and dereferenced only on the UI thread.
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
 };
 
 }  // namespace content

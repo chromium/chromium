@@ -42,7 +42,8 @@ void AwPrefetchHandleWrapper::CommitInitialPrefetchHandle(
   // A valid handle should be provided to commit.
   CHECK(prefetch_handle);
 
-  prefetch_handle_ = std::move(prefetch_handle);
+  prefetch_handle_ =
+      content::CrossThreadPrefetchHandle::Create(std::move(prefetch_handle));
   SetState(State::kPrefetchHandleCommitted);
 }
 
@@ -52,7 +53,8 @@ AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
     std::unique_ptr<content::PrefetchHandle> prefetch_handle)
     : url_(url),
       expected_no_vary_search_(std::move(expected_no_vary_search)),
-      prefetch_handle_(std::move(prefetch_handle)),
+      prefetch_handle_(content::CrossThreadPrefetchHandle::Create(
+          std::move(prefetch_handle))),
       state_(State::kPrefetchHandleCommitted) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!base::FeatureList::IsEnabled(
@@ -60,18 +62,7 @@ AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
   CheckState();
 }
 
-AwPrefetchHandleWrapper::~AwPrefetchHandleWrapper() {
-  if (prefetch_handle_) {
-    // Delete the handle on the UI thread since it may touch
-    // `PrefetchContainer` if it is `PrefetchHandle`.
-    if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-      CHECK(base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread));
-      content::GetUIThreadTaskRunner({})->DeleteSoon(
-          FROM_HERE, std::move(prefetch_handle_));
-    }
-  }
-}
+AwPrefetchHandleWrapper::~AwPrefetchHandleWrapper() = default;
 
 void AwPrefetchHandleWrapper::CheckState() const {
   switch (state_) {
@@ -149,7 +140,8 @@ void AwPrefetchHandleWrapper::CommitPrefetchHandleAfterConsume(
 
   // A valid handle should be provided to commit.
   CHECK(prefetch_handle);
-  prefetch_handle_ = std::move(prefetch_handle);
+  prefetch_handle_ =
+      content::CrossThreadPrefetchHandle::Create(std::move(prefetch_handle));
   SetState(State::kPrefetchHandleCommitted);
 }
 
