@@ -1,0 +1,51 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "TabRelevanceModelMetadataProto";
+
+// Metadata for OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE.
+message TabRelevanceModelMetadata {
+  // Features used by the Tab Relevance model.
+  // Missing feature values are padded with zeros.
+  enum TabRelevanceFeature {
+    // Unknown feature.
+    TAB_RELEVANCE_FEATURE_UNKNOWN = 0;
+    // Number of words in the query.
+    // (Length: 1)
+    TAB_RELEVANCE_FEATURE_QUERY_LENGTH = 1;
+    // Lexical similarity between the query and the candidate tab's title.
+    // (Length: 1)
+    TAB_RELEVANCE_FEATURE_QUERY_TITLE_LEXICAL_SIMILARITY = 2;
+    // Cosine similarity between the query and the active tab's title,
+    // followed by the similarity between the query and each of the
+    // `num_passages_per_tab` passages in the active tab.
+    // (Length: 1 + num_passages_per_tab)
+    TAB_RELEVANCE_FEATURE_QUERY_ACTIVE_TAB_SIMILARITY = 3;
+    // Cosine similarity between the query and the candidate tab's title,
+    // followed by the similarity between the query and each of the
+    // `num_passages_per_tab` passages in the candidate tab.
+    // (Length: 1 + num_passages_per_tab)
+    TAB_RELEVANCE_FEATURE_QUERY_CANDIDATE_TAB_SIMILARITY = 4;
+    // Cosine similarity between the active tab's title and the candidate tab's
+    // title.
+    // (Length: 1)
+    TAB_RELEVANCE_FEATURE_ACTIVE_CANDIDATE_TAB_SIMILARITY = 5;
+  }
+
+  // The ordered sequence of features as they appear in the model's input
+  // vector. Clients must construct the input vector in this exact order.
+  repeated TabRelevanceFeature feature_sequence = 1;
+
+  // The total number of features in the model's input vector.
+  int32 num_features = 2;
+
+  // The number of passages used per tab.
+  int32 num_passages_per_tab = 3;
+}

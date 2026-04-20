@@ -84,6 +84,7 @@ proto_library("optimization_guide_proto") {
     "salient_image_metadata.proto",
     "string_value.proto",
     "substitution.proto",
+    "tab_relevance_model_metadata.proto",
     "text_safety_model_metadata.proto",
     "visual_search_model_metadata.proto",
   ]
