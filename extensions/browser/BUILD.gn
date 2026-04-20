@@ -1289,7 +1289,6 @@ if (enable_extensions) {
     testonly = true
     sources = [
       "api/hid/hid_apitest.cc",
-      "api/socket/socket_apitest.cc",
       "api/sockets_tcp/sockets_tcp_apitest.cc",
       "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
       "api/sockets_udp/sockets_udp_apitest.cc",
