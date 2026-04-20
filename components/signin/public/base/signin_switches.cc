@@ -456,6 +456,8 @@ BASE_FEATURE(kForceStartupSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFullscreenSignInPromoUseDate, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kGaiaAccountIdEnforcement, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kGlicEligibilitySeparateAccountCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
