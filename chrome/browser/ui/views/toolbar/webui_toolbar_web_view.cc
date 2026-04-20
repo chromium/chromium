@@ -360,6 +360,52 @@ void WebUIToolbarWebView::HandleContextMenu(
     case toolbar_ui_api::mojom::ContextMenuType::kHome:
       home_control_.HandleContextMenu(screen_rect, source);
       break;
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionNewIncognitoWindow:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionShowPasswordsBubbleOrPage:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionShowPaymentsBubbleOrPage:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionShowAddressesBubbleOrPage:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowBookmarks:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowReadingList:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowHistoryCluster:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowDownloads:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionClearBrowsingData:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionPrint:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowLensOverlayResults:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionShowTranslate:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionQrCodeGenerator:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionRouteMedia:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowReadAnything:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionCopyUrl:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSendTabToSelf:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTaskManager:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionDevTools:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionTabSearch:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowContextualTasks:
+    case toolbar_ui_api::mojom::ContextMenuType::kPinnedActionSidePanelShowLens:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowAboutThisSite:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowCustomizeChrome:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowShoppingInsights:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowMerchantTrust:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSendSharedTabGroupFeedback:
+    case toolbar_ui_api::mojom::ContextMenuType::
+        kPinnedActionSidePanelShowComments:
+      pinned_toolbar_actions_.HandleContextMenu(menu_type, screen_rect, source);
+      break;
     case toolbar_ui_api::mojom::ContextMenuType::kUnspecified:
       NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
   }
