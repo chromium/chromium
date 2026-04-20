@@ -136,6 +136,17 @@ enum class GeminiClientMode {
   kPreviousConversationLoading,
 };
 
+// Enum representing the Gemini view mode.
+// This needs to stay in sync with GMNGeminiViewMode in the SDK.
+enum class GeminiViewMode {
+  // The view mode is unknown.
+  kUnknown,
+  // The floaty view mode.
+  kFloaty,
+  // The live view mode.
+  kLive,
+};
+
 // Configures Gemini with the given startup configuration.
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* startup_configuration);
@@ -195,6 +206,12 @@ void UpdateGeminiViewState(GeminiViewState view_state, bool animated);
 
 // Returns the current `GeminiViewState` of the floaty.
 GeminiViewState GetCurrentGeminiViewState();
+
+// Switches the Gemini view to the specified mode with an animation flag.
+void SwitchToMode(GeminiViewMode mode, bool animated);
+
+// Returns the current `GeminiViewMode` of the floaty.
+GeminiViewMode GetCurrentMode();
 
 // Requests a UI change for a specific element type.
 void RequestUIChange(GeminiUIElementType ui_element_type);
