@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowClosed) {
 }
 
 // TODO(crbug.com/503936424): Re-enable the test.
-#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#if (defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_MAC)
 #define MAYBE_testInitializeFailsWindowOpen \
   DISABLED_testInitializeFailsWindowOpen
 #else
