@@ -25,6 +25,7 @@ enum class ActionType {
   kWait,
   kScroll,
   kScrollTo,
+  kSelect,
 };
 
 // Based on the field names in
@@ -53,6 +54,9 @@ ActionType GetActionType(const std::string& key) {
   }
   if (key == "scroll_to") {
     return ActionType::kScrollTo;
+  }
+  if (key == "select") {
+    return ActionType::kSelect;
   }
   return ActionType::kUnknown;
 }
@@ -217,6 +221,21 @@ bool MapScrollToAction(const base::DictValue& dict,
   return scroll->ByteSizeLong() > 0;
 }
 
+bool MapSelectAction(const base::DictValue& dict,
+                     optimization_guide::proto::Action* action) {
+  auto* select = action->mutable_select();
+  if (std::optional<int> tab_id = dict.FindInt("tab_id")) {
+    select->set_tab_id(*tab_id);
+  }
+  if (const base::DictValue* target = dict.FindDict("target")) {
+    MapActionTarget(*target, select->mutable_target());
+  }
+  if (const std::string* value = dict.FindString("value")) {
+    select->set_value(*value);
+  }
+  return select->ByteSizeLong() > 0;
+}
+
 }  // namespace
 
 bool ParseActionFromDict(const base::DictValue& dict,
@@ -251,6 +270,8 @@ bool ParseActionFromDict(const base::DictValue& dict,
       return MapScrollAction(value.GetDict(), action);
     case ActionType::kScrollTo:
       return MapScrollToAction(value.GetDict(), action);
+    case ActionType::kSelect:
+      return MapSelectAction(value.GetDict(), action);
     case ActionType::kUnknown:
       return false;
   }

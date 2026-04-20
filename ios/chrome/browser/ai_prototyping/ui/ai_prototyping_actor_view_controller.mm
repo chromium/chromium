@@ -23,6 +23,7 @@ NSString* const kToolWait = @"Wait";
 NSString* const kToolMultiTool = @"Multi-tool";
 NSString* const kToolScroll = @"Scroll";
 NSString* const kToolScrollTo = @"Scroll To";
+NSString* const kToolSelect = @"Select";
 
 // Placeholder macro for tab ID.
 NSString* const kTabIdMacro = @"{{tab_id}}";
@@ -35,7 +36,8 @@ bool IsWebActuationTool(NSString* tool) {
          [tool isEqualToString:kToolType] ||
          [tool isEqualToString:kToolMultiTool] ||
          [tool isEqualToString:kToolScroll] ||
-         [tool isEqualToString:kToolScrollTo];
+         [tool isEqualToString:kToolScrollTo] ||
+         [tool isEqualToString:kToolSelect];
 }
 }  // namespace
 
@@ -488,6 +490,16 @@ bool IsWebActuationTool(NSString* tool) {
         }
       }
     },
+    kToolSelect : @{
+      @"ui" : @[ _tabIdContainer, _frameIdContainer, _jsonContainer ],
+      @"template" : @{
+        @"select" : @{
+          @"tab_id" : kTabIdMacro,
+          @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}},
+          @"value" : @"Option 1"
+        }
+      }
+    },
   };
 
   _toolPickerButton.menu = [self createToolPickerMenu];
@@ -705,7 +717,7 @@ bool IsWebActuationTool(NSString* tool) {
   // Define the explicit order for the dropdown menu.
   NSArray<NSString*>* orderedTools = @[
     kToolMultiTool, kToolNavigate, kToolClick, kToolType, kToolHistoryBack,
-    kToolHistoryForward, kToolWait, kToolScroll, kToolScrollTo
+    kToolHistoryForward, kToolWait, kToolScroll, kToolScrollTo, kToolSelect
   ];
 
   for (NSString* toolName in orderedTools) {
