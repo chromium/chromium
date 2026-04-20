@@ -1849,6 +1849,10 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
     return false;
   }
 
+  if (!MatchesBool(query_info_.discarded, web_contents->WasDiscarded())) {
+    return false;
+  }
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* tab_lifecycle_unit_external =
       resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
@@ -1857,12 +1861,6 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
   if (!MatchesBool(query_info_.frozen,
                    tab_lifecycle_unit_external->GetTabState() ==
                        ::mojom::LifecycleUnitState::FROZEN)) {
-    return false;
-  }
-
-  if (!MatchesBool(query_info_.discarded,
-                   tab_lifecycle_unit_external->GetTabState() ==
-                       ::mojom::LifecycleUnitState::DISCARDED)) {
     return false;
   }
 
