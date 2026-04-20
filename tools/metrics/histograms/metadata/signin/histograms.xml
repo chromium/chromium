@@ -2466,6 +2466,16 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.MagiChrome.HybridTransportSupported" enum="Boolean"
+    expires_after="2026-10-01">
+  <owner>msalama@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the device supports Hybrid Transport (BLE) for MagiChrome.
+    Recorded when the Chrome sign-in URL is generated.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ManageAccountsResponse.ServiceType"
     enum="GaiaServiceType" expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>

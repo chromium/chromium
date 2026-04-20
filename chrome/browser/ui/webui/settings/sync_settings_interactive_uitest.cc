@@ -36,6 +36,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "ui/base/interaction/state_observer.h"
@@ -90,7 +92,11 @@ class SyncSettingsInteractiveTest
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
   SyncSettingsInteractiveTest()
-      : gaia_signin_page_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : gaia_signin_page_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    mock_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SigninBrowserTestBaseT<WebUiInteractiveTestMixin<InteractiveBrowserTest>>::
@@ -140,6 +146,7 @@ class SyncSettingsInteractiveTest
   base::test::ScopedFeatureList feature_list_{
       syncer::kReplaceSyncPromosWithSignInPromos};
   net::EmbeddedTestServer gaia_signin_page_test_server_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,

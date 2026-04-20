@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -25,6 +26,8 @@
 #include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -117,6 +120,20 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
       url = net::AppendQueryParameter(url, "magichrome_fre_exp_branch",
                                       exp_param);
     }
+  }
+  static const char kMagiChromeHybridTransportSupportedHistogram[] =
+      "Signin.MagiChrome.HybridTransportSupported";
+  // Record hybrid transport signal histogram.
+  if (!device::BluetoothAdapterFactory::Get()->IsLowEnergySupported()) {
+    base::UmaHistogramBoolean(kMagiChromeHybridTransportSupportedHistogram,
+                              false);
+  } else {
+    device::BluetoothAdapterFactory::Get()->GetAdapter(
+        base::BindOnce([](scoped_refptr<device::BluetoothAdapter> adapter) {
+          bool is_present = adapter && adapter->IsPresent();
+          base::UmaHistogramBoolean(
+              kMagiChromeHybridTransportSupportedHistogram, is_present);
+        }));
   }
 
   return url;

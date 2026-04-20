@@ -11,6 +11,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -50,6 +51,8 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -90,7 +93,20 @@ TEST(SigninPromoTest, TestReauthURL) {
 // This test can be deleted once kReplaceSyncPromosWithSignInPromos is launched.
 // The behavior with the feature enabled is tested in
 // SigninURLForDiceWithHistorySyncOptin.
-TEST(SigninPromoTest, SigninURLForDice) {
+class SigninPromoUrlTest : public testing::Test {
+ public:
+  void SetUp() override {
+    mock_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+};
+
+TEST_F(SigninPromoUrlTest, SigninURLForDice) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       syncer::kReplaceSyncPromosWithSignInPromos);
@@ -117,7 +133,7 @@ TEST(SigninPromoTest, SigninURLForDice) {
                               GURL("https://continue_url/")));
 }
 
-TEST(SigninPromoTest, SigninURLForDiceWithHistorySyncOptin) {
+TEST_F(SigninPromoUrlTest, SigninURLForDiceWithHistorySyncOptin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
@@ -144,7 +160,7 @@ TEST(SigninPromoTest, SigninURLForDiceWithHistorySyncOptin) {
                               GURL("https://continue_url/")));
 }
 
-TEST(SigninPromoTest, SigninURLForDiceMagiChromeExperiments) {
+TEST_F(SigninPromoUrlTest, SigninURLForDiceMagiChromeExperiments) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       switches::kMagiChromeSignInExperimentsBatch1,
