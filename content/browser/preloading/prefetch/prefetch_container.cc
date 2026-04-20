@@ -1072,30 +1072,22 @@ void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
   if (GetNonRedirectHead()) {
     prefetch_container_metrics_.time_header_determined_successfully =
         base::TimeTicks::Now();
-  }
 
-  // Propagates the header to `no_vary_search_data_` if a non-redirect response
-  // header is got.
-  MaybeSetNoVarySearchData();
+    // Propagates the header to `no_vary_search_data_` if a non-redirect
+    // response header is got.
+    CHECK(!no_vary_search_data_.has_value());
+
+    // RenderFrameHostImpl will be used to display error messages in DevTools
+    // console. Can be null when the prefetch is browser-initiated.
+    RenderFrameHostImpl* rfhi_can_be_null = nullptr;
+    if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
+      rfhi_can_be_null = renderer_initiator_info->GetRenderFrameHost();
+    }
+    no_vary_search_data_ = no_vary_search::ProcessHead(
+        *GetNonRedirectHead(), GetURL(), rfhi_can_be_null);
+  }
 
   NotifyObservers(&Observer::OnDeterminedHead);
-}
-
-void PrefetchContainer::MaybeSetNoVarySearchData() {
-  CHECK(!no_vary_search_data_.has_value());
-
-  if (!GetNonRedirectHead()) {
-    return;
-  }
-
-  // RenderFrameHostImpl will be used to display error messagse in DevTools
-  // console. Can be null when the prefetch is browser-initiated.
-  RenderFrameHostImpl* rfhi_can_be_null = nullptr;
-  if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
-    rfhi_can_be_null = renderer_initiator_info->GetRenderFrameHost();
-  }
-  no_vary_search_data_ = no_vary_search::ProcessHead(
-      *GetNonRedirectHead(), GetURL(), rfhi_can_be_null);
 }
 
 void PrefetchContainer::StartTimeoutTimerIfNeeded(
@@ -1559,10 +1551,8 @@ bool PrefetchContainer::IsExactMatch(const GURL& url) const {
 }
 
 bool PrefetchContainer::IsNoVarySearchHeaderMatch(const GURL& url) const {
-  const std::optional<net::HttpNoVarySearchData>& no_vary_search_data =
-      GetNoVarySearchData();
-  return no_vary_search_data &&
-         no_vary_search_data->AreEquivalent(url, GetURL());
+  return no_vary_search_data_ &&
+         no_vary_search_data_->AreEquivalent(url, GetURL());
 }
 
 bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {

@@ -534,11 +534,10 @@ class CONTENT_EXPORT PrefetchContainer
   static void SetPrefetchResponseCompletedCallbackForTesting(
       PrefetchResponseCompletedCallbackForTesting callback);
 
-  const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
+  const std::optional<net::HttpNoVarySearchData>&
+  GetNoVarySearchDataForTesting() const {
     return no_vary_search_data_;
   }
-  // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
-  void MaybeSetNoVarySearchData();
 
   // Called upon detecting a change to cookies within the redirect chain.
   //

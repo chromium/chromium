@@ -144,14 +144,14 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
   ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   EXPECT_THAT(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->GetAffectedParams(),
               testing::UnorderedElementsAreArray({"a"}));
   EXPECT_FALSE(urls_with_no_vary_search.at(0)
-                   .second->GetNoVarySearchData()
+                   .second->GetNoVarySearchDataForTesting()
                    ->vary_by_default());
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->vary_on_key_order());
   EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/index.html?b=4&a=2&c=5")),
             prefetch_container);
@@ -177,14 +177,14 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
   ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   EXPECT_THAT(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->GetAffectedParams(),
               testing::UnorderedElementsAreArray({"a"}));
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->vary_by_default());
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->vary_on_key_order());
   EXPECT_EQ(helper->MatchUrl(test_url), prefetch_container);
   EXPECT_EQ(helper->MatchUrl(GURL("https://a.com/home.html?b=3")),
@@ -213,14 +213,14 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
   ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->GetAffectedParams()
                   .empty());
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
-                  .second->GetNoVarySearchData()
+                  .second->GetNoVarySearchDataForTesting()
                   ->vary_by_default());
   EXPECT_FALSE(urls_with_no_vary_search.at(0)
-                   .second->GetNoVarySearchData()
+                   .second->GetNoVarySearchDataForTesting()
                    ->vary_on_key_order());
   EXPECT_FALSE(helper->MatchUrl(GURL("https://a.com/away.html?b=3")));
   EXPECT_FALSE(helper->MatchUrl(GURL("https://a.com/away.html?b=3&a=4")));
