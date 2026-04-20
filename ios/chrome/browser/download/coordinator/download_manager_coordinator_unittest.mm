@@ -152,7 +152,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
 // DownloadManagerViewController is propertly configured and presented.
 TEST_F(DownloadManagerCoordinatorTest, Start) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  coordinator_.downloadTask = task->GetWeakPtr();
   [coordinator_ start];
 
   // By default coordinator presents without animation.
@@ -184,7 +184,7 @@ TEST_F(DownloadManagerCoordinatorTest, Start) {
 // stale raw pointer).
 TEST_F(DownloadManagerCoordinatorTest, Stop) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  coordinator_.downloadTask = task->GetWeakPtr();
   [coordinator_ start];
   @autoreleasepool {
     // Calling -stop will retain and autorelease coordinator_. task_environment_
@@ -204,7 +204,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -250,7 +250,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateCreatedDownload) {
                        webStateIsVisible:YES];
 
   // Verify that coordinator's properties are set up.
-  EXPECT_EQ(task.get(), coordinator_.downloadTask);
+  EXPECT_EQ(task.get(), coordinator_.downloadTask.get());
   EXPECT_TRUE(coordinator_.animatesPresentation);
 
   // First presentation of Download Manager UI should be animated.
@@ -402,7 +402,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateShowDownload) {
 // cancelled.
 TEST_F(DownloadManagerCoordinatorTest, Close) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  coordinator_.downloadTask = task->GetWeakPtr();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -439,7 +439,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -526,7 +526,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -569,7 +569,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   auto task = CreateTestTask();
   web::DownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   auto web_state = std::make_unique<web::FakeWebState>();
   browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   [coordinator_ start];
@@ -621,7 +621,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
 TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   auto task = CreateTestTask();
   task->Start(base::FilePath());
-  coordinator_.downloadTask = task.get();
+  coordinator_.downloadTask = task->GetWeakPtr();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -679,7 +679,7 @@ TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
 // Coordinator should present the confirmation dialog.
 TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  coordinator_.downloadTask = task->GetWeakPtr();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -766,7 +766,7 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   DownloadManagerViewController* viewController =
@@ -806,7 +806,7 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   // First download is a failure.
@@ -862,7 +862,7 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   // Start and immediately fail the download.
@@ -899,7 +899,7 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   auto task = CreateTestTask();
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->SetCurrentDownload(std::move(task));
-  coordinator_.downloadTask = task_ptr;
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -936,7 +936,7 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
 // started and nil when stopped.
 TEST_F(DownloadManagerCoordinatorTest, ViewController) {
   auto task = CreateTestTask();
-  coordinator_.downloadTask = task.get();
+  coordinator_.downloadTask = task->GetWeakPtr();
   ASSERT_FALSE(coordinator_.viewController);
   [coordinator_ start];
 
