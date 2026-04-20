@@ -8,17 +8,11 @@
 #include <memory>
 #include <string_view>
 
-#include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/path_service.h"
-#include "base/process/launch.h"
 #include "base/run_loop.h"
-#include "base/strings/cstring_view.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -26,6 +20,7 @@
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
+#include "net/disk_cache/sql/test_util.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,38 +77,15 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
   // `sqlite_dev_shell` tool. This allows verifying that the query optimizer is
   // using the expected indexes, which is critical for performance.
   std::string GetQueryPlan(base::cstring_view query) {
-    base::CommandLine command_line(GetExecSqlShellPath());
-    command_line.AppendArgPath(temp_dir_.GetPath().Append(
-        disk_cache::kSqlBackendDatabaseShard0FileName));
-
-    std::string explain_query = base::StrCat({"EXPLAIN QUERY PLAN ", query});
-    command_line.AppendArg(explain_query);
-
-    std::string output;
-    if (!base::GetAppOutput(command_line, &output)) {
-      return "Failed to execute sqlite_dev_shell";
-    }
-    base::TrimWhitespaceASCII(output, base::TRIM_ALL, &output);
-    if (base::StartsWith(output, "QUERY PLAN")) {
-      std::string_view temp = output;
-      temp.remove_prefix(strlen("QUERY PLAN"));
-      temp = base::TrimWhitespaceASCII(temp, base::TRIM_LEADING);
-      output = std::string(temp);
-    }
-    return output;
+    return disk_cache::test::GetQueryPlan(
+        temp_dir_.GetPath().Append(
+            disk_cache::kSqlBackendDatabaseShard0FileName),
+        query);
   }
 
   base::ScopedTempDir temp_dir_;
 
  private:
-  // Helper to locate the `sqlite_dev_shell` executable, which is expected to be
-  // in the same directory as the test executable.
-  base::FilePath GetExecSqlShellPath() {
-    base::FilePath path;
-    base::PathService::Get(base::DIR_EXE, &path);
-    return path.AppendASCII("sqlite_dev_shell");
-  }
-
   base::test::TaskEnvironment task_environment_;
   disk_cache::SqlAsyncTaskManager async_task_manager_;
 };
