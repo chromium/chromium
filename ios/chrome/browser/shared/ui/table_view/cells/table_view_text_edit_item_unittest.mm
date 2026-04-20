@@ -36,4 +36,5 @@ TEST_F(TableViewTextEditItemTest, ConfigureCell) {
   EXPECT_NSEQ(name, textEditCell.textLabel.text);
   EXPECT_NSEQ(value, textEditCell.textField.text);
   EXPECT_FALSE(textEditCell.textField.enabled);
+  EXPECT_NSEQ(name, textEditCell.textField.accessibilityLabel);
 }

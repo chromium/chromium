@@ -76,6 +76,10 @@ const CGFloat kSymbolSize = 15;
         [NSString stringWithFormat:@"%@_textField", self.fieldNameLabelText];
   }
 
+  if (self.fieldNameLabelText.length) {
+    cell.textField.accessibilityLabel = self.fieldNameLabelText;
+  }
+
   if (self.textFieldBackgroundColor) {
     cell.textLabel.backgroundColor = self.textFieldBackgroundColor;
     cell.textField.backgroundColor = self.textFieldBackgroundColor;
@@ -397,6 +401,7 @@ const CGFloat kSymbolSize = 15;
   self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
   self.isAccessibilityElement = YES;
   self.textField.accessibilityIdentifier = nil;
+  self.textField.accessibilityLabel = nil;
   self.textField.enabled = NO;
   self.textField.delegate = nil;
   self.textField.secureTextEntry = NO;
