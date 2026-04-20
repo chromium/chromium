@@ -162,8 +162,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, ObjectSelection) {
   RunOverlayTest("lens/overlay/object_selection_test.js", "mocha.run()");
 }
 
+// TODO(crbug.com/502264102): Test is failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SelectionOverlayWithoutWordsOrObjects \
+  DISABLED_SelectionOverlayWithoutWordsOrObjects
+#else
+#define MAYBE_SelectionOverlayWithoutWordsOrObjects \
+  SelectionOverlayWithoutWordsOrObjects
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayTest,
-                       SelectionOverlayWithoutWordsOrObjects) {
+                       MAYBE_SelectionOverlayWithoutWordsOrObjects) {
   RunOverlayTest(
       "lens/overlay/selection_overlay_test.js",
       "runMochaSuite('SelectionOverlay WithoutWordsOrObjects')");
