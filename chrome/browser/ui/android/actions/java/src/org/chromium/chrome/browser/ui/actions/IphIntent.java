@@ -52,6 +52,11 @@ public class IphIntent {
         return mHasBeenShown;
     }
 
+    /** Returns the feature name associated with this IPH intent for testing. */
+    public String getFeatureNameForTesting() {
+        return mFeatureName;
+    }
+
     /**
      * Attempts to build and show the IPH anchored to the provided view. Returns true if
      * successfully requested, false if it has already been shown.

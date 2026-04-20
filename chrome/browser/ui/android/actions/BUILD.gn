@@ -39,12 +39,17 @@ android_library("tabswitcher_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionButtonBinder.java",
     "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/tabswitcher/TabSwitcherActionUtils.java",
   ]
 
   deps = [
     ":java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab_ui/android:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/feature_engagement/public:public_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
