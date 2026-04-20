@@ -59,7 +59,7 @@ class ScopedGpuSequence;
 // A WebNNContextImpl owns a collection of graphs and tensors and may be bound
 // to a device such as a GPU or NPU. It is created and destroyed on its
 // `owning_task_runner()`. Mojo messages are dispatched on
-// `scheduler_task_runner()`, which is a distinct task runner but runs on the
+// `task_runner()`, which is a distinct task runner but runs on the
 // same thread.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public WebNNObjectBase<mojom::WebNNContext,
@@ -183,7 +183,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // sequence with this WebNNContext -- that is, on the same gpu::Scheduler
   // sequence. When running without a GPU sequence, returns the owning task
   // runner. Does not support nested loops or delayed tasks.
-  scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner() const;
+  scoped_refptr<base::SequencedTaskRunner> task_runner() const;
 
   // Exposes the ScopedGpuSequence which can be used to schedule tasks
   // in sequence with this WebNNContext -- that is, on the same gpu::Scheduler

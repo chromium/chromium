@@ -54,12 +54,12 @@ TensorImplTflite::~TensorImplTflite() = default;
 
 const scoped_refptr<QueueableResourceState<BufferContent>>&
 TensorImplTflite::GetBufferState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return buffer_state_;
 }
 
 void TensorImplTflite::ReadTensorImpl(ReadTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplTflite::ReadTensorImpl");
 
@@ -96,7 +96,7 @@ void TensorImplTflite::ReadTensorImpl(ReadTensorCallback callback) {
 }
 
 void TensorImplTflite::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplTflite::WriteTensorImpl");
 

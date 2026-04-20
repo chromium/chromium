@@ -56,7 +56,7 @@ class TensorImplOrt final : public WebNNTensorImpl {
   // and declared before `tensor_` to ensure correct destruction order to avoid
   // use-after-free errors.
   scoped_refptr<DeviceAllocator> device_allocator_;
-  const ScopedOrtValue tensor_ GUARDED_BY_CONTEXT(gpu_sequence_checker_);
+  const ScopedOrtValue tensor_ GUARDED_BY_CONTEXT(sequence_checker_);
   const size_t size_;
 };
 

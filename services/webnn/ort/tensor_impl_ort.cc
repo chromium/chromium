@@ -53,7 +53,7 @@ TensorImplOrt::TensorImplOrt(
 TensorImplOrt::~TensorImplOrt() = default;
 
 base::span<uint8_t> TensorImplOrt::AsSpan() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   void* ort_tensor_raw_data = nullptr;
   CHECK_STATUS(
@@ -67,7 +67,7 @@ base::span<uint8_t> TensorImplOrt::AsSpan() const {
 }
 
 void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::span<const uint8_t> buffer_span = AsSpan();
   CHECK_EQ(PackedByteLength(), buffer_span.size());
@@ -76,13 +76,13 @@ void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
 }
 
 void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   context_->ReadDataFromBigBufferOrDataPipe(std::move(src_buffer), AsSpan());
 }
 
 bool TensorImplOrt::ImportTensorImpl(ScopedAccessPtr access) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // No synchronization needed if there is no fence to acquire.
   scoped_refptr<gfx::D3DSharedFence> d3d_write_fence =
@@ -115,7 +115,7 @@ bool TensorImplOrt::ImportTensorImpl(ScopedAccessPtr access) {
 }
 
 void TensorImplOrt::ExportTensorImpl(ScopedAccessPtr access) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Since we wait for all WebNN operations to complete, we only need to release
   // the ScopedAccess to end WebNN access.

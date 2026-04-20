@@ -73,7 +73,7 @@ ContextImplLiteRt::ContextImplLiteRt(
 ContextImplLiteRt::~ContextImplLiteRt() = default;
 
 base::WeakPtr<WebNNContextImpl> ContextImplLiteRt::AsWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
 

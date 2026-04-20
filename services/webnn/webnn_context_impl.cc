@@ -242,7 +242,7 @@ void WebNNContextImpl::CreateTensor(
     mojom::TensorInfoPtr tensor_info,
     mojo_base::BigBuffer tensor_data,
     mojom::WebNNContext::CreateTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("WebNNContextImpl::CreateTensor");
 
@@ -302,8 +302,7 @@ void WebNNContextImpl::CreateTensor(
   tensor_impls_.emplace(*std::move(result));
 }
 
-scoped_refptr<base::SequencedTaskRunner>
-WebNNContextImpl::scheduler_task_runner() const {
+scoped_refptr<base::SequencedTaskRunner> WebNNContextImpl::task_runner() const {
   if (gpu_sequence_) {
     return gpu_sequence_->scheduler_task_runner();
   }
@@ -352,7 +351,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                                                const gpu::Mailbox& mailbox,
                                                const gpu::SyncToken& fence,
                                                CreateTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("WebNNContextImpl::CreateTensorFromMailbox");
 
@@ -392,7 +391,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   // it directly on the GPU sequence can violate Mojo's sequence checks,
   // even if executing on the same thread.
   auto mojo_callback_wrapper =
-      base::BindPostTask(scheduler_task_runner(), std::move(callback));
+      base::BindPostTask(task_runner(), std::move(callback));
 
   // Must be a scheduled task since this depends on shared image creation task.
   ScheduleGpuTaskWithThisContext(

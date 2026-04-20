@@ -280,12 +280,12 @@ TensorImplCoreml::TensorImplCoreml(
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplCoreml::~TensorImplCoreml() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void TensorImplCoreml::ReadTensorImpl(
     mojom::WebNNTensor::ReadTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::ReadTensorImpl");
 
@@ -328,7 +328,7 @@ void TensorImplCoreml::ReadTensorImpl(
 }
 
 void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::WriteTensorImpl");
 
@@ -364,7 +364,7 @@ void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
 
 const scoped_refptr<QueueableResourceState<BufferContent>>&
 TensorImplCoreml::GetBufferState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return buffer_state_;
 }
 
@@ -401,7 +401,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
   // it directly on the GPU sequence can violate Mojo's sequence checks,
   // even if executing on the same thread.
   auto mojo_callback_wrapper = base::BindPostTask(
-      context_->scheduler_task_runner(),
+      context_->task_runner(),
       base::BindOnce(
           [](ExportTensorSyncCallback callback, ScopedTrace scoped_trace,
              uint64_t flow_id) {
