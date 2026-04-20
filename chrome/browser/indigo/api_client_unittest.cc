@@ -21,6 +21,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace indigo {
 
@@ -28,6 +29,10 @@ namespace {
 
 constexpr char kTestGenerateUrl[] = "https://example.com/generate";
 constexpr uint8_t kTestBytes[] = {1, 2, 3};
+constexpr char kTestDataUrl[] =
+    "data:image/png;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C"
+    "8AAAAASUVORK5CYII=";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kSignOutSupportedOnPlatform = false;
@@ -107,14 +112,20 @@ TEST_F(IndigoApiClientTest, GenerateSuccess) {
   ASSERT_TRUE(image_bytes_base64);
   EXPECT_EQ(*image_bytes_base64, base::Base64Encode(kTestBytes));
 
+  const std::string* output_format =
+      value->GetDict().FindString("outputFormat");
+  ASSERT_TRUE(output_format);
+  EXPECT_EQ(*output_format, "OUTPUT_FORMAT_IMAGE_BYTES");
+
   // Simulate the response.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(),
-      R"({"result": {"generatedImageFifeUrl": "https://example.com/image.png"}})");
+      absl::StrFormat(R"({"result": {"generatedImageUrl": "%s"}})",
+                      kTestDataUrl));
 
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value().image_url, GURL("https://example.com/image.png"));
+  EXPECT_EQ(result.value().image_url, GURL(kTestDataUrl));
 }
 
 TEST_F(IndigoApiClientTest, GenerateFailure) {
@@ -253,7 +264,8 @@ TEST_F(IndigoApiClientTest, GenerateAccountChange) {
 
   test_url_loader_factory_.AddResponse(
       kTestGenerateUrl,
-      R"({"result": {"generatedImageFifeUrl": "https://example.com/image.png"}})");
+      absl::StrFormat(R"({"result": {"generatedImageUrl": "%s"}})",
+                      kTestDataUrl));
 
   base::test::TestFuture<base::expected<GeneratedImage, GenerateImageError>>
       future;
@@ -262,7 +274,7 @@ TEST_F(IndigoApiClientTest, GenerateAccountChange) {
 
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value().image_url, GURL("https://example.com/image.png"));
+  EXPECT_EQ(result.value().image_url, GURL(kTestDataUrl));
 }
 
 TEST_F(IndigoApiClientTest, GenerateSignOutDuringTokenRequest) {

@@ -38,6 +38,7 @@ class GenerateRequest : public google_apis::UrlFetchRequestBase {
     base::DictValue request_dict;
     request_dict.Set("productImageBytes",
                      base::Base64Encode(product_image_bytes));
+    request_dict.Set("outputFormat", "OUTPUT_FORMAT_IMAGE_BYTES");
     base::JSONWriter::Write(request_dict, &request_content_);
   }
 
@@ -104,8 +105,7 @@ class GenerateRequest : public google_apis::UrlFetchRequestBase {
     const auto& dict = parse_result->GetDict();
     const auto* result = dict.FindDict("result");
     if (result) {
-      const std::string* url_string =
-          result->FindString("generatedImageFifeUrl");
+      const std::string* url_string = result->FindString("generatedImageUrl");
       if (!url_string) {
         return complete(base::unexpected(
             GenerateImageError{"No generated image URL in result"}));
