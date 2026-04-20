@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_ENTRYPOINT_H_
-#define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_ENTRYPOINT_H_
+#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_ENTRYPOINT_H_
+#define IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_ENTRYPOINT_H_
 
 /// Enum defining invocation points for the composebox.
 enum class ComposeboxEntrypoint {
@@ -19,4 +19,4 @@ enum class ComposeboxEntrypoint {
   kOther,
 };
 
-#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_ENTRYPOINT_H_
+#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_ENTRYPOINT_H_

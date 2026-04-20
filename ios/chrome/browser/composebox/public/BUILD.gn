@@ -6,7 +6,9 @@ group("public") {
   public_deps = [
     ":animation",
     ":attachment_options",
+    ":composebox_mode",
     ":constants",
+    ":entrypoint",
     ":features",
     ":input_plate_controls",
     ":input_plate_position",
@@ -64,5 +66,15 @@ source_set("model_options") {
 
 source_set("attachment_options") {
   sources = [ "composebox_attachment_option.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("entrypoint") {
+  sources = [ "composebox_entrypoint.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("composebox_mode") {
+  sources = [ "composebox_mode.h" ]
   deps = [ "//base" ]
 }

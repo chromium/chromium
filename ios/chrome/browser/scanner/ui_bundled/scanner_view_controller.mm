@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_mutator.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"

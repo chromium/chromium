@@ -9,10 +9,7 @@ source_set("coordinator") {
     "composebox_navigation_mediator.h",
     "composebox_navigation_mediator.mm",
   ]
-  public_deps = [
-    ":availability",
-    ":entrypoint",
-  ]
+  public_deps = [ ":availability" ]
   deps = [
     ":aim_deps",
     ":clipboard_deps",
@@ -47,17 +44,13 @@ source_set("availability") {
     "composebox_availability.h",
     "composebox_availability.mm",
   ]
-  public_deps = [ ":entrypoint" ]
+  public_deps = [ "//ios/chrome/browser/composebox/public:entrypoint" ]
   deps = [
     "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
   ]
-}
-
-source_set("entrypoint") {
-  sources = [ "composebox_entrypoint.h" ]
 }
 
 source_set("input_plate") {
@@ -75,7 +68,6 @@ source_set("input_plate") {
   ]
   public_deps = [
     ":availability",
-    ":entrypoint",
     ":mode_holder",
   ]
   deps = [
@@ -275,7 +267,10 @@ source_set("constants") {
     "composebox_constants.h",
     "composebox_constants.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/composebox/public:composebox_mode",
+  ]
 }
 
 source_set("unit_tests") {

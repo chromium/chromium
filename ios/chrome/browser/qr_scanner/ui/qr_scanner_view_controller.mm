@@ -9,7 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"

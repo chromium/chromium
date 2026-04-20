@@ -7,19 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-// The different modes for the composebox.
-enum class ComposeboxMode {
-  // Performs a regular search.
-  kRegularSearch,
-  // Performs an AI Mode search.
-  kAIM,
-  // Creates an image based on the input.
-  kImageGeneration,
-  // Generates a new canvas based on the input query.
-  kCanvas,
-  // Helps user with complex research tasks.
-  kDeepSearch,
-};
+#import "ios/chrome/browser/composebox/public/composebox_mode.h"
 
 // The maximum number of attachments that can be added to a prompt.
 extern const NSUInteger kAttachmentLimit;

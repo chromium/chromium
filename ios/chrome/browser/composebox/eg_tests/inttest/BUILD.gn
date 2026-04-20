@@ -12,6 +12,7 @@ source_set("inttest") {
     "//base",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/composebox/coordinator",
+    "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
 }

@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 
 @implementation ComposeboxInttestCoordinator {
   ComposeboxCoordinator* _composeboxCoordinator;

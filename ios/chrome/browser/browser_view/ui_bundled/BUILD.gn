@@ -119,6 +119,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/commerce/model/price_notifications",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/composebox/coordinator",
+    "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/context_menu/ui_bundled:coordinator",
