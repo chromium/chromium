@@ -80,6 +80,7 @@ source_set("commands") {
     "save_to_drive_commands.h",
     "save_to_photos_commands.h",
     "scene_commands.h",
+    "search_engine_choice_commands.h",
     "search_image_with_lens_command.h",
     "search_image_with_lens_command.mm",
     "security_alert_commands.h",

@@ -247,6 +247,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/save_to_photos/ui_bundled",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/search_engine_choice/coordinator",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/send_tab_to_self/coordinator",
     "//ios/chrome/browser/send_tab_to_self/model",

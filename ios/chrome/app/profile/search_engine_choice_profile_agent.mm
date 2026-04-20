@@ -13,7 +13,6 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
-#import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -21,6 +20,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/search_engine_choice_commands.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
 namespace {
@@ -33,15 +34,21 @@ enum class SkipScreenDecision {
   kSkip,
 };
 
+// Returns the SearchEngineChoiceCommands handler for a SceneState.
+id<SearchEngineChoiceCommands> GetSearchEngineChoiceHandler(
+    SceneState* scene_state) {
+  if (Browser* browser =
+          scene_state.browserProviderInterface.currentBrowserProvider.browser) {
+    return HandlerForProtocol(browser->GetCommandDispatcher(),
+                              SearchEngineChoiceCommands);
+  }
+
+  return nil;
+}
+
 }  // namespace
 
-@interface SearchEngineChoiceProfileAgent () <
-    SearchEngineChoiceCoordinatorDelegate>
-@end
-
 @implementation SearchEngineChoiceProfileAgent {
-  // The coordinator of the search engine choice screen.
-  SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
   // UI blocker used by the search engine selection screen.
   std::unique_ptr<ScopedUIBlocker> _searchEngineChoiceUIBlocker;
   // Scene state ID where the search engine choice dialog is displayed.
@@ -108,18 +115,6 @@ enum class SkipScreenDecision {
   }
 }
 
-#pragma mark - SearchEngineChoiceCoordinatorDelegate
-
-- (void)choiceScreenWasDismissed:(SearchEngineChoiceCoordinator*)coordinator {
-  DCHECK_EQ(_searchEngineChoiceCoordinator, coordinator);
-  [self stopPresentingChoiceScreen];
-
-  // Advance to the next stage when the screen is dismissed by the user.
-  if (self.profileState.initStage == ProfileInitStage::kChoiceScreen) {
-    [self.profileState queueTransitionToNextInitStage];
-  }
-}
-
 #pragma mark - Private
 
 // Returns whether the app was started via an external intent (i.e. any
@@ -161,9 +156,8 @@ enum class SkipScreenDecision {
 
   // If the Choice Screen is already presented on another SceneState, then
   // there is nothing to do.
-  if (_searchEngineChoiceCoordinator) {
+  if (!_searchEngineChoiceSceneStateID.empty()) {
     DCHECK(_searchEngineChoiceUIBlocker);
-    DCHECK(!_searchEngineChoiceSceneStateID.empty());
     return;
   }
 
@@ -179,18 +173,22 @@ enum class SkipScreenDecision {
     return;
   }
 
+  id<SearchEngineChoiceCommands> handler =
+      GetSearchEngineChoiceHandler(sceneState);
+  if (!handler) {
+    [self.profileState queueTransitionToNextInitStage];
+    return;
+  }
+
   // Present the screen.
   _searchEngineChoiceSceneStateID = sceneState.sceneSessionID;
   _searchEngineChoiceUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 
-  id<BrowserProvider> browserProvider =
-      sceneState.browserProviderInterface.currentBrowserProvider;
-
-  _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
-      initWithBaseViewController:browserProvider.viewController
-                         browser:browserProvider.browser];
-  _searchEngineChoiceCoordinator.delegate = self;
-  [_searchEngineChoiceCoordinator start];
+  __weak __typeof(self) weakSelf = self;
+  __weak SceneState* weakSceneState = sceneState;
+  [handler showSearchEngineChoiceScreenWithCompletion:^{
+    [weakSelf choiceScreenClosedForSceneState:weakSceneState];
+  }];
 }
 
 // Tries to dismiss the choice screen if presented by `sceneState` as the
@@ -199,21 +197,13 @@ enum class SkipScreenDecision {
 // to the next active SceneState, if any.
 - (void)sceneStateDisconnected:(SceneState*)sceneState {
   DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kChoiceScreen);
-  if (!_searchEngineChoiceCoordinator) {
-    // Nothing to do if the Search Engine Choice Screen is not presented.
-    return;
-  }
-
-  DCHECK(_searchEngineChoiceUIBlocker);
-  DCHECK(!_searchEngineChoiceSceneStateID.empty());
-
   if (_searchEngineChoiceSceneStateID != sceneState.sceneSessionID) {
     // Nothing to do if the Search Engine Choice Screen is not presented
     // by `sceneState`.
     return;
   }
 
-  [self stopPresentingChoiceScreen];
+  [self stopPresentingChoiceScreenForSceneState:sceneState];
   if (SceneState* nextSceneState = self.profileState.foregroundActiveScene) {
     [self maybeShowChoiceScreen:nextSceneState];
   }
@@ -222,14 +212,24 @@ enum class SkipScreenDecision {
 // Stops presenting the choice screen. Called after it has been dismissed
 // by the user or when programmatically dismissing when a SceneState is
 // detached or disconnected while the screen is presented.
-- (void)stopPresentingChoiceScreen {
+- (void)stopPresentingChoiceScreenForSceneState:(SceneState*)sceneState {
   DCHECK(!_searchEngineChoiceSceneStateID.empty());
+  DCHECK_EQ(_searchEngineChoiceSceneStateID, sceneState.sceneSessionID);
   _searchEngineChoiceSceneStateID.clear();
   _searchEngineChoiceUIBlocker.reset();
 
-  _searchEngineChoiceCoordinator.delegate = nil;
-  [_searchEngineChoiceCoordinator stop];
-  _searchEngineChoiceCoordinator = nil;
+  id<SearchEngineChoiceCommands> handler =
+      GetSearchEngineChoiceHandler(sceneState);
+  [handler stopSearchEngineChoiceScreen];
+}
+
+- (void)choiceScreenClosedForSceneState:(SceneState*)sceneState {
+  [self stopPresentingChoiceScreenForSceneState:sceneState];
+
+  // Advance to the next stage when the screen is dismissed by the user.
+  if (self.profileState.initStage == ProfileInitStage::kChoiceScreen) {
+    [self.profileState queueTransitionToNextInitStage];
+  }
 }
 
 @end
