@@ -30,7 +30,6 @@ class AutotestConfig:
   no_single_variant: bool | None
   no_build: bool | None
   suite: bool | None
-  builder: bool | None
   files: tuple[str, ...]
   gemini: bool | None
   extras: list[str] | None = None  # To hold ctx.args
@@ -138,7 +137,8 @@ def autotest_options(f):
           '--path-index',
           '--path_index',
           type=int,
-          help='When the path is ambiguous, choose the one with this index.'),
+          help='When the test path is ambiguous, choose the one with this index.'
+      ),
       click.option(
           '--run-changed',
           '--run_changed',
@@ -149,7 +149,8 @@ def autotest_options(f):
           '--run-related',
           '--run_related',
           is_flag=True,
-          help='Run tests related to files modified since diverging from main.'
+          help=
+          'Run tests related to files modified since this branch diverged from main.'
       ),
       click.option('--line',
                    type=int,
@@ -200,11 +201,6 @@ def autotest_options(f):
           help=
           'If a test fails, interactively launch the Gemini CLI to diagnose the failure and propose a fix.'
       ),
-      click.option(
-          '--builder',
-          is_flag=True,
-          help='Simulate a given builder locally via UTR. Run with no extra '
-          'arguments to see UTR options.'),
   ]
   # Apply in reverse so the first item in the list appears first in --help
   for option in reversed(options):
