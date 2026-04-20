@@ -60,20 +60,25 @@ enum class TransactError {
   kOther,
 };
 
+class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveTransaction {
+ public:
+  virtual ~EnclaveTransaction() = default;
+};
+
 // Perform a transaction with the enclave.
 //
 // Serialises and sends `request` and calls `callback` with the response, or
 // else `nullopt` if there was an error.
-COMPONENT_EXPORT(DEVICE_FIDO)
-void Transact(
-    NetworkContextFactory network_context_factory,
-    const EnclaveIdentity& enclave,
-    std::string access_token,
-    std::optional<std::string> reauthentication_token,
-    cbor::Value request,
-    SigningCallback signing_callback,
-    base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
-        callback);
+[[nodiscard]] COMPONENT_EXPORT(DEVICE_FIDO)
+    std::unique_ptr<EnclaveTransaction> Transact(
+        NetworkContextFactory network_context_factory,
+        const EnclaveIdentity& enclave,
+        std::string access_token,
+        std::optional<std::string> reauthentication_token,
+        cbor::Value request,
+        SigningCallback signing_callback,
+        base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
+            callback);
 
 }  // namespace device::enclave
 

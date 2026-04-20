@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -34,18 +35,21 @@ void RecordTransactionResult(EnclaveTransactionResult result) {
                                 result);
 }
 
-struct Transaction : base::RefCounted<Transaction> {
+struct Transaction : public EnclaveTransaction {
   Transaction(
       const EnclaveIdentity& enclave,
       cbor::Value request,
       SigningCallback signing_callback,
       base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
           callback)
-      : enclave_public_key_(enclave.public_key),
-        request_(std::move(request)),
+      : request_(std::move(request)),
         signing_callback_(std::move(signing_callback)),
-        callback_(std::move(callback)),
-        handshake_(std::nullopt, enclave.public_key, std::nullopt) {}
+        handshake_(std::nullopt, enclave.public_key, std::nullopt) {
+    callback_ = base::BindOnce(&Transaction::OnTransactionComplete,
+                               weak_factory_.GetWeakPtr(), std::move(callback));
+  }
+
+  ~Transaction() override = default;
 
   void set_client(std::unique_ptr<EnclaveWebSocketClient> client) {
     client_ = std::move(client);
@@ -72,9 +76,6 @@ struct Transaction : base::RefCounted<Transaction> {
       RecordTransactionResult(EnclaveTransactionResult::kWebSocketError);
       std::move(callback_).Run(
           base::unexpected(TransactError::kWebSocketError));
-      // client_ holds a RepeatingCallback that has a reference to this
-      // object. Thus, by deleting it, this object should also be destroyed.
-      client_.reset();
       return;
     }
 
@@ -83,93 +84,93 @@ struct Transaction : base::RefCounted<Transaction> {
         RecordTransactionResult(EnclaveTransactionResult::kHandshakeFailed);
         std::move(callback_).Run(
             base::unexpected(TransactError::kHandshakeFailed));
-        // client_ holds a RepeatingCallback that has a reference to this
-        // object. Thus, by deleting it, this object should also be destroyed.
-        client_.reset();
         return;
       }
 
       FIDO_LOG(EVENT) << "<- "
                       << cbor::DiagnosticWriter::Write(
                              RedactEnclaveRequest(request_));
-      BuildCommandRequestBody(
-          std::move(request_), std::move(signing_callback_), *handshake_hash_,
-          base::BindOnce(&Transaction::RequestReady, scoped_refptr(this)));
+      BuildCommandRequestBody(std::move(request_), std::move(signing_callback_),
+                              *handshake_hash_,
+                              base::BindOnce(&Transaction::RequestReady,
+                                             weak_factory_.GetWeakPtr()));
     } else {
-      do {
-        std::vector<uint8_t> plaintext;
-        if (!crypter_->Decrypt(data, &plaintext)) {
-          FIDO_LOG(ERROR) << "Failed to decrypt enclave response";
-          RecordTransactionResult(EnclaveTransactionResult::kDecryptionFailed);
-          std::move(callback_).Run(base::unexpected(TransactError::kOther));
-          break;
-        }
+      std::vector<uint8_t> plaintext;
+      if (!crypter_->Decrypt(data, &plaintext)) {
+        FIDO_LOG(ERROR) << "Failed to decrypt enclave response";
+        RecordTransactionResult(EnclaveTransactionResult::kDecryptionFailed);
+        std::move(callback_).Run(base::unexpected(TransactError::kOther));
+        return;
+      }
 
-        std::optional<cbor::Value> response = cbor::Reader::Read(plaintext);
-        if (!response) {
-          FIDO_LOG(ERROR) << "Failed to parse enclave response";
-          RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
-          std::move(callback_).Run(base::unexpected(TransactError::kOther));
-          break;
-        }
+      std::optional<cbor::Value> response = cbor::Reader::Read(plaintext);
+      if (!response) {
+        FIDO_LOG(ERROR) << "Failed to parse enclave response";
+        RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
+        std::move(callback_).Run(base::unexpected(TransactError::kOther));
+        return;
+      }
 
-        FIDO_LOG(EVENT) << "-> "
-                        << cbor::DiagnosticWriter::Write(
-                               RedactEnclaveResponse(*response));
-        if (!response->is_map()) {
-          RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
-          std::move(callback_).Run(base::unexpected(TransactError::kOther));
-          break;
-        }
+      FIDO_LOG(EVENT) << "-> "
+                      << cbor::DiagnosticWriter::Write(
+                             RedactEnclaveResponse(*response));
+      if (!response->is_map()) {
+        RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
+        std::move(callback_).Run(base::unexpected(TransactError::kOther));
+        return;
+      }
 
-        const cbor::Value::MapValue& map = response->GetMap();
-        const cbor::Value::MapValue::const_iterator ok_it =
-            map.find(cbor::Value("ok"));
-        if (ok_it == map.end()) {
-          const cbor::Value::MapValue::const_iterator err_it =
-              map.find(cbor::Value("err"));
-          if (err_it != map.end() && err_it->second.is_integer()) {
-            int code = err_it->second.GetInteger();
-            if (code == static_cast<int>(TransactError::kUnknownClient)) {
-              RecordTransactionResult(EnclaveTransactionResult::kUnknownClient);
-              std::move(callback_).Run(
-                  base::unexpected(TransactError::kUnknownClient));
-              break;
-            }
-            if (code == static_cast<int>(TransactError::kMissingKey)) {
-              RecordTransactionResult(EnclaveTransactionResult::kMissingKey);
-              std::move(callback_).Run(
-                  base::unexpected(TransactError::kMissingKey));
-              break;
-            }
-            if (code ==
-                static_cast<int>(TransactError::kSignatureVerificationFailed)) {
-              RecordTransactionResult(
-                  EnclaveTransactionResult::kSignatureVerificationFailed);
-              std::move(callback_).Run(base::unexpected(
-                  TransactError::kSignatureVerificationFailed));
-              break;
-            }
-            // Any other code deliberately falls through to
-            // kUnknownServiceError.
+      const cbor::Value::MapValue& map = response->GetMap();
+      const cbor::Value::MapValue::const_iterator ok_it =
+          map.find(cbor::Value("ok"));
+      if (ok_it == map.end()) {
+        const cbor::Value::MapValue::const_iterator err_it =
+            map.find(cbor::Value("err"));
+        if (err_it != map.end() && err_it->second.is_integer()) {
+          int code = err_it->second.GetInteger();
+          if (code == static_cast<int>(TransactError::kUnknownClient)) {
+            RecordTransactionResult(EnclaveTransactionResult::kUnknownClient);
+            std::move(callback_).Run(
+                base::unexpected(TransactError::kUnknownClient));
+            return;
           }
-          RecordTransactionResult(EnclaveTransactionResult::kOtherError);
-          std::move(callback_).Run(
-              base::unexpected(TransactError::kUnknownServiceError));
-          break;
+          if (code == static_cast<int>(TransactError::kMissingKey)) {
+            RecordTransactionResult(EnclaveTransactionResult::kMissingKey);
+            std::move(callback_).Run(
+                base::unexpected(TransactError::kMissingKey));
+            return;
+          }
+          if (code ==
+              static_cast<int>(TransactError::kSignatureVerificationFailed)) {
+            RecordTransactionResult(
+                EnclaveTransactionResult::kSignatureVerificationFailed);
+            std::move(callback_).Run(
+                base::unexpected(TransactError::kSignatureVerificationFailed));
+            return;
+          }
+          // Any other code deliberately falls through to
+          // kUnknownServiceError.
         }
+        RecordTransactionResult(EnclaveTransactionResult::kOtherError);
+        std::move(callback_).Run(
+            base::unexpected(TransactError::kUnknownServiceError));
+        return;
+      }
 
-        RecordTransactionResult(EnclaveTransactionResult::kSuccess);
-        std::move(callback_).Run(base::ok(ok_it->second.Clone()));
-      } while (false);
-
-      client_.reset();
+      RecordTransactionResult(EnclaveTransactionResult::kSuccess);
+      std::move(callback_).Run(base::ok(ok_it->second.Clone()));
     }
   }
 
+  base::WeakPtr<Transaction> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
  private:
-  friend class base::RefCounted<Transaction>;
-  ~Transaction() = default;
+  void OnTransactionComplete(
+      base::OnceCallback<void(base::expected<cbor::Value, TransactError>)> cb,
+      base::expected<cbor::Value, TransactError> result) {
+    client_.reset();
+    std::move(cb).Run(std::move(result));
+  }
 
   void RequestReady(std::optional<std::vector<uint8_t>> request) {
     if (!callback_) {
@@ -181,14 +182,12 @@ struct Transaction : base::RefCounted<Transaction> {
       FIDO_LOG(EVENT)
           << "Signing failed, potentially due to the user canceling";
       std::move(callback_).Run(base::unexpected(TransactError::kSigningFailed));
-      client_.reset();
       return;
     }
 
     if (!crypter_->Encrypt(&request.value())) {
       FIDO_LOG(ERROR) << "Failed to encrypt message to enclave";
       std::move(callback_).Run(base::unexpected(TransactError::kOther));
-      client_.reset();
       return;
     }
     client_->Write(*request);
@@ -231,7 +230,6 @@ struct Transaction : base::RefCounted<Transaction> {
     return true;
   }
 
-  const std::array<uint8_t, kP256X962Length> enclave_public_key_;
   cbor::Value request_;
   SigningCallback signing_callback_;
   base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
@@ -244,11 +242,13 @@ struct Transaction : base::RefCounted<Transaction> {
 
   // Timer for `kWebAuthnEnclaveAuthenticatorDelay` dev flag.
   base::OneShotTimer timer_;
+
+  base::WeakPtrFactory<Transaction> weak_factory_{this};
 };
 
 }  // namespace
 
-void Transact(
+std::unique_ptr<EnclaveTransaction> Transact(
     NetworkContextFactory network_context_factory,
     const EnclaveIdentity& enclave,
     std::string access_token,
@@ -257,16 +257,17 @@ void Transact(
     SigningCallback signing_callback,
     base::OnceCallback<void(base::expected<cbor::Value, TransactError>)>
         callback) {
-  auto transaction = base::MakeRefCounted<Transaction>(
-      enclave, std::move(request), std::move(signing_callback),
-      std::move(callback));
+  auto transaction = std::make_unique<Transaction>(enclave, std::move(request),
+                                                   std::move(signing_callback),
+                                                   std::move(callback));
 
   transaction->set_client(std::make_unique<EnclaveWebSocketClient>(
       enclave.url, std::move(access_token), std::move(reauthentication_token),
       std::move(network_context_factory),
-      base::BindRepeating(&Transaction::OnData, transaction)));
+      base::BindRepeating(&Transaction::OnData, transaction->GetWeakPtr())));
 
   transaction->Start();
+  return transaction;
 }
 
 }  // namespace device::enclave

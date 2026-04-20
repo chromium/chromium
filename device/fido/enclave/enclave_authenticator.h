@@ -146,6 +146,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   std::unique_ptr<PendingMakeCredentialRequest>
       pending_make_credential_request_;
 
+  std::unique_ptr<EnclaveTransaction> pending_transaction_;
+
   // Set to true when the request included a deferred UV key creation.
   bool includes_new_uv_key_ = false;
 

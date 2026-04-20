@@ -229,17 +229,18 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
 
   RecordEvent(Event::kMakeCredential);
 
-  Transact(network_context_factory_, GetEnclaveIdentity(),
-           std::move(ui_request_->access_token),
-           /*reauthentication_token=*/std::nullopt,
-           BuildMakeCredentialCommand(
-               std::move(pending_make_credential_request_->options.json),
-               std::move(ui_request_->claimed_pin),
-               std::move(ui_request_->wrapped_secret),
-               std::move(ui_request_->secret)),
-           std::move(ui_request_->signing_callback),
-           base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
-                          weak_factory_.GetWeakPtr()));
+  pending_transaction_ = Transact(
+      network_context_factory_, GetEnclaveIdentity(),
+      std::move(ui_request_->access_token),
+      /*reauthentication_token=*/std::nullopt,
+      BuildMakeCredentialCommand(
+          std::move(pending_make_credential_request_->options.json),
+          std::move(ui_request_->claimed_pin),
+          std::move(ui_request_->wrapped_secret),
+          std::move(ui_request_->secret)),
+      std::move(ui_request_->signing_callback),
+      base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey(
@@ -257,13 +258,13 @@ void EnclaveAuthenticator::DispatchMakeCredentialWithNewUVKey(
       std::move(ui_request_->claimed_pin),
       std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret)));
 
-  Transact(network_context_factory_, GetEnclaveIdentity(),
-           std::move(ui_request_->access_token),
-           /*reauthentication_token=*/std::nullopt,
-           cbor::Value(std::move(requests)),
-           std::move(ui_request_->signing_callback),
-           base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
-                          weak_factory_.GetWeakPtr()));
+  pending_transaction_ = Transact(
+      network_context_factory_, GetEnclaveIdentity(),
+      std::move(ui_request_->access_token),
+      /*reauthentication_token=*/std::nullopt, cbor::Value(std::move(requests)),
+      std::move(ui_request_->signing_callback),
+      base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
@@ -337,19 +338,20 @@ void EnclaveAuthenticator::DispatchGetAssertion() {
 
   RecordEvent(Event::kGetAssertion);
 
-  Transact(network_context_factory_, GetEnclaveIdentity(),
-           std::move(ui_request_->access_token),
-           /*reauthentication_token=*/std::nullopt,
-           BuildGetAssertionCommand(
-               *ui_request_->entity,
-               std::move(pending_get_assertion_request_->options.json),
-               pending_get_assertion_request_->request.client_data_json,
-               std::move(ui_request_->claimed_pin),
-               std::move(ui_request_->wrapped_secret),
-               std::move(ui_request_->secret)),
-           std::move(ui_request_->signing_callback),
-           base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
-                          weak_factory_.GetWeakPtr()));
+  pending_transaction_ = Transact(
+      network_context_factory_, GetEnclaveIdentity(),
+      std::move(ui_request_->access_token),
+      /*reauthentication_token=*/std::nullopt,
+      BuildGetAssertionCommand(
+          *ui_request_->entity,
+          std::move(pending_get_assertion_request_->options.json),
+          pending_get_assertion_request_->request.client_data_json,
+          std::move(ui_request_->claimed_pin),
+          std::move(ui_request_->wrapped_secret),
+          std::move(ui_request_->secret)),
+      std::move(ui_request_->signing_callback),
+      base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
@@ -369,13 +371,13 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
       std::move(ui_request_->claimed_pin),
       std::move(ui_request_->wrapped_secret), std::move(ui_request_->secret)));
 
-  Transact(network_context_factory_, GetEnclaveIdentity(),
-           std::move(ui_request_->access_token),
-           /*reauthentication_token=*/std::nullopt,
-           cbor::Value(std::move(requests)),
-           std::move(ui_request_->signing_callback),
-           base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
-                          weak_factory_.GetWeakPtr()));
+  pending_transaction_ = Transact(
+      network_context_factory_, GetEnclaveIdentity(),
+      std::move(ui_request_->access_token),
+      /*reauthentication_token=*/std::nullopt, cbor::Value(std::move(requests)),
+      std::move(ui_request_->signing_callback),
+      base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void EnclaveAuthenticator::ProcessMakeCredentialResponse(

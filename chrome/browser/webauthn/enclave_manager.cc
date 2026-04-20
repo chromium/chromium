@@ -2049,7 +2049,7 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kRegisteringWithEnclave;
     std::string token = std::move(std::get_if<AccessToken>(&event)->value());
-    enclave::Transact(
+    pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
         /*reauthentication_token=*/std::nullopt,
@@ -2108,7 +2108,7 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kWrappingSecrets;
     std::string token = std::move(std::get_if<AccessToken>(&event)->value());
-    enclave::Transact(
+    pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
         /*reauthentication_token=*/std::nullopt,
@@ -2368,7 +2368,7 @@ class EnclaveManager::StateMachine {
 
   void SendPINAndSecretWrappingRequest(std::string token) {
     state_ = State::kWrappingPINAndSecret;
-    enclave::Transact(
+    pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token),
         /*reauthentication_token=*/std::nullopt,
@@ -2387,7 +2387,7 @@ class EnclaveManager::StateMachine {
     state_ = State::kSettingPIN;
     std::vector<uint8_t> wrapped_secret =
         GetCurrentWrappedSecretForUser(user_).second;
-    enclave::Transact(
+    pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token), std::move(rapt_),
         BuildPINAndSecurityDomainSecretWrappingEnclaveRequest(
@@ -2401,7 +2401,7 @@ class EnclaveManager::StateMachine {
 
   void SendPINRenewalRequest(std::string token) {
     state_ = State::kRenewingPIN;
-    enclave::Transact(
+    pending_transaction_ = enclave::Transact(
         manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
         std::move(token), std::nullopt,
         BuildPINRenewalRequest(
@@ -2704,13 +2704,13 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kUnregistering;
     std::string token = std::move(std::get_if<AccessToken>(&event)->value());
-    enclave::Transact(manager_->network_context_factory_,
-                      enclave::GetEnclaveIdentity(), std::move(token),
-                      /*reauthentication_token=*/std::nullopt,
-                      BuildUnregisterMessage(user_->device_id()),
-                      enclave::SigningCallback(),
-                      base::BindOnce(&StateMachine::OnEnclaveResponse,
-                                     weak_ptr_factory_.GetWeakPtr()));
+    pending_transaction_ = enclave::Transact(
+        manager_->network_context_factory_, enclave::GetEnclaveIdentity(),
+        std::move(token),
+        /*reauthentication_token=*/std::nullopt,
+        BuildUnregisterMessage(user_->device_id()), enclave::SigningCallback(),
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoUnregistering(Event event) {
@@ -3062,6 +3062,8 @@ class EnclaveManager::StateMachine {
   std::optional<trusted_vault::MemberKeysSource> member_keys_source_;
   // When uploading a PIN, this contains the pending `WrappedPIN`.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin_proto_;
+
+  std::unique_ptr<device::enclave::EnclaveTransaction> pending_transaction_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<StateMachine> weak_ptr_factory_{this};
