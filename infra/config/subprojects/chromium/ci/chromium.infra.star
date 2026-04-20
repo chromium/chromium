@@ -387,12 +387,6 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.0-CANARY/google_apis/x86_64.yaml",
                 "sdk_channel": "CANARY",
             },
-            # TODO(https://crbug.com/490498459): Remove when Android 17 is
-            # fully released.
-            {
-                "sdk_package_name": "system-images;android-CinnamonBun;google_apis_ps16k;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-CinnamonBun/google_apis_ps16k/x86_64.yaml",
-            },
         ],
     },
 )
