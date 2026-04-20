@@ -11,7 +11,7 @@
 
 class ChromeContentBrowserClient;
 
-namespace web_apps {
+namespace web_app {
 
 // Implements the IWA portion of ChromeContentBrowserClient.
 class ChromeContentBrowserClientIsolatedWebAppsPart
@@ -42,6 +42,6 @@ class ChromeContentBrowserClientIsolatedWebAppsPart
       content::RenderProcessHost& process) override;
 };
 
-}  // namespace web_apps
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_CHROME_CONTENT_BROWSER_CLIENT_ISOLATED_WEB_APPS_PART_H_

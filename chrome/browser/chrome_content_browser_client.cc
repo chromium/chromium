@@ -781,7 +781,7 @@ using plugins::ChromeContentBrowserClientPluginsPart;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-using web_apps::ChromeContentBrowserClientIsolatedWebAppsPart;
+using web_app::ChromeContentBrowserClientIsolatedWebAppsPart;
 #endif
 
 namespace {

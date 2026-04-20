@@ -21,13 +21,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
-namespace web_apps {
+namespace web_app {
 
 namespace {
 
-using IwaOrigin = web_app::IwaOrigin;
-using PermissionsPolicyCacheEntry =
-    web_app::IwaPermissionsPolicyCache::CacheEntry;
+using PermissionsPolicyCacheEntry = IwaPermissionsPolicyCache::CacheEntry;
 using PermissionPolicyEntryPtr =
     blink::mojom::IsolatedAppPermissionPolicyEntryPtr;
 using PermissionPolicyEntry = blink::mojom::IsolatedAppPermissionPolicyEntry;
@@ -56,8 +54,8 @@ ChromeContentBrowserClientIsolatedWebAppsPart::
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   const PermissionsPolicyCacheEntry* policy =
-      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile)
-          ->GetPolicy(origin);
+      IwaPermissionsPolicyCacheFactory::GetForProfile(profile)->GetPolicy(
+          origin);
   if (!policy) {
     return {};
   }
@@ -66,11 +64,12 @@ ChromeContentBrowserClientIsolatedWebAppsPart::
     return PermissionPolicyEntry::New(entry.feature, entry.allowed_origins);
   });
 }
+
 // static
 bool ChromeContentBrowserClientIsolatedWebAppsPart::AreIsolatedWebAppsEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!web_app::AreWebAppsEnabled(profile) || profile->IsGuestSession() ||
+  if (!AreWebAppsEnabled(profile) || profile->IsGuestSession() ||
       profile->IsOffTheRecord()) {
     return false;
   }
@@ -99,4 +98,4 @@ void ChromeContentBrowserClientIsolatedWebAppsPart::
   command_line->AppendSwitch(switches::kEnableIsolatedWebAppsInRenderer);
 }
 
-}  // namespace web_apps
+}  // namespace web_app
