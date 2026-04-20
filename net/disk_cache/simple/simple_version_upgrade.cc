@@ -107,7 +107,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
         LOG(ERROR) << "Failed to write a new fake index.";
         return SimpleCacheConsistencyResult::kWriteFakeIndexFileFailed;
       }
-      return SimpleCacheConsistencyResult::kOK;
+      return SimpleCacheConsistencyResult::kOKCreated;
     }
     return SimpleCacheConsistencyResult::kBadFakeIndexFile;
   }
@@ -159,7 +159,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
   DCHECK_EQ(kSimpleIndexFileVersion, version_from);
 
   if (!new_fake_index_needed)
-    return SimpleCacheConsistencyResult::kOK;
+    return SimpleCacheConsistencyResult::kOKNoUpgrade;
 
   const base::FilePath temp_fake_index = path.AppendASCII("upgrade-index");
   if (!WriteFakeIndexFile(file_operations, temp_fake_index)) {
@@ -173,7 +173,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     LogMessageFailedUpgradeFromVersion(file_header.version);
     return SimpleCacheConsistencyResult::kReplaceFileFailed;
   }
-  return SimpleCacheConsistencyResult::kOK;
+  return SimpleCacheConsistencyResult::kOKUpgraded;
 }
 
 bool DeleteIndexFilesIfCacheIsEmpty(const base::FilePath& path) {

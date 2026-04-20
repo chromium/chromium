@@ -9387,10 +9387,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SimpleCache.{CacheInstance}ConsistencyResult"
+<histogram name="SimpleCache.{CacheInstance}ConsistencyResult2"
     enum="SimpleCacheConsistencyResult" expires_after="2026-10-11">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Record the outcome of the simple DiskCache consistency check. The
     consistency check is executed every time a simple DiskCache is initialized.

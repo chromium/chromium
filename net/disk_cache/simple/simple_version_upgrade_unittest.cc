@@ -115,13 +115,26 @@ TEST(SimpleVersionUpgradeTest, WritesEncryptionStatusToFakeIndexFile) {
       cache_path.AppendASCII(kFakeIndexFileName);
 
   TestFileOperations file_operations(true);
-  ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOK,
+  ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOKCreated,
             disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path));
 
   disk_cache::FakeIndexData data;
   ASSERT_TRUE(base::ReadFile(fake_index_path, base::byte_span_from_ref(data)));
   EXPECT_EQ(1, data.encryption_status);
   EXPECT_EQ(disk_cache::kSimpleVersion, data.version);
+}
+
+TEST(SimpleVersionUpgradeTest, NoUpgradeNeeded) {
+  base::ScopedTempDir cache_dir;
+  ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
+  const base::FilePath cache_path = cache_dir.GetPath();
+
+  // Create a fake index file with current version.
+  ASSERT_TRUE(WriteFakeIndexFile(cache_path, disk_cache::kSimpleVersion, 0));
+
+  disk_cache::TrivialFileOperations file_operations;
+  EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kOKNoUpgrade,
+            disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path));
 }
 
 TEST(SimpleVersionUpgradeTest, EncryptionStatusMismatch) {
@@ -161,7 +174,7 @@ TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
 
   disk_cache::TrivialFileOperations file_operations;
   // Upgrade.
-  ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOK,
+  ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOKUpgraded,
             disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path));
 
   // Check that the version in the fake index file is updated.

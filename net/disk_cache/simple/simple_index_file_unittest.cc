@@ -460,7 +460,7 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   TrivialFileOperations file_operations;
   // Upgrade the cache.
   ASSERT_EQ(disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path),
-            SimpleCacheConsistencyResult::kOK);
+            SimpleCacheConsistencyResult::kOKUpgraded);
 
   // Create the backend and initiate index flush by destroying the backend.
   scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker =

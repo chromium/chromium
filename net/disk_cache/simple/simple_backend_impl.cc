@@ -716,7 +716,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
   result.net_error = net::OK;
   SimpleCacheConsistencyResult consistency =
       FileStructureConsistent(file_operations.get(), path);
-  SIMPLE_CACHE_UMA(ENUMERATION, "ConsistencyResult", cache_type, consistency);
+  SIMPLE_CACHE_UMA(ENUMERATION, "ConsistencyResult2", cache_type, consistency);
 
   // If the cache structure is inconsistent make a single attempt at
   // recovering it.  Previously there were bugs that could cause a partially
@@ -724,7 +724,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
   // that case we can delete the index files and start over.  Also, some
   // consistency failures may leave an empty directory directly and we can
   // retry those cases as well.
-  if (consistency != SimpleCacheConsistencyResult::kOK) {
+  if (!IsOK(consistency)) {
     bool deleted_files = disk_cache::DeleteIndexFilesIfCacheIsEmpty(path);
     SIMPLE_CACHE_UMA(BOOLEAN, "DidDeleteIndexFilesAfterFailedConsistency",
                      cache_type, deleted_files);
@@ -733,7 +733,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
       consistency = FileStructureConsistent(file_operations.get(), path);
       SIMPLE_CACHE_UMA(ENUMERATION, "RetryConsistencyResult", cache_type,
                        consistency);
-      if (consistency == SimpleCacheConsistencyResult::kOK) {
+      if (IsOK(consistency)) {
         SIMPLE_CACHE_UMA(ENUMERATION,
                          "OriginalConsistencyResultBeforeSuccessfulRetry",
                          cache_type, orig_consistency);
@@ -745,7 +745,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
     }
   }
 
-  if (consistency != SimpleCacheConsistencyResult::kOK) {
+  if (!IsOK(consistency)) {
     LOG(ERROR) << "Simple Cache Backend: wrong file structure on disk: "
                << static_cast<int>(consistency)
                << " path: " << path.LossyDisplayName();

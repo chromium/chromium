@@ -39,8 +39,33 @@ enum class SimpleCacheConsistencyResult {
   kReplaceFileFailed = 9,
   kBadFakeIndexReadSize = 10,
   kEncryptionStatusMismatch = 11,
-  kMaxValue = kEncryptionStatusMismatch,
+  kOKCreated = 12,
+  kOKNoUpgrade = 13,
+  kOKUpgraded = 14,
+  kMaxValue = kOKUpgraded,
 };
+
+inline bool IsOK(SimpleCacheConsistencyResult result) {
+  switch (result) {
+    case SimpleCacheConsistencyResult::kOKCreated:
+    case SimpleCacheConsistencyResult::kOKNoUpgrade:
+    case SimpleCacheConsistencyResult::kOKUpgraded:
+      return true;
+    case SimpleCacheConsistencyResult::kOK:
+    case SimpleCacheConsistencyResult::kCreateDirectoryFailed:
+    case SimpleCacheConsistencyResult::kBadFakeIndexFile:
+    case SimpleCacheConsistencyResult::kBadInitialMagicNumber:
+    case SimpleCacheConsistencyResult::kVersionTooOld:
+    case SimpleCacheConsistencyResult::kVersionFromTheFuture:
+    case SimpleCacheConsistencyResult::kBadZeroCheck:
+    case SimpleCacheConsistencyResult::kUpgradeIndexV5V6Failed:
+    case SimpleCacheConsistencyResult::kWriteFakeIndexFileFailed:
+    case SimpleCacheConsistencyResult::kReplaceFileFailed:
+    case SimpleCacheConsistencyResult::kBadFakeIndexReadSize:
+    case SimpleCacheConsistencyResult::kEncryptionStatusMismatch:
+      return false;
+  }
+}
 
 // Performs all necessary disk IO to upgrade the cache structure if it is
 // needed.
