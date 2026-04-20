@@ -1425,8 +1425,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
 
   base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
       future;
-  service()->GetRelevantTabsForQuery(
-      /*options=*/{}, "some text", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
   EXPECT_TRUE(logs_uploader()->uploaded_logs().empty());
 }

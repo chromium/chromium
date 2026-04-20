@@ -140,7 +140,7 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
 
 const base::FeatureParam<double> kTabSelectionScoreThreshold{
     &kContextualTasksContext,
-    "ContextualTasksContextTabSelectionScoreThreshold", 0.8};
+    "ContextualTasksContextTabSelectionScoreThreshold", 0.4};
 
 const base::FeatureParam<double> kContentVisibilityThreshold{
     &kContextualTasksContext,
@@ -162,7 +162,7 @@ const base::FeatureParam<base::TimeDelta> kSmartTabSharingTabSelectionTimeout(
 const base::FeatureParam<double> kSmartTabSharingPromoScoreThreshold(
     &kContextualTasksContext,
     "ContextualTasksContextSmartTabSharingPromoScoreThreshold",
-    0.9);
+    0.6);
 
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
