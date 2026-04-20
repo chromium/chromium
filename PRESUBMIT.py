@@ -990,6 +990,9 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ('absl::StatusOr is banned. Use base::expected instead.', ),
         True,
         [
+            # Needed to use MediaPipe API.
+            r'components/media_effects/.*\.cc',
+
             # Needed to use liburlpattern API.
             r'components/url_pattern/.*',
             r'services/network/shared_dictionary/simple_url_pattern_matcher\.cc',
@@ -999,8 +1002,9 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Needed to use QUICHE API.
             r'net/quic/dedicated_web_transport_http3_client\.cc',
 
-            # Needed to use MediaPipe API.
-            r'components/media_effects/.*\.cc',
+            # Needed to use Ink API.
+            r'pdf/.*_ink.*\.cc',
+
             # Not an error in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK
         ],
