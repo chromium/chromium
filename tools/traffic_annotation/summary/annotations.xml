@@ -205,7 +205,6 @@ Refer to README.md for content description and update process.
  <item id="spellcheck_lookup" added_in_milestone="62" content_hash_code="072d1525" os_list="linux,windows,chromeos" file_path="components/spellcheck/browser/spelling_service_client.cc" />
  <item id="ssl_hmac_channel_authenticator" added_in_milestone="66" content_hash_code="0695685d" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/ssl_hmac_channel_authenticator.cc" />
  <item id="ssl_name_mismatch_lookup" added_in_milestone="62" content_hash_code="05d18c86" os_list="linux,windows,chromeos,android" file_path="components/security_interstitials/content/common_name_mismatch_handler.cc" />
- <item id="stream_message_pipe_adapter" added_in_milestone="66" content_hash_code="03f252fd" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/stream_message_pipe_adapter.cc" />
  <item id="stream_packet_socket" added_in_milestone="84" content_hash_code="034904c2" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/stream_packet_socket.cc" />
  <item id="sync_file_system" added_in_milestone="62" content_hash_code="031bce6a" os_list="linux,windows,chromeos" file_path="chrome/browser/sync_file_system/drive_backend/sync_engine.cc" />
  <item id="sync_http_bridge" added_in_milestone="62" content_hash_code="01f587fa" os_list="linux,windows,chromeos,android" file_path="components/sync/engine/net/http_bridge.cc" />

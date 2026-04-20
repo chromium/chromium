@@ -319,7 +319,6 @@ missing_new_fields,remoting/client/notification/notification_client.cc
 missing_new_fields,remoting/host/heartbeat_sender.cc
 missing_new_fields,remoting/host/security_key/security_key_socket.cc
 missing_new_fields,remoting/protocol/ssl_hmac_channel_authenticator.cc
-missing_new_fields,remoting/protocol/stream_message_pipe_adapter.cc
 missing_new_fields,remoting/protocol/stream_packet_socket.cc
 missing_new_fields,remoting/signaling/ftl_registration_manager.cc
 missing_new_fields,rlz/lib/financial_ping.cc

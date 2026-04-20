@@ -23,7 +23,6 @@
 #include "remoting/base/compound_buffer.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/fake_authenticator.h"
-#include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/network_settings.h"

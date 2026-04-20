@@ -18,8 +18,6 @@ class CompoundBuffer;
 
 namespace protocol {
 
-class MessageChannelFactory;
-
 // Base class for channel message dispatchers. It's responsible for
 // creating the named channel. Derived dispatchers then dispatch
 // incoming messages on this channel as well as send outgoing
@@ -43,10 +41,6 @@ class ChannelDispatcherBase : public MessagePipe::EventHandler {
   ChannelDispatcherBase& operator=(const ChannelDispatcherBase&) = delete;
 
   ~ChannelDispatcherBase() override;
-
-  // Creates and connects the channel using |channel_factory|.
-  void Init(MessageChannelFactory* channel_factory,
-            EventHandler* event_handler);
 
   // Initializes the channel using |message_pipe| that's already connected.
   void Init(std::unique_ptr<MessagePipe> message_pipe,
@@ -74,7 +68,6 @@ class ChannelDispatcherBase : public MessagePipe::EventHandler {
   void OnMessagePipeClosed() override;
 
   std::string channel_name_;
-  raw_ptr<MessageChannelFactory> channel_factory_ = nullptr;
   raw_ptr<EventHandler> event_handler_ = nullptr;
   bool is_connected_ = false;
 

@@ -192,7 +192,6 @@ after discussions on the right group.
       <annotation id="websocket_stream"/>
       <annotation id="security_key_socket"/>
       <annotation id="ssl_hmac_channel_authenticator"/>
-      <annotation id="stream_message_pipe_adapter"/>
       <annotation id="stream_packet_socket"/>
       <annotation id="certificate_verifier_url_loader"/>
       <annotation id="webrtc_peer_connection"/>
