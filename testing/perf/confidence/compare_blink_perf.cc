@@ -32,14 +32,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/perf/confidence/ratio_bootstrap_estimator.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// Not used with untrusted inputs.
-#pragma allow_unsafe_buffers
-#endif
 
 using std::max;
 using std::min;
@@ -83,15 +79,20 @@ unordered_map<string, unordered_map<string, vector<double>>> ReadFile(
   }
   while (!feof(fp)) {
     char buf[4096];
-    if (fgets(buf, sizeof(buf), fp) == nullptr) {
+    // SAFETY: fgets reads until EoF (safe) or until a '\n' is reached, or
+    // buf.size()-1 chars have been read, it then adds a null terminator to the
+    // end. See man pages:
+    // https://man7.org/linux/man-pages/man3/fgets.3p.html
+    if (UNSAFE_BUFFERS(fgets(buf, sizeof(buf), fp)) == nullptr) {
       break;
     }
-    string str(buf);
+    // fgets promises a null terminator so this is safe.
+    std::string_view str(buf);
     if (str.length() > 1 && str[str.length() - 1] == '\n') {
-      str.resize(str.length() - 1);
+      str.remove_suffix(1);
     }
     if (str.length() > 1 && str[str.length() - 1] == '\r') {
-      str.resize(str.length() - 1);
+      str.remove_suffix(1);
     }
 
     // A result line looks like: *RESULT BlinkStyleParseTime: Video= 11061 us
@@ -152,11 +153,12 @@ int main(int argc, char** argv) {
     fprintf(stderr, "USAGE: compare_blink_perf OLD_LOG NEW_LOG\n");
     exit(1);
   }
-
+  // SAFETY: Standard C++ main contract.
+  auto args = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
   unordered_map<string, unordered_map<string, vector<double>>> before =
-      ReadFile(argv[1]);
+      ReadFile(args[1]);
   unordered_map<string, unordered_map<string, vector<double>>> after =
-      ReadFile(argv[2]);
+      ReadFile(args[2]);
 
   unsigned min_num_trials = numeric_limits<unsigned>::max();
   unsigned max_num_trials = numeric_limits<unsigned>::min();
