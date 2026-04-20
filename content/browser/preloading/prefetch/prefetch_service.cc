@@ -151,42 +151,6 @@ bool ShouldStartSpareRenderer() {
   return true;
 }
 
-void RecordPrefetchProxyPrefetchMainframeTotalTime(
-    network::mojom::URLResponseHead* head) {
-  DCHECK(head);
-
-  base::Time start = head->request_time;
-  base::Time end = head->response_time;
-
-  if (start.is_null() || end.is_null()) {
-    return;
-  }
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.TotalTime",
-                             end - start, base::Milliseconds(10),
-                             base::Seconds(30), 100);
-}
-
-void RecordPrefetchProxyPrefetchMainframeConnectTime(
-    network::mojom::URLResponseHead* head) {
-  DCHECK(head);
-
-  base::TimeTicks start = head->load_timing.connect_timing.connect_start;
-  base::TimeTicks end = head->load_timing.connect_timing.connect_end;
-
-  if (start.is_null() || end.is_null()) {
-    return;
-  }
-
-  UMA_HISTOGRAM_TIMES("PrefetchProxy.Prefetch.Mainframe.ConnectTime",
-                      end - start);
-}
-
-void RecordPrefetchProxyPrefetchMainframeRespCode(int response_code) {
-  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.RespCode",
-                           response_code);
-}
-
 // Returns true if the prefetch is heldback, and set the holdback status
 // correspondingly.
 bool CheckAndSetPrefetchHoldbackStatus(PrefetchContainer& prefetch_container) {
@@ -1492,8 +1456,8 @@ void PrefetchService::SendPrefetchRequest(
       GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
       *prefetch_container.GetResourceRequest(),
       kNavigationalPrefetchTrafficAnnotation, PrefetchTimeoutDuration(),
-      base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
-                     base::Unretained(this), weak_prefetch_container),
+      base::BindOnce(&PrefetchContainer::OnPrefetchResponseStarted,
+                     weak_prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), weak_prefetch_container),
       prefetch_container.GetResponseReaderForCurrentPrefetch(),
@@ -1772,39 +1736,20 @@ void PrefetchService::OnPrefetchRedirect(
   CheckEligibilityOfPrefetch(std::move(params));
 }
 
-std::optional<PrefetchErrorOnResponseReceived>
-PrefetchService::OnPrefetchResponseStarted(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    network::mojom::URLResponseHead* head) {
-  TRACE_EVENT("loading", "PrefetchService::OnPrefetchResponseStarted",
-              "prefetch_url",
-              prefetch_container ? prefetch_container->GetURL().spec() : "");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void PrefetchService::OnWillBeDestroyed(
+    const PrefetchContainer& prefetch_container) {}
 
-  if (!prefetch_container || prefetch_container->IsDecoy()) {
-    return PrefetchErrorOnResponseReceived::kPrefetchWasDecoy;
-  }
+void PrefetchService::OnGotInitialEligibility(
+    const PrefetchContainer& prefetch_container,
+    PreloadingEligibility eligibility) {}
 
-  if (prefetch_container && prefetch_container->IsCrossSiteContaminated()) {
-    head->is_prefetch_with_cross_site_contamination = true;
-  }
-
-  prefetch_container->NotifyPrefetchResponseReceived(*head);
-
-  if (!head->headers) {
-    return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;
-  }
-
-  RecordPrefetchProxyPrefetchMainframeTotalTime(head);
-  RecordPrefetchProxyPrefetchMainframeConnectTime(head);
-
-  int response_code = head->headers->response_code();
-  RecordPrefetchProxyPrefetchMainframeRespCode(response_code);
-  if (response_code < 200 || response_code >= 300) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchFailedNon2XX);
-
-    if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+void PrefetchService::OnDeterminedHead(
+    const PrefetchContainer& prefetch_container) {
+  // `IsDecoy()` check is added here to keep the existing behavior.
+  if (prefetch_container.GetResponseCode() == net::HTTP_SERVICE_UNAVAILABLE &&
+      !prefetch_container.IsDecoy()) {
+    if (const network::mojom::URLResponseHead* head =
+            prefetch_container.GetNonRedirectHead()) {
       base::TimeDelta retry_after;
       std::string retry_after_string;
       if (head->headers->EnumerateHeader(nullptr, "Retry-After",
@@ -1818,30 +1763,12 @@ PrefetchService::OnPrefetchResponseStarted(
           retry_after = max_retry_after;
         }
 
-        delegate_->ReportOriginRetryAfter(prefetch_container->GetURL(),
+        delegate_->ReportOriginRetryAfter(prefetch_container.GetURL(),
                                           retry_after);
       }
     }
-    return PrefetchErrorOnResponseReceived::kFailedNon2XX;
   }
-
-  if (PrefetchServiceHTMLOnly() && head->mime_type != "text/html") {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchFailedMIMENotSupported);
-    return PrefetchErrorOnResponseReceived::kFailedMIMENotSupported;
-  }
-  return std::nullopt;
 }
-
-void PrefetchService::OnWillBeDestroyed(
-    const PrefetchContainer& prefetch_container) {}
-
-void PrefetchService::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container,
-    PreloadingEligibility eligibility) {}
-
-void PrefetchService::OnDeterminedHead(
-    const PrefetchContainer& prefetch_container) {}
 
 void PrefetchService::OnPrefetchCompletedOrFailed(
     const PrefetchContainer& prefetch_container,

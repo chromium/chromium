@@ -362,14 +362,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
                           const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr redirect_head);
 
-  // Called when the response for |prefetch_container| has started. Based on
-  // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
-  // the prefetch is servable. If servable, then `std::nullopt` will be
-  // returned, otherwise a failure status is returned.
-  std::optional<PrefetchErrorOnResponseReceived> OnPrefetchResponseStarted(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      network::mojom::URLResponseHead* head);
-
   // PrefetchContainer::Observer overrides:
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
   void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,

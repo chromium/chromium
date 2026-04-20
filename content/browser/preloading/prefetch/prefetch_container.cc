@@ -236,6 +236,42 @@ GetPrefetchResponseCompletedCallbackForTesting() {
   return *prefetch_response_completed_callback_for_testing;
 }
 
+void RecordPrefetchProxyPrefetchMainframeTotalTime(
+    network::mojom::URLResponseHead* head) {
+  DCHECK(head);
+
+  base::Time start = head->request_time;
+  base::Time end = head->response_time;
+
+  if (start.is_null() || end.is_null()) {
+    return;
+  }
+
+  UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.TotalTime",
+                             end - start, base::Milliseconds(10),
+                             base::Seconds(30), 100);
+}
+
+void RecordPrefetchProxyPrefetchMainframeConnectTime(
+    network::mojom::URLResponseHead* head) {
+  DCHECK(head);
+
+  base::TimeTicks start = head->load_timing.connect_timing.connect_start;
+  base::TimeTicks end = head->load_timing.connect_timing.connect_end;
+
+  if (start.is_null() || end.is_null()) {
+    return;
+  }
+
+  UMA_HISTOGRAM_TIMES("PrefetchProxy.Prefetch.Mainframe.ConnectTime",
+                      end - start);
+}
+
+void RecordPrefetchProxyPrefetchMainframeRespCode(int response_code) {
+  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                           response_code);
+}
+
 }  // namespace
 
 // static
@@ -974,6 +1010,54 @@ void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   streaming_loader_.reset();
 }
 
+// static
+std::optional<PrefetchErrorOnResponseReceived>
+PrefetchContainer::OnPrefetchResponseStarted(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    network::mojom::URLResponseHead* head) {
+  if (!prefetch_container) {
+    // `kPrefetchWasDecoy` is used to keep the existing behavior.
+    return PrefetchErrorOnResponseReceived::kPrefetchWasDecoy;
+  }
+  return prefetch_container->OnPrefetchResponseStartedInternal(head);
+}
+
+std::optional<PrefetchErrorOnResponseReceived>
+PrefetchContainer::OnPrefetchResponseStartedInternal(
+    network::mojom::URLResponseHead* head) {
+  TRACE_EVENT("loading", "PrefetchContainer::OnPrefetchResponseStartedInternal",
+              "prefetch_url", GetURL().spec());
+  if (IsDecoy()) {
+    return PrefetchErrorOnResponseReceived::kPrefetchWasDecoy;
+  }
+
+  if (IsCrossSiteContaminated()) {
+    head->is_prefetch_with_cross_site_contamination = true;
+  }
+
+  NotifyPrefetchResponseReceived(*head);
+
+  if (!head->headers) {
+    return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;
+  }
+
+  RecordPrefetchProxyPrefetchMainframeTotalTime(head);
+  RecordPrefetchProxyPrefetchMainframeConnectTime(head);
+
+  int response_code = head->headers->response_code();
+  RecordPrefetchProxyPrefetchMainframeRespCode(response_code);
+  if (response_code < 200 || response_code >= 300) {
+    SetPrefetchStatus(PrefetchStatus::kPrefetchFailedNon2XX);
+    return PrefetchErrorOnResponseReceived::kFailedNon2XX;
+  }
+
+  if (PrefetchServiceHTMLOnly() && head->mime_type != "text/html") {
+    SetPrefetchStatus(PrefetchStatus::kPrefetchFailedMIMENotSupported);
+    return PrefetchErrorOnResponseReceived::kFailedMIMENotSupported;
+  }
+  return std::nullopt;
+}
+
 void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
   TRACE_EVENT("loading", "PrefetchContainer::OnDeterminedHead",
               request_->preload_pipeline_info().GetFlow());
@@ -1648,7 +1732,8 @@ void PrefetchContainer::NotifyPrefetchRequestWillBeSent(
 
 void PrefetchContainer::NotifyPrefetchResponseReceived(
     const network::mojom::URLResponseHead& head) {
-  // Ensured by the caller `PrefetchService::OnPrefetchResponseStarted()`.
+  // Ensured by the caller
+  // `PrefetchContainer::OnPrefetchResponseStartedInternal()`.
   CHECK(!IsDecoy());
 
   prefetch_container_metrics_.time_url_request_started =
@@ -1685,7 +1770,7 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
 
 void PrefetchContainer::NotifyPrefetchRequestComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
-  // Ensured by the caller `PrefetchService::OnPrefetchResponseStarted()`.
+  // Ensured by the caller `PrefetchContainer::OnPrefetchCompleteInternal()`.
   CHECK(!IsDecoy());
 
   auto* renderer_initiator_info = request().GetRendererInitiatorInfo();

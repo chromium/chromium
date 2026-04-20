@@ -185,6 +185,15 @@ class CONTENT_EXPORT PrefetchContainer
       std::unique_ptr<const PrefetchRequest> request,
       std::unique_ptr<PrePrefetchContainer> pre_prefetch_container = nullptr);
 
+  // Called when the response for |prefetch_container| has started. Based on
+  // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
+  // the prefetch is servable. If servable, then `std::nullopt` will be
+  // returned, otherwise a failure status is returned.
+  // This is `static` just to handle `WeakPtr` check.
+  static std::optional<PrefetchErrorOnResponseReceived>
+  OnPrefetchResponseStarted(base::WeakPtr<PrefetchContainer> prefetch_container,
+                            network::mojom::URLResponseHead* head);
+
   // Use `Create*()` above.
   // TODO(crbug.com/452389538): Receiving `PrefetchRequest` and
   // `PrePrefetchContainer` whose only `PrefetchRequest` is moved out (when
@@ -745,6 +754,9 @@ class CONTENT_EXPORT PrefetchContainer
   // UMAs.
   void RecordPrefetchPotentialCandidateServingResultHistogram(
       PrefetchPotentialCandidateServingResult matching_result);
+
+  std::optional<PrefetchErrorOnResponseReceived>
+  OnPrefetchResponseStartedInternal(network::mojom::URLResponseHead* head);
 
   // Should be called only from `OnPrefetchComplete()`, so that
   // `OnPrefetchCompletedOrFailed()` is always called after
