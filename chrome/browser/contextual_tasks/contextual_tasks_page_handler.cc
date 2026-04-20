@@ -22,7 +22,10 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -179,6 +182,15 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
       contextual_tasks_service_(contextual_tasks_service) {
   CHECK(contextual_tasks_service_);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
+
+  if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
+    Profile* profile = web_ui_controller_->GetProfile();
+    pref_change_registrar_.Init(profile->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kPinContextualTaskButton,
+        base::BindRepeating(&ContextualTasksPageHandler::OnPrefChanged,
+                            base::Unretained(this)));
+  }
 }
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
@@ -418,16 +430,7 @@ void ContextualTasksPageHandler::GetCommonSearchParams(
 }
 
 void ContextualTasksPageHandler::OnboardingTooltipDismissed() {
-  Profile* profile = web_ui_controller_->GetProfile();
-  if (!profile) {
-    return;
-  }
-
-  PrefService* prefs = profile->GetPrefs();
-  if (!prefs) {
-    return;
-  }
-
+  PrefService* prefs = web_ui_controller_->GetProfile()->GetPrefs();
   int count = prefs->GetInteger(
       contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount);
   prefs->SetInteger(
@@ -565,4 +568,31 @@ void ContextualTasksPageHandler::OnReceivedRemoveInjectedInput(
   if (token.has_value()) {
     web_ui_controller_->GetPageRemote()->RemoveInjectedInput(token.value());
   }
+}
+
+void ContextualTasksPageHandler::PinSidePanel() {
+  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
+    return;
+  }
+  web_ui_controller_->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kPinContextualTaskButton, true);
+}
+
+void ContextualTasksPageHandler::UnpinSidePanel() {
+  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
+    return;
+  }
+  web_ui_controller_->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kPinContextualTaskButton, false);
+}
+
+void ContextualTasksPageHandler::OnPinStateChanged(bool is_pinned) {
+  web_ui_controller_->GetPageRemote()->OnSidePanelPinStateChanged(is_pinned);
+}
+
+void ContextualTasksPageHandler::OnPrefChanged() {
+  OnPinStateChanged(
+      contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
+      web_ui_controller_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kPinContextualTaskButton));
 }

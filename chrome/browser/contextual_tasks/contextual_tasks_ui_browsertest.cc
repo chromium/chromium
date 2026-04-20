@@ -77,6 +77,7 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               (const std::vector<uint8_t>& message),
               (override));
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
+  MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
   MOCK_METHOD(void,
               OnContextUpdated,
               (std::vector<contextual_tasks::mojom::ContextInfoPtr>),

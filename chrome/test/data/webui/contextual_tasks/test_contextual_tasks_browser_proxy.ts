@@ -39,6 +39,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'injectInputWithIcon',
       'removeInjectedInput',
       'setShowReopenTabs',
+      'onSidePanelPinStateChanged',
     ]);
   }
 
@@ -150,6 +151,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   removeInjectedInput(fileToken: UnguessableToken) {
     this.methodCalled('removeInjectedInput', fileToken);
   }
+
+  onSidePanelPinStateChanged(isPinned: boolean) {
+    this.methodCalled('onSidePanelPinStateChanged', isPinned);
+  }
 }
 
 /**
@@ -195,6 +200,9 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'setThreadTitle',
       'showThreadHistory',
       'submitQuery',
+      'pinSidePanel',
+      'unpinSidePanel',
+      'isSidePanelPinned',
     ]);
 
     this.url_ = url;
@@ -374,6 +382,19 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   postMessageToWebview(message: number[]) {
     this.methodCalled('postMessageToWebview', message);
+  }
+
+  pinSidePanel() {
+    this.methodCalled('pinSidePanel');
+  }
+
+  unpinSidePanel() {
+    this.methodCalled('unpinSidePanel');
+  }
+
+  isSidePanelPinned() {
+    this.methodCalled('isSidePanelPinned');
+    return Promise.resolve({isPinned: false});
   }
 }
 

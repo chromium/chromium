@@ -27,6 +27,10 @@ namespace contextual_tasks {
 // Enables the contextual tasks side panel while browsing.
 BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the pin button in the toolbar for contextual tasks.
+BASE_FEATURE(kEnableContextualTasksPinButtonInToolbar,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of the kSearchResultsOAuth2Scope instead of the
 // kChromeSyncOAuth2Scope.
 BASE_FEATURE(kContextualTasksScopeChange, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -318,6 +322,9 @@ int ContextualTasksInactiveSidePanelKeepInCacheMinutes() {
   return kContextualTasksInactiveSidePanelKeepInCacheMinutes.Get();
 }
 
+bool IsContextualTasksPinButtonInToolbarEnabled() {
+  return base::FeatureList::IsEnabled(kEnableContextualTasksPinButtonInToolbar);
+}
 
 bool GetIsProtectedPageErrorEnabled() {
   return kEnableProtectedPageError.Get();

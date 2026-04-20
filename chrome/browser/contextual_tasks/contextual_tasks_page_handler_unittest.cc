@@ -20,15 +20,17 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/application_locale_storage/application_locale_storage.h"
-#include "content/public/test/navigation_simulator.h"
-#include "content/public/test/web_contents_tester.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_ui.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,6 +109,7 @@ class MockPage : public mojom::Page {
               RemoveInjectedInput,
               (const base::UnguessableToken& file_token),
               (override));
+  MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
 
   mojo::Receiver<mojom::Page> receiver_{this};
 };
@@ -162,6 +165,8 @@ class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
     mock_contextual_tasks_ui_service_ =
         static_cast<MockContextualTasksUiService*>(
             ContextualTasksUiServiceFactory::GetForBrowserContext(profile()));
+
+    profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
 
     page_handler_ = std::make_unique<ContextualTasksPageHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
@@ -566,6 +571,56 @@ TEST_F(ContextualTasksPageHandlerTest, ShowThreadHistory) {
       });
 
   page_handler_->ShowThreadHistory();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  // Recreate page_handler_ to pick up the feature flag.
+  page_handler_ = std::make_unique<ContextualTasksPageHandler>(
+      mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
+      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
+  page_handler_->set_skip_feedback_ui_for_testing(true);
+
+  // Initial state should be unpinned.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+
+  // We expect the page to be notified when the pref changes.
+  EXPECT_CALL(page_, OnSidePanelPinStateChanged(true)).Times(1);
+
+  // Pin the side panel.
+  page_handler_->PinSidePanel();
+
+  // Verify state via pref.
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+
+  // Now unpin.
+  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false)).Times(1);
+  page_handler_->UnpinSidePanel();
+
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+}
+
+TEST_F(ContextualTasksPageHandlerTest, PinSidePanel_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  // Initial state should be unpinned.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+
+  // Pin the side panel (should be a no-op when feature is disabled).
+  page_handler_->PinSidePanel();
+
+  // Should still be false.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
 }
 
 TEST_F(ContextualTasksPageHandlerTest, MoveTaskUiToNewTab) {

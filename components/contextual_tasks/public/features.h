@@ -14,6 +14,7 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 // When enabled, it should instead request the kSearchResultsOAuth2Scope instead
 // of the kChromeSyncOAuth2Scope
 BASE_DECLARE_FEATURE(kContextualTasksScopeChange);
@@ -267,6 +268,9 @@ extern ExpandButtonOption GetExpandButtonOption();
 
 // Returns whether the rounded clip-path is enabled.
 extern bool IsRoundedClipPathEnabled();
+
+// Returns whether the pin button in toolbar is enabled.
+extern bool IsContextualTasksPinButtonInToolbarEnabled();
 
 namespace flag_descriptions {
 
