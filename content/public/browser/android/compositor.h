@@ -57,6 +57,10 @@ class CONTENT_EXPORT Compositor {
   static Compositor* Create(CompositorClient* client,
                             gfx::NativeWindow root_window);
 
+  // Creates and returns an offscreen compositor instance.
+  static Compositor* CreateOffscreen(CompositorClient* client,
+                                     gfx::NativeWindow root_window);
+
   virtual void SetRootWindow(gfx::NativeWindow root_window) = 0;
 
   // Attaches the layer tree.
@@ -69,6 +73,7 @@ class CONTENT_EXPORT Compositor {
   virtual const gfx::Size& GetWindowBounds() = 0;
 
   // Set the output surface which the compositor renders into.
+  // Banned for offscreen rendering.
   virtual std::optional<gpu::SurfaceHandle> SetSurface(
       const base::android::JavaRef<jobject>& surface,
       bool can_be_used_with_surface_control,
@@ -95,13 +100,16 @@ class CONTENT_EXPORT Compositor {
   // Caches the back buffer associated with the current surface, if any. The
   // client is responsible for evicting this cache entry before destroying the
   // associated window.
+  // Banned for offscreen rendering.
   virtual void CacheBackBufferForCurrentSurface() = 0;
 
   // Evicts the cache entry created from the cached call above.
+  // Banned for offscreen rendering.
   virtual void EvictCachedBackBuffer() = 0;
 
   // Notifies associated Display to not detach child surface controls during
   // destruction.
+  // Banned for offscreen rendering.
   virtual void PreserveChildSurfaceControls() = 0;
 
   // Registers a callback that is run when the presentation feedback for the

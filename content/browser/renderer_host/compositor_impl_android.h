@@ -74,7 +74,9 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
                                       public viz::HostFrameSinkClient,
                                       public display::DisplayObserver {
  public:
-  CompositorImpl(CompositorClient* client, gfx::NativeWindow root_window);
+  CompositorImpl(CompositorClient* client,
+                 gfx::NativeWindow root_window,
+                 bool is_offscreen_rendering);
 
   CompositorImpl(const CompositorImpl&) = delete;
   CompositorImpl& operator=(const CompositorImpl&) = delete;
@@ -220,6 +222,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
       const PendingSurfaceCopyId& scoped_keep_surface_alive_id);
 
   viz::FrameSinkId frame_sink_id_;
+  const bool is_offscreen_rendering_;
 
   // root_layer_ is the persistent internal root layer, while subroot_layer_
   // is the one attached by the compositor client.

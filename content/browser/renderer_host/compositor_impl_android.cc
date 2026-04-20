@@ -173,7 +173,17 @@ class CompositorImpl::ScopedCachedBackBuffer {
 // static
 Compositor* Compositor::Create(CompositorClient* client,
                                gfx::NativeWindow root_window) {
-  return client ? new CompositorImpl(client, root_window) : nullptr;
+  return client ? new CompositorImpl(client, root_window,
+                                     /* is_offscreen_rendering= */ false)
+                : nullptr;
+}
+
+// static
+Compositor* Compositor::CreateOffscreen(CompositorClient* client,
+                                        gfx::NativeWindow root_window) {
+  return client ? new CompositorImpl(client, root_window,
+                                     /* is_offscreen_rendering= */ true)
+                : nullptr;
 }
 
 // static
@@ -196,8 +206,10 @@ bool CompositorImpl::IsInitialized() {
 }
 
 CompositorImpl::CompositorImpl(CompositorClient* client,
-                               gfx::NativeWindow root_window)
+                               gfx::NativeWindow root_window,
+                               bool is_offscreen_rendering)
     : frame_sink_id_(AllocateFrameSinkId()),
+      is_offscreen_rendering_(is_offscreen_rendering),
       resource_manager_(root_window),
       window_(nullptr),
       surface_handle_(gpu::kNullSurfaceHandle),
@@ -209,6 +221,10 @@ CompositorImpl::CompositorImpl(CompositorClient* client,
   DCHECK(client);
 
   SetRootWindow(root_window);
+
+  if (is_offscreen_rendering_) {
+    SetVisible(true);
+  }
 }
 
 CompositorImpl::~CompositorImpl() {
@@ -218,7 +234,11 @@ CompositorImpl::~CompositorImpl() {
 
   DetachRootWindow();
   // Clean-up any surface references.
-  SetSurface(nullptr, false, nullptr);
+  if (!is_offscreen_rendering_) {
+    SetSurface(nullptr, false, nullptr);
+  } else {
+    SetVisible(false);
+  }
 
   BrowserGpuChannelHostFactory::instance()->MaybeCloseChannel();
 }
@@ -245,7 +265,7 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   // handle visibility, swapping begin frame sources, etc.
   // These checks ensure we have no begin frame source, and that we don't need
   // to register one on the new window.
-  DCHECK(!window_);
+  DCHECK(!window_ || is_offscreen_rendering_);
 
   scoped_refptr<cc::slim::Layer> root_layer;
   if (root_window_) {
@@ -284,6 +304,7 @@ std::optional<gpu::SurfaceHandle> CompositorImpl::SetSurface(
     const base::android::JavaRef<jobject>& surface,
     bool can_be_used_with_surface_control,
     const base::android::JavaRef<jobject>& host_input_token) {
+  CHECK(!is_offscreen_rendering_);
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
 
   if (window_) {
@@ -334,7 +355,7 @@ void CompositorImpl::SetVisible(bool visible) {
   if (!visible) {
     DCHECK(host_->IsVisible());
     // Tear down the display first, synchronously completing any pending
-    // draws/readbacks if poosible.
+    // draws/readbacks if possible.
     TearDownDisplayAndUnregisterRootFrameSink();
     // Hide the LayerTreeHost and release its frame sink.
     host_->SetVisible(false);
@@ -469,7 +490,7 @@ void CompositorImpl::HandlePendingLayerTreeFrameSinkRequest() {
     return;
   }
 
-  DCHECK(surface_handle_ != gpu::kNullSurfaceHandle);
+  DCHECK(is_offscreen_rendering_ || surface_handle_ != gpu::kNullSurfaceHandle);
   BrowserGpuChannelHostFactory::instance()->EstablishGpuChannel(base::BindOnce(
       &CompositorImpl::OnGpuChannelEstablished, weak_factory_.GetWeakPtr()));
 }
@@ -497,8 +518,10 @@ void CompositorImpl::OnGpuChannelEstablished(
     return;
   }
 
-  DCHECK(window_);
-  DCHECK_NE(surface_handle_, gpu::kNullSurfaceHandle);
+  if (!is_offscreen_rendering_) {
+    DCHECK(window_);
+    DCHECK_NE(surface_handle_, gpu::kNullSurfaceHandle);
+  }
 
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;
@@ -753,9 +776,6 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   display_client_ = std::make_unique<AndroidHostDisplayClient>(this);
   root_params->display_client = display_client_->GetBoundRemote(task_runner);
 
-  const auto& display_props =
-      display::Screen::Get()->GetDisplayNearestWindow(root_window_);
-
   viz::RendererSettings renderer_settings;
   renderer_settings.partial_swap_enabled = true;
   renderer_settings.allow_antialiasing = false;
@@ -770,7 +790,8 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   root_params->gpu_compositing = true;
   root_params->renderer_settings = renderer_settings;
   root_params->refresh_rate = root_window_->GetRefreshRate();
-  if (input::InputUtils::IsTransferInputToVizSupported()) {
+  if (!is_offscreen_rendering_ &&
+      input::InputUtils::IsTransferInputToVizSupported()) {
     root_params->create_input_receiver = true;
   }
 
@@ -821,8 +842,14 @@ void CompositorImpl::OnFatalOrSurfaceContextCreationFailure(
   }
 
   if (context_result == gpu::ContextResult::kSurfaceFailure) {
-    SetSurface(nullptr, false, nullptr);
-    client_->RecreateSurface();
+    if (is_offscreen_rendering_) {
+      // Offscreen rendering cannot recover from surface failure as there
+      // is no Android Surface to request a recreation from.
+      FatalSurfaceFailure();
+    } else {
+      SetSurface(nullptr, false, nullptr);
+      client_->RecreateSurface();
+    }
   }
 }
 
@@ -831,6 +858,7 @@ void CompositorImpl::OnFirstSurfaceActivation(const viz::SurfaceInfo& info) {
 }
 
 void CompositorImpl::CacheBackBufferForCurrentSurface() {
+  CHECK(!is_offscreen_rendering_);
   if (window_ && display_private_) {
     cached_back_buffer_ =
         std::make_unique<ScopedCachedBackBuffer>(frame_sink_id_);
@@ -838,10 +866,12 @@ void CompositorImpl::CacheBackBufferForCurrentSurface() {
 }
 
 void CompositorImpl::EvictCachedBackBuffer() {
+  CHECK(!is_offscreen_rendering_);
   cached_back_buffer_.reset();
 }
 
 void CompositorImpl::PreserveChildSurfaceControls() {
+  CHECK(!is_offscreen_rendering_);
   if (display_private_) {
     display_private_->PreserveChildSurfaceControls();
   }
