@@ -95,6 +95,7 @@ public class CustomTabBottomBarDelegate
     private boolean mShowShadow = true;
     private @Nullable PendingIntent mSwipeUpPendingIntent;
     private boolean mKeepContentView;
+    private final Callback<ViewportInsets> mInsetObserver;
 
     /**
      * The override height in pixels. A value of -1 is interpreted as "not set" and means it should
@@ -138,15 +139,23 @@ public class CustomTabBottomBarDelegate
         mKeepContentView = false;
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
 
-        Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
-        // TODO(REVIEW): Is it ok this doesn't remove itself?
+        mInsetObserver = this::onViewportInsetChange;
         mWindowAndroid
                 .getApplicationBottomInsetTracker()
                 .getSupplier()
-                .addSyncObserverAndPostIfNonNull(insetObserver);
+                .addSyncObserverAndPostIfNonNull(mInsetObserver);
         mShadowHeightPx =
                 activity.getResources()
                         .getDimensionPixelSize(R.dimen.custom_tabs_bottom_bar_shadow_height);
+    }
+
+    /** Cleans up observers registered in the constructor. */
+    public void destroy() {
+        mBrowserControlsSizer.removeObserver(this);
+        mWindowAndroid
+                .getApplicationBottomInsetTracker()
+                .getSupplier()
+                .removeObserver(mInsetObserver);
     }
 
     /** Makes the bottom bar area to show, if any. */

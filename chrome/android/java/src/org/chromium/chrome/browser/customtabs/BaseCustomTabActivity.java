@@ -185,7 +185,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private CustomTabToolbarColorController mCustomTabToolbarColorController;
     private SplashController mSplashController;
     private CustomTabCompositorContentInitializer mCustomTabCompositorContentInitializer;
-    private CustomTabBottomBarDelegate mCustomTabBottomBarDelegate;
+    private @Nullable CustomTabBottomBarDelegate mCustomTabBottomBarDelegate;
     private CustomTabTabPersistencePolicy mCustomTabTabPersistencePolicy;
     private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
     private TrustedWebActivityModel mTrustedWebActivityModel;
@@ -899,6 +899,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             mBrowserServicesThemeColorProvider = null;
         }
 
+        if (mCustomTabBottomBarDelegate != null) {
+            mCustomTabBottomBarDelegate.destroy();
+            mCustomTabBottomBarDelegate = null;
+        }
+
         if (mTabProvider != null && mTabProvider.getTab() != null) {
             AllTabObserver.removeCustomTab(mTabProvider.getTab());
         }
@@ -1485,7 +1490,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     protected CustomTabBottomBarDelegate getCustomTabBottomBarDelegate() {
-        return mCustomTabBottomBarDelegate;
+        return assumeNonNull(mCustomTabBottomBarDelegate);
     }
 
     private CustomTabDelegateFactory getCustomTabDelegateFactory() {
