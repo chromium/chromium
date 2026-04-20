@@ -303,14 +303,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Auto dark mode message"/>
 </enum>
 
-<enum name="AndroidToolbarDropType">
-  <int value="0" label="Invalid"/>
-  <int value="1" label="Chrome Text"/>
-  <int value="2" label="Text"/>
-  <int value="3" label="Chrome Link"/>
-  <int value="4" label="Chrome Image"/>
-</enum>
-
 <!-- LINT.IfChange(AndroidUidType) -->
 
 <enum name="AndroidUidType">

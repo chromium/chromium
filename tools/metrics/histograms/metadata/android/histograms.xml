@@ -1992,27 +1992,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.DownloadManager.Thumbnail.MaxRequiredStretch.{AndroidDownloadType}"
-    units="%" expires_after="2021-01-30">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records the required stretch of the smaller dimension before displaying an
-    image on download home. Measured in percentage. {AndroidDownloadType}
-  </summary>
-  <token key="AndroidDownloadType">
-    <variant name="Audio" summary=""/>
-    <variant name="Document" summary=""/>
-    <variant name="Image" summary=""/>
-    <variant name="OfflinePage" summary=""/>
-    <variant name="Other" summary=""/>
-    <variant name="PrefetchedOfflinePage" summary=""/>
-    <variant name="Total" summary=""/>
-    <variant name="Video" summary=""/>
-  </token>
-</histogram>
-
 <histogram name="Android.DownloadPage.OpenSource"
     enum="AndroidDownloadOpenSource" expires_after="2026-09-06">
   <owner>qinmin@chromium.org</owner>
@@ -2125,18 +2104,6 @@ chromium-metrics-reviews@google.com.
     maximum number of Chrome instances were open, in a 24-hour period. Recorded
     when the max-instance toast is shown when a dragged tab or group drop is
     unhandled at the max instance limit.
-  </summary>
-</histogram>
-
-<histogram name="Android.DragDrop.ToOmnibox.DropType"
-    enum="AndroidToolbarDropType" expires_after="2024-02-25">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the type of object dropped on the Omnibox, as well as whether it
-    originated from Chrome. This metric could be used to determine the total
-    number of uses for drag and drop to Omnibox, and specifics on how much each
-    data type is being dropped. Android only.
   </summary>
 </histogram>
 
@@ -5808,19 +5775,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.ServiceTracingProxyProvider.SuccessesOutOfInitialForty"
-    units="count" expires_after="2024-12-01">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    When the number of attempts to proxy Binder services reaches 40, records the
-    number of successful proxy installations.
-
-    Recorded only on channels: Dev, Canary, Beta.
-  </summary>
-</histogram>
-
 <histogram name="Android.Settings.PendingPopBackWorked" units="count"
     expires_after="2026-12-31">
   <owner>hidehiko@google.com</owner>
@@ -6370,17 +6324,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.TabSwitcher.CreationTime" units="ms"
-    expires_after="2024-11-10">
-  <owner>skavuluru@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the time taken to create the StartSurfaceCoordinator and grid tab
-    switcher views. Only recorded for tablets.
-  </summary>
-</histogram>
-
 <histogram name="Android.TabSwitcher.IncognitoClickedIsEmpty" enum="Boolean"
     expires_after="2024-03-17">
   <owner>roagarwal@chromium.org</owner>
@@ -6597,21 +6540,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Unfold.Latency" units="ms" expires_after="2023-09-30">
-  <owner>amanvr@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Records the time taken by chrome to display the first frame presented after
-    unfolding(folding) a foldable device. This histogram aims to capture the
-    unfold latency in devices which switch to tablet mode(phone mode) when
-    unfolded(folded), and is recorded every time the device is unfolded(folded).
-    The begin timestamp of the metric is the timestamp from the start of the
-    first OnPause activity lifecycle callback before the activity recreates. The
-    end timestamp is the timestamp when Chrome displays the first frame on the
-    new screen.
-  </summary>
-</histogram>
-
 <histogram name="Android.VersionCode" enum="VersionCode"
     expires_after="2026-09-13">
   <owner>tasak@google.com</owner>
@@ -6622,19 +6550,6 @@ chromium-metrics-reviews@google.com.
     given Chrome version. See go/chrome-android-version-codes.
 
     This is recorded every time a metrics log is created.
-  </summary>
-</histogram>
-
-<histogram name="Android.View.onDraw.30Seconds" units="count"
-    expires_after="2023-05-07">
-  <owner>nuskos@chromium.org</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Keeps a counter of each onDraw invoked on the root view and emits the count
-    once every 30 seconds. Thus this is the amount of times android attempted to
-    draw/update a java view in the last 30 seconds.
-
-    NOTE: 30 second intervals with 0 draws are not reported.
   </summary>
 </histogram>
 
@@ -7791,17 +7706,6 @@ chromium-metrics-reviews@google.com.
     Records whether WebView is running in an Instant App. This is emitted once
     during WebView global initialization. Recorded in an internal repository, so
     code references might be missing.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.JavaBridge.InvocationIsInPrimaryMainFrame"
-    enum="BooleanMainFrame" expires_after="2023-04-19">
-  <owner>peter@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records whether an invocation of a JavaScript method exposed through
-    WebView's Java Bridge happened on a page's main frame or one of its sub
-    frames. Recorded for each invocation of such methods.
   </summary>
 </histogram>
 

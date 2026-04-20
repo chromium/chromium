@@ -18,11 +18,9 @@ import androidx.annotation.CallSuper;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
-import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.home.view.SelectionView;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
@@ -103,8 +101,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
                 mThumbnail.setImageDrawable(null);
             } else {
                 mThumbnail.setVisibility(View.VISIBLE);
-                mThumbnail.setImageResizer(
-                        new BitmapResizer(mThumbnail, Filters.fromOfflineItem(offlineItem)));
+                mThumbnail.setImageResizer(new BitmapResizer(mThumbnail));
                 mThumbnail.setAsyncImageDrawable(
                         (consumer, width, height) ->
                                 properties
@@ -259,12 +256,9 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
 
         private final ImageView mImageView;
 
-        private final @Filters.FilterType int mFilter;
-
         /** Constructor. */
-        public BitmapResizer(ImageView imageView, @Filters.FilterType int filter) {
+        public BitmapResizer(ImageView imageView) {
             mImageView = imageView;
-            mFilter = filter;
         }
 
         @Override
@@ -308,7 +302,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
             float widthRatio = (float) mImageView.getWidth() / width;
             float heightRatio = (float) mImageView.getHeight() / height;
 
-            UmaUtils.recordImageViewRequiredStretch(widthRatio, heightRatio, mFilter);
             if (Math.max(widthRatio, heightRatio) < IMAGE_VIEW_MAX_SCALE_FACTOR) return 1.f;
 
             float minRequiredScale = Math.min(widthRatio, heightRatio);
