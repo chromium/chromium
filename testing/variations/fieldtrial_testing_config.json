@@ -25036,6 +25036,32 @@
             ]
         }
     ],
+    "WebUIReloadButtonStudy": [
+        {
+            "platforms": [],
+            "experiments": [
+                {
+                    "name": "Control_20260420",
+                    "params": {
+                        "WebUIReloadButtonDeferBrowserViewShow": "true",
+                        "WebUIReloadButtonKeepVisibleUntilPaint": "true",
+                        "config": "",
+                        "high_stream_priority": "true"
+                    },
+                    "enable_features": [
+                        "InitialWebUI",
+                        "InitialWebUISyncNavStartToCommit",
+                        "InitialWebUIWithoutExtensions",
+                        "SendGPUChannelEarly",
+                        "SkipIPCChannelPausingForNonGuests",
+                        "WebUIInProcessResourceLoadingV2",
+                        "WebUIReloadButton",
+                        "WebiumMetricsMapping"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewBypassProvisionalCookieManager": [
         {
             "platforms": [
