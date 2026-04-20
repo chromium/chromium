@@ -561,7 +561,8 @@ void InputStateModel::UpdateDisabledInputTypes() {
     std::erase_if(state_.allowed_input_types, [](auto input_type) {
       return input_type == omnibox::InputType::INPUT_TYPE_LENS_IMAGE ||
              input_type == omnibox::InputType::INPUT_TYPE_LENS_FILE ||
-             input_type == omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+             input_type == omnibox::InputType::INPUT_TYPE_BROWSER_TAB ||
+             input_type == omnibox::InputType::INPUT_TYPE_DRIVE;
     });
   }
 
