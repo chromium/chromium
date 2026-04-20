@@ -3743,6 +3743,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/record_replay/internal': {
+      'url': Var('chrome_git') + '/chrome/components/record_replay.git' + '@' +
+        'bebf92e693379cd4d3b8b1107fa71fd2f871e7f0',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/resources/default_100_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/components/default_100_percent/google_chrome.git' + '@' +
         '6be9997567ca4e4ae5df98e62a2b3a38cff7f4b0',
