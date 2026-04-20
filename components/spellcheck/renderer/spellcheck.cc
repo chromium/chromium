@@ -220,8 +220,10 @@ void SpellCheck::SpellCheckCustomDictionaryChanged(
     const std::set<std::string> added(words_added.begin(), words_added.end());
     NotifyDictionaryObservers(ConvertToWebStringFromUtf8(added));
     // Add or remove the word in the spell checker custom dictionary
-    (*languages_.begin())
-        ->SpellCheckCustomDictionaryChanged(words_added, words_removed);
+    if (!languages_.empty()) {
+      (*languages_.begin())
+          ->SpellCheckCustomDictionaryChanged(words_added, words_removed);
+    }
   }
 }
 
