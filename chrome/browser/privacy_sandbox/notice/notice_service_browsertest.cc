@@ -43,10 +43,6 @@ class PrivacySandboxNoticeServiceBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-// TODO(crbug.com/40200835) Enable Restart tests on Android when they're
-// supported.
-
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeServiceBrowserTest,
                        PRE_StartupHistogramsEmitOnlyAfterNoticeInteraction) {
   Profile* profile = GetProfile();
@@ -78,8 +74,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeServiceBrowserTest,
                        "PrivacySandbox.Notice.Startup.LastRecordedEvent.")
                    .empty());
 }
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeServiceBrowserTest,
                        ServiceNotCreatedForOTRProfile) {
