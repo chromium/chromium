@@ -557,6 +557,11 @@ TEST_F(L10nUtilTest, MAYBE_GetDisplayNameForCountry) {
   EXPECT_EQ(u"XYZ", result);
 }
 
+TEST_F(L10nUtilTest, GetDisplayNameForCountryEmptyCode) {
+  std::u16string result = l10n_util::GetDisplayNameForCountry("", "en");
+  EXPECT_EQ(u"", result);
+}
+
 TEST_F(L10nUtilTest, GetParentLocales) {
   EXPECT_THAT(l10n_util::GetParentLocales("sr_Cyrl_RS"),
               ElementsAre("sr_Cyrl_RS", "sr_Cyrl", "sr"));

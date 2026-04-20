@@ -695,6 +695,9 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
 
 std::u16string GetDisplayNameForCountry(std::string_view country_code,
                                         std::string_view display_locale) {
+  if (country_code.empty()) {
+    return std::u16string();
+  }
   return GetDisplayNameForLocale(base::StrCat({"_", country_code}),
                                  display_locale, false);
 }

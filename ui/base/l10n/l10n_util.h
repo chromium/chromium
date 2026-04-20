@@ -98,7 +98,8 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
                                        bool is_for_ui,
                                        bool disallow_default = false);
 
-// Returns the display name of the `country_code` in `display_locale.
+// Returns the display name of the `country_code` in `display_locale`.
+// Returns an empty string if `country_code` is empty.
 COMPONENT_EXPORT(UI_BASE)
 std::u16string GetDisplayNameForCountry(std::string_view country_code,
                                         std::string_view display_locale);
