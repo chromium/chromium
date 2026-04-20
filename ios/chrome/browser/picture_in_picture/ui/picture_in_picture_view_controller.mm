@@ -82,6 +82,7 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
     _primaryButtonTitle = primaryButtonTitle;
     _videoURL = videoURL;
     _shouldAutoStartPictureInPicture = YES;
+    _feature = feature;
   }
   return self;
 }
