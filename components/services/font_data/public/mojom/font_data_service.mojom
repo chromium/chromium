@@ -96,4 +96,10 @@ interface FontDataService {
   [Sync]
   LegacyMakeTypeface(string? family_name, TypefaceStyle style) =>
       (MatchFamilyNameResult? result);
+
+  // Returns a match for a font identified by its PostScript name or full font
+  // name (as used by @font-face src: local()). Returns null if not found or
+  // if local font matching is not supported on the current platform.
+  [Sync]
+  MatchLocalFont(string font_unique_name) => (MatchFamilyNameResult? result);
 };

@@ -15,6 +15,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "components/services/font_data/local_font_matcher.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -80,6 +81,10 @@ class FontDataServiceImpl : public mojom::FontDataService {
   void LegacyMakeTypeface(const std::optional<std::string>& family_name,
                           mojom::TypefaceStylePtr style,
                           LegacyMakeTypefaceCallback callback) override;
+
+  // Finds a font by its PostScript name or full font name.
+  void MatchLocalFont(const std::string& font_unique_name,
+                      MatchLocalFontCallback callback) override;
 
  protected:
   // Returns a file handle based on the SkTypeface. The file handle may be empty
@@ -150,6 +155,9 @@ class FontDataServiceImpl : public mojom::FontDataService {
   absl::flat_hash_map<intptr_t, size_t> address_to_asset_index_;
 
   absl::flat_hash_map<base::FilePath, uint64_t> unique_path_ids_;
+
+  // Handles local font matching by PostScript name or full font name.
+  std::unique_ptr<LocalFontMatcher> local_font_matcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

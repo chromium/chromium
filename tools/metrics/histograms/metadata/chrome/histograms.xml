@@ -187,6 +187,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataService.MatchLocalFont.FilterSuccess"
+    enum="Boolean" expires_after="2026-12-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>dileepmaurya@microsoft.com</owner>
+  <summary>
+    Records whether the local font matching found a matching font during a
+    MatchLocalFont call. True means a font was found by PostScript name or full
+    font name, false means no match was found in the system font set.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataService.MemoryMapCacheSize" units="count"
     expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>

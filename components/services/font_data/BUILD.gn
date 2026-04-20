@@ -8,7 +8,16 @@ source_set("lib") {
   sources = [
     "font_data_service_impl.cc",
     "font_data_service_impl.h",
+    "local_font_matcher.cc",
+    "local_font_matcher.h",
   ]
+
+  if (is_win) {
+    sources += [
+      "dwrite_local_font_matcher.cc",
+      "dwrite_local_font_matcher.h",
+    ]
+  }
 
   deps = [
     "//base",
@@ -33,5 +42,8 @@ source_set("unit_tests") {
     "//mojo/public/cpp/system",
     "//skia",
     "//testing/gtest",
+    "//ui/gfx",
   ]
+
+  data_deps = [ "//third_party/test_fonts" ]
 }

@@ -129,6 +129,13 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
                     std::move(callback));
   }
 
+  void MatchLocalFont(const std::string& font_unique_name,
+                      MatchLocalFontCallback callback) override {
+    // Required stub: the Mojo interface now includes MatchLocalFont as a pure
+    // virtual method. Return null since this mock does not need real matching.
+    std::move(callback).Run(nullptr);
+  }
+
   size_t match_family_call_count() const { return match_family_call_count_; }
   size_t match_family_character_call_count() const {
     return match_family_character_call_count_;

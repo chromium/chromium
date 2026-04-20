@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -17,6 +18,9 @@ namespace gfx {
 namespace win {
 
 COMPONENT_EXPORT(GFX) void SideLoadFontForTesting(base::FilePath path);
+
+COMPONENT_EXPORT(GFX)
+const std::vector<base::FilePath>* GetSideloadedFontsForTesting();
 
 COMPONENT_EXPORT(GFX) void InitializeDirectWrite();
 

@@ -51,7 +51,8 @@ enum class FontDataServiceIPC {
   kMatchFamilyNameCharacter = 1,
   kGetAllFamilyNames = 2,
   kLegacyMakeTypeface = 3,
-  kMaxValue = kLegacyMakeTypeface,
+  kMatchLocalFont = 4,
+  kMaxValue = kMatchLocalFont,
 };
 
 // Value is arbitrary. The number should be small to conserve memory but large
@@ -95,7 +96,8 @@ FontDataServiceImpl::MappedAsset::MappedAsset(
 FontDataServiceImpl::MappedAsset::~MappedAsset() = default;
 
 FontDataServiceImpl::FontDataServiceImpl()
-    : font_manager_(skia::DefaultFontMgr()) {
+    : font_manager_(skia::DefaultFontMgr()),
+      local_font_matcher_(LocalFontMatcher::Create()) {
   CHECK(font_manager_);
 }
 
@@ -512,6 +514,44 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(
   }
 
   return result;
+}
+
+void FontDataServiceImpl::MatchLocalFont(const std::string& font_unique_name,
+                                         MatchLocalFontCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("fonts", "FontDataServiceImpl::MatchLocalFont",
+              "font_unique_name", font_unique_name);
+  base::UmaHistogramEnumeration("Chrome.FontDataService.InvokedIPC",
+                                FontDataServiceIPC::kMatchLocalFont);
+
+  if (local_font_matcher_) {
+    std::optional<LocalFontMatchResult> match =
+        local_font_matcher_->MatchLocalFont(font_unique_name);
+    base::UmaHistogramBoolean(
+        "Chrome.FontDataService.MatchLocalFont.FilterSuccess",
+        match.has_value());
+    if (match) {
+      base::File font_file(match->file_path,
+                           base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+#if BUILDFLAG(IS_WIN)
+      if (!font_file.IsValid()) {
+        base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
+                                 ::GetLastError());
+      }
+#endif  // BUILDFLAG(IS_WIN)
+      if (font_file.IsValid()) {
+        auto result = mojom::MatchFamilyNameResult::New();
+        result->ttc_index = match->ttc_index;
+        result->typeface_data =
+            mojom::TypefaceData::NewFontFile(mojom::TypefaceFile::New(
+                std::move(font_file), GetUniqueFileId(match->file_path)));
+        std::move(callback).Run(std::move(result));
+        return;
+      }
+    }
+  }
+  std::move(callback).Run(nullptr);
 }
 
 }  // namespace font_data_service

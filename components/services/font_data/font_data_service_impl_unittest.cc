@@ -5,16 +5,23 @@
 #include "components/services/font_data/font_data_service_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/direct_write.h"
+#endif
 
 namespace font_data_service {
 
@@ -73,6 +80,23 @@ mojom::TypefaceStylePtr CreateTypefaceStyle(int weight,
   style->slant = slant;
   return style;
 }
+
+#if BUILDFLAG(IS_WIN)
+void ExpectValidTypefaceData(const mojom::TypefaceDataPtr& typeface_data) {
+  ASSERT_TRUE(typeface_data);
+  if (typeface_data->is_font_file()) {
+    EXPECT_TRUE(typeface_data->get_font_file()->file_handle.IsValid());
+    return;
+  }
+
+  if (typeface_data->is_region()) {
+    EXPECT_TRUE(typeface_data->get_region().IsValid());
+    return;
+  }
+
+  ADD_FAILURE() << "Unexpected TypefaceData variant";
+}
+#endif
 
 // The CheckMatchesRequiredStyles workaround is only implemented on Windows.
 #if BUILDFLAG(IS_WIN)
@@ -325,6 +349,106 @@ TEST_F(FontDataServiceImplUnitTest, LegacyMakeTypefaceNullFamilyName) {
   EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_ByPostScriptName) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  font_service_->MatchLocalFont("ArialMT", &out_result);
+  ASSERT_TRUE(out_result);
+  ExpectValidTypefaceData(out_result->typeface_data);
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_DifferentFontByPostScript) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  font_service_->MatchLocalFont("TimesNewRomanPSMT", &out_result);
+  ASSERT_TRUE(out_result);
+  ExpectValidTypefaceData(out_result->typeface_data);
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_BoldByFullName) {
+  mojom::MatchFamilyNameResultPtr bold_result;
+  font_service_->MatchLocalFont("Arial Bold", &bold_result);
+  ASSERT_TRUE(bold_result);
+  ExpectValidTypefaceData(bold_result->typeface_data);
+
+  // Verify the returned font is actually Bold — it must come from a different
+  // file than Arial Regular ("ArialMT"). If the code were matching by family
+  // name instead of full font name, it would match family "Arial" and could
+  // return the regular face.
+  mojom::MatchFamilyNameResultPtr regular_result;
+  font_service_->MatchLocalFont("ArialMT", &regular_result);
+  ASSERT_TRUE(regular_result);
+  ASSERT_TRUE(bold_result->typeface_data->is_font_file());
+  ASSERT_TRUE(regular_result->typeface_data->is_font_file());
+  EXPECT_NE(bold_result->typeface_data->get_font_file()->id,
+            regular_result->typeface_data->get_font_file()->id);
+}
+
+TEST_F(FontDataServiceImplUnitTest,
+       MatchLocalFont_BoldByFullNameMatchesBoldByPostScript) {
+  // Looking up "Arial Bold" (full name) and "Arial-BoldMT" (PS name) must
+  // return the same font file — they refer to the same font face.
+  mojom::MatchFamilyNameResultPtr full_name_result;
+  font_service_->MatchLocalFont("Arial Bold", &full_name_result);
+  ASSERT_TRUE(full_name_result);
+
+  mojom::MatchFamilyNameResultPtr ps_result;
+  font_service_->MatchLocalFont("Arial-BoldMT", &ps_result);
+  ASSERT_TRUE(ps_result);
+
+  ASSERT_TRUE(full_name_result->typeface_data->is_font_file());
+  ASSERT_TRUE(ps_result->typeface_data->is_font_file());
+  EXPECT_EQ(full_name_result->typeface_data->get_font_file()->id,
+            ps_result->typeface_data->get_font_file()->id);
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_CaseInsensitive) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  // DirectWrite font property matching is case-insensitive.
+  font_service_->MatchLocalFont("arialmt", &out_result);
+  ASSERT_TRUE(out_result);
+  ExpectValidTypefaceData(out_result->typeface_data);
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchLocalFont_NotFound) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  font_service_->MatchLocalFont("NonExistentFontXYZ_12345", &out_result);
+  EXPECT_FALSE(out_result);
+}
+
+// Test fixture that sideloads the Ahem test font before constructing the
+// FontDataServiceImpl, ensuring the DWrite font set includes sideloaded fonts.
+class FontDataServiceImplSideloadTest : public testing::Test {
+ protected:
+  FontDataServiceImplSideloadTest() {
+    // Sideload Ahem.ttf so it appears in the DWrite font set built by
+    // DWriteLocalFontMatcher::GetLocalFontSet().
+    base::FilePath base_path;
+    base::PathService::Get(base::DIR_MODULE, &base_path);
+    base::FilePath font_path =
+        base_path.Append(FILE_PATH_LITERAL("test_fonts/Ahem.ttf"));
+    gfx::win::SideLoadFontForTesting(font_path);
+
+    receiver_.emplace(&impl_, font_service_.BindNewPipeAndPassReceiver());
+  }
+
+  base::test::SingleThreadTaskEnvironment environment_;
+  mojo::Remote<mojom::FontDataService> font_service_;
+  TestFontDataService impl_;
+  std::optional<mojo::Receiver<mojom::FontDataService>> receiver_;
+};
+
+TEST_F(FontDataServiceImplSideloadTest, MatchLocalFont_SideloadedAhem) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  // The Ahem font has family name, PostScript name, and full font name all
+  // equal to "Ahem". It is not a system font — it must be found via the
+  // sideloaded font set built in DWriteLocalFontMatcher::GetLocalFontSet().
+  font_service_->MatchLocalFont("Ahem", &out_result);
+  ASSERT_TRUE(out_result);
+  ExpectValidTypefaceData(out_result->typeface_data);
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 

@@ -124,6 +124,10 @@ void SideLoadFontForTesting(base::FilePath path) {
   g_sideloaded_fonts->push_back(path);
 }
 
+const std::vector<base::FilePath>* GetSideloadedFontsForTesting() {
+  return g_sideloaded_fonts;
+}
+
 void CreateDWriteFactory(IDWriteFactory** factory) {
   Microsoft::WRL::ComPtr<IUnknown> factory_unknown;
   HRESULT hr =

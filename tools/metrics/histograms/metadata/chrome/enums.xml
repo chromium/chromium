@@ -120,6 +120,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="MatchFamilyNameCharacter"/>
   <int value="2" label="GetAllFamilyNames"/>
   <int value="3" label="LegacyMakeTypeface"/>
+  <int value="4" label="MatchLocalFont"/>
 </enum>
 
 <enum name="HeadlessChromeAction">
