@@ -1865,10 +1865,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
   }
   builder.SetPseudoElementStyles(match_result.PseudoElementStyles().Bits());
 
-  if (element->IsPseudoElement()) {
-    state.StyleBuilder().SetStyleType(element->GetPseudoIdForStyling());
-  }
-
   // Now we're done with all operations that may overwrite InsideLink,
   // so we can set it once and for all.
   builder.SetInsideLink(state.InsideLink());
