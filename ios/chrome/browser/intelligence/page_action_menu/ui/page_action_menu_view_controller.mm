@@ -508,8 +508,7 @@ const CGFloat kDividerWidth = 1.0;
   [button addTarget:self
                 action:@selector(handleBWGTapped:)
       forControlEvents:UIControlEventTouchUpInside];
-
-  [self updateButton:button enabled:[self.mutator geminiEntryPoint].enabled];
+  [self updateGeminiAvailabilityForButton:button];
 
   return button;
 }
@@ -721,6 +720,16 @@ const CGFloat kDividerWidth = 1.0;
              enabled:[self.mutator
                          lensEntryPointForTraitCollection:traitCollection]
                          .enabled];
+}
+
+
+- (void)updateGeminiAvailability {
+  [self updateGeminiAvailabilityForButton:_BWGButton];
+}
+
+- (void)updateGeminiAvailabilityForButton:(UIButton*)button {
+  PageActionMenuContentEntryPoint* entryPoint = [self.mutator geminiEntryPoint];
+  [self updateButton:button enabled:entryPoint.enabled];
 }
 
 // Updates a `button` for whether it's `enabled`.
