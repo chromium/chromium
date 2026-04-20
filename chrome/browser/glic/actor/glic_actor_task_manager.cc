@@ -136,6 +136,7 @@ void GlicActorTaskManager::CreateTask(
         GURL(), actor::TaskId(), "GlicActorTaskManager::CreateTask",
         actor::JournalDetailsBuilder()
             .AddError("Actuation capability disabled")
+            .Add("reason", base::ToString(reason_to_log))
             .Build());
     std::move(callback).Run(
         base::unexpected(mojom::CreateTaskErrorReason::kBlockedByPolicy));
