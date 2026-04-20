@@ -219,15 +219,19 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
         //   memory e.g. '@gemini<tab>'. Don't have to similarly consider
         //   non-instant keywords since same-line `KEYWORD_MODE` is ordered
         //   before `FOCUSED_BUTTON_AIM`.
+        // - The 2nd match has a takeover action to avoid disrupting muscle
+        //   memory e.g. 'create doc<tab>'.
         // - The input is not ZeroSuggest (i.e., the user has typed something).
-        bool second_match_has_instant_keyword =
+        bool second_match_has_instant_keyword_or_takeover_action =
             result.size() >= 2 &&
-            result.match_at(1).HasInstantKeyword(template_url_service);
+            (result.match_at(1).HasInstantKeyword(template_url_service) ||
+             result.match_at(1).takeover_action);
         if (aim_button_visible && line_number == 0 &&
             !result.match_at(0).from_keyword &&
             result.match_at(0).associated_keyword.empty() &&
             result.match_at(0).actions.size() == 0 &&
-            !second_match_has_instant_keyword && !input.IsZeroSuggest()) {
+            !second_match_has_instant_keyword_or_takeover_action &&
+            !input.IsZeroSuggest()) {
           available_selections.emplace_back(line_number, line_state);
         }
       } else if (line_state == FOCUSED_BUTTON_ACTION) {
