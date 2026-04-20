@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Context and state management for {@link CronetAdaptiveNetworkBidirectionalStream}. */
 class CronetAdaptiveRequestContext {
-
     // Name of the flag that controls which hosts are eligible for adaptive network selection.
     @VisibleForTesting
     public static final String ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME =
@@ -47,6 +46,12 @@ class CronetAdaptiveRequestContext {
 
     // Name of the flag that controls whether Cronet adaptive network selection is enabled.
     public static final String ENABLE_ADAPTIVE_NETWORK_NAME = "Cronet_enable_adaptive_network";
+
+    // Name of the flag that controls which network paths are eligible for fast idempotent
+    // selection. These paths must also be specified in the ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME
+    // flag, otherwise this will have no effect.
+    @VisibleForTesting
+    public static final String FAST_IDEMPOTENT_PATHS_FLAG_NAME = "Cronet_fast_idempotent_paths";
 
     /**
      * The time we wait until we start the backup stream. This value is 3x the initial retransmit
@@ -74,6 +79,7 @@ class CronetAdaptiveRequestContext {
     private final CronetLogger mLogger;
     private final String[] mAdaptiveNetworkHosts;
     private final Set<String> mAdaptiveNetworkPaths;
+    private final Set<String> mFastIdempotentPaths;
     private final long mReadyFailoverMs;
     private final boolean mEnableAdaptiveNetwork;
 
@@ -157,6 +163,16 @@ class CronetAdaptiveRequestContext {
         } else {
             mEnableAdaptiveNetwork = false;
         }
+
+        mFastIdempotentPaths = new HashSet<>();
+        if (flags.containsKey(FAST_IDEMPOTENT_PATHS_FLAG_NAME)) {
+            for (String path :
+                    flags.get(FAST_IDEMPOTENT_PATHS_FLAG_NAME).getStringValue().trim().split(",")) {
+                if (!path.isEmpty()) {
+                    mFastIdempotentPaths.add(path);
+                }
+            }
+        }
     }
 
     /**
@@ -209,6 +225,11 @@ class CronetAdaptiveRequestContext {
 
             return null;
         }
+    }
+
+    /** Returns true if the given URI is configured as a fast idempotent request. */
+    public boolean isFastIdempotentRequest(URI uri) {
+        return mFastIdempotentPaths.contains(uri.getPath());
     }
 
     long getReadyFailoverMs() {

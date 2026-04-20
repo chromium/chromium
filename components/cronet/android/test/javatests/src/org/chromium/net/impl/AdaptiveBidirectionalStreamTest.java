@@ -72,6 +72,7 @@ public class AdaptiveBidirectionalStreamTest {
     private TestLogger mTestLogger;
 
     private SocketDroppingPacketHandler mDroppingPacketHandler;
+    private SocketDroppingPacketHandler mPostTlsDroppingPacketHandler;
     private CronetAdaptiveRequestContext mAdaptiveRequestContext;
     private ConnectivityManagerWrapper mMockConnectivityManagerWrapper;
     private Network mDefaultNetwork;
@@ -105,6 +106,7 @@ public class AdaptiveBidirectionalStreamTest {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDroppingPacketHandler = new SocketDroppingPacketHandler();
+        mPostTlsDroppingPacketHandler = new SocketDroppingPacketHandler();
 
         ExperimentalCronetEngine.Builder builder =
                 (ExperimentalCronetEngine.Builder)
@@ -120,7 +122,8 @@ public class AdaptiveBidirectionalStreamTest {
                         Http2TestServer.startHttp2TestServer(
                                 new Http2TestServer.ServerStartOptions(
                                                 mTestRule.getTestFramework().getContext())
-                                        .setPreTlsPacketHandler(mDroppingPacketHandler)))
+                                        .setPreTlsPacketHandler(mDroppingPacketHandler)
+                                        .setPostTlsPacketHandler(mPostTlsDroppingPacketHandler)))
                 .isTrue();
 
         mAdaptiveRequestContext = ((CronetUrlRequestContext) mCronetEngine).mAdaptiveRequestContext;
@@ -442,6 +445,61 @@ public class AdaptiveBidirectionalStreamTest {
 
         // Even if not expired, it should return null because the network is not available.
         assertThat(getFallbackNetworkHandle(url)).isNull();
+    }
+
+    @Flags(
+            stringFlags = {
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME,
+                        value = "https://localhost"),
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
+                        value = "/echostream"),
+                @StringFlag(
+                        name = CronetAdaptiveRequestContext.FAST_IDEMPOTENT_PATHS_FLAG_NAME,
+                        value = "/echostream")
+            },
+            boolFlags = {
+                @BoolFlag(
+                        name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_NAME,
+                        value = true)
+            })
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "Logging is not supported for these implementations.")
+    @Test
+    @SmallTest
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void postViaBidirectionalStreamWithFastIdempotentRequest_successOnFallbackNetwork()
+            throws Exception {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+
+        // Drop packet for first socket AFTER TLS.
+        mPostTlsDroppingPacketHandler.mDropFirstRemoteAddress = true;
+        String url = Http2TestServer.getEchoStreamUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        callback.addWriteData("Test String".getBytes());
+
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .build();
+        stream.start();
+        callback.blockForDone();
+
+        // The request should succeed because it fell back to the "alternative" network.
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("Test String");
+
+        mTestLogger.waitForLogCronetAdaptiveTrafficTerminated();
+        assertThat(mTestLogger.getCronetAdaptiveTrafficTerminatedInfo()).isNotNull();
+        assertThat(mTestLogger.getCronetAdaptiveTrafficTerminatedInfo().getWinner())
+                .isEqualTo(
+                        CronetLogger.CronetAdaptiveTrafficWinner
+                                .CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK);
     }
 
     private URI getUriIfAdaptive(String url) {

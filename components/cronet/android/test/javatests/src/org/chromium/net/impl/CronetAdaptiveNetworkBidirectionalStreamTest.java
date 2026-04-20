@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -768,7 +769,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
-    public void testFastIdempotent_onWriteCompleted_ignoresReplayedOnFallback() {
+    public void testFastIdempotent_onWriteCompleted_forwardsOriginal() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream =
@@ -801,8 +802,57 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 .getCallback()
                 .onWriteCompleted(mFallbackStream, info, replayedBuffer, false);
 
-        // Should NOT be forwarded to callback because it was a replayed write.
-        verify(mMockCallback, never()).onWriteCompleted(any(), any(), any(), any(Boolean.class));
+        // Should be forwarded to callback with the ORIGINAL buffer.
+        verify(mMockCallback).onWriteCompleted(mAdaptiveStream, info, buffer, false);
+        assertEquals(buffer.limit(), buffer.position());
+    }
+
+    @Test
+    @SmallTest
+    public void testFastIdempotent_onWriteCompleted_reportsOnlyOnce() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        TEST_URL,
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        mAdaptiveStream.write(buffer, false);
+
+        // Both become ready and replay
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        ArgumentCaptor<ByteBuffer> primaryBufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mPrimaryStream).write(primaryBufferCaptor.capture(), eq(false));
+        ByteBuffer primaryReplayedBuffer = primaryBufferCaptor.getValue();
+
+        ArgumentCaptor<ByteBuffer> fallbackBufferCaptor = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mFallbackStream).write(fallbackBufferCaptor.capture(), eq(false));
+        ByteBuffer fallbackReplayedBuffer = fallbackBufferCaptor.getValue();
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+
+        // 1. Completion on primary
+        mAdaptiveStream
+                .getCallback()
+                .onWriteCompleted(mPrimaryStream, info, primaryReplayedBuffer, false);
+        verify(mMockCallback).onWriteCompleted(mAdaptiveStream, info, buffer, false);
+
+        // 2. Completion on fallback
+        mAdaptiveStream
+                .getCallback()
+                .onWriteCompleted(mFallbackStream, info, fallbackReplayedBuffer, false);
+        // Should NOT be reported again. Total calls should still be 1.
+        verify(mMockCallback, times(1))
+                .onWriteCompleted(any(), any(), eq(buffer), any(Boolean.class));
     }
 
     @Test

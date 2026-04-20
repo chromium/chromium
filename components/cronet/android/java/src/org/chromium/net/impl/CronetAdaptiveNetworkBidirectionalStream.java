@@ -66,11 +66,16 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
     private final List<PendingWrite> mPendingWrites = new ArrayList<>();
 
     /**
-     * Tracks buffers that are being re-sent to multiple streams to avoid duplicate onWriteCompleted
-     * callbacks.
+     * Tracks duplicates that are currently being written to one or more underlying streams. Maps
+     * each duplicate back to the original buffer provided by the user.
      */
     @GuardedBy("mLock")
-    private final Set<ByteBuffer> mReplayedBuffers =
+    private final IdentityHashMap<ByteBuffer, ByteBuffer> mDuplicateToOriginal =
+            new IdentityHashMap<>();
+
+    /** Tracks original buffers for which onWriteCompleted has already been reported. */
+    @GuardedBy("mLock")
+    private final Set<ByteBuffer> mReportedOriginals =
             Collections.newSetFromMap(new IdentityHashMap<>());
 
     private final AtomicBoolean mCallbackOnStreamReadyCalled = new AtomicBoolean(false);
@@ -81,11 +86,13 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             Collections.newSetFromMap(new IdentityHashMap<>());
 
     private static class PendingWrite {
-        final ByteBuffer mBuffer;
+        final ByteBuffer mOriginalBuffer;
+        final ByteBuffer mBufferSnapshot;
         final boolean mEndOfStream;
 
         PendingWrite(ByteBuffer buffer, boolean endOfStream) {
-            this.mBuffer = buffer;
+            this.mOriginalBuffer = buffer;
+            this.mBufferSnapshot = buffer.duplicate();
             this.mEndOfStream = endOfStream;
         }
     }
@@ -254,9 +261,9 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             synchronized (mLock) {
                 mReadyStreams.add(stream);
                 for (PendingWrite pendingWrite : mPendingWrites) {
-                    ByteBuffer replayedBuffer = pendingWrite.mBuffer.duplicate();
-                    mReplayedBuffers.add(replayedBuffer);
-                    stream.write(replayedBuffer, pendingWrite.mEndOfStream);
+                    ByteBuffer duplicate = pendingWrite.mBufferSnapshot.duplicate();
+                    mDuplicateToOriginal.put(duplicate, pendingWrite.mOriginalBuffer);
+                    stream.write(duplicate, pendingWrite.mEndOfStream);
                 }
             }
             // TODO(b/474048542): Should we really call flush here? The outer stream might not have
@@ -286,18 +293,23 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                 ByteBuffer buffer,
                 boolean endOfStream) {
             checkValidStream(stream);
+            ByteBuffer original;
             synchronized (mLock) {
-                if (mReplayedBuffers.remove(buffer)) {
+                original = mDuplicateToOriginal.remove(buffer);
+                if (original == null) {
+                    // This was either not a replayed buffer or we already handled it.
+                    // If it wasn't replayed, it must be the original (in non-fast-idempotent mode).
+                    original = buffer;
+                }
+                if (mReportedOriginals.contains(original)) {
+                    // Already reported completion for this original buffer.
                     return;
                 }
+                mReportedOriginals.add(original);
             }
-            // TODO(b/474048542): If the main stream hangs and does not report onWriteCompleted, the
-            // `mBackendCallback.onWriteCompleted` may never be called even though the fallback
-            // stream calls onWriteCompleted.
-            if (mActiveStream.get() == stream || mActiveStream.get() == null) {
-                mBackendCallback.onWriteCompleted(
-                        CronetAdaptiveNetworkBidirectionalStream.this, info, buffer, endOfStream);
-            }
+            original.position(original.limit());
+            mBackendCallback.onWriteCompleted(
+                    CronetAdaptiveNetworkBidirectionalStream.this, info, original, endOfStream);
         }
     }
 
@@ -373,13 +385,11 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
         }
         // Continue with mIsFastIdempotentRequest logic.
         synchronized (mLock) {
-            // TODO(b/474048542): Do not duplicate ByteBuffers here
-            // to ensure onWriteCompleted gets called properly even on multiple writes.
             mPendingWrites.add(new PendingWrite(buffer, endOfStream));
             for (BidirectionalStream stream : mReadyStreams) {
-                ByteBuffer replayedBuffer = buffer.duplicate();
-                mReplayedBuffers.add(replayedBuffer);
-                stream.write(replayedBuffer, endOfStream);
+                ByteBuffer duplicate = buffer.duplicate();
+                mDuplicateToOriginal.put(duplicate, buffer);
+                stream.write(duplicate, endOfStream);
             }
         }
     }

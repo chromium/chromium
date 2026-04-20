@@ -8,7 +8,6 @@ import android.os.ConditionVariable;
 import android.os.SystemClock;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -483,7 +482,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             Executor uploadDataProviderExecutor,
             byte[] sharedDictionaryHash,
             ByteBuffer sharedDictionary,
-            @NonNull String sharedDictionaryId) {
+            String sharedDictionaryId) {
         // if this request is not bound to network, use the network bound to the engine.
         if (networkHandle == DEFAULT_NETWORK_HANDLE) {
             networkHandle = mNetworkHandle;
@@ -552,8 +551,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                     mAdaptiveRequestContext,
                                     url,
                                     mLogger,
-                                    // TODO(b/474048542): Add support for fast idempotent requests.
-                                    /* isFastIdempotentRequest= */ false)
+                                    mAdaptiveRequestContext.isFastIdempotentRequest(adaptiveUri))
                             : null;
 
             CronetBidirectionalStream stream =
@@ -668,7 +666,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             }
             if (!CronetUrlRequestContextJni.get()
                     .startNetLogToFile(mUrlRequestContextAdapter, fileName, logAll)) {
-
                 throw new RuntimeException("Unable to start NetLog");
             }
             mIsLogging = true;
@@ -738,7 +735,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             int chainId,
             @JniType("std::vector<std::string>") String[] headers,
             int statusCode,
-            @NonNull CompletionOnceCallback callback) {
+            CompletionOnceCallback callback) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onTunnelHeadersReceived")) {
             ArrayList<Pair<String, String>> headersList = new ArrayList<>();
@@ -1153,8 +1150,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                 } catch (Exception e) {
                                     Log.e(LOG_TAG, "Exception thrown from observation task", e);
                                 } finally {
-                                    if (inflightCallbackCount != null)
+                                    if (inflightCallbackCount != null) {
                                         inflightCallbackCount.decrement();
+                                    }
                                 }
                             }
                         });
