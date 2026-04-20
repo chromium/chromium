@@ -278,7 +278,7 @@
 <translation id="2717271541250958000">tabpnl</translation>
 <translation id="2720806141886412599">.input {$$COUNT :number} .match $$COUNT 1{{backslash}} *{{{$$COUNT} backslashes}}</translation>
 <translation id="2723001399770238859">אודיו</translation>
-<translation id="2737898226590637227">‏אין עוד ציוני דרך מסוג ARIA</translation>
+<translation id="2737898226590637227">‏אין עוד מאפייני ARIA</translation>
 <translation id="2749275490991666823">מסומן</translation>
 <translation id="2751454300227269244">מזיזים את הפה ימינה</translation>
 <translation id="27527859628328957">דילוג לפריט הבא הניתן למיקוד</translation>
@@ -291,7 +291,7 @@
 <translation id="2816868829355607410">אזור תרגול: פקודות קפיצה</translation>
 <translation id="2841013758207633010">שעה</translation>
 <translation id="284171465644749950">יש להחליק שמאלה או ימינה בעזרת אצבע אחת כדי לעיין בנושאים</translation>
-<translation id="2843432675592278677">‏אין ציון דרך קודם מסוג ARIA</translation>
+<translation id="2843432675592278677">‏אין מאפיין ARIA קודם</translation>
 <translation id="2843814945404750166">ירוק זית כהה</translation>
 <translation id="2843837985843789981">הקבוצה הקודמת</translation>
 <translation id="2849035674501872372">יש להרים את המבט</translation>

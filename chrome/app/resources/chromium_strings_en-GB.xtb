@@ -590,7 +590,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7347827960336370838">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Your system administrator has configured Chromium to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
-<translation id="7368826207863345663">To get future Chromium updates, you'll need macOS 13 or later. This computer is using macOS 11.</translation>
+<translation id="7368826207863345663">To get future Chromium updates, you'll need macOS 13 or later. This computer is using macOS 12.</translation>
 <translation id="7376384068949534168">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">This extension is no longer supported. Chromium recommends that you remove it instead.</translation>
 <translation id="7413153308467572558">Continue where you left off: Chromium restores your tabs every time you restart. To turn this off, go to</translation>

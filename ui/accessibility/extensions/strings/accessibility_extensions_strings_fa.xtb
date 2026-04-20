@@ -7,19 +7,19 @@
 <translation id="1555130319947370107">آبی</translation>
 <translation id="1588438908519853928">معمولی</translation>
 <translation id="1591070050619849194">همه پویانمایی‌های تصویر غیرفعال شود.</translation>
-<translation id="1703735871906654364">مرور هشتک</translation>
+<translation id="1703735871906654364">مرور با هشتک</translation>
 <translation id="1791496371305830581">همه تصاویر پویانمایی مجاز هستند.</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
 <translation id="1996252509865389616">فعال شود؟</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2179565792157161713">باز کردن «توضیح طولانی» در «برگه جدید»</translation>
 <translation id="2223143012868735942">یک فیلتر رنگ قابل سفارشی کردن به صفحه‌های وب اعمال شد تا ادراک رنگ‌ها بهبود یابد.</translation>
-<translation id="2394933097471027016">اکنون آن را امتحان کنید - «مرور هشتک» همیشه در این صفحه فعال است!</translation>
+<translation id="2394933097471027016">آن را امتحان کنید - «مرور با هشتک» همیشه در این صفحه فعال است!</translation>
 <translation id="2471847333270902538">طرح رنگ برای <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">‏برای جابه‌جایی کلمه به کلمه، &lt;span class='key'&gt;Option (گزینه)&lt;/span&gt; s را پایین نگه دارید.</translation>
 <translation id="2795227192542594043">این افزونه یک نشانگر متحرک در صفحه وب به شما می‌دهد که با آن می‌توانید نوشتار را با صفحه‌کلید انتخاب کنید.</translation>
 <translation id="2808027189040546825">مرحله ۱: ردیف دارای کم‌رنگ‌ترین ستاره‌ها را انتخاب کنید:</translation>
-<translation id="2965611304828530558">‏&lt;p&gt;زمانی که به یک پیوند یا کنترل می‌رسید، به صورت خودکار متمرکز می‌شود. برای کلیک روی یک پیوند یا دکمه، &lt;span class='key'&gt;Enter (ورود)&lt;/span&gt; را فشار دهید. &lt;/p&gt; &lt;p&gt; زمانی که یک کنترل متمرکز شده (مانند کادر نوشتاری یا کادر فهرست) به کلیدهای پیکان رسید، &lt;span class='key'&gt;Esc (گریز)&lt;/span&gt; و پس از آن پیکان چپ یا راست را برای ادامه «مرور هشتک» فشار دهید. &lt;/p&gt; &lt;p&gt;   یا، برای رفتن به کنترل قابل تمرکز بعدی، &lt;span class='key'&gt;کلید جهش&lt;/span&gt; را فشار دهید. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">‏&lt;p&gt;زمانی که به یک پیوند یا کنترل می‌رسید، به صورت خودکار متمرکز می‌شود. برای کلیک روی یک پیوند یا دکمه، &lt;span class='key'&gt;Enter (ورود)&lt;/span&gt; را فشار دهید. &lt;/p&gt; &lt;p&gt; زمانی که یک کنترل متمرکز شده (مانند کادر نوشتاری یا کادر فهرست) به کلیدهای پیکان رسید، &lt;span class='key'&gt;Esc (گریز)&lt;/span&gt; و پس از آن پیکان چپ یا راست را برای ادامه «مرور با هشتک» فشار دهید. &lt;/p&gt; &lt;p&gt; یا، برای رفتن به کنترل قابل تمرکز بعدی، &lt;span class='key'&gt;کلید جهش&lt;/span&gt; را فشار دهید. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">راه‌اندازی</translation>
 <translation id="3410969471888629217">فراموش کردن سفارشی‌سازی‌های این سایت</translation>
 <translation id="3435896845095436175">فعال کردن</translation>
@@ -32,8 +32,8 @@
 <translation id="4769065380738716500">‏نوشتار «alt» جایگزین تصاویر مربوطه شد.</translation>
 <translation id="4896660567607030658">بازخوردی وجود ندارد، فقط نشانگر نشان داده شود.</translation>
 <translation id="4937901943818762779">تصاویر پویانمایی مجاز هستند اما تنها یک‌بار.</translation>
-<translation id="4949131196216960195">‏برای روشن کردن «مرور هشتگ» &lt;span class='key'&gt;جستجو&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (کلید «افزایش روشنایی یا F7) را فشار دهید. برای خاموش کردن، آن را دوباره فشار دهید.</translation>
-<translation id="4954450790315188152">زمانی که «مرور هشتک» فعال است</translation>
+<translation id="4949131196216960195">‏برای روشن کردن «مرور با هشتک» &lt;span class='key'&gt;جستجو&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (کلید «افزایش روشنایی یا F7) را فشار دهید. برای خاموش کردن، آن را دوباره فشار دهید.</translation>
+<translation id="4954450790315188152">زمانی که «مرور با هشتک» فعال است</translation>
 <translation id="5041932793799765940">تنظیم رنگ</translation>
 <translation id="5094574508723441140">کنتراست افزایش یافته</translation>
 <translation id="5173942593318174089">مکان نشانگر با یک تصویر متحرک برجسته شود.</translation>
@@ -62,10 +62,10 @@
 <translation id="7658239707568436148">لغو</translation>
 <translation id="786423340267544509">‏به عناصر دارای ویژگی «aria-describedat» یا «longdesc» حد ومرز اضافه کنید.</translation>
 <translation id="7942349550061667556">قرمز</translation>
-<translation id="8260673944985561857">گزینه‌های مرور هشتک</translation>
+<translation id="8260673944985561857">گزینه‌های «مرور با هشتک»</translation>
 <translation id="8321034316479930120">خطمشی پویانمایی</translation>
 <translation id="8480209185614411573">کنتراست بالا</translation>
-<translation id="8609925175482059018">‏دکمه &lt;span class='key'&gt;F7&lt;/span&gt; را برای روشن کردن «مرور هشتک» فشار دهید. برای خاموش کردن آن را دوباره فشار دهید.</translation>
+<translation id="8609925175482059018">‏دکمه &lt;span class='key'&gt;F7&lt;/span&gt; را برای روشن کردن «مرور با هشتک» فشار دهید. برای خاموش کردن، آن را دوباره فشار دهید.</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="894241283505723656">توضیحات طولانی در منوی زمینه</translation>
 </translationbundle>
