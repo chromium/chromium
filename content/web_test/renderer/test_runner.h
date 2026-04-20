@@ -140,7 +140,7 @@ class TestRunner {
   // Returns printable safe inset. Printers usually have unprintable areas near
   // the paper edges, due to the paper handling mechanism. This is the larger
   // inset of those areas.
-  int GetSafePrintableInset() const;
+  float GetSafePrintableInset(blink::WebLocalFrame* frame) const;
 
   // Returns the page ranges to be printed. This is specified in the document
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no

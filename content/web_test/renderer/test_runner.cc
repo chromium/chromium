@@ -2891,7 +2891,27 @@ int TestRunner::GetPrintingMargin() const {
   return web_test_runtime_flags_.printing_margin();
 }
 
-int TestRunner::GetSafePrintableInset() const {
+float TestRunner::GetSafePrintableInset(blink::WebLocalFrame* frame) const {
+  // First check for WPT-style <meta name="safe-printable-inset">
+  blink::WebElementCollection meta_iter =
+      frame->GetDocument().GetElementsByHTMLTagName("meta");
+  if (!meta_iter.IsNull()) {
+    for (blink::WebElement meta = meta_iter.FirstItem(); !meta.IsNull();
+         meta = meta_iter.NextItem()) {
+      if (meta.GetAttribute("name") == "safe-printable-inset") {
+        blink::WebString attr = meta.GetAttribute("content");
+        double inset;
+        if (!attr.IsNull() && base::StringToDouble(attr.Latin1(), &inset)) {
+          // The META element specifies the value in centimeters. Convert it to
+          // CSS pixels.
+          return inset * 96 / 2.54;
+        }
+        break;
+      }
+    }
+  }
+
+  // Fall back to runtime flags settings.
   return web_test_runtime_flags_.safe_printable_inset();
 }
 
@@ -2981,7 +3001,7 @@ SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   print_params.default_page_description.margin_bottom = default_margin;
   print_params.default_page_description.margin_left = default_margin;
   gfx::RectF printable_area(page_size);
-  printable_area.Inset(GetSafePrintableInset());
+  printable_area.Inset(GetSafePrintableInset(frame));
   print_params.printable_area_in_css_pixels = printable_area;
   print_params.scale_factor = printing_scale_factor_;
   print_params.print_scaling_option =

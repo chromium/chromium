@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <title>Page margin safety on page margin boxes</title>
-<script>
-  if (window.testRunner) {
-    testRunner.setPrinting();
-    testRunner.setSafePrintableInset(20);
-    if (window.internals)
-      internals.settings.setShouldPrintBackgrounds(true);
-  }
-</script>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/pull/13190/files">
+<link rel="match" href="safe-printable-inset-003-print-ref.html">
+<meta name="safe-printable-inset" content="0.635">
 <style>
   @page {
     size: 400px 250px;
@@ -95,8 +91,11 @@
     }
   }
 
+  :root {
+    print-color-adjust: exact;
+  }
+
   body {
     margin: 0;
   }
 </style>
-
