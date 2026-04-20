@@ -17,6 +17,7 @@ enum MediaPlaybackState {
   kPlaying,
 };
 
+// LINT.IfChange(MediaSessionAction)
 [Stable, Extensible]
 enum MediaSessionAction {
   kPlay,
@@ -41,6 +42,7 @@ enum MediaSessionAction {
   [MinVersion=18] kNextSlide,
   [MinVersion=19] kEnterAutoPictureInPicture,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MediaSessionAction)
 
 [Stable, Extensible]
 enum MediaSessionImageType {

@@ -1547,6 +1547,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Play/Pause"/>
 </enum>
 
+<!-- LINT.IfChange(MediaItemUIUpdatedViewAction) -->
+
 <enum name="MediaItemUIUpdatedViewAction">
   <int value="0" label="Play"/>
   <int value="1" label="Pause"/>
@@ -1562,6 +1564,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Enter picture in picture"/>
   <int value="12" label="Exit picture in picture"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/global_media_controls/public/views/media_item_ui_updated_view.h:MediaItemUIUpdatedViewAction) -->
 
 <!-- LINT.IfChange(MediaLauncherActivityEnabledReason) -->
 

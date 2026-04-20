@@ -20822,6 +20822,8 @@ from previous Chrome versions.
   <int value="11" label="kTest"/>
 </enum>
 
+<!-- LINT.IfChange(MediaSessionAction) -->
+
 <enum name="MediaSessionAction">
   <int value="0" label="Play"/>
   <int value="1" label="Pause"/>
@@ -20836,7 +20838,17 @@ from previous Chrome versions.
   <int value="10" label="Enter picture in picture"/>
   <int value="11" label="Exit picture in picture"/>
   <int value="12" label="Switch audio device"/>
+  <int value="13" label="Toggle microphone"/>
+  <int value="14" label="Toggle camera"/>
+  <int value="15" label="Hang up"/>
+  <int value="16" label="Raise"/>
+  <int value="17" label="Set mute"/>
+  <int value="18" label="Previous slide"/>
+  <int value="19" label="Next slide"/>
+  <int value="20" label="Enter auto picture in picture"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/media_session/public/mojom/media_session.mojom:MediaSessionAction) -->
 
 <enum name="MediaStatusCode">
   <int value="0" label="Ok"/>
