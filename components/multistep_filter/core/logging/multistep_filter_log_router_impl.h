@@ -7,13 +7,13 @@
 
 #include <atomic>
 #include <cstddef>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_log_router.h"
@@ -35,7 +35,7 @@ class MultistepFilterLogRouterImpl : public KeyedService,
   ~MultistepFilterLogRouterImpl() override;
 
   // Returns all currently buffered logs.
-  base::ListValue GetBufferedLogs() const;
+  std::vector<LogEntry> GetBufferedLogs() const override;
 
   // MultistepFilterLogRouter:
   void AddObserver(MultistepFilterLogRouter::Observer* observer) override;
@@ -48,7 +48,7 @@ class MultistepFilterLogRouterImpl : public KeyedService,
 
   // Returns a thread-safe callback that can be used to route logs from
   // background sequences.
-  base::RepeatingCallback<void(LogEntry)> GetLogCallback();
+  base::RepeatingCallback<void(LogEntry)> GetLogCallback() override;
 
  private:
   base::ObserverList<MultistepFilterLogRouter::Observer> observers_;

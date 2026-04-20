@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_LOG_ROUTER_H_
 #define COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_LOG_ROUTER_H_
 
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 
 namespace multistep_filter {
@@ -39,8 +42,17 @@ class MultistepFilterLogRouter {
   // This method is thread-safe and can be called from any sequence.
   virtual bool IsLoggingEnabled() const = 0;
 
+  // Returns all currently buffered logs.
+  // Note: This method is not thread-safe and must be called on the same
+  // sequence that created the log router.
+  virtual std::vector<LogEntry> GetBufferedLogs() const = 0;
+
   // Routes a completed log entry to the appropriate destination.
   virtual void RouteLogMessage(LogEntry entry) = 0;
+
+  // Returns a thread-safe callback that can be used to route logs from
+  // background sequences.
+  virtual base::RepeatingCallback<void(LogEntry)> GetLogCallback() = 0;
 };
 
 }  // namespace multistep_filter

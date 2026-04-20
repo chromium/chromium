@@ -5,12 +5,12 @@
 #include "components/multistep_filter/core/logging/multistep_filter_log_router_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,22 +74,15 @@ TEST_F(MultistepFilterLogRouterImplTest, BufferManagement) {
     router_.RouteLogMessage(std::move(entry));
   }
 
-  base::ListValue logs = router_.GetBufferedLogs();
-  ASSERT_EQ(logs.size(), MultistepFilterLogRouterImpl::kMaxBufferSize);
+  std::vector<LogEntry> logs = router_.GetBufferedLogs();
+  ASSERT_EQ(MultistepFilterLogRouterImpl::kMaxBufferSize, logs.size());
 
   // First 100 entries should have been evicted. First buffered log should be
   // 100.
-  const std::string* first_nav_id =
-      logs[0].GetDict().FindString("navigation_id");
-  ASSERT_TRUE(first_nav_id);
-  EXPECT_EQ(*first_nav_id, "100");
-
-  const std::string* last_nav_id =
-      logs[MultistepFilterLogRouterImpl::kMaxBufferSize - 1]
-          .GetDict()
-          .FindString("navigation_id");
-  ASSERT_TRUE(last_nav_id);
-  EXPECT_EQ(*last_nav_id, base::NumberToString(kTotalLogs - 1));
+  EXPECT_EQ(logs[0].navigation_id, "100");
+  EXPECT_EQ(
+      logs[MultistepFilterLogRouterImpl::kMaxBufferSize - 1].navigation_id,
+      base::NumberToString(kTotalLogs - 1));
 }
 
 TEST_F(MultistepFilterLogRouterImplTest, CallbackSafeAfterShutdown) {
@@ -119,7 +112,7 @@ TEST_F(MultistepFilterLogRouterImplTest, CallbackSafeAfterShutdown) {
 
   run_loop.Run();
 
-  EXPECT_EQ(router_.GetBufferedLogs().size(), 0u);
+  EXPECT_TRUE(router_.GetBufferedLogs().empty());
 }
 
 TEST_F(MultistepFilterLogRouterImplTest, ShutdownNotifiesObservers) {
@@ -130,6 +123,63 @@ TEST_F(MultistepFilterLogRouterImplTest, ShutdownNotifiesObservers) {
   scoped_observation.Observe(&router_);
 
   EXPECT_CALL(observer, OnLogRouterShutdown());
+  router_.Shutdown();
+}
+
+TEST_F(MultistepFilterLogRouterImplTest, LogsIgnoredWhenLoggingDisabled) {
+  EXPECT_FALSE(router_.IsLoggingEnabled());
+  LogEntry entry("test", LogEventType::kNavigationStarted, "test.com");
+  router_.RouteLogMessage(std::move(entry));
+  EXPECT_TRUE(router_.GetBufferedLogs().empty());
+}
+
+TEST_F(MultistepFilterLogRouterImplTest, RemoveObserverDisablesLogging) {
+  MockLogRouterObserver observer1;
+  MockLogRouterObserver observer2;
+
+  router_.AddObserver(&observer1);
+  EXPECT_TRUE(router_.IsLoggingEnabled());
+
+  router_.AddObserver(&observer2);
+  EXPECT_TRUE(router_.IsLoggingEnabled());
+
+  router_.RemoveObserver(&observer1);
+  EXPECT_TRUE(router_.IsLoggingEnabled());
+
+  router_.RemoveObserver(&observer2);
+  EXPECT_FALSE(router_.IsLoggingEnabled());
+}
+
+TEST_F(MultistepFilterLogRouterImplTest, ShutdownClearsBuffer) {
+  MockLogRouterObserver observer;
+  router_.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnLogEntryAdded(testing::_));
+  router_.RouteLogMessage(
+      LogEntry("test", LogEventType::kNavigationStarted, "test.com"));
+  EXPECT_EQ(1u, router_.GetBufferedLogs().size());
+
+  EXPECT_CALL(observer, OnLogRouterShutdown());
+  router_.Shutdown();
+  EXPECT_TRUE(router_.GetBufferedLogs().empty());
+  router_.RemoveObserver(&observer);
+}
+
+class RemovingObserver : public MultistepFilterLogRouter::Observer {
+ public:
+  explicit RemovingObserver(MultistepFilterLogRouter* router)
+      : router_(router) {}
+  void OnLogEntryAdded(const LogEntry& entry) override {}
+  void OnLogRouterShutdown() override { router_->RemoveObserver(this); }
+
+ private:
+  raw_ptr<MultistepFilterLogRouter> router_;
+};
+
+TEST_F(MultistepFilterLogRouterImplTest, ObserverRemovesItselfOnShutdown) {
+  RemovingObserver observer(&router_);
+  router_.AddObserver(&observer);
+  // This should not crash or trigger use-after-free or iterator invalidation.
   router_.Shutdown();
 }
 
@@ -192,8 +242,8 @@ TEST_F(MultistepFilterLogRouterImplTest, ConcurrentLogsFromMultipleThreads) {
   // Wait for all ThreadPool tasks and their main-thread responses to finish.
   run_loop.Run();
 
-  base::ListValue logs = router_.GetBufferedLogs();
-  EXPECT_EQ(logs.size(), static_cast<size_t>(kNumConcurrentLogs));
+  std::vector<LogEntry> logs = router_.GetBufferedLogs();
+  EXPECT_EQ(static_cast<size_t>(kNumConcurrentLogs), logs.size());
 }
 
 }  // namespace multistep_filter

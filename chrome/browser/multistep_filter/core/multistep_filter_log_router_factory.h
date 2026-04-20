@@ -22,15 +22,15 @@ class BrowserContext;
 
 namespace multistep_filter {
 
-class MultistepFilterLogRouterImpl;
+class MultistepFilterLogRouter;
 
-// Factory for MultistepFilterLogRouterImpl.
+// Factory for MultistepFilterLogRouter.
 class MultistepFilterLogRouterFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the MultistepFilterLogRouterImpl for the given |profile|.
+  // Returns the MultistepFilterLogRouter for the given |profile|.
   // Returns nullptr for Off-The-Record (Incognito) profiles, as well as when
   // the feature is disabled.
-  static MultistepFilterLogRouterImpl* GetForProfile(Profile* profile);
+  static MultistepFilterLogRouter* GetForProfile(Profile* profile);
   static MultistepFilterLogRouterFactory* GetInstance();
 
   MultistepFilterLogRouterFactory(const MultistepFilterLogRouterFactory&) =

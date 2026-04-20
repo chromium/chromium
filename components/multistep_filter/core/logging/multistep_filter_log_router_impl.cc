@@ -4,6 +4,8 @@
 
 #include "components/multistep_filter/core/logging/multistep_filter_log_router_impl.h"
 
+#include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -18,12 +20,11 @@ MultistepFilterLogRouterImpl::~MultistepFilterLogRouterImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-base::ListValue MultistepFilterLogRouterImpl::GetBufferedLogs() const {
+std::vector<LogEntry> MultistepFilterLogRouterImpl::GetBufferedLogs() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ListValue logs;
-  for (const LogEntry& entry : buffer_) {
-    logs.Append(entry.ToValue());
-  }
+  std::vector<LogEntry> logs;
+  logs.reserve(buffer_.size());
+  std::ranges::transform(buffer_, std::back_inserter(logs), &LogEntry::Clone);
   return logs;
 }
 

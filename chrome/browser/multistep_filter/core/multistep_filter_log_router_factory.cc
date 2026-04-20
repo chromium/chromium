@@ -16,7 +16,7 @@
 namespace multistep_filter {
 
 // static
-MultistepFilterLogRouterImpl* MultistepFilterLogRouterFactory::GetForProfile(
+MultistepFilterLogRouter* MultistepFilterLogRouterFactory::GetForProfile(
     Profile* profile) {
   return static_cast<MultistepFilterLogRouterImpl*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

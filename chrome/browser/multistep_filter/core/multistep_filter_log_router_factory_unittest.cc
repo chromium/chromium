@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/multistep_filter/core/features.h"
-#include "components/multistep_filter/core/logging/multistep_filter_log_router_impl.h"
+#include "components/multistep_filter/core/logging/multistep_filter_log_router.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,7 +41,7 @@ TEST_F(MultistepFilterLogRouterFactoryTest, FeatureEnabled) {
   feature_list.InitAndEnableFeature(kMultistepFilter);
 
   TestingProfile profile;
-  MultistepFilterLogRouterImpl* service =
+  MultistepFilterLogRouter* service =
       MultistepFilterLogRouterFactory::GetForProfile(&profile);
 
   EXPECT_NE(nullptr, service);

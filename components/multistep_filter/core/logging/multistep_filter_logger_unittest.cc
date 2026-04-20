@@ -4,10 +4,13 @@
 
 #include "components/multistep_filter/core/logging/multistep_filter_logger.h"
 
+#include <algorithm>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
 #include "components/multistep_filter/core/logging/multistep_filter_log_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,8 +29,21 @@ class TestLogRouter : public MultistepFilterLogRouter {
   bool IsLoggingEnabled() const override { return is_logging_enabled_; }
   void SetIsLoggingEnabled(bool enabled) { is_logging_enabled_ = enabled; }
 
+  std::vector<LogEntry> GetBufferedLogs() const override {
+    std::vector<LogEntry> cloned_entries;
+    cloned_entries.reserve(entries_.size());
+    std::ranges::transform(entries_, std::back_inserter(cloned_entries),
+                           &LogEntry::Clone);
+    return cloned_entries;
+  }
+
   void RouteLogMessage(LogEntry entry) override {
     entries_.push_back(std::move(entry));
+  }
+
+  base::RepeatingCallback<void(LogEntry)> GetLogCallback() override {
+    return base::BindRepeating(&TestLogRouter::RouteLogMessage,
+                               base::Unretained(this));
   }
 
   // Returns all intercepted log entries for test verification.
