@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -49,6 +50,7 @@ constexpr int kActionIconSize = 20;
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kToolbarElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kCloseButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar, kExpandButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoToolbar,
@@ -79,6 +81,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
 
   auto view =
       views::Builder<views::FlexLayoutView>()
+          .SetProperty(views::kElementIdentifierKey, kToolbarElementId)
           .SetBackground(
               std::make_unique<views::BubbleBackground>(bubble_border.get()))
           .SetBorder(std::move(bubble_border))
@@ -241,7 +244,9 @@ std::unique_ptr<views::Button> IndigoToolbar::CreateExpandedButton(
       .Build();
 }
 
-void IndigoToolbar::Show(gfx::NativeView parent_view) {
+void IndigoToolbar::ShowAt(
+    gfx::NativeView parent_view,
+    base::FunctionRef<gfx::Point(const gfx::Size&)> toolbar_origin_func) {
   if (!widget_) {
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
@@ -260,15 +265,34 @@ void IndigoToolbar::Show(gfx::NativeView parent_view) {
     widget_->SetContentsView(CreateToolbarView());
   }
 
-  gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
-  gfx::Rect widget_bounds(
-      gfx::Point(kToolbarInitialOffset, kToolbarInitialOffset), preferred_size);
-  // Shift the widget origin so the content area (inside the shadow) starts at
-  // (kToolbarInitialOffset, kToolbarInitialOffset).
   gfx::Insets insets = widget_->GetContentsView()->GetInsets();
+  gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
+  gfx::Size content_size = preferred_size;
+  content_size.Enlarge(-insets.width(), -insets.height());
+  gfx::Point point = toolbar_origin_func(content_size);
+
+  gfx::Rect widget_bounds(point, preferred_size);
+
+  // Shift the widget origin so the content area (inside the shadow) starts at
+  // the target point.
   widget_bounds.Offset(-insets.left(), -insets.top());
+
   widget_->SetBounds(widget_bounds);
   widget_->Show();
+}
+
+void IndigoToolbar::Show(gfx::NativeView parent_view) {
+  ShowAt(parent_view, [](const gfx::Size& size) {
+    return gfx::Point(kToolbarInitialOffset, kToolbarInitialOffset);
+  });
+}
+
+void IndigoToolbar::ShowInside(gfx::NativeView parent_view,
+                               const gfx::Rect& rect) {
+  ShowAt(parent_view, [rect](const gfx::Size& size) {
+    return gfx::Point(rect.right() - size.width() - kToolbarInitialOffset,
+                      rect.y() + kToolbarInitialOffset);
+  });
 }
 
 void IndigoToolbar::Hide() {

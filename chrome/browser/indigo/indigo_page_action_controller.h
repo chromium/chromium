@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -53,6 +54,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   static IndigoPageActionController* From(tabs::TabInterface* tab);
 
   void InvokeAction();
+
+  // Shows the toolbar at the specified rectangle in the web contents view.
+  void ShowToolbarInside(const gfx::Rect& rect);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

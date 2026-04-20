@@ -162,6 +162,18 @@ void IndigoPageActionController::InvokeAction() {
           tab().GetBrowserWindowInterface()->GetWeakPtr()));
 }
 
+void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  if (!toolbar_) {
+    toolbar_ = std::make_unique<IndigoToolbar>(this);
+    toolbar_->ShowInside(web_contents->GetNativeView(), rect);
+  }
+}
+
 void IndigoPageActionController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   ContentsObservingTabFeature::DidFinishNavigation(navigation_handle);

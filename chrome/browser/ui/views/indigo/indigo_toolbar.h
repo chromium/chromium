@@ -7,8 +7,11 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
@@ -28,6 +31,7 @@ namespace indigo {
 // of the web page which is being modified.
 class IndigoToolbar {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExpandButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegenerateButtonElementId);
@@ -53,6 +57,19 @@ class IndigoToolbar {
   ~IndigoToolbar();
 
   void Show(gfx::NativeView parent_view);
+
+  // Shows the toolbar at a position computed by the given callback.
+  // The callback `toolbar_origin_func` receives the preferred size of the
+  // toolbar view, excluding the view shadow, and should return the origin point
+  // of the content area (also excluding the view shadow, relative to the web
+  // view) where the toolbar should be placed. This is useful when the
+  // positioning depends on the toolbar's preferred size, which is only known
+  // after layout.
+  void ShowAt(
+      gfx::NativeView parent_view,
+      base::FunctionRef<gfx::Point(const gfx::Size&)> toolbar_origin_func);
+
+  void ShowInside(gfx::NativeView parent_view, const gfx::Rect& rect);
   void Hide();
 
  private:

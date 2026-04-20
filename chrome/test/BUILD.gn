@@ -3529,6 +3529,7 @@ if (!is_android) {
       "../browser/idle/idle_browsertest.cc",
       "../browser/iframe_browsertest.cc",
       "../browser/image_fetcher/image_fetcher_impl_browsertest.cc",
+      "../browser/indigo/indigo_browsertest.cc",
       "../browser/indigo/indigo_image_replacement_manager_browsertest.cc",
       "../browser/infobars/infobars_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",

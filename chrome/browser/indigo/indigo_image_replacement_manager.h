@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace content {
 class Page;
@@ -32,7 +33,8 @@ class IndigoImageReplacementManager
 
   // blink::mojom::ImageReplacementHost implementation:
   void ReplacementFrameAttached(
-      const blink::LocalFrameToken& replacement_frame_token) override;
+      const blink::LocalFrameToken& replacement_frame_token,
+      const gfx::QuadF& quad) override;
 
  private:
   friend class content::PageUserData<IndigoImageReplacementManager>;

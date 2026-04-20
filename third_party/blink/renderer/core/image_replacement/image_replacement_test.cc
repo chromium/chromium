@@ -81,14 +81,17 @@ class ErrorEventListener : public NativeEventListener {
 
 class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
  public:
-  void ReplacementFrameAttached(
-      const blink::LocalFrameToken& frame_token) override {
+  void ReplacementFrameAttached(const blink::LocalFrameToken& frame_token,
+                                const gfx::QuadF& quad) override {
     frame_token_ = frame_token;
+    quad_ = quad;
   }
 
   const std::optional<blink::LocalFrameToken>& frame_token() const {
     return frame_token_;
   }
+
+  const std::optional<gfx::QuadF>& quad() const { return quad_; }
 
   mojo::Receiver<mojom::blink::ImageReplacementHost>& receiver() {
     return receiver_;
@@ -97,6 +100,7 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
  private:
   mojo::Receiver<mojom::blink::ImageReplacementHost> receiver_{this};
   std::optional<blink::LocalFrameToken> frame_token_;
+  std::optional<gfx::QuadF> quad_;
 };
 
 class ImageReplacementSimTest : public SimTest {};
@@ -185,6 +189,104 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
   EXPECT_FALSE(img->UserAgentShadowRoot()->HasChildren());
   EXPECT_FALSE(DocumentImageReplacements::FromIfExists(GetDocument())
                    ->GetImageReplacement(img));
+}
+
+TEST_F(ImageReplacementSimTest, ImageReplacementSendsCorrectQuad) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <style>
+      body { margin: 0; }
+      #target { position: absolute; left: 50px; top: 100px; width: 100px; height: 100px; }
+    </style>
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target"></img>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  ASSERT_TRUE(img->GetLayoutObject());
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(mock_host.quad().has_value());
+
+  // We expect the quad to be exactly at the absolutely positioned location
+  // and match the specified dimensions.
+  gfx::QuadF expected_quad(gfx::RectF(50, 100, 100, 100));
+
+  EXPECT_EQ(mock_host.quad().value(), expected_quad);
+}
+
+TEST_F(ImageReplacementSimTest, ImageReplacementSendsCorrectQuadWithTransform) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  WebView().SetZoomFactorForDeviceScaleFactor(2.0f);
+
+  main_resource.Complete(R"(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 50px;
+        top: 100px;
+        width: 100px;
+        height: 100px;
+        transform: rotate(45deg);
+      }
+    </style>
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target"></img>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  ASSERT_TRUE(img->GetLayoutObject());
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(mock_host.quad().has_value());
+
+  gfx::QuadF received_quad = mock_host.quad().value();
+
+  // Center in CSS pixels is (100, 150). -> Physical (DPR=2): (200, 300)
+  // Bounding box size in CSS pixels was 141.4214 -> Physical (DPR=2): 282.8428
+
+  EXPECT_NEAR(received_quad.BoundingBox().CenterPoint().x(), 200.f, 0.5f);
+  EXPECT_NEAR(received_quad.BoundingBox().CenterPoint().y(), 300.f, 0.5f);
+
+  EXPECT_NEAR(received_quad.BoundingBox().width(), 282.8428f, 0.5f);
+  EXPECT_NEAR(received_quad.BoundingBox().height(), 282.8428f, 0.5f);
 }
 
 TEST_F(ImageReplacementSimTest, ClickFiresOnImageAfterReplacement) {

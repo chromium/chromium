@@ -53,7 +53,8 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
         content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0));
     ASSERT_TRUE(subframe.get());
 
-    host_remote_->ReplacementFrameAttached(subframe->GetFrameToken());
+    host_remote_->ReplacementFrameAttached(subframe->GetFrameToken(),
+                                           gfx::QuadF());
 
     start_replacement_future_.SetValue();
   }

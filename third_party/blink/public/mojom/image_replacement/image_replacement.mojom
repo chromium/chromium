@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Browser -> Renderer interface to manage a single image replacement (where an
 // image in a HTML document is replaced in-place with remote content (hosted and
@@ -36,5 +37,7 @@ interface ImageReplacementHost {
   //   `replacement_frame_token`: Identifier for the subframe in the replacement
   //     image shadow tree. The host is responsible for navigating this subframe
   //     to the remote content.
-  ReplacementFrameAttached(LocalFrameToken replacement_frame_token);
+  //   `quad`: The bounding quad of the replacement frame in the main viewport
+  //     space, in physical pixels.
+  ReplacementFrameAttached(LocalFrameToken replacement_frame_token, gfx.mojom.QuadF quad);
 };

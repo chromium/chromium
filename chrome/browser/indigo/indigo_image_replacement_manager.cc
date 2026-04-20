@@ -6,14 +6,19 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace indigo {
 
@@ -36,7 +41,8 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
 }
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(
-    const blink::LocalFrameToken& replacement_frame_token) {
+    const blink::LocalFrameToken& replacement_frame_token,
+    const gfx::QuadF& quad) {
   content::RenderFrameHost* image_replacement_subframe =
       content::RenderFrameHost::FromFrameToken(
           content::GlobalRenderFrameHostToken(
@@ -55,6 +61,8 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
   content::NavigationController::LoadURLParams params{
       extensions::Extension::GetResourceURL(
           extensions::Extension::GetBaseURLFromExtensionId(
@@ -62,13 +70,30 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
           "index.html")};
   params.frame_tree_node_id = image_replacement_subframe->GetFrameTreeNodeId();
   params.should_replace_current_entry = true;
-  content::WebContents::FromRenderFrameHost(&page().GetMainDocument())
-      ->GetController()
-      .LoadURLWithParams(std::move(params));
+  web_contents->GetController().LoadURLWithParams(std::move(params));
 
   // TODO(b/489468738): We should wait for the extension to finish loading
   // before calling RenderReplacement.
   receivers_.current_context()->RenderReplacement();
+
+  gfx::QuadF scaled_quad = quad;
+  if (content::RenderWidgetHostView* view =
+          page().GetMainDocument().GetView()) {
+    scaled_quad.Scale(1.0f / view->GetDeviceScaleFactor());
+  }
+
+  gfx::Rect bounds_rect = gfx::ToEnclosingRect(scaled_quad.BoundingBox());
+  if (bounds_rect.IsEmpty()) {
+    return;
+  }
+
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    // TODO(b/493707092): The controls should show up when the transformation
+    // completes, rather than when it starts.
+    if (auto* controller = indigo::IndigoPageActionController::From(tab)) {
+      controller->ShowToolbarInside(bounds_rect);
+    }
+  }
 }
 
 PAGE_USER_DATA_KEY_IMPL(IndigoImageReplacementManager);

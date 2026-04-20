@@ -11,7 +11,9 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/image_replacement/document_image_replacements.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_image_replacement.h"
+#include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -109,7 +111,16 @@ void ImageReplacement::StartReplacement(
     host_.Bind(std::move(host_remote),
                image_element_->GetDocument().GetTaskRunner(
                    TaskType::kInternalDefault));
-    host_->ReplacementFrameAttached(frame->GetLocalFrameToken());
+
+    gfx::QuadF quad;
+    if (LayoutBox* box = image_element_->GetLayoutBox()) {
+      PhysicalRect local_rect = box->PhysicalBorderBoxRect();
+      quad = box->LocalRectToAncestorQuad(
+          local_rect, nullptr,
+          kTraverseDocumentBoundaries | kApplyRemoteViewportTransform);
+    }
+
+    host_->ReplacementFrameAttached(frame->GetLocalFrameToken(), quad);
   }
 }
 
