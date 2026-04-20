@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service/app_icon:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications:web_app_test",
     "//chrome/test:test_support",
     "//components/services/app_service",
     "//components/webapps/browser",

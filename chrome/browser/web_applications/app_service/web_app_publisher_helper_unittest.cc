@@ -18,15 +18,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/traits_bag.h"
+#include "base/values.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -48,7 +49,6 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -92,7 +92,7 @@ bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
 
 }  // namespace
 
-class WebAppPublisherHelperTest : public testing::Test {
+class WebAppPublisherHelperTest : public WebAppTest {
  public:
   WebAppPublisherHelperTest() = default;
   WebAppPublisherHelperTest(const WebAppPublisherHelperTest&) = delete;
@@ -101,14 +101,12 @@ class WebAppPublisherHelperTest : public testing::Test {
   ~WebAppPublisherHelperTest() override = default;
 
   void SetUp() override {
-    TestingProfile::Builder builder;
-    profile_ = builder.Build();
+    WebAppTest::SetUp();
 
-    provider_ = WebAppProvider::GetForWebApps(profile());
     apps::WaitForAppServiceProxyReady(
         apps::AppServiceProxyFactory::GetForProfile(profile()));
 
-    publisher_ = std::make_unique<WebAppPublisherHelper>(profile(), provider_,
+    publisher_ = std::make_unique<WebAppPublisherHelper>(profile(), &provider(),
                                                          &no_op_delegate_);
     auto ui_manager = std::make_unique<MockWebAppUiManager>();
     ui_manager_ = ui_manager.get();
@@ -118,20 +116,16 @@ class WebAppPublisherHelperTest : public testing::Test {
   }
 
   void TearDown() override {
+    publisher_.reset();
     ui_manager_ = nullptr;
-    testing::Test::TearDown();
+    WebAppTest::TearDown();
   }
-
-  Profile* profile() { return profile_.get(); }
 
   FakeWebAppUiManager& fake_ui_manager() {
-    return static_cast<FakeWebAppUiManager&>(provider_->ui_manager());
+    return static_cast<FakeWebAppUiManager&>(provider().ui_manager());
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   NoOpWebAppPublisherDelegate no_op_delegate_;
-  raw_ptr<WebAppProvider> provider_ = nullptr;
   std::unique_ptr<WebAppPublisherHelper> publisher_;
   raw_ptr<MockWebAppUiManager> ui_manager_ = nullptr;
 };
@@ -144,7 +138,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
   info->title = base::UTF8ToUTF16(name);
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_EQ(app->app_id, app_id);
@@ -192,7 +186,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_ScopeExtension) {
       ScopeExtensionInfo::CreateForScope(extended_scope_url)};
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(
@@ -219,7 +213,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_WildcardScopeExtension) {
                                          /*has_origin_wildcard*/ true)};
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(
@@ -243,7 +237,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_NoteTaking) {
   info->note_taking_new_note_url = new_note_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(app, apps_util::CreateCreateNoteIntent()));
@@ -259,7 +253,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
   info->lock_screen_start_url = lock_screen_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_FALSE(HandlesIntent(app, apps_util::CreateStartOnLockScreenIntent()));
@@ -267,18 +261,14 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
 
 TEST_F(WebAppPublisherHelperTest,
        CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
-  const WebApp* app = nullptr;
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    auto new_app = test::CreateWebApp();
-    app = new_app.get();
-    DCHECK(new_app->start_url().is_valid());
-    // TODO(https://crbug.com/411126942): Stop using CreateApp.
-    update->CreateApp(std::move(new_app));
-  }
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/path"));
+  info->scope = GURL("https://example.com/path");
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
 
   apps::IntentFilters filters =
-      WebAppPublisherHelper::CreateIntentFiltersForWebApp(*provider_, *app);
+      WebAppPublisherHelper::CreateIntentFiltersForWebApp(provider(), *app);
 
   ASSERT_EQ(filters.size(), 1u);
   apps::IntentFilterPtr& filter = filters[0];
@@ -328,37 +318,25 @@ TEST_F(WebAppPublisherHelperTest,
 // TODO(crbug.com/327431493): Use a more holistic approach than adding apps to
 // the registry.
 TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
-  const WebApp* app = nullptr;
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    auto new_app = test::CreateWebApp();
-    app = new_app.get();
-    DCHECK(new_app->start_url().is_valid());
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/path"));
+  info->scope = GURL("https://example.com/path");
 
-    apps::FileHandler::AcceptEntry accept_entry;
-    proto::os_state::WebAppOsIntegration test_state;
+  apps::FileHandler::AcceptEntry accept_entry;
+  accept_entry.mime_type = "text/plain";
+  accept_entry.file_extensions.insert(".txt");
 
-    accept_entry.mime_type = "text/plain";
-    accept_entry.file_extensions.insert(".txt");
-    apps::FileHandler file_handler;
-    file_handler.action = GURL("https://example.com/path/handler.html");
+  apps::FileHandler file_handler;
+  file_handler.action = GURL("https://example.com/path/handler.html");
+  file_handler.accept.push_back(std::move(accept_entry));
 
-    proto::os_state::FileHandling::FileHandler* file_handler_proto =
-        test_state.mutable_file_handling()->add_file_handlers();
-    file_handler_proto->set_action(file_handler.action.spec());
-    auto* accept_entry_proto = file_handler_proto->add_accept();
-    accept_entry_proto->set_mimetype(accept_entry.mime_type);
-    accept_entry_proto->add_file_extensions(".txt");
+  info->file_handlers.push_back(std::move(file_handler));
 
-    file_handler.accept.push_back(std::move(accept_entry));
-    new_app->SetFileHandlers({std::move(file_handler)});
-    new_app->SetCurrentOsIntegrationStates(test_state);
-    // TODO(https://crbug.com/411126942): Stop using CreateApp.
-    update->CreateApp(std::move(new_app));
-  }
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
 
   apps::IntentFilters filters =
-      WebAppPublisherHelper::CreateIntentFiltersForWebApp(*provider_, *app);
+      WebAppPublisherHelper::CreateIntentFiltersForWebApp(provider(), *app);
 
   ASSERT_EQ(filters.size(), 2u);
   // 1st filter is URL filter.
@@ -385,55 +363,39 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
 
 #if (BUILDFLAG(IS_CHROMEOS))
 TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
-  const GURL start_url("https://example.com/start");
   const GURL app_url("https://example.com/path/index.html");
-  const WebApp* app = nullptr;
 
   base::DictValue pref_value;
-  pref_value.Set(".txt", "https://example.com/path/index.html");
+  pref_value.Set(".txt", app_url.spec());
   profile()->GetPrefs()->SetDict(ash::prefs::kDefaultHandlersForFileExtensions,
                                  std::move(pref_value));
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    auto new_app = test::CreateWebApp(app_url);
-    app = new_app.get();
-    DCHECK(new_app->start_url().is_valid());
 
-    apps::FileHandler::AcceptEntry accept_entry;
-    proto::os_state::WebAppOsIntegration test_state;
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  info->scope = app_url;
 
-    accept_entry.mime_type = "text/plain";
-    accept_entry.file_extensions.insert(".txt");
-    apps::FileHandler file_handler;
-    file_handler.action = GURL("https://example.com/path/handler.html");
+  apps::FileHandler::AcceptEntry accept_entry;
+  accept_entry.mime_type = "text/plain";
+  accept_entry.file_extensions.insert(".txt");
+  apps::FileHandler file_handler;
+  file_handler.action = GURL("https://example.com/path/handler.html");
+  file_handler.accept.push_back(std::move(accept_entry));
+  info->file_handlers.push_back(std::move(file_handler));
 
-    proto::os_state::FileHandling::FileHandler* file_handler_proto =
-        test_state.mutable_file_handling()->add_file_handlers();
-    file_handler_proto->set_action(file_handler.action.spec());
-    auto* accept_entry_proto = file_handler_proto->add_accept();
-    accept_entry_proto->set_mimetype(accept_entry.mime_type);
-    accept_entry_proto->add_file_extensions(".txt");
-
-    file_handler.accept.push_back(std::move(accept_entry));
-    new_app->SetFileHandlers({std::move(file_handler)});
-    new_app->SetCurrentOsIntegrationStates(test_state);
-    new_app->SetLatestInstallSource(
-        webapps::WebappInstallSource::EXTERNAL_POLICY);
-    new_app->AddInstallURLToManagementExternalConfigMap(
-        WebAppManagement::kPolicy, app_url);
-    // TODO(https://crbug.com/415780942): Do not use CreateWebApp here.
-    update->CreateApp(std::move(new_app));
-  }
+  info->install_url = app_url;
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(info), false,
+                          webapps::WebappInstallSource::EXTERNAL_POLICY);
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
 
   MockWebAppUiManager& ui_manager =
       static_cast<MockWebAppUiManager&>(fake_ui_manager());
 
-  EXPECT_EQ(provider_->registrar_unsafe().GetAppFileHandlerApprovalState(
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerApprovalState(
                 app->app_id(), ".txt"),
             ApiApprovalState::kAllowed);
 
   // Default handlers pref setting does not influence user choice.
-  EXPECT_EQ(provider_->registrar_unsafe().GetAppFileHandlerUserApprovalState(
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
                 app->app_id()),
             ApiApprovalState::kRequiresPrompt);
 
@@ -470,7 +432,7 @@ TEST_F(WebAppPublisherHelperTest_WebLockScreenApi, CreateWebApp_LockScreen) {
   info->lock_screen_start_url = lock_screen_url;
 
   webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(app, apps_util::CreateStartOnLockScreenIntent()));
