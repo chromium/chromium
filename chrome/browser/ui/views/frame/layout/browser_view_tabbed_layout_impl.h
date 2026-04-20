@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
@@ -96,7 +97,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // Describes how to render the top of the vertical tab strip.
   struct VerticalTabStripAnimation {
     // Is the vertical tab strip animating?
-    bool is_animating = false;
+    BrowserAnimationMotion current_motion;
     // The y-value of the top of the tab strip.
     int top_offset = 0;
     // The relative size of the top corner.

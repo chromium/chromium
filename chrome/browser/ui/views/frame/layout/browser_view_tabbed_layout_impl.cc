@@ -92,6 +92,11 @@ int GetExclusionWidth(const BrowserLayoutParams& params) {
   return base::ClampCeil(width + padding);
 }
 
+void InsetHorizontal(gfx::Rect& rect, int amount, bool leading) {
+  rect.Inset(
+      gfx::Insets::TLBR(0, leading ? amount : 0, 0, !leading ? amount : 0));
+}
+
 }  // namespace
 
 BrowserViewTabbedLayoutImpl::BrowserViewTabbedLayoutImpl(
@@ -371,9 +376,8 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
   VerticalTabStripAnimation animation;
 
   const auto* const controller = BrowserAnimationController::From(browser());
-  const auto motion =
+  animation.current_motion =
       controller->GetCurrentMotion(TabStripAnimations::kVerticalTabStrip);
-  animation.is_animating = static_cast<bool>(motion);
 
   double top_corner_collapsed_state = 1.0;
   if (leading_exclusion_height > 0) {
@@ -397,11 +401,11 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
       hovering ? -1.0 : (is_collapsed ? top_corner_collapsed_state : 1.0);
   animation.bottom_corner = hovering ? -1.0 : 1.0;
 
-  if (animation.is_animating) {
+  if (animation.current_motion) {
     animation.top_corner = *controller->GetCurrentValue(
         TabStripAnimations::kVerticalTabStrip, TabStripAnimations::kTopCorner);
-    if (motion == TabStripAnimations::kExpand ||
-        motion == TabStripAnimations::kCollapse) {
+    if (animation.current_motion == TabStripAnimations::kExpand ||
+        animation.current_motion == TabStripAnimations::kCollapse) {
       // For expand and collapse, the target is an outside corner, so don't dip
       // below the minimum.
       animation.top_corner =
@@ -430,7 +434,7 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
             .value_or(0.0);
   }
 
-  if (motion == TabStripAnimations::kExpand) {
+  if (animation.current_motion == TabStripAnimations::kExpand) {
     // These values have to be interpreted in terms of the most recent values
     // before the expand animation was playing.
     animation.bottom_corner =
@@ -710,8 +714,12 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                              /*leading=*/true);
 
       // Let the vertical tab strip animate out over the content.
-      if (vertical_tab_strip_animation.is_animating) {
-        clip_content_for_animation = true;
+      if (vertical_tab_strip_animation.current_motion) {
+        clip_content_for_animation =
+            vertical_tab_strip_animation.current_motion ==
+                TabStripAnimations::kExpand ||
+            vertical_tab_strip_animation.current_motion ==
+                TabStripAnimations::kCollapse;
         unclipped_contents_region.Inset(gfx::Insets::TLBR(
             0, VerticalTabStripRegionView::kCollapsedWidth, 0, 0));
       } else {
@@ -849,6 +857,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       (tab_strip_type != TabStripType::kVertical ||
        delegate().GetImmersiveModeController()->IsEnabled());
   bool adjust_for_shadow_box = false;
+  bool side_panel_is_animating = false;
   if (horizontal_layout.has_toolbar_height_side_panel()) {
     const SidePanel* const toolbar_height_side_panel =
         views().toolbar_height_side_panel;
@@ -858,6 +867,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     if (toolbar_height_side_panel_reveal_amount < 1.0) {
       clip_content_for_animation = true;
       adjust_for_shadow_box = true;
+      side_panel_is_animating = true;
     }
 
     // Not all of the width may be visible on the screen.
@@ -898,6 +908,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     }
 
     params.InsetHorizontal(visible_width, toolbar_height_side_panel_leading);
+    if (toolbar_height_side_panel_reveal_amount == 1.0) {
+      InsetHorizontal(unclipped_contents_region, visible_width,
+                      toolbar_height_side_panel_leading);
+    }
   }
 
   const bool show_shadow_overlay = ShadowOverlayVisible();
@@ -914,6 +928,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         scaled_main_area_padding,
         toolbar_height_side_panel_leading ? scaled_main_area_padding : 0);
     params.Inset(shadow_overlay_insets);
+    if (!adjust_for_shadow_box) {
+      unclipped_contents_region.Inset(shadow_overlay_insets);
+    }
   }
 
   // Lay out the shadow overlay.
@@ -987,6 +1004,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       show_leading_separator = contents_height_side_panel_leading;
       show_trailing_separator = !contents_height_side_panel_leading;
       if (animation_value < 1.0) {
+        side_panel_is_animating = true;
         clip_content_for_animation = true;
       }
     }
@@ -1004,6 +1022,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(views().contents_height_side_panel,
                     contents_height_side_panel_bounds);
     params.InsetHorizontal(visible_width, contents_height_side_panel_leading);
+    if (animation_value == 1.0) {
+      InsetHorizontal(unclipped_contents_region, visible_width,
+                      contents_height_side_panel_leading);
+    }
   }
 
   // Show separators in multi-contents view. Note that the multi-contents
@@ -1080,7 +1102,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // If the top separator is suppressed now, it won't be at the extent of
       // the animation.
       if (top_separator_type == TopSeparatorType::kMultiContents &&
-          suppress_top_separator) {
+          suppress_top_separator && side_panel_is_animating) {
         unclipped_contents_region.Inset(
             gfx::Insets::TLBR(views::Separator::kThickness, 0, 0, 0));
       }
