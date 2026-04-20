@@ -766,6 +766,10 @@
 	path = components/crash/core/app/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/crash
 	gclient-condition = checkout_src_internal
+[submodule "components/internal"]
+	path = components/internal
+	url = https://chrome-internal.googlesource.com/chrome/components
+	gclient-condition = checkout_src_internal
 [submodule "components/metrics/internal"]
 	path = components/metrics/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/metrics/internal
