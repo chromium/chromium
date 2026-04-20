@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import time
 import zipfile
 
 import adb_command_line
@@ -713,10 +714,11 @@ class _LogcatProcessor:
     # E.g.: #01 pc 00180c8d  /data/data/.../lib/libbase.cr.so
     _STACK_PATTERN = re.compile(r'\s*#\d+\s+(?:pc )?(0x)?[0-9a-f]{8,16}\s')
 
-    def __init__(self, stack_script_context, print_func):
+    def __init__(self, stack_script_context, print_func, on_stack_func):
       # To symbolize native stacks, we need to pass all lines at once.
       self._stack_script_context = stack_script_context
       self._print_func = print_func
+      self._on_stack_func = on_stack_func
       self._crash_lines_buffer = None
 
     def _FlushLines(self):
@@ -739,6 +741,7 @@ class _LogcatProcessor:
         d['message'] = line
         parsed_line = _LogcatProcessor.ParsedLine(**d)
         self._print_func(parsed_line, dim)
+      self._on_stack_func()
 
     def AddLine(self, parsed_line, dim):
       # Assume all lines from DEBUG are stacks.
@@ -809,13 +812,16 @@ class _LogcatProcessor:
     self._log_level_idx = LOGCAT_LEVELS.find(log_level)
     if stack_script_context:
       self._print_func = _LogcatProcessor.NativeStackSymbolizer(
-          stack_script_context, self._PrintParsedLine).AddLine
+          stack_script_context, self._PrintParsedLine,
+          self._UpdateStackSeenTime).AddLine
     else:
       self._print_func = self._PrintParsedLine
     # Process ID for the app's main process (with no :name suffix).
     self._primary_pid = None
-    # Set of all Process IDs that belong to the app.
+    # Set of Process IDs that have ever belonged to the app.
     self._my_pids = set()
+    # Subset of _my_pids that are still alive.
+    self._active_pids = set()
     # Set of all Process IDs that we've parsed at some point.
     self._seen_pids = set()
     # Start proc 22953:com.google.chromeremotedesktop/
@@ -828,11 +834,12 @@ class _LogcatProcessor:
     self.nonce = 'Chromium apk_operations.py nonce={}'.format(random.random())
     # Holds lines buffered on start-up, before we find our nonce message.
     self._initial_buffered_lines = []
-    self._UpdateMyPids()
+    self.UpdateMyPids()
     # Give preference to PID reported by "ps" over those found from
     # _start_pattern. There can be multiple "Start proc" messages from prior
     # runs of the app.
     self._found_initial_pid = self._primary_pid is not None
+    self.last_stack_seen_time = None
     # Retrieve any additional patterns that are relevant for the User.
     self._user_defined_highlight = None
     user_regex = os.environ.get('CHROMIUM_LOGCAT_HIGHLIGHT')
@@ -843,11 +850,21 @@ class _LogcatProcessor:
             'Rejecting invalid regular expression: {}'.format(user_regex),
             colorama.Fore.RED + colorama.Style.BRIGHT))
 
-  def _UpdateMyPids(self):
+  def FoundNonce(self):
+    return self.nonce is None
+
+  def HasOwnedPids(self):
+    return bool(self._my_pids)
+
+  def HasActivePids(self):
+    return bool(self._active_pids)
+
+  def UpdateMyPids(self):
     # We intentionally do not clear self._my_pids to make sure that the
     # ProcessLine method below also includes lines from processes which may
     # have already exited.
     self._primary_pid = None
+    current_pids = set()
     for package_name in [self._package_name] + self._extra_package_names:
       for process in _GetPackageProcesses(self._device, package_name):
         # We take only the first "main" process found in order to account for
@@ -855,6 +872,11 @@ class _LogcatProcessor:
         if ':' not in process.name and self._primary_pid is None:
           self._primary_pid = process.pid
         self._my_pids.add(process.pid)
+        current_pids.add(process.pid)
+    self._active_pids = current_pids
+
+  def _UpdateStackSeenTime(self):
+    self.last_stack_seen_time = time.time()
 
   def _GetPidStyle(self, pid, dim=False):
     if pid == self._primary_pid:
@@ -948,7 +970,9 @@ class _LogcatProcessor:
                          self._GetPriorityStyle(parsed_line.priority))
     messages = [parsed_line.message]
     if self._deobfuscator:
-      messages = self._deobfuscator.TransformLines(messages)
+      new_messages = self._deobfuscator.TransformLines(messages)
+      if new_messages != messages:
+        self._UpdateStackSeenTime()
     for message in messages:
       message = _Colorize(message, msg_style)
       sys.stdout.write('{} {} {} {} {} {}: {}\n'.format(
@@ -971,17 +995,18 @@ class _LogcatProcessor:
     if not line or line.startswith('------'):
       return
 
-    if self.nonce and self.nonce in line:
+    nonce_found = self.FoundNonce()
+    if not nonce_found and self.nonce in line:
+      nonce_found = True
       self._TriggerNonceFound()
 
-    nonce_found = self.nonce is None
 
     log = self._ParseLine(line)
     if log.pid not in self._seen_pids:
       self._seen_pids.add(log.pid)
       if nonce_found:
         # Update list of owned PIDs each time a new PID is encountered.
-        self._UpdateMyPids()
+        self.UpdateMyPids()
 
     # Search for "Start proc $pid:$package_name/" message.
     if not nonce_found:
@@ -1007,6 +1032,10 @@ class _LogcatProcessor:
       if self._DALVIK_IGNORE_PATTERN.match(log.message):
         return
 
+    if log.tag == 'ActivityManager' and 'has died' in log.message:
+      if m := re.search(r'\(pid (\d+)\)', log.message):
+        self._active_pids.discard(int(m.group(1)))
+
     if owned_pid or self._verbose or (log.priority == 'F' or  # Java crash dump
                                       log.tag in self._ALLOWLISTED_TAGS):
       if nonce_found:
@@ -1023,7 +1052,9 @@ def _RunLogcat(device,
                exit_on_match=None,
                filter_regex=None,
                log_level="V",
-               extra_package_names=None):
+               extra_package_names=None,
+               forever=False,
+               timeout=None):
   logcat_processor = _LogcatProcessor(device,
                                       package_name,
                                       stack_script_context,
@@ -1034,11 +1065,40 @@ def _RunLogcat(device,
                                       exit_on_match=exit_on_match,
                                       extra_package_names=extra_package_names)
   device.RunShellCommand(['log', logcat_processor.nonce])
-  for line in device.adb.Logcat(logcat_format='threadtime'):
+
+  dead_since = None
+  last_pid_refresh = None
+  start_time = time.time()
+
+  for line in device.adb.Logcat(logcat_format='threadtime', iter_timeout=1):
     try:
-      logcat_processor.ProcessLine(line)
-      if logcat_processor.FoundExitMatch():
+      now = time.time()
+      if timeout is not None and now - start_time >= timeout:
+        print(f'Stopping logcat because timeout of {timeout}s was reached.')
         return
+
+      if line is not None:
+        logcat_processor.ProcessLine(line)
+        if logcat_processor.FoundExitMatch():
+          return
+
+      if logcat_processor.FoundNonce():
+        if last_pid_refresh is None:
+          last_pid_refresh = now
+        elif now - last_pid_refresh > 1.0:
+          logcat_processor.UpdateMyPids()
+          last_pid_refresh = now
+
+        if logcat_processor.HasActivePids():
+          dead_since = None
+        elif not forever and logcat_processor.HasOwnedPids():
+          if dead_since is None:
+            dead_since = time.time()
+          elif now - max(dead_since, logcat_processor.last_stack_seen_time
+                         or 0) >= 1.0:
+            print('Stopping logcat because the process stopped.'
+                  ' Use --forever to prevent this.')
+            return
     except:
       sys.stderr.write('Failed to process line: ' + line + '\n')
       # Skip stack trace for the common case of the adb server being
@@ -1892,16 +1952,30 @@ To disable filtering, (but keep coloring), use --verbose.
       for additional_apk_helper in self.additional_apk_helpers:
         extra_package_names.append(additional_apk_helper.GetPackageName())
 
+    exit_on_match = self.args.exit_on_match
+    if self.args.exit_on_crash:
+      if exit_on_match:
+        exit_on_match += '|'
+      else:
+        exit_on_match = ''
+
+      all_packages_names = [self.args.package_name] + extra_package_names
+      pkg = '(?:' + '|'.join(re.escape(n) for n in all_packages_names) + ')'
+      exit_on_match += (f'Fatal signal.*{pkg}|'
+                        f'App crashed.*{pkg}|'
+                        f'Force stopping.*{pkg}')
     try:
       _RunLogcat(self.devices[0],
                  self.args.package_name,
                  stack_script_context,
                  deobfuscate,
                  bool(self.args.verbose_count),
-                 self.args.exit_on_match,
+                 exit_on_match=exit_on_match,
                  filter_regex=self.args.filter,
                  log_level=self.args.log_level,
-                 extra_package_names=extra_package_names)
+                 extra_package_names=extra_package_names,
+                 forever=self.args.forever,
+                 timeout=self.args.timeout)
     except KeyboardInterrupt:
       pass  # Don't show stack trace upon Ctrl-C
     finally:
@@ -1920,13 +1994,22 @@ To disable filtering, (but keep coloring), use --verbose.
           help='Path to ProGuard map (enables deobfuscation)')
     group.add_argument('--exit-on-match',
                        help='Exits logcat when a message matches this regex.')
-
-
+    group.add_argument('--forever',
+                       action='store_true',
+                       help='Do not exit when the process stops.')
+    group.add_argument('--timeout',
+                       type=float,
+                       help='Exit logcat after this many seconds.')
+    group.add_argument('--exit-on-crash',
+                       action='store_true',
+                       help='Exit logcat after any owned processes crash.')
     group.add_argument("--log-level",
                        choices=list(LOGCAT_LEVELS),
                        default="V",
                        help="Minimum log level.")
     group.add_argument("--filter", help="Regex to filter logcat output.")
+
+
 class _PsCommand(_Command):
   name = 'ps'
   description = 'Show PIDs of any APK processes currently running.'
