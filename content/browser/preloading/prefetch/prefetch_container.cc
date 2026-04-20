@@ -341,7 +341,7 @@ PrefetchContainer::~PrefetchContainer() {
   // https://chromium-review.googlesource.com/c/chromium/src/+/5657659/comments/0cfb14c0_3050963e
   //
   // TODO(crbug.com/356314759): Do it.
-  OnWillBeDestroyed();
+  NotifyObservers(&Observer::OnWillBeDestroyed);
 
   CancelStreamingURLLoaderIfNotServing();
 
@@ -388,10 +388,6 @@ PrefetchContainer::~PrefetchContainer() {
   // Destroy `assert_observer_` before `WeakPtr`s are invalidated to allow it
   // call `RemoveObserver()`.
   assert_observer_.reset();
-}
-
-void PrefetchContainer::OnWillBeDestroyed() {
-  NotifyObservers(&Observer::OnWillBeDestroyed);
 }
 
 PrefetchServingHandle PrefetchContainer::CreateServingHandle() {

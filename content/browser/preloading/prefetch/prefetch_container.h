@@ -284,8 +284,6 @@ class CONTENT_EXPORT PrefetchContainer
         const network::URLLoaderCompletionStatus& completion_status) = 0;
   };
 
-  void OnWillBeDestroyed();
-
   // `content::PrefetchDeduplicationEntry` overrides.
   // The initial URL that was requested to be prefetched.
   // Equivalent to `request().key().url()`.
