@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_panel_container;
 
+import android.graphics.Rect;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,9 +40,12 @@ public interface SidePanelContainerCoordinator {
      *
      * @param content Wrapper object for the content to show in the side panel.
      * @param onAnimationFinishedCallback Callback to invoke after content is populated.
+     * @param startingBounds Optional bounds for the animation to start from.
      */
     void populateContent(
-            SidePanelContent content, Callback<@Nullable Void> onAnimationFinishedCallback);
+            SidePanelContent content,
+            Callback<@Nullable Void> onAnimationFinishedCallback,
+            @Nullable Rect startingBounds);
 
     /**
      * Removes {@link SidePanelContent} from this side panel container and closes the container.

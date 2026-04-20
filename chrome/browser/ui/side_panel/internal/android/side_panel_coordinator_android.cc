@@ -27,6 +27,14 @@
     LOG(ERROR) << LOG_TAG << ": " << message;              \
   }
 
+namespace {
+constexpr int kInvalidCoordinate = -1;
+const gfx::Rect kNoBounds(kInvalidCoordinate,
+                          kInvalidCoordinate,
+                          kInvalidCoordinate,
+                          kInvalidCoordinate);
+}  // namespace
+
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -138,7 +146,11 @@ void SidePanelCoordinatorAndroid::ShowFrom(
   SPLOG("ShowFrom - entry_key: "
         << entry_key.ToString() << ", starting_bounds: "
         << starting_bounds_in_browser_coordinates.ToString());
-  // TODO(crbug.com/494001629): Implement this.
+  std::optional<UniqueKey> unique_key = GetUniqueKeyForKey(entry_key);
+  CHECK(unique_key.has_value())
+      << "Entry should exist for the given key: " << entry_key.ToString();
+  last_starting_bounds_ = starting_bounds_in_browser_coordinates;
+  SidePanelUI::Show(entry_key);
 }
 
 void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
@@ -155,6 +167,9 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
 
   // Stop any pending load.
   waiter(panel_type)->ResetLoadingEntryIfNecessary();
+
+  // If a ShowFrom() was pending, clear the starting bounds.
+  last_starting_bounds_.reset();
 
   if (!IsSidePanelShowing(panel_type)) {
     return;
@@ -251,6 +266,9 @@ void SidePanelCoordinatorAndroid::Show(
       SPLOG("Show - entry is already visible.");
       waiter(entry_type)->ResetLoadingEntryIfNecessary();
 
+      // If a ShowFrom() was pending or attempted on a visible entry, clear it.
+      last_starting_bounds_.reset();
+
       // TODO(crbug.com/493931047): Handle the case where the current entry is
       // being closed, i.e., when `state_` is `SidePanelState::kClosing`.
       // In this case, we should:
@@ -286,8 +304,7 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
 
   // Case 1: If the side panel isn't shown, just show it.
   if (!IsSidePanelShowing(entry->type())) {
-    Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
-        AttachCurrentThread(), java_coordinator(), native_view->view());
+    PopulateJavaSidePanel(native_view->view());
     SetCurrentKey(entry->type(), unique_key);
     entry->OnEntryShown();
 
@@ -336,8 +353,8 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   }
 
   previous_entry->OnEntryWillHide(previous_entry_hide_reason);
-  Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
-      AttachCurrentThread(), java_coordinator(), native_view->view());
+
+  PopulateJavaSidePanel(native_view->view());
   SetCurrentKey(entry->type(), unique_key);
   entry->OnEntryShown();
   previous_entry->OnEntryHidden();
@@ -424,6 +441,18 @@ ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
                       "C++ SidePanelCoordinatorAndroid, so the Java object "
                       "shouldn't be destroyed before the C++ object";
   return local_ref;
+}
+
+void SidePanelCoordinatorAndroid::PopulateJavaSidePanel(
+    const JavaRef<jobject>& view) {
+  // Pass the starting bounds to Java. If no bounds were provided (e.g. not a
+  // ShowFrom call), we use kNoBounds as a sentinel for JNI.
+  gfx::Rect start_bounds = last_starting_bounds_.value_or(kNoBounds);
+  last_starting_bounds_.reset();
+
+  Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
+      AttachCurrentThread(), java_coordinator(), view, start_bounds.x(),
+      start_bounds.y(), start_bounds.width(), start_bounds.height());
 }
 
 // ----------------------------------------------------------------------------

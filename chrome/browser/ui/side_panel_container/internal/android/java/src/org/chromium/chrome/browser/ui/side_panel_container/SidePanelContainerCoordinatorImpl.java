@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.side_panel_container;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -73,8 +74,10 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void populateContent(
-            SidePanelContent content, Callback<@Nullable Void> onAnimationFinishedCallback) {
-        log(TAG, "populateContent", content);
+            SidePanelContent content,
+            Callback<@Nullable Void> onAnimationFinishedCallback,
+            @Nullable Rect startingBounds) {
+        log(TAG, "populateContent", content, startingBounds);
         ThreadUtils.assertOnUiThread();
         mCurrentContent = content;
 

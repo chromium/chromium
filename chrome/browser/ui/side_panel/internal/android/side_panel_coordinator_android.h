@@ -99,6 +99,9 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
+  // Handles the JNI call to Java to populate the side panel UI.
+  void PopulateJavaSidePanel(const base::android::JavaRef<jobject>& view);
+
   // The current state of the Side Panel
   SidePanelState state_ = SidePanelState::kClosed;
 
@@ -109,6 +112,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
   JavaObjectWeakGlobalRef java_coordinator_;
+
+  std::optional<gfx::Rect> last_starting_bounds_;
 
   ui::ScopedUnownedUserData<SidePanelCoordinatorAndroid>
       scoped_unowned_user_data_;

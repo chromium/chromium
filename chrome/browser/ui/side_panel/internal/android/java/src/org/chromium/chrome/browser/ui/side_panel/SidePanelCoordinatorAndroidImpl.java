@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -23,6 +24,9 @@ import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContent;
 @NullMarked
 public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinatorAndroid {
     private static final String TAG = "SidePanelCoordinatorAndroidImpl";
+
+    /** Sentinel value for invalid or unset coordinates. */
+    private static final int INVALID_COORDINATE = -1;
 
     private final SidePanelContainerCoordinator mSidePanelContainerCoordinator;
 
@@ -77,12 +81,22 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         mNativeSidePanelCoordinatorAndroid = 0;
     }
 
+    /**
+     * Populates the side panel with content.
+     *
+     * @param sidePanelNativeView The view to show.
+     * @param x The x coordinate of the starting bounds, or -1 if none.
+     * @param y The y coordinate of the starting bounds, or -1 if none.
+     * @param width The width of the starting bounds, or -1 if none.
+     * @param height The height of the starting bounds, or -1 if none.
+     */
     @CalledByNative
-    private void populateSidePanel(View sidePanelNativeView) {
-        log(TAG, "populateSidePanel", sidePanelNativeView);
+    private void populateSidePanel(View sidePanelNativeView, int x, int y, int width, int height) {
+        log(TAG, "populateSidePanel", sidePanelNativeView, x, y, width, height);
         mSidePanelContainerCoordinator.populateContent(
                 new SidePanelContent(sidePanelNativeView),
-                result -> notifyOpenAnimationFinished(null));
+                result -> notifyOpenAnimationFinished(null),
+                createRectFromCoordinates(x, y, width, height));
     }
 
     @CalledByNative
@@ -91,6 +105,16 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         log(TAG, "removeContentAndClose", type, suppressAnimations);
         mSidePanelContainerCoordinator.removeContentAndClose(
                 result -> notifyCloseAnimationFinished(null), suppressAnimations);
+    }
+
+    private @Nullable Rect createRectFromCoordinates(int x, int y, int width, int height) {
+        if (x == INVALID_COORDINATE
+                && y == INVALID_COORDINATE
+                && width == INVALID_COORDINATE
+                && height == INVALID_COORDINATE) {
+            return null;
+        }
+        return new Rect(x, y, x + width, y + height);
     }
 
     private void notifyOpenAnimationFinished(@Nullable Void unused) {
