@@ -48,13 +48,18 @@ LoopbackServerEntity::CreateEntityFromProto(
   switch (entity.type()) {
     case sync_pb::LoopbackServerEntity_Type_TOMBSTONE:
       return PersistentTombstoneEntity::CreateFromEntity(entity.entity());
-    case sync_pb::LoopbackServerEntity_Type_PERMANENT:
+    case sync_pb::LoopbackServerEntity_Type_PERMANENT: {
+      DataType data_type =
+          syncer::GetDataTypeFromSpecifics(entity.entity().specifics());
+      if (!IsRealDataType(data_type)) {
+        return nullptr;
+      }
       return std::make_unique<PersistentPermanentEntity>(
-          entity.entity().id_string(), entity.entity().version(),
-          syncer::GetDataTypeFromSpecifics(entity.entity().specifics()),
+          entity.entity().id_string(), entity.entity().version(), data_type,
           entity.entity().name(), entity.entity().parent_id_string(),
           entity.entity().server_defined_unique_tag(),
           entity.entity().specifics());
+    }
     case sync_pb::LoopbackServerEntity_Type_BOOKMARK:
       return PersistentBookmarkEntity::CreateFromEntity(entity.entity());
     case sync_pb::LoopbackServerEntity_Type_UNIQUE:

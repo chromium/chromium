@@ -39,6 +39,11 @@ std::unique_ptr<LoopbackServerEntity>
 PersistentUniqueClientEntity::CreateFromEntity(
     const sync_pb::SyncEntity& client_entity) {
   DataType data_type = GetDataTypeFromSpecifics(client_entity.specifics());
+  if (!IsRealDataType(data_type)) {
+    DLOG(WARNING) << "A UniqueClientEntity should have a valid data type.";
+    return nullptr;
+  }
+
   if (!client_entity.has_client_tag_hash()) {
     DLOG(WARNING) << "A UniqueClientEntity should have a client-defined unique "
                      "tag.";
