@@ -3357,7 +3357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.AppListUpdate.Latency" units="ms"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3370,7 +3370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.AppStream.LaunchAttempt" enum="AppStreamLaunchEntryPoint"
-    expires_after="2026-10-04">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3381,7 +3381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connection.Duration" units="ms"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3392,7 +3392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connection.Result" enum="BooleanSuccess"
-    expires_after="2026-08-30">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3406,7 +3406,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Eche.Connection.Result.FailureReason"
     enum="SecureChannelConnectionAttemptFailureReason"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -3417,7 +3417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connectivity.Latency" units="ms"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3428,7 +3428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.MultiDeviceFeatureState" enum="MultiDevice_FeatureState"
-    expires_after="2026-10-04">
+    expires_after="2027-05-30">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -3439,7 +3439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.NetworkCheck.FailureReason" enum="ConnectionFailReason"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>jonmann@google.com</owner>
   <owner>nayebi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3450,7 +3450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.NetworkCheck.Result" enum="BooleanSuccess"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>jonmann@google.com</owner>
   <owner>nayebi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3461,7 +3461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Onboarding.UserAction" enum="OnboardingUserActionMetric"
-    expires_after="2026-10-04">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>samchiu@google.com</owner>
@@ -3472,7 +3472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent" enum="StreamState"
-    expires_after="2026-10-04">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3484,7 +3484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.ConnectionFail" enum="ConnectionFailReason"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3495,7 +3495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.Duration.FromInitializeToClose" units="ms"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3508,7 +3508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.FromLauncher" enum="StreamState"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3520,7 +3520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.FromNotification" enum="StreamState"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3533,7 +3533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.ConnectionFail"
-    enum="ConnectionFailReason" expires_after="2026-05-30">
+    enum="ConnectionFailReason" expires_after="2027-05-30">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3547,7 +3547,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.Result"
-    enum="StreamState" expires_after="2026-05-30">
+    enum="StreamState" expires_after="2027-05-30">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3560,7 +3560,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.FromRecentApps" enum="StreamState"
-    expires_after="2026-05-30">
+    expires_after="2027-05-30">
   <owner>pushi@google.com</owner>
   <owner>jonmann@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -3572,7 +3572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.UniqueAppsStreamed.PerDay" units="count"
-    expires_after="2026-10-04">
+    expires_after="2027-05-30">
   <owner>crisrael@google.com</owner>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
