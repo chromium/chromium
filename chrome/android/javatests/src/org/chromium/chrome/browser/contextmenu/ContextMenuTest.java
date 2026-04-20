@@ -1392,7 +1392,11 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        // Re-enable on automotive once crbug.com/504680967 is fixed
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testPrintPageLongPress() throws Exception {
