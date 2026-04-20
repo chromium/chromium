@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ConcurrentVisibility.Duration" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ConcurrentVisibility.PeakCount" units="instances"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -913,7 +913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.Floaty.ToggleSource" enum="GlicInvocationSource"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1002,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.LifetimeDuration.Max21Days" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1355,7 +1355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TotalBackgroundDuration" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1365,7 +1365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TotalHiddenDuration" units="ms"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
