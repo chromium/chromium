@@ -170,6 +170,8 @@ UsedInputType EnumTraits<UsedInputType, omnibox::InputType>::ToMojom(
       return UsedInputType::kLensFile;
     case omnibox::InputType::INPUT_TYPE_BROWSER_TAB:
       return UsedInputType::kBrowserTab;
+    case omnibox::InputType::INPUT_TYPE_DRIVE:
+      return UsedInputType::kDrive;
     // The proto compiler generates these sentinel values. We must handle them
     // to satisfy the compiler's exhaustiveness check (since we don't have a
     // default case), but they should never be encountered in practice.
@@ -193,6 +195,8 @@ omnibox::InputType EnumTraits<UsedInputType, omnibox::InputType>::FromMojom(
       return omnibox::InputType::INPUT_TYPE_LENS_FILE;
     case UsedInputType::kBrowserTab:
       return omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+    case UsedInputType::kDrive:
+      return omnibox::InputType::INPUT_TYPE_DRIVE;
   }
   NOTREACHED();
 }

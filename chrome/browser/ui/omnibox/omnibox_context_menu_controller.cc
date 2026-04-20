@@ -57,6 +57,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
@@ -563,6 +564,8 @@ omnibox::ContextType OmniboxContextMenuController::CommandIdToEnum(
           return omnibox::ContextType::kImage;
         case omnibox::InputType::INPUT_TYPE_LENS_FILE:
           return omnibox::ContextType::kFile;
+        case omnibox::InputType::INPUT_TYPE_DRIVE:
+          return omnibox::ContextType::kDrive;
         default:
           return omnibox::ContextType::kUnknown;
       }
@@ -653,6 +656,8 @@ std::u16string OmniboxContextMenuController::GetMenuLabelForInputType(
       return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE);
     case omnibox::InputType::INPUT_TYPE_LENS_FILE:
       return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE);
+    case omnibox::InputType::INPUT_TYPE_DRIVE:
+      return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_DRIVE);
     default:
       return u"";
   }
@@ -669,6 +674,16 @@ ui::ImageModel OmniboxContextMenuController::GetIconForInputType(
       return ui::ImageModel::FromVectorIcon(
           kAttachFileIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
+    // The Google Drive icon is only available in Google Chrome branded builds.
+    // This guard is necessary to prevent compilation errors in Chromium.
+    case omnibox::InputType::INPUT_TYPE_DRIVE:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ui::ImageModel::FromVectorIcon(
+          vector_icons::kGoogleDriveIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
+#else
+      return ui::ImageModel();
+#endif
     default:
       return ui::ImageModel();
   }

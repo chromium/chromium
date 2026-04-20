@@ -281,6 +281,20 @@ suite('ContextualActionMenu', () => {
         'menuitem', $$(actionMenu, '#fileUpload')!.getAttribute('role'));
   });
 
+  test('Shows drive when allowed', async () => {
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kDrive],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
+    });
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    assertTrue(!!$$(actionMenu, '#driveUpload'));
+    assertEquals(
+        'menuitem', $$(actionMenu, '#driveUpload')!.getAttribute('role'));
+  });
+
   test('Hides image and file upload when not allowed', async () => {
     actionMenu.inputState = new MockInputState({
       allowedInputTypes: [],
@@ -292,6 +306,7 @@ suite('ContextualActionMenu', () => {
 
     assertFalse(!!$$(actionMenu, '#imageUpload'));
     assertFalse(!!$$(actionMenu, '#fileUpload'));
+    assertFalse(!!$$(actionMenu, '#driveUpload'));
   });
 
   test('Disables image and file upload when disabled', async () => {

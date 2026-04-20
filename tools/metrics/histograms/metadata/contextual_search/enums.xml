@@ -51,6 +51,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="RegularModel"/>
   <int value="9" label="ProNoGenUiModel"/>
   <int value="10" label="Unknown"/>
+  <int value="11" label="Drive"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:ContextType, //ui/webui/resources/cr_components/composebox/common.ts:ContextType) -->
