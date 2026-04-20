@@ -66,11 +66,14 @@ public class WebViewResizingHelper {
         reset();
         mThinWebView = thinWebView;
 
+        makeWebViewResizable();
+
+        View webView = mThinWebView.getView();
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.gravity = Gravity.BOTTOM;
-        mResizingContainer.addView(mThinWebView.getView(), layoutParams);
+        mResizingContainer.addView(webView, layoutParams);
     }
 
     /** Returns the resizing container. This holds the ThinWebView and the placeholder. */
@@ -114,11 +117,7 @@ public class WebViewResizingHelper {
 
         mAnimationHandler.startAnimation(valueAnimator);
 
-        ViewGroup.LayoutParams params = webView.getLayoutParams();
-        if (params != null) {
-            params.height = webView.getHeight();
-            webView.setLayoutParams(params);
-        }
+        makeWebViewResizable();
 
         mResizingPlaceholder.setVisibility(View.VISIBLE);
         mResizingPlaceholder.setAlpha(0f);
@@ -151,5 +150,15 @@ public class WebViewResizingHelper {
 
         webView.setAlpha(0f);
         webView.setVisibility(View.VISIBLE);
+    }
+
+    private void makeWebViewResizable() {
+        assert mThinWebView != null;
+        View webView = mThinWebView.getView();
+        ViewGroup.LayoutParams params = webView.getLayoutParams();
+        if (params != null) {
+            params.height = webView.getHeight();
+            webView.setLayoutParams(params);
+        }
     }
 }

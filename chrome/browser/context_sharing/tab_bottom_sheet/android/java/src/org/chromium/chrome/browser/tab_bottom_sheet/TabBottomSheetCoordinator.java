@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,7 +41,7 @@ public class TabBottomSheetCoordinator {
 
     // Can be modified later to be set dynamically based on device
     private static final float FULL_HEIGHT_RATIO = 0.7f;
-    private static final float KEYBOARD_SHOWING_HEIGHT_RATIO = 0.9f;
+    private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
 
     // Interface used by the manager to monitor events related to the state of the
     // bottom sheet.
@@ -184,7 +188,7 @@ public class TabBottomSheetCoordinator {
                         mModel,
                         coBrowseViews,
                         FULL_HEIGHT_RATIO,
-                        KEYBOARD_SHOWING_HEIGHT_RATIO);
+                        SMALL_SCREEN_HEIGHT_RATIO);
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
     }
@@ -200,7 +204,7 @@ public class TabBottomSheetCoordinator {
         mContentView = mCoBrowseViews.getView();
         mSheetContent =
                 new TabBottomSheetContent(
-                        mContentView, getDefaultHeightRatio(), mCoBrowseViews.getBackgroundColor());
+                        mContentView, FULL_HEIGHT_RATIO, mCoBrowseViews.getBackgroundColor());
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
@@ -384,7 +388,7 @@ public class TabBottomSheetCoordinator {
                             getDefaultHeightRatio(),
                             heightFraction,
                             (int) offsetPx,
-                            mBottomSheetController.getMaxOffset());
+                            getVisibleViewportHeight());
                 }
             }
 
@@ -433,16 +437,35 @@ public class TabBottomSheetCoordinator {
     }
 
     private void updateResizingStateWithFixedHeight() {
+        if (mWindowAndroid.getWindow() == null) return;
+
         float defaultHeightRatio = getDefaultHeightRatio();
         mMediator.updateResizingState(
                 defaultHeightRatio,
                 defaultHeightRatio,
                 mBottomSheetController.getCurrentOffset(),
-                mBottomSheetController.getMaxOffset());
+                (int) (getVisibleViewportHeight() * getDefaultHeightRatio()));
+    }
+
+    private int getVisibleViewportHeight() {
+        Window window = mWindowAndroid.getWindow();
+        assert window != null;
+
+        Rect visibleViewportRect = new Rect();
+        View decorView = window.getDecorView();
+        decorView.getWindowVisibleDisplayFrame(visibleViewportRect);
+
+        @Px int decorHeight = window.getDecorView().getHeight();
+        @Px int visibleHeight = Math.min(decorHeight, visibleViewportRect.height());
+        return visibleHeight;
     }
 
     private float getDefaultHeightRatio() {
-        return isKeyboardShowing() ? KEYBOARD_SHOWING_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
+        Configuration configuration = mContext.getResources().getConfiguration();
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return SMALL_SCREEN_HEIGHT_RATIO;
+        }
+        return isKeyboardShowing() ? SMALL_SCREEN_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
     }
 
     // Testing methods.

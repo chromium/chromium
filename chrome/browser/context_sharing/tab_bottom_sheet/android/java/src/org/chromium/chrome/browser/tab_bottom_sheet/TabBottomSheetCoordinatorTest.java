@@ -23,9 +23,11 @@ import static org.mockito.Mockito.when;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -48,6 +50,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -64,7 +67,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class TabBottomSheetCoordinatorTest {
     private static final float FULL_HEIGHT_RATIO = 0.7f;
-    private static final float KEYBOARD_SHOWING_HEIGHT_RATIO = 0.9f;
+    private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
     private static final int MAX_OFFSET = 1000;
     private static final int CONTAINER_WIDTH = 500;
     private static final int CONTAINER_HEIGHT = 500;
@@ -90,6 +93,8 @@ public class TabBottomSheetCoordinatorTest {
             };
 
     @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private Window mMockWindow;
+    @Mock private View mMockDecorView;
     @Mock private TouchEventProvider mMockTouchEventProvider;
     @Mock private CoBrowseViews mCoBrowseViews;
     @Mock private WindowAndroid mWindowAndroid;
@@ -110,6 +115,18 @@ public class TabBottomSheetCoordinatorTest {
         mView = new FrameLayout(mContext);
         when(mCoBrowseViews.getView()).thenReturn(mView);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
+
+        when(mWindowAndroid.getWindow()).thenReturn(mMockWindow);
+        when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
+        when(mMockDecorView.getHeight()).thenReturn(MAX_OFFSET);
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(0, 0, CONTAINER_WIDTH, MAX_OFFSET);
+                            return null;
+                        })
+                .when(mMockDecorView)
+                .getWindowVisibleDisplayFrame(any(Rect.class));
 
         mCoordinator =
                 new TabBottomSheetCoordinator(
@@ -225,7 +242,7 @@ public class TabBottomSheetCoordinatorTest {
                 .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
         TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
         assertNotNull(content);
-        assertEquals(FULL_HEIGHT_RATIO, content.getFullHeightRatio(), EPSILON);
+        assertEquals(HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), EPSILON);
     }
 
     @Test
@@ -236,7 +253,7 @@ public class TabBottomSheetCoordinatorTest {
                 .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
         TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
         assertNotNull(content);
-        assertEquals(KEYBOARD_SHOWING_HEIGHT_RATIO, content.getFullHeightRatio(), EPSILON);
+        assertEquals(HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), EPSILON);
     }
 
     @Test
@@ -406,13 +423,21 @@ public class TabBottomSheetCoordinatorTest {
     public void testOnContainerSizeChanged() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
-        int containerHeight = 1234;
-        when(mMockBottomSheetController.getMaxOffset()).thenReturn(containerHeight);
+        int viewportHeight = 999;
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(0, 0, CONTAINER_WIDTH, viewportHeight);
+                            return null;
+                        })
+                .when(mMockDecorView)
+                .getWindowVisibleDisplayFrame(any(Rect.class));
 
-        observer.onContainerSizeChanged(500, containerHeight);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, viewportHeight);
 
         ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertEquals(containerHeight, state.webUiContainerHeight);
+        int expectedWebUiHeight = (int) (viewportHeight * FULL_HEIGHT_RATIO);
+        assertEquals(expectedWebUiHeight, state.webUiContainerHeight);
     }
 
     @Test
