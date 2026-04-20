@@ -1897,8 +1897,6 @@ source_set("browser") {
     "renderer_host/media/aec_dump_manager_impl.h",
     "renderer_host/media/audio_input_device_manager.cc",
     "renderer_host/media/audio_input_device_manager.h",
-    "renderer_host/media/audio_input_stream_handle.cc",
-    "renderer_host/media/audio_input_stream_handle.h",
     "renderer_host/media/audio_output_authorization_handler.cc",
     "renderer_host/media/audio_output_authorization_handler.h",
     "renderer_host/media/audio_output_stream_observer_impl.cc",

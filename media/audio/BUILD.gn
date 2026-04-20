@@ -66,8 +66,6 @@ source_set("audio") {
     "audio_features.cc",
     "audio_features.h",
     "audio_handler.h",
-    "audio_input_delegate.cc",
-    "audio_input_delegate.h",
     "audio_input_device.cc",
     "audio_input_device.h",
     "audio_input_ipc.cc",

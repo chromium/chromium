@@ -7,15 +7,12 @@
 //
 // Relationship of classes:
 //
-//  AudioInputController                 AudioInputDevice
+//  audio::InputController                 AudioInputDevice
 //           ^                                  ^
 //           |                                  |
 //           v                  IPC             v
-// MojoAudioInputStream    <----------->  AudioInputIPC
-//           ^                            (MojoAudioInputIPC)
-//           |
-//           v
-// AudioInputDeviceManager
+// audio::mojom::AudioInputStream    <----------->  AudioInputIPC
+//                                       (MojoAudioInputIPC)
 //
 // Transportation of audio samples from the browser to the render process
 // is done by using shared memory in combination with a SyncSocket.
