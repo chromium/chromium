@@ -23,6 +23,8 @@ build_webui("build") {
     "app.ts",
     "full_app.html.ts",
     "full_app.ts",
+    "omnibox_composebox.html.ts",
+    "omnibox_composebox.ts",
     "omnibox_popup.ts",
     "omnibox_popup_browser_proxy.ts",
   ]
@@ -30,6 +32,7 @@ build_webui("build") {
     "aim_app.css",
     "app.css",
     "full_app.css",
+    "omnibox_composebox.css",
     "omnibox_popup_shared_style.css",
   ]
   ts_composite = true

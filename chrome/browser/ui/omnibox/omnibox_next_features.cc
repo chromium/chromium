@@ -323,6 +323,10 @@ const base::FeatureParam<bool> kShowContextMenuHeaders(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowContextMenuHeaders",
     true);
+const base::FeatureParam<bool> kUseComposeboxFork(
+    &internal::kWebUIOmniboxAimPopup,
+    "Omnibox_UseComposeboxFork",
+    false);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
