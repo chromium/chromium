@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_service.h"
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/platform_keys/keystore_service_util.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
@@ -175,7 +176,9 @@ MATCHER_P(StrStartsWith, expected_prefix, "Unexpected string.") {
 class KeystoreServiceTest : public testing::Test {
  public:
   KeystoreServiceTest()
-      : keystore_service_(&platform_keys_service_, &key_permissions_service_) {}
+      : keystore_service_(&profile_,
+                          &platform_keys_service_,
+                          &key_permissions_service_) {}
   KeystoreServiceTest(const KeystoreServiceTest&) = delete;
   auto operator=(const KeystoreServiceTest&) = delete;
   ~KeystoreServiceTest() override = default;
@@ -186,6 +189,7 @@ class KeystoreServiceTest : public testing::Test {
 
   StrictMock<MockPlatformKeysService> platform_keys_service_;
   StrictMock<MockKeyPermissionsService> key_permissions_service_;
+  TestingProfile profile_;
   KeystoreService keystore_service_;
   base::test::MockLog log_;
 };
@@ -857,14 +861,13 @@ TEST_F(KeystoreServiceTest, ChallengeUserKeyNoMigrateSuccess) {
   attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
-  EXPECT_CALL(
-      *challenge_key_ptr,
-      BuildResponse(::attestation::ENTERPRISE_USER,
-                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-                    /*register_key=*/false,
-                    /*key_crypto_type=*/KEY_TYPE_RSA,
-                    /*key_name=*/std::string(),
-                    /*signals=*/_))
+  EXPECT_CALL(*challenge_key_ptr,
+              BuildResponse(::attestation::ENTERPRISE_USER, &profile_,
+                            /*callback=*/_, /*challenge=*/GetDataStr(),
+                            /*register_key=*/false,
+                            /*key_crypto_type=*/KEY_TYPE_RSA,
+                            /*key_name=*/std::string(),
+                            /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -886,14 +889,13 @@ TEST_F(KeystoreServiceTest, ChallengeUserKeyMigrateSuccess) {
   attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
-  EXPECT_CALL(
-      *challenge_key_ptr,
-      BuildResponse(::attestation::ENTERPRISE_USER,
-                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-                    /*register_key=*/true,
-                    /*key_crypto_type=*/KEY_TYPE_RSA,
-                    /*key_name=*/std::string(),
-                    /*signals=*/_))
+  EXPECT_CALL(*challenge_key_ptr,
+              BuildResponse(::attestation::ENTERPRISE_USER, &profile_,
+                            /*callback=*/_, /*challenge=*/GetDataStr(),
+                            /*register_key=*/true,
+                            /*key_crypto_type=*/KEY_TYPE_RSA,
+                            /*key_name=*/std::string(),
+                            /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -915,14 +917,13 @@ TEST_F(KeystoreServiceTest, ChallengeDeviceKeyNoMigrateSuccess) {
   attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
-  EXPECT_CALL(
-      *challenge_key_ptr,
-      BuildResponse(::attestation::ENTERPRISE_MACHINE,
-                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-                    /*register_key=*/false,
-                    /*key_crypto_type=*/KEY_TYPE_RSA,
-                    /*key_name=*/std::string(),
-                    /*signals=*/_))
+  EXPECT_CALL(*challenge_key_ptr,
+              BuildResponse(::attestation::ENTERPRISE_MACHINE, &profile_,
+                            /*callback=*/_, /*challenge=*/GetDataStr(),
+                            /*register_key=*/false,
+                            /*key_crypto_type=*/KEY_TYPE_RSA,
+                            /*key_name=*/std::string(),
+                            /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -947,8 +948,8 @@ TEST_F(KeystoreServiceTest, ChallengeDeviceKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(::attestation::ENTERPRISE_MACHINE,
-                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+      BuildResponse(::attestation::ENTERPRISE_MACHINE, &profile_,
+                    /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
                     /*key_crypto_type=*/KEY_TYPE_RSA,
                     /*key_name=*/StrStartsWith("attest-ent-machine-keystore-"),
@@ -975,14 +976,13 @@ TEST_F(KeystoreServiceTest, ChallengeUserEcdsaKeyMigrateSuccess) {
   attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
-  EXPECT_CALL(
-      *challenge_key_ptr,
-      BuildResponse(::attestation::ENTERPRISE_USER,
-                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-                    /*register_key=*/true,
-                    /*key_crypto_type=*/KEY_TYPE_ECC,
-                    /*key_name=*/std::string(),
-                    /*signals=*/_))
+  EXPECT_CALL(*challenge_key_ptr,
+              BuildResponse(::attestation::ENTERPRISE_USER, &profile_,
+                            /*callback=*/_, /*challenge=*/GetDataStr(),
+                            /*register_key=*/true,
+                            /*key_crypto_type=*/KEY_TYPE_ECC,
+                            /*key_name=*/std::string(),
+                            /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
@@ -1004,14 +1004,13 @@ TEST_F(KeystoreServiceTest, ChallengeKeyFail) {
   auto challenge_result = attestation::TpmChallengeKeyResult::MakeError(
       attestation::TpmChallengeKeyResultCode::kDbusError);
 
-  EXPECT_CALL(
-      *challenge_key_ptr,
-      BuildResponse(::attestation::ENTERPRISE_USER,
-                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
-                    /*register_key=*/false,
-                    /*key_crypto_type=*/KEY_TYPE_RSA,
-                    /*key_name=*/std::string(),
-                    /*signals=*/_))
+  EXPECT_CALL(*challenge_key_ptr,
+              BuildResponse(::attestation::ENTERPRISE_USER, &profile_,
+                            /*callback=*/_, /*challenge=*/GetDataStr(),
+                            /*register_key=*/false,
+                            /*key_crypto_type=*/KEY_TYPE_RSA,
+                            /*key_name=*/std::string(),
+                            /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(challenge_result));
 
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;

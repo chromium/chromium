@@ -65,12 +65,10 @@ class KeystoreService : public KeyedService {
   using SetAttributeForKeyCallback =
       base::OnceCallback<void(bool, chromeos::KeystoreError)>;
 
-  explicit KeystoreService(content::BrowserContext* fixed_context);
-  // Allows to create the service early. It will use the current primary profile
-  // whenever used. The profile should be specified explicitly when possible.
-  KeystoreService();
+  explicit KeystoreService(content::BrowserContext* context);
   // For testing only.
-  explicit KeystoreService(
+  KeystoreService(
+      content::BrowserContext* context,
       platform_keys::PlatformKeysService* platform_keys_service,
       platform_keys::KeyPermissionsService* key_permissions_service);
   KeystoreService(const KeystoreService&) = delete;
@@ -174,16 +172,9 @@ class KeystoreService : public KeyedService {
   static void DidSetAttributeForKey(SetAttributeForKeyCallback callback,
                                     chromeos::platform_keys::Status status);
 
-  // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
-  // Stores a pointer to a specific PlatformKeysService if it was specified in
-  // constructor.
-  const raw_ptr<platform_keys::PlatformKeysService>
-      fixed_platform_keys_service_ = nullptr;
-  // Can be nullptr, should not be used directly, use GetKeyPermissions()
-  // instead. Stores a pointer to a specific KeyPermissionsService if it was
-  // specified in constructor.
-  const raw_ptr<platform_keys::KeyPermissionsService>
-      fixed_key_permissions_service_ = nullptr;
+  const raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<platform_keys::PlatformKeysService> platform_keys_service_;
+  const raw_ptr<platform_keys::KeyPermissionsService> key_permissions_service_;
 
   // Container to keep outstanding challenges alive. The challenges should be
   // destroyed together with this service to reduce the chance of them accessing
