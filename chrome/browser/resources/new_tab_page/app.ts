@@ -307,6 +307,7 @@ export class AppElement extends AppElementBase {
       },
 
       ntpNextFeaturesEnabled_: {type: Boolean},
+      ntpNextDisablementEnabled_: {type: Boolean},
       maxTilesInCollapsedState_: {type: Number},
       maxShortcutsInExpandedState_: {type: Number},
       maxMostVisitedTilesInExpandedState_: {type: Number},
@@ -414,6 +415,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
   protected accessor ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
+  protected accessor ntpNextDisablementEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextDisablementEnabled');
   protected accessor maxTilesInCollapsedState_: number =
       loadTimeData.getInteger('maxTilesInCollapsedState');
   protected accessor maxShortcutsInExpandedState_: number =
@@ -425,7 +428,8 @@ export class AppElement extends AppElementBase {
   protected accessor containerFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
-      this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ?
+      this.ntpNextFeaturesEnabled_ &&
+          (!this.ntpNextDisablementEnabled_ || this.isActionChipsVisible_) ?
       GlifAnimationState.SPINNER_ONLY :
       GlifAnimationState.INELIGIBLE;
   protected accessor undoToastCallback_: (() => void)|null = null;

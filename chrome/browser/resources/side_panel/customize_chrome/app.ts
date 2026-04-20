@@ -86,6 +86,7 @@ export class AppElement extends AppElementBase {
       extensionPolicyEnabled_: {type: Boolean},
       extensionsCardEnabled_: {type: Boolean},
       ntpNextFeaturesEnabled_: {type: Boolean},
+      ntpNextDisablementEnabled_: {type: Boolean},
       aimPolicyEnabled_: {type: Boolean},
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
@@ -104,6 +105,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('extensionsCardEnabled');
   protected accessor ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
+  protected accessor ntpNextDisablementEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextDisablementEnabled');
   protected accessor extensionPolicyEnabled_: boolean = false;
   protected accessor aimPolicyEnabled_: boolean =
       loadTimeData.getBoolean('aimPolicyEnabled');

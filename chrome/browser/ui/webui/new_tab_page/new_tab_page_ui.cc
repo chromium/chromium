@@ -256,7 +256,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_features::kNtpNextShowDismissalUIParam.Get());
   source->AddBoolean("ntpNextDisablementContextMenuEnabled",
                      ntp_features::kNtpNextDisablementContextMenuParam.Get());
+  source->AddBoolean("ntpNextDisablementEnabled",
+                     ntp_features::kNtpNextDisablementParam.Get());
   source->AddBoolean(
+
       "oneGoogleBarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
