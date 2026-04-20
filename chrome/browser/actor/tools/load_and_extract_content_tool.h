@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_LOAD_AND_EXTRACT_CONTENT_TOOL_H_
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -36,7 +36,7 @@ class LoadAndExtractContentTool : public Tool {
   LoadAndExtractContentTool(TaskId task_id,
                             ToolDelegate& tool_delegate,
                             SessionID window_id,
-                            std::vector<GURL> urls);
+                            base::span<const GURL> urls);
 
   ~LoadAndExtractContentTool() override;
 
@@ -54,8 +54,6 @@ class LoadAndExtractContentTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
-  using UrlIndex = base::StrongAlias<class UrlIndexTag, size_t>;
-
   struct PerTabState;
   enum class PerTabResultCode;
   class TabObservationDelayer;
@@ -63,12 +61,12 @@ class LoadAndExtractContentTool : public Tool {
 
   // Should be called once we no longer need to keep the tab open, i.e. it has
   // navigated and we've extracted the content (or encountered an error).
-  void OnTabReadyToClose(UrlIndex index, PerTabResultCode result_code);
+  void OnTabReadyToClose(size_t index, PerTabResultCode result_code);
 
-  void OnTabObservationDelayComplete(UrlIndex index,
+  void OnTabObservationDelayComplete(size_t index,
                                      PerTabResultCode result_code);
   void OnGotAIPageContent(
-      UrlIndex index,
+      size_t index,
       optimization_guide::AIPageContentResultOrError result_or_error);
   void OnAllUrlsCompleted();
 
@@ -79,12 +77,12 @@ class LoadAndExtractContentTool : public Tool {
 
   ToolCallback invoke_callback_;
 
-  const std::vector<GURL> urls_;
   SessionID window_id_;
 
-  // Tracks the state of each opened tab, using the index into `urls_` as the
-  // key.
-  std::map<UrlIndex, PerTabState> per_tab_state_;
+  // Tracks the state of the tab associated with each GURL. The order of the
+  // elements in the vector matches the order of the GURLs passed to the
+  // constructor.
+  std::vector<PerTabState> per_tab_state_;
 
   std::optional<ObservationDelayController::PageStabilityConfig>
       page_stability_config_;
