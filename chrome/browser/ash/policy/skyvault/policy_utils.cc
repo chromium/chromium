@@ -125,7 +125,7 @@ std::optional<base::Time> GetMigrationStartTime(Profile* profile) {
   }
   PrefService* pref_service = profile->GetPrefs();
   base::Time scheduled_start_time =
-      pref_service->GetTime(prefs::kSkyVaultMigrationScheduledStartTime);
+      pref_service->GetTime(ash::prefs::kSkyVaultMigrationScheduledStartTime);
   if (scheduled_start_time.is_null()) {
     LOG(ERROR) << "Migration/deletion start time cannot be determined.";
     return std::nullopt;

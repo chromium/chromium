@@ -683,12 +683,12 @@ void Preferences::RegisterProfilePrefs(
                                std::string());
 
   registry->RegisterIntegerPref(
-      ::prefs::kSkyVaultMigrationState,
+      ash::prefs::kSkyVaultMigrationState,
       static_cast<int>(policy::local_user_files::State::kUninitialized));
-  registry->RegisterIntegerPref(::prefs::kSkyVaultMigrationRetryCount, 0);
-  registry->RegisterTimePref(::prefs::kSkyVaultMigrationScheduledStartTime,
+  registry->RegisterIntegerPref(ash::prefs::kSkyVaultMigrationRetryCount, 0);
+  registry->RegisterTimePref(ash::prefs::kSkyVaultMigrationScheduledStartTime,
                              base::Time());
-  registry->RegisterTimePref(::prefs::kSkyVaultMigrationStartTime,
+  registry->RegisterTimePref(ash::prefs::kSkyVaultMigrationStartTime,
                              base::Time());
   FrozenUpdateNotification::RegisterProfilePrefs(registry);
 }

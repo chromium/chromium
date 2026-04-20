@@ -1489,24 +1489,6 @@ inline constexpr char kNetworkAnnotationBlocklist[] =
 inline constexpr char kViewSourceLineWrappingEnabled[] =
     "view_source.line_wrapping_enabled";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// The state of the SkyVault migration of local files to the cloud.
-inline constexpr char kSkyVaultMigrationState[] = "skyvault.migration_state";
-
-// The number of times SkyVault migration was retried after some upload errors.
-inline constexpr char kSkyVaultMigrationRetryCount[] =
-    "skyvault.migration_retry_count";
-
-// The time at which the SkyVault local files upload or deletion is scheduled to
-// start.
-inline constexpr char kSkyVaultMigrationScheduledStartTime[] =
-    "skyvault.migration_scheduled_start_time";
-
-// The time at which the SkyVault local files upload actually started.
-inline constexpr char kSkyVaultMigrationStartTime[] =
-    "skyvault.migration_start_time";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Boolean that when set overrides the kStaticStorageQuota feature flag.
 inline constexpr char kStaticStorageQuotaEnabled[] =
     "static_storage_quota_enabled";

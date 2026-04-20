@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
@@ -269,12 +269,12 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   Profile* profile = Profile::FromBrowserContext(context_);
   PrefService* pref_service = profile->GetPrefs();
   state_ = static_cast<State>(
-      pref_service->GetInteger(prefs::kSkyVaultMigrationState));
+      pref_service->GetInteger(ash::prefs::kSkyVaultMigrationState));
 
   VLOG(1) << "Loaded migration state: " << StateToString(state_);
 
   current_retry_count_ =
-      pref_service->GetInteger(prefs::kSkyVaultMigrationRetryCount);
+      pref_service->GetInteger(ash::prefs::kSkyVaultMigrationRetryCount);
   VLOG(1) << "Loaded retry count: " << current_retry_count_;
   if (current_retry_count_ > kMaxRetryCount) {
     // Loaded state should be kFailed, but set it explicitly just in case.
@@ -290,7 +290,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   if (state_ == State::kFailure &&
       migration_destination_ == MigrationDestination::kDelete) {
     current_retry_count_ = 0;
-    pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+    pref_service->SetInteger(ash::prefs::kSkyVaultMigrationRetryCount,
                              current_retry_count_);
     SetState(State::kCleanup);
   }
@@ -488,10 +488,10 @@ void LocalFilesMigrationManager::InformUser() {
     PrefService* pref_service =
         Profile::FromBrowserContext(context_)->GetPrefs();
     scheduled_start_time =
-        pref_service->GetTime(prefs::kSkyVaultMigrationScheduledStartTime);
+        pref_service->GetTime(ash::prefs::kSkyVaultMigrationScheduledStartTime);
     if (scheduled_start_time.is_null()) {
       scheduled_start_time = now + kTotalMigrationTimeout;
-      pref_service->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+      pref_service->SetTime(ash::prefs::kSkyVaultMigrationScheduledStartTime,
                             scheduled_start_time);
     }
   }
@@ -657,9 +657,9 @@ void LocalFilesMigrationManager::StartMigration(
 
   PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
   const base::Time start_time =
-      pref_service->GetTime(prefs::kSkyVaultMigrationStartTime);
+      pref_service->GetTime(ash::prefs::kSkyVaultMigrationStartTime);
   if (start_time.is_null()) {
-    pref_service->SetTime(prefs::kSkyVaultMigrationStartTime,
+    pref_service->SetTime(ash::prefs::kSkyVaultMigrationStartTime,
                           base::Time::Now());
   }
 
@@ -683,7 +683,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
 
   const base::Time start_time =
       Profile::FromBrowserContext(context_)->GetPrefs()->GetTime(
-          prefs::kSkyVaultMigrationStartTime);
+          ash::prefs::kSkyVaultMigrationStartTime);
   const base::TimeDelta duration = base::Time::Now() - start_time;
 
   if (errors.empty()) {
@@ -700,7 +700,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
 
   bool failed = ShouldFail(errors, ++current_retry_count_);
   Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
-      prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+      ash::prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
 
   if (failed) {
     SkyVaultMigrationDoneHistograms(migration_destination_, /*success=*/false,
@@ -779,7 +779,7 @@ void LocalFilesMigrationManager::OnCleanupDone(
 
     bool failed_too_many_times = ++current_retry_count_ > kMaxRetryCount;
     Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
-        prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+        ash::prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
     if (failed_too_many_times) {
       SkyVaultDeletionDoneHistogram(/*success=*/false);
       SetState(State::kFailure);
@@ -857,17 +857,17 @@ void LocalFilesMigrationManager::SetState(State new_state) {
   }
   state_ = new_state;
   Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
-      prefs::kSkyVaultMigrationState, static_cast<int>(new_state));
+      ash::prefs::kSkyVaultMigrationState, static_cast<int>(new_state));
 }
 
 void LocalFilesMigrationManager::ResetMigrationPrefs() {
   SetState(State::kUninitialized);
   current_retry_count_ = 0;
   PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
-  pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+  pref_service->SetInteger(ash::prefs::kSkyVaultMigrationRetryCount,
                            current_retry_count_);
-  pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
-  pref_service->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
+  pref_service->SetTime(ash::prefs::kSkyVaultMigrationStartTime, base::Time());
+  pref_service->SetTime(ash::prefs::kSkyVaultMigrationScheduledStartTime,
                         base::Time());
 }
 

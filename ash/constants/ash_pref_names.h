@@ -3658,6 +3658,26 @@ inline constexpr char kTimeLimitLocalOverride[] = "screen_time.local_override";
 // A dictionary preference holding the usage time limit definitions for a user.
 inline constexpr char kUsageTimeLimit[] = "screen_time.limit";
 
+//-----------------------------------------------------------------------------
+// SkyVault related Prefs
+//-----------------------------------------------------------------------------
+
+// The state of the SkyVault migration of local files to the cloud.
+inline constexpr char kSkyVaultMigrationState[] = "skyvault.migration_state";
+
+// The number of times SkyVault migration was retried after some upload errors.
+inline constexpr char kSkyVaultMigrationRetryCount[] =
+    "skyvault.migration_retry_count";
+
+// The time at which the SkyVault local files upload or deletion is scheduled to
+// start.
+inline constexpr char kSkyVaultMigrationScheduledStartTime[] =
+    "skyvault.migration_scheduled_start_time";
+
+// The time at which the SkyVault local files upload actually started.
+inline constexpr char kSkyVaultMigrationStartTime[] =
+    "skyvault.migration_start_time";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

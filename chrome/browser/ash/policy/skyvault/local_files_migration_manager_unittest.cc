@@ -171,7 +171,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->local_state()->SetString(
         ash::prefs::kLocalUserFilesMigrationDestination, destination);
 
-    profile()->GetPrefs()->SetInteger(prefs::kSkyVaultMigrationState,
+    profile()->GetPrefs()->SetInteger(ash::prefs::kSkyVaultMigrationState,
                                       static_cast<int>(state));
   }
 
@@ -188,7 +188,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
   }
 
   void SetRetryCount(int count) {
-    profile()->GetPrefs()->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+    profile()->GetPrefs()->SetInteger(ash::prefs::kSkyVaultMigrationRetryCount,
                                       count);
   }
 
@@ -423,8 +423,8 @@ TEST_F(LocalFilesMigrationManagerTest, UsesExistingStartTimeFromPrefs) {
   CreateTestFile(kTestFile);
 
   base::Time start_time = base::Time::Now() + base::Hours(5);
-  profile()->GetPrefs()->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
-                                 start_time);
+  profile()->GetPrefs()->SetTime(
+      ash::prefs::kSkyVaultMigrationScheduledStartTime, start_time);
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
       std::make_unique<MockMigrationNotificationManager>(profile());
   EXPECT_CALL(*notification_manager.get(),
@@ -447,8 +447,8 @@ TEST_F(LocalFilesMigrationManagerTest, InformUserShortTimeJumpsToSecond) {
   CreateTestFile(kTestFile);
 
   base::Time start_time = base::Time::Now() + base::Minutes(34);
-  profile()->GetPrefs()->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
-                                 start_time);
+  profile()->GetPrefs()->SetTime(
+      ash::prefs::kSkyVaultMigrationScheduledStartTime, start_time);
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
       std::make_unique<MockMigrationNotificationManager>(profile());
   EXPECT_CALL(*notification_manager.get(),
@@ -484,7 +484,7 @@ TEST_F(LocalFilesMigrationManagerTest, StoresScheduledTimeToPrefs) {
   base::RunLoop().RunUntilIdle();
 
   base::Time start_time = profile()->GetPrefs()->GetTime(
-      prefs::kSkyVaultMigrationScheduledStartTime);
+      ash::prefs::kSkyVaultMigrationScheduledStartTime);
   EXPECT_FALSE(start_time.is_null());
 }
 
@@ -493,8 +493,8 @@ TEST_F(LocalFilesMigrationManagerTest, StartsNowIfStartTimePast) {
   CreateTestFile(kTestFile);
 
   base::Time start_time = base::Time::Now() - base::Hours(5);
-  profile()->GetPrefs()->SetTime(prefs::kSkyVaultMigrationScheduledStartTime,
-                                 start_time);
+  profile()->GetPrefs()->SetTime(
+      ash::prefs::kSkyVaultMigrationScheduledStartTime, start_time);
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
       std::make_unique<MockMigrationNotificationManager>(profile());
   EXPECT_CALL(*notification_manager.get(), ShowMigrationInfoDialog).Times(0);
@@ -608,8 +608,8 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesDeleteOnSessionStart) {
   base::RunLoop().RunUntilIdle();
 
   // The retry count should be reset.
-  int retry_count =
-      profile()->GetPrefs()->GetInteger(prefs::kSkyVaultMigrationRetryCount);
+  int retry_count = profile()->GetPrefs()->GetInteger(
+      ash::prefs::kSkyVaultMigrationRetryCount);
   EXPECT_EQ(0, retry_count);
 
   histogram_tester_.ExpectBucketCount(
