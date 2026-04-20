@@ -86,6 +86,19 @@ struct Target {
       conversation = DefaultConversation();
 };
 
+// Configuration to override the default ZSS behavior for the invocation,
+// only having an impact if ZSS would be shown for the invocation.
+struct ZssConfig {
+  ZssConfig();
+  explicit ZssConfig(std::optional<std::string> additional_content);
+  ~ZssConfig();
+  ZssConfig(const ZssConfig&);
+  ZssConfig& operator=(const ZssConfig&);
+
+  // Additional content to inject into the body of the ZSS message.
+  std::optional<std::string> additional_content;
+};
+
 // The level of in-flight navigation events allowed without canceling the
 // invocation.
 enum class AllowedInflightNavigation {
@@ -146,6 +159,10 @@ struct GlicInvokeOptions {
   // Whether to suppress the Zero State Suggestions (ZSS) feature for security,
   // privacy, or UX reasons.
   bool disable_zss = false;
+
+  // Configuration to override the default ZSS behavior for the invocation,
+  // only having an impact if ZSS would be shown for the invocation.
+  std::optional<ZssConfig> zss_config;
 
   // If this invocation is used by the skill feature, this specifies its ID.
   std::optional<std::string> skill_id;

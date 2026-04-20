@@ -1636,6 +1636,14 @@ enum FeatureMode {
 };
 
 // @generate glic_api
+// Configuration to override the default ZSS behavior for the invocation,
+// only having an impact if ZSS would be shown for the invocation.
+struct ZssConfig {
+  // Additional content to inject into the body of the ZSS message.
+  string? additional_content;
+};
+
+// @generate glic_api
 // Options for the Invoke method.
 struct InvokeOptions {
   // Source that triggered this invocation.
@@ -1660,6 +1668,9 @@ struct InvokeOptions {
 
   // If this invocation is for a skill, the ID of the skill to use.
   string? skill_id;
+
+  // Configuration to override the default ZSS behavior for the invocation.
+  ZssConfig? zss_config;
 };
 
 // @generate glic_api

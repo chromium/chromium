@@ -16,6 +16,13 @@ ConversationId::~ConversationId() = default;
 ConversationId::ConversationId(const ConversationId&) = default;
 ConversationId& ConversationId::operator=(const ConversationId&) = default;
 
+ZssConfig::ZssConfig() = default;
+ZssConfig::ZssConfig(std::optional<std::string> additional_content)
+    : additional_content(std::move(additional_content)) {}
+ZssConfig::~ZssConfig() = default;
+ZssConfig::ZssConfig(const ZssConfig&) = default;
+ZssConfig& ZssConfig::operator=(const ZssConfig&) = default;
+
 Target::Target() = default;
 Target::Target(Target&&) = default;
 Target& Target::operator=(Target&&) = default;

@@ -89,6 +89,12 @@ export declare interface AdditionalContextPart {
   pendingRegion?: PendingCapturedRegion;
 }
 
+/** Configuration to override the default ZSS behavior for the invocation. */
+export declare interface ZssConfig {
+  /** Additional content to inject into the body of the ZSS message. */
+  additionalContent?: string;
+}
+
 /** Options for invoking Glic. */
 export declare interface InvokeOptions {
   /** Source that triggered this invocation. */
@@ -105,6 +111,8 @@ export declare interface InvokeOptions {
   disableZeroStateSuggestions: boolean;
   /** Skill ID to trigger. */
   skillId?: string;
+  /** Configuration to override the default ZSS behavior for the invocation. */
+  zssConfig?: ZssConfig;
 }
 
 /**

@@ -257,6 +257,13 @@ mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
     mojo_options->skill_id = *options_.skill_id;
   }
 
+  if (options_.zss_config) {
+    auto mojo_zss_config = mojom::ZssConfig::New();
+    mojo_zss_config->additional_content =
+        options_.zss_config->additional_content;
+    mojo_options->zss_config = std::move(mojo_zss_config);
+  }
+
   return mojo_options;
 }
 
