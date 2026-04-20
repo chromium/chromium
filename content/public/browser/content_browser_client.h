@@ -971,6 +971,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual bool IsDataSaverEnabled(BrowserContext* context);
 
+  // Returns whether pinch-to-zoom is allowed for the given BrowserContext.
+  // Defaults to true.
+  virtual bool IsPinchToZoomAllowed(BrowserContext* context);
+
   // Updates the given prefs for Service Worker and Shared Worker. The prefs
   // are to be sent to the renderer process when a worker is created. Note that
   // We don't use this method for Dedicated Workers as they inherit preferences

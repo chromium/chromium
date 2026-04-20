@@ -227,6 +227,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     owner_delegate_ = owner_delegate;
   }
 
+  bool IsPinchToZoomEnabled() const;
+
   RenderWidgetHostOwnerDelegate* owner_delegate() { return owner_delegate_; }
 
   AgentSchedulingGroupHost& agent_scheduling_group() {
@@ -251,7 +253,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const input::NativeWebKeyboardEvent& key_event) override;
   void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) override;
-  RenderProcessHost* GetProcess() override;
+  RenderProcessHost* GetProcess() const override;
   int GetRoutingID() final;
   RenderWidgetHostViewBase* GetView() override;
   const RenderWidgetHostViewBase* GetView() const override;

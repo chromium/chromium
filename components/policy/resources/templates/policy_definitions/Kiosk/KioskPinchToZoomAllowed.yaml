@@ -1,0 +1,24 @@
+caption: Allow pinch-to-zoom in Kiosk mode
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset means pinch-to-zoom is allowed in a Kiosk session.
+
+  Setting the policy to Disabled means pinch-to-zoom is not allowed in a Kiosk session.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow pinch-to-zoom in Kiosk mode
+  value: true
+- caption: Disable pinch-to-zoom in Kiosk mode
+  value: false
+owners:
+- poromov@google.com
+- file://chromeos/components/kiosk/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:149-
+tags: []
+type: main

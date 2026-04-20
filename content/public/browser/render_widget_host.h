@@ -189,7 +189,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) = 0;
 
-  virtual RenderProcessHost* GetProcess() = 0;
+  virtual RenderProcessHost* GetProcess() const = 0;
 
   virtual int GetRoutingID() = 0;
 

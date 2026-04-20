@@ -213,6 +213,7 @@ void KioskBrowserSession::RegisterProfilePrefs(
       ash::prefs::kKioskBrowserPermissionsAllowedForOrigins,
       PrefRegistrySimple::NO_REGISTRATION_FLAGS);
   registry->RegisterBooleanPref(ash::prefs::kKioskWebAppOfflineEnabled, true);
+  registry->RegisterBooleanPref(ash::prefs::kKioskPinchToZoomAllowed, true);
   registry->RegisterBooleanPref(ash::prefs::kKioskChromeAppsForceAllowed,
                                 false);
   registry->RegisterBooleanPref(

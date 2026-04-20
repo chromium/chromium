@@ -564,6 +564,11 @@ bool ContentBrowserClient::IsDataSaverEnabled(BrowserContext* context) {
   return false;
 }
 
+bool ContentBrowserClient::IsPinchToZoomAllowed(BrowserContext* context) {
+  DCHECK(context);
+  return true;
+}
+
 void ContentBrowserClient::UpdateRendererPreferencesForWorker(
     BrowserContext* browser_context,
     blink::RendererPreferences* out_prefs) {

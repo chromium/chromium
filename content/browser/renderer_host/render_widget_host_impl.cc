@@ -52,6 +52,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/switches.h"
 #include "components/input/timeout_monitor.h"
 #include "components/input/utils.h"
 #include "components/viz/common/features.h"
@@ -91,15 +92,18 @@
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/tracked_element_observer.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -585,7 +589,7 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
   GetRenderInputRouter()->SetView(view);
 }
 
-RenderProcessHost* RenderWidgetHostImpl::GetProcess() {
+RenderProcessHost* RenderWidgetHostImpl::GetProcess() const {
   return agent_scheduling_group_->GetProcess();
 }
 
@@ -2698,6 +2702,15 @@ void RenderWidgetHostImpl::NotifyObserversOfInputEventAcks(
 bool RenderWidgetHostImpl::PreHandleGestureEvent(
     const blink::WebGestureEvent& event) {
   return delegate()->PreHandleGestureEvent(event);
+}
+
+bool RenderWidgetHostImpl::IsPinchToZoomEnabled() const {
+  if (!input::switches::IsPinchToZoomEnabled()) {
+    return false;
+  }
+
+  return GetContentClient()->browser()->IsPinchToZoomAllowed(
+      GetProcess()->GetBrowserContext());
 }
 
 std::unique_ptr<viz::PeakGpuMemoryTracker>

@@ -2871,6 +2871,10 @@ inline constexpr char kKioskChromeAppsForceAllowed[] =
 // This setting resides in local state.
 inline constexpr char kKioskMetrics[] = "kiosk-metrics";
 
+// A boolean pref that controls whether pinch-to-zoom is allowed in kiosk mode.
+inline constexpr char kKioskPinchToZoomAllowed[] =
+    "policy.kiosk_pinch_to_zoom_allowed";
+
 // A boolean pref which determines whether kiosk troubleshooting tools are
 // enabled.
 inline constexpr char kKioskTroubleshootingToolsEnabled[] =

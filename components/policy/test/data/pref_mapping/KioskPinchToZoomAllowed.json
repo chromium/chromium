@@ -1,0 +1,16 @@
+[
+    {
+        "os": [
+            "chromeos"
+        ],
+        "simple_policy_pref_mapping_test": {
+            "pref_name": "policy.kiosk_pinch_to_zoom_allowed",
+            "pref_location": "user_profile",
+            "default_value": true,
+            "values_to_test": [
+                true,
+                false
+            ]
+        }
+    }
+]

@@ -3188,6 +3188,17 @@ bool ChromeContentBrowserClient::IsDataSaverEnabled(
   return data_saver::IsDataSaverEnabled();
 }
 
+bool ChromeContentBrowserClient::IsPinchToZoomAllowed(
+    content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsRunningInAppMode()) {
+    return user_prefs::UserPrefs::Get(context)->GetBoolean(
+        ash::prefs::kKioskPinchToZoomAllowed);
+  }
+#endif
+  return true;
+}
+
 void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(
     content::BrowserContext* browser_context,
     blink::RendererPreferences* out_prefs) {
