@@ -1,0 +1,11 @@
+Tests that DevTools can request the content of a sandboxed iframe without a crash (crbug.com/500193041)
+frame.url: http://devtools.oopif-a.test:8000/inspector-protocol/network/resources/cached.php
+{
+    error : {
+        code : -32000
+        message : No resource with given URL found
+    }
+    id : <number>
+    sessionId : <string>
+}
+
