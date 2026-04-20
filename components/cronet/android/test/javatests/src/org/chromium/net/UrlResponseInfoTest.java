@@ -58,16 +58,14 @@ public class UrlResponseInfoTest {
 
         assertThat(info).hasUrlChainThat().isEqualTo(urlChain);
         assertThat(info).hasUrlThat().isEqualTo(urlChain.get(urlChain.size() - 1));
-        assertThrows(
-                UnsupportedOperationException.class, () -> info.getUrlChain().add("example.com"));
+        List<String> list = info.getUrlChain();
+        assertThrows(UnsupportedOperationException.class, () -> list.add("example.com"));
         assertThat(info).hasHttpStatusCodeThat().isEqualTo(httpStatusCode);
         assertThat(info).hasHttpStatusTextThat().isEqualTo(httpStatusText);
         assertThat(info).hasHeadersListThat().isEqualTo(allHeadersList);
-        assertThrows(
-                UnsupportedOperationException.class,
-                () ->
-                        info.getAllHeadersAsList()
-                                .add(new AbstractMap.SimpleImmutableEntry<>("X", "Y")));
+        var headersList = info.getAllHeadersAsList();
+        var newEntry = new AbstractMap.SimpleImmutableEntry<>("X", "Y");
+        assertThrows(UnsupportedOperationException.class, () -> headersList.add(newEntry));
         assertThat(info)
                 .hasHeadersThat()
                 .containsExactly(header.getKey(), Arrays.asList(header.getValue()));

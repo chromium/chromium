@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetException;
+import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.TestRequestFinishedListener;
 import org.chromium.net.UrlRequest;
@@ -78,13 +79,9 @@ public class FakeCronetEngineTest {
     public void testShutdownEngineThrowsExceptionWhenApiCalled() {
         mFakeCronetEngine.shutdown();
 
-        IllegalStateException e =
-                assertThrows(
-                        IllegalStateException.class,
-                        () ->
-                                mFakeCronetEngine
-                                        .newUrlRequestBuilder("", mCallback, mExecutor)
-                                        .build());
+        ExperimentalUrlRequest.Builder builder =
+                mFakeCronetEngine.newUrlRequestBuilder("", mCallback, mExecutor);
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> builder.build());
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo(

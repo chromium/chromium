@@ -195,29 +195,23 @@ public final class ResolvedFlagsTest {
     @Test
     @SmallTest
     public void testResolve_throwsOnEmptyCronetVersion() {
+        Flags flags = Flags.newBuilder().build();
         assertThrows(
                 IllegalArgumentException.class,
-                () -> {
-                    ResolvedFlags.resolve(
-                            Flags.newBuilder().build(),
-                            "test_app_id",
-                            "",
-                            /* isTelemetryEnabled= */ true);
-                });
+                () ->
+                        ResolvedFlags.resolve(
+                                flags, "test_app_id", "", /* isTelemetryEnabled= */ true));
     }
 
     @Test
     @SmallTest
     public void testResolve_throwsOnInvalidCronetVersion() {
+        Flags flags = Flags.newBuilder().build();
         assertThrows(
                 IllegalArgumentException.class,
-                () -> {
-                    ResolvedFlags.resolve(
-                            Flags.newBuilder().build(),
-                            "test_app_id",
-                            "1.2.a.4",
-                            /* isTelemetryEnabled= */ true);
-                });
+                () ->
+                        ResolvedFlags.resolve(
+                                flags, "test_app_id", "1.2.a.4", /* isTelemetryEnabled= */ true));
     }
 
     @Test

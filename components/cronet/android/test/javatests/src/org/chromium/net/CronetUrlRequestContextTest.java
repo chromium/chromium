@@ -1678,10 +1678,10 @@ public class CronetUrlRequestContextTest {
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
 
+        String fileName = file.getPath();
         Exception e =
                 assertThrows(
-                        Exception.class,
-                        () -> cronetEngine.startNetLogToFile(file.getPath(), false));
+                        Exception.class, () -> cronetEngine.startNetLogToFile(fileName, false));
         assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
         assertThat(hasBytesInNetLog(file)).isFalse();
         assertThat(file.delete()).isTrue();
@@ -1708,12 +1708,11 @@ public class CronetUrlRequestContextTest {
         assertThat(netLogDir.exists()).isFalse();
         assertThat(netLogDir.mkdir()).isTrue();
         File logFile = new File(netLogDir, "netlog.json");
+        String dirPath = netLogDir.getPath();
         Exception e =
                 assertThrows(
                         Exception.class,
-                        () ->
-                                cronetEngine.startNetLogToDisk(
-                                        netLogDir.getPath(), false, MAX_FILE_SIZE));
+                        () -> cronetEngine.startNetLogToDisk(dirPath, false, MAX_FILE_SIZE));
         assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
         assertThat(logFile.exists()).isFalse();
         FileUtils.recursivelyDeleteFile(netLogDir);

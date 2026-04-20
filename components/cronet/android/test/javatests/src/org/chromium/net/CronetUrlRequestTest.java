@@ -143,15 +143,15 @@ public class CronetUrlRequestTest {
     public void testBuilderChecks() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
+        ExperimentalCronetEngine experimentalCronetEngine =
+                mTestRule.getTestFramework().getEngine();
+        ExecutorService executor = callback.getExecutor();
         NullPointerException e =
                 assertThrows(
                         NullPointerException.class,
                         () ->
-                                mTestRule
-                                        .getTestFramework()
-                                        .getEngine()
-                                        .newUrlRequestBuilder(
-                                                null, callback, callback.getExecutor()));
+                                experimentalCronetEngine.newUrlRequestBuilder(
+                                        null, callback, executor));
         assertThat(e).hasMessageThat().isEqualTo("URL is required.");
 
         e =
@@ -586,6 +586,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("AssertThrowsMinimizer") // Sometimes on .build(), sometimes on .start()
     public void testBadMethod() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -601,6 +602,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("AssertThrowsMinimizer") // Sometimes on .build(), sometimes on .start()
     public void testBadHeaderName() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -644,6 +646,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("AssertThrowsMinimizer") // Sometimes on .build(), sometimes on .start()
     public void testBadHeaderValue() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -1365,6 +1368,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("AssertThrowsMinimizer") // Sometimes on .build(), sometimes on .start()
     public void testUploadSetDataProvider() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -1376,10 +1380,11 @@ public class CronetUrlRequestTest {
                                 callback,
                                 callback.getExecutor());
 
+        ExecutorService executor = callback.getExecutor();
         NullPointerException e =
                 assertThrows(
                         NullPointerException.class,
-                        () -> builder.setUploadDataProvider(null, callback.getExecutor()));
+                        () -> builder.setUploadDataProvider(null, executor));
         assertThat(e).hasMessageThat().isEqualTo("Invalid UploadDataProvider.");
 
         TestUploadDataProvider dataProvider =
@@ -3125,9 +3130,8 @@ public class CronetUrlRequestTest {
             // itself at bind time, not at request execution time.
             // Note: this will never happen in prod, as translation failure can only happen if we're
             // given a fake networkHandle.
-            assertThrows(
-                    IllegalArgumentException.class,
-                    () -> builder.bindToNetwork(-150 /* invalid network handle */).build());
+            builder.bindToNetwork(-150 /* invalid network handle */);
+            assertThrows(IllegalArgumentException.class, builder::build);
             return;
         }
 

@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -162,12 +163,11 @@ public class FakeUrlRequestTest {
     @SmallTest
     public void testBuilderChecks() {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        ExecutorService executor = callback.getExecutor();
         NullPointerException e =
                 assertThrows(
                         NullPointerException.class,
-                        () ->
-                                mFakeCronetEngine.newUrlRequestBuilder(
-                                        null, callback, callback.getExecutor()));
+                        () -> mFakeCronetEngine.newUrlRequestBuilder(null, callback, executor));
         assertThat(e).hasMessageThat().isEqualTo("URL is required.");
 
         e =
@@ -194,7 +194,7 @@ public class FakeUrlRequestTest {
         UrlRequest.Builder builder =
                 mFakeCronetEngine.newUrlRequestBuilder("url", callback, callback.getExecutor());
         NullPointerException e =
-                assertThrows(NullPointerException.class, () -> builder.setHttpMethod(null).build());
+                assertThrows(NullPointerException.class, () -> builder.setHttpMethod(null));
         assertThat(e).hasMessageThat().isEqualTo("Method is required.");
     }
 
@@ -205,10 +205,9 @@ public class FakeUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mFakeCronetEngine.newUrlRequestBuilder("url", callback, callback.getExecutor());
+        builder.setHttpMethod(method);
         IllegalArgumentException e =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> builder.setHttpMethod(method).build());
+                assertThrows(IllegalArgumentException.class, () -> builder.build());
         assertThat(e).hasMessageThat().isEqualTo("Invalid http method: " + method);
     }
 
@@ -911,10 +910,11 @@ public class FakeUrlRequestTest {
 
         mFakeCronetController.addResponseMatcher(new EchoBodyResponseMatcher());
 
+        ExecutorService executor = callback.getExecutor();
         NullPointerException e =
                 assertThrows(
                         NullPointerException.class,
-                        () -> builder.setUploadDataProvider(null, callback.getExecutor()));
+                        () -> builder.setUploadDataProvider(null, executor));
         assertThat(e).hasMessageThat().isEqualTo("Invalid UploadDataProvider.");
     }
 
@@ -934,8 +934,7 @@ public class FakeUrlRequestTest {
                 new TestUploadDataProvider(
                         TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
-        IllegalArgumentException e =
-                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, builder::build);
         assertThat(e)
                 .hasMessageThat()
                 .isEqualTo("Requests with upload data must have a Content-Type.");

@@ -285,16 +285,15 @@ public class ExperimentalOptionsTest {
     // Experimental options should be specified through a JSON compliant string. When that is not
     // the case building a Cronet engine should fail.
     public void testWrongJsonExperimentalOptions() throws Exception {
+        CronetTestFramework cronetTestFramework = mTestRule.getTestFramework();
         IllegalArgumentException e =
                 assertThrows(
                         IllegalArgumentException.class,
                         () ->
-                                mTestRule
-                                        .getTestFramework()
-                                        .applyEngineBuilderPatch(
-                                                (builder) ->
-                                                        builder.setExperimentalOptions(
-                                                                "Not a serialized JSON object")));
+                                cronetTestFramework.applyEngineBuilderPatch(
+                                        builder ->
+                                                builder.setExperimentalOptions(
+                                                        "Not a serialized JSON object")));
         // The top level exception is a side effect of using applyEngineBuilderPatch
         assertThat(e).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
         assertThat(e)
