@@ -1197,6 +1197,29 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TcpFailAfterNeedsClientAuth) {
             HostPortPair::FromSchemeHostPort(kDestination));
 }
 
+// Verifies the AttemptManager's base SSLConfig allows TLS renegotiation for
+// HTTP/1.1 but not HTTP/2.
+TEST_F(HttpStreamPoolAttemptManagerTest, BaseSSLConfigAllowsRenegotiation) {
+  // Keep DNS resolution pending so the AttemptManager stays alive.
+  resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(url::SchemeHostPort(GURL("https://a.test")))
+      .RequestStream(pool());
+
+  AttemptManager* attempt_manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .attempt_manager();
+  ASSERT_TRUE(attempt_manager);
+
+  SSLConfig ssl_config = attempt_manager->GetBaseSSLConfig();
+
+  EXPECT_TRUE(ssl_config.renego_allowed_default);
+  EXPECT_THAT(ssl_config.renego_allowed_for_protos,
+              testing::ElementsAre(NextProto::kProtoHTTP11));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, RequestCanceledBeforeAttemptSuccess) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();

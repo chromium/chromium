@@ -228,6 +228,26 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     ssl_config.network_anonymization_key =
         stream_key().network_anonymization_key();
 
+    // Prior to HTTP/2 and SPDY, some servers used TLS renegotiation to
+    // request TLS client authentication after the HTTP request was sent.
+    // The initial TLS handshake completes without requesting a client
+    // certificate; the server then sends a HelloRequest to trigger a
+    // renegotiation that includes a CertificateRequest. Allow
+    // renegotiation for only those connections.
+    //
+    // Note that this does NOT implement the provision in
+    // https://http2.github.io/http2-spec/#rfc.section.9.2.1 which allows
+    // the server to request a renegotiation immediately before sending the
+    // connection preface as waiting for the preface would cost the round
+    // trip that False Start otherwise saves.
+    //
+    // TODO(crbug.com/502745043): AttemptManager currently only handles
+    // direct (non-proxied) connections, so renegotiation is unconditionally
+    // allowed. Once HEv3 supports proxied connections, renegotiation must
+    // be disabled for connections tunneled through a proxy.
+    ssl_config.renego_allowed_default = true;
+    ssl_config.renego_allowed_for_protos = {NextProto::kProtoHTTP11};
+
     base_ssl_config_.emplace(std::move(ssl_config));
   }
 }
