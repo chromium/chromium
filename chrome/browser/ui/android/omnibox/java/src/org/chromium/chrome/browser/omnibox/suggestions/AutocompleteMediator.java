@@ -1870,25 +1870,31 @@ class AutocompleteMediator
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        if (!isInInputSession()) return;
+        boolean showSuggestionsContainer = isTopResumedActivity;
 
-        if (isTopResumedActivity) {
-            installAutocompleteObservers();
-            onInputChanged();
-        } else {
-            stopAutocomplete(/* clear= */ true);
-            removeAutocompleteObservers();
+        if (isInInputSession()) {
+            // Always set the window activity focused property to true for hub search so that the
+            // dropdown container persists when search activity is dismissed.
+            // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
+            // exiting hub search that dismisses the URL bar and suggestions list together.
+            showSuggestionsContainer |=
+                    mAutocompleteInput.getPageClassification()
+                            == PageClassification.ANDROID_HUB_VALUE;
+
+            if (isTopResumedActivity) {
+                installAutocompleteObservers();
+                onInputChanged();
+            } else {
+                stopAutocomplete(/* clear= */ true);
+                removeAutocompleteObservers();
+            }
         }
 
-        // Always set the window activity focused property to true for hub search so that the
-        // dropdown container persists when search activity is dismissed.
-        // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
-        // exiting hub search that dismisses the URL bar and suggestions list together.
+        // TODO(crbug.com/390011136): Find a better / more appropriate name for this property. It is
+        // a misnomer: this property doesn't reflect activity window focus, but the intent to show
+        // the suggestions list container.
         mListPropertyModel.set(
-                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED,
-                mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE
-                        ? true
-                        : isTopResumedActivity);
+                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, showSuggestionsContainer);
     }
 
     /**
