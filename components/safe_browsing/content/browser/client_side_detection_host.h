@@ -252,6 +252,7 @@ class ClientSideDetectionHost
   friend class ClientSideDetectionHostCreditCardFormTest;
   friend class ClientSideDetectionHostClipboardDataTest;
   friend class ClientSideDetectionHostGeminiAntiscamProtectionTest;
+  friend class ClientSideDetectionHostPriorityTest;
   friend class ClientSideDetectionHostPrerenderBrowserTest_Screenshot;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
@@ -568,6 +569,13 @@ class ClientSideDetectionHost
   bool HasDonePreclassificationCheckOnSameURL(
       ClientSideDetectionType client_side_detection_type,
       std::optional<std::string> credit_card_form_event);
+
+  // Returns true if the new request type has a higher or same priority tier
+  // than the last request type.
+  bool NewRequestTypeTierHigher(ClientSideDetectionType new_request_type);
+
+  // Returns the tier value for the given request type.
+  int GetTierValue(ClientSideDetectionType request_type);
 
   // OnCreditCardFormVisitCount is a callback that is called when site
   // visit count on a credit card form event is complete, at which point

@@ -480,6 +480,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.BlockingRequestType{RequestType}"
+    enum="ClientSideDetectionType" expires_after="2026-09-01">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the ongoing request type that blocked a new request of type
+    {RequestType} due to the new request having a lower or same priority tier.
+    Logged in ClientSideDetectionHost::MaybeStartPreClassification when a new
+    trigger occurs while another classification is already in progress.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
     enum="BooleanReady" expires_after="2026-09-27">
   <owner>andysjlim@chromium.org</owner>

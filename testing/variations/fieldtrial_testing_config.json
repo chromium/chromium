@@ -5814,6 +5814,28 @@
             ]
         }
     ],
+    "ClientSideDetectionBypassTiers": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ClientSideDetectionBypassTiersList": ""
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionBypassTiers"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionClipboardCopyApi": [
         {
             "platforms": [
@@ -6034,6 +6056,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ClientSideDetectionSkipErrorPage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ClientSideDetectionTierSystem": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionTierSystem"
                     ]
                 }
             ]

@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -52,6 +53,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/zoom/zoom_controller.h"
@@ -921,7 +923,19 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   // Cancel any pending classification request.
   // TODO(b/447359124): Support multiple classifications on the same page.
   if (classification_request_.get()) {
-    classification_request_->Cancel(request_type);
+    if (base::FeatureList::IsEnabled(kClientSideDetectionTierSystem)) {
+      if (NewRequestTypeTierHigher(request_type)) {
+        classification_request_->Cancel(request_type);
+      } else {
+        base::UmaHistogramExactLinear(
+            base::StrCat({"SBClientPhishing.BlockingRequestType.",
+                          GetRequestTypeName(request_type)}),
+            last_request_type_, ClientSideDetectionType_MAX + 1);
+        return;
+      }
+    } else {
+      classification_request_->Cancel(request_type);
+    }
   }
 
   if (!csd_service_) {
@@ -1820,6 +1834,14 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
       }
       *verdict->mutable_image_feature_embedding() =
           std::move(embedding.value());
+      // Tier 2 and higher will add embedding metadata information because lower
+      // tiers process and require the embedding metadata phishy condition to
+      // go further, whereas tier 2 and above do not.
+      if (base::FeatureList::IsEnabled(kClientSideDetectionTierSystem) &&
+          GetClientSideDetectionTypeTier(
+              verdict->client_side_detection_type()) <= 2) {
+        csd_service_->ClassifyThroughEmbeddings(verdict.get());
+      }
     } else {
       VLOG(0) << "Failed to parse image feature embedding.";
     }
@@ -2442,6 +2464,38 @@ void ClientSideDetectionHost::
     set_high_confidence_allowlist_acceptance_rate_for_testing(
         float acceptance_rate) {
   probability_for_accepting_hc_allowlist_trigger_ = acceptance_rate;
+}
+
+bool ClientSideDetectionHost::NewRequestTypeTierHigher(
+    ClientSideDetectionType new_request_type) {
+  if (last_request_type_ ==
+      ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionBypassTiers)) {
+    std::string bypass_tiers_list_str =
+        kClientSideDetectionBypassTiersList.Get();
+    if (!bypass_tiers_list_str.empty()) {
+      std::vector<std::string> bypass_tiers =
+          base::SplitString(bypass_tiers_list_str, ",", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_NONEMPTY);
+      for (const std::string& tier_str : bypass_tiers) {
+        int tier_val;
+        if (base::StringToInt(tier_str, &tier_val) &&
+            static_cast<int>(new_request_type) == tier_val) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return GetTierValue(new_request_type) < GetTierValue(last_request_type_);
+}
+
+int ClientSideDetectionHost::GetTierValue(
+    ClientSideDetectionType request_type) {
+  return GetClientSideDetectionTypeTier(request_type);
 }
 
 }  // namespace safe_browsing

@@ -791,47 +791,58 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
         client_side_phishing_model_->GetTriggerModelVersion());
   }
 
-  auto target_image_embeddings =
-      client_side_phishing_model_->GetTargetImageEmbeddings();
-  if (!target_image_embeddings.empty() && !verdict->is_phishing() &&
-      verdict->has_image_feature_embedding()) {
-    if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
-      verdict->mutable_image_feature_embedding()->set_embedding_model_version(
-          client_side_phishing_model_->GetImageEmbeddingModelVersion());
-    }
-
-    // Create a FeatureVector from the ImageFeatureEmbedding.
-    tflite::task::vision::FeatureVector feature_vector;
-    for (float image_embedding_value :
-         verdict->image_feature_embedding().embedding_value()) {
-      feature_vector.add_value_float(image_embedding_value);
-    }
-    // Compare newly made FeatureVector to target image embeddings.
-    for (const TargetEmbedding& target_image_embedding :
-         target_image_embeddings) {
-      tflite::support::StatusOr<double> similarity =
-          tflite::task::vision::ImageEmbedder::CosineSimilarity(
-              target_image_embedding.embedding, feature_vector);
-      if (similarity.ok() &&
-          similarity.value() >= target_image_embedding.threshold) {
-        verdict->set_is_phishing(true);
-        ClientPhishingRequest::EmbeddingMatchMetadata embedding_match_metadata;
-        const auto& value_floats =
-            target_image_embedding.embedding.value_float();
-        embedding_match_metadata.set_id(
-            ClientSidePhishingModel::GetHashFromEmbedding(
-                std::vector<float>(value_floats.begin(), value_floats.end())));
-        embedding_match_metadata.set_score(similarity.value());
-        *verdict->mutable_target_image_embedding_score() =
-            embedding_match_metadata;
-        break;
-      }
-    }
+  if (!verdict->is_phishing() && verdict->has_image_feature_embedding()) {
+    ClassifyThroughEmbeddings(verdict);
   }
 
   base::UmaHistogramEnumeration(
       "SBClientPhishing.ClassifyThresholdsResult",
       SBClientDetectionClassifyThresholdsResult::kSuccess);
+}
+
+void ClientSideDetectionService::ClassifyThroughEmbeddings(
+    ClientPhishingRequest* verdict) {
+  auto target_image_embeddings =
+      client_side_phishing_model_->GetTargetImageEmbeddings();
+  if (target_image_embeddings.empty()) {
+    return;
+  }
+
+  if (!verdict->has_image_feature_embedding()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+    verdict->mutable_image_feature_embedding()->set_embedding_model_version(
+        client_side_phishing_model_->GetImageEmbeddingModelVersion());
+  }
+
+  // Create a FeatureVector from the ImageFeatureEmbedding.
+  tflite::task::vision::FeatureVector feature_vector;
+  for (float image_embedding_value :
+       verdict->image_feature_embedding().embedding_value()) {
+    feature_vector.add_value_float(image_embedding_value);
+  }
+  // Compare newly made FeatureVector to target image embeddings.
+  for (const TargetEmbedding& target_image_embedding :
+       target_image_embeddings) {
+    tflite::support::StatusOr<double> similarity =
+        tflite::task::vision::ImageEmbedder::CosineSimilarity(
+            target_image_embedding.embedding, feature_vector);
+    if (similarity.ok() &&
+        similarity.value() >= target_image_embedding.threshold) {
+      verdict->set_is_phishing(true);
+      ClientPhishingRequest::EmbeddingMatchMetadata embedding_match_metadata;
+      const auto& value_floats = target_image_embedding.embedding.value_float();
+      embedding_match_metadata.set_id(
+          ClientSidePhishingModel::GetHashFromEmbedding(
+              std::vector<float>(value_floats.begin(), value_floats.end())));
+      embedding_match_metadata.set_score(similarity.value());
+      *verdict->mutable_target_image_embedding_score() =
+          embedding_match_metadata;
+      break;
+    }
+  }
 }
 
 base::WeakPtr<ClientSideDetectionService>

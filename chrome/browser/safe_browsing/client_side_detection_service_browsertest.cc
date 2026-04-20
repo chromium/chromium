@@ -206,6 +206,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   // Case 1: ClientPhishingRequest's image embedding doesn't meet threshold.
   ClientPhishingRequest request = CreateMinimumClientPhishingRequest();
+  request.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
 
   // Add an image_feature_embedding that will match.
   auto* features = request.mutable_image_feature_embedding();
@@ -221,6 +223,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   // Case 2: Visual TFLite already flagged the page phishy.
   ClientPhishingRequest request2 = CreateMinimumClientPhishingRequest();
+  request2.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
 
   // Add an image_feature_embedding that will match.
   auto* features2 = request2.mutable_image_feature_embedding();
@@ -251,6 +255,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   LoadVisualTfLiteModel();
 
   ClientPhishingRequest request = CreateMinimumClientPhishingRequest();
+  request.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
 
   // Setup TargetEmbeddings.
   float threshold = 0.95;

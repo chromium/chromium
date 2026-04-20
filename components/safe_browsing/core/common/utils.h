@@ -94,6 +94,9 @@ std::string_view GetExtraExtraMetricsSuffix(
 std::string GetThreatTypeStringForInterstitial(
     safe_browsing::SBThreatType threat_type);
 
+// Returns the tier value for the given ClientSideDetectionType.
+int GetClientSideDetectionTypeTier(ClientSideDetectionType type);
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_

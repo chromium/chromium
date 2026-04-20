@@ -61,6 +61,12 @@ BASE_FEATURE(kBundledSecuritySettings, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBundledSecuritySettingsSecureDnsV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionBypassTiers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<std::string> kClientSideDetectionBypassTiersList{
+    &kClientSideDetectionBypassTiers, "ClientSideDetectionBypassTiersList",
+    /*default_value=*/""};
+
 BASE_FEATURE(kClientSideDetectionClipboardCopyApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<double> kCsdClipboardCopyApiHCAcceptanceRate{
@@ -173,6 +179,8 @@ constexpr base::FeatureParam<int> kClientSideDetectionServerModelMaxScansPerDay{
 
 BASE_FEATURE(kClientSideDetectionSkipErrorPage,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClientSideDetectionTierSystem, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConditionalImageResize, base::FEATURE_DISABLED_BY_DEFAULT);
 

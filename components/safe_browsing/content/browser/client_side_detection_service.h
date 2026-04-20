@@ -183,6 +183,8 @@ class ClientSideDetectionService
   virtual void ClassifyPhishingThroughThresholds(
       ClientPhishingRequest* verdict);
 
+  virtual void ClassifyThroughEmbeddings(ClientPhishingRequest* verdict);
+
   // Returns the list of target image embeddings.
   virtual const std::vector<TargetEmbedding>& GetTargetImageEmbeddings();
 

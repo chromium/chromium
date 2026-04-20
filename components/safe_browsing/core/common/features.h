@@ -58,6 +58,14 @@ BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 // also enabled.
 BASE_DECLARE_FEATURE(kBundledSecuritySettingsSecureDnsV2);
 
+// Allows a list of ClientSideDetectionType to bypass the priority tier check.
+BASE_DECLARE_FEATURE(kClientSideDetectionBypassTiers);
+// The tier list below will be in form of the integer value of the
+// ClientSideDetectionType which will bypass the system. Example: "1,2" will
+// allow trigger type FORCE_REQUEST and TRIGGER_MODELS to bypass all others.
+extern const base::FeatureParam<std::string>
+    kClientSideDetectionBypassTiersList;
+
 // Expand CSPP beyond phishing and trigger when clipboard copy API is called on
 // the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionClipboardCopyApi);
@@ -155,6 +163,8 @@ extern const base::FeatureParam<int>
 #endif
 
 BASE_DECLARE_FEATURE(kClientSideDetectionSkipErrorPage);
+
+BASE_DECLARE_FEATURE(kClientSideDetectionTierSystem);
 
 // Set a RESIZE_BEST preference for image resizing algorithm in Client Side
 // Detection renderer processes for both image classification and image
