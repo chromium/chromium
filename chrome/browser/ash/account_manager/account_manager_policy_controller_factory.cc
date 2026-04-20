@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
@@ -53,13 +52,6 @@ AccountManagerPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
   if (!account_manager)
     return nullptr;
 
-  auto* account_manager_facade =
-      AccountManagerFactory::Get()->GetAccountManagerFacade(
-          profile->GetPath().value());
-
-  if (!account_manager_facade)
-    return nullptr;
-
   const user_manager::User* const user =
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   if (!user)
@@ -67,7 +59,6 @@ AccountManagerPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<AccountManagerPolicyController> service =
       std::make_unique<AccountManagerPolicyController>(profile, account_manager,
-                                                       account_manager_facade,
                                                        user->GetAccountId());
   // Auto-start the Service.
   service->Start();

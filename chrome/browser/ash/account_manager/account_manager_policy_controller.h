@@ -21,7 +21,6 @@
 class Profile;
 
 namespace account_manager {
-class AccountManagerFacade;
 class AccountManager;
 }
 
@@ -33,7 +32,6 @@ class AccountManagerPolicyController : public KeyedService {
   AccountManagerPolicyController(
       Profile* profile,
       account_manager::AccountManager* account_manager,
-      account_manager::AccountManagerFacade* account_manager_facade,
       const AccountId& device_account_id);
 
   AccountManagerPolicyController(const AccountManagerPolicyController&) =
@@ -66,7 +64,6 @@ class AccountManagerPolicyController : public KeyedService {
   // Non-owning pointers.
   const raw_ptr<Profile> profile_;
   const raw_ptr<account_manager::AccountManager> account_manager_;
-  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 
   const AccountId device_account_id_;
 

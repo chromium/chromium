@@ -27,7 +27,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/session_manager/core/session_manager.h"
@@ -121,14 +120,14 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
   }
 
   std::vector<::account_manager::Account> GetAccountManagerAccounts() {
-    auto* account_manager_facade =
-        ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+    auto* account_manager =
+        ash::AccountManagerFactory::Get()->GetAccountManager(
             profile_->GetPath().value());
-    CHECK(account_manager_facade);
+    CHECK(account_manager);
 
     base::test::TestFuture<const std::vector<::account_manager::Account>&>
         future;
-    account_manager_facade->GetAccounts(future.GetCallback());
+    account_manager->GetAccounts(future.GetCallback());
     return future.Get();
   }
 
