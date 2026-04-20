@@ -184,7 +184,6 @@ public class StripLayoutTab extends StripLayoutView {
     private final Size mCloseButtonSize;
     private TintedCompositorButton mCloseButton;
 
-    private boolean mIsClosed;
     private boolean mIsSelected;
     private boolean mIsPinned;
     private float mPinnedTabFaviconOffsetX;
@@ -195,7 +194,6 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mStartDividerVisible;
     private boolean mEndDividerVisible;
     private boolean mForceHideEndDivider;
-    private boolean mSkipAsyncClosure;
     private float mBottomMargin;
     private float mContainerOpacity;
     private @MediaState int mMediaState;
@@ -698,45 +696,6 @@ public class StripLayoutTab extends StripLayoutView {
     @Override
     public void setIncognito(boolean incognito) {
         assert false : "Incognito state of a tab cannot change";
-    }
-
-    /**
-     * Mark this tab as closed. We can't immediately remove the tab from the TabModel, since doing
-     * so may result in a concurrent modification exception. Track here to treat as removed.
-     *
-     * @param isClosed Whether or not the tab should be treated as closed.
-     */
-    public void setIsClosed(boolean isClosed) {
-        mIsClosed = isClosed;
-    }
-
-    /**
-     * Closed tabs should have been removed from the TabModel and mStripTabs. We can't do so
-     * immediately, however, since we may try to do so when we are committing all tab closures,
-     * resulting in a concurrent modification exception. We instead post the removal and mark such
-     * tabs as closed.
-     *
-     * @return Whether or not the tab should be treated as closed.
-     */
-    public boolean isClosed() {
-        return mIsClosed;
-    }
-
-    /**
-     * Mark that this tab is closing through the new tab closure flow, and needs to skip the async
-     * closure from the old tab closure flow. Can be removed once the migration is complete. See
-     * crbug.com/443337907.
-     */
-    public void setSkipAsyncClosure(boolean skipAsyncClosure) {
-        mSkipAsyncClosure = skipAsyncClosure;
-    }
-
-    /**
-     * Returns true if the tab should skip the async closure from the old tab closure flow. Can be
-     * removed once the migration is complete. See crbug.com/443337907.
-     */
-    public boolean shouldSkipAsyncClosure() {
-        return mSkipAsyncClosure;
     }
 
     /**

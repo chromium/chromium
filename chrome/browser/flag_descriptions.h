@@ -6034,13 +6034,6 @@ inline constexpr char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
 
-inline constexpr char kTabStripCloseRefactorAndroidName[] =
-    "Tab Strip Close Refactor";
-inline constexpr char kTabStripCloseRefactorAndroidDescription[] =
-    "Enables the refactored changes for the tab strip close button flow. This "
-    "immediately removes the tab from the model and allows for group titles to "
-    "animate closing as well.";
-
 inline constexpr char kTabStripDensityChangeAndroidName[] =
     "Tab Strip Density Change";
 inline constexpr char kTabStripDensityChangeAndroidDescription[] =

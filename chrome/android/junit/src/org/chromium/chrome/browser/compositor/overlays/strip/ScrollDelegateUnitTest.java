@@ -146,7 +146,7 @@ public class ScrollDelegateUnitTest {
         // Tab 2 has a trailing margin.
         when(mTab2.getTrailingMargin()).thenReturn(TRAILING_MARGIN_WIDTH);
         // Tabs 3 and 4 will be ignored.
-        when(mTab3.isClosed()).thenReturn(true);
+        when(mTab3.isDraggedOffStrip()).thenReturn(true);
         when(mTab4.isDraggedOffStrip()).thenReturn(true);
         setupDragDropState();
 
