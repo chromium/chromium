@@ -260,7 +260,7 @@ public class JniPaymentApp extends PaymentApp {
     @Override
     public void dismissInstrument() {
         if (mNativeObject == 0) return;
-        JniPaymentAppJni.get().freeNativeObject(mNativeObject);
+        JniPaymentAppJni.get().freeNativeObjectSoon(mNativeObject);
         mNativeObject = 0;
     }
 
@@ -327,7 +327,7 @@ public class JniPaymentApp extends PaymentApp {
 
         void setPaymentHandlerHost(long nativeJniPaymentApp, PaymentHandlerHost paymentHandlerHost);
 
-        void freeNativeObject(long nativeJniPaymentApp);
+        void freeNativeObjectSoon(long nativeJniPaymentApp);
 
         byte[] setAppSpecificResponseFields(long nativeJniPaymentApp, ByteBuffer paymentResponse);
     }
