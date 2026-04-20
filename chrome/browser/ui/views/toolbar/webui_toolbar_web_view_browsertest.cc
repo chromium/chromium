@@ -431,42 +431,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
                                      &webui_toolbar_view, &web_view,
                                      browser()));
 
-  // Find accessibility node for reload button.
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), "Reload");
   content::FindAccessibilityNodeCriteria find_criteria;
-  find_criteria.name = "Reload";
-  ui::AXPlatformNodeDelegate* reload_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  ASSERT_TRUE(reload_node);
-
-  // Verify appropriate accessibility properties for reload button.
-  const ui::AXNodeData& reload = reload_node->GetData();
-  EXPECT_EQ(ax::mojom::Role::kButton, reload.role);
-  EXPECT_EQ(true, reload.IsClickable());
-  EXPECT_EQ("Reload",
-            reload.GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ("Reload this page", reload.GetStringAttribute(
-                                    ax::mojom::StringAttribute::kDescription));
-  EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kFalse),
-            reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
-
-  // Verify enabling devtools is reflected in HasPopup attribute.
-  webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
-  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), "Reload");
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
-        web_view->GetWebContents(), find_criteria);
-    return node &&
-           node->GetData().GetIntAttribute(
-               ax::mojom::IntAttribute::kHasPopup) ==
-               static_cast<int>(ax::mojom::HasPopup::kMenu) &&
-           node->GetData().GetStringAttribute(
-               ax::mojom::StringAttribute::kDescription) ==
-               "Reload this page, hold to see more options";
-  }));
 
   // Verify appropriate accessibility properties for back button.
   content::WaitForAccessibilityTreeToContainNodeWithName(
@@ -496,69 +461,70 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
       "Click to go forward, hold to see history",
       forward.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
 
-  // Verify appropriate accessibility properties for home button.
-  std::string home_name =
-      content::EvalJs(web_view->GetWebContents(),
-                      "import('//resources/js/load_time_data.js').then(m => "
-                      "m.loadTimeData.getString('homeButtonAccName'))")
-          .ExtractString();
-  std::string home_tooltip =
-      content::EvalJs(web_view->GetWebContents(),
-                      "import('//resources/js/load_time_data.js').then(m => "
-                      "m.loadTimeData.getString('homeButtonTooltip'))")
-          .ExtractString();
+  // Verify appropriate accessibility properties for reload button.
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Reload");
+  find_criteria.name = "Reload";
+  ui::AXPlatformNodeDelegate* reload_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(reload_node);
+  const ui::AXNodeData& reload = reload_node->GetData();
+  EXPECT_EQ(ax::mojom::Role::kButton, reload.role);
+  EXPECT_EQ(true, reload.IsClickable());
+  EXPECT_EQ("Reload",
+            reload.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("Reload this page", reload.GetStringAttribute(
+                                    ax::mojom::StringAttribute::kDescription));
+  EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kFalse),
+            reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 
-  // Pin home button first to make it visible
+  auto check_reload_a11y = [&](ax::mojom::HasPopup expected_has_popup,
+                               const std::string& expected_description) {
+    content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
+    content::WaitForAccessibilityTreeToContainNodeWithName(
+        web_view->GetWebContents(), "Reload");
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
+          web_view->GetWebContents(), find_criteria);
+      return node &&
+             node->GetData().GetIntAttribute(
+                 ax::mojom::IntAttribute::kHasPopup) ==
+                 static_cast<int>(expected_has_popup) &&
+             node->GetData().GetStringAttribute(
+                 ax::mojom::StringAttribute::kDescription) ==
+                 expected_description;
+    }));
+  };
+
+  // Verify enabling devtools is reflected in HasPopup attribute.
+  webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
+  check_reload_a11y(ax::mojom::HasPopup::kMenu,
+                    "Reload this page, hold to see more options");
+
+  // Verify that setting mode to kStop is reflected in HasPopup attribute.
+  webui_toolbar_view->GetReloadControl()->ChangeMode(ReloadControl::Mode::kStop,
+                                                     true);
+  check_reload_a11y(ax::mojom::HasPopup::kFalse, "Stop loading this page");
+
+  // Verify it works when returning to kReload mode.
+  webui_toolbar_view->GetReloadControl()->ChangeMode(
+      ReloadControl::Mode::kReload, true);
+  check_reload_a11y(ax::mojom::HasPopup::kMenu,
+                    "Reload this page, hold to see more options");
+
+  // Verify appropriate accessibility properties for home button.
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), home_name);
-  find_criteria.name = home_name;
+      web_view->GetWebContents(), "Home");
+  find_criteria.name = "Home";
   ui::AXPlatformNodeDelegate* home_node =
       content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
   ASSERT_TRUE(home_node);
   const ui::AXNodeData& home = home_node->GetData();
   EXPECT_EQ(ax::mojom::Role::kButton, home.role);
-  EXPECT_EQ(home_name,
-            home.GetStringAttribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(home_tooltip,
+  EXPECT_EQ("Home", home.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("Open the home page",
             home.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
-
-  // Verify that setting mode to kStop is reflected in HasPopup attribute.
-  webui_toolbar_view->GetReloadControl()->ChangeMode(ReloadControl::Mode::kStop,
-                                                     true);
-  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), "Reload");
-  find_criteria.name = "Reload";
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
-        web_view->GetWebContents(), find_criteria);
-    return node &&
-           node->GetData().GetIntAttribute(
-               ax::mojom::IntAttribute::kHasPopup) ==
-               static_cast<int>(ax::mojom::HasPopup::kFalse) &&
-           node->GetData().GetStringAttribute(
-               ax::mojom::StringAttribute::kDescription) ==
-               "Stop loading this page";
-  }));
-
-  // Verify it works when returning to kReload mode.
-  webui_toolbar_view->GetReloadControl()->ChangeMode(
-      ReloadControl::Mode::kReload, true);
-  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), "Reload");
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    ui::AXPlatformNodeDelegate* node = content::FindAccessibilityNode(
-        web_view->GetWebContents(), find_criteria);
-    return node &&
-           node->GetData().GetIntAttribute(
-               ax::mojom::IntAttribute::kHasPopup) ==
-               static_cast<int>(ax::mojom::HasPopup::kMenu) &&
-           node->GetData().GetStringAttribute(
-               ax::mojom::StringAttribute::kDescription) ==
-               "Reload this page, hold to see more options";
-  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
