@@ -63,15 +63,12 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
@@ -3870,8 +3867,7 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
   content::WebContents* contents = nullptr;
 
   // If `tab_id` is given, find the web_contents respective to it.
-  // Otherwise invoke discard function in TabManager with null web_contents
-  // that will discard the least important tab.
+  // Otherwise, discard the least important tab.
   if (params->tab_id) {
     int tab_id = *params->tab_id;
     std::string error;
