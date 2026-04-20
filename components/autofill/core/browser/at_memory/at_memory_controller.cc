@@ -207,6 +207,11 @@ void AtMemoryController::FillOrPreviewSearchResult(
   const std::u16string& replacement =
       suggestion.GetPayload<Suggestion::AtMemoryPayload>().value;
 
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      at_memory_funnel_metrics_) {
+    at_memory_funnel_metrics_->OnSuggestionAccepted();
+  }
+
   manager_->FillOrPreviewField(
       action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger, form,
       field, replacement, suggestion.type, /*field_type_used=*/std::nullopt);

@@ -77,4 +77,27 @@ TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_QuerySubmitted_False) {
       "Autofill.AtMemory.Funnel.QuerySubmitted", false, 1);
 }
 
+// Tests that `OnPopupHidden` correctly logs that a suggestion was accepted.
+TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_SuggestionAccepted_True) {
+  AtMemoryFunnelMetrics metrics;
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+  metrics.OnSuggestionAccepted();
+  metrics.OnPopupHidden();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
+}
+
+// Tests that `OnPopupHidden` correctly logs that no suggestion was accepted
+// during a shown session.
+TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_SuggestionAccepted_False) {
+  AtMemoryFunnelMetrics metrics;
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+  // No suggestion accepted.
+  metrics.OnPopupHidden();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.Funnel.SuggestionAccepted", false, 1);
+}
+
 }  // namespace autofill

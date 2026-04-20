@@ -2101,6 +2101,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.Funnel.SuggestionAccepted" enum="Boolean"
+    expires_after="2027-03-09">
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether a suggestion was accepted while the @memory popup was
+    displayed. Emitted when the popup is hidden, provided it was successfully
+    shown.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
     enum="AutofilledFieldUserEditingStatus" expires_after="2027-04-12">
