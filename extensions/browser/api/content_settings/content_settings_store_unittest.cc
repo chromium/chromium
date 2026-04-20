@@ -232,6 +232,52 @@ TEST_F(ContentSettingsStoreTest, GetAllSettings) {
   ASSERT_EQ(0u, rules.size());
 }
 
+TEST_F(ContentSettingsStoreTest, GetRuleDisabledExtension) {
+  GURL url("http://www.youtube.com");
+  ContentSettingsPattern pattern = ContentSettingsPattern::FromURL(url);
+  std::string ext_id("my_extension");
+  RegisterExtension(ext_id);
+  store()->SetExtensionContentSetting(
+      ext_id, pattern, pattern, ContentSettingsType::COOKIES,
+      CONTENT_SETTING_ALLOW, ChromeSettingScope::kRegular);
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetContentSettingFromStore(store(), url, url,
+                                       ContentSettingsType::COOKIES, false));
+
+  // Disable the extension.
+  store()->SetExtensionState(ext_id, false);
+
+  // GetRule should now return CONTENT_SETTING_DEFAULT.
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            GetContentSettingFromStore(store(), url, url,
+                                       ContentSettingsType::COOKIES, false));
+}
+
+TEST_F(ContentSettingsStoreTest, GetRuleDisabledExtensionIncognito) {
+  GURL url("http://www.youtube.com");
+  ContentSettingsPattern pattern = ContentSettingsPattern::FromURL(url);
+  std::string ext_id("my_extension");
+  RegisterExtension(ext_id);
+
+  // Set incognito setting.
+  store()->SetExtensionContentSetting(
+      ext_id, pattern, pattern, ContentSettingsType::COOKIES,
+      CONTENT_SETTING_ALLOW, ChromeSettingScope::kIncognitoPersistent);
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetContentSettingFromStore(store(), url, url,
+                                       ContentSettingsType::COOKIES, true));
+
+  // Disable the extension.
+  store()->SetExtensionState(ext_id, false);
+
+  // GetRule should now return CONTENT_SETTING_DEFAULT even for incognito.
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            GetContentSettingFromStore(store(), url, url,
+                                       ContentSettingsType::COOKIES, true));
+}
+
 TEST_F(ContentSettingsStoreTest, SetFromList) {
   // Force creation of ContentSettingsRegistry, so that the string to content
   // setting type lookup can succeed.

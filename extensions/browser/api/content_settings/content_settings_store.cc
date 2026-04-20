@@ -113,6 +113,10 @@ std::unique_ptr<content_settings::Rule> ContentSettingsStore::GetRule(
   std::unique_ptr<content_settings::Rule> result;
 
   for (const auto& entry : entries_) {
+    if (!entry->enabled) {
+      continue;
+    }
+
     if (off_the_record) {
       {
         base::AutoLock lock(entry->incognito_session_only_settings.GetLock());
