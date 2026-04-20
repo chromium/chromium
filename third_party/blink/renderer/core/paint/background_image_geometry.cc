@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_background_paint_context.h"
@@ -716,10 +717,22 @@ void BackgroundImageGeometry::Calculate(
          effective_clip == EFillBox::kBorderAreaText) &&
         RuntimeEnabledFeatures::CSSBackgroundClipBorderAreaEnabled()) {
       SetBorderShapeState(style, rects);
-      PhysicalRect outer =
+      // Expand the dest rect to cover the parts of the border-shape outer
+      // path that extend beyond paint_rect. Uniting with the full outer
+      // bounds would reset the origin and undo the offset applied for
+      // background-position when the outer path sits inside paint_rect.
+      const PhysicalRect outer =
           PhysicalRect::EnclosingRect(*border_shape_outer_bounds_);
-      unsnapped_dest_rect_.Unite(outer);
-      snapped_dest_rect_.Unite(outer);
+      const PhysicalBoxStrut overflow(
+          (paint_rect.Y() - outer.Y()).ClampNegativeToZero(),
+          (outer.Right() - paint_rect.Right()).ClampNegativeToZero(),
+          (outer.Bottom() - paint_rect.Bottom()).ClampNegativeToZero(),
+          (paint_rect.X() - outer.X()).ClampNegativeToZero());
+      unsnapped_dest_rect_.Expand(overflow);
+      snapped_dest_rect_.Expand(overflow);
+      // Compensate the phase for the dest-origin shift so the visual tile
+      // position stays where it was computed against paint_rect.
+      phase_ -= overflow.Offset();
     } else {
       border_shape_rects_ = rects;
     }
