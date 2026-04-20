@@ -827,7 +827,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAsyncNotificationManagerForDownload =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, true);
     public static final CachedFlag sAutoDocPipPermissionPromptAndroid =
-            newCachedFlag(AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID, false);
+            newCachedFlag(
+                    AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sAutomotiveBackButtonBarStreamline =
             newCachedFlag(AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE, /* defaultValue= */ true);
     public static final CachedFlag sBackgroundThreadPoolFieldTrial =
@@ -934,7 +935,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sDocumentPictureInPictureAPI =
-            newCachedFlag(DOCUMENT_PICTURE_IN_PICTURE_API, false, /* defaultValueInTests= */ false);
+            newCachedFlag(DOCUMENT_PICTURE_IN_PICTURE_API, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sDrawChromePagesEdgeToEdge =
             newCachedFlag(DRAW_CHROME_PAGES_EDGE_TO_EDGE, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeBottomChin =

@@ -1011,6 +1011,36 @@
             ]
         }
     ],
+    "AndroidDocumentPictureInPictureAPI": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Desktop_FormFactor_20260417",
+                    "enable_features": [
+                        "AutoDocPiPPermissionPromptAndroid",
+                        "DocumentPictureInPictureAPI"
+                    ]
+                },
+                {
+                    "name": "Enabled_NonDesktop_FormFactor_20260417",
+                    "enable_features": [
+                        "AutoDocPiPPermissionPromptAndroid",
+                        "DocumentPictureInPictureAPI"
+                    ]
+                },
+                {
+                    "name": "Control_NonDesktop_FormFactor_20260417",
+                    "disable_features": [
+                        "AutoDocPiPPermissionPromptAndroid",
+                        "DocumentPictureInPictureAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [
