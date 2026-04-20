@@ -175,6 +175,14 @@ PdfInkBrush::PdfInkBrush(Type brush_type, SkColor color, float size)
 
 PdfInkBrush::~PdfInkBrush() = default;
 
+std::optional<ink::Brush> PdfInkBrush::CloneWithSize(float size) const {
+  ink::Brush cloned_brush = ink_brush();
+  if (!cloned_brush.SetSize(size).ok()) {
+    return std::nullopt;
+  }
+  return cloned_brush;
+}
+
 gfx::Rect PdfInkBrush::GetInvalidateArea(const gfx::PointF& center1,
                                          const gfx::PointF& center2) const {
   // For a line connecting `center1` to `center2`, the invalidate
