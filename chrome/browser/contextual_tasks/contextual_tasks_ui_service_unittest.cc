@@ -428,6 +428,48 @@ TEST_F(ContextualTasksUiServiceTest,
   run_loop.Run();
 }
 
+TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_NcbParam) {
+  GURL ai_url(kAiPageUrl);
+  ai_url = net::AppendQueryParameter(ai_url, "ncb", "1");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_AiPage_NcbParam_VirtualUrl) {
+  GURL virtual_url("chrome://google.com/search?udm=50&q=test&ncb=1");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  base::RunLoop run_loop;
+  ON_CALL(*service_for_nav_, LoadUrlInWebContents(_, _))
+      .WillByDefault([&](const GURL& url, content::WebContents* web_contents) {
+        EXPECT_EQ(url.spec(),
+                  "https://www.google.com/search?udm=50&q=test&ncb=1");
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(virtual_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  run_loop.Run();
+}
+
 TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   GURL navigated_url(kTestUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);

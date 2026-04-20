@@ -114,6 +114,8 @@ constexpr net::BackoffEntry::Policy
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kDebugParam[] = "deb";
 constexpr char kDebugNoCobrowseValue[] = "nocobrowse1";
+constexpr char kNcbParam[] = "ncb";
+constexpr char kNcbValue[] = "1";
 
 // Parameters that the search results page must contain at least one of to be
 // considered a valid search results page.
@@ -840,27 +842,35 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   bool is_nav_to_ai = IsAiUrl(url_params.url);
 
-  // The "deb" param is a debugging tool that allows a client to specify whether
-  // the browser intercepts an AI navigation, optionally allowing it to be shown
-  // in a top-level tab. In this case, if "nocobrowse1" is the value of this
-  // param and if set on a "virtual" URL, will cause a new navigation to the AI
-  // URL. If specified on a non-virtual AI URL, the navigation is simply allowed
-  // to proceed.
+  // The "deb=nocobrowse1" and "ncb=1" params allow bypassing interception.
+  bool should_bypass_interception = false;
+  std::string bypass_reason;
+  std::string ncb_value;
   std::string debug_param_value;
-  if (is_nav_to_ai &&
-      net::GetValueForKeyInQuery(url_params.url, kDebugParam,
-                                 &debug_param_value) &&
-      debug_param_value.contains(kDebugNoCobrowseValue)) {
+
+  if (is_nav_to_ai) {
+    if (net::GetValueForKeyInQuery(url_params.url, kNcbParam, &ncb_value) &&
+        ncb_value == kNcbValue) {
+      should_bypass_interception = true;
+      bypass_reason = "ncb param";
+    } else if (net::GetValueForKeyInQuery(url_params.url, kDebugParam,
+                                        &debug_param_value) &&
+               debug_param_value.contains(kDebugNoCobrowseValue)) {
+      should_bypass_interception = true;
+      bypass_reason = "debug param";
+    }
+  }
+
+  if (should_bypass_interception) {
     if (original_url_is_virtual) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
-             "posting LoadUrlInWebContents for debug param";
+             "posting LoadUrlInWebContents for "
+          << bypass_reason;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&ContextualTasksUiService::LoadUrlInWebContents,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         net::AppendQueryParameter(url_params.url, kDebugParam,
-                                                   kDebugNoCobrowseValue),
+                         weak_ptr_factory_.GetWeakPtr(), url_params.url,
                          source_contents));
       return true;
     } else {
