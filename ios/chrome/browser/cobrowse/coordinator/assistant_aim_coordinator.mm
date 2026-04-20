@@ -147,7 +147,7 @@ class AssistantAIMUIStateProvider
 
   if (_viewController) {
     _viewController = nil;
-    [self dismissAssistantContainerAnimated:NO];
+    [self dismissAssistantContainerAnimated:YES];
   }
 }
 
