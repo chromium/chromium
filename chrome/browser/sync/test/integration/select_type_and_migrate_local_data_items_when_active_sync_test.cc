@@ -527,9 +527,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
   // Sign in with a managed account.
-  ASSERT_TRUE(
-      GetClient(0)->SignInPrimaryAccount(SyncTestAccount::kEnterpriseAccount1));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn(SyncTestAccount::kEnterpriseAccount1));
 
   // This should not turn on account storage. The address will stay local.
   GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
@@ -556,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
   // Sign in with a Google managed account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(
+  ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion(
       SyncTestAccount::kGoogleDotComAccount1));
   enterprise_util::SetUserAcceptedAccountManagement(GetProfile(0), true);
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());

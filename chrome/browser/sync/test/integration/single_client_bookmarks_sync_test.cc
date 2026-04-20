@@ -2546,7 +2546,7 @@ class SingleClientBookmarksThrottlingSyncTest
 #endif  // BUILDFLAG(IS_CHROMEOS)
                   })));
     } else {
-      ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+      ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInNoWaitForCompletion());
       ASSERT_TRUE(GetClient(kSingleProfileIndex)->DisableAllSelectableTypes());
 #if BUILDFLAG(IS_CHROMEOS)
       ASSERT_TRUE(
@@ -3351,7 +3351,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Sign in again, but don't actually enable Sync-the-feature (so that Sync
   // will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -3599,7 +3599,7 @@ IN_PROC_BROWSER_TEST_F(
           IsUrlBookmark(kMapsTitle, kMapsUrl)));
 
   // Sign in again, and enable sync in transport mode only.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   GetSyncService(kSingleProfileIndex)
       ->GetUserSettings()
       ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
@@ -3742,7 +3742,7 @@ class SingleClientBookmarksExplicitSigninSyncTest
 
 IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninSyncTest,
                        PRE_BookmarksEnabledDefaultValue) {
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
 
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kBookmarks));
@@ -3769,8 +3769,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninSyncTest,
   // When the user signs in after the flags were enabled, bookmarks should
   // always be available. See
   // `PrimaryAccountManager::SetExplicitBrowserSigninPrefs()`.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kBookmarks));
@@ -3815,7 +3814,7 @@ class SingleClientBookmarksExplicitSigninBothFeaturesSyncTest
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninBothFeaturesSyncTest,
                        PRE_BookmarksEnabledDefaultValue) {
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
 
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kBookmarks));
@@ -3873,7 +3872,7 @@ class SingleClientBookmarksExplicitSigninTransitionTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
                        PRE_PRE_ExplicitSigninForBookmarksOffToOn) {
   ASSERT_FALSE(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
 
   // If `kReplaceSyncPromosWithSignInPromos` is disabled, syncing bookmarks is
   // turned off.

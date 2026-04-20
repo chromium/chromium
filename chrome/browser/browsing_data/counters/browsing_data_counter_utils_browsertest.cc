@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   EXPECT_FALSE(ShouldShowCookieException(GetProfile(0)));
 
   // Sign the profile in.
-  EXPECT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  EXPECT_TRUE(SignIn());
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Users on Dice platforms are explicitly signed in.

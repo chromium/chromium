@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
     // Enable sync on Client 0 and wait until they are committed.
     ASSERT_TRUE(GetClient(0)->SetupSync());
   } else {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
     // Enable sync on Client 1 and wait until they are committed.
     ASSERT_TRUE(GetClient(1)->SetupSync());
   } else {
-    ASSERT_TRUE(GetClient(1)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(1)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(1)->AwaitSyncTransportActive());
   }
   ASSERT_TRUE(SamePasswordFormsChecker(GetPasswordStoreType()).Wait());
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
     // Enable sync on Client 0 and wait until they are committed.
     ASSERT_TRUE(GetClient(0)->SetupSync());
   } else {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
     // Enable sync on Client 1 and wait until all passwords are merged.
     ASSERT_TRUE(GetClient(1)->SetupSync());
   } else {
-    ASSERT_TRUE(GetClient(1)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(1)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(1)->AwaitSyncTransportActive());
   }
   ASSERT_TRUE(SamePasswordFormsChecker(GetPasswordStoreType()).Wait());

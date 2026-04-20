@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(SyncErrorTest, UpgradeClientErrorDuringInitialSync) {
 
   // Signing in should start sync-the-transport, which should fail with an
   // error.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
 
   // Wait until an actionable error is encountered.
   EXPECT_TRUE(ActionableProtocolErrorChecker(GetSyncService(0)).Wait());

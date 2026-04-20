@@ -187,7 +187,7 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
               })));
     } else {
-      ASSERT_TRUE(GetClient(i)->SignInPrimaryAccount());
+      ASSERT_TRUE(GetClient(i)->SignInNoWaitForCompletion());
       ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
       ASSERT_TRUE(GetClient(i)->DisableAllSelectableTypes());
 #if BUILDFLAG(IS_CHROMEOS)

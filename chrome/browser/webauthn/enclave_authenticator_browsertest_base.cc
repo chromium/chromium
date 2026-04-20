@@ -184,7 +184,7 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
   if (sync_feature_enabled_) {
     ASSERT_TRUE(sync_harness_->SetupSync());
   } else {
-    ASSERT_TRUE(sync_harness_->SignInPrimaryAccount());
+    ASSERT_TRUE(sync_harness_->SignInNoWaitForCompletion());
   }
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(

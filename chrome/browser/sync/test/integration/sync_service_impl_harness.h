@@ -72,7 +72,7 @@ class SyncServiceImplHarness {
   std::string GetEmailForAccount(SyncTestAccount account) const;
 
   // Signs in to a primary account without enabling sync the feature.
-  [[nodiscard]] bool SignInPrimaryAccount(
+  [[nodiscard]] bool SignInNoWaitForCompletion(
       SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // This is similar to click the reset button on chrome.google.com/data.

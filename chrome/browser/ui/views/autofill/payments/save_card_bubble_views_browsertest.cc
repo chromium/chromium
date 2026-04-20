@@ -214,20 +214,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
         {AutofillManagerEvent::kFormsSeen}};
   };
 
-  // Sets up Chrome with Sync-the-transport mode enabled, with the Wallet
-  // datatype as enabled type. Signing in (without granting sync consent or
-  // explicitly setting up Sync) should trigger starting the Sync machinery in
-  // standalone transport mode.
-  void SignIn() {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-    ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
-              GetSyncService(0)->GetTransportState());
-
-    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-    ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-              GetSyncService(0)->GetTransportState());
-  }
-
   // Various events that can be waited on by the DialogEventWaiter.
   enum DialogEvent : int {
     OFFERED_LOCAL_SAVE,
@@ -1229,7 +1215,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_TransportMode_InfoTextIconExists) {
-  SignIn();
+  ASSERT_TRUE(SignIn());
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
 
@@ -1243,7 +1229,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Local_TransportMode_InfoTextIconDoesNotExist) {
-  SignIn();
+  ASSERT_TRUE(SignIn());
   HideAccountNameEmailProfile();
 
   FillForm();
@@ -1275,7 +1261,10 @@ IN_PROC_BROWSER_TEST_P(
     Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
   // Signing in (without granting sync consent or explicitly setting up Sync)
   // should trigger starting the Sync machinery in standalone transport mode.
-  SignIn();
+  ASSERT_TRUE(SignIn());
+  HideAccountNameEmailProfile();
+
+  // Set the user's full name.
   SetAccountFullName("John Smith");
   HideAccountNameEmailProfile();
 
@@ -1296,7 +1285,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_TransportMode_ClickingSaveAcceptsBubble) {
-  SignIn();
+  ASSERT_TRUE(SignIn());
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
 

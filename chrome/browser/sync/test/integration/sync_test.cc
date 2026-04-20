@@ -744,7 +744,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
     DVLOG(1) << "Setting up " << client_index << " client";
 
     if (setup_mode == SetupSyncMode::kSyncTransportOnly) {
-      if (!client->SignInPrimaryAccount(account) ||
+      if (!client->SignInNoWaitForCompletion(account) ||
           !client->AwaitEngineInitialization() ||
           (enable_history_sync_in_transport_mode &&
            !client->EnableHistorySyncNoWaitForCompletion())) {
@@ -1107,7 +1107,7 @@ bool SyncTest::ResetSyncForPrimaryAccount() {
       SyncServiceImplHarness::Create(
           &profile, SyncServiceImplHarness::SigninType::UI_SIGNIN);
   CHECK(client);
-  if (!client->SignInPrimaryAccount()) {
+  if (!client->SignInNoWaitForCompletion()) {
     LOG(ERROR) << "Failed to sign in primary account";
     return false;
   }

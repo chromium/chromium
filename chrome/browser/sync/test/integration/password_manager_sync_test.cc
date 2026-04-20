@@ -245,7 +245,7 @@ class PasswordManagerSyncTest : public SyncTest {
             GetProfile(0));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(account));
+    ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion(account));
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   }

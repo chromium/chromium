@@ -2417,9 +2417,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
                         GetFakeServer());
 
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // The error is now shown, because PASSWORDS is trying to sync. The data
@@ -2475,8 +2473,7 @@ IN_PROC_BROWSER_TEST_P(
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
       /*trigger=*/std::nullopt);
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   ASSERT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),

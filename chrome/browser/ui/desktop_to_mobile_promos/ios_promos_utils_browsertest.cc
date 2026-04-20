@@ -39,7 +39,7 @@ class IOSPromosUtilsTest : public SyncTest {
     ASSERT_TRUE(SetupClients());
 
     // Sign the profile in.
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))

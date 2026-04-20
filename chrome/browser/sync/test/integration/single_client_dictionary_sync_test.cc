@@ -108,8 +108,6 @@ class SingleClientDictionaryTransportModeSyncTest
 
 IN_PROC_BROWSER_TEST_P(SingleClientDictionaryTransportModeSyncTest,
                        ShouldStartDataTypeInTransportModeIfFeatureEnabled) {
-  ASSERT_TRUE(SetupClients());
-
   // Sign in the primary account.
   ASSERT_TRUE(SignIn());
   // Enable history to enable DICTIONARY.

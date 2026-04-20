@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientUserEventsSyncTest,
   if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
     ASSERT_TRUE(GetClient(kEncryptingClientId)->SetupSync());
   } else {
-    ASSERT_TRUE(GetClient(kEncryptingClientId)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(kEncryptingClientId)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(kEncryptingClientId)->AwaitSyncTransportActive());
   }
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientUserEventsSyncTest,
   if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
     ASSERT_TRUE(GetClient(kDecryptingClientId)->SetupSyncNoWaitForCompletion());
   } else {
-    ASSERT_TRUE(GetClient(kDecryptingClientId)->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(kDecryptingClientId)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(kDecryptingClientId)->AwaitSyncTransportActive());
   }
   // The second client asks the user to provide a password for decryption.

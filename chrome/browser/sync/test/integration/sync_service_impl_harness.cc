@@ -216,8 +216,8 @@ std::string SyncServiceImplHarness::GetEmailForAccount(
     SyncTestAccount account) const {
   return signin_delegate_->GetEmailForAccount(account);
 }
-
-bool SyncServiceImplHarness::SignInPrimaryAccount(SyncTestAccount account) {
+bool SyncServiceImplHarness::SignInNoWaitForCompletion(
+    SyncTestAccount account) {
   if (!signin_delegate_->SignIn(account, signin::ConsentLevel::kSignin)) {
     return false;
   }

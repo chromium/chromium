@@ -191,31 +191,6 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
               (override));
 };
 
-class PrimaryAccountChecker : public StatusChangeChecker,
-                              public signin::IdentityManager::Observer {
- public:
-  explicit PrimaryAccountChecker(signin::IdentityManager* identity_manager)
-      : identity_manager_(identity_manager) {
-    identity_manager_->AddObserver(this);
-  }
-  ~PrimaryAccountChecker() override { identity_manager_->RemoveObserver(this); }
-
-  // StatusChangeChecker overrides:
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for primary account";
-    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  }
-
-  // signin::IdentityManager::Observer overrides:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override {
-    CheckExitCondition();
-  }
-
- private:
-  raw_ptr<signin::IdentityManager> identity_manager_;
-};
-
 Profile* CreateAdditionalProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   size_t starting_number_of_profiles = profile_manager->GetNumberOfProfiles();
@@ -1989,15 +1964,12 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     ProfileMenuClickTest_SignedIn_ReplaceSyncPromosEnabled,
     /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
     /*disabled_features=*/{}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   RunTest();
 }
@@ -2027,15 +1999,12 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     (std::vector<base::test::FeatureRef>{
         syncer::kReplaceSyncPromosWithSignInPromos,
         syncer::kReplaceSyncPromosWithSigninPromosNewSignin})) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   RunTest();
 }
@@ -2065,15 +2034,12 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         {syncer::kReplaceSyncPromosWithSignInPromos,
          switches::kSigninWindows10DepreciationStateBypassForTesting}),
     /*disabled_features=*/{}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Regular local data type.
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
@@ -2107,15 +2073,12 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         {syncer::kReplaceSyncPromosWithSignInPromos,
          switches::kSigninWindows10DepreciationStateBypassForTesting}),
     /*disabled_features=*/{}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   signin_util::EnableHistorySync(sync_service());
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
@@ -2152,15 +2115,12 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         {syncer::kReplaceSyncPromosWithSignInPromos,
          switches::kSigninWindows10DepreciationStateForTesting}),
     /*disabled_features=*/{}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Any (local/account storage) valid data type.
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
@@ -2197,15 +2157,12 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         {syncer::kReplaceSyncPromosWithSignInPromos,
          switches::kSigninWindows10DepreciationStateBypassForTesting}),
     /*disabled_features=*/{}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Bookmarks with previously syncing account creates a different type of promo
   // to be shown.
@@ -2242,7 +2199,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled,
     {syncer::kReplaceSyncPromosWithSignInPromos},
     {}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   CoreAccountId account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -2250,7 +2207,6 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
-  PrimaryAccountChecker(identity_manager()).Wait();
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -2284,7 +2240,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     (std::vector<base::test::FeatureRef>{
         syncer::kReplaceSyncPromosWithSignInPromos,
         syncer::kReplaceSyncPromosWithSigninPromosNewSignin})) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   CoreAccountId account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -2292,11 +2248,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
-  PrimaryAccountChecker(identity_manager()).Wait();
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           account_id));
@@ -2330,7 +2285,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         {features::kEnterpriseProfileBadgingForMenu,
          syncer::kReplaceSyncPromosWithSignInPromos}),
     /*disabled_features=*/{}) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   CoreAccountId account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   AccountInfo account_info =
@@ -2338,11 +2293,8 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   supervised_user::UpdateSupervisionStatusForAccount(
       account_info, identity_manager(),
       /*is_subject_to_parental_controls=*/true);
-  PrimaryAccountChecker(identity_manager()).Wait();
 
   // Check setup.
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
   ASSERT_FALSE(profiles::IsGuestModeEnabled(*GetProfile()));
 
   RunTest();
@@ -2376,7 +2328,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     (std::vector<base::test::FeatureRef>{
         syncer::kReplaceSyncPromosWithSignInPromos,
         syncer::kReplaceSyncPromosWithSigninPromosNewSignin})) {
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   CoreAccountId account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   AccountInfo account_info =
@@ -2384,11 +2336,8 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   supervised_user::UpdateSupervisionStatusForAccount(
       account_info, identity_manager(),
       /*is_subject_to_parental_controls=*/true);
-  PrimaryAccountChecker(identity_manager()).Wait();
 
   // Check setup.
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
   ASSERT_FALSE(profiles::IsGuestModeEnabled(*GetProfile()));
 
   RunTest();
@@ -2494,7 +2443,7 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
   // For ensuring that the Passkey unlock card will be displayed we need to
   // ensure that we are in signed-in state, and that the sync history is
   // enabled.
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   signin_util::EnableHistorySync(sync_service());
   RunTest();
 }
@@ -2532,15 +2481,12 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
   // Ensuring that we are in the state when sync-the-transport is enabled but
   // sync-the-feature is not enabled. In this case we can already display a
   // passkey promo.
-  ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
-  CoreAccountId account_id =
-      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  PrimaryAccountChecker(identity_manager()).Wait();
+  ASSERT_TRUE(sync_harness()->SignInNoWaitForCompletion());
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_EQ(account_id, identity_manager()->GetPrimaryAccountId(
-                            signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   RunTest();
 }

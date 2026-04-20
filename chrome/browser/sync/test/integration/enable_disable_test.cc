@@ -189,7 +189,7 @@ class EnableDisableSingleClientTest
 #endif  // !BUILDFLAG(IS_CHROMEOS)
           })));
     } else {
-      ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+      ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
       GetSyncService(0)->GetUserSettings()->SetSelectedTypes(all_types_enabled,
                                                              {});
       ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());

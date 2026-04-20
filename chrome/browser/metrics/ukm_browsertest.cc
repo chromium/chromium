@@ -1166,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NotEnabledForNonSyncingAccountSync) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
-  ASSERT_TRUE(harness->SignInPrimaryAccount());
+  ASSERT_TRUE(harness->SignInNoWaitForCompletion());
   ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
             sync_service->GetTransportState());
   ASSERT_TRUE(harness->AwaitSyncTransportActive());

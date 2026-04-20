@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfTransportModeSyncTest,
   ASSERT_TRUE(GetClient(0)->SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
-  ASSERT_TRUE(GetClient(1)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(1)->SignInNoWaitForCompletion());
   ASSERT_TRUE(GetClient(1)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(1)->IsSyncFeatureActive());
 
