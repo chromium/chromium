@@ -2,18 +2,23 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#outer {
-  min-width: 0;  /* Wrap content to screen on mobile. */
-  text-align: left;
-  width: 90%;
-}
+/* Apply mobile-specific overrides only on smaller screens to allow large
+ * screens (e.g. tablets or foldables in desktop mode) to use the desktop
+ * layout from about_version.css. */
+@media (width < 800px) {
+  #outer {
+    min-width: 0;  /* Wrap content to screen on mobile. */
+    text-align: left;
+    width: 90%;
+  }
 
-#inner {
-  width: auto;
-}
+  #inner {
+    width: auto;
+  }
 
-#logo {
-  float: none;
-  margin-left: auto;
-  margin-right: auto;
+  #logo {
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
