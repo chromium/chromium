@@ -49,6 +49,10 @@ declare_args() {
   # implementations in compiler-rt are outdated, so avoid building them in this
   # case.
   use_llvm_libatomic = !is_apple
+
+  # Whether to enable strict deps checks. This ensures that your dependencies
+  # are correctly declared (no missing deps and no accessing transitive deps).
+  enable_strict_deps = false
 }
 
 use_custom_libcxx =
