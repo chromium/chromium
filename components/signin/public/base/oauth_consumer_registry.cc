@@ -326,9 +326,6 @@ constexpr char kMultistepFilterName[] = "multistep_filter";
 namespace signin {
 
 BASE_FEATURE(kWebHistoryUseSpecificScope, base::FEATURE_ENABLED_BY_DEFAULT);
-// TODO(crbug.com/492129718): Remove the flag and use the agentic permission
-// scope
-BASE_FEATURE(kActorLoginUseChromeSyncScope, base::FEATURE_DISABLED_BY_DEFAULT);
 
 OAuthConsumer GetOAuthConsumerForDynamicScopes(
     OAuthConsumerId oauth_consumer_id,
@@ -747,16 +744,9 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kAccessibilityAnnotatorName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
     case OAuthConsumerId::kActorLoginPermissionService:
-      if (base::FeatureList::IsEnabled(kActorLoginUseChromeSyncScope)) {
-        return OAuthConsumer(
-            /*name=*/kActorLoginPermissionServiceName,
-            /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope,
-                        kAgenticPermissionOAuth2Scope});
-      } else {
-        return OAuthConsumer(
-            /*name=*/kActorLoginPermissionServiceName,
-            /*scopes=*/{kAgenticPermissionOAuth2Scope});
-      }
+      return OAuthConsumer(
+          /*name=*/kActorLoginPermissionServiceName,
+          /*scopes=*/{kAgenticPermissionOAuth2Scope});
     case OAuthConsumerId::kGapisService:
       return OAuthConsumer(
           /*name=*/kGapisServiceName,
