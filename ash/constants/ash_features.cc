@@ -767,7 +767,7 @@ BASE_FEATURE(kFixStaticIpForTwoManagedEthPorts,
 BASE_FEATURE(kFjordOobe, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if the Fjord variant of OOBE is shown for squid devices.
-BASE_FEATURE(kFjordOobeForSquid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFjordOobeForSquid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Force flag for the Fjord variant of OOBE. This is to make testing easier
 // because the Fjord OOBE variant is buildflag dependent.
