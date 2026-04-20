@@ -199,21 +199,10 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
   // Calculate the offset from the outer_path to the center of the outline
   // stroke.
   //
-  // When border-shape uses a single shape, the border is drawn as a stroke
-  // centered on the outer_path. The outer edge of the border is at
-  // border_width/2 from the path. The outline starts from there.
-  //
-  // When border-shape uses double shapes (outer + inner), the border fills the
-  // area between them. The outline starts from the outer_path directly
-  // (border_stroke_offset = 0).
-  float border_stroke_offset = 0;
-  if (!border_shape->HasSeparateInnerShape()) {
-    DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
-    border_stroke_offset = derived_stroke.thickness / 2.0f;
-  }
-
-  const float center_offset = border_stroke_offset +
-                              static_cast<float>(outline_offset) +
+  // OuterPathWithOffset already starts from the expanded OuterPath, which
+  // represents the outer edge of the border. Therefore, we only need to
+  // add outline_offset and half of the outline_width.
+  const float center_offset = static_cast<float>(outline_offset) +
                               static_cast<float>(outline_width) / 2.0f;
   Path center_path =
       OuterPathWithOffset(style, outer_reference_rect, center_offset);
