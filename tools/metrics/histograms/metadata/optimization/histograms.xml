@@ -35,6 +35,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
+<!-- LINT.IfChange(OnDeviceBaseModelName) -->
+
+<variants name="BaseModel">
+  <variant name="TinyModelSummarizer"
+      summary="Tinymodel component for Summarizer"/>
+  <variant name="Unknown" summary="Unknown base model"/>
+  <variant name="V3Nano"
+      summary="General nano V3 served by the single model component"/>
+  <variant name="V3NanoCpu" summary="Nano V3 with GPU backend"/>
+  <variant name="V3NanoGpu" summary="Nano V3 with CPU backend"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.cc:OnDeviceBaseModelName) -->
+
 <variants name="FrameType">
   <variant name="MainFrame" summary="Outermost primary main frame"/>
   <variant name="RemoteSubFrame" summary="Remote subframes"/>
@@ -1331,6 +1345,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.{BaseModel}"
+    enum="OnDeviceModelUninstallReason" expires_after="2026-10-15">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the reason of uninstalling the on-device model. Recorded once an
+    on-device base model is uninstalled.
+  </summary>
+  <token key="BaseModel" variants="BaseModel"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResult"
     enum="OnDeviceModelValidationResult" expires_after="2027-04-14">
   <owner>cduvall@chromium.org</owner>
@@ -1777,6 +1803,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the on-device model currently installed. Recorded once on each
     browser startup.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.OnDeviceModel.NewModelInstalled"
+    enum="InstalledModel" expires_after="2026-10-15">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the on-device model when it is newly installed. Recorded once when
+    the model becomes ready from a new base model download, i.e. does not log on
+    browser restart if the model was installed prior to the restart.
   </summary>
 </histogram>
 

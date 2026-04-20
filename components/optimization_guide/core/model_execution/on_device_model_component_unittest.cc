@@ -209,6 +209,8 @@ TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
       "OptimizationGuide.ModelExecution."
       "OnDeviceModelInstalledAtRegistrationTime",
       true, 1);
+  histograms_.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.NewModelInstalled", 0);
 }
 
 TEST_F(OnDeviceModelComponentTest, NotYetInstalledFlow) {
@@ -442,6 +444,12 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return broker_.component_state().uninstall_called(); }));
+
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      OnDeviceModelComponentStateManager::RegistrationCriteria::
+          UninstallReason::kInsufficientDisk,
+      1);
 }
 
 TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
@@ -575,6 +583,9 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 
   histograms_.ExpectTotalCount("OptimizationGuide.OnDeviceModel.InstalledModel",
                                1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.NewModelInstalled",
+      0 /*BaseModel::kUnknown*/, 1);
   EXPECT_FALSE(state->GetInstallDirectory().empty());
   EXPECT_EQ(state->GetComponentVersion(), base::Version("0.0.1"));
 

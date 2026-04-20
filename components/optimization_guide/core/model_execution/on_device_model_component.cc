@@ -163,6 +163,11 @@ base::DictValue MakeOverrideManifest() {
           .Set("supported_performance_hints", std::move(hints)));
 }
 
+// `BaseModel` is deliberately made to be the same as an enum class of the same
+// name in
+// components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.cc.
+// This is to allow logging of new model installations regardless of which model
+// management scheme is used.
 enum class BaseModel {
   kUnknown = 0,
   kXxs = 1,
@@ -172,7 +177,7 @@ enum class BaseModel {
   kMaxValue = kV3Nano,
 };
 
-BaseModel ConvertModelNameToEnum(std::string& model_name) {
+BaseModel ConvertModelNameToEnum(const std::string& model_name) {
   if (model_name == "v3Nano") {
     return BaseModel::kV3Nano;
   } else if (model_name == "v2Nano") {
@@ -183,6 +188,15 @@ BaseModel ConvertModelNameToEnum(std::string& model_name) {
     return BaseModel::kXxs;
   } else {
     return BaseModel::kUnknown;
+  }
+}
+
+std::string ConvertModelNameToUmaModelName(const std::string& model_name) {
+  if (model_name == "v3Nano") {
+    return "V3Nano";
+  } else {
+    // Treat obsolete models as unknown.
+    return "Unknown";
   }
 }
 
@@ -442,10 +456,19 @@ void OnDeviceModelComponentStateManager::SetReady(
           manifest, performance_classifier_->GetPossibleHints())) {
     state_ = std::make_unique<OnDeviceModelComponentState>(install_dir, version,
                                                            *model_spec);
+    bool is_new_installation =
+        (component_installer_state_ == ComponentInstallerState::kRegistered ||
+         component_installer_state_ ==
+             ComponentInstallerState::kOnDemandDownloading);
     component_installer_state_ = ComponentInstallerState::kInstalled;
     base::UmaHistogramEnumeration(
         "OptimizationGuide.OnDeviceModel.InstalledModel",
         ConvertModelNameToEnum(model_spec->model_name));
+    if (is_new_installation) {
+      base::UmaHistogramEnumeration(
+          "OptimizationGuide.OnDeviceModel.NewModelInstalled",
+          ConvertModelNameToEnum(model_spec->model_name));
+    }
   }
 
   NotifyStateChanged();
@@ -633,7 +656,21 @@ void OnDeviceModelComponentStateManager::UpdateRegistration() {
     // UninstallComplete() for next action.
     return;
   }
-  if (registration_criteria_->should_uninstall()) {
+  std::optional<RegistrationCriteria::UninstallReason> uninstall_reason =
+      registration_criteria_->should_uninstall();
+  if (uninstall_reason.has_value()) {
+    // If `state_` is null, the uninstallation is happening before the model is
+    // ready, so `Unknown` is logged.
+    std::string uma_model_name = "Unknown";
+    if (state_) {
+      uma_model_name =
+          ConvertModelNameToUmaModelName(state_->GetBaseModelSpec().model_name);
+    }
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason." +
+            uma_model_name,
+        *uninstall_reason);
+
     component_installer_state_ = ComponentInstallerState::kUninstalling;
     // Uninstall the component which will delete the model files, after a
     // short delay to give time for the consumers to unload the model.

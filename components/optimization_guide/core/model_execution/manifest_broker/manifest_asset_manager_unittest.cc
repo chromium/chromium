@@ -9,11 +9,13 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
@@ -302,11 +304,45 @@ TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
   EXPECT_EQ(future.Get<UnavailableReason>(),
             mojom::ModelUnavailableReason::kPendingAssets);
 
+  base::HistogramTester histogram_tester;
   MakeAssetInstallable(asset);
 
   base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
   subscriber.WaitForClient(client_future.GetCallback());
   EXPECT_TRUE(client_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.InstalledModel",
+      0 /*BaseModel::kUnknown*/, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.NewModelInstalled",
+      0 /*BaseModel::kUnknown*/, 1);
+}
+
+TEST_F(ManifestAssetManagerTest, DoesNotLogNewInstallExistingComponent) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+
+  {
+    base::HistogramTester histogram_tester;
+    Startup();
+    EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.OnDeviceModel.NewModelInstalled",
+        0 /*BaseModel::kUnknown*/, 1);
+    SimulateShutdown();
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    UpdateManifest(DummyManifest().Add(asset));
+    Startup();
+    EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.OnDeviceModel.NewModelInstalled",
+        0 /*BaseModel::kUnknown*/, 0);
+  }
 }
 
 TEST_F(ManifestAssetManagerTest, ResumesInstallationOnStartup) {
@@ -428,11 +464,15 @@ TEST_F(ManifestAssetManagerTest, UninstallsWhenPublicKeyChanged) {
   DummyAsset asset_v1 = DummyAsset::For("compose").WithPublicKey("key1");
   DummyAsset asset_v2 = DummyAsset::For("compose").WithPublicKey("key2");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
+  base::HistogramTester histogram_tester;
   MakeAssetsInstallable(DummyManifest().Add(asset_v1));
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.ToInstallTarget()));
   UpdateManifest(DummyManifest().Add(asset_v2));
   EXPECT_TRUE(component_state_.WaitForUninstall(asset_v1.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kObsolete, 1);
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallsWhenRunningOutOfDiskSpace) {
@@ -442,12 +482,16 @@ TEST_F(ManifestAssetManagerTest, UninstallsWhenRunningOutOfDiskSpace) {
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
   SimulateShutdown();
+  base::HistogramTester histogram_tester;
   // 5gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   component_state_.SetFreeDiskSpace(base::GiB(5) - base::ByteCount(1));
   task_environment_.FastForwardBy(base::Seconds(11));
   UpdateManifest(DummyManifest().Add(asset));
   Startup();
   EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kInsufficientDisk, 1);
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenFeatureNotEnabled) {
@@ -468,6 +512,7 @@ TEST_F(ManifestAssetManagerTest, UninstallWhileRegistrationPending) {
   UpdateManifest(DummyManifest().Add(asset));
   Startup();
 
+  base::HistogramTester histogram_tester;
   // Verify that it is currently registering.
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
@@ -479,6 +524,9 @@ TEST_F(ManifestAssetManagerTest, UninstallWhileRegistrationPending) {
   // Uninstall is queued and triggered once registration is complete.
   component_state_.RunPendingRegistrations();
   EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason.Unknown",
+      Manifest::UninstallReason::kDisallowedByUser, 1);
 }
 
 TEST_F(ManifestAssetManagerTest, RegisterWhileUninstallPending) {

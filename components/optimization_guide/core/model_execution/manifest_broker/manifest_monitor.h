@@ -73,7 +73,7 @@ class ManifestMonitor {
   void OnInputsChanged();
 
   // Uses the default manifest, which has uninstalls all assets.
-  void UseUninstallManifest();
+  void UseUninstallManifest(Manifest::UninstallReason reason);
 
   // Called when the manifest is loaded.
   void OnManifestLoaded(

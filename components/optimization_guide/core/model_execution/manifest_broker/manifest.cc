@@ -302,7 +302,8 @@ void Manifest::Load(
       std::move(callback));
 }
 
-Manifest::Manifest() = default;
+Manifest::Manifest(Manifest::UninstallReason uninstall_reason)
+    : uninstall_reason_(uninstall_reason) {}
 Manifest::Manifest(base::FilePath directory,
                    proto::DeviceCategoryConfig device_category_config,
                    proto::Recipes recipes,

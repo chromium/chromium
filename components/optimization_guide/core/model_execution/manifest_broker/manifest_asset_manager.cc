@@ -18,6 +18,7 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/sequence_checker.h"
@@ -39,6 +40,41 @@ namespace optimization_guide {
 namespace {
 // TTL for disk space evaluation result.
 constexpr base::TimeDelta kDiskSpaceFreshnessThreshold = base::Seconds(10);
+
+// Possible base models. `ManifestAssetManager` does not serve any model earlier
+// than Nano V3, therefore the earlier UMA enums are not listed here.
+// LINT.IfChange(OnDeviceBaseModelEnum)
+enum class BaseModel {
+  kUnknown = 0,
+  kV3NanoCpu = 5,
+  kV3NanoGpu = 6,
+  kMaxValue = kV3NanoGpu,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceBaseModelEnum)
+
+BaseModel ConvertComponentKeyToEnum(const std::string& key) {
+  if (key == "nano_v3_component_gpu") {
+    return BaseModel::kV3NanoGpu;
+  } else if (key == "nano_v3_component_cpu") {
+    return BaseModel::kV3NanoCpu;
+  } else {
+    return BaseModel::kUnknown;
+  }
+}
+
+// LINT.IfChange(OnDeviceBaseModelName)
+std::string ConvertComponentKeyToUmaModelName(const std::string& key) {
+  if (key == "nano_v3_component_gpu") {
+    return "V3NanoGpu";
+  } else if (key == "nano_v3_component_cpu") {
+    return "V3NanoCpu";
+  } else if (key == "tinymodel_summarizer_component") {
+    return "TinyModelSummarizer";
+  } else {
+    return "Unknown";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:OnDeviceBaseModelName)
 
 // Delay to give consumers time to unload the model before it's deleted.
 constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
@@ -377,7 +413,7 @@ bool ManifestAssetManager::ShouldInstall(
     return false;
   }
   if (context.requested_version() == component->target_version()) {
-    // We already started downloading this component, so we should continue.
+    // The component is either downloading or already installed.
     return true;
   }
   if (!disk_space_status_.CanSupportOnDemandInstall()) {
@@ -416,6 +452,16 @@ void ManifestAssetManager::UpdateRegistrations() {
       if (context.NeedsCleanup()) {
         // Component is obsolete.
         context.SetUninstalling();
+
+        Manifest::UninstallReason log_reason =
+            Manifest::UninstallReason::kUnknown;
+        log_reason = factory_->manifest().uninstall_reason();
+
+        base::UmaHistogramEnumeration(
+            "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason." +
+                ConvertComponentKeyToUmaModelName(context.asset_id()),
+            log_reason);
+
         keys_to_save.push_back(public_key);
         // Uninstall the component which will delete the model files, after a
         // short delay to give time for the consumers to unload the model.
@@ -522,7 +568,19 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ComponentContext* context = ledger_.GetContext(public_key);
   CHECK(context);  // Any asset that is ready should be in the ledger.
+  bool is_new_installation =
+      (context->state() == ComponentState::kRegistered ||
+       context->state() == ComponentState::kOnDemandDownloading);
   context->SetReady(install_dir, version);
+
+  BaseModel model_enum = ConvertComponentKeyToEnum(context->asset_id());
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.OnDeviceModel.InstalledModel", model_enum);
+  if (is_new_installation) {
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.OnDeviceModel.NewModelInstalled", model_enum);
+  }
+
   NotifyFactory(public_key, *context);
 }
 

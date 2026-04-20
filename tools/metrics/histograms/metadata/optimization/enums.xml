@@ -92,13 +92,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="[Deprecated] Host Model Features"/>
 </enum>
 
+<!-- LINT.IfChange(OnDeviceBaseModelEnum) -->
+
 <enum name="InstalledModel">
   <int value="0" label="Unknown"/>
   <int value="1" label="XXS"/>
   <int value="2" label="XS"/>
   <int value="3" label="v2Nano"/>
   <int value="4" label="v3Nano"/>
+  <int value="5" label="v3NanoCpu"/>
+  <int value="6" label="v3NanoGpu"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.cc:OnDeviceBaseModelEnum) -->
 
 <!-- Use following code to get the hash from the model version.
 import struct
@@ -143,6 +149,20 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="8" label="GPU blocked"/>
   <int value="9" label="Failed to load library"/>
 </enum>
+
+<!-- LINT.IfChange(OnDeviceModelUninstallReason) -->
+
+<enum name="OnDeviceModelUninstallReason">
+  <int value="0" label="Unknown reason"/>
+  <int value="1" label="Insufficient disk"/>
+  <int value="2" label="Policy not allowed"/>
+  <int value="3" label="Device not capable"/>
+  <int value="4" label="Parse error"/>
+  <int value="5" label="Not allowed by user setting"/>
+  <int value="6" label="The installed component is obsolete"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest.h:UninstallReason) -->
 
 <enum name="OnDeviceModelValidationResult">
   <int value="0" label="Unknown"/>

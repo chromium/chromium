@@ -49,6 +49,19 @@ class Manifest final {
     kConflictingComponent,
   };
 
+  // LINT.IfChange(UninstallReason)
+  enum class UninstallReason {
+    kUnknown = 0,
+    kInsufficientDisk = 1,
+    kDisallowedByPolicy = 2,
+    kDeviceNotCapable = 3,
+    kParseError = 4,
+    kDisallowedByUser = 5,
+    kObsolete = 6,
+    kMaxValue = kObsolete,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceModelUninstallReason)
+
   static base::expected<Manifest, ParseError> Create(
       const base::FilePath& directory,
       proto::Manifest manifest,
@@ -59,8 +72,9 @@ class Manifest final {
       DeviceCategory device_category,
       base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback);
 
-  // Default constructed manifest supports no assets or recipes.
-  Manifest();
+  // Constructs an empty manifest indicating no recipes are supported and all
+  // assets should be uninstalled, for the indicated `uninstall_reason`.
+  explicit Manifest(UninstallReason uninstall_reason);
   ~Manifest();
 
   Manifest(const Manifest&);
@@ -70,6 +84,9 @@ class Manifest final {
 
   // Returns true if the manifest defines any assets.
   bool HasAssets() const;
+
+  UninstallReason uninstall_reason() const { return uninstall_reason_; }
+
   // Returns the OnDemandComponent for the given public key, or nullopt if it is
   // not found in the manifest.
   const proto::OnDemandComponent* GetAssetByPublicKey(
@@ -104,6 +121,9 @@ class Manifest final {
   proto::Assets assets_;
   // A map from public key to the factory's manifest's OnDemandComponent.
   absl::flat_hash_map<std::string, std::string> asset_id_by_public_key_;
+
+  // The reason to give for uninstalling an asset not listed in this manifest.
+  UninstallReason uninstall_reason_ = UninstallReason::kObsolete;
 };
 
 }  // namespace optimization_guide
