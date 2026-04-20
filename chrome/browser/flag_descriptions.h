@@ -5776,12 +5776,6 @@ inline constexpr char kAndroidNavigationBlurTransitionAnimationDescription[] =
     "Display a blur animation during cross-site navigations to provide an "
     "enhanced transition experience where the white loading screen is avoided.";
 
-inline constexpr char kNavigationCaptureRefactorAndroidName[] =
-    "Navigation Capture refactoring for Chrome on Android";
-inline constexpr char kNavigationCaptureRefactorAndroidDescription[] =
-    "Prevents UI jank when a navigation is 'captured', causing a new "
-    "app to be opened.";
-
 inline constexpr char kNewTabPageCustomizationThemeSyncName[] =
     "New Tab Page Customization Theme Sync";
 inline constexpr char kNewTabPageCustomizationThemeSyncDescription[] =
