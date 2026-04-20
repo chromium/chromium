@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "remoting/base/source_location.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/session.h"
 #include "remoting/signaling/iq_sender.h"

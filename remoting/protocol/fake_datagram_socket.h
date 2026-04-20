@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_errors.h"
-#include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 
 namespace base {
@@ -101,55 +100,6 @@ class FakeDatagramSocket : public P2PDatagramSocket {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<FakeDatagramSocket> weak_factory_{this};
-};
-
-class FakeDatagramChannelFactory : public DatagramChannelFactory {
- public:
-  FakeDatagramChannelFactory();
-
-  FakeDatagramChannelFactory(const FakeDatagramChannelFactory&) = delete;
-  FakeDatagramChannelFactory& operator=(const FakeDatagramChannelFactory&) =
-      delete;
-
-  ~FakeDatagramChannelFactory() override;
-
-  void set_asynchronous_create(bool asynchronous_create) {
-    asynchronous_create_ = asynchronous_create;
-  }
-
-  void set_fail_create(bool fail_create) { fail_create_ = fail_create; }
-
-  // Pair with |peer_factory|. Once paired the factory will be automatically
-  // pairing created sockets with the sockets with the same name from the peer
-  // factory.
-  void PairWith(FakeDatagramChannelFactory* peer_factory);
-
-  // Can be used to retrieve FakeDatagramSocket created by this factory, e.g. to
-  // feed data into it. The caller doesn't get ownership of the result. Returns
-  // nullptr if the socket doesn't exist.
-  FakeDatagramSocket* GetFakeChannel(const std::string& name);
-
-  // DatagramChannelFactory interface.
-  void CreateChannel(const std::string& name,
-                     ChannelCreatedCallback callback) override;
-  void CancelChannelCreation(const std::string& name) override;
-
- private:
-  using ChannelsMap = std::map<std::string, base::WeakPtr<FakeDatagramSocket>>;
-
-  void NotifyChannelCreated(std::unique_ptr<FakeDatagramSocket> owned_socket,
-                            const std::string& name,
-                            ChannelCreatedCallback callback);
-
-  base::WeakPtr<FakeDatagramChannelFactory> peer_factory_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  bool asynchronous_create_;
-  ChannelsMap channels_;
-
-  bool fail_create_;
-
-  base::WeakPtrFactory<FakeDatagramChannelFactory> weak_factory_{this};
 };
 
 }  // namespace remoting::protocol
