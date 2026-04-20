@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -17,6 +19,8 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -25,6 +29,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,25 +39,34 @@
 namespace contextual_cueing {
 namespace {
 
+std::unique_ptr<KeyedService> CreateTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
 using ::testing::Return;
 
-class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
+class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
  public:
-  void SetUp() override {
+  ContextualCueingControllerBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(kContextualCueingV2);
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    SigninBrowserTestBase::SetUpOnMainThread();
 
     auto test_cue_target = std::make_unique<TestCueTarget>();
     cue_target_ = test_cue_target.get();
     contextual_cueing_controller()->RegisterCueTarget(
         CueTargetType::kGlic, std::move(test_cue_target));
+
+    // Enable history sync by default.
+    EnableHistorySync(true);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
+    SigninBrowserTestBase::SetUpInProcessBrowserTestFixture();
+
     // Override the creation of BrowserUserEducationInterface to
     // use the mock.
     user_ed_override_ =
@@ -67,7 +81,13 @@ class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     cue_target_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
+    SigninBrowserTestBase::TearDownOnMainThread();
+  }
+
+  void EnableHistorySync(bool enabled) {
+    GetTestSyncService()->SetSignedIn(signin::ConsentLevel::kSignin);
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, enabled);
   }
 
   ContextualCueingController* contextual_cueing_controller() {
@@ -122,6 +142,18 @@ class ContextualCueingControllerBrowserTest : public InProcessBrowserTest {
   raw_ptr<TestCueTarget> cue_target_ = nullptr;
 
  private:
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->profile()));
+  }
+
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestSyncService));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
@@ -429,6 +461,24 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kFeaturePromoActive, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, HistorySyncOff) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  EnableHistorySync(false);
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kHistorySyncOff,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,

@@ -80,8 +80,12 @@ chromium-metrics-reviews@google.com.
       label="Cue not shown: no longer active tab after model execution">
     Cue could not be shown because the tab for the cue was no longer active.
   </int>
-  <int value="14" label="Cue not shown: feature promo active">
-    Cue could not be shown because there was a feature promo active.
+  <int value="14" label="Cue not generated / shown: feature promo active">
+    Cue could not be generated or shown because there was a feature promo
+    active.
+  </int>
+  <int value="15" label="Cue not generated / shown: history sync off">
+    Cue could not be generated or shown because history sync is off.
   </int>
 </enum>
 

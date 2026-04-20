@@ -28,6 +28,10 @@ class ModelQualityLogEntry;
 struct OptimizationGuideModelExecutionResult;
 }  // namespace optimization_guide
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace contextual_cueing {
 
 class ContextualCueingService;
@@ -62,9 +66,12 @@ enum class ContextualCueingDecision {
   kNoPageActions = 12,
   // The cue couldn't be shown because the tab for the cue was no longer active.
   kNoLongerActiveTabAfterModelExecution = 13,
-  // The cue couldn't be shown because there was a feature promo active.
+  // The cue couldn't be generated/shown because there was a feature promo
+  // active.
   kFeaturePromoActive = 14,
-  kMaxValue = kFeaturePromoActive,
+  // The cue couldn't be generated/shown because history sync is off.
+  kHistorySyncOff = 15,
+  kMaxValue = kHistorySyncOff,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 
@@ -104,6 +111,9 @@ class ContextualCueingController
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
+  // Returns true if the cue should be shown to the user.
+  bool IsAllowedToShowCue();
+
   void ShowCue(CueTargetType cue_type,
                const CueTarget& target,
                optimization_guide::proto::ContextualCueingResponse response);
@@ -122,6 +132,7 @@ class ContextualCueingController
       page_content_annotations_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<syncer::SyncService> sync_service_;
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};

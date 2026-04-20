@@ -23,6 +23,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -32,6 +33,9 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/actions/actions.h"
@@ -105,7 +109,9 @@ ContextualCueingController::ContextualCueingController(
               browser_window_interface_->GetProfile())),
       optimization_guide_keyed_service_(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
-              browser_window_interface_->GetProfile())) {
+              browser_window_interface_->GetProfile())),
+      sync_service_(SyncServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile())) {
   if (page_content_annotations_service_) {
     page_content_annotations_service_->AddObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
@@ -141,6 +147,10 @@ void ContextualCueingController::OnPageContentAnnotated(
     RecordContextualCueingDecision(
         ContextualCueingDecision::
             kNoLongerActiveTabAfterCategoryClassification);
+    return;
+  }
+
+  if (!IsAllowedToShowCue()) {
     return;
   }
 
@@ -314,7 +324,31 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     return;
   }
 
-  ShowCue(*target_type, *target, std::move(*response));
+  if (IsAllowedToShowCue()) {
+    ShowCue(*target_type, *target, std::move(*response));
+  }
+}
+
+bool ContextualCueingController::IsAllowedToShowCue() {
+  if (!sync_service_ ||
+      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    // If history sync is off, we cannot proceed to generate or show the cue.
+    RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
+    return false;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  auto* browser_user_education_interface =
+      BrowserUserEducationInterface::From(browser_window_interface_);
+  if (browser_user_education_interface &&
+      browser_user_education_interface->IsAnyFeaturePromoActive()) {
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kFeaturePromoActive);
+    return false;
+  }
+#endif
+  return true;
 }
 
 void ContextualCueingController::ShowCue(
@@ -325,15 +359,6 @@ void ContextualCueingController::ShowCue(
   NOTIMPLEMENTED()
       << "Contextual cueing anchored message UI is not implemented for Android";
 #else
-  auto* browser_user_education_interface =
-      BrowserUserEducationInterface::From(browser_window_interface_);
-  if (browser_user_education_interface &&
-      browser_user_education_interface->IsAnyFeaturePromoActive()) {
-    RecordContextualCueingDecision(
-        ContextualCueingDecision::kFeaturePromoActive);
-    return;
-  }
-
   tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
   CHECK(tab);
 
