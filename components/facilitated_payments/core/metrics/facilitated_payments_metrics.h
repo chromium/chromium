@@ -240,7 +240,8 @@ enum class PixIframeUrlType {
   kAboutBlank = 1,
   kEmpty = 2,
   kAboutSrcDoc = 3,
-  kMaxValue = kAboutSrcDoc
+  kNonEmptyAndSameOriginAsMainFrame = 4,
+  kMaxValue = kNonEmptyAndSameOriginAsMainFrame
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.IframeUrlType)
 

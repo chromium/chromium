@@ -38,7 +38,8 @@ class MockContentFacilitatedPaymentsDriver
                const std::optional<GURL>& iframe_url,
                const url::Origin& main_frame_origin,
                const std::u16string& copied_text,
-               ukm::SourceId ukm_source_id),
+               ukm::SourceId ukm_source_id,
+               bool is_same_origin),
               (override));
 };
 
@@ -117,131 +118,6 @@ TEST_F(
       /*expected_count=*/0);
 }
 
-TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
-       OnTextCopiedToClipboard_PixCodeInIFrame_UrlTypeLogged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
-  ON_CALL(*client_, GetOptimizationGuideDecider)
-      .WillByDefault(testing::Return(decider_.get()));
-
-  NavigateAndCommit(GURL("https://example.com"));
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-
-  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
-  std::vector<std::pair<std::string, PixIframeUrlType>> test_cases = {
-      {"https://psp.com", PixIframeUrlType::kOtherNonEmptyUrl},
-      {"about:blank", PixIframeUrlType::kAboutBlank},
-      {"", PixIframeUrlType::kEmpty},
-      {"about:srcdoc", PixIframeUrlType::kAboutSrcDoc}};
-
-  for (const auto& [url_string, expected_type] : test_cases) {
-    base::HistogramTester histogram_tester;
-    content::RenderFrameHost* iframe =
-        content::RenderFrameHostTester::For(main_frame)->AppendChild("iframe");
-
-    if (!url_string.empty()) {
-      iframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL(url_string), iframe);
-    }
-
-    factory_->OnTextCopiedToClipboard(iframe, kValidPixCode);
-
-    histogram_tester.ExpectUniqueSample(
-        "FacilitatedPayments.Pix.Iframe.UrlType",
-        /*sample=*/expected_type,
-        /*expected_bucket_count=*/1);
-  }
-}
-
-TEST_F(
-    ContentFacilitatedPaymentsDriverFactoryTest,
-    OnTextCopiedToClipboard_PixCodeInIFrame_IframeUrlIsAboutBlank_IsSameOriginLogged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
-  ON_CALL(*client_, GetOptimizationGuideDecider)
-      .WillByDefault(testing::Return(decider_.get()));
-
-  NavigateAndCommit(GURL("https://example.com"));
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-
-  content::RenderFrameHost* iframe =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("iframe");
-  iframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("about:blank"), iframe);
-
-  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
-  base::HistogramTester histogram_tester;
-
-  factory_->OnTextCopiedToClipboard(iframe, kValidPixCode);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Iframe.IsSameOrigin", true, 1);
-}
-
-TEST_F(
-    ContentFacilitatedPaymentsDriverFactoryTest,
-    OnTextCopiedToClipboard_PixCodeInIFrame_IframeUrlIsAboutBlank_IsNotSameOriginLogged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
-  ON_CALL(*client_, GetOptimizationGuideDecider)
-      .WillByDefault(testing::Return(decider_.get()));
-
-  NavigateAndCommit(GURL("https://example.com"));
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-
-  // Create a cross-origin iframe attached to the main frame.
-  content::RenderFrameHost* cross_origin_iframe =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("iframe");
-  cross_origin_iframe =
-      content::NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL("https://merchant.com/iframe"), cross_origin_iframe);
-
-  // Create an about:blank iframe nested inside the cross-origin iframe.
-  content::RenderFrameHost* nested_about_blank_iframe =
-      content::RenderFrameHostTester::For(cross_origin_iframe)
-          ->AppendChild("nested_iframe");
-  nested_about_blank_iframe =
-      content::NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL("about:blank"), nested_about_blank_iframe);
-
-  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
-  base::HistogramTester histogram_tester;
-
-  factory_->OnTextCopiedToClipboard(nested_about_blank_iframe, kValidPixCode);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Iframe.IsSameOrigin", false, 1);
-}
-
-TEST_F(
-    ContentFacilitatedPaymentsDriverFactoryTest,
-    OnTextCopiedToClipboard_PixCodeInIFrame_RegularUrl_IsSameOriginNotLogged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
-
-  ON_CALL(*client_, GetOptimizationGuideDecider)
-      .WillByDefault(testing::Return(decider_.get()));
-
-  NavigateAndCommit(GURL("https://example.com"));
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-
-  content::RenderFrameHost* iframe =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("iframe");
-  iframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://example.com/iframe"), iframe);
-
-  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
-  base::HistogramTester histogram_tester;
-
-  factory_->OnTextCopiedToClipboard(iframe, kValidPixCode);
-
-  histogram_tester.ExpectTotalCount(
-      "FacilitatedPayments.Pix.Iframe.IsSameOrigin", 0);
-}
-
 TEST_F(
     ContentFacilitatedPaymentsDriverFactoryTest,
     OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_CorrectIframeUrlPassedToDriver) {
@@ -269,7 +145,8 @@ TEST_F(
           /*main_frame_url=*/main_frame->GetLastCommittedURL(),
           /*iframe_url=*/std::make_optional(iframe->GetLastCommittedURL()),
           /*main_frame_origin=*/main_frame->GetLastCommittedOrigin(),
-          kValidPixCode, iframe->GetPageUkmSourceId()));
+          kValidPixCode, iframe->GetPageUkmSourceId(),
+          /*is_same_origin=*/testing::_));
 
   factory_->OnTextCopiedToClipboard(iframe, kValidPixCode);
 }

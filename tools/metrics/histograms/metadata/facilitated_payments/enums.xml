@@ -124,13 +124,14 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixAccountLinkingFlowExitedReason) -->
 
-<!-- LINT.IfChange(PixIframeUrlType) -->
+<!-- LINT.IfChange(FacilitatedPayments.Pix.IframeUrlType) -->
 
 <enum name="FacilitatedPayments.Pix.IframeUrlType">
   <int value="0" label="Other non-empty URL"/>
   <int value="1" label="about:blank"/>
   <int value="2" label="Empty URL"/>
   <int value="3" label="about:srcdoc"/>
+  <int value="4" label="Non-empty and same origin as main frame"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixIframeUrlType) -->
