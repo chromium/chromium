@@ -51,6 +51,10 @@ void ContextualCueingService::OnCueShown(const GURL& url) {
 
 contextual_cueing::ContextualCueingDecision ContextualCueingService::CanShowCue(
     const GURL& url) const {
+  if (kDisableCueBackoff.Get()) {
+    return ContextualCueingDecision::kSuccess;
+  }
+
   if (remaining_quiet_loads_ > 0) {
     return ContextualCueingDecision::kNotEnoughPageLoadsSinceLastCue;
   }

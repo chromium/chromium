@@ -23,6 +23,11 @@ const base::FeatureParam<int> kMaxNumBackgroundTabs(
     "ContextualCueingV2MaxNumBackgroundTabs",
     10);
 
+const base::FeatureParam<bool> kDisableCueBackoff(
+    &kContextualCueingV2,
+    "ContextualCueingV2DisableCueBackoff",
+    false);
+
 const base::FeatureParam<int> kMinPageCountBetweenNudges(
     &kContextualCueingV2,
     "ContextualCueingV2MinPageCountBetweenNudges",

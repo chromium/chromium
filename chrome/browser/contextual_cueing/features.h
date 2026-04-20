@@ -16,6 +16,9 @@ extern const base::FeatureParam<double> kEduClassifierThreshold;
 extern const base::FeatureParam<double> kShoppingClassifierThreshold;
 extern const base::FeatureParam<int> kMaxNumBackgroundTabs;
 
+// If true, disable the cue backoff logic.
+extern const base::FeatureParam<bool> kDisableCueBackoff;
+
 // The minimum number of page loads that must occur between nudges.
 extern const base::FeatureParam<int> kMinPageCountBetweenNudges;
 // The minimum amount of time that must pass between nudges.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -90,6 +91,33 @@ TEST_F(ContextualCueingServiceV2Test, TooManyCuesForUserOverTime) {
   // matter.
   EXPECT_EQ(service()->CanShowCue(GURL("https://qux.com")),
             ContextualCueingDecision::kTooManyCuesShownToTheUser);
+}
+
+class ContextualCueingServiceDisableBackoffTest
+    : public ContextualCueingServiceV2Test {
+ public:
+  ContextualCueingServiceDisableBackoffTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kContextualCueingV2,
+             {{"ContextualCueingV2DisableCueBackoff", "true"}}},
+        },
+        {});
+  }
+  ~ContextualCueingServiceDisableBackoffTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContextualCueingServiceDisableBackoffTest, BackoffDisabled) {
+  GURL url("https://example.com");
+
+  // Simulate a cue being shown.
+  service()->OnCueShown(url);
+
+  // Should not be blocked by backoff.
+  EXPECT_EQ(service()->CanShowCue(url), ContextualCueingDecision::kSuccess);
 }
 
 }  // namespace

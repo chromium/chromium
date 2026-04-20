@@ -3491,6 +3491,13 @@ const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
 const FeatureEntry::FeatureVariation kContextualCueingEnabledOptions[] = {
     {"no engagement caps", kContextualCueingEnabledNoEngagementCap, nullptr},
 };
+
+const FeatureEntry::FeatureParam kContextualCueingV2DisableCueBackoff[] = {
+    {"ContextualCueingV2DisableCueBackoff", "true"}};
+
+const FeatureEntry::FeatureVariation kContextualCueingV2Options[] = {
+    {"disable backoff", kContextualCueingV2DisableCueBackoff, nullptr},
+};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
@@ -10424,7 +10431,9 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ContextualCueingEnabledOptions")},
     {"contextual-cueing-v2", flag_descriptions::kContextualCueingV2Name,
      flag_descriptions::kContextualCueingV2Description, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(contextual_cueing::kContextualCueingV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_cueing::kContextualCueingV2,
+                                    kContextualCueingV2Options,
+                                    "ContextualCueingV2Options")},
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition-alloc-with-advanced-checks",
