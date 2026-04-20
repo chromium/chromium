@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -156,8 +157,17 @@ public class DocumentPictureInPictureActivityUnitTest {
 
         mActivity.setParentWebContentsOnInstanceForTesting(parentWebContents);
 
-        final Rect windowBoundsPx = new Rect(100, 100, 300, 300); // 200x200
-        when(mWindowMetrics.getBounds()).thenReturn(windowBoundsPx);
+        when(mContentLayout.getWidth()).thenReturn(200);
+        when(mContentLayout.getHeight()).thenReturn(200);
+        doAnswer(
+                        invocation -> {
+                            int[] loc = invocation.getArgument(0);
+                            loc[0] = 100;
+                            loc[1] = 100;
+                            return null;
+                        })
+                .when(mContentLayout)
+                .getLocationOnScreen(any(int[].class));
 
         mActivity.saveBoundsToCache();
 
@@ -170,5 +180,26 @@ public class DocumentPictureInPictureActivityUnitTest {
                         eq(150), // 300 / 2.0
                         anyInt(),
                         anyInt());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testSaveBoundsToCache_NullLayout() {
+        doReturn(null).when(mActivity).findViewById(R.id.document_picture_in_picture_content);
+
+        mActivity.saveBoundsToCache();
+
+        verifyNoInteractions(mMockNatives);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testSaveBoundsToCache_ZeroDimensions() {
+        when(mContentLayout.getWidth()).thenReturn(0);
+        when(mContentLayout.getHeight()).thenReturn(0);
+
+        mActivity.saveBoundsToCache();
+
+        verifyNoInteractions(mMockNatives);
     }
 }

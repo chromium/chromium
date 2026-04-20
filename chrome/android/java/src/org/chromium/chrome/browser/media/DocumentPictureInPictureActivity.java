@@ -464,7 +464,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     }
 
     /**
-     * Saves the current window bounds to the cache if conditions are met.
+     * Saves the current content area bounds to the cache if conditions are met.
      *
      * <p>This requires that the parent WebContents is still valid, we are not recreating the
      * activity, and the API level is 30 or higher (required for {@code getCurrentWindowMetrics()}).
@@ -477,11 +477,6 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 && getWindowAndroid() != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             DisplayAndroid display = getDisplayAndroid();
-            Rect currentWindowBounds =
-                    DisplayUtil.convertLocalPxToGlobalDipCoordinates(
-                            display,
-                            new Rect(getWindowManager().getCurrentWindowMetrics().getBounds()));
-
             int openerDisplayId = INVALID_DISPLAY;
             WindowAndroid openerWindow = mParentWebContents.getTopLevelNativeWindow();
             if (openerWindow != null) {
@@ -490,8 +485,27 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
             int pipDisplayId = display.getDisplayId();
 
+            FrameLayout contentLayout = findViewById(R.id.document_picture_in_picture_content);
+            if (contentLayout == null
+                    || contentLayout.getWidth() <= 0
+                    || contentLayout.getHeight() <= 0) {
+                return;
+            }
+            int[] location = new int[2];
+            contentLayout.getLocationOnScreen(location);
+
+            Rect contentBoundsPx =
+                    new Rect(
+                            location[0],
+                            location[1],
+                            location[0] + contentLayout.getWidth(),
+                            location[1] + contentLayout.getHeight());
+
+            Rect contentBounds =
+                    DisplayUtil.convertLocalPxToGlobalDipCoordinates(display, contentBoundsPx);
+
             PictureInPictureBoundsCacheBridge.updateCachedBounds(
-                    mParentWebContents, currentWindowBounds, openerDisplayId, pipDisplayId);
+                    mParentWebContents, contentBounds, openerDisplayId, pipDisplayId);
         }
     }
 
