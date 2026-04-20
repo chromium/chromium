@@ -1333,8 +1333,6 @@ if (enable_extensions) {
 
     if (is_chromeos) {
       sources += [
-        "api/audio/audio_apitest_chromeos.cc",
-
         # TODO(michaelpg): bluetooth_appshell_test.cc is a crutch until we have
         # a better system for testing APIs in both app_shell and chrome. See
         # crbug.com/650835.
@@ -1347,7 +1345,6 @@ if (enable_extensions) {
       deps += [
         "//chromeos/ash/components/audio",
         "//chromeos/ash/components/dbus:test_support",
-        "//chromeos/ash/components/dbus/audio",
         "//chromeos/ash/components/dbus/media_analytics",
         "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
         "//chromeos/ash/components/dbus/upstart",

@@ -10,13 +10,16 @@
 #include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/audio/device_activate_type.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/features/feature_session_type.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace extensions {
 
@@ -94,7 +97,7 @@ AudioNode CreateAudioNode(const AudioNodeInfo& info, int version) {
       info.is_input ? kInputNumberOfVolumeSteps : kOutputNumberOfVolumeSteps);
 }
 
-class AudioApiTest : public ShellApiTest {
+class AudioApiTest : public ExtensionApiTest {
  public:
   AudioApiTest() = default;
 
@@ -107,7 +110,7 @@ class AudioApiTest : public ShellApiTest {
     session_feature_type_ = extensions::ScopedCurrentFeatureSessionType(
         extensions::mojom::FeatureSessionType::kKiosk);
 
-    ShellApiTest::SetUp();
+    ExtensionApiTest::SetUp();
   }
 
   void ChangeAudioNodes(const AudioNodeList& audio_nodes) {
@@ -132,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, Audio) {
 
   ChangeAudioNodes(audio_nodes);
 
-  EXPECT_TRUE(RunAppTest("api_test/audio")) << message_;
+  EXPECT_TRUE(RunExtensionTest("audio/basics")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AudioApiTest, OnLevelChangedOutputDevice) {
@@ -148,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnLevelChangedOutputDevice) {
   // Loads background app.
   ResultCatcher result_catcher;
   ExtensionTestMessageListener load_listener("loaded");
-  ASSERT_TRUE(LoadApp("api_test/audio/volume_change"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("audio/volume_change")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Change output device volume.
@@ -182,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnOutputMuteChanged) {
   // Loads background app.
   ResultCatcher result_catcher;
   ExtensionTestMessageListener load_listener("loaded");
-  ASSERT_TRUE(LoadApp("api_test/audio/output_mute_change"));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("audio/output_mute_change")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Un-mute the output.
@@ -213,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnInputMuteChanged) {
   // Loads background app.
   ResultCatcher result_catcher;
   ExtensionTestMessageListener load_listener("loaded");
-  ASSERT_TRUE(LoadApp("api_test/audio/input_mute_change"));
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("audio/input_mute_change")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Mute the input.
@@ -239,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnNodesChangedAddNodes) {
   // Load background app.
   ResultCatcher result_catcher;
   ExtensionTestMessageListener load_listener("loaded");
-  ASSERT_TRUE(LoadApp("api_test/audio/add_nodes"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("audio/add_nodes")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Plug in HDMI output.
@@ -267,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnNodesChangedRemoveNodes) {
   // Load background app.
   ResultCatcher result_catcher;
   ExtensionTestMessageListener load_listener("loaded");
-  ASSERT_TRUE(LoadApp("api_test/audio/remove_nodes"));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("audio/remove_nodes")));
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Remove camera mic.
