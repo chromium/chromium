@@ -2324,9 +2324,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_DATA_TYPES_OFF" desc="Message to show when all sync data types are off">
         No data selected to sync
       </message>
-      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
-        Tap to set up sync
-      </message>
       <message name="IDS_SYNC_IS_DISABLED_BY_ADMINISTRATOR" desc="Message to show when Chrome sync is disabled by administrator">
         Sync is disabled by your administrator
       </message>
@@ -2663,9 +2660,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). The message prompts the user to fix this issue.">
         Get all your passwords
       </message>
-      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED_TITLE" desc="Title of the error message shown when sync setup was not complete. [CHAR_LIMIT=60]">
-        Initial sync setup not finished
-      </message>
       <message name="IDS_SYNC_NEEDS_VERIFICATION_TITLE" desc="Title of the error message shown when sync needs to verify the user.">
         Sync needs to verify it's you
       </message>
@@ -2689,12 +2683,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_HINT_PASSPHRASE_REQUIRED" desc="Hint message to resolve passphrase required error.">
         To start sync, enter your passphrase
-      </message>
-      <message name="IDS_HINT_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
-        Choose what to sync below
-      </message>
-      <message name="IDS_HINT_OTHER_SYNC_ERRORS" desc="Hint message to resolve sync errors not listed independently.">
-        Try signing in again
       </message>
       <message name="IDS_HINT_CLIENT_OUT_OF_DATE" desc="Hint message to resolve sync protocol error for out-of-date client.">
         Update <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> to start sync

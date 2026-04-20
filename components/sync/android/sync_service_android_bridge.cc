@@ -212,15 +212,6 @@ void SyncServiceAndroidBridge::SetSetupInProgress(bool in_progress) {
   }
 }
 
-bool SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete() {
-  return native_sync_service_->GetUserSettings()
-      ->IsInitialSyncFeatureSetupComplete();
-}
-
-void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete() {
-  native_sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
-}
-
 std::vector<int32_t> SyncServiceAndroidBridge::GetActiveDataTypes() {
   return DataTypeSetToVector(native_sync_service_->GetActiveDataTypes());
 }

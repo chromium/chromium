@@ -32,7 +32,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -228,31 +227,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Set up a test account, sign in and enable sync. FirstSetupComplete bit will be set after
-     * this. For most purposes this function should be used as this emulates the basic sign in flow.
-     *
-     * @return the test account that is signed in.
-     */
-    @Deprecated
-    public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addTestAccountThenSigninWithConsentLevelSync();
-
-        // In addition to using ConsentLevel.SYNC above, configure SyncService
-        // to enable the legacy Sync-the-feature.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSyncService.setInitialSyncFeatureSetupComplete();
-                });
-
-        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
-        enableUKM();
-        SyncTestUtil.waitForSyncFeatureActive();
-        SyncTestUtil.triggerSyncAndWaitForCompletion();
-        return accountInfo;
-    }
-
-    /**
      * Sets up an account and signs in and enables history sync.
      *
      * @return the test {@link CoreAccountInfo} that is signed in.
@@ -438,16 +412,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /** Returns an instance of SyncService that can be overridden by subclasses. */
     protected SyncService createSyncServiceImpl() {
         return null;
-    }
-
-    private static void enableUKM() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Outside of tests, URL-keyed anonymized data collection is enabled by sign-in
-                    // UI.
-                    UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                            ProfileManager.getLastUsedRegularProfile(), true);
-                });
     }
 
     private static PrefService getPrefService() {

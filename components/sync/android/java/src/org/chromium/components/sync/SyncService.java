@@ -131,10 +131,6 @@ public interface SyncService {
      */
     void setSelectedType(@UserSelectableType int type, boolean isTypeOn);
 
-    void setInitialSyncFeatureSetupComplete();
-
-    boolean isInitialSyncFeatureSetupComplete();
-
     /**
      * Instances of this class keep sync paused until {@link #close} is called. Use {@link
      * SyncService#getSetupInProgressHandle} to create. Please note that {@link #close} should be

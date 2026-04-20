@@ -190,21 +190,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public void setInitialSyncFeatureSetupComplete() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        SyncServiceImplJni.get().setInitialSyncFeatureSetupComplete(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean isInitialSyncFeatureSetupComplete() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get()
-                .isInitialSyncFeatureSetupComplete(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -523,10 +508,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
 
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
-
-        boolean isInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
-
-        void setInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
 
         @JniType("std::vector<int32_t>")
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);

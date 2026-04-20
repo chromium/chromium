@@ -201,7 +201,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 startUpdateCredentialsFlow(mActivity);
                 break;
             case UserActionableError.NEEDS_PASSPHRASE:
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 openSettings();
                 break;
@@ -296,8 +295,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 return context.getString(R.string.identity_error_message_button_verify);
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
                 return context.getString(R.string.learn_more);
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-            case UserActionableError.UNRECOVERABLE_ERROR:
             default:
                 assert false;
                 return "";
@@ -349,8 +346,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 return context.getString(R.string.identity_error_card_button_verify);
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
                 return context.getString(R.string.bookmark_sync_limit_error_title);
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-            case UserActionableError.UNRECOVERABLE_ERROR:
             default:
                 assert false;
                 return "";
@@ -369,9 +364,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         assert mError != UserActionableError.NONE;
         // Check if this is for a sync error.
         if (mSyncService.hasSyncConsent()) {
-            return mError == UserActionableError.NEEDS_SETTINGS_CONFIRMATION
-                    ? context.getString(R.string.sync_settings_not_confirmed_title)
-                    : SyncSettingsUtils.getSyncErrorHint(context, mError);
+            return SyncSettingsUtils.getSyncErrorHint(context, mError);
         }
 
         // Strings for identity error.
@@ -393,8 +386,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 return context.getString(R.string.identity_error_message_body);
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
                 return context.getString(R.string.bookmark_sync_limit_error_description);
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-            case UserActionableError.UNRECOVERABLE_ERROR:
             default:
                 assert false;
                 return "";
@@ -491,9 +482,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
 
     private static @UserActionableError int getError(Profile profile) {
         @UserActionableError int error = SyncSettingsUtils.getSyncError(profile);
-        // Do not show sync error message for UPM_BACKEND_OUTDATED or OTHER_ERRORS.
-        if (error == UserActionableError.NEEDS_UPM_BACKEND_UPGRADE
-                || error == UserActionableError.UNRECOVERABLE_ERROR) {
+        // Do not show sync error message for UPM_BACKEND_OUTDATED.
+        if (error == UserActionableError.NEEDS_UPM_BACKEND_UPGRADE) {
             return UserActionableError.NONE;
         }
         return error;

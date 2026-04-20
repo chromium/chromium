@@ -482,13 +482,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                         mSignedInCoreAccountInfo,
                         REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
                 return;
-            case UserActionableError.UNRECOVERABLE_ERROR:
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                // Identity error card is not shown for unrecoverable errors nor for sync setup
-                // incomplete error (the latter is shown as part of sync error in the manage sync
-                // settings page).
-                assert false; // NOTREACHED()
-                // fall through
             case UserActionableError.NONE:
             default:
                 return;

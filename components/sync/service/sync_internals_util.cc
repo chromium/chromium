@@ -202,12 +202,12 @@ std::string GetUserActionableErrorString(
     case SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return "Trusted vault recoverability degraded for everything";
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     case SyncService::UserActionableError::kNeedsSettingsConfirmation:
       return "Needs settings confirmation";
     case SyncService::UserActionableError::kUnrecoverableError:
       return "Unrecoverable error";
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
     case SyncService::UserActionableError::kNeedsUPMBackendUpgrade:
       return "Needs UPM backend upgrade";

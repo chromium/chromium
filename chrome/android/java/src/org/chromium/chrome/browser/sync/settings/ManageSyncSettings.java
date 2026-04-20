@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -27,7 +26,6 @@ import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 
 import org.chromium.base.CallbackController;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -55,7 +53,6 @@ import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
-import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.SignoutButtonPreference;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -69,7 +66,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -792,13 +788,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onIdentityErrorCardButtonClicked(@UserActionableError int error) {
-        assert error != UserActionableError.NEEDS_SETTINGS_CONFIRMATION : "Invalid error";
-        assert error != UserActionableError.UNRECOVERABLE_ERROR : "Not an identity error";
         onErrorCardClicked(error);
     }
 
     private void onErrorCardClicked(@UserActionableError int error) {
-        Profile profile = getProfile();
         final CoreAccountInfo primaryAccountInfo =
                 getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         assert primaryAccountInfo != null;
@@ -817,19 +810,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                         + ContextUtils.getApplicationContext().getPackageName()));
                 startActivity(intent);
                 return;
-            case UserActionableError.UNRECOVERABLE_ERROR:
-                SignOutCoordinator.startSignOutFlow(
-                        requireContext(),
-                        profile,
-                        getActivity().getSupportFragmentManager(),
-                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                        assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
-                        profile.isChild()
-                                ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
-                                : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                        /* showConfirmDialog= */ false,
-                        CallbackUtils.emptyRunnable());
-                return;
             case UserActionableError.NEEDS_PASSPHRASE:
                 displayPassphraseDialog();
                 return;
@@ -844,9 +824,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         this,
                         primaryAccountInfo,
                         REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
-                return;
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                mSyncService.setInitialSyncFeatureSetupComplete();
                 return;
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 GmsUpdateLauncher.launch(getContext());

@@ -221,7 +221,9 @@ class SyncService : public KeyedService {
     // Same as above, but for the case where data loss may affect all
     // encryptable datatypes.
     kTrustedVaultRecoverabilityDegradedForEverything = 6,
+// This enum is parsed by java_cpp_enum.py, which doesn't accept &&ing flags.
 #if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
     // Sync settings dialog not confirmed yet.
     kNeedsSettingsConfirmation = 7,
     // Sync has encountered an unrecoverable error. It won't attempt to start
@@ -229,6 +231,7 @@ class SyncService : public KeyedService {
     // and back in again. This error is only shown for syncing users, and will
     // be removed with "Sync The Feature" deprecation.
     kUnrecoverableError = 8,
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

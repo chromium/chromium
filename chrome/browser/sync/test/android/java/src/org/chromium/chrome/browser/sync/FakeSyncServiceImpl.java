@@ -39,7 +39,6 @@ public class FakeSyncServiceImpl implements SyncService {
     private boolean mTrustedVaultRecoverabilityDegraded;
     private boolean mEncryptEverythingEnabled;
     private boolean mRequiresClientUpgrade;
-    private boolean mHasUnrecoverableError;
     private boolean mRequiresUpmBackendUpgrade;
     private boolean mBookmarksLimitExceeded;
     private GoogleServiceAuthError mAuthError =
@@ -76,15 +75,6 @@ public class FakeSyncServiceImpl implements SyncService {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAuthError = authError;
-                    notifySyncStateChanged();
-                });
-    }
-
-    @AnyThread
-    public void setHasUnrecoverableError(boolean hasUnrecoverableError) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mHasUnrecoverableError = hasUnrecoverableError;
                     notifySyncStateChanged();
                 });
     }
@@ -281,16 +271,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public void setInitialSyncFeatureSetupComplete() {
-        mDelegate.setInitialSyncFeatureSetupComplete();
-    }
-
-    @Override
-    public boolean isInitialSyncFeatureSetupComplete() {
-        return mDelegate.isInitialSyncFeatureSetupComplete();
-    }
-
-    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         return mDelegate.getSetupInProgressHandle();
     }
@@ -322,14 +302,6 @@ public class FakeSyncServiceImpl implements SyncService {
             return UserActionableError.NONE;
         }
 
-        if (hasSyncConsent()) {
-            if (!isInitialSyncFeatureSetupComplete()) {
-                return UserActionableError.NEEDS_SETTINGS_CONFIRMATION;
-            }
-            if (mHasUnrecoverableError) {
-                return UserActionableError.UNRECOVERABLE_ERROR;
-            }
-        }
         if (mAuthError.getState() != GoogleServiceAuthErrorState.NONE) {
             return UserActionableError.SIGN_IN_NEEDS_UPDATE;
         }

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.view.View;
@@ -257,16 +255,6 @@ public class IdentityErrorCardPreferenceTest {
         }
         mRenderTestRule.render(
                 getIdentityErrorCardView(), "identity_error_card_bookmark_limit_reached");
-    }
-
-    @Test
-    @LargeTest
-    public void testIdentityErrorCardNotShownForUnrecoverableErrors() throws Exception {
-        mFakeSyncServiceImpl.setHasUnrecoverableError(true);
-        mSigninTestRule.addTestAccountThenSignin();
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     private View getIdentityErrorCardView() {

@@ -121,8 +121,6 @@ public class SyncSettingsUtils {
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 return context.getString(
                         R.string.hint_client_out_of_date, ApkInfo.getHostPackageLabel());
-            case UserActionableError.UNRECOVERABLE_ERROR:
-                return context.getString(R.string.hint_other_sync_errors);
             case UserActionableError.NEEDS_PASSPHRASE:
                 return context.getString(R.string.hint_passphrase_required);
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
@@ -133,8 +131,6 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.hint_sync_recoverability_degraded_for_everything);
             case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 return context.getString(R.string.hint_sync_recoverability_degraded_for_passwords);
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                return context.getString(R.string.hint_sync_settings_not_confirmed_description);
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 return context.getString(R.string.sync_error_card_outdated_gms);
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
@@ -156,9 +152,7 @@ public class SyncSettingsUtils {
         switch (error) {
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
-            case UserActionableError.UNRECOVERABLE_ERROR:
             case UserActionableError.NEEDS_PASSPHRASE:
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
                 return context.getString(R.string.sync_error_card_title);
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
@@ -199,10 +193,6 @@ public class SyncSettingsUtils {
         @UserActionableError int userActionableError = syncService.getUserActionableError();
 
         switch (userActionableError) {
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                return context.getString(R.string.sync_settings_not_confirmed);
-            case UserActionableError.UNRECOVERABLE_ERROR:
-                return context.getString(R.string.sync_error_generic);
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 return getSyncStatusSummaryForAuthError(
                         context, syncService.getAuthError().getState());
@@ -562,8 +552,6 @@ public class SyncSettingsUtils {
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
                 return new ErrorCardDetails(
                         R.string.bookmark_sync_limit_error_description, R.string.learn_more);
-            case UserActionableError.UNRECOVERABLE_ERROR:
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
             case UserActionableError.NONE:
                 assert false; // NOTREACHED()
                 // fall through
@@ -585,8 +573,6 @@ public class SyncSettingsUtils {
                 return ".AuthError";
             case UserActionableError.NEEDS_PASSPHRASE:
                 return ".PassphraseRequired";
-            case UserActionableError.NEEDS_SETTINGS_CONFIRMATION:
-                return ".SyncSetupIncomplete";
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 return ".ClientOutOfDate";
             case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
@@ -599,8 +585,6 @@ public class SyncSettingsUtils {
                 return ".TrustedVaultRecoverabilityDegradedForPasswords";
             case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
                 return ".UpmBackendOutdated";
-            case UserActionableError.UNRECOVERABLE_ERROR:
-                return ".OtherErrors";
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
                 return ".BookmarkLimitReached";
             default:
