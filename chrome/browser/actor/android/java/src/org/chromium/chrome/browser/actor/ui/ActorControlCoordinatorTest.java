@@ -402,7 +402,7 @@ public class ActorControlCoordinatorTest {
 
         verify(mActorTask, never()).pause();
         verify(mActorTask, never()).resume();
-        verify(mTabBottomSheetManager).setSheetExpanded(true);
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
     }
 
     @Test
@@ -415,7 +415,7 @@ public class ActorControlCoordinatorTest {
 
         verify(mActorTask, never()).pause();
         verify(mActorTask, never()).resume();
-        verify(mTabBottomSheetManager).setSheetExpanded(true);
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
     }
 
     @Test
@@ -426,7 +426,7 @@ public class ActorControlCoordinatorTest {
 
         performActorControlClick();
 
-        verify(mTabBottomSheetManager).setSheetExpanded(true);
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
     }
@@ -460,6 +460,6 @@ public class ActorControlCoordinatorTest {
 
         performPeekViewClick();
 
-        verify(mTabBottomSheetManager).setSheetExpanded(true);
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
     }
 }

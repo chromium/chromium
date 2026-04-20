@@ -28,6 +28,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -45,7 +46,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
@@ -96,6 +96,7 @@ public class TabBottomSheetCoordinatorTest {
     @Mock private Window mMockWindow;
     @Mock private View mMockDecorView;
     @Mock private TouchEventProvider mMockTouchEventProvider;
+    @Mock private CoBrowseViews mCoBrowseViews;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
@@ -103,7 +104,6 @@ public class TabBottomSheetCoordinatorTest {
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksArgumentCaptor;
     @Captor private ArgumentCaptor<TouchEventObserver> mTouchEventObserverArgumentCaptor;
 
-    private CoBrowseViews mCoBrowseViews;
     private Context mContext;
     private View mView;
     private TabBottomSheetCoordinator mCoordinator;
@@ -112,11 +112,8 @@ public class TabBottomSheetCoordinatorTest {
     @Before
     public void setUp() {
         mContext = spy(ApplicationProvider.getApplicationContext());
-        mCoBrowseViews = new CoBrowseViews(mContext, null, null, 0);
-        mView = mCoBrowseViews.getView();
-        assertNotNull(
-                "actor_control_container should be found in CoBrowseViews",
-                mView.findViewById(R.id.actor_control_container));
+        mView = new FrameLayout(mContext);
+        when(mCoBrowseViews.getView()).thenReturn(mView);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
 
         when(mWindowAndroid.getWindow()).thenReturn(mMockWindow);

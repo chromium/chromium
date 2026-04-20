@@ -172,6 +172,7 @@ public class ActorControlCoordinator implements ActorKeyedService.Observer {
         }
     }
 
+
     /** Cleans up component */
     public void destroy() {
         if (mActorKeyedService != null) {
@@ -198,7 +199,7 @@ public class ActorControlCoordinator implements ActorKeyedService.Observer {
             if (PeekViewUiState.WAITING.equals(
                     mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE))) {
                 // In the WAITING state, the actor control button is the "View" button.
-                mTabBottomSheetManager.setSheetExpanded(true);
+                mTabBottomSheetManager.hidePeekViewAndShowExpandedContent();
             } else {
                 Log.w(TAG, "onActorControlClicked: No active task and not in WAITING state.");
             }
@@ -217,7 +218,7 @@ public class ActorControlCoordinator implements ActorKeyedService.Observer {
                 break;
             case ActorTaskState.PAUSED_BY_ACTOR:
             case ActorTaskState.WAITING_ON_USER:
-                mTabBottomSheetManager.setSheetExpanded(true);
+                mTabBottomSheetManager.hidePeekViewAndShowExpandedContent();
                 break;
             default:
                 Log.w(
@@ -237,7 +238,7 @@ public class ActorControlCoordinator implements ActorKeyedService.Observer {
 
     /** Called when the peek view is clicked. */
     /* package */ void onPeekViewClicked() {
-        mTabBottomSheetManager.setSheetExpanded(true);
+        mTabBottomSheetManager.hidePeekViewAndShowExpandedContent();
     }
 
     /**

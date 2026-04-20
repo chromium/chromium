@@ -199,7 +199,7 @@ public class TabBottomSheetCoordinator {
             return false;
         }
         if (mCoBrowseViews.hasPeekView()) {
-            mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK);
+            mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK, true);
         }
         mContentView = mCoBrowseViews.getView();
         mSheetContent =
@@ -277,16 +277,31 @@ public class TabBottomSheetCoordinator {
     }
 
     /**
-     * Sets whether the bottom sheet is expanded.
+     * Shows the peek view and hides the expanded content.
      *
-     * @param expanded Whether the bottom sheet should be expanded.
+     * @return Whether the peek view was successfully shown.
      */
-    void setSheetExpanded(boolean expanded) {
-        if (expanded) {
-            mBottomSheetController.expandSheet();
-        } else {
-            mBottomSheetController.collapseSheet(/* animate= */ true);
+    boolean showPeekViewAndHideExpandedContent() {
+        if (!mCoBrowseViews.hasPeekView()) {
+            return false;
         }
+        mMediator.onSheetStateChanged(SheetState.PEEK, mCoBrowseViews.hasPeekView());
+        mBottomSheetController.collapseSheet(false);
+        return true;
+    }
+
+    /**
+     * Hides the peek view and shows the expanded content.
+     *
+     * @return Whether the peek view was successfully hidden.
+     */
+    boolean hidePeekViewAndShowExpandedContent() {
+        if (!mCoBrowseViews.hasPeekView()) {
+            return false;
+        }
+        mMediator.onSheetStateChanged(SheetState.FULL, mCoBrowseViews.hasPeekView());
+        mBottomSheetController.expandSheet();
+        return true;
     }
 
     void closeBottomSheet(boolean animate) {
@@ -339,7 +354,7 @@ public class TabBottomSheetCoordinator {
                 if (mSheetContent == null
                         || mSheetEventsCallback == null
                         || !mIsShowingTabBottomSheet) return;
-                mMediator.onSheetStateChanged(state);
+                mMediator.onSheetStateChanged(state, mCoBrowseViews.hasPeekView());
                 if (state != SheetState.HIDDEN) {
                     mSheetEventsCallback.onBottomSheetOpened(state != SheetState.PEEK);
                 }
@@ -371,7 +386,6 @@ public class TabBottomSheetCoordinator {
 
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                mMediator.updateCrossFadeAlpha(offsetPx);
                 if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
                     mMediator.updateResizingState(
                             getDefaultHeightRatio(),
@@ -391,7 +405,9 @@ public class TabBottomSheetCoordinator {
                     mIsShowingTabBottomSheet = true;
                 } else {
                     if (mIsShowingTabBottomSheet) {
-                        mMediator.onSheetStateChanged(BottomSheetController.SheetState.HIDDEN);
+                        mMediator.onSheetStateChanged(
+                                BottomSheetController.SheetState.HIDDEN,
+                                mCoBrowseViews.hasPeekView());
                         mSheetEventsCallback.onBottomSheetClosed();
                         stopObservingCompositorViewInteractions();
                     }
