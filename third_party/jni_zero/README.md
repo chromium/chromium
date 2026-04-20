@@ -579,6 +579,28 @@ it's so that Chrome can support multiple ABIs with a single Java file - we put
 the smaller (subset) ABI switch numbers first, and the superset ABI's unique
 classes get the final switch numbers.
 
+#### Per-File Natives
+
+This was added to make transitioning to JNI Zero easier. It allows using
+`@NativeMethods` without needing a registration step at the cost of extra
+binary size by putting the `native` methods directly in the `FooJni` classes.
+
+Example:
+```java
+class FooJni {
+  public static int f() {
+    nativeF();
+  }
+  public static native nativeF();
+}
+class BarJni {
+  public static int b() {
+    nativeB();
+  }
+  public static native nativeB();
+}
+```
+
 ### Legacy Modes
 
 These are modes which JNI provides currently, but we hope to remove. Please do
@@ -618,26 +640,29 @@ class N {
 }
 ```
 
-#### Per-File Natives
+### Placeholder .jar Files
 
-This was added to make transitioning to JNI Zero easier. The idea is that this
-allows you to partially onboard without needing to use a registration step, so
-no `GEN_JNI` is generated at all, and the `generate_jni` step's outputs look
-different than "normal" mode.
-```java
-class FooJni {
-  public static int f() {
-    nativeF();
-  }
-  public static native nativeF();
-}
-class BarJni {
-  public static int b() {
-    nativeB();
-  }
-  public static native nativeB();
-}
-```
+In the original design of JNI Zero, generated `.java` files would be included
+directly into the `android_library` target that contains the annotated classes.
+This was necessary because the generated files can reference any type that the
+host source files can. If it were a separate library, then we'd have a circular
+dependency (the codegen depends on the original, and the original depends on
+the codegen).
+
+The main downside of using a single target is that the generated `FooJni`
+classes refer to a placeholder "`GEN_JNI`" class, which the host library then
+needs to mark as compile-only (e.g. with `jar_excluded_patterns`). Another
+downside is that if one `android_library` depends on two `generate_jni` srcjars,
+the compiler complains of duplicate `GEN_JNI.java` classes.
+
+To address both of these downsides, and for easier integration with Bazel (which
+supports `neverlink`, but not `jar_excluded_patterns`), we now generate separate
+`android_library` targets for the generated code. To avoid a circuclar dependency,
+we generate placeholder (compile-only) files for each type referenced by the
+generated code. See
+[`testPlaceholdersOverlapping-placeholder.srcjar.golden`](test/golden/testPlaceholdersOverlapping-placeholder.srcjar.golden)
+for an example.
+
 
 ## Changing JNI Zero
 
