@@ -279,10 +279,6 @@ third_party/abseil-cpp/ci
 third_party/abseil-cpp/CMake
 third_party/abseil-cpp/CMake/Googletest
 third_party/abseil-cpp/.github
-third_party/afl/src
-third_party/afl/src/docs
-third_party/afl/src/llvm_mode
-third_party/afl/src/qemu_mode
 third_party/android_build_tools/json
 third_party/android_deps/buildSrc/src/main/groovy
 third_party/android_deps/libs
