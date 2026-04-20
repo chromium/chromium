@@ -12,6 +12,8 @@ import {isInvalidHighlightForWordHighlighting} from './speech_presentation_rules
 export const previousReadHighlightClass = 'previous-read-highlight';
 export const currentReadHighlightClass = 'current-read-highlight';
 export const PARENT_OF_HIGHLIGHT_CLASS = 'parent-of-highlight';
+const STRICT_TABLE_PARENTS =
+    ['TABLE', 'TBODY', 'THEAD', 'TFOOT', 'TR', 'COLGROUP'];
 
 // Represents a single granularity for moving forward and backward. A single
 // granularity always represents a sentence right now, and it can consist of
@@ -151,6 +153,17 @@ export abstract class Highlight {
     if (!element || start < 0 || length <= 0) {
       return;
     }
+
+    // Prevent injecting <span> elements into strict table structures.
+    // Wrapping text nodes that are direct children of TR, TBODY, etc.,
+    // triggers HTML foster parenting and breaks the table's visual layout.
+    // Skipping these nodes is safe and does not break TTS synchronization
+    // because they consist exclusively of structural whitespace/newlines.
+    const parentNodeName = element.parentNode?.nodeName?.toUpperCase() || '';
+    if (STRICT_TABLE_PARENTS.includes(parentNodeName)) {
+      return;
+    }
+
     const end = start + length;
     let previousHighlightOnly = false;
     if (skipNonWords) {

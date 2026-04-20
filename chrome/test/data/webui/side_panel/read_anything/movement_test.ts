@@ -870,4 +870,47 @@ suite('Movement', () => {
         newDomNode.classList.contains('parent-of-highlight'),
         'newDomNode does not have parent-of-highlight class');
   });
+
+  test(
+      'does not highlight text nodes directly inside strict table elements',
+      () => {
+        const containerId = 1;
+        const tr = document.createElement('tr');
+        // Simulate the structural whitespace (newline) that breaks the layout.
+        const text = '   \n   ';
+        const whitespaceNode = document.createTextNode(text);
+        tr.appendChild(whitespaceNode);
+        document.body.appendChild(tr);
+
+        // Save the <tr> in the nodeStore to be able to use assertHtmlExcludes.
+        nodeStore.setDomNode(tr, containerId);
+        const readAloudNode = ReadAloudNode.create(whitespaceNode)!;
+        const segments = [
+          {
+            node: readAloudNode,
+            start: 0,
+            length: text.length,
+          },
+        ];
+
+        // Verify that the highlight is considered empty.
+        const highlight = new SentenceHighlight(segments);
+        assertTrue(highlight.isEmpty());
+
+        // Verify that the TR still has exactly one child (the TextNode) and
+        // that no <span> was injected which would cause HTML foster parenting.
+        const childNodes = tr.childNodes;
+        assertTrue(!!childNodes);
+
+        // Expect a single child
+        assertEquals(1, childNodes.length);
+        const firstChild = childNodes[0];
+        assertTrue(!!firstChild);
+        assertEquals(Node.TEXT_NODE, firstChild.nodeType);
+
+        // Verify at the HTML level that the highlight classes were not
+        // injected.
+        assertHtmlExcludes(PARENT_OF_HIGHLIGHT_CLASS, containerId);
+        assertHtmlExcludes(currentReadHighlightClass, containerId);
+      });
 });
