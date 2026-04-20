@@ -4127,6 +4127,8 @@ test("base_unittests") {
       "win/wrapped_window_proc_unittest.cc",
     ]
 
+    fuzztests += [ "FileUtilFuzzTest.RemoveWindowsExtendedPathPrefixNoCrash" ]
+
     if (enable_cet_shadow_stack) {
       sources += [ "win/cet_shadow_stack_unittest.cc" ]
     }

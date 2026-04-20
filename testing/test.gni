@@ -154,7 +154,8 @@ template("mixed_test") {
   }
 
   _building_fuzztest_fuzzer =
-      defined(invoker.fuzztests) && use_fuzzing_engine && (is_linux || is_mac)
+      defined(invoker.fuzztests) && use_fuzzing_engine &&
+      (is_linux || is_mac || is_win)
 
   # Fuzz tests are small fuzzers that do not require particularly-powerful
   # machines to run, so we do not build them when `high_end_fuzzer_targets`
@@ -377,7 +378,10 @@ template("mixed_test") {
             ":" + _fuzztest_generate_fuzzer + "_constants",
           ]
           if (confirm_fuzztest_contents) {
-            deps += [ ":" + _fuzztest_check_action ]
+            # Use data_deps to avoid propagating all_dependent_configs
+            # (e.g. Rust alwayslink configs) from the test binary into
+            # this lightweight wrapper executable.
+            data_deps += [ ":" + _fuzztest_check_action ]
           }
           output_name = _fuzzer_name
           sources =

@@ -48,12 +48,15 @@ def main():
 
   env = os.environ
   env['ASAN_OPTIONS'] = 'detect_odr_violation=0'
-  process_result = subprocess.run([args.executable, '--list_fuzz_tests=1'],
-                                  env=env,
-                                  stdout=subprocess.PIPE,
-                                  check=False)
+  try:
+    process_result = subprocess.run([args.executable, '--list_fuzz_tests=1'],
+                                    env=env,
+                                    stdout=subprocess.PIPE,
+                                    check=False)
+  except OSError:
+    process_result = None
 
-  if process_result.returncode == 0:
+  if process_result and process_result.returncode == 0:
     test_list = process_result.stdout.decode('utf-8')
 
     actual_tests = re.findall('Fuzz test: (.*)', test_list)
@@ -62,7 +65,7 @@ def main():
     # change gn files correspondingly, so strip such prefixes when checking
     # that the test lists match.
     actual_tests = {
-        test.replace('DISABLED_', '').replace('FLAKY_', '')
+        test.strip().replace('DISABLED_', '').replace('FLAKY_', '')
         for test in actual_tests
     }
 
