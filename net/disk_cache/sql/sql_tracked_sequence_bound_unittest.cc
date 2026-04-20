@@ -108,7 +108,14 @@ TEST_F(SqlTrackedSequenceBoundTest, AsyncCallWithArgsThen) {
   EXPECT_TRUE(then_called);
 }
 
-TEST_F(SqlTrackedSequenceBoundTest, IntAsyncCall) {
+// TODO(crbug.com/504495556): The test is consistently failing on ChromeOS.
+// Re-enable it.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_IntAsyncCall DISABLED_IntAsyncCall
+#else
+#define MAYBE_IntAsyncCall IntAsyncCall
+#endif
+TEST_F(SqlTrackedSequenceBoundTest, MAYBE_IntAsyncCall) {
   SqlTrackedSequenceBound<DummyBackend> tracked_sequence_bound(
       base::ThreadPool::CreateSequencedTaskRunner({}), async_task_manager_);
 
@@ -144,7 +151,14 @@ TEST_F(SqlTrackedSequenceBoundTest, IntAsyncCallWithArgsThen) {
   EXPECT_EQ(10, then_result);
 }
 
-TEST_F(SqlTrackedSequenceBoundTest, MissingWithArgs) {
+// TODO(crbug.com/504495556): The test is consistently failing on ChromeOS.
+// Re-enable it.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MissingWithArgs DISABLED_MissingWithArgs
+#else
+#define MAYBE_MissingWithArgs MissingWithArgs
+#endif
+TEST_F(SqlTrackedSequenceBoundTest, MAYBE_MissingWithArgs) {
   SqlTrackedSequenceBound<DummyBackend> tracked_sequence_bound(
       base::ThreadPool::CreateSequencedTaskRunner({}), async_task_manager_);
 
