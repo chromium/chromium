@@ -25,6 +25,12 @@ OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
 OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
     const OneTimeTokenBackendNotification&) = default;
 
+OneTimeTokenBackendNotification::OneTimeTokenBackendNotification(
+    OneTimeTokenBackendNotification&&) = default;
+
+OneTimeTokenBackendNotification& OneTimeTokenBackendNotification::operator=(
+    OneTimeTokenBackendNotification&&) = default;
+
 OneTimeTokenBackendNotification::~OneTimeTokenBackendNotification() = default;
 
 }  // namespace one_time_tokens

@@ -31,6 +31,10 @@ struct OneTimeTokenBackendNotification {
       base::Time email_received_timestamp,
       base::Time notification_received_timestamp);
   OneTimeTokenBackendNotification(const OneTimeTokenBackendNotification&);
+  OneTimeTokenBackendNotification(OneTimeTokenBackendNotification&&);
+  OneTimeTokenBackendNotification& operator=(
+      const OneTimeTokenBackendNotification&) = default;
+  OneTimeTokenBackendNotification& operator=(OneTimeTokenBackendNotification&&);
   ~OneTimeTokenBackendNotification();
 };
 }  // namespace one_time_tokens
