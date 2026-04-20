@@ -122,6 +122,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     #
     # Chromium uses assert statements.
     'AssertFalse',
+    # Just a style nit.
+    'AssertThrowsBlockToExpression',
     # Debatable whether it makes code less readable by forcing larger names for
     # "Builder".
     'BadImport',
