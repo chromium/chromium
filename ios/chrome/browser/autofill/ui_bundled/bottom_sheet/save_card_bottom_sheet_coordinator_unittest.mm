@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/scanned_card_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -188,7 +188,8 @@ TEST_F(SaveCardBottomSheetCoordinatorTest,
               UINavigationController* navigationController =
                   (UINavigationController*)viewController;
               return [navigationController.viewControllers.firstObject
-                  isKindOfClass:[ScannedCardBottomSheetViewController class]];
+                  isKindOfClass:[PaymentsScanSaveAndFillEditViewController
+                                    class]];
             }
             return NO;
           }]

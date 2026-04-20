@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/scanned_card_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h"
 
 #import <UIKit/UIKit.h>
 
@@ -24,7 +24,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface ScannedCardBottomSheetViewController (Testing)
+@interface PaymentsScanSaveAndFillEditViewController (Testing)
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)item;
 - (void)updateSaveButtonStatus;
 - (void)validateAndReconfigureItems:(NSArray<TableViewItem*>*)items;
@@ -40,7 +40,7 @@ const NSInteger kSectionIdentifierEnumZero = 0;
 const NSInteger kSectionIdentifierEnumOne = 1;
 }  // namespace
 
-@interface FakeScannedCardBottomSheetMutator
+@interface FakePaymentsScanSaveAndFillEditMutator
     : NSObject <SaveCardBottomSheetMutator>
 @property(nonatomic, assign) BOOL didCancelCalled;
 @property(nonatomic, assign) BOOL saveAndFillCalled;
@@ -49,7 +49,7 @@ const NSInteger kSectionIdentifierEnumOne = 1;
 @property(nonatomic, weak) id<SaveCardBottomSheetConsumer> consumer;
 @end
 
-@implementation FakeScannedCardBottomSheetMutator {
+@implementation FakePaymentsScanSaveAndFillEditMutator {
   NSString* _cardNumber;
   NSString* _expirationDate;
   NSString* _cardholderName;
@@ -156,7 +156,7 @@ const NSInteger kSectionIdentifierEnumOne = 1;
 
 @end
 
-class ScannedCardBottomSheetViewControllerTest : public PlatformTest {
+class PaymentsScanSaveAndFillEditViewControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -166,10 +166,10 @@ class ScannedCardBottomSheetViewControllerTest : public PlatformTest {
         OCMProtocolMock(@protocol(SaveCardBottomSheetDataSource));
     mock_delegate_ = OCMProtocolMock(@protocol(SaveCardBottomSheetDelegate));
     mock_mutator_ = OCMProtocolMock(@protocol(SaveCardBottomSheetMutator));
-    fake_mutator_ = [[FakeScannedCardBottomSheetMutator alloc] init];
+    fake_mutator_ = [[FakePaymentsScanSaveAndFillEditMutator alloc] init];
 
     // Instantiate the target ViewController.
-    view_controller_ = [[ScannedCardBottomSheetViewController alloc] init];
+    view_controller_ = [[PaymentsScanSaveAndFillEditViewController alloc] init];
     fake_mutator_.consumer = view_controller_;
 
     // Inject properties.
@@ -201,16 +201,16 @@ class ScannedCardBottomSheetViewControllerTest : public PlatformTest {
     return [dataSource snapshot];
   }
 
-  ScannedCardBottomSheetViewController* view_controller_;
+  PaymentsScanSaveAndFillEditViewController* view_controller_;
   id mock_data_source_;
   id mock_delegate_;
   id mock_mutator_;
-  FakeScannedCardBottomSheetMutator* fake_mutator_;
+  FakePaymentsScanSaveAndFillEditMutator* fake_mutator_;
 };
 
 // Tests if the UI model is loaded correctly with the expected sections and
 // cells.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestLoadModel) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestLoadModel) {
   // Triggers viewDidLoad and loadModel.
   [view_controller_ loadViewIfNeeded];
 
@@ -233,7 +233,7 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestLoadModel) {
 
 // Tests if the UI Model is updated correctly when data is passed from the
 // Scanner Consumer.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestScannerUpdatesUI) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestScannerUpdatesUI) {
   // Triggers viewDidLoad and loadModel.
   [view_controller_ loadViewIfNeeded];
 
@@ -258,7 +258,7 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestScannerUpdatesUI) {
 }
 
 // Tests if the UI model correctly configures placeholder texts for the fields.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestPlaceholders) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestPlaceholders) {
   [view_controller_ loadViewIfNeeded];
 
   NSDiffableDataSourceSnapshot* snapshot = GetSnapshot();
@@ -302,7 +302,7 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestPlaceholders) {
 }
 
 // Tests the behavior when the "Cancel" button is tapped.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestDidTapCancel) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestDidTapCancel) {
   [view_controller_ loadViewIfNeeded];
 
   // Expect that cancel was called on the mutator.
@@ -322,7 +322,7 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestDidTapCancel) {
 }
 
 // Tests the behavior when the "Save and Fill" button is tapped.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestDidTapSave) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestDidTapSave) {
   CreateController();
   view_controller_.mutator = fake_mutator_;
 
@@ -363,7 +363,8 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestDidTapSave) {
 }
 
 // Tests the behavior of showConfirmationState.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestShowConfirmationState) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestShowConfirmationState) {
   CreateController();
 
   [view_controller_ showConfirmationState];
@@ -378,12 +379,13 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestShowConfirmationState) {
 }
 
 // Tests if the expiration date properly validates.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestExpirationDateValidation) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestExpirationDateValidation) {
   CreateController();
   view_controller_.mutator = fake_mutator_;
 
   TableViewTextEditItem* expItem = GetItem(kSectionIdentifierEnumZero, 1);
-  ScannedCardBottomSheetViewController* delegate = view_controller_;
+  PaymentsScanSaveAndFillEditViewController* delegate = view_controller_;
 
   // Enter invalid data "122"
   expItem.textFieldValue = @"122";
@@ -402,7 +404,7 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestExpirationDateValidation) {
 }
 
 // Tests if the save button's state correctly updates based on validations.
-TEST_F(ScannedCardBottomSheetViewControllerTest, TestSaveButtonState) {
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestSaveButtonState) {
   CreateController();
   [view_controller_ loadViewIfNeeded];
 

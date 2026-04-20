@@ -4,13 +4,12 @@
 
 source_set("coordinator") {
   sources = [
-    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h",
-    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.mm",
-    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.h",
-    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.mm",
+    "payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h",
+    "payments_scan_save_and_fill_offer_bottom_sheet_coordinator.mm",
+    "payments_scan_save_and_fill_offer_bottom_sheet_mediator.h",
+    "payments_scan_save_and_fill_offer_bottom_sheet_mediator.mm",
   ]
   deps = [
-    ":ui",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
@@ -18,6 +17,7 @@ source_set("coordinator") {
     "//components/infobars/core",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/scan_save_and_fill/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -27,42 +27,22 @@ source_set("coordinator") {
   ]
 }
 
-source_set("ui") {
-  sources = [
-    "ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h",
-    "ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h",
-    "ui/payments_scan_save_and_fill_offer_bottom_sheet_view_controller.h",
-    "ui/payments_scan_save_and_fill_offer_bottom_sheet_view_controller.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/button_stack",
-    "//ios/chrome/common/ui/confirmation_alert",
-    "//ui/base",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator_unittest.mm",
-    "coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator_unittest.mm",
+    "payments_scan_save_and_fill_offer_bottom_sheet_coordinator_unittest.mm",
+    "payments_scan_save_and_fill_offer_bottom_sheet_mediator_unittest.mm",
   ]
   deps = [
     ":coordinator",
-    ":ui",
+    "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/scan_save_and_fill/ui",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

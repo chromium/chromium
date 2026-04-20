@@ -96,7 +96,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
-    "//ios/chrome/browser/autofill/scan_save_and_fill:coordinator",
+    "//ios/chrome/browser/autofill/scan_save_and_fill/coordinator",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_edit",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet",

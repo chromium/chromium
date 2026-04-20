@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/scanned_card_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
@@ -71,12 +71,12 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 #endif
 }  // namespace
 
-@interface ScannedCardBottomSheetViewController () <
+@interface PaymentsScanSaveAndFillEditViewController () <
     TableViewTextEditItemDelegate,
     UITextViewDelegate>
 @end
 
-@implementation ScannedCardBottomSheetViewController {
+@implementation PaymentsScanSaveAndFillEditViewController {
   // Stored card details.
   NSString* _cardNumber;
   NSString* _expirationDate;
