@@ -5,16 +5,23 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_append_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -30,12 +37,18 @@ class MockAILanguageModel : public mojom::blink::AILanguageModel {
                   pending_responder) override {
     last_prompts_ = std::move(prompt);
     call_count_++;
+    if (reset_client_on_call_) {
+      pending_responder.reset();
+    }
   }
   void Append(Vector<mojom::blink::AILanguageModelPromptPtr> prompt,
               mojo::PendingRemote<mojom::blink::ModelStreamingResponder> client)
       override {
     last_prompts_ = std::move(prompt);
     call_count_++;
+    if (reset_client_on_call_) {
+      client.reset();
+    }
   }
   void MeasureInputUsage(Vector<mojom::blink::AILanguageModelPromptPtr> prompt,
                          MeasureInputUsageCallback callback) override {
@@ -44,10 +57,15 @@ class MockAILanguageModel : public mojom::blink::AILanguageModel {
   void Destroy() override {}
   void Fork(
       mojo::PendingRemote<mojom::blink::AIManagerCreateLanguageModelClient>
-          client) override {}
+          client) override {
+    if (reset_client_on_call_) {
+      client.reset();
+    }
+  }
 
   Vector<mojom::blink::AILanguageModelPromptPtr> last_prompts_;
   int call_count_ = 0;
+  bool reset_client_on_call_ = false;
   mojo::Receiver<mojom::blink::AILanguageModel> receiver_;
 };
 
@@ -77,6 +95,18 @@ class LanguageModelTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockAILanguageModel> mock_remote_;
 };
+
+template <typename IDLType>
+DOMExceptionCode GetRejectedExceptionCode(ScriptState* script_state,
+                                          ScriptPromise<IDLType> promise) {
+  ScriptPromiseTester tester(script_state, promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* dom_exception = V8DOMException::ToWrappable(script_state->GetIsolate(),
+                                                    tester.Value().V8Value());
+  EXPECT_TRUE(dom_exception);
+  return static_cast<DOMExceptionCode>(dom_exception->code());
+}
 
 TEST_F(LanguageModelTest, EmptyInputSucceeds) {
   V8TestingScope scope;
@@ -184,6 +214,83 @@ TEST_F(LanguageModelTest, VerifyMojoConversion) {
     ASSERT_EQ(mock_remote_->last_prompts_[0]->content.size(), 1u);
     EXPECT_EQ(mock_remote_->last_prompts_[0]->content[0]->get_text(), "");
   }
+}
+
+TEST_F(LanguageModelTest, MojoDisconnectPrompt) {
+  V8TestingScope scope;
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+  mock_remote_->reset_client_on_call_ = true;
+  V8LanguageModelPrompt* input = CreateStringPrompt("foobar");
+  EXPECT_TRUE(mock_remote_->receiver_.is_bound());
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  auto promise = language_model->prompt(script_state, input,
+                                        LanguageModelPromptOptions::Create(),
+                                        exception_state);
+
+  // Check that the promise will be rejected
+  EXPECT_EQ(GetRejectedExceptionCode(script_state, promise),
+            DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(LanguageModelTest, MojoDisconnectPromptStreaming) {
+  V8TestingScope scope;
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+  mock_remote_->reset_client_on_call_ = true;
+  V8LanguageModelPrompt* input = CreateStringPrompt("foobar");
+  EXPECT_TRUE(mock_remote_->receiver_.is_bound());
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  ReadableStream* stream = language_model->promptStreaming(
+      script_state, input, LanguageModelPromptOptions::Create(),
+      exception_state);
+
+  // Check that the InvalidStateError is passed to the stream.
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetRejectedExceptionCode(script_state, read_promise),
+            DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(LanguageModelTest, MojoDisconnectAppend) {
+  V8TestingScope scope;
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+  mock_remote_->reset_client_on_call_ = true;
+  V8LanguageModelPrompt* input = CreateStringPrompt("foobar");
+  EXPECT_TRUE(mock_remote_->receiver_.is_bound());
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  auto promise = language_model->append(script_state, input,
+                                        LanguageModelAppendOptions::Create(),
+                                        exception_state);
+
+  // Check that the promise will be rejected
+  EXPECT_EQ(GetRejectedExceptionCode(script_state, promise),
+            DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(LanguageModelTest, MojoDisconnectClone) {
+  V8TestingScope scope;
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+  mock_remote_->reset_client_on_call_ = true;
+  EXPECT_TRUE(mock_remote_->receiver_.is_bound());
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  auto promise = language_model->clone(
+      script_state, LanguageModelCloneOptions::Create(), exception_state);
+
+  // Check that the promise will be rejected
+  EXPECT_EQ(GetRejectedExceptionCode(script_state, promise),
+            DOMExceptionCode::kInvalidStateError);
 }
 
 }  // namespace blink

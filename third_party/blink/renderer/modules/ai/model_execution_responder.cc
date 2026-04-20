@@ -84,7 +84,10 @@ class Responder final : public GarbageCollected<Responder>,
   mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
   BindNewPipeAndPassRemote(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return receiver_.BindNewPipeAndPassRemote(task_runner);
+    auto pending_remote = receiver_.BindNewPipeAndPassRemote(task_runner);
+    receiver_.set_disconnect_handler(
+        BindOnce(&Responder::OnConnectionError, WrapWeakPersistent(this)));
+    return pending_remote;
   }
 
   // `mojom::blink::ModelStreamingResponder` implementation.
@@ -142,6 +145,11 @@ class Responder final : public GarbageCollected<Responder>,
   void OnAborted() {
     std::move(abort_callback_).Run();
     Cleanup();
+  }
+
+  void OnConnectionError() {
+    OnError(ModelStreamingResponseStatus::kErrorSessionDestroyed,
+            /*quota_error_info=*/nullptr);
   }
 
   void RecordResponseStatusMetrics(
@@ -235,7 +243,10 @@ class StreamingResponder final
   mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
   BindNewPipeAndPassRemote(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return receiver_.BindNewPipeAndPassRemote(task_runner);
+    auto pending_remote = receiver_.BindNewPipeAndPassRemote(task_runner);
+    receiver_.set_disconnect_handler(BindOnce(
+        &StreamingResponder::OnConnectionError, WrapWeakPersistent(this)));
+    return pending_remote;
   }
 
   ReadableStream* CreateReadableStream() {
@@ -335,6 +346,11 @@ class StreamingResponder final
       Controller()->Error(reason.V8Value());
     }
     Cleanup();
+  }
+
+  void OnConnectionError() {
+    OnError(ModelStreamingResponseStatus::kErrorSessionDestroyed,
+            /*quota_error_info=*/nullptr);
   }
 
   void RecordResponseStatusMetrics(

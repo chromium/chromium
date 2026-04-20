@@ -49,6 +49,8 @@ class LanguageModelCreateClient
   // Process options and create, if the availability result is valid.
   void Create(mojom::blink::ModelAvailabilityCheckResult result);
 
+  void OnConnectionError();
+
   // Continue creation after any initial prompts were processed or rejected.
   void OnInitialPromptsResolved(
       Vector<mojom::blink::AILanguageModelExpectedPtr> expected_inputs,

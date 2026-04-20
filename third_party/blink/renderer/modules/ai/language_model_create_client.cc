@@ -509,6 +509,11 @@ void LanguageModelCreateClient::OnError(
   Cleanup();
 }
 
+void LanguageModelCreateClient::OnConnectionError() {
+  OnError(mojom::blink::AIManagerCreateClientError::kUnableToCreateSession,
+          /*quota_error_info=*/nullptr);
+}
+
 void LanguageModelCreateClient::ResetReceiver() {
   receiver_.reset();
 }
@@ -524,6 +529,8 @@ void LanguageModelCreateClient::OnInitialPromptsResolved(
   mojo::PendingRemote<mojom::blink::AIManagerCreateLanguageModelClient>
       client_remote;
   receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(), task_runner_);
+  receiver_.set_disconnect_handler(BindOnce(
+      &LanguageModelCreateClient::OnConnectionError, WrapWeakPersistent(this)));
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
 

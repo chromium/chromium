@@ -242,6 +242,41 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   runloop.Run();
 }
 
+TEST(CreateModelExecutionResponder, RejectOnMojoDisconnection) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  auto* controller = AbortController::Create(scope.GetScriptState());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  auto promise = resolver->Promise();
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, controller->signal(),
+      blink::scheduler::GetSequencedTaskRunnerForTesting(),
+      AIMetrics::AISessionType::kLanguageModel,
+      base::BindOnce(&ResolvePromiseOnCompletion<IDLString>,
+                     WrapPersistent(resolver)),
+      /*tool_call_callback=*/base::NullCallback(),
+      /*overflow_callback=*/base::DoNothing(),
+      base::BindOnce(&RejectPromiseOnError<IDLString>,
+                     WrapPersistent(resolver)),
+      base::BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),
+                     WrapPersistent(controller->signal()),
+                     WrapPersistent(script_state)));
+
+  pending_remote.reset();
+
+  // Check that the promise will be rejected with an InvalidStateError.
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* dom_exception = V8DOMException::ToWrappable(script_state->GetIsolate(),
+                                                    tester.Value().V8Value());
+  ASSERT_TRUE(dom_exception);
+  EXPECT_EQ(DOMException(DOMExceptionCode::kInvalidStateError).name(),
+            dom_exception->name());
+}
+
 TEST(CreateModelExecutionStreamingResponder, Simple) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
@@ -385,6 +420,34 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
 
   // Check that the Mojo handle will be disconnected.
   runloop.Run();
+}
+
+TEST(CreateModelExecutionStreamingResponder, RejectOnMojoDisconnection) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  auto* controller = AbortController::Create(scope.GetScriptState());
+  auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
+      script_state, controller->signal(),
+      blink::scheduler::GetSequencedTaskRunnerForTesting(),
+      AIMetrics::AISessionType::kLanguageModel,
+      /*complete_callback=*/base::DoNothing(),
+      /*overflow_callback=*/base::DoNothing());
+
+  pending_remote.reset();
+
+  // Check that the InvalidStateError is passed to the stream.
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(scope.GetScriptState(), read_promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+  auto* dom_exception = V8DOMException::ToWrappable(script_state->GetIsolate(),
+                                                    tester.Value().V8Value());
+  ASSERT_TRUE(dom_exception);
+  EXPECT_EQ(DOMException(DOMExceptionCode::kInvalidStateError).name(),
+            dom_exception->name());
 }
 
 }  // namespace blink

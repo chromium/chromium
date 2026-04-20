@@ -193,6 +193,9 @@ class CloneLanguageModelClient
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    language_model->GetTaskRunner());
+    receiver_.set_disconnect_handler(
+        BindOnce(&CloneLanguageModelClient::OnConnectionError,
+                 WrapWeakPersistent(this)));
     language_model_->GetAILanguageModelRemote()->Fork(std::move(client_remote));
   }
   ~CloneLanguageModelClient() override = default;
@@ -235,6 +238,11 @@ class CloneLanguageModelClient
     Cleanup();
   }
 
+  void OnConnectionError() {
+    OnError(mojom::blink::AIManagerCreateClientError::kUnableToCreateSession,
+            /*quota_error_info=*/nullptr);
+  }
+
   void ResetReceiver() override { receiver_.reset(); }
 
  private:
@@ -265,6 +273,8 @@ class AppendClient : public GarbageCollected<AppendClient>,
     mojo::PendingRemote<mojom::blink::ModelStreamingResponder> client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    language_model->GetTaskRunner());
+    receiver_.set_disconnect_handler(
+        BindOnce(&AppendClient::OnConnectionError, WrapWeakPersistent(this)));
     language_model_->GetAILanguageModelRemote()->Append(
         std::move(prompts), std::move(client_remote));
   }
@@ -318,6 +328,11 @@ class AppendClient : public GarbageCollected<AppendClient>,
           status, std::move(quota_error_info)));
     }
     Cleanup();
+  }
+
+  void OnConnectionError() {
+    OnError(ModelStreamingResponseStatus::kErrorSessionDestroyed,
+            /*quota_error_info=*/nullptr);
   }
 
   void OnStreaming(const String& text) override {
