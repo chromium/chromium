@@ -132,6 +132,8 @@ struct GlicInvokeOptions {
 
   // Additional context (e.g., image data, Annotated Page Content) to be
   // included with the invocation.
+  // Warning: not fully implemented.
+  // TODO(b/504627812): finish implementing.
   glic::mojom::AdditionalContextPtr additional_context;
 
   // Defines the target for the invocation (surface and conversation).
