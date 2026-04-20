@@ -25,7 +25,10 @@ enum SignatureKind {
   RSA_PSS_SHA384,
   RSA_PSS_SHA512,
 
+  ECDSA_SHA1,
   ECDSA_SHA256,
+  ECDSA_SHA384,
+  ECDSA_SHA512,
 
   // Note: Ed25519 cannot be used in streaming modes and has to be passed the
   // entire message to sign; it does not take a separate hash function.

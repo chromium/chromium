@@ -54,10 +54,21 @@ TEST(Sign, RoundTripSignVerify) {
   expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PSS_SHA384);
   expect_roundtrip(rsa_priv, rsa_pub, SignatureKind::RSA_PSS_SHA512);
 
-  auto ec_priv = PrivateKey::GenerateEcP256();
-  auto ec_pub = PublicKey::FromPrivateKey(ec_priv);
+  auto ec_p256_priv = PrivateKey::GenerateEcP256();
+  auto ec_p256_pub = PublicKey::FromPrivateKey(ec_p256_priv);
 
-  expect_roundtrip(ec_priv, ec_pub, SignatureKind::ECDSA_SHA256);
+  expect_roundtrip(ec_p256_priv, ec_p256_pub, SignatureKind::ECDSA_SHA1);
+  expect_roundtrip(ec_p256_priv, ec_p256_pub, SignatureKind::ECDSA_SHA256);
+
+  auto ec_p384_priv = PrivateKey::GenerateEcP384();
+  auto ec_p384_pub = PublicKey::FromPrivateKey(ec_p384_priv);
+
+  expect_roundtrip(ec_p384_priv, ec_p384_pub, SignatureKind::ECDSA_SHA384);
+
+  auto ec_p521_priv = PrivateKey::GenerateEcP521();
+  auto ec_p521_pub = PublicKey::FromPrivateKey(ec_p521_priv);
+
+  expect_roundtrip(ec_p521_priv, ec_p521_pub, SignatureKind::ECDSA_SHA512);
 
   auto ed25519_priv = PrivateKey::GenerateEd25519();
   auto ed25519_pub = PublicKey::FromPrivateKey(ed25519_priv);
