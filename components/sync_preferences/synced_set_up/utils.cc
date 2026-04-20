@@ -58,6 +58,16 @@ void BuildDeviceDataMapFromPrefMap(
     // synced prefs and number of recent observed changes.
     for (const sync_preferences::TimestampedPrefValue& pref_value :
          pref_values) {
+      VLOG_IF(1,
+              base::FeatureList::IsEnabled(
+                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+          << "XplatSyncedSetup, " << __func__ << ": found "
+          << tracked_pref.first << " for device "
+          << pref_value.device_sync_cache_guid
+          << ", value=" << pref_value.value.DebugString()
+          << ", last_observed_change_time="
+          << pref_value.last_observed_change_time;
+
       DeviceData& device_data_entry =
           device_data_map[pref_value.device_sync_cache_guid];
 
@@ -165,6 +175,10 @@ DeviceData GetBestMatchDeviceData(
   const auto& best_match = *scored_remote_devices.rbegin();
   const std::string best_guid = std::string(best_match.second);
 
+  VLOG_IF(1, debug_logs_enabled)
+      << "XplatSyncedSetup, " << __func__ << ": tentatively selected device "
+      << best_guid << " with change count " << std::get<2>(best_match.first);
+
   // Final check: Compare activity level with the local device, if present.
   auto local_it = synced_devices.find(local_device_guid);
   if (local_it != synced_devices.end()) {
@@ -218,10 +232,11 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
     const sync_preferences::CrossDevicePrefTracker* pref_tracker,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::DeviceInfo* local_device) {
+  const bool debug_logs_enabled = base::FeatureList::IsEnabled(
+      sync_preferences::features::kCrossDevicePrefTrackerExtraLogs);
+
   if (!pref_tracker || !device_info_tracker || !local_device) {
-    VLOG_IF(1,
-            base::FeatureList::IsEnabled(
-                sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+    VLOG_IF(1, debug_logs_enabled)
         << "XplatSyncedSetup, " << __func__
         << ": Returning empty because pref_tracker, "
         << "device_info_tracker, or local_device is null.";
@@ -230,16 +245,16 @@ std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
   DeviceDataMap device_data_map = MapPrefsToDevices(pref_tracker);
   DeviceData best_match_device_data = GetBestMatchDeviceData(
       device_data_map, device_info_tracker, local_device);
-  std::map<std::string_view, base::Value> cross_device_pref_values =
-      GetCrossDevicePrefValuesForDevice(best_match_device_data);
-  if (base::FeatureList::IsEnabled(
-          sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-    for (const auto& [key, value] : cross_device_pref_values) {
+  if (debug_logs_enabled) {
+    for (const auto& [key, timestamped_pref_value] :
+         best_match_device_data.pref_map) {
       VLOG(1) << "XplatSyncedSetup, " << __func__ << ": key=" << key
-              << ", value=" << value.DebugString();
+              << ", value=" << timestamped_pref_value.value.DebugString()
+              << ", last_observed_change_time="
+              << timestamped_pref_value.last_observed_change_time;
     }
   }
-  return cross_device_pref_values;
+  return GetCrossDevicePrefValuesForDevice(best_match_device_data);
 }
 
 }  // namespace sync_preferences::synced_set_up

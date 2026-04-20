@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -370,6 +371,9 @@ void ApplyPrefChangeToCrossDevice(
   CHECK(profile_pref_service);
   CHECK(device_info_sync_service);
 
+  const bool debug_logs_enabled = base::FeatureList::IsEnabled(
+      sync_preferences::features::kCrossDevicePrefTrackerExtraLogs);
+
   // Do not attempt writes if Sync is not configured for the relevant types
   // (e.g. user is signed out or has disabled PREFERENCES sync). The state will
   // be refreshed when Sync becomes configured again via `OnSyncStateChanged()`.
@@ -407,9 +411,7 @@ void ApplyPrefChangeToCrossDevice(
       ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
       update->Remove(cache_guid.value());
 
-      VLOG_IF(1,
-              base::FeatureList::IsEnabled(
-                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+      VLOG_IF(1, debug_logs_enabled)
           << "CrossDevicePrefTracker, " << __func__ << ": Cleared entry for "
           << cross_device_pref_name << ", guid: " << cache_guid.value();
     }
@@ -437,6 +439,9 @@ void ApplyPrefChangeToCrossDevice(
       // change (e.g., initial sync or refresh). This correctly preserves the
       // existing entry, including any existing timestamps, without requiring
       // a write.
+      VLOG_IF(1, debug_logs_enabled)
+          << "CrossDevicePrefTracker, " << __func__ << ": skipping write for "
+          << tracked_pref_name << " because value matches and not observed.";
       return;
     }
   }
@@ -455,7 +460,11 @@ void ApplyPrefChangeToCrossDevice(
                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
       << "CrossDevicePrefTracker, " << __func__ << ": Wrote entry for "
       << cross_device_pref_name << ", guid: " << cache_guid.value()
-      << ", value: " << current_value.DebugString();
+      << ", value: " << current_value.DebugString()
+      << ", observed_change_time: "
+      << (observed_change_time.has_value()
+              ? base::ToString(observed_change_time.value())
+              : "nullopt");
 }
 
 // Retrieves, filters, and parses all valid cross-device pref entries that
@@ -515,6 +524,13 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
         ParseCrossDevicePrefEntry(entry_value.GetDict(), *device_info);
 
     if (parsed_cross_device_entry.has_value()) {
+      VLOG_IF(1, debug_logs_enabled)
+          << "CrossDevicePrefTracker, " << __func__ << ": found "
+          << cross_device_pref_name << " for device " << cache_guid
+          << ", value=" << parsed_cross_device_entry->value.DebugString()
+          << ", last_observed_change_time="
+          << parsed_cross_device_entry->last_observed_change_time;
+
       matching_cross_device_entries.push_back(
           std::move(parsed_cross_device_entry.value()));
     }
@@ -573,6 +589,11 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   is_sync_configured_for_writes_ = IsSyncConfiguredForWrites();
 
   is_profile_prefs_syncing_ = profile_pref_service_->IsSyncing();
+
+  VLOG_IF(1, base::FeatureList::IsEnabled(
+                 sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+      << "CrossDevicePrefTracker, " << __func__
+      << "is_profile_prefs_syncing_ = " << is_profile_prefs_syncing_;
 
   service_status_ = ComputeServiceStatus(
       device_info_sync_service_->GetDeviceInfoTracker(),
@@ -675,6 +696,12 @@ std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
       GetCrossDeviceEntriesMatchingDeviceFilter(*profile_pref_service_,
                                                 device_info_tracker,
                                                 cross_device_pref_name, filter);
+
+  VLOG_IF(1, base::FeatureList::IsEnabled(
+                 sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+      << "CrossDevicePrefTracker, " << __func__
+      << ": pref=" << cross_device_pref_name << ", found "
+      << matching_entries.size() << " entries";
 
   std::sort(matching_entries.begin(), matching_entries.end(), std::greater<>());
 
@@ -990,7 +1017,16 @@ void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
     const std::string& cross_device_pref_name,
     const base::DictValue* entry,
     const syncer::DeviceInfo& remote_device_info) {
+  VLOG_IF(1, base::FeatureList::IsEnabled(
+                 sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+      << "CrossDevicePrefTracker, " << __func__
+      << ": pref=" << cross_device_pref_name
+      << ", guid=" << remote_device_info.guid()
+      << ", has_entry=" << (entry != nullptr)
+      << ", entry=" << (entry ? entry->DebugString() : "null");
+
   // Default constructed value signifies deletion (null value and null time).
+
   TimestampedPrefValue timestamped_value;
 
   if (entry) {
@@ -998,6 +1034,12 @@ void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
         ParseCrossDevicePrefEntry(*entry, remote_device_info);
 
     if (!internal_value.has_value()) {
+      VLOG_IF(1,
+              base::FeatureList::IsEnabled(
+                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+          << "CrossDevicePrefTracker, " << __func__
+          << ": skipping notification for " << cross_device_pref_name
+          << " because entry could not be parsed.";
       // Entry is invalid, skip notifying observers.
       return;
     }
@@ -1235,6 +1277,11 @@ void CrossDevicePrefTrackerImpl::UpdateServiceStatus() {
 }
 
 void CrossDevicePrefTrackerImpl::OnIsSyncingChanged() {
+  VLOG_IF(1, base::FeatureList::IsEnabled(
+                 sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+      << "CrossDevicePrefTracker, " << __func__ << "is_profile_prefs_syncing_ "
+      << is_profile_prefs_syncing_;
+
   is_profile_prefs_syncing_ = profile_pref_service_->IsSyncing();
   UpdateServiceStatus();
 }

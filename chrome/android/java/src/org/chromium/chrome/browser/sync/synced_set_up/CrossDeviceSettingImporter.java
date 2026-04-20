@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.synced_set_up;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.XPLAT_SYNCED_SETUP;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
 import static org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.getCrossDevicePrefsFromRemoteDevice;
@@ -205,6 +206,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         @ServiceStatus int status = crossDevicePrefTracker.getServiceStatus();
         boolean trackerReady = !NOT_READY_YET_STATES.contains(status);
         boolean localStateReady = LocalStatePrefs.areNativePrefsLoaded();
+        if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(
+                    TAG,
+                    "onTabChangeOrGainFocus - trackerReady = "
+                            + trackerReady
+                            + ", localStateReady = "
+                            + localStateReady);
+        }
 
         // If both dependencies are ready, stop any active observation and proceed to import.
         if (trackerReady && localStateReady) {
@@ -266,10 +275,17 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private void ensureObservingLocalState() {
         if (mLocalStateObserver != null) return;
 
+        if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(TAG, "Started observing local state");
+        }
         mLocalStateObserver =
-                () ->
-                        onTabChangeOrGainFocus(
-                                mActivityTabSupplier.get(), /* availableImmediately= */ false);
+                () -> {
+                    if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                        Log.i(TAG, "Local state readiness observer was triggered");
+                    }
+                    onTabChangeOrGainFocus(
+                            mActivityTabSupplier.get(), /* availableImmediately= */ false);
+                };
         LocalStatePrefs.addObserver(mLocalStateObserver);
     }
 
@@ -291,6 +307,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             Profile profile,
             Tab tab,
             boolean availableImmediately) {
+        if (ChromeFeatureList.isEnabled(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(
+                    TAG,
+                    "running onCrossDevicePrefTrackerAndLocalStateReady with status "
+                            + status
+                            + ", available immediately ? "
+                            + availableImmediately);
+        }
         boolean onlyOmniboxPosition = !UrlUtilities.isNtpUrl(tab.getUrl());
         SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
         if (onlyOmniboxPosition) {
