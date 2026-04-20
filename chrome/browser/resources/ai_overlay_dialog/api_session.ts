@@ -43,53 +43,31 @@ interface SetupMessage {
     model: string,
     generationConfig: {
       responseModalities: string[],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: {
-            voiceName: string,
-          },
-        },
-      },
+      speechConfig: {voiceConfig: {prebuiltVoiceConfig: {voiceName: string}}},
     },
-    systemInstruction?: {
-      parts: Array<{text: string}>,
-    },
+    systemInstruction?: {parts: Array<{text: string}>},
     tools?: Tool[],
-    inputAudioTranscription?: {},
-    outputAudioTranscription?: {},
+    inputAudioTranscription?: Record<string, unknown>,
+    outputAudioTranscription?: Record<string, unknown>,
   };
 }
 
 interface RealtimeInputMessage {
-  realtimeInput: {
-    audio: {
-      data: string,
-      mimeType: string,
-    },
-  };
+  realtimeInput: {audio: {data: string, mimeType: string}};
 }
 
 interface ServerContentMessage {
   serverContent?: {
     modelTurn?: {
-      parts?: Array<{
-             inlineData?: {
-               data: string,
-               mimeType: string,
-             },
-             text?: string,
-           }>,
+      parts?: Array<
+               {inlineData?: {data: string, mimeType: string}, text?: string}>,
     },
     interrupted?: boolean,
     turnComplete?: boolean,
-    inputTranscription?: {
-      text?: string,
-    },
-    outputTranscription?: {
-      text?: string,
-    },
+    inputTranscription?: {text?: string},
+    outputTranscription?: {text?: string},
   };
-  setupComplete?: {};
+  setupComplete?: Record<string, unknown>;
   toolCall?: ToolCall;
 }
 
@@ -139,10 +117,17 @@ export class ApiSession {
   // responded to and the connection is ready for input.
   async connect() {
     const url = `${this.config.endpointUrl}?key=${this.config.apiKey}`;
+    log(FILE, `Connecting to WebSocket: ${this.config.endpointUrl}`);
     this.ws = new WebSocket(url);
 
-    const setupCompletedPromise =
-        new Promise<void>(resolve => this.setupCompletedCallback = resolve);
+    let setupCompletedReject: ((e: Error) => void)|null = null;
+    const setupCompletedPromise = new Promise<void>((resolve, reject) => {
+      this.setupCompletedCallback = () => {
+        setupCompletedReject = null;
+        resolve();
+      };
+      setupCompletedReject = reject;
+    });
 
     this.ws.onopen = () => {
       log(FILE, 'WebSocket Opened');
@@ -151,7 +136,9 @@ export class ApiSession {
       if (this.audioQueue.length > 0) {
         log(FILE, `Flushing ${this.audioQueue.length} queued audio chunks`);
         for (const msg of this.audioQueue) {
-          this.ws?.send(JSON.stringify(msg));
+          if (this.ws) {
+            this.ws.send(JSON.stringify(msg));
+          }
         }
         this.audioQueue = [];
       }
@@ -159,16 +146,26 @@ export class ApiSession {
 
     this.ws.onmessage = async (event) => {
       let jsonPayload: ServerContentMessage|null = null;
+      let text = '';
+
       if (event.data instanceof Blob) {
         try {
-          const text = await event.data.text();
-          jsonPayload = JSON.parse(text);
+          text = await event.data.text();
         } catch (e) {
-          errorLog(FILE, 'WebSocket Failed message decode: ', e);
+          errorLog(FILE, 'Failed to decode Blob to text:', e);
           return;
         }
       } else if (typeof event.data === 'string') {
-        jsonPayload = JSON.parse(event.data);
+        text = event.data;
+      }
+
+      if (text) {
+        try {
+          jsonPayload = JSON.parse(text);
+        } catch (parseError) {
+          errorLog(FILE, 'JSON parse error:', parseError);
+          return;
+        }
       }
 
       if (jsonPayload) {
@@ -188,17 +185,30 @@ export class ApiSession {
       log(FILE,
           `WebSocket Closed: code=${e.code}, reason=${e.reason}, wasClean=${
               e.wasClean}`);
+      if (setupCompletedReject) {
+        setupCompletedReject(new Error(`WebSocket Closed: ${e.code}`));
+        setupCompletedReject = null;
+      }
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
 
     this.ws.onerror = (error) => {
       errorLog(FILE, '[ApiSession] WebSocket Error:', error);
+      if (setupCompletedReject) {
+        setupCompletedReject(new Error('WebSocket Error'));
+        setupCompletedReject = null;
+      }
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
 
-    await setupCompletedPromise;
+    try {
+      await setupCompletedPromise;
+    } catch (e) {
+      errorLog(FILE, 'setupCompletedPromise rejected:', e);
+      throw e;
+    }
   }
 
   stop() {
@@ -219,16 +229,21 @@ export class ApiSession {
                 {prebuiltVoiceConfig: {voiceName: this.config.voiceName}},
           },
         },
-        systemInstruction: {
-          parts: [{
-            text: this.config.systemInstruction,
-          }],
-        },
-        tools: this.toolDefinitions,
-        inputAudioTranscription: {},
-        outputAudioTranscription: {},
       },
     };
+
+    if (this.config.systemInstruction &&
+        this.config.systemInstruction.length > 0) {
+      setup.setup.systemInstruction = {
+        parts: [{
+          text: this.config.systemInstruction,
+        }],
+      };
+    }
+    if (this.toolDefinitions && this.toolDefinitions.length > 0) {
+      setup.setup.tools = this.toolDefinitions;
+    }
+
     log(FILE, 'Sending Setup Message', setup);
     this.ws?.send(JSON.stringify(setup));
   }
@@ -250,14 +265,27 @@ export class ApiSession {
   }
 
   sendToolResponse(responses: FunctionResponse[]) {
+    const functionResponses: FunctionResponse[] = [];
+    for (const response of responses) {
+      if (response.scheduling !== undefined) {
+        functionResponses.push({
+          id: response.id,
+          name: response.name,
+          response: response.response,
+          scheduling: response.scheduling,
+        });
+      } else {
+        functionResponses.push({
+          id: response.id,
+          name: response.name,
+          response: response.response,
+        });
+      }
+    }
+
     const msg = {
       toolResponse: {
-        functionResponses: responses.map(response => ({
-                                           id: response.id,
-                                           name: response.name,
-                                           response: response.response,
-                                           scheduling: response.scheduling,
-                                         })),
+        functionResponses,
       },
     };
     log(FILE, 'Sending Tool Response', msg);

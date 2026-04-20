@@ -303,11 +303,15 @@ export class AppElement extends CrLitElement {
         if (jsonData) {
           log(FILE,
               'Received mock audio data:', jsonData.substring(0, 100) + '...');
-          const config = JSON.parse(jsonData);
-          this.mockButtons = config.buttons || [];
-          log(FILE, `Loaded ${this.mockButtons.length} mock buttons`);
-          this.blobCapturer = new BlobAudioCapturer();
-          return this.blobCapturer;
+          try {
+            const config = JSON.parse(jsonData);
+            this.mockButtons = config.buttons || [];
+            log(FILE, `Loaded ${this.mockButtons.length} mock buttons`);
+            this.blobCapturer = new BlobAudioCapturer();
+            return this.blobCapturer;
+          } catch (parseError) {
+            errorLog(FILE, 'Failed to parse mock audio JSON:', parseError);
+          }
         } else {
           log(FILE, 'No mock audio data provided or found');
         }
@@ -351,7 +355,6 @@ export class AppElement extends CrLitElement {
         this.conversation = this.createConversation(config);
       }
 
-      log(FILE, 'Attempting to connect. conversation state is not connected.');
       await this.conversation.start();
 
       this.audioPlayer = this.createAudioPlayer();

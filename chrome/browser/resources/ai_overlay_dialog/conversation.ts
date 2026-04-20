@@ -8,7 +8,7 @@ import type {PageCallbackRouter} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
 import type {ApiSessionConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
 import {Journal} from './journal.js';
-import {debugLog, DebugLogTag, log} from './logging.js';
+import {debugLog, DebugLogTag, errorLog, log} from './logging.js';
 import type {PageContext, PageContextChangeEvent} from './page_context_manager.js';
 import {PageContextChangeType, PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction, formatPageVisitHistory, formatTranscript} from './persona.js';
@@ -199,7 +199,19 @@ export class Conversation implements ApiSessionDelegate {
    */
   async start() {
     const toolDefinitionsJson = this.toolExecutor.getToolDefinitions();
-    this.toolDefinitions = JSON.parse(toolDefinitionsJson);
+    try {
+      if (toolDefinitionsJson && toolDefinitionsJson.trim() !== '') {
+        this.toolDefinitions = JSON.parse(toolDefinitionsJson);
+      } else {
+        this.toolDefinitions = [];
+      }
+    } catch (e) {
+      errorLog(
+          FILE,
+          'Failed to parse toolDefinitionsJson: ' + e +
+              '\nJSON start: ' + toolDefinitionsJson.substring(0, 500));
+      this.toolDefinitions = [];
+    }
 
     await this.createNewApiSession();
   }
