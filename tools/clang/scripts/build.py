@@ -1042,8 +1042,6 @@ def main():
         '^.*Sanitizer-.*sunrpc.*cpp$',
         # sysroot/host glibc version mismatch, crbug.com/1506551
         '^.*Sanitizer.*mallinfo2.cpp$',
-        # This BOLT test hangs in lit's internal shell, crbug.com/442483657
-        '^BOLT.*runtime/instrumentation-indirect-2.c$',
     ]
   elif sys.platform == 'darwin':
     lit_excludes += [

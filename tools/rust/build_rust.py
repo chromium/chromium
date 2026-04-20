@@ -76,16 +76,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen-llvm', 'common_prim_int_ptr.rs'),
     # Temporarily disabled due to https://crbug.com/433249564
     os.path.join('tests', 'codegen-llvm', 'enum', 'enum-discriminant-eq.rs'),
-    # Temporarily disabled due to https://crbug.com/446928953
-    os.path.join('tests', 'codegen-llvm', 'issues',
-                 'issue-122600-ptr-discriminant-update.rs'),
-    os.path.join('tests', 'codegen-llvm', 'vec_pop_push_noop.rs'),
-    os.path.join('tests', 'codegen-llvm', 'vecdeque_pop_push.rs'),
-    # Temporarily disabled due to https://crbug.com/453668132
-    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-scatter.rs'),
-    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-gather.rs'),
-    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-masked-store.rs'),
-    os.path.join('tests', 'codegen-llvm', 'simd-intrinsic', 'simd-intrinsic-generic-masked-load.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
@@ -655,29 +645,6 @@ def GitApplyCherryPicks():
     # cherry-pick fixes into it, then point RUST_SRC_DIR at that fork
     # with `GitMoveSubmoduleBranch()`.
     #############################
-
-    # TODO(crbug.com/474940921): Remove once
-    # https://github.com/rust-lang/rust/pull/150998 lands and we roll past it.
-    GitCherryPick(RUST_SRC_DIR, '6ca950136de7abd91cc1820b5a7f7109fe568016',
-                  'https://github.com/rust-lang/rust.git')
-    # TODO(crbug.com/474940920): Remove once
-    # https://github.com/rust-lang/rust/pull/151072 lands and we roll past it.
-    GitCherryPick(RUST_SRC_DIR, '5435e8188ce1bf0912b3a98a54e316e391d3ca27',
-                  'https://github.com/rust-lang/rust.git')
-    # TODO(crbug.com/483350674): Remove once
-    # https://github.com/rust-lang/rust/pull/152404 lands and we roll past it.
-    GitCherryPick(RUST_SRC_DIR, 'aefb9a9ae261dae8d84b801c9396dd571a75339a',
-                  'https://github.com/rust-lang/rust.git')
-    # TODO(crbug.com/489522417): Remove once
-    # https://github.com/rust-lang/rust/pull/153305 lands and we roll past it.
-    GitCherryPick(RUST_SRC_DIR, '13ddff53be423b17615837846dc959592c32d93d',
-                  'https://github.com/rust-lang/rust.git')
-
-    # TODO(crbug.com/477565811): Remove once the outline atomics situation is
-    # resolved. This cherry-picks
-    # https://github.com/zmodem/rust/commit/b01caa5309eb7d47bbd2a0b4ae63f7d065be1963
-    GitCherryPick(RUST_SRC_DIR, 'b01caa5309eb7d47bbd2a0b4ae63f7d065be1963',
-                  'https://github.com/zmodem/rust.git', 'zmodem')
 
     print('Finished applying cherry-picks.')
 
