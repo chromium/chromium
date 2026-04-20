@@ -48,6 +48,7 @@ class PageHandler;
 class TracingHandler;
 class LogHandler;
 class WebAuthnHandler;
+class WebMCPHandler;
 }
 
 class DevToolsSession : public protocol::FrontendChannel,
@@ -224,7 +225,8 @@ class DevToolsSession : public protocol::FrontendChannel,
         std::is_same<T, protocol::PageHandler>,
         std::is_same<T, protocol::TracingHandler>,
         std::is_same<T, protocol::LogHandler>,
-        std::is_same<T, protocol::WebAuthnHandler>>;
+        std::is_same<T, protocol::WebAuthnHandler>,
+        std::is_same<T, protocol::WebMCPHandler>>;
   }
   void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
   void PrepareForReload(std::string script_to_evaluate_on_load);

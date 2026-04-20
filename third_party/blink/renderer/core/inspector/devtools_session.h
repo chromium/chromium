@@ -49,6 +49,7 @@ class InspectorOverlayAgent;
 class InspectorPageAgent;
 class InspectorPerformanceAgent;
 class InspectorWebAudioAgent;
+class InspectorWebMCPAgent;
 
 class CORE_EXPORT DevToolsSession
     : public v8_inspector::V8Inspector::ManagedChannel,
@@ -159,7 +160,8 @@ class CORE_EXPORT DevToolsSession
                               std::is_same<T, InspectorOverlayAgent>,
                               std::is_same<T, InspectorPageAgent>,
                               std::is_same<T, InspectorPerformanceAgent>,
-                              std::is_same<T, InspectorWebAudioAgent>>;
+                              std::is_same<T, InspectorWebAudioAgent>,
+                              std::is_same<T, InspectorWebMCPAgent>>;
   }
   void Append(InspectorAgent*);
 

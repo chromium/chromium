@@ -47,7 +47,8 @@ template <typename Handler>
 bool IsDomainAvailableToUntrustedClient() {
   return std::disjunction_v<std::is_same<Handler, PageHandler>,
                             std::is_same<Handler, EmulationHandler>,
-                            std::is_same<Handler, TargetHandler>>;
+                            std::is_same<Handler, TargetHandler>,
+                            std::is_same<Handler, WebMCPHandler>>;
 }
 
 }  // namespace
