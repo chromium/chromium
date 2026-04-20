@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_job.h"
+#include "base/time/time.h"
 
 namespace enterprise_connectors {
 class FileAnalysisRequestBase;
@@ -40,6 +41,11 @@ class FileOpeningJob : public base::RefCounted<FileOpeningJob> {
 
   static size_t GetMaxFileOpeningThreads();
 
+  // Cancels the file opening job. Background tasks will abort on their next
+  // check of is_cancelled(), rather than having to wait for the job's
+  // destruction.
+  void Cancel();
+
   // This constructor will call base::PostJob on the given tasks and only cancel
   // that job in the destructor. This means that if the result of the tasks is
   // no longer useful (if a folder upload is cancelled for instance), `this`
@@ -65,6 +71,11 @@ class FileOpeningJob : public base::RefCounted<FileOpeningJob> {
   // needs a `worker_count` argument in its signature, even though it is unused.
   size_t MaxConcurrentThreads(size_t /*worker_count*/);
 
+  // Returns whether this job has been cancelled.
+  bool is_cancelled() const {
+    return is_cancelled_.load(std::memory_order_relaxed);
+  }
+
   // Initialized with the size of `tasks_` in the constructor. This should
   // always be accessed through its corresponding getter method to avoid
   // synchronization bugs.
@@ -75,6 +86,12 @@ class FileOpeningJob : public base::RefCounted<FileOpeningJob> {
 
   std::vector<FileOpeningTask> tasks_;
   size_t max_threads_;
+
+  // If true, this job has been cancelled and will not process any more tasks.
+  std::atomic<bool> is_cancelled_{false};
+
+  // Timestamp of when Cancel() was called to measure cancellation duration.
+  base::TimeTicks cancel_time_;
 };
 
 }  // namespace safe_browsing

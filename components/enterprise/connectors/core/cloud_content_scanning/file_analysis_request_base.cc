@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/post_job.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
@@ -99,7 +100,8 @@ std::string GetFileMimeType(const base::FilePath& path,
 // scoped_file_access will not do anything outside of ChromeOS.
 std::string ComputeHashBlocking(
     base::File file,
-    std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access) {
+    std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access,
+    const std::atomic<bool>* is_cancelled) {
   if (file.Seek(base::File::FROM_BEGIN, 0) != 0) {
     return "";  // return empty string to indicate error.
   }
@@ -109,8 +111,29 @@ std::string ComputeHashBlocking(
   size_t bytes_read = 0;
   size_t file_size = file.GetLength();
   std::vector<char> buf(kReadFileChunkSize);
+  bool cancel_enabled = base::FeatureList::IsEnabled(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  // Check for cancellation periodically to reduce overhead of atomic
+  // operations.
+  constexpr size_t kCancelCheckIntervalBytes = 100 * 1024 * 1024;  // 100 MB
+  size_t next_cancel_check_bytes = kCancelCheckIntervalBytes;
+
+  // Always check once at the very beginning.
+  if (cancel_enabled && is_cancelled &&
+      is_cancelled->load(std::memory_order_relaxed)) {
+    return "";
+  }
 
   while (bytes_read < file_size) {
+    if (bytes_read >= next_cancel_check_bytes) {
+      if (cancel_enabled && is_cancelled &&
+          is_cancelled->load(std::memory_order_relaxed)) {
+        return "";  // return empty string to indicate cancelled.
+      }
+      next_cancel_check_bytes += kCancelCheckIntervalBytes;
+    }
+
     std::optional<size_t> bytes_currently_read =
         file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
     if (!bytes_currently_read.has_value()) {
@@ -135,6 +158,7 @@ GetFileDataBlocking(
     bool detect_mime_type,
     bool is_obfuscated,
     bool force_sync_hash_computation,
+    const std::atomic<bool>* is_cancelled,
     base::OnceCallback<std::string()>& output_compute_hash_callback) {
   DCHECK(!path.empty());
 
@@ -200,14 +224,17 @@ GetFileDataBlocking(
           enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
     // TODO(crbug.com/367257039): Pass along hash of unobfuscated file for
     // enterprise scans
-    file_data.hash =
-        ComputeHashBlocking(std::move(file), std::move(scoped_file_access));
+    file_data.hash = ComputeHashBlocking(
+        std::move(file), std::move(scoped_file_access), is_cancelled);
     if (file_data.hash.empty()) {
       // Reset the size to zero since some code assumes an UNKNOWN result is
       // matched with a zero size.
       file_data.size = 0;
-      return {enterprise_connectors::ScanRequestUploadResult::kUnknown,
-              file_data};
+      return {
+          is_cancelled && is_cancelled->load(std::memory_order_relaxed)
+              ? enterprise_connectors::ScanRequestUploadResult::kUserCancelled
+              : enterprise_connectors::ScanRequestUploadResult::kUnknown,
+          file_data};
     }
   } else if (file_data.size > kMaxHashComputeSizeBytes) {
     // When none of the above conditions are true and the file is very large,
@@ -216,8 +243,9 @@ GetFileDataBlocking(
   } else {
     // Otherwise, set the function parameter reference to a callback that
     // computes the hash.
-    output_compute_hash_callback = base::BindOnce(
-        &ComputeHashBlocking, std::move(file), std::move(scoped_file_access));
+    output_compute_hash_callback =
+        base::BindOnce(&ComputeHashBlocking, std::move(file),
+                       std::move(scoped_file_access), is_cancelled);
   }
 
   size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
@@ -290,7 +318,13 @@ void FileAnalysisRequestBase::GetRequestData(DataCallback callback) {
   }
 }
 
-void FileAnalysisRequestBase::OpenFile() {
+void FileAnalysisRequestBase::Cancel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  file_opening_job_.reset();
+  data_callback_.Reset();
+}
+
+void FileAnalysisRequestBase::OpenFile(const std::atomic<bool>* is_cancelled) {
   DCHECK(!data_callback_.is_null());
 
   // Opening the file synchronously here is OK since OpenFile should be called
@@ -299,7 +333,8 @@ void FileAnalysisRequestBase::OpenFile() {
   std::pair<enterprise_connectors::ScanRequestUploadResult, Data> file_data =
       GetFileDataBlocking(path_, std::move(scoped_file_access_),
                           cached_data_.mime_type.empty(), is_obfuscated_,
-                          force_sync_hash_computation_, compute_hash_callback);
+                          force_sync_hash_computation_, is_cancelled,
+                          compute_hash_callback);
 
   if (compute_hash_callback) {
     register_on_got_hash_callback_ = base::BindPostTask(
@@ -445,7 +480,7 @@ void FileAnalysisRequestBase::GetData(
       base::BindOnce(&GetFileDataBlocking, path_,
                      std::move(scoped_file_access_),
                      cached_data_.mime_type.empty(), is_obfuscated_,
-                     force_sync_hash_computation_,
+                     force_sync_hash_computation_, nullptr,
                      base::OwnedRef(std::move(unused_hash_callback))),
       base::BindOnce(&FileAnalysisRequestBase::OnGotFileData,
                      weakptr_factory_.GetWeakPtr()));

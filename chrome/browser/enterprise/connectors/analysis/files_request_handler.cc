@@ -156,6 +156,14 @@ FilesRequestHandler::~FilesRequestHandler() {
     return;
   }
 
+  // Actively cancel the file opening job to ensure that all file access is
+  // released as soon as possible and to avoid memory leaks. It makes sense to
+  // only call this if the handler was interrupted by user. This will allow to
+  // track user cancellation metrics.
+  if (file_opening_job_) {
+    file_opening_job_->Cancel();
+  }
+
   if (!base::FeatureList::IsEnabled(
           enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
     return;

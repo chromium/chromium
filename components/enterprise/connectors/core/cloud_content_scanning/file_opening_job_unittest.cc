@@ -13,11 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,18 +46,34 @@ class FileOpeningJobTest : public testing::Test {
           request,
       enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::BinaryUploadRequest::Data data) {
-    EXPECT_EQ(enterprise_connectors::ScanRequestUploadResult::kSuccess, result);
+    if (is_cancelled_test_) {
+      EXPECT_TRUE(
+          result == enterprise_connectors::ScanRequestUploadResult::kSuccess ||
+          result ==
+              enterprise_connectors::ScanRequestUploadResult::kUserCancelled);
+    } else {
+      EXPECT_EQ(enterprise_connectors::ScanRequestUploadResult::kSuccess,
+                result);
+    }
     EXPECT_TRUE(data.contents.empty());
-    EXPECT_FALSE(data.mime_type.empty());
-    EXPECT_EQ(3u, data.size);
-    // printf "foo" | sha256sum |  tr '[:lower:]' '[:upper:]'
-    EXPECT_EQ(
-        "2C26B46B68FFC68FF99B453C1D30413413422D706483BFA0F98A5E886266E7AE",
-        data.hash);
+
+    if (result == enterprise_connectors::ScanRequestUploadResult::kSuccess) {
+      EXPECT_FALSE(data.mime_type.empty());
+      EXPECT_EQ(3u, data.size);
+      // printf "foo" | sha256sum |  tr '[:lower:]' '[:upper:]'
+      EXPECT_EQ(
+          "2C26B46B68FFC68FF99B453C1D30413413422D706483BFA0F98A5E886266E7AE",
+          data.hash);
+    } else {
+      EXPECT_EQ(0u, data.size);
+      EXPECT_EQ("", data.hash);
+    }
 
     ++on_got_file_data_count_;
     if (on_got_file_data_count_ == quit_file_count_) {
-      quit_closure_.Run();
+      if (quit_closure_) {
+        quit_closure_.Run();
+      }
     }
   }
 
@@ -93,6 +112,7 @@ class FileOpeningJobTest : public testing::Test {
   int next_file_id_ = 0;
   int on_got_file_data_count_ = 0;
   int quit_file_count_ = 0;
+  bool is_cancelled_test_ = false;
   base::RepeatingClosure quit_closure_;
 
   base::WeakPtrFactory<FileOpeningJobTest> weak_factory_{this};
@@ -120,6 +140,30 @@ TEST_F(FileOpeningJobTest, MultiFiles) {
 
   run_loop.Run();
   EXPECT_EQ(100, on_got_file_data_count_);
+}
+
+TEST_F(FileOpeningJobTest, Cancel) {
+  is_cancelled_test_ = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  auto tasks = CreateFilesAndTasks(50);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  job->Cancel();
+
+  // Post a task to the ThreadPool to ensure that any pending tasks have
+  // run, and wait for its completion instead of using RunUntilIdle().
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTaskAndReply(FROM_HERE,
+                                     {base::TaskPriority::BEST_EFFORT},
+                                     base::DoNothing(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The requests were cancelled. It is possible that some tasks were taken
+  // before Cancel() took effect, but it shouldn't be all 50 tasks.
+  EXPECT_LT(on_got_file_data_count_, 50);
 }
 
 TEST_F(FileOpeningJobTest, MaxThreadsFlag) {

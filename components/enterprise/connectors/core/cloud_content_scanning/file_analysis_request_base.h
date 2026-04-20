@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_BASE_H_
 
+#include <atomic>
+
 #include "base/functional/callback_helpers.h"
+#include "base/task/post_job.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
@@ -50,7 +53,14 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
 
   // Opens the file, reads it, and then calls OnGotFileData on the UI thread.
   // This should be called on a thread with base::MayBlock().
-  void OpenFile();
+  void OpenFile(const std::atomic<bool>* is_cancelled = nullptr);
+
+  // Cancels the request if it hasn't been opened yet, triggering callbacks
+  // to avoid memory leaks. Resetting data_callback_ destroys the bound
+  // arguments, which includes the std::unique_ptr holding this
+  // FileAnalysisRequestBase, destroying it and breaking the circular reference
+  // silently.
+  void Cancel();
 
  protected:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

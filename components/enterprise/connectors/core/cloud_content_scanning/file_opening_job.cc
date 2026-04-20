@@ -7,9 +7,12 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
@@ -60,9 +63,37 @@ FileOpeningJob::FileOpeningJob(std::vector<FileOpeningTask> tasks)
                                         base::Unretained(this)));
 }
 
+void FileOpeningJob::Cancel() {
+  cancel_time_ = base::TimeTicks::Now();
+
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {
+    return;
+  }
+
+  // Store the atomic bool first to ensure that all threads see the cancellation
+  // before the job handle is cancelled.
+  is_cancelled_.store(true, std::memory_order_relaxed);
+  if (file_opening_job_handle_) {
+    file_opening_job_handle_.Cancel();
+  }
+
+  // Cancel all tasks that have not been taken yet. That ensures that the
+  // request will release the reference to *this.
+  for (auto& task : tasks_) {
+    if (!task.taken.exchange(true, std::memory_order_relaxed)) {
+      task.request->Cancel();
+    }
+  }
+}
+
 FileOpeningJob::~FileOpeningJob() {
   if (file_opening_job_handle_) {
     file_opening_job_handle_.Cancel();
+  }
+  if (!cancel_time_.is_null()) {
+    base::UmaHistogramMediumTimes("Enterprise.FileOpeningJob.CancelDuration",
+                                  base::TimeTicks::Now() - cancel_time_);
   }
 }
 
@@ -71,6 +102,9 @@ void FileOpeningJob::ProcessNextTask(base::JobDelegate* job_delegate) {
   for (size_t i = 0; i < tasks_.size() && num_unopened_files() != 0 &&
                      !job_delegate->ShouldYield();
        ++i) {
+    if (is_cancelled()) {
+      break;
+    }
     // The task's `taken` value is atomic, so exchanging it to find it used to
     // be true indicates we were the not the thread that took it.
     // std::memory_order_relaxed is safe here since `taken` is not synchronized
@@ -81,7 +115,7 @@ void FileOpeningJob::ProcessNextTask(base::JobDelegate* job_delegate) {
 
     // Since we know we now have taken `tasks_[i]`, we can do the file opening
     // work safely.
-    tasks_[i].request->OpenFile();
+    tasks_[i].request->OpenFile(&is_cancelled_);
 
     // Now that the file opening work is done, `num_unopened_files_` is
     // decremented atomically and we return to free the thread.

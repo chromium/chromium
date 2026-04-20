@@ -2633,6 +2633,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.FileOpeningJob.CancelDuration" units="ms"
+    expires_after="2026-10-31">
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the time it takes to cancel the FileOpeningJob. The cancellation
+    waits for currently running file analysis tasks to yield or complete. This
+    provides a measure of how long the UI thread or other threads might block
+    while waiting for the background job to finish.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.File{Operation}Obfuscation.{Action}"
     enum="EnterpriseObfuscationError" expires_after="2026-09-13">
   <owner>haihan@google.com</owner>

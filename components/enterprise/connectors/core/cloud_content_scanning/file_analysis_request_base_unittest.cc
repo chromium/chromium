@@ -404,6 +404,56 @@ TEST_F(FileAnalysisRequestBaseTest, CachesResultsWithKnownMimetype) {
   EXPECT_EQ(request->file_size(), data.size);
 }
 
+TEST_F(FileAnalysisRequestBaseTest, Cancel) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath path = temp_dir.GetPath().AppendASCII("normal.doc");
+  base::WriteFile(path, "Normal file contents");
+
+  auto request =
+      MakeRequest(path, path.BaseName(), /*delay_opening_file=*/true);
+
+  bool data_callback_called = false;
+  request->GetRequestData(base::BindLambdaForTesting(
+      [&data_callback_called](ScanRequestUploadResult result,
+                              BinaryUploadRequest::Data data) {
+        data_callback_called = true;
+      }));
+
+  request->Cancel();
+
+  EXPECT_FALSE(data_callback_called);
+}
+
+TEST_F(FileAnalysisRequestBaseTest, CancelledDuringHashComputation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath path = temp_dir.GetPath().AppendASCII("normal.doc");
+  base::WriteFile(path, "Normal file contents");
+
+  auto request =
+      MakeRequest(path, path.BaseName(), /*delay_opening_file=*/true);
+
+  base::RunLoop run_loop;
+  request->GetRequestData(
+      base::BindLambdaForTesting([&run_loop](ScanRequestUploadResult result,
+                                             BinaryUploadRequest::Data data) {
+        EXPECT_EQ(result, ScanRequestUploadResult::kUserCancelled);
+        run_loop.Quit();
+      }));
+
+  std::atomic<bool> is_cancelled{true};
+  request->OpenFile(&is_cancelled);
+
+  run_loop.Run();
+}
+
 TEST_F(FileAnalysisRequestBaseTest, DelayedFileOpening) {
   std::string file_contents = "Normal file contents";
   base::ScopedTempDir temp_dir;
