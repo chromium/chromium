@@ -49,6 +49,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -659,10 +660,8 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
   // New Tab Page:
   // Bypass embedding origin check as the `requesting_origin` will later be
   // transformed to the DSE origin in `GetCanonicalOriginOverride()`.
-  if (embedding_origin ==
-          GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
-      embedding_origin ==
-          GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
+  if (embedding_origin == chrome::ChromeUINewTabURLAsGURL() ||
+      embedding_origin == chrome::ChromeUINewTabPageURLAsGURL()) {
     return true;
   }
 
@@ -685,10 +684,8 @@ std::optional<GURL> ChromePermissionsClient::GetCanonicalOriginOverride(
   // New Tab Page:
   // Transform chrome:// origins to the DSE origin so that permissions are
   // stored under and shared with the DSE.
-  if (embedding_origin ==
-      GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
-    if (requesting_origin ==
-        GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
+  if (embedding_origin == chrome::ChromeUINewTabURLAsGURL()) {
+    if (requesting_origin == chrome::ChromeUINewTabPageURLAsGURL()) {
       return GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
           .DeprecatedGetOriginAsURL();
     }
@@ -731,10 +728,8 @@ std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
   // the requesting origin is the NTP (chrome://new-tab-page).
   // Note that the embedding origin is later transformed to the DSE origin via
   // `GetCanonicalOriginOverride()`.
-  if (requesting_origin ==
-          GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() &&
-      embedding_origin ==
-          GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
+  if (requesting_origin == chrome::ChromeUINewTabPageURLAsGURL() &&
+      embedding_origin == chrome::ChromeUINewTabURLAsGURL()) {
     return embedding_origin;
   }
 

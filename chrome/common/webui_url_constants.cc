@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
@@ -327,6 +328,16 @@ base::span<const base::cstring_view> ChromeDebugURLs() {
        kChromeUIRestartURL});
 
   return base::span(kChromeDebugURLs);
+}
+
+const GURL& ChromeUINewTabPageURLAsGURL() {
+  static base::NoDestructor<GURL> instance(kChromeUINewTabPageURL);
+  return *instance;
+}
+
+const GURL& ChromeUINewTabURLAsGURL() {
+  static base::NoDestructor<GURL> instance(kChromeUINewTabURL);
+  return *instance;
 }
 
 }  // namespace chrome

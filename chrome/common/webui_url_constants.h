@@ -24,6 +24,7 @@
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "url/gurl.h"
 
 namespace chrome {
 
@@ -219,7 +220,9 @@ inline constexpr char kChromeUINewTabPageThirdPartyHost[] =
 inline constexpr char kChromeUINewTabPageThirdPartyURL[] =
     "chrome://new-tab-page-third-party/";
 inline constexpr char kChromeUINewTabPageURL[] = "chrome://new-tab-page/";
+const GURL& ChromeUINewTabPageURLAsGURL();
 inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
+const GURL& ChromeUINewTabURLAsGURL();
 inline constexpr char kChromeUINewTabFooterURL[] = "chrome://newtab-footer/";
 inline constexpr char kChromeUIUntrustedNtpMicrosoftAuthHost[] =
     "ntp-microsoft-auth";
