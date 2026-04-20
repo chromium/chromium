@@ -1069,7 +1069,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
   if (force_collapse_lock_count_ > 0) {
     if (is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/false);
-      is_expanded_on_hover_ = false;
     }
     return;
   }
@@ -1088,7 +1087,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
   if (!IsFrameActive()) {
     if (is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/false);
-      is_expanded_on_hover_ = false;
     }
     return;
   }
@@ -1100,7 +1098,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
   if (!should_expand) {
     if (is_expanded_on_hover_ && keep_expanded_lock_count_ == 0) {
       AnimateExpandOnHover(/*expand=*/false);
-      is_expanded_on_hover_ = false;
     } else {
       ResetExpandOnHoverTimers();
     }
