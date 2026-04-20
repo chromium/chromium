@@ -67,6 +67,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
                         null,
                         null,
                         null,
+                        null,
                         null);
     }
 

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.ai.PageSummaryButtonController;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,6 +59,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             mTabStripVisibilitySupplier;
     private final GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable ChromeAndroidTask> mChromeAndroidTaskSupplier;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     /**
      * @param context The Android context.
@@ -72,6 +74,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
      * @param modalDialogManagerSupplier Used to manage modal dialogs.
      * @param tabStripVisibilitySupplier Used to check or observe tab strip visibility.
      * @param toggleGlicCallback Callback to toggle the Glic UI.
+     * @param chromeAndroidTaskSupplier Supplier for the ChromeAndroidTask.
+     * @param browserControlsVisibilityManager Manager for browser controls.
      */
     public TabbedAdaptiveToolbarBehavior(
             Context context,
@@ -86,7 +90,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier,
             GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback,
-            Supplier<@Nullable ChromeAndroidTask> chromeAndroidTaskSupplier) {
+            Supplier<@Nullable ChromeAndroidTask> chromeAndroidTaskSupplier,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
@@ -100,6 +105,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         mTabStripVisibilitySupplier = tabStripVisibilitySupplier;
         mToggleGlicCallback = toggleGlicCallback;
         mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
     }
 
     @Override
@@ -152,7 +158,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                             mActivityTabProvider,
                             mToggleGlicCallback,
                             trackerSupplier,
-                            mChromeAndroidTaskSupplier));
+                            mChromeAndroidTaskSupplier,
+                            mBrowserControlsVisibilityManager));
         }
 
         mRegisterVoiceSearchRunnable.run();

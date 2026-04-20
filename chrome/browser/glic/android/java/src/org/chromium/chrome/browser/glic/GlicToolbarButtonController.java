@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -42,6 +43,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -77,6 +79,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
     private @Nullable GlicKeyedService mCurrentGlicService;
@@ -88,6 +91,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private @ButtonState int mButtonState = ButtonState.DEFAULT;
     private boolean mPersistDoneState;
     private boolean mIsPanelOpen;
+    private int mBrowserControlsShowingToken = TokenHolder.INVALID_TOKEN;
 
     /**
      * @param context The Android context.
@@ -95,13 +99,15 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
      * @param toggleGlicCallback Callback to run when the button is clicked to open Glic.
      * @param trackerSupplier Supplier for the current profile tracker.
      * @param taskSupplier Supplier for the ChromeAndroidTask.
+     * @param browserControlsVisibilityManager Manager for browser controls.
      */
     public GlicToolbarButtonController(
             Context context,
             Supplier<@Nullable Tab> activeTabSupplier,
             GlicButtonDelegate toggleGlicCallback,
             Supplier<@Nullable Tracker> trackerSupplier,
-            Supplier<@Nullable ChromeAndroidTask> taskSupplier) {
+            Supplier<@Nullable ChromeAndroidTask> taskSupplier,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
         // TODO(crbug.com/482372270): Add correct styling to button including Nudge state text,
         // active state shape change, and appropriate colors.
         super(
@@ -117,6 +123,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
         mTaskSupplier = taskSupplier;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mDefaultSpec = mButtonData.getButtonSpec();
         Drawable collapsedDrawable =
                 AppCompatResources.getDrawable(context, R.drawable.glic_dirty_dot_spark);
@@ -258,19 +265,52 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     private void updateButtonState() {
         if (mCurrentActorService == null) {
-            mButtonState = ButtonState.DEFAULT;
+            updateButtonStateAndControls(ButtonState.DEFAULT);
             return;
         }
 
         ActorTask task = mCurrentActorService.getCurrentActiveTask();
+        int newButtonState;
         if (task != null) {
-            @ActorTaskState int state = task.getState();
-            mButtonState = mapTaskStateToButtonState(state);
-            mPersistDoneState = (mButtonState == ButtonState.DONE);
+            newButtonState = mapTaskStateToButtonState(task.getState());
         } else if (mPersistDoneState) {
-            mButtonState = ButtonState.DONE;
+            newButtonState = ButtonState.DONE;
         } else {
-            mButtonState = ButtonState.DEFAULT;
+            newButtonState = ButtonState.DEFAULT;
+        }
+
+        updateButtonStateAndControls(newButtonState);
+    }
+
+    private void updateButtonStateAndControls(int newButtonState) {
+        int oldButtonState = mButtonState;
+        mButtonState = newButtonState;
+        mPersistDoneState = (mButtonState == ButtonState.DONE);
+
+        if (mButtonState != oldButtonState) {
+            if (mButtonState == ButtonState.WORKING) {
+                acquireBrowserControls();
+            } else if (oldButtonState == ButtonState.WORKING) {
+                releaseBrowserControls();
+            }
+        }
+    }
+
+    private void acquireBrowserControls() {
+        if (mBrowserControlsShowingToken == TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsShowingToken =
+                    mBrowserControlsVisibilityManager
+                            .getBrowserVisibilityDelegate()
+                            .showControlsPersistent();
+        }
+    }
+
+    private void releaseBrowserControls() {
+        if (mBrowserControlsShowingToken != TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsVisibilityManager
+                    .getBrowserVisibilityDelegate()
+                    .releasePersistentShowingToken(mBrowserControlsShowingToken);
+            mBrowserControlsShowingToken = TokenHolder.INVALID_TOKEN;
         }
     }
 
@@ -372,9 +412,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             mPersistDoneState = true;
         }
         int oldButtonState = mButtonState;
-
-        mButtonState = mapTaskStateToButtonState(newState);
-        mPersistDoneState = (mButtonState == ButtonState.DONE);
+        updateButtonStateAndControls(mapTaskStateToButtonState(newState));
 
         if (mButtonState != oldButtonState) {
             notifyObservers(true);
