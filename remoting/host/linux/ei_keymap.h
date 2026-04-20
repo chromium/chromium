@@ -15,7 +15,7 @@
 #include "remoting/host/base/pointer_utils.h"
 #include "remoting/host/linux/fd_string_reader.h"
 #include "remoting/proto/control.pb.h"
-#include "third_party/libei/cipd/include/libei-1.0/libei.h"
+#include "third_party/libei/src/src/libei.h"
 #include "ui/events/keycodes/scoped_xkb.h"
 
 namespace remoting {

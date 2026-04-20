@@ -640,10 +640,10 @@ static_library("common") {
     assert(use_glib)
     defines += [ "REMOTING_USE_X11" ]
     sources -= [ "active_display_monitor.cc" ]
-    libs += [ "//third_party/libei/cipd/lib64/libei.a" ]
     deps += [
       "//remoting/host/linux:platform_impls",
       "//remoting/host/linux:utils",
+      "//third_party/libei",
       "//ui/base/x",
       "//ui/events/platform/x11",
       "//ui/gfx/x",

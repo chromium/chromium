@@ -1,0 +1,194 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/pkg_config.gni")
+
+assert(is_linux)
+
+config("libei_include_dirs") {
+  include_dirs = [ "src/src" ]
+}
+
+config("libei_config") {
+  include_dirs = [
+    ".",
+    "src/src",
+    "$target_gen_dir",
+  ]
+  defines = [
+    "HAVE_CONFIG_H",
+    "typeof(x)=__typeof__(x)",
+  ]
+
+  cflags = [
+    "-fvisibility=hidden",
+    "-Wno-unused-parameter",
+    "-Wno-missing-field-initializers",
+  ]
+  cflags_c = [
+    "-Wno-return-type",
+    "-Wno-string-conversion",
+  ]
+}
+
+action("generate_brei_proto_headers") {
+  script = "scanner.py"
+  sources = [ "src/proto/protocol.xml" ]
+  inputs = [
+    "src/proto/ei-scanner",
+    "src/src/brei-proto.h.tmpl",
+  ]
+  outputs = [ "$target_gen_dir/brei-proto.h" ]
+  args = [
+    "--component",
+    "brei",
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+    rebase_path(sources[0], root_build_dir),
+    rebase_path("src/src/brei-proto.h.tmpl", root_build_dir),
+  ]
+}
+
+template("ei_scanner_gen") {
+  action(target_name) {
+    script = "scanner.py"
+    sources = [ "src/proto/protocol.xml" ]
+    inputs = [
+      "src/proto/ei-scanner",
+      invoker.template,
+    ]
+    outputs = [ "$target_gen_dir/${invoker.output}" ]
+    args = [
+      "--component",
+      invoker.component,
+      "--output",
+      rebase_path(outputs[0], root_build_dir),
+    ]
+    if (defined(invoker.extra_data)) {
+      args += [
+        "--jinja-extra-data",
+        invoker.extra_data,
+      ]
+    }
+    args += [
+      rebase_path(sources[0], root_build_dir),
+      rebase_path(invoker.template, root_build_dir),
+    ]
+  }
+}
+
+ei_scanner_gen("generate_ei_proto_headers") {
+  component = "ei"
+  output = "ei-proto.h"
+  template = "src/src/ei-proto.h.tmpl"
+}
+
+ei_scanner_gen("generate_ei_proto_sources") {
+  component = "ei"
+  output = "ei-proto.c"
+  template = "src/src/ei-proto.c.tmpl"
+  extra_data = "{\"headerfile\": \"ei-proto.h\"}"
+}
+
+ei_scanner_gen("generate_eis_proto_headers") {
+  component = "eis"
+  output = "eis-proto.h"
+  template = "src/src/ei-proto.h.tmpl"
+}
+
+ei_scanner_gen("generate_eis_proto_sources") {
+  component = "eis"
+  output = "eis-proto.c"
+  template = "src/src/ei-proto.c.tmpl"
+  extra_data = "{\"headerfile\": \"eis-proto.h\"}"
+}
+
+source_set("libutil") {
+  sources = [
+    "src/src/brei-shared.c",
+    "src/src/util-bits.c",
+    "src/src/util-io.c",
+    "src/src/util-list.c",
+    "src/src/util-logger.c",
+    "src/src/util-memfile.c",
+    "src/src/util-memmap.c",
+    "src/src/util-sources.c",
+    "src/src/util-strings.c",
+  ]
+  deps = [ ":generate_brei_proto_headers" ]
+  configs += [ ":libei_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+static_library("libei") {
+  sources = [
+    "src/src/libei-button.c",
+    "src/src/libei-callback.c",
+    "src/src/libei-connection.c",
+    "src/src/libei-device.c",
+    "src/src/libei-event.c",
+    "src/src/libei-fd.c",
+    "src/src/libei-handshake.c",
+    "src/src/libei-keyboard.c",
+    "src/src/libei-log.c",
+    "src/src/libei-ping.c",
+    "src/src/libei-pingpong.c",
+    "src/src/libei-pointer-absolute.c",
+    "src/src/libei-pointer.c",
+    "src/src/libei-region.c",
+    "src/src/libei-scroll.c",
+    "src/src/libei-seat.c",
+    "src/src/libei-socket.c",
+    "src/src/libei-touchscreen.c",
+    "src/src/libei.c",
+  ]
+  sources += get_target_outputs(":generate_ei_proto_sources")
+
+  deps = [
+    ":generate_ei_proto_headers",
+    ":generate_ei_proto_sources",
+    ":libutil",
+  ]
+
+  configs += [ ":libei_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+static_library("libeis") {
+  sources = [
+    "src/src/libeis-button.c",
+    "src/src/libeis-callback.c",
+    "src/src/libeis-client.c",
+    "src/src/libeis-connection.c",
+    "src/src/libeis-device.c",
+    "src/src/libeis-event.c",
+    "src/src/libeis-fd.c",
+    "src/src/libeis-handshake.c",
+    "src/src/libeis-keyboard.c",
+    "src/src/libeis-log.c",
+    "src/src/libeis-ping.c",
+    "src/src/libeis-pingpong.c",
+    "src/src/libeis-pointer-absolute.c",
+    "src/src/libeis-pointer.c",
+    "src/src/libeis-region.c",
+    "src/src/libeis-scroll.c",
+    "src/src/libeis-seat.c",
+    "src/src/libeis-socket.c",
+    "src/src/libeis-touchscreen.c",
+    "src/src/libeis.c",
+  ]
+  sources += get_target_outputs(":generate_eis_proto_sources")
+
+  deps = [
+    ":generate_eis_proto_headers",
+    ":generate_eis_proto_sources",
+    ":libutil",
+  ]
+
+  configs += [ ":libei_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}

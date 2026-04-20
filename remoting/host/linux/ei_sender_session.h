@@ -23,7 +23,7 @@
 #include "remoting/base/loggable.h"
 #include "remoting/host/base/pointer_utils.h"
 #include "remoting/proto/event.pb.h"
-#include "third_party/libei/cipd/include/libei-1.0/libei.h"
+#include "third_party/libei/src/src/libei.h"
 
 namespace remoting {
 

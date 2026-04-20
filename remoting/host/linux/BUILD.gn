@@ -298,6 +298,7 @@ source_set("platform_impls") {
     "//remoting/host/security_key",
     "//remoting/proto",
     "//remoting/protocol",
+    "//third_party/libei",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base",
     "//ui/base/x",

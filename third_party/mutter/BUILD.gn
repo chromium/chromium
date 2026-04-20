@@ -762,7 +762,6 @@ config("libmutter_config") {
     "src/src",
     "data",
     "src/clutter/clutter",
-    "//third_party/libei/cipd/include/libei-1.0",
   ]
 
   configs = [
@@ -1453,6 +1452,7 @@ source_set("libmutter") {
   configs += [
     ":libmutter_config",
     ":gbm",
+    "//third_party/libei:libei_include_dirs",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -1471,6 +1471,7 @@ source_set("libmutter") {
     "//build/config/linux/libdrm",
     "//third_party/gvdb",
     "//third_party/libdisplay-info:libdisplay_info",
+    "//third_party/libei:libeis",
     "//third_party/libgudev",
     "//third_party/libinput",
     "//third_party/wayland:wayland_server_lib",
@@ -1497,10 +1498,6 @@ source_set("libmutter") {
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//third_party/wayland-protocols:xdg_toplevel_drag_protocol",
   ]
-
-  if (current_cpu == "x64") {
-    libs = [ "//third_party/libei/cipd/lib64/libeis.a" ]
-  }
 }
 
 shared_library("libdefault") {

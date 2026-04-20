@@ -3042,17 +3042,9 @@ deps = {
   'src/third_party/xnnpack/src':
     Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '319d7d43a48cdcc85f9f9e776043508a04842f0c',
 
-  'src/third_party/libei/cipd': {
-
-    'packages': [
-      {
-        'package': 'chromium/third_party/libei/linux-amd64',
-        'version': 'bPkImucD7usjluBHHjsxfAC9pIK_Z8v8MjmDTgHYV28C',
-      },
-    ],
-
-    'condition': 'checkout_linux and non_git_source',
-    'dep_type': 'cipd',
+  'src/third_party/libei/src': {
+      'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libei.git' + '@' + '5d6d8e6590df210b75559a889baa9459c68d9366',
+      'condition': 'checkout_linux',
   },
 
   'src/third_party/zstd/src':

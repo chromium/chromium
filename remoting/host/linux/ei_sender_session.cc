@@ -98,7 +98,7 @@
 #include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/ei_keymap.h"
 #include "remoting/proto/event.pb.h"
-#include "third_party/libei/cipd/include/libei-1.0/libei.h"
+#include "third_party/libei/src/src/libei.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace remoting {
