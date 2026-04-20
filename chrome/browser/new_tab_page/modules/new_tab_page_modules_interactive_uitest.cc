@@ -155,11 +155,12 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
   }
 
   InteractiveTestApi::MultiStep LoadNewTabPage() {
-    return Steps(InstrumentTab(kNewTabPageElementId, 0),
-                 NavigateWebContents(kNewTabPageElementId,
-                                     GURL(chrome::kChromeUINewTabPageURL)),
-                 WaitForWebContentsReady(kNewTabPageElementId,
-                                         GURL(chrome::kChromeUINewTabPageURL)));
+    return Steps(
+        InstrumentTab(kNewTabPageElementId, 0),
+        NavigateWebContents(kNewTabPageElementId,
+                            chrome::ChromeUINewTabPageURLAsGURL()),
+        WaitForWebContentsReady(kNewTabPageElementId,
+                                chrome::ChromeUINewTabPageURLAsGURL()));
   }
 
   InteractiveTestApi::MultiStep WaitForElementToLoad(

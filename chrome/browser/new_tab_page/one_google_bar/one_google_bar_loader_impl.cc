@@ -263,7 +263,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::Start() {
       network::mojom::CredentialsMode::kInclude;
   SetRequestHeaders(resource_request.get());
   resource_request->request_initiator =
-      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+      url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
   // Adds cookies even if 3P cookies are blocked. See b/297160590.
   resource_request->site_for_cookies = net::SiteForCookies::FromUrl(api_url_);
 
