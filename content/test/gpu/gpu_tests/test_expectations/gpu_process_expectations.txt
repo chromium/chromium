@@ -156,6 +156,9 @@ crbug.com/1294065 [ android android-shield-android-tv ] GpuProcess_visibility [ 
 # SwiftShader is disabled on Mac M1 by default
 crbug.com/1378476 [ mac arch-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 
+# Vulkan VMA race test is too slow on ChromeOS
+crbug.com/504644655 [ chromeos ] GpuProcess_vulkan_vma_race [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
