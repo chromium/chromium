@@ -5,7 +5,8 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {AncestorNode, ReadAloudNode} from '../read_aloud/read_aloud_types.js';
-import {getWordCount, isDistilledByReadability, isRectMostlyVisible} from '../shared/common.js';
+import {getWordCount, isDistilledByReadability} from '../shared/common.js';
+import {isRectMostlyVisible} from '../shared/rect_calculations.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.

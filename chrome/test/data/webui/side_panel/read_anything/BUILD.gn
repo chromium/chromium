@@ -17,6 +17,7 @@ build_webui_tests("build") {
     "color_menu_test.ts",
     "common.ts",
     "common_test.ts",
+    "rect_calculations_test.ts",
     "content_controller_test.ts",
     "dom_queries_test.ts",
     "dom_read_aloud_node_test.ts",

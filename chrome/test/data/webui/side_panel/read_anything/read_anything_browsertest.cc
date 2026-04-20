@@ -144,6 +144,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RectCalculations) {
+  RunSidePanelTest("side_panel/read_anything/rect_calculations_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {
   RunSidePanelTest("side_panel/read_anything/read_anything_logger_test.js",
                    "mocha.run()");

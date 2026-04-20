@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NodeStore} from '../content/node_store.js';
-import {isRectVisible} from '../shared/common.js';
+import {isRectVisible} from '../shared/rect_calculations.js';
 
 import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';

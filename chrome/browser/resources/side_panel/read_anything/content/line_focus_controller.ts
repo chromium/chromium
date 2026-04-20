@@ -1,14 +1,13 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assert} from '//resources/js/assert.js';
-
 import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {getTextNodeOffsets} from '../shared/dom_queries.js';
+import {getRectIndexAtY, getRectsForSegments} from '../shared/dom_queries.js';
 import {isForwardArrow, isLineFocusShortcut, isVerticalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {calculateTextBounds} from '../shared/rect_calculations.js';
 
 import {LineFocusModel} from './line_focus_model.js';
 
@@ -166,23 +165,7 @@ export class LineFocusController {
       return;
     }
 
-    const rects: DOMRect[] = [];
-    for (const {node, start} of segments) {
-      const domNode = node.domNode();
-      if (!domNode) {
-        continue;
-      }
-      const {node: finalNode, offset} = getTextNodeOffsets(domNode, start);
-      const startOffset = start - offset;
-      const range = document.createRange();
-
-      range.setStart(finalNode, startOffset);
-      range.setEndAfter(finalNode);
-      rects.push(...Array.from(range.getClientRects()));
-    }
-
-    const sortedRects =
-        Array.from(new Set(rects)).sort((a, b) => a.bottom - b.bottom);
+    const sortedRects = getRectsForSegments(segments);
     if (!sortedRects.length) {
       return;
     }
@@ -211,8 +194,9 @@ export class LineFocusController {
 
       // Save the current line index before recalculating positions so we know
       // which line was in focus.
-      const currentIndex =
-          this.model_.getCurrentLineIndex() ?? this.getFirstLineIndex_(true);
+      const currentIndex = this.model_.getCurrentLineIndex() ??
+          getRectIndexAtY(this.model_.getY(), this.model_.getTextBounds(),
+                          /*isForward=*/ true);
       this.model_.setCurrentLineIndex(currentIndex);
 
       this.calculateNewPositions_(container, height);
@@ -359,7 +343,9 @@ export class LineFocusController {
   }
 
   private initializeSnapIndex_(lines: DOMRect[], isForward: boolean) {
-    const rawIndex = this.getFirstLineIndex_(isForward);
+    const rawIndex = getRectIndexAtY(
+        this.model_.getY(), this.model_.getTextBounds(),
+        /*isForward=*/ isForward);
     const safeIndex = this.clampLineIndex_(rawIndex);
 
     this.model_.setCurrentLineIndex(safeIndex);
@@ -500,8 +486,9 @@ export class LineFocusController {
       return;
     }
 
-    const currentLineIndex =
-        this.model_.getCurrentLineIndex() || this.getFirstLineIndex_(true);
+    const currentLineIndex = this.model_.getCurrentLineIndex() ||
+        getRectIndexAtY(this.model_.getY(), this.model_.getTextBounds(),
+                        /*isForward=*/ true);
 
     const numLines = this.getCurrentLineFocusStyle().lines;
     const topIndex = currentLineIndex - ((numLines - 1) / 2);
@@ -519,21 +506,14 @@ export class LineFocusController {
   }
 
   private calculateNewPositions_(container: HTMLElement, height: number) {
-    const currentLineFocus = this.getCurrentLineFocusStyle();
-    assert(!!currentLineFocus);
-    this.model_.setMinY(container.offsetTop);
-    this.model_.setMaxY(height);
-
-    const range = document.createRange();
-    range.selectNodeContents(container);
-
-    const newBounds =
-        this.combineIntersectingRects_(Array.from(range.getClientRects()));
-    this.model_.setTextBounds(newBounds);
+    const {minY, maxY, bounds} = calculateTextBounds(container, height);
+    this.model_.setMinY(minY);
+    this.model_.setMaxY(maxY);
+    this.model_.setTextBounds(bounds);
 
     // Adjust line focus to remain at the same text line even if it's moved,
     // due to font or other spacing changes.
-    const newLines = newBounds.map(rect => rect.bottom);
+    const newLines = bounds.map(rect => rect.bottom);
     const currentLineIndex = this.model_.getCurrentLineIndex();
     if (!this.isStatic() && currentLineIndex !== null &&
         currentLineIndex >= 0 && currentLineIndex < newLines.length) {
@@ -541,68 +521,6 @@ export class LineFocusController {
     }
   }
 
-  private combineIntersectingRects_(unsortedRects: DOMRect[]): DOMRect[] {
-    if (unsortedRects.length === 0) {
-      return [];
-    }
-
-    const sortedRects =
-        Array.from(new Set(unsortedRects)).sort((a, b) => a.bottom - b.bottom);
-    const combinedRects: DOMRect[] = [sortedRects[0]!];
-    // The smaller the line spacing, the larger the threshold needs to be, since
-    // it is more likely for lines to have overlapping bounds. Thus, invert the
-    // line spacing value and multiply by 10 to ensure it is above 1.
-    const lineHeight =
-        chrome.readingMode.getLineSpacingValue(chrome.readingMode.lineSpacing);
-    const threshold =
-        Math.max(1, chrome.readingMode.fontSize) * (1 / lineHeight) * 10;
-    for (let i = 1; i < sortedRects.length; i++) {
-      const currentRect = sortedRects[i]!;
-      const lastRect = combinedRects[combinedRects.length - 1]!;
-
-      // The rects are sorted by their bottom values. If the current rect top is
-      // above the previous rect top, then it encompasses the previous line (or
-      // more), so this rect is not a single line of text.
-      if (currentRect.top < lastRect.top) {
-        continue;
-      }
-
-      // Skip duplicate rects.
-      if (lastRect.top === currentRect.top &&
-          lastRect.bottom === currentRect.bottom) {
-        continue;
-      }
-
-      // If the next rect intersects with the last rect, and the intersection is
-      // larger than a threshold, merge them by removing the last rect and
-      // keeping the new one with a higher bottom value. The threshold is > 0
-      // because some fonts may cause their returned rects to slightly overlap,
-      // even though the lines are visually distinct.
-      const isIntersecting = lastRect.bottom > currentRect.top &&
-          lastRect.bottom <= currentRect.bottom;
-      if (isIntersecting && (lastRect.bottom - currentRect.top) > threshold) {
-        combinedRects.pop();
-      }
-      combinedRects.push(currentRect);
-    }
-
-    return combinedRects;
-  }
-
-  // Returns the closest line index based on the current Y position.
-  private getFirstLineIndex_(isForward: boolean): number {
-    let previousY = 0;
-    const lines = this.model_.getTextBounds();
-    for (let index = 0; index < lines.length; index++) {
-      const line = lines[index]!.bottom;
-      if (this.model_.getY() >= previousY && this.model_.getY() < line) {
-        return (isForward || (index <= 0)) ? index : index - 1;
-      }
-      previousY = line;
-    }
-
-    return lines.length - 1;
-  }
 
   private setCenterY_() {
     this.setY_(this.model_.getMaxY() / 2);
