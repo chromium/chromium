@@ -23,6 +23,10 @@ class ConfigFilter extends Filter {
     public ConfigFilter(JSONObject configJson) throws JSONException {
         Map<String, Set<String>> testsByClass = new HashMap<>();
         JSONObject configsObj = configJson.getJSONObject("configs");
+        if (configsObj.length() != 1) {
+            throw new RuntimeException(
+                    "JSON Config had " + configsObj.length() + " entries: " + configsObj.keySet());
+        }
         JSONObject classesObj = configsObj.getJSONObject(configsObj.keys().next());
         Iterator<String> classNames = classesObj.keys();
         while (classNames.hasNext()) {
@@ -41,8 +45,8 @@ class ConfigFilter extends Filter {
             throws JSONException, ClassNotFoundException {
         JSONObject configsObj = configJson.getJSONObject("configs");
         if (configsObj.length() != 1) {
-            throw new IllegalArgumentException(
-                    "JSON Config had " + configsObj.length() + " entries");
+            throw new RuntimeException(
+                    "JSON Config had " + configsObj.length() + " entries: " + configsObj.keySet());
         }
         JSONObject classesObj = configsObj.getJSONObject(configsObj.keys().next());
         Class[] ret = new Class[classesObj.length()];

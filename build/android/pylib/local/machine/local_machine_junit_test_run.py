@@ -409,6 +409,31 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     test_run_results = base_test_result.TestRunResults()
     test_run_results.AddResults(results_list)
 
+    num_actual = len(test_run_results.GetAll())
+    num_expected = sum(
+        len(methods) for classes in json_config['configs'].values()
+        for methods in classes.values())
+
+    # Check that all tests actually ran that we expected to run.
+    if num_actual != num_expected:
+      sb = [
+          f'Expected {num_expected} tests, but got only {num_actual} results.',
+          'Missing results for:',
+      ]
+      actual_test_names = {r.GetName() for r in test_run_results.GetAll()}
+      for config, classes in json_config['configs'].items():
+        for class_name, methods in classes.items():
+          for method in methods:
+            test_name = f'{class_name}#{method}'
+            if test_name not in actual_test_names:
+              sb.append(f'  {test_name} ({config})')
+      if self._test_instance.run_disabled:
+        sb.append('The missing tests could be due to not using '
+                  'BaseJUnit4ClassRunner / BaseRobolectricTestRunner, since '
+                  'these are required for --run-disabled.')
+      results.append(
+          _MakeUnknownFailureResult('Not Enough Results', '\n'.join(sb)))
+
     if json_config.get('disabled') and not self._test_instance.run_disabled:
       num_disabled = sum(
           len(methods) for classes in json_config['disabled'].values()
@@ -455,13 +480,16 @@ def GroupTests(json_config, max_per_job):
   return ret
 
 
-def _MakeUnknownFailureResult(message):
+def _MakeUnknownFailureResult(name, details=None):
+  # TODO(504602174): These result types are not handled properly.
   results_list = [
-      base_test_result.BaseTestResult(message,
-                                      base_test_result.ResultType.UNKNOWN)
+      base_test_result.BaseTestResult(name,
+                                      base_test_result.ResultType.UNKNOWN,
+                                      log=details)
   ]
   test_run_results = base_test_result.TestRunResults()
   test_run_results.AddResults(results_list)
+  logging.error('%s. Details: %s', name, details)
   return test_run_results
 
 

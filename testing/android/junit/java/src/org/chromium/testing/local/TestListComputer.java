@@ -33,12 +33,25 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 class TestListComputer extends Computer {
-    private final List<Description> mDescriptions = new ArrayList<>();
+    private static class DescriptionInfo {
+        public final Description description;
+        public final boolean isDisabled;
+
+        DescriptionInfo(Description description, boolean isDisabled) {
+            this.description = description;
+            this.isDisabled = isDisabled;
+        }
+    }
+
+    private final List<DescriptionInfo> mDescriptions = new ArrayList<>();
     private final Allowlist mShadowsAllowlist;
 
     private static final @Nullable Class<Annotation> CHROME_DISABLED_ANNOTATION = initAnnotation();
@@ -160,18 +173,19 @@ class TestListComputer extends Computer {
             return mRunner.getDescription();
         }
 
-        private void collectDescriptions(Description description) {
-            if (description.getMethodName() != null) {
-                mDescriptions.add(description);
+        private void collectDescriptions(Description description, boolean parentDisabled) {
+            boolean disabled = parentDisabled || isDisabled(description);
+            if (description.isTest()) {
+                mDescriptions.add(new DescriptionInfo(description, disabled));
             }
             for (Description child : description.getChildren()) {
-                collectDescriptions(child);
+                collectDescriptions(child, disabled);
             }
         }
 
         @Override
         public void run(RunNotifier notifier) {
-            collectDescriptions(mRunner.getDescription());
+            collectDescriptions(mRunner.getDescription(), false);
         }
 
         @Override
@@ -229,13 +243,31 @@ class TestListComputer extends Computer {
         JSONObject disabledObj = new JSONObject();
         root.put("disabled", disabledObj);
 
-        for (Description d : mDescriptions) {
-            boolean isDisabled = isDisabled(d);
+        // Ensure that all tests have unique names.
+        Map<String, Set<String>> seenDescriptionsByConfig = new HashMap<>();
+
+        for (DescriptionInfo info : mDescriptions) {
+            Description d = info.description;
+            String methodName = d.getMethodName();
+            if (methodName == null) {
+                // Happens when @Ignore is set on the class and --run-disabled is not used.
+                continue;
+            }
             String config = computeConfig(d, instrumentedPackages, instrumentedClasses);
-            JSONObject targetConfigsObj = isDisabled ? disabledObj : configsObj;
+
+            Set<String> seenDescriptions =
+                    seenDescriptionsByConfig.computeIfAbsent(config, k -> new HashSet<>());
+
+            String displayName = d.getDisplayName();
+            if (!seenDescriptions.add(displayName)) {
+                throw new RuntimeException(
+                        "Duplicate test entry found: " + displayName + " in config " + config);
+            }
+
+            JSONObject targetConfigsObj = info.isDisabled ? disabledObj : configsObj;
             JSONObject configObj = getOrNewObject(targetConfigsObj, config);
             JSONArray methodsArr = getOrNewArray(configObj, d.getClassName());
-            methodsArr.put(d.getMethodName());
+            methodsArr.put(methodName);
         }
 
         JSONArray arr = new JSONArray();
