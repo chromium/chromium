@@ -25372,6 +25372,18 @@
             ]
         }
     ],
+    "WebViewNoOp": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebViewNonBlockingCookieStoreHandoff": [
         {
             "platforms": [
