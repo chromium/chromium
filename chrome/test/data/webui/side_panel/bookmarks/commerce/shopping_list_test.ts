@@ -19,7 +19,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from '../test_bookmarks_api_proxy.js';
 
@@ -68,8 +68,8 @@ suite('SidePanelShoppingListTest', () => {
         shoppingList.shadowRoot!.querySelectorAll('.product-item'));
   }
 
-  function checkProductElementRender(
-      element: HTMLElement, product: BookmarkProductInfo): void {
+  async function checkProductElementRender(
+      element: HTMLElement, product: BookmarkProductInfo): Promise<void> {
     assertEquals(
         product.info.title,
         element.querySelector('.product-title')!.textContent);
@@ -78,16 +78,17 @@ suite('SidePanelShoppingListTest', () => {
         element.querySelector('.product-domain')!.textContent);
 
     const imageElement =
-        element.querySelector<HTMLElement>('.product-image-container');
-    const faviconElement = element.querySelector<HTMLElement>('.favicon-image');
+        element.querySelector<HTMLElement>('.product-image-container')!;
+    const faviconElement = element.querySelector<HTMLElement>('.favicon-image')!;
     if (!product.info.imageUrl) {
       assertFalse(isVisible(imageElement));
       assertTrue(isVisible(faviconElement));
     } else {
+      await whenCheck(element, () => !isVisible(faviconElement));
       assertFalse(isVisible(faviconElement));
       assertTrue(isVisible(imageElement));
       const productImage =
-          imageElement!.querySelector<HTMLElement>(
+          imageElement.querySelector<HTMLElement>(
                            '.product-image')!.getAttribute('auto-src');
       assertEquals(productImage, product.info.imageUrl);
     }
@@ -151,12 +152,12 @@ suite('SidePanelShoppingListTest', () => {
     window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = undefined;
   });
 
-  test('RenderShoppingList', () => {
+  test('RenderShoppingList', async () => {
     const productElements = getProductElements(shoppingList);
     assertEquals(2, products.length);
 
     for (let i = 0; i < products.length; i++) {
-      checkProductElementRender(productElements[i]!, products[i]!);
+      await checkProductElementRender(productElements[i]!, products[i]!);
     }
   });
 
@@ -317,7 +318,7 @@ suite('SidePanelShoppingListTest', () => {
     await flushTasks();
     const productElements = getProductElements(shoppingList);
     assertEquals(3, productElements.length);
-    checkProductElementRender(productElements[2]!, newProduct);
+    await checkProductElementRender(productElements[2]!, newProduct);
 
     const actionButtons =
         Array.from(shoppingList.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -365,7 +366,7 @@ suite('SidePanelShoppingListTest', () => {
     assertEquals(2, products.length);
 
     for (let i = 0; i < products.length; i++) {
-      checkProductElementRender(productElements[i]!, products[i]!);
+      await checkProductElementRender(productElements[i]!, products[i]!);
     }
 
     const updatedProduct = {
@@ -389,8 +390,8 @@ suite('SidePanelShoppingListTest', () => {
     productElements = getProductElements(shoppingList);
     assertEquals(2, products.length);
 
-    checkProductElementRender(productElements[0]!, updatedProduct);
-    checkProductElementRender(productElements[1]!, products[1]!);
+    await checkProductElementRender(productElements[0]!, updatedProduct);
+    await checkProductElementRender(productElements[1]!, products[1]!);
   });
 
   test('UntrackedItemsResetsWithProductInfos', async () => {
