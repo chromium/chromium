@@ -291,6 +291,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.AndroidEntraSso.HeaderSkipReason"
+    enum="AndroidEntraSsoHeaderSkipReason" expires_after="2027-03-30">
+  <owner>ssolarewicz@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    If a header provided by the Android OS for the purpose of the Entra SSO
+    authentication event is skipped, reason is emitted via this histogram. This
+    metric is emitted by enterprise_auth::EntraProviderAndroid during parsing of
+    the authentication headers.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.AndroidEntraSso.Result"
     enum="AndroidEntraSsoResult" expires_after="2027-03-30">
   <owner>ssolarewicz@google.com</owner>

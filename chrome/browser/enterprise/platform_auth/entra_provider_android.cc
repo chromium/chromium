@@ -252,11 +252,17 @@ void EntraProviderAndroid::ParseJsonHeaders(
   for (const auto [key, value] : *headers_field) {
     if (!base::StartsWith(key, kHeaderNamePrefix,
                           base::CompareCase::INSENSITIVE_ASCII)) {
+      base::UmaHistogramEnumeration(
+          EntraProviderAndroid::kHeaderSkipReasonHistogram,
+          HeaderSkipReason::kNamePrefixMismatch);
       continue;
     }
     if (!net::HttpUtil::IsValidHeaderName(key)) {
       LOG_POLICY(WARNING, POLICY_AUTH)
           << kLogTag << " Skipping invalid header name: " << key;
+      base::UmaHistogramEnumeration(
+          EntraProviderAndroid::kHeaderSkipReasonHistogram,
+          HeaderSkipReason::kInvalidHeaderName);
       continue;
     }
 
@@ -265,6 +271,9 @@ void EntraProviderAndroid::ParseJsonHeaders(
       LOG_POLICY(WARNING, POLICY_AUTH)
           << kLogTag << " Invalid header value type for key " << key << ": "
           << value.DebugString();
+      base::UmaHistogramEnumeration(
+          EntraProviderAndroid::kHeaderSkipReasonHistogram,
+          HeaderSkipReason::kInvalidValueFormat);
       continue;
     }
 
@@ -274,6 +283,9 @@ void EntraProviderAndroid::ParseJsonHeaders(
       LOG_POLICY(WARNING, POLICY_AUTH)
           << kLogTag << " Invalid header name: value pair " << key << ": "
           << *str_value;
+      base::UmaHistogramEnumeration(
+          EntraProviderAndroid::kHeaderSkipReasonHistogram,
+          HeaderSkipReason::kInvalidHeaderValue);
     }
   }
 

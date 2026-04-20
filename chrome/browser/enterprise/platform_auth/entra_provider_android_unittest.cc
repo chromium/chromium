@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/platform_auth/entra_provider_android.h"
 
+#include <map>
 #include <optional>
 #include <utility>
 
@@ -332,6 +333,7 @@ struct HeadersParsingTestParams {
   net::HttpRequestHeaders::HeaderVector expected_headers;
   AuthenticationResult result;
   std::optional<Status> failure_reason;
+  std::map<EntraProviderAndroid::HeaderSkipReason, int> expected_skip_counts;
 };
 
 class HeadersParsingTest
@@ -344,6 +346,11 @@ TEST_P(HeadersParsingTest, ParseHeaders) {
       FetchHeaders(params.status, params.raw_json);
 
   ExpectMetrics(params.result, params.failure_reason);
+
+  for (const auto& [reason, count] : params.expected_skip_counts) {
+    histogram_tester_.ExpectBucketCount(
+        EntraProviderAndroid::kHeaderSkipReasonHistogram, reason, count);
+  }
 
   const auto& headers_vector = headers.GetHeaderVector();
   EXPECT_EQ(params.expected_headers.size(), headers_vector.size());
@@ -512,6 +519,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_headers = {{"x-ms-refreshtokencredential",
                                   "valid_token"}},
             .result = AuthenticationResult::kSuccessWithHeaders,
+            .expected_skip_counts =
+                {{EntraProviderAndroid::HeaderSkipReason::kNamePrefixMismatch,
+                  1}},
         },
 
         HeadersParsingTestParams{
@@ -524,6 +534,9 @@ INSTANTIATE_TEST_SUITE_P(
                 })",
             .expected_headers = {{"x-ms-devicecredential", "valid_token"}},
             .result = AuthenticationResult::kSuccessWithHeaders,
+            .expected_skip_counts =
+                {{EntraProviderAndroid::HeaderSkipReason::kInvalidValueFormat,
+                  1}},
         },
 
         HeadersParsingTestParams{
@@ -536,6 +549,9 @@ INSTANTIATE_TEST_SUITE_P(
                 })",
             .expected_headers = {{"x-ms-devicecredential", "valid_token"}},
             .result = AuthenticationResult::kSuccessWithHeaders,
+            .expected_skip_counts =
+                {{EntraProviderAndroid::HeaderSkipReason::kInvalidHeaderValue,
+                  1}},
         },
 
         HeadersParsingTestParams{
@@ -548,6 +564,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_headers = {},
             .result = AuthenticationResult::kFailure,
             .failure_reason = Status::kAllHeadersSkipped,
+            .expected_skip_counts =
+                {{EntraProviderAndroid::HeaderSkipReason::kInvalidHeaderName,
+                  1}},
         },
 
         HeadersParsingTestParams{
@@ -560,6 +579,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_headers = {},
             .result = AuthenticationResult::kFailure,
             .failure_reason = Status::kAllHeadersSkipped,
+            .expected_skip_counts =
+                {{EntraProviderAndroid::HeaderSkipReason::kNamePrefixMismatch,
+                  1}},
         },
 
         HeadersParsingTestParams{
@@ -608,4 +630,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  {"x-ms-devicecredential4", "token10"},
                                  {"x-ms-devicecredential5", "token11"}},
             .result = AuthenticationResult::kSuccessWithHeaders,
+            .expected_skip_counts =
+                {{EntraProviderAndroid::HeaderSkipReason::kNamePrefixMismatch,
+                  2}},
         }));

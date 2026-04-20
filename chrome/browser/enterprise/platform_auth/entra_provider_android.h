@@ -31,6 +31,8 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
       "Enterprise.AndroidEntraSso.Duration.NoBroker";
   static constexpr char kFailureReasonHistogram[] =
       "Enterprise.AndroidEntraSso.FailureReason";
+  static constexpr char kHeaderSkipReasonHistogram[] =
+      "Enterprise.AndroidEntraSso.HeaderSkipReason";
 
   // These values are persisted to logs. Entries should not be renumbered
   // and numeric values should never be reused.
@@ -73,7 +75,20 @@ class EntraProviderAndroid : public enterprise_auth::PlatformAuthProvider {
 
     kMaxValue = kNoBrokerRegistered,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:FailureReason)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:AndroidEntraSsoFailureReason)
+
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  //
+  // LINT.IfChange(HeaderSkipReason)
+  enum class HeaderSkipReason {
+    kNamePrefixMismatch = 0,
+    kInvalidHeaderName = 1,
+    kInvalidValueFormat = 2,
+    kInvalidHeaderValue = 3,
+    kMaxValue = kInvalidHeaderValue,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:AndroidEntraSsoHeaderSkipReason)
 
   using OnJavaReadTokensCallback =
       base::OnceCallback<void(Status, std::string)>;

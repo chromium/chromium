@@ -40,6 +40,13 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="All headers were skipped"/>
 </enum>
 
+<enum name="AndroidEntraSsoHeaderSkipReason">
+  <int value="0" label="Header name does not start with x-ms-"/>
+  <int value="1" label="Name is not a valid HTTP header name"/>
+  <int value="2" label="Value is not a string"/>
+  <int value="3" label="Value is not a valid HTTP header value"/>
+</enum>
+
 <enum name="AndroidEntraSsoResult">
   <int value="0" label="Success with auth headers attached"/>
   <int value="1" label="Success without auth headers"/>
