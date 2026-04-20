@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_intro_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -186,28 +187,16 @@ void WebAppInstallFlowDialogDelegate::Show(
               delegate_weak_ptr));
 
   // kInstallerOptions
-  std::u16string label;
-  switch (os_type) {
-    case InstallOsType::kMac:
-      label = u"Installer options Mac view";
-      break;
-    case InstallOsType::kWin:
-      label = u"Installer options Windows view";
-      break;
-    case InstallOsType::kCros:
-      label = u"Installer options ChromeOS view";
-      break;
-    default:
-      label = u"Installer options Other view";
-  }
   install_step_to_view[InstallDialogStep::kInstallerOptions] =
-      views::Builder<views::Label>().SetText(label).Build();
+      std::make_unique<WebAppInstallOptionsView>(os_type);
 
   // kProgress
+  // TODO(crbug.com/503767931): Localize this text.
   install_step_to_view[InstallDialogStep::kProgress] =
       views::Builder<views::Label>().SetText(u"Progress View").Build();
 
   // kSuccessful
+  // TODO(crbug.com/503767931): Localize this text.
   install_step_to_view[InstallDialogStep::kSuccessful] =
       views::Builder<views::Label>().SetText(u"Successful View").Build();
 
@@ -244,6 +233,7 @@ void WebAppInstallFlowDialogDelegate::Show(
                 return delegate ? delegate->OnOkButtonClicked() : true;
               },
               delegate_weak_ptr),
+          // TODO(crbug.com/503767931): Localize this text.
           ui::DialogModel::Button::Params().SetLabel(u"Next").SetId(
               WebAppInstallDialogDelegate::kPwaInstallDialogInstallButton))
       .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,

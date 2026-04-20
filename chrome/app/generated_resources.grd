@@ -3561,6 +3561,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DIY_APP_INSTALL_DIALOG_SUBTITLE" desc="Subtitle of the DIY app install dialog containing information about how the app opens">
         Apps open in a window
       </message>
+      <message name="IDS_WEB_APP_INSTALL_PIN_TO_SHELF" desc="Checkbox label to pin the web app to the shelf during installation.">
+        Pin to shelf
+      </message>
       <message name="IDS_DIY_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a DIY app, read by spoken feedback.">
         App name
       </message>

@@ -1,0 +1,40 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_OPTIONS_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_OPTIONS_VIEW_H_
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
+#include "ui/views/view.h"
+
+namespace views {
+class Checkbox;
+}
+
+namespace web_app {
+
+// A view that presents installation options to the user.
+// The content varies based on the platform (InstallOsType).
+class WebAppInstallOptionsView : public views::View {
+ public:
+  explicit WebAppInstallOptionsView(InstallOsType os_type);
+  ~WebAppInstallOptionsView() override;
+
+  WebAppInstallOptionsView(const WebAppInstallOptionsView&) = delete;
+  WebAppInstallOptionsView& operator=(const WebAppInstallOptionsView&) = delete;
+
+  // Returns true if the "Pin to shelf" option is checked.
+  // Only applicable for kCrOS.
+  bool IsPinToShelfChecked() const;
+
+ private:
+  void InitView(InstallOsType os_type);
+
+  raw_ptr<views::Checkbox> pin_to_shelf_checkbox_ = nullptr;
+};
+
+}  // namespace web_app
+
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_OPTIONS_VIEW_H_
