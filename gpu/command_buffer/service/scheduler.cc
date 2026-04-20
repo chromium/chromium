@@ -672,7 +672,7 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
         "GPU.Scheduler.ThreadSuspendedTime",
         base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
         base::Microseconds(10), base::Seconds(30), 100);
-    base::UmaHistogramCustomTimes(
+    base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat(
             {"GPU.Scheduler.ThreadSuspendedTime.", priority_str, "Priority"}),
         base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
@@ -682,7 +682,7 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
         "GPU.Scheduler.TaskDependencyTime",
         sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
         base::Seconds(30), 100);
-    base::UmaHistogramCustomTimes(
+    base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat(
             {"GPU.Scheduler.TaskDependencyTime.", priority_str, "Priority"}),
         sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
@@ -692,7 +692,7 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
         "GPU.Scheduler.TaskSchedulingDelayTime",
         sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
         base::Seconds(30), 100);
-    base::UmaHistogramCustomTimes(
+    base::UmaHistogramCustomMicrosecondsTimes(
         base::StrCat({"GPU.Scheduler.TaskSchedulingDelayTime.", priority_str,
                       "Priority"}),
         sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
