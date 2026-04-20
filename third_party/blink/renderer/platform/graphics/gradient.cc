@@ -39,8 +39,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix.h"
-#include "third_party/skia/include/core/SkShader.h"
-#include "third_party/skia/include/effects/SkGradient.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
 
 namespace blink {
@@ -71,6 +69,10 @@ void Gradient::AddColorStop(const Gradient::ColorStop& stop) {
 
   stops_.push_back(stop);
   cached_shader_.reset();
+}
+
+void Gradient::AddColorStop(double value, const Color& color) {
+  AddColorStop(ColorStop(gfx::ClampFloatGeometry(value), color));
 }
 
 void Gradient::AddColorStops(const Vector<Gradient::ColorStop>& stops) {

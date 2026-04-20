@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/effects/SkGradient.h"
 
 class SkMatrix;
 
@@ -107,15 +106,13 @@ class PLATFORM_EXPORT Gradient {
 
   struct ColorStop {
     DISALLOW_NEW();
-    double stop;
+    float stop;
     Color color;
 
-    ColorStop(double s, const Color& c) : stop(s), color(c) {}
+    ColorStop(float s, const Color& c) : stop(s), color(c) {}
   };
   void AddColorStop(const ColorStop&);
-  void AddColorStop(double value, const Color& color) {
-    AddColorStop(ColorStop(value, color));
-  }
+  void AddColorStop(double value, const Color& color);
   void AddColorStops(const Vector<Gradient::ColorStop>&);
 
   void ApplyToFlags(cc::PaintFlags&,
@@ -147,7 +144,7 @@ class PLATFORM_EXPORT Gradient {
   Gradient(Type, SpreadMethod, PremultipliedAlpha, DegenerateHandling);
 
   using ColorBuffer = Vector<SkColor4f, 8>;
-  using OffsetBuffer = Vector<SkScalar, 8>;
+  using OffsetBuffer = Vector<float, 8>;
   virtual sk_sp<PaintShader> CreateShader(const ColorBuffer&,
                                           const OffsetBuffer&,
                                           SkTileMode,
