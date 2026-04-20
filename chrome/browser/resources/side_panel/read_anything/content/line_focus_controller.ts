@@ -23,7 +23,6 @@ export interface LineFocusListener {
 // Used to prevent microadjustments of the line focus window when adjusting to
 // new line heights as it can be distracting for no functional difference.
 // Determined by experimentation and should be tweaked as needed.
-const WINDOW_DIFF_THRESHOLD = 5;
 const SCROLL_THRESHOLD = 10;
 
 // Handles the business logic for managing the line focus feature.
@@ -35,7 +34,7 @@ export class LineFocusController {
 
   constructor() {
     this.model_.setCurrentStyleMode(
-        new LineFocusNoneStyleMode(LineFocusStyle.OFF));
+        new LineFocusNoneStyleMode(LineFocusStyle.OFF, this.model_));
     this.model_.setCurrentMoveMode(
         new LineFocusNoneMoveMode(LineFocusMovement.STATIC));
   }
@@ -121,15 +120,11 @@ export class LineFocusController {
         if (this.isStatic() && this.getCurrentLineFocusLines_() > 1) {
           return;
         }
-        const oldHeight = this.getHeight();
+        const oldHeight = this.model_.getWindowHeight();
         const oldTop = this.getTop();
-        this.calculateHeight_();
-        const heightDiff = (oldHeight === null || this.getHeight() === null) ?
-            null :
-            Math.abs(oldHeight - this.getHeight()!);
-        const topDiff = Math.abs(oldTop - this.getTop());
-        if (heightDiff === null || heightDiff > WINDOW_DIFF_THRESHOLD ||
-            topDiff > WINDOW_DIFF_THRESHOLD) {
+        this.model_.getCurrentStyleMode().calculateHeight();
+        if (this.model_.getCurrentStyleMode().shouldRefreshFocalPoint(
+                oldHeight, oldTop)) {
           this.listeners_.forEach(l => l.onLineFocusMove());
         }
       } else {
@@ -178,7 +173,9 @@ export class LineFocusController {
       return;
     }
 
-    if (this.model_.getY() !== this.getNewY_(sortedRects[0]!)) {
+    if (this.model_.getY() !==
+        this.model_.getCurrentStyleMode().getFocalPointForRect(
+            sortedRects[0]!)) {
       chrome.readingMode.incrementLineFocusSpeechLines();
     }
     this.setyOrScroll_(sortedRects[0]!);
@@ -211,14 +208,16 @@ export class LineFocusController {
 
       const lines = this.model_.getTextBounds();
       if (lines.length > 0) {
-        const targetIndex = Math.min(currentIndex, lines.length - 1);
-        const clampedIndex = this.clampLineIndex_(targetIndex);
+        const targetIndex =
+            Math.max(0, Math.min(currentIndex, lines.length - 1));
+        const clampedIndex =
+            this.model_.getCurrentStyleMode().clampLineIndex(targetIndex);
         this.model_.setCurrentLineIndex(clampedIndex);
 
         // Re-center the line that's in focus when text locations change in
         // cursor mode. Scroll instantly to reduce dizzying movement.
         if (!this.isStatic()) {
-          this.scrollToCenter_(lines, targetIndex, /*instant=*/ true);
+          this.scrollToCenter_(lines, clampedIndex, /*instant=*/ true);
         }
       }
 
@@ -273,15 +272,15 @@ export class LineFocusController {
   private updateStrategies_(
       style: LineFocusStyle, movement: LineFocusMovement) {
     if (style.type === LineFocusType.NONE) {
-      const styleMode = new LineFocusNoneStyleMode(style);
-      this.model_.setCurrentStyleMode(styleMode);
+      this.model_.setCurrentStyleMode(
+          new LineFocusNoneStyleMode(style, this.model_));
       this.model_.setCurrentMoveMode(new LineFocusNoneMoveMode(movement));
       return;
     }
 
     const styleMode = style.type === LineFocusType.LINE ?
-        new LineFocusLineStyleMode(style) :
-        new LineFocusWindowStyleMode(style);
+        new LineFocusLineStyleMode(style, this.model_) :
+        new LineFocusWindowStyleMode(style, this.model_);
     this.model_.setCurrentStyleMode(styleMode);
 
     const moveMode = movement === LineFocusMovement.STATIC ?
@@ -373,7 +372,8 @@ export class LineFocusController {
     const rawIndex = getRectIndexAtY(
         this.model_.getY(), this.model_.getTextBounds(),
         /*isForward=*/ isForward);
-    const safeIndex = this.clampLineIndex_(rawIndex);
+    const safeIndex =
+        this.model_.getCurrentStyleMode().clampLineIndex(rawIndex);
 
     this.model_.setCurrentLineIndex(safeIndex);
     this.setyOrScroll_(lines[safeIndex]!);
@@ -390,11 +390,14 @@ export class LineFocusController {
       return;
     }
 
-    const clampedIndex = this.clampLineIndex_(nextIndex);
+    const clampedIndex =
+        this.model_.getCurrentStyleMode().clampLineIndex(nextIndex);
     this.model_.setCurrentLineIndex(clampedIndex);
 
     // Calculate visibility bounds to see if we need to scroll.
-    const {topRect, bottomRect} = this.getFocusWindowRects_(lines, nextIndex);
+    const {topRect, bottomRect} =
+        this.model_.getCurrentStyleMode().getFocusWindowBounds(
+            lines, nextIndex);
 
     const isOutOfView = bottomRect.bottom > this.model_.getMaxY() ||
         topRect.top < this.model_.getMinY();
@@ -424,57 +427,21 @@ export class LineFocusController {
 
   private scrollToCenter_(
       lines: DOMRect[], targetIndex: number, instant: boolean = false) {
-    const {topRect, bottomRect} = this.getFocusWindowRects_(lines, targetIndex);
     const desiredCenter =
-        this.getCurrentLineFocusType() === LineFocusType.LINE ?
-        bottomRect.bottom :
-        (topRect.top + bottomRect.bottom) / 2;
+        this.model_.getCurrentStyleMode().getDesiredCenter(lines, targetIndex);
     const scrollDiff = desiredCenter - (this.model_.getMaxY() / 2);
     this.scroll_(scrollDiff, instant);
-  }
-
-  // Gets the DOMRects for the top and bottom of the focus window for a given
-  // center line index
-  private getFocusWindowRects_(lines: DOMRect[], targetIndex: number) {
-    const numLines = this.getCurrentLineFocusLines_();
-    const isLineMode = this.getCurrentLineFocusType() === LineFocusType.LINE;
-
-    // In Line Mode, the "window" is just the line itself.
-    // In Window Mode, the "window" spans multiple lines around the center.
-    const topIndex =
-        isLineMode ? targetIndex : Math.max(0, targetIndex - (numLines / 2));
-    const bottomIndex = isLineMode ?
-        targetIndex :
-        Math.min(lines.length - 1, topIndex + numLines);
-
-    return {
-      topRect: lines[Math.floor(topIndex)]!,
-      bottomRect: lines[Math.floor(bottomIndex)] || lines[lines.length - 1]!,
-    };
   }
 
   private getCurrentLineFocusLines_(): number {
     return this.getCurrentLineFocusStyle().lines;
   }
 
-  // If line focus is a window of > 1 line, the bottom of the window should not
-  // go above the number of lines in the window.
-  private clampLineIndex_(index: number): number {
-    return this.getCurrentLineFocusType() === LineFocusType.LINE ?
-        index :
-        Math.max(index, (this.getCurrentLineFocusLines_() - 1) / 2);
-  }
-
-  private getNewY_(newBounds: DOMRect) {
-    return this.getCurrentLineFocusType() === LineFocusType.LINE ?
-        newBounds.bottom :
-        (newBounds.top + newBounds.bottom) / 2;
-  }
-
   // When the current line focus mode is static, scroll the content instead of
   // moving the line focus element.
   private setyOrScroll_(newBounds: DOMRect) {
-    const newY = this.getNewY_(newBounds);
+    const newY =
+        this.model_.getCurrentStyleMode().getFocalPointForRect(newBounds);
     if (this.isStatic()) {
       const scrollDiff = newY - this.model_.getY();
       this.scroll_(scrollDiff);
@@ -494,42 +461,10 @@ export class LineFocusController {
 
   private setY_(y: number, quietly: boolean = false) {
     this.model_.setY(y);
-    this.calculateHeight_();
+    this.model_.getCurrentStyleMode().calculateHeight();
     if (!quietly) {
       this.listeners_.forEach(l => l.onLineFocusMove());
     }
-  }
-
-  private calculateHeight_() {
-    if (this.getCurrentLineFocusType() === LineFocusType.LINE) {
-      this.model_.setTop(this.model_.getY());
-      return;
-    }
-
-    // In window mode, always use the calculated line locations to set the top
-    // and height of the window.
-    const bounds = this.model_.getTextBounds();
-    if (bounds.length === 0) {
-      return;
-    }
-
-    const currentLineIndex = this.model_.getCurrentLineIndex() ||
-        getRectIndexAtY(this.model_.getY(), this.model_.getTextBounds(),
-                        /*isForward=*/ true);
-
-    const numLines = this.getCurrentLineFocusStyle().lines;
-    const topIndex = currentLineIndex - ((numLines - 1) / 2);
-    const maxTopIndex = bounds.length - numLines;
-    const minTopIndex =
-        bounds.findIndex(rect => rect.top >= this.model_.getMinY());
-    const validTopIndex =
-        Math.max(minTopIndex, Math.min(maxTopIndex, topIndex));
-    const topLine = bounds[validTopIndex]!;
-    this.model_.setTop(topLine.top);
-    const bottomIndex = (validTopIndex + numLines - 1);
-    const bottom = bottomIndex < bounds.length ? bounds[bottomIndex]!.bottom :
-                                                 this.model_.getMaxY();
-    this.model_.setWindowHeight(bottom - this.getTop());
   }
 
   private calculateNewPositions_(container: HTMLElement, height: number) {
