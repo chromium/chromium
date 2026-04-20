@@ -129,6 +129,9 @@ suite('Movement', () => {
     });
 
     test('scroll into view', () => {
+      if (window.innerHeight === 0) {
+        Object.defineProperty(window, 'innerHeight', {value: 600});
+      }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
       container.style.height = window.innerHeight + 'px';
@@ -173,6 +176,9 @@ suite('Movement', () => {
     });
 
     test('scroll into view with large highlight', () => {
+      if (window.innerHeight === 0) {
+        Object.defineProperty(window, 'innerHeight', {value: 600});
+      }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
       container.style.height = window.innerHeight + 'px';
@@ -231,6 +237,9 @@ suite('Movement', () => {
     });
 
     test('scrollIntoView scrolls to make the current highlight visible', () => {
+      if (window.innerHeight === 0) {
+        Object.defineProperty(window, 'innerHeight', {value: 600});
+      }
       // Create a scrollable container to act as our "viewport".
       const container = document.createElement('div');
       container.style.height = window.innerHeight + 'px';
