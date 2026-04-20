@@ -802,11 +802,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         PropertyModel model =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
-                        .with(ListMenuItemProperties.SUBTITLE, bookmarkItem.getUrl().getSpec())
-                        .with(
-                                ListMenuItemProperties.TOOLTIP,
-                                bookmarkItem.getTitle() + "\n" + bookmarkItem.getUrl().getSpec())
-                        .with(ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END, true)
+                        .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .with(ListMenuItemProperties.TOUCH_LISTENER, touchListener)
@@ -1080,11 +1076,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                                 item.getTitle())
                                         : null)
                         .with(BookmarkBarButtonProperties.TITLE, item.getTitle())
-                        .with(
-                                BookmarkBarButtonProperties.TOOLTIP,
-                                item.isFolder()
-                                        ? item.getTitle()
-                                        : item.getTitle() + "\n" + item.getUrl().getSpec())
+                        .with(BookmarkBarButtonProperties.TOOLTIP, item.getTitle())
                         .with(BookmarkBarButtonProperties.BOOKMARK_ITEM, item)
                         .with(BookmarkBarButtonProperties.TEXT_APPEARANCE_ID, textStyleRes)
                         .with(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID, backgroundResId);
