@@ -54,6 +54,8 @@ enum FeatureName {
   // A generic feature name used exclusively for the initial
   // AnonymousTokenRequest during client attestation.
   FEATURE_NAME_CHROME_CLIENT_ATTESTATION = 702;
+
+  FEATURE_NAME_CHROME_CONTEXTUAL_CUEING = 703;
 }
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiFeatureName)
 
