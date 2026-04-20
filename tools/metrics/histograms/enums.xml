@@ -8803,6 +8803,8 @@ from previous Chrome versions.
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
   <int value="-1753979488" label="SupportForcedSigninPolicy:enabled"/>
+  <int value="-1753314199"
+      label="ZeroSuggestPrefetchingForComposebox:disabled"/>
   <int value="-1752853388"
       label="OmniboxUIExperimentElideToRegistrableDomain:enabled"/>
   <int value="-1752118355" label="DesktopDetailedLanguageSettings:enabled"/>
@@ -13826,6 +13828,7 @@ from previous Chrome versions.
   <int value="-86788587" label="allow-autofill-sync-credential"/>
   <int value="-86626539" label="WebAppInstallation:enabled"/>
   <int value="-86243376" label="LayoutNG:enabled"/>
+  <int value="-85839363" label="ZeroSuggestPrefetchingForComposebox:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
   <int value="-85704140" label="ImageServiceSuggestPoweredImages:disabled"/>
   <int value="-84431403" label="AccessibilityFilterKeys:enabled"/>

@@ -7141,6 +7141,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-zero-suggest-prefetching-for-composebox",
+    "owners": ["niharm@google.com", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 159
+  },
+  {
     "name": "omnibox-zero-suggest-prefetching-on-srp",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 150

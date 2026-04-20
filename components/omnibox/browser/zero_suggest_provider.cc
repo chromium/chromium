@@ -159,7 +159,9 @@ bool ShouldCacheResultTypeInContext(const ResultType result_type,
       // Composebox requests can't have contextual inputs and must not have any
       // tools enabled to use stored response.
       if (omnibox::IsNTPComposebox(page_class)) {
-        return !has_contextual_input &&
+        return base::FeatureList::IsEnabled(
+                   omnibox::kZeroSuggestPrefetchingForComposebox) &&
+               !has_contextual_input &&
                input_state.active_tool ==
                    omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
       }

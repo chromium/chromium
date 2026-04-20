@@ -3408,3 +3408,35 @@ TEST_F(ZeroSuggestProviderTest, SuggestUrlIncludesPageTitle) {
     EXPECT_EQ(url.spec().find("pageTitle="), std::string::npos);
   }
 }
+
+TEST_F(ZeroSuggestProviderTest,
+       TestZeroSuggestDoesNotCacheForComposeboxWhenFlagDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(omnibox::kZeroSuggestPrefetchingForComposebox);
+
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  AutocompleteInput input = ZeroPrefixInputForComposebox();
+  provider_->Start(input, false);
+
+  EXPECT_FALSE(provider_->done());
+  EXPECT_EQ(1, test_loader_factory()->NumPending());
+
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      json_response);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // Ensure nothing is stored in the cache for composebox when the flag is
+  // disabled.
+  PrefService* prefs = client_->GetPrefs();
+  EXPECT_EQ(std::string(),
+            prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox));
+}
