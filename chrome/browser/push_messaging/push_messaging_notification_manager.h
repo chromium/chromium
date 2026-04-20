@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_NOTIFICATION_MANAGER_H_
 
 #include <stdint.h>
+
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/push_messaging/budget_database.h"
 #include "extensions/buildflags/buildflags.h"
@@ -63,13 +66,13 @@ class PushMessagingNotificationManager {
 
   // Enforces the requirements implied for push subscriptions which must display
   // a Web Notification in response to an incoming message.
-  // `requested_user_visible_only` is the userVisibleOnly value a worker based
-  // extension sets on push subscription.
+  // `user_visible_only_bypass` is true if a worker based extension requested
+  // a bypass (i.e. set `userVisibleOnly: false`) on push subscription.
   void EnforceUserVisibleOnlyRequirements(
       const GURL& origin,
       int64_t service_worker_registration_id,
       EnforceRequirementsCallback message_handled_callback,
-      bool requested_user_visible_only);
+      bool user_visible_only_bypass);
 
   // Checks if the userVisibleOnly: true requirement or the notifications
   // permission requirement can be bypassed in certain scenarios.
@@ -77,12 +80,16 @@ class PushMessagingNotificationManager {
   // Currently that is only allowed for extensions with workers that set
   // userVisibleOnly: false on subscription.
   bool ShouldBypassUserVisibleOnlyRequirement(const GURL& origin,
-                                              bool requested_user_visible_only);
+                                              bool user_visible_only_bypass);
   bool ShouldBypassNotificationPermissionRequirement(
       const GURL& origin,
-      bool requested_user_visible_only) {
+      bool user_visible_only_bypass) {
     return ShouldBypassUserVisibleOnlyRequirement(origin,
-                                                  requested_user_visible_only);
+                                                  user_visible_only_bypass);
+  }
+
+  void SetBudgetClockForTesting(std::unique_ptr<base::Clock> clock) {
+    budget_database_.SetClockForTesting(std::move(clock));
   }
 
  private:
@@ -94,6 +101,7 @@ class PushMessagingNotificationManager {
       const GURL& origin,
       int64_t service_worker_registration_id,
       EnforceRequirementsCallback message_handled_callback,
+      bool user_visible_only_bypass,
       bool success,
       int notification_count);
 
@@ -121,7 +129,7 @@ class PushMessagingNotificationManager {
   // extensions that set it to false.
   bool ShouldExtensionsBypassUserVisibleOnlyRequirement(
       const GURL& origin,
-      bool requested_user_visible_only);
+      bool user_visible_only_bypass);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Weak. This manager is owned by a keyed service on this profile.

@@ -6,8 +6,11 @@
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -28,7 +31,7 @@ constexpr char kInstanceIDGuidSuffix[] = "-V2";
 
 constexpr size_t kGuidSuffixLength = sizeof(kInstanceIDGuidSuffix) - 1;
 
-constexpr char kPrefValueSeparator = '#';
+constexpr std::string_view kPrefValueSeparatorStr = "#";
 
 std::string FromTimeToString(base::Time time) {
   DCHECK(!time.is_null());
@@ -64,10 +67,12 @@ bool AppIdentifier::UseInstanceID(const std::string& app_id) {
 AppIdentifier AppIdentifier::Generate(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    const std::optional<base::Time>& expiration_time) {
+    const std::optional<base::Time>& expiration_time,
+    bool user_visible_only) {
   // All new push subscriptions use Instance ID tokens.
   return GenerateInternal(origin, service_worker_registration_id,
-                          true /* use_instance_id */, expiration_time);
+                          /*use_instance_id=*/true, expiration_time,
+                          user_visible_only);
 }
 
 // static
@@ -80,7 +85,8 @@ AppIdentifier AppIdentifier::GenerateInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
     bool use_instance_id,
-    const std::optional<base::Time>& expiration_time) {
+    const std::optional<base::Time>& expiration_time,
+    bool user_visible_only) {
   // Use uppercase GUID for consistency with GUIDs Push has already sent to GCM.
   // Also allows detecting case mangling; see code commented "crbug.com/461867".
   std::string guid =
@@ -90,11 +96,11 @@ AppIdentifier AppIdentifier::GenerateInternal(
                  kInstanceIDGuidSuffix);
   }
   CHECK(!guid.empty());
-  std::string app_id =
-      kAppIdentifierPrefix + origin.spec() + kPrefValueSeparator + guid;
+  std::string app_id = base::StrCat(
+      {kAppIdentifierPrefix, origin.spec(), kPrefValueSeparatorStr, guid});
 
   AppIdentifier app_identifier(app_id, origin, service_worker_registration_id,
-                               expiration_time);
+                               expiration_time, user_visible_only);
   app_identifier.DCheckValid();
   return app_identifier;
 }
@@ -104,11 +110,13 @@ AppIdentifier::AppIdentifier() : service_worker_registration_id_(-1) {}
 AppIdentifier::AppIdentifier(const std::string& app_id,
                              const GURL& origin,
                              int64_t service_worker_registration_id,
-                             const std::optional<base::Time>& expiration_time)
+                             const std::optional<base::Time>& expiration_time,
+                             bool user_visible_only)
     : app_id_(app_id),
       origin_(origin),
       service_worker_registration_id_(service_worker_registration_id),
-      expiration_time_(expiration_time) {}
+      expiration_time_(expiration_time),
+      user_visible_only_(user_visible_only) {}
 
 bool AppIdentifier::IsExpired() const {
   // TODO(crbug.com/444713031): Should DCHECK(!is_null()) as other getters.
@@ -132,7 +140,7 @@ void AppIdentifier::DCheckValid() const {
     DCHECK_EQ(origin_, GURL(app_id_.substr(
                            kPrefixLength,
                            app_id_.size() - kPrefixLength - suffix_length)));
-    DCHECK_EQ(std::string(1, kPrefValueSeparator),
+    DCHECK_EQ(kPrefValueSeparatorStr,
               app_id_.substr(app_id_.size() - suffix_length, 1));
   }
 
@@ -152,14 +160,31 @@ void AppIdentifier::DCheckValid() const {
 }
 
 std::string AppIdentifier::ToPrefValue() const {
-  std::string result = origin().spec() + kPrefValueSeparator +
-                       base::NumberToString(service_worker_registration_id());
-  if (expiration_time()) {
-    result += kPrefValueSeparator + FromTimeToString(*expiration_time());
-  }
-  return result;
+  std::string expiration_str =
+      expiration_time() ? FromTimeToString(*expiration_time()) : "";
+
+  return base::StrCat({origin().spec(), kPrefValueSeparatorStr,
+                       base::NumberToString(service_worker_registration_id()),
+                       kPrefValueSeparatorStr, expiration_str,
+                       kPrefValueSeparatorStr, user_visible_only_ ? "1" : "0"});
 }
 
+// Parses the serialized preference value into an `AppIdentifier`.
+//
+// Supported formats:
+// 1. origin#sw_id
+//    - Result after split: ["origin", "sw_id"]
+// 2. origin#sw_id#expiration
+//    - Result after split: ["origin", "sw_id", "expiration"]
+// 3. origin#sw_id##user_visible_only (no expiration time)
+//    - Result after split: ["origin", "sw_id", "", "user_visible_only"]
+// 4. origin#sw_id#expiration#user_visible_only
+//    - Result after split: ["origin", "sw_id", "expiration",
+//    "user_visible_only"]
+//
+// The expiration value can be empty if not set.
+// `user_visible_only` is represented as "0" or "1". If absent it defaults to
+// `true`.
 // static
 std::optional<AppIdentifier> AppIdentifier::FromPrefValue(
     const std::string& app_id,
@@ -167,11 +192,16 @@ std::optional<AppIdentifier> AppIdentifier::FromPrefValue(
   GURL origin;
   int64_t service_worker_registration_id;
   std::optional<base::Time> expiration_time;
+  bool user_visible_only = true;  // `userVisibleOnly` defaults to true.
+
   std::vector<std::string> parts =
-      base::SplitString(pref_value, std::string(1, kPrefValueSeparator),
+      base::SplitString(pref_value, kPrefValueSeparatorStr,
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  if (parts.size() < 2 || parts.size() > 3) {
+  // All formats must have at least valid origin and valid service worker
+  // registration ID. After these checks, we have at least formats 1, 2, 3,
+  // or 4.
+  if (parts.size() < 2) {
     return std::nullopt;
   }
 
@@ -184,12 +214,25 @@ std::optional<AppIdentifier> AppIdentifier::FromPrefValue(
     return std::nullopt;
   }
 
-  if (parts.size() == 3 && !FromStringToTime(parts[2], expiration_time)) {
-    return std::nullopt;
+  // Now we check for expiration time (formats 2, 3, or 4).
+  bool has_expiration_string = parts.size() >= 3 && !parts[2].empty();
+  if (has_expiration_string) {
+    if (!FromStringToTime(parts[2], expiration_time)) {
+      return std::nullopt;
+    }
+  }
+
+  // Now we check for "user_visible_only" (formats 3 or 4).
+  bool has_user_visible_only = parts.size() >= 4;
+  if (has_user_visible_only) {
+    if (parts[3] != "0" && parts[3] != "1") {
+      return std::nullopt;
+    }
+    user_visible_only = parts[3] == "1";
   }
 
   AppIdentifier result{app_id, origin, service_worker_registration_id,
-                       expiration_time};
+                       expiration_time, user_visible_only};
   result.DCheckValid();
   return result;
 }

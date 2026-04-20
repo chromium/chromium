@@ -113,11 +113,11 @@ void PushMessagingNotificationManager::EnforceUserVisibleOnlyRequirements(
     const GURL& origin,
     int64_t service_worker_registration_id,
     EnforceRequirementsCallback message_handled_callback,
-    bool requested_user_visible_only) {
+    bool user_visible_only_bypass) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (ShouldBypassUserVisibleOnlyRequirement(origin,
-                                             requested_user_visible_only)) {
+                                             user_visible_only_bypass)) {
     std::move(message_handled_callback)
         .Run(/* did_show_generic_notification= */ false);
     LogSilentPushEvent(SilentPushEvent::kNotificationEnforcementSkipped);
@@ -133,13 +133,14 @@ void PushMessagingNotificationManager::EnforceUserVisibleOnlyRequirements(
       base::BindOnce(
           &PushMessagingNotificationManager::DidCountVisibleNotifications,
           weak_factory_.GetWeakPtr(), origin, service_worker_registration_id,
-          std::move(message_handled_callback)));
+          std::move(message_handled_callback), user_visible_only_bypass));
 }
 
 void PushMessagingNotificationManager::DidCountVisibleNotifications(
     const GURL& origin,
     int64_t service_worker_registration_id,
     EnforceRequirementsCallback message_handled_callback,
+    bool user_visible_only_bypass,
     bool success,
     int notification_count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -284,11 +285,11 @@ void PushMessagingNotificationManager::DidWriteNotificationData(
 
 bool PushMessagingNotificationManager::ShouldBypassUserVisibleOnlyRequirement(
     const GURL& origin,
-    bool requested_user_visible_only) {
+    bool user_visible_only_bypass) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (origin.SchemeIs(extensions::kExtensionScheme)) {
     return ShouldExtensionsBypassUserVisibleOnlyRequirement(
-        origin, requested_user_visible_only);
+        origin, user_visible_only_bypass);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -306,10 +307,10 @@ void PushMessagingNotificationManager::LogSilentPushEvent(
 bool PushMessagingNotificationManager::
     ShouldExtensionsBypassUserVisibleOnlyRequirement(
         const GURL& origin,
-        bool requested_user_visible_only) {
+        bool user_visible_only_bypass) {
   // Worker based extensions are exempt from the user visible requirement only
   // if they request it.
-  if (!requested_user_visible_only) {
+  if (!user_visible_only_bypass) {
     return false;
   }
   const extensions::ExtensionSet& extensions =

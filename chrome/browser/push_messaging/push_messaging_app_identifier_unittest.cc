@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/push_messaging/app_identifier_test_support.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -271,4 +273,46 @@ TEST_F(PushMessagingAppIdentifierTest, PersistWithExpirationTime) {
                                                 different_et_.app_id());
     EXPECT_TRUE(found_by_different_et_app_id.is_null());
   }
+}
+
+// Tests that `userVisibleOnly: false` setting is persisted to prefs.
+TEST_F(PushMessagingAppIdentifierTest, PersistWithUserVisibleOnly) {
+  const push_messaging::AppIdentifier silent_identifier =
+      push_messaging::AppIdentifier::Generate(
+          GURL("https://www.example.com/"),
+          /*service_worker_registration_id=*/1,
+          /*expiration_time=*/std::nullopt,
+          /*user_visible_only=*/false);
+
+  ASSERT_FALSE(silent_identifier.user_visible_only());
+
+  PushMessagingAppIdentifier::PersistToPrefs(silent_identifier, profile());
+
+  push_messaging::AppIdentifier found = PushMessagingAppIdentifier::FindByAppId(
+      profile(), silent_identifier.app_id());
+
+  EXPECT_FALSE(found.is_null());
+  EXPECT_FALSE(found.user_visible_only());
+  ExpectAppIdentifiersEqual(silent_identifier, found);
+}
+
+// Tests that pref strings without `user_visible_only` default to
+// `user_visible_only` true.
+TEST_F(PushMessagingAppIdentifierTest, PrefStringWithoutUserVisibleOnly) {
+  const std::string app_id = "wp:01234567-89AB-CDEF-0123-456789ABCDEF";
+  const std::string pref_value = "https://www.example.com#42";  // origin#sw_id
+
+  {
+    ScopedDictPrefUpdate update(profile()->GetPrefs(),
+                                prefs::kPushMessagingAppIdentifierMap);
+    update.Get().Set(app_id, pref_value);
+  }
+
+  push_messaging::AppIdentifier found =
+      PushMessagingAppIdentifier::FindByAppId(profile(), app_id);
+
+  EXPECT_FALSE(found.is_null());
+  EXPECT_EQ(GURL("https://www.example.com"), found.origin());
+  EXPECT_EQ(42, found.service_worker_registration_id());
+  EXPECT_TRUE(found.user_visible_only());
 }

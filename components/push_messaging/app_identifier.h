@@ -44,7 +44,8 @@ class AppIdentifier final {
   static AppIdentifier Generate(
       const GURL& origin,
       int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
+      const std::optional<base::Time>& expiration_time = std::nullopt,
+      bool user_visible_only = true);
 
   // Creates an invalid AppIdentifier which will return is_null() and fail on
   // DCheckValid(), accessing any fields triggers DCheck failure.
@@ -84,6 +85,11 @@ class AppIdentifier final {
     return expiration_time_;
   }
 
+  bool user_visible_only() const {
+    DCHECK(!is_null());
+    return user_visible_only_;
+  }
+
   // Validates that all the fields contain valid values.
   void DCheckValid() const;
 
@@ -107,22 +113,24 @@ class AppIdentifier final {
       const GURL& origin,
       int64_t service_worker_registration_id,
       bool use_instance_id,
-      const std::optional<base::Time>& expiration_time);
+      const std::optional<base::Time>& expiration_time,
+      bool user_visible_only);
 
   // Constructs an invalid app identifier.
   AppIdentifier();
 
   // Constructs a valid app identifier.
-  AppIdentifier(
-      const std::string& app_id,
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
+  AppIdentifier(const std::string& app_id,
+                const GURL& origin,
+                int64_t service_worker_registration_id,
+                const std::optional<base::Time>& expiration_time = std::nullopt,
+                bool user_visible_only = true);
 
   std::string app_id_;
   GURL origin_;
   int64_t service_worker_registration_id_;
   std::optional<base::Time> expiration_time_;
+  bool user_visible_only_;
 };
 
 }  // namespace push_messaging

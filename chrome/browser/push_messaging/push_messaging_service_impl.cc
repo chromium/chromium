@@ -281,6 +281,13 @@ PushMessagingServiceImpl::PushMessagingServiceImpl(
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &PushMessagingServiceImpl::OnAppTerminating, base::Unretained(this)));
   refresh_observation_.Observe(&refresher_);
+
+  for (const auto& identifier : PushMessagingAppIdentifier::GetAll(profile_)) {
+    if (!identifier.user_visible_only()) {
+      origins_requesting_user_visible_requirement_bypass.insert(
+          identifier.origin());
+    }
+  }
 }
 
 PushMessagingServiceImpl::~PushMessagingServiceImpl() = default;
@@ -863,7 +870,8 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
   // generate a new one. This will create a new subscription on the server.
   if (app_identifier.is_null()) {
     app_identifier = push_messaging::AppIdentifier::Generate(
-        requesting_origin, service_worker_registration_id);
+        requesting_origin, service_worker_registration_id,
+        /*expiration_time=*/std::nullopt, options->user_visible_only);
   }
 
   if (push_subscription_count_ + pending_push_subscription_count_ >=

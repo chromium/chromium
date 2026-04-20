@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -68,16 +69,19 @@ AppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
     Profile* profile,
     const GURL& origin,
     int64_t service_worker_registration_id) {
-  const std::string base_pref_value =
-      AppIdentifier::Generate(origin, service_worker_registration_id)
-          .ToPrefValue();
-
   const base::DictValue& map =
       profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
+  std::string search_prefix =
+      base::StrCat({origin.spec(), "#",
+                    base::NumberToString(service_worker_registration_id)});
+  std::string search_prefix_with_sep = base::StrCat({search_prefix, "#"});
+
   for (auto entry : map) {
-    if (entry.second.is_string() &&
-        base::StartsWith(entry.second.GetString(), base_pref_value,
-                         base::CompareCase::SENSITIVE)) {
+    if (!entry.second.is_string()) {
+      continue;
+    }
+    const std::string& val = entry.second.GetString();
+    if (val == search_prefix || base::StartsWith(val, search_prefix_with_sep)) {
       return FindByAppId(profile, entry.first);
     }
   }
