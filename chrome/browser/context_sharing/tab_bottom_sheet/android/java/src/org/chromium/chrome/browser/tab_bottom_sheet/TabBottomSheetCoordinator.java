@@ -204,7 +204,10 @@ public class TabBottomSheetCoordinator {
         mContentView = mCoBrowseViews.getView();
         mSheetContent =
                 new TabBottomSheetContent(
-                        mContentView, FULL_HEIGHT_RATIO, mCoBrowseViews.getBackgroundColor());
+                        mContentView,
+                        FULL_HEIGHT_RATIO,
+                        mCoBrowseViews.getBackgroundColor(),
+                        mCoBrowseViews.getClientType());
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);

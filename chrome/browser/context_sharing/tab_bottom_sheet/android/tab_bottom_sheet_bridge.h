@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
 
 class TabAndroid;
 
@@ -48,7 +49,7 @@ class TabBottomSheetBridge {
   // Creates a bridge to the Java `TabBottomSheetNativeInterface`.
   explicit TabBottomSheetBridge(Observer* observer,
                                 tabs::TabInterface* tab,
-                                bool show_fusebox);
+                                TabBottomSheetClientType client_type);
   ~TabBottomSheetBridge();
 
   // Sets or updates the WebContents displayed in the bottom sheet.
@@ -91,7 +92,7 @@ class TabBottomSheetBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
   base::android::ScopedJavaGlobalRef<jobject> co_browse_views_;
   const raw_ref<tabs::TabInterface> tab_;
-  bool show_fusebox_;
+  TabBottomSheetClientType client_type_;
 };
 
 }  // namespace context_sharing

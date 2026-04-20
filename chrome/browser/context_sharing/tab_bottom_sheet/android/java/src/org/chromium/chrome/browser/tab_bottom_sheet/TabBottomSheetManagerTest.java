@@ -96,7 +96,13 @@ public class TabBottomSheetManagerTest {
                             (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
                     mBottomSheetController = tabbedRootUiCoordinator.getBottomSheetController();
                     var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
-                    mCoBrowseViews = new CoBrowseViews(mActivity, null, null, Color.WHITE);
+                    mCoBrowseViews =
+                            new CoBrowseViews(
+                                    mActivity,
+                                    TabBottomSheetClientType.UNKNOWN,
+                                    null,
+                                    null,
+                                    Color.WHITE);
                     mManager = tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
                 });
     }
@@ -138,7 +144,9 @@ public class TabBottomSheetManagerTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 CoBrowseViewFactory.buildCoBrowseViews(
-                                        mWindowAndroid, webContents, /* showFusebox= */ false));
+                                        mWindowAndroid,
+                                        webContents,
+                                        TabBottomSheetClientType.UNKNOWN));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -182,7 +190,9 @@ public class TabBottomSheetManagerTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 CoBrowseViewFactory.buildCoBrowseViews(
-                                        mWindowAndroid, webContents, /* showFusebox= */ false));
+                                        mWindowAndroid,
+                                        webContents,
+                                        TabBottomSheetClientType.UNKNOWN));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

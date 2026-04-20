@@ -11,6 +11,7 @@ source_set("android") {
     "tab_bottom_sheet_bridge.h",
   ]
   deps = [
+    ":client_type_java_enum",
     ":jni_headers",
     "//base",
     "//chrome/browser/android:tabs_public",
@@ -25,6 +26,10 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViews.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetNativeInterface.java",
   ]
+}
+
+java_cpp_enum("client_type_java_enum") {
+  sources = [ "tab_bottom_sheet_client_type.h" ]
 }
 
 android_resources("java_resources") {
@@ -44,7 +49,10 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":client_type_java_enum",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewFactory.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViews.java",

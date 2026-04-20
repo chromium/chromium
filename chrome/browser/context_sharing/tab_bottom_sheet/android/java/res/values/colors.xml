@@ -5,5 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <color name="tab_bottom_sheet_bg">@android:color/white</color>
+    <color name="tab_bottom_sheet_glic_bg">@android:color/white</color>
+    <color name="tab_bottom_sheet_base_bg">@android:color/white</color>
 </resources>

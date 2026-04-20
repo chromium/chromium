@@ -26,7 +26,7 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
                           base::Unretained(this)));
 
   bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
-      this, tab, /*show_fusebox=*/false);
+      this, tab, context_sharing::TabBottomSheetClientType::kGlic);
 }
 
 GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() = default;

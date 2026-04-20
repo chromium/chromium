@@ -35,21 +35,25 @@ public class CoBrowseViews {
     private final @Nullable ContextualTasksFusebox mFusebox;
     private final @ColorInt int mBackgroundColor;
     private final View mView;
+    private final @TabBottomSheetClientType int mClientType;
     private @Nullable View mPeekView;
 
     /**
      * Constructor for CoBrowseViews.
      *
      * @param context The context for the view.
+     * @param clientType The client using the bottom sheet.
      * @param webUi The web UI for the view.
      * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
      */
     public CoBrowseViews(
             Context context,
+            @TabBottomSheetClientType int clientType,
             @Nullable TabBottomSheetWebUi webUi,
             @Nullable ContextualTasksFusebox fusebox,
             @ColorInt int backgroundColor) {
+        mClientType = clientType;
         mWebUi = webUi;
         mFusebox = fusebox;
         mBackgroundColor = backgroundColor;
@@ -180,6 +184,11 @@ public class CoBrowseViews {
             return mFusebox.getFuseboxView().getHeight();
         }
         return 0;
+    }
+
+    @TabBottomSheetClientType
+    int getClientType() {
+        return mClientType;
     }
 
     private View buildView(Context context) {
