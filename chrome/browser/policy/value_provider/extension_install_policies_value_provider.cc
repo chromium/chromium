@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -119,11 +120,13 @@ std::string SourceToString(policy::PolicySource source) {
 struct PolicyEntryData {
   PolicyEntryData(const std::string& version,
                   const policy::PolicyMap::Entry* entry)
-      : entry_(raw_ref<const policy::PolicyMap::Entry>::from_ptr(entry)) {
-    const base::Value* value =
-        entry_->value(base::Value::Type::DICT)->GetDict().Find(version);
+      : entry_(raw_ref<const policy::PolicyMap::Entry>::from_ptr(entry)),
+        value_(raw_ref<const base::DictValue>::from_ptr(
+            entry_->value(base::Value::Type::DICT)
+                ->GetDict()
+                .FindDict(version))) {
     action_ = static_cast<em::ExtensionInstallPolicy::Action>(
-        value->GetDict().FindInt("action").value_or(
+        value_->FindInt("action").value_or(
             em::ExtensionInstallPolicy::ACTION_ALLOW));
   }
 
@@ -143,12 +146,11 @@ struct PolicyEntryData {
   // formatted for the policy UI.
   base::DictValue ToDict() const {
     base::DictValue dict;
-    if (value_) {
+    {
       base::DictValue val_dict;
       val_dict.Set("action", ActionToString(action_));
-      val_dict.Set("reasons",
-                   ReasonsToListValue(value_->GetDict().FindList("reasons")));
-      if (const auto* risk_levels = value_->GetDict().FindDict("risk_levels")) {
+      val_dict.Set("reasons", ReasonsToListValue(value_->FindList("reasons")));
+      if (const auto* risk_levels = value_->FindDict("risk_levels")) {
         val_dict.Set("risk_levels", RiskLevelsToValue(risk_levels));
       }
       dict.Set("value", std::move(val_dict));
@@ -159,11 +161,11 @@ struct PolicyEntryData {
     return dict;
   }
 
-  const std::optional<base::Value>& value() const { return value_; }
+  const base::DictValue& value() const { return value_.get(); }
 
  private:
   raw_ref<const policy::PolicyMap::Entry> entry_;
-  std::optional<base::Value> value_;
+  raw_ref<const base::DictValue> value_;
   em::ExtensionInstallPolicy::Action action_;
 };
 
