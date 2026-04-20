@@ -113,36 +113,23 @@ int SandboxedFile::Read(void* buffer, int size, sqlite3_int64 offset) {
 }
 
 int SandboxedFile::Write(const void* buffer, int size, sqlite3_int64 offset) {
-  // Make a safe span from the pair <buffer, size>. The buffer and the
-  // size are received from sqlite.
   CHECK(buffer);
-  CHECK_GE(size, 0);
   CHECK_GE(offset, 0);
-  const size_t checked_size = base::checked_cast<size_t>(size);
-  // SAFETY: `buffer` always points to at least `size` valid bytes.
-  auto data = UNSAFE_BUFFERS(
-      base::span(static_cast<const uint8_t*>(buffer), checked_size));
-
   CHECK(IsValid());
-  std::optional<size_t> bytes_written = opened_file_.Write(offset, data);
-  if (!bytes_written.has_value()) {
-    return SQLITE_IOERR_WRITE;
-  }
-  CHECK_LE(bytes_written.value(), checked_size);
 
-  // The bytes were successfully written to disk.
-  if (bytes_written.value() == checked_size) {
+  if (opened_file_.WriteAndCheck(
+          offset,
+          // SAFETY: `buffer` always points to at least `size` valid bytes.
+          UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(buffer),
+                                    base::checked_cast<size_t>(size))))) {
     return SQLITE_OK;
   }
 
-  // Detect the case where there is no space on the disk.
-  base::File::Error last_error = base::File::GetLastFileError();
-  if (last_error == base::File::Error::FILE_ERROR_NO_SPACE) {
-    return SQLITE_FULL;
-  }
-
-  // A generic write error.
-  return SQLITE_IOERR_WRITE;
+  // Distinguish disk full from general I/O errors.
+  return base::File::GetLastFileError() ==
+                 base::File::Error::FILE_ERROR_NO_SPACE
+             ? SQLITE_FULL
+             : SQLITE_IOERR_WRITE;
 }
 
 int SandboxedFile::Truncate(sqlite3_int64 size) {
