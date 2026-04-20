@@ -31,6 +31,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/pref_names.h"
@@ -409,6 +410,16 @@ void ExtensionInstallPolicyServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void ExtensionInstallPolicyServiceImpl::OnPolicyServiceInitialized(
+    PolicyDomain domain) {
+  NotifyExtensionInstallPolicyUpdated();
+}
+
+void ExtensionInstallPolicyServiceImpl::OnFirstPoliciesLoaded(
+    PolicyDomain domain) {
+  NotifyExtensionInstallPolicyUpdated();
+}
+
 void ExtensionInstallPolicyServiceImpl::OnPolicyUpdated(
     const PolicyNamespace& ns,
     const PolicyMap& previous,
@@ -573,9 +584,21 @@ bool ExtensionInstallPolicyServiceImpl::MustRemainDisabled(
 #else
   // TODO(crbug.com/477545526): Refresh policies when new extensions are
   // installed.
+  std::optional<bool> is_extension_allowed =
+      IsExtensionAllowed({extension->id(), extension->VersionString()});
+  auto* extension_prefs = extensions::ExtensionPrefs::Get(&profile_.get());
+
+  bool was_disabled_by_policy = extension_prefs->HasDisableReason(
+      extension->id(), extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY)
+      || extension_prefs->HasDisableReason(
+          extension->id(),
+          extensions::disable_reason::DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK);
+
+  // If the extension was disabled by policy, it must remain disabled until the
+  // policy value is known.
   bool must_remain_disabled =
-      !IsExtensionAllowed({extension->id(), extension->VersionString()})
-           .value_or(true);
+      (!is_extension_allowed.has_value() && was_disabled_by_policy) ||
+      !is_extension_allowed.value_or(true);
   base::UmaHistogramBoolean(kExtensionMustRemainDisabledResult,
                             must_remain_disabled);
   return must_remain_disabled;
