@@ -9158,13 +9158,6 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableADPFAsyncAndScrollNoRendererMain",
-                    "enable_features": [
-                        "EnableADPFAsyncSetThreads",
-                        "EnableADPFScrollNoRendererMain"
-                    ]
-                },
-                {
                     "name": "EnableADPFAsyncSetThreadsOnly",
                     "enable_features": [
                         "EnableADPFAsyncSetThreads"
