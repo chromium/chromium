@@ -73,8 +73,6 @@ void TabSearchToolbarButtonController::UpdateBubbleHost(
         static_cast<int>(actions::ActionPinnableState::kPinnable));
     tab_search_bubble_host_observation_.Observe(new_tab_search_bubble_host);
   } else {
-    action_item->SetImage(
-        ui::ImageModel::FromVectorIcon(kTabSearchTabStripIcon));
     action_item->SetProperty(
         actions::kActionItemPinnableKey,
         static_cast<int>(actions::ActionPinnableState::kNotPinnable));

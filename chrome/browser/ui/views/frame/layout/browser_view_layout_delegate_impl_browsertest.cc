@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                  bounds.set_x(0);
                  bounds.set_width(browser_view->width());
                }),
-      Screenshot(kBrowserViewElementId, "tabstrip_region", "7763146",
+      Screenshot(kBrowserViewElementId, "tabstrip_region", "7771971",
                  std::ref(bounds)));
 }
 
@@ -202,6 +202,6 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                  bounds.set_x(0);
                  bounds.set_width(browser_view->width());
                }),
-      Screenshot(kBrowserViewElementId, "tabstrip_region", "7763146",
+      Screenshot(kBrowserViewElementId, "tabstrip_region", "7771971",
                  std::ref(bounds))));
 }
