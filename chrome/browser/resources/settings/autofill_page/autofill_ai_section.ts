@@ -213,9 +213,12 @@ export class SettingsAutofillAiSectionElement extends
       return;
     }
 
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
-    if (addressAutofillEnabled.enforcement ===
+    // TODO(crbug.com/490338056): replace undefined check with pref
+    // initialization check
+    const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
+
+    if (!!addressAutofillEnabled &&
+        addressAutofillEnabled.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
         !addressAutofillEnabled.value &&
         !this.autofillAddOtherDatatypesPrefIsEnabled_) {
@@ -250,7 +253,8 @@ export class SettingsAutofillAiSectionElement extends
     } else {
       this.set(
           'optedIn_.value',
-          !this.ineligibleUser && optedIn && addressAutofillEnabled.value);
+          !this.ineligibleUser && optedIn && !!addressAutofillEnabled &&
+              addressAutofillEnabled.value);
     }
   }
 
@@ -321,19 +325,21 @@ export class SettingsAutofillAiSectionElement extends
       return false;
     }
 
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
+    // TODO(crbug.com/490338056): replace undefined check with pref
+    // initialization check
+    const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
 
     // We show the extension control only if the extension forces false value
-    return !!addressAutofillEnabled.extensionId &&
+    return !!addressAutofillEnabled && !!addressAutofillEnabled.extensionId &&
         !addressAutofillEnabled.value;
   }
 
   private optInToggleDisabled_(): boolean {
     if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
-      const addressAutofillEnabled =
-          this.getPref<boolean>('autofill.profile_enabled');
-      const addressAutofillEnforcedFalse =
+      // TODO(crbug.com/490338056): replace undefined check with pref
+      // initialization check
+      const addressAutofillEnabled = this.get('prefs.autofill.profile_enabled');
+      const addressAutofillEnforcedFalse = !!addressAutofillEnabled &&
           addressAutofillEnabled.enforcement ===
               chrome.settingsPrivate.Enforcement.ENFORCED &&
           !addressAutofillEnabled.value;
