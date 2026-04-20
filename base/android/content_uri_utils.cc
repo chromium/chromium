@@ -45,13 +45,22 @@ std::optional<std::string> TranslateOpenFlagsToJavaMode(uint32_t open_flags) {
     case File::FLAG_OPEN_ALWAYS | File::FLAG_READ:
     case File::FLAG_CREATE | File::FLAG_READ:
       return "r";
+    case File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE:
     case File::FLAG_OPEN_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
+    case File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE:
       return "rw";
+    case File::FLAG_OPEN | File::FLAG_APPEND:
+    case File::FLAG_OPEN | File::FLAG_APPEND | File::FLAG_WRITE:
     case File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND:
+    case File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE:
       return "wa";
     case File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE:
+    case File::FLAG_OPEN_TRUNCATED | File::FLAG_READ | File::FLAG_WRITE:
       return "rwt";
     case File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE:
+    case File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND:
+    case File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE:
+    case File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE:
       return "wt";
     default:
       return std::nullopt;

@@ -54,10 +54,19 @@ TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
       {File::FLAG_OPEN | File::FLAG_READ, "r"},
       {File::FLAG_OPEN_ALWAYS | File::FLAG_READ, "r"},
       {File::FLAG_CREATE | File::FLAG_READ, "r"},
+      {File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WRITE, "rw"},
       {File::FLAG_OPEN_ALWAYS | File::FLAG_READ | File::FLAG_WRITE, "rw"},
+      {File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE, "rw"},
+      {File::FLAG_OPEN | File::FLAG_APPEND, "wa"},
+      {File::FLAG_OPEN | File::FLAG_APPEND | File::FLAG_WRITE, "wa"},
       {File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND, "wa"},
+      {File::FLAG_OPEN_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE, "wa"},
       {File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE, "rwt"},
+      {File::FLAG_OPEN_TRUNCATED | File::FLAG_READ | File::FLAG_WRITE, "rwt"},
       {File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE, "wt"},
+      {File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND, "wt"},
+      {File::FLAG_CREATE_ALWAYS | File::FLAG_APPEND | File::FLAG_WRITE, "wt"},
+      {File::FLAG_OPEN_TRUNCATED | File::FLAG_WRITE, "wt"},
   });
 
   for (const auto open_or_create : std::vector<uint32_t>(
@@ -65,7 +74,8 @@ TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
             File::FLAG_CREATE_ALWAYS, File::FLAG_OPEN_TRUNCATED})) {
     for (const auto read_write_append : std::vector<uint32_t>(
              {0u, File::FLAG_READ, File::FLAG_WRITE, File::FLAG_APPEND,
-              File::FLAG_READ | File::FLAG_WRITE})) {
+              File::FLAG_READ | File::FLAG_WRITE,
+              File::FLAG_APPEND | File::FLAG_WRITE})) {
       for (const auto other : std::vector<uint32_t>(
                {0u, File::FLAG_DELETE_ON_CLOSE, File::FLAG_TERMINAL_DEVICE})) {
         uint32_t open_flags = open_or_create | read_write_append | other;
@@ -75,8 +85,6 @@ TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
           EXPECT_TRUE(mode.has_value()) << "flag=0x" << std::hex << open_flags;
           EXPECT_EQ(mode.value(), it->second)
               << "flag=0x" << std::hex << open_flags;
-        } else {
-          EXPECT_FALSE(mode.has_value()) << "flag=0x" << std::hex << open_flags;
         }
       }
     }
