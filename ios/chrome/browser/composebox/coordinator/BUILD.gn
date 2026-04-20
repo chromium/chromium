@@ -29,6 +29,7 @@ source_set("coordinator") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/debugger",
+    "//ios/chrome/browser/composebox/menu/coordinator",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
