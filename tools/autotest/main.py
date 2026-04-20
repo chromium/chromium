@@ -45,6 +45,7 @@ import utils.telemetry as telemetry
 
 from utils.command_error import AutotestError, CommandError
 from utils.options import AutotestConfig, Formatter, autotest_options
+from utils.remote import display_utr_help, run_remote_test
 
 sys.path.append(str(const.SRC_DIR / 'build' / 'android'))
 from pylib import constants
@@ -81,6 +82,11 @@ def main(ctx, **kwargs) -> int:
   kwargs['extras'] = extras
 
   config: AutotestConfig = AutotestConfig(**kwargs)
+
+  if config.builder and not (config.run_changed or config.run_related
+                             or config.files or config.name or config.target):
+    display_utr_help()
+    return 0
 
   if config.out_dir:
     constants.SetOutputDirectory(config.out_dir)
@@ -211,6 +217,9 @@ def main(ctx, **kwargs) -> int:
 
   if not build_ok:
     return 1
+
+  if config.builder:
+    return run_remote_test(config, out_dir, targets)
 
   return test_executor.RunTestTargets(out_dir,
                                       targets,
