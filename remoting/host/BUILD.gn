@@ -351,6 +351,20 @@ source_set("mojo_caller_security_checker") {
 }
 
 if (is_posix) {
+  source_set("pam_authorization") {
+    sources = [
+      "pam_authorization_factory_posix.cc",
+      "pam_authorization_factory_posix.h",
+    ]
+    deps = [
+      ":common_headers",
+      "//base",
+      "//remoting/base",
+      "//remoting/host/base",
+    ]
+    public_deps = [ "//remoting/protocol" ]
+  }
+
   source_set("signal_handler") {
     sources = [
       "posix/signal_handler.cc",
@@ -1012,6 +1026,11 @@ source_set("unit_tests") {
     data_deps = [ "//remoting/test:capability_test_stub" ]
   }
 
+  if (is_posix) {
+    sources += [ "pam_authorization_factory_posix_unittest.cc" ]
+    deps += [ ":pam_authorization" ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -1224,11 +1243,10 @@ if (enable_me2me_host) {
     }
 
     if (is_posix) {
-      sources += [
-        "pam_authorization_factory_posix.cc",
-        "pam_authorization_factory_posix.h",
+      deps += [
+        ":pam_authorization",
+        ":signal_handler",
       ]
-      deps += [ ":signal_handler" ]
     }
 
     if (!is_ios) {

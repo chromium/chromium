@@ -47,6 +47,8 @@ class PamAuthorizer : public protocol::Authenticator {
 
   std::unique_ptr<protocol::Authenticator> underlying_;
   enum { NOT_CHECKED, ALLOWED, DISALLOWED } local_login_status_;
+
+  base::WeakPtrFactory<PamAuthorizer> weak_factory_{this};
 };
 
 }  // namespace
@@ -101,11 +103,12 @@ void PamAuthorizer::ProcessMessage(const JingleAuthentication& message,
                                    base::OnceClosure resume_callback) {
   // Always delegate to the underlying authenticator and let it manage its own
   // state machine.
-  // |underlying_| is owned, so Unretained() is safe here.
+  // Note: We use a WeakPtr here because the underlying authenticator may
+  // synchronously destroy this object.
   underlying_->ProcessMessage(
       message,
-      base::BindOnce(&PamAuthorizer::OnMessageProcessed, base::Unretained(this),
-                     std::move(resume_callback)));
+      base::BindOnce(&PamAuthorizer::OnMessageProcessed,
+                     weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
 void PamAuthorizer::OnMessageProcessed(base::OnceClosure resume_callback) {
@@ -114,9 +117,13 @@ void PamAuthorizer::OnMessageProcessed(base::OnceClosure resume_callback) {
 }
 
 JingleAuthentication PamAuthorizer::GetNextMessage() {
+  base::WeakPtr<PamAuthorizer> self = weak_factory_.GetWeakPtr();
   JingleAuthentication result = underlying_->GetNextMessage();
-  // PAM check may be performed once the state has transitioned to ACCEPTED.
-  MaybeCheckLocalLogin();
+  // Verify this object is still valid after calling GetNextMessage().
+  if (self) {
+    // PAM check may be performed once the state has transitioned to ACCEPTED.
+    MaybeCheckLocalLogin();
+  }
   return result;
 }
 
