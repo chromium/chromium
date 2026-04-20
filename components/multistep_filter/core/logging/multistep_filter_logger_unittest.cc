@@ -20,6 +20,9 @@ class TestLogRouter : public MultistepFilterLogRouter {
   TestLogRouter() = default;
   ~TestLogRouter() override = default;
 
+  // MultistepFilterLogRouter:
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
   bool IsLoggingEnabled() const override { return is_logging_enabled_; }
   void SetIsLoggingEnabled(bool enabled) { is_logging_enabled_ = enabled; }
 
