@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -26,15 +27,16 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/base_window.h"
 namespace glic {
 
 namespace {
 constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
-  BrowserWindowCreateParams params(*profile, /*from_user_gesture=*/false);
-  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* browser = chrome::OpenEmptyWindow(profile);
   if (!browser) {
     return nullptr;
   }
@@ -45,6 +47,7 @@ static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
   }
   return tab;
 }
+#endif
 
 // static
 GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
@@ -60,19 +63,23 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
       }
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     tabs::TabInterface* tab = CreateBrowserAndGetActiveTab(profile);
     if (tab) {
       return {tab, /*is_new=*/true};
     }
+#endif
 
     return {nullptr, /*is_new=*/false};
   } else if (const auto* new_tab_opt = std::get_if<NewTab>(&target.surface)) {
     BrowserWindowInterface* browser = new_tab_opt->window;
     if (!browser) {
+#if !BUILDFLAG(IS_ANDROID)
       tabs::TabInterface* tab = CreateBrowserAndGetActiveTab(profile);
       if (tab) {
         return {tab, /*is_new=*/true};
       }
+#endif
       return {nullptr, /*is_new=*/false};
     }
     tabs::TabInterface* tab = TabListInterface::From(browser)->OpenTab(
