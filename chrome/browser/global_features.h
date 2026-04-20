@@ -205,6 +205,8 @@ class GlobalFeatures {
   // Features will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
 
+  std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
+
   std::unique_ptr<system_permission_settings::PlatformHandle>
       system_permissions_platform_handle_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -241,8 +243,6 @@ class GlobalFeatures {
 
   std::unique_ptr<local_network_access::IPAddressSpaceOverridesPrefsObserver>
       ip_address_space_overrides_prefs_observer_;
-
-  std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<StartupLaunchManager> startup_launch_manager_;
