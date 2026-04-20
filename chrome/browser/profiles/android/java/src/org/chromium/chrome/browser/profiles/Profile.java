@@ -81,6 +81,14 @@ public class Profile implements BrowserContextHandle {
         return ProfileJni.get().getOriginalProfile(mNativeProfile);
     }
 
+    /**
+     * Returns the creation time of the profile in milliseconds since Unix epoch. Directly
+     * comparable with the value returned from `System.currentTimeMillis()`
+     */
+    public long getCreationTime() {
+        return ProfileJni.get().getCreationTime(mNativeProfile);
+    }
+
     /** Return whether this Profile represents the initially created "Default" Profile. */
     public boolean isInitialProfile() {
         return ProfileJni.get().isInitialProfile(mNativeProfile);
@@ -260,6 +268,8 @@ public class Profile implements BrowserContextHandle {
         @Nullable Profile fromWebContents(@Nullable WebContents webContents);
 
         Profile getOriginalProfile(long ptr);
+
+        long getCreationTime(long ptr);
 
         boolean isInitialProfile(long ptr);
 

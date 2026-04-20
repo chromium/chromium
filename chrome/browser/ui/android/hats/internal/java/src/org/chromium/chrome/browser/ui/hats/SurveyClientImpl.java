@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.ui.hats.SurveyConfig.RequestedBrowserType;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
@@ -71,7 +70,7 @@ class SurveyClientImpl implements SurveyClient {
         mUiDelegate = uiDelegate;
         mController = controller;
         mCrashUploadPermissionSupplier = crashUploadPermissionSupplier;
-        mThrottler = new SurveyThrottler(mConfig);
+        mThrottler = new SurveyThrottler(mConfig, profile.getCreationTime());
         mAggregatedSurveyPsd = new HashMap<>();
         mProfile = profile;
         mTabModelSelector = tabModelSelector;

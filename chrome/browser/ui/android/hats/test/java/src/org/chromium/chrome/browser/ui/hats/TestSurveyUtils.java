@@ -45,7 +45,8 @@ public class TestSurveyUtils {
                         psdBitFields,
                         psdStringFields,
                         null,
-                        SurveyConfig.RequestedBrowserType.REGULAR));
+                        RequestedBrowserType.REGULAR,
+                        ProfileAgeRequirement.ANY_AGE));
     }
 
     /** Sets the flag that determines if we should forcefully use the testing configuration. */

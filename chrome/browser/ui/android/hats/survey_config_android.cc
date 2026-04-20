@@ -56,10 +56,14 @@ void SurveyConfigHolder::InitJavaHolder(Profile* profile) {
                                             ? cooldown_period_override->InDays()
                                             : 0;
     int32_t requested_browser_type = survey_config.requested_browser_type;
+    int32_t profile_age_requirement =
+        static_cast<int32_t>(survey_config.profile_age_requirement);
+
     Java_SurveyConfig_addActiveSurveyConfigToHolder(
         env, jobj_, jtrigger, jtrigger_id, jprobability, juser_prompted,
         jpsd_bits_data_fields, jpsd_string_data_fields,
-        jcooldown_period_override, requested_browser_type);
+        jcooldown_period_override, requested_browser_type,
+        profile_age_requirement);
   }
 }
 

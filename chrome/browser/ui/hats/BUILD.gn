@@ -4,6 +4,10 @@
 
 import("//pdf/features.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("hats") {
@@ -120,6 +124,12 @@ source_set("impl") {
     ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (is_android) {
+  java_cpp_enum("hats_enums") {
+    sources = [ "survey_config.h" ]
+  }
 }
 
 if (!is_android) {

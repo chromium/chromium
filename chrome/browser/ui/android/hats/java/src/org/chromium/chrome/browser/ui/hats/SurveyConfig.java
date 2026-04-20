@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,8 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,16 +28,6 @@ import java.util.Map;
 @JNINamespace("hats")
 @NullMarked
 public class SurveyConfig {
-
-    // LINT.IfChange(RequestedBrowserType)
-    @IntDef({RequestedBrowserType.REGULAR, RequestedBrowserType.INCOGNITO})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface RequestedBrowserType {
-        int REGULAR = 0;
-        int INCOGNITO = 1;
-    }
-
-    // LINT.ThenChange(//chrome/browser/ui/hats/survey_config.h:RequestedBrowserType)
 
     private static boolean sForceUsingTestingConfig;
     private static @Nullable SurveyConfig sConfigForTesting;
@@ -81,6 +68,9 @@ public class SurveyConfig {
     /** Requested browser type decides where the survey can be shown. */
     final @RequestedBrowserType int mRequestedBrowserType;
 
+    /** Profile age requirement. */
+    final @ProfileAgeRequirement int mProfileAgeRequirement;
+
     /** Not generated from java. */
     @VisibleForTesting
     SurveyConfig(
@@ -91,7 +81,8 @@ public class SurveyConfig {
             String[] psdBitDataFields,
             String[] psdStringDataFields,
             @Nullable Integer cooldownPeriodOverride,
-            @RequestedBrowserType int requestedBrowserType) {
+            @RequestedBrowserType int requestedBrowserType,
+            @ProfileAgeRequirement int profileAgeRequirement) {
         mTrigger = trigger;
         mTriggerId = triggerId;
         mProbability = probability;
@@ -100,6 +91,7 @@ public class SurveyConfig {
         mPsdStringDataFields = psdStringDataFields;
         mCooldownPeriodOverride = cooldownPeriodOverride;
         mRequestedBrowserType = requestedBrowserType;
+        mProfileAgeRequirement = profileAgeRequirement;
     }
 
     /**
@@ -147,7 +139,15 @@ public class SurveyConfig {
                 .append(" Probability=")
                 .append(config.mProbability)
                 .append(" UserPrompted=")
-                .append(config.mUserPrompted);
+                .append(config.mUserPrompted)
+                .append(" RequestedBrowserType=")
+                .append(config.mRequestedBrowserType)
+                .append(" ProfileAgeRequirement=")
+                .append(config.mProfileAgeRequirement);
+
+        if (config.mCooldownPeriodOverride != null) {
+            sb.append(" CooldownPeriodOverride=").append(config.mCooldownPeriodOverride);
+        }
 
         sb.append(" PsdBitFields=");
         for (String field : config.mPsdBitDataFields) {
@@ -188,7 +188,8 @@ public class SurveyConfig {
                     config.mPsdBitDataFields,
                     config.mPsdStringDataFields,
                     config.mCooldownPeriodOverride,
-                    config.mRequestedBrowserType);
+                    config.mRequestedBrowserType,
+                    config.mProfileAgeRequirement);
         }
         return config;
     }
@@ -203,7 +204,8 @@ public class SurveyConfig {
             String[] psdBitDataFields,
             String[] psdStringDataFields,
             int cooldownPeriodOverride,
-            @RequestedBrowserType int requestedBrowserType) {
+            @RequestedBrowserType int requestedBrowserType,
+            @ProfileAgeRequirement int profileAgeRequirement) {
         holder.mTriggers.put(
                 trigger,
                 new SurveyConfig(
@@ -214,7 +216,8 @@ public class SurveyConfig {
                         psdBitDataFields,
                         psdStringDataFields,
                         cooldownPeriodOverride == 0 ? null : cooldownPeriodOverride,
-                        requestedBrowserType));
+                        requestedBrowserType,
+                        profileAgeRequirement));
     }
 
     /** Holder that stores all the active surveys for Android. */

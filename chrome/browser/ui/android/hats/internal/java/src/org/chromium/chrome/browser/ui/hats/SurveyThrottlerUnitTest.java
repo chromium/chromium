@@ -60,15 +60,18 @@ public class SurveyThrottlerUnitTest {
     }
 
     @Test
-    public void testFirstTimeUser() {
+    public void testFirstTimeUserAllowedIfAnyAge() {
         FirstRunStatus.setFirstRunTriggeredForTesting(true);
         RiggedSurveyThrottler throttler =
                 new RiggedSurveyThrottler(/* randomlySelected= */ true, /* date= */ 1);
 
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.Survey.SurveyFilteringResults", FilteringResult.FIRST_TIME_USER)) {
-            assertFalse("Survey shouldn't shown for first time users.", throttler.canShowSurvey());
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+            assertTrue(
+                    "Survey should be shown for first time users if requirement is ANY_AGE.",
+                    throttler.canShowSurvey());
         }
     }
 
@@ -369,6 +372,75 @@ public class SurveyThrottlerUnitTest {
     }
 
     @Test
+    public void testProfileTooNew() {
+        SurveyConfig config =
+                newSurveyConfig(TEST_TRIGGER_ID, ProfileAgeRequirement.ONE_MONTH_OR_OLDER);
+        long now = System.currentTimeMillis();
+        long tenDaysAgo = now - 10L * 24 * 60 * 60 * 1000;
+        RiggedSurveyThrottler throttler =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0,
+                        /* date= */ 1,
+                        config,
+                        tenDaysAgo);
+
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults", FilteringResult.PROFILE_TOO_NEW)) {
+            assertFalse("Survey shouldn't shown for new profiles.", throttler.canShowSurvey());
+        }
+    }
+
+    @Test
+    public void testProfileOldEnough() {
+        SurveyConfig config =
+                newSurveyConfig(TEST_TRIGGER_ID, ProfileAgeRequirement.ONE_MONTH_OR_OLDER);
+        long now = System.currentTimeMillis();
+        long fortyDaysAgo = now - 40L * 24 * 60 * 60 * 1000;
+        RiggedSurveyThrottler throttler =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0,
+                        /* date= */ 1,
+                        config,
+                        fortyDaysAgo);
+
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+            assertTrue("Survey should be shown for old profiles.", throttler.canShowSurvey());
+        }
+    }
+
+    @Test
+    public void testProfileAnyAge() {
+        SurveyConfig config = newSurveyConfig(TEST_TRIGGER_ID, ProfileAgeRequirement.ANY_AGE);
+        long now = System.currentTimeMillis();
+        long tenDaysAgo = now - 10L * 24 * 60 * 60 * 1000;
+        RiggedSurveyThrottler throttler =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0,
+                        /* date= */ 1,
+                        config,
+                        tenDaysAgo);
+
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+            assertTrue(
+                    "Survey should be shown for any age if requirement is ANY_AGE.",
+                    throttler.canShowSurvey());
+        }
+    }
+
+    @Test
     public void testEncodeDateImpl() {
         Calendar calendar = Calendar.getInstance();
 
@@ -419,7 +491,22 @@ public class SurveyThrottlerUnitTest {
                 new String[0],
                 new String[0],
                 cooldownOverride,
-                SurveyConfig.RequestedBrowserType.REGULAR);
+                RequestedBrowserType.REGULAR,
+                ProfileAgeRequirement.ANY_AGE);
+    }
+
+    private static SurveyConfig newSurveyConfig(
+            String triggerId, @ProfileAgeRequirement int profileAgeRequirement) {
+        return new SurveyConfig(
+                "trigger",
+                triggerId,
+                0.5f,
+                false,
+                new String[0],
+                new String[0],
+                null,
+                RequestedBrowserType.REGULAR,
+                profileAgeRequirement);
     }
 
     /** Test class used to test the rate limiting logic for {@link SurveyThrottler}. */
@@ -428,12 +515,22 @@ public class SurveyThrottlerUnitTest {
         private final Calendar mCalendar;
 
         RiggedSurveyThrottler(
-                boolean randomlySelected, int year, int month, int date, SurveyConfig config) {
-            super(config);
+                boolean randomlySelected,
+                int year,
+                int month,
+                int date,
+                SurveyConfig config,
+                long profileCreationTimeMs) {
+            super(config, profileCreationTimeMs);
 
             mRandomlySelected = randomlySelected;
             mCalendar = Calendar.getInstance();
             mCalendar.set(year, month, date);
+        }
+
+        RiggedSurveyThrottler(
+                boolean randomlySelected, int year, int month, int date, SurveyConfig config) {
+            this(randomlySelected, year, month, date, config, 0);
         }
 
         RiggedSurveyThrottler(boolean randomlySelected, int date, String triggerId) {

@@ -133,15 +133,15 @@ class Profile;
 
 namespace hats {
 struct SurveyConfig {
-  // LINT.IfChange(RequestedBrowserType)
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.hats
   enum RequestedBrowserType {
     // A standard survey, shown only in regular mode.
     kRegular = 0,
     // An Incognito survey, shown only in incognito.
     kIncognito = 1,
   };
-  // LINT.ThenChange(//chrome/browser/ui/android/hats/java/src/org/chromium/chrome/browser/ui/hats/SurveyConfig.java:RequestedBrowserType)
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.hats
   // Enum to control the minimum profile age check before showing a survey.
   // The profile age is determined by the creation time of the profile
   // directory, and is NOT related to the age of the user.

@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.hats.SurveyConfig.RequestedBrowserType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -203,7 +202,8 @@ public class SurveyClientUnitTest {
                         new String[0],
                         new String[0],
                         null,
-                        SurveyConfig.RequestedBrowserType.REGULAR);
+                        RequestedBrowserType.REGULAR,
+                        ProfileAgeRequirement.ANY_AGE);
         SurveyClientImpl client =
                 new SurveyClientImpl(
                         config,
@@ -426,7 +426,8 @@ public class SurveyClientUnitTest {
                         new String[] {"bitField"},
                         new String[] {"stringField"},
                         null,
-                        SurveyConfig.RequestedBrowserType.REGULAR);
+                        RequestedBrowserType.REGULAR,
+                        ProfileAgeRequirement.ANY_AGE);
         SurveyClientImpl client =
                 new SurveyClientImpl(
                         config,
@@ -494,6 +495,7 @@ public class SurveyClientUnitTest {
                 new String[0],
                 new String[0],
                 null,
-                requestedBrowserType);
+                requestedBrowserType,
+                ProfileAgeRequirement.ANY_AGE);
     }
 }

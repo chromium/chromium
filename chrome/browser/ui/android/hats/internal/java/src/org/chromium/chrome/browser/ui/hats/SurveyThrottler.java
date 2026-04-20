@@ -12,7 +12,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 
@@ -20,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class used to check whether survey can be shown based on metadata. The class is also responsible
@@ -32,6 +32,7 @@ import java.util.Random;
 @NullMarked
 public class SurveyThrottler {
     private static final int MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED = 180;
+    private static final long THIRTY_DAYS_MS = TimeUnit.DAYS.toMillis(30);
 
     /**
      * Reasons that the user was rejected from being selected for a survey Note: these values cannot
@@ -48,6 +49,7 @@ public class SurveyThrottler {
         FilteringResult.FIRST_TIME_USER,
         FilteringResult.USER_PROMPT_SURVEY,
         FilteringResult.OTHER_SURVEY_DISPLAYED_RECENTLY,
+        FilteringResult.PROFILE_TOO_NEW,
         FilteringResult.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -61,19 +63,23 @@ public class SurveyThrottler {
         int FIRST_TIME_USER = 8;
         int USER_PROMPT_SURVEY = 9;
         int OTHER_SURVEY_DISPLAYED_RECENTLY = 10;
+        int PROFILE_TOO_NEW = 11;
 
         // Number of entries
-        int NUM_ENTRIES = 11;
+        int NUM_ENTRIES = 12;
     }
 
     private final SurveyConfig mSurveyConfig;
+    private final long mProfileCreationTimeMs;
     private @MonotonicNonNull SurveyMetadata mMetadata;
 
     /**
      * @param config Survey config associated with the throttler.
+     * @param profileCreationTimeMs The creation time of the profile in ms.
      */
-    SurveyThrottler(SurveyConfig config) {
+    SurveyThrottler(SurveyConfig config, long profileCreationTimeMs) {
         mSurveyConfig = config;
+        mProfileCreationTimeMs = profileCreationTimeMs;
     }
 
     /**
@@ -88,9 +94,12 @@ public class SurveyThrottler {
             return true;
         }
 
-        if (FirstRunStatus.isFirstRunTriggered()) {
-            recordSurveyFilteringResult(FilteringResult.FIRST_TIME_USER);
-            return false;
+        if (mSurveyConfig.mProfileAgeRequirement == ProfileAgeRequirement.ONE_MONTH_OR_OLDER) {
+            long ageMs = System.currentTimeMillis() - mProfileCreationTimeMs;
+            if (ageMs < THIRTY_DAYS_MS) {
+                recordSurveyFilteringResult(FilteringResult.PROFILE_TOO_NEW);
+                return false;
+            }
         }
 
         // Ignore the random selection since it's a user prompt survey.

@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/common/chrome_constants.h"
@@ -62,6 +63,11 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetOriginalProfile(JNIEnv* env,
   Profile* original_profile = self->GetOriginalProfile();
   DCHECK(original_profile);
   return original_profile->GetJavaObject();
+}
+
+static int64_t JNI_Profile_GetCreationTime(JNIEnv* env, int64_t ptr) {
+  Profile* self = reinterpret_cast<Profile*>(ptr);
+  return self->GetCreationTime().InMillisecondsSinceUnixEpoch();
 }
 
 static bool JNI_Profile_IsInitialProfile(JNIEnv* env, int64_t ptr) {

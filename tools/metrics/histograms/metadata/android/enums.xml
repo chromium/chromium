@@ -1895,6 +1895,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="First time user"/>
   <int value="9" label="User prompted survey"/>
   <int value="10" label="Other survey displayed recently"/>
+  <int value="11" label="Profile too new"/>
 </enum>
 
 <enum name="SurveyPresentationStatusCode">
