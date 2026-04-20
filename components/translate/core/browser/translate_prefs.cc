@@ -932,25 +932,32 @@ void TranslatePrefs::MigrateNeverPromptSites() {
   // the new version and clears all references to the old one. This will
   // make subsequent calls to migrate no-ops.
 
-  // Use of ScopedDictPrefUpdate is avoided since a call to its Get() ensures
-  // that the observers are notified upon destruction no matter if the value was
-  // changed or not.
+  // Early-out when there's nothing to migrate. This avoids constructing a
+  // ScopedListPrefUpdate (which unconditionally dirties the pref store on
+  // destruction) on every navigation after migration is already complete.
+  const base::ListValue& deprecated_list =
+      prefs_->GetList(kPrefNeverPromptSitesDeprecated);
+  if (deprecated_list.empty()) {
+    return;
+  }
+
   base::DictValue never_prompt_list =
       prefs_->GetDict(prefs::kPrefNeverPromptSitesWithTime).Clone();
-  ScopedListPrefUpdate deprecated_prompt_list_update(
-      prefs_, kPrefNeverPromptSitesDeprecated);
-  base::ListValue& deprecated_list = deprecated_prompt_list_update.Get();
-  for (auto& site : deprecated_list) {
+  bool migrated_any = false;
+  for (const auto& site : deprecated_list) {
     if (site.is_string() &&
         (!never_prompt_list.Find(site.GetString()) ||
          !base::ValueToTime(never_prompt_list.Find(site.GetString())))) {
       never_prompt_list.Set(site.GetString(),
                             base::TimeToValue(base::Time::Now()));
+      migrated_any = true;
     }
   }
-  deprecated_list.clear();
-  prefs_->SetDict(prefs::kPrefNeverPromptSitesWithTime,
-                  std::move(never_prompt_list));
+  if (migrated_any) {
+    prefs_->SetDict(prefs::kPrefNeverPromptSitesWithTime,
+                    std::move(never_prompt_list));
+  }
+  prefs_->ClearPref(kPrefNeverPromptSitesDeprecated);
 }
 
 bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,

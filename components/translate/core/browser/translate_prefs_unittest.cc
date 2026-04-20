@@ -991,11 +991,13 @@ TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
 }
 
 TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
-  ScopedListPrefUpdate update(&prefs_,
-                              TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::ListValue& never_prompt_list = update.Get();
-  never_prompt_list.Append(1);
-  never_prompt_list.Append("unmigrated.com");
+  {
+    ScopedListPrefUpdate update(
+        &prefs_, TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+    base::ListValue& never_prompt_list = update.Get();
+    never_prompt_list.Append(1);
+    never_prompt_list.Append("unmigrated.com");
+  }
   translate_prefs_->MigrateNeverPromptSites();
   EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
                   base::Time::Now() - base::Days(1), base::Time::Max()),
@@ -1009,10 +1011,12 @@ TEST_F(TranslatePrefsTest, ShouldNotifyUponMigrateNeverPromptSites) {
   registrar.Init(&prefs_);
   registrar.Add(prefs::kPrefNeverPromptSitesWithTime, observer.GetCallback());
 
-  ScopedListPrefUpdate update(&prefs_,
-                              TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::ListValue& never_prompt_list = update.Get();
-  never_prompt_list.Append("unmigrated.com");
+  {
+    ScopedListPrefUpdate update(
+        &prefs_, TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+    base::ListValue& never_prompt_list = update.Get();
+    never_prompt_list.Append("unmigrated.com");
+  }
 
   EXPECT_CALL(observer, OnPreferenceChanged);
   translate_prefs_->MigrateNeverPromptSites();
@@ -1034,10 +1038,12 @@ TEST_F(TranslatePrefsTest,
   registrar.Init(&prefs_);
   registrar.Add(prefs::kPrefNeverPromptSitesWithTime, observer.GetCallback());
 
-  ScopedListPrefUpdate update(&prefs_,
-                              TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::ListValue& never_prompt_list = update.Get();
-  never_prompt_list.Append("unmigrated.com");
+  {
+    ScopedListPrefUpdate update(
+        &prefs_, TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+    base::ListValue& never_prompt_list = update.Get();
+    never_prompt_list.Append("unmigrated.com");
+  }
 
   EXPECT_CALL(observer, OnPreferenceChanged);
   translate_prefs_->MigrateNeverPromptSites();
@@ -1047,27 +1053,35 @@ TEST_F(TranslatePrefsTest,
 }
 
 TEST_F(TranslatePrefsTest, ShouldNotNotifyUponMigrateInvalidNeverPromptSites) {
-  // Listen to pref changes.
+  // Listen to pref changes on the new pref only. The deprecated pref will be
+  // cleared (and thus notified) since it contains entries, even if invalid.
   MockPrefChangeCallback observer(&prefs_);
   PrefChangeRegistrar registrar;
   registrar.Init(&prefs_);
   registrar.Add(prefs::kPrefNeverPromptSitesWithTime, observer.GetCallback());
 
-  ScopedListPrefUpdate update(&prefs_,
-                              TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::ListValue& never_prompt_list = update.Get();
-  never_prompt_list.Append(1);
+  {
+    ScopedListPrefUpdate update(
+        &prefs_, TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+    base::ListValue& never_prompt_list = update.Get();
+    never_prompt_list.Append(1);
+  }
 
+  // Migration with only invalid (non-string) entries should not notify the new
+  // pref.
   EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
   translate_prefs_->MigrateNeverPromptSites();
 }
 
 TEST_F(TranslatePrefsTest, ShouldNotNotifyUponMigrateNoNeverPromptSites) {
-  // Listen to pref changes.
+  // Listen to pref changes on both the new and deprecated prefs to verify
+  // that neither pref is dirtied when there's nothing to migrate.
   MockPrefChangeCallback observer(&prefs_);
   PrefChangeRegistrar registrar;
   registrar.Init(&prefs_);
   registrar.Add(prefs::kPrefNeverPromptSitesWithTime, observer.GetCallback());
+  registrar.Add(TranslatePrefs::kPrefNeverPromptSitesDeprecated,
+                observer.GetCallback());
 
   ASSERT_TRUE(
       prefs_.GetList(TranslatePrefs::kPrefNeverPromptSitesDeprecated).empty());
