@@ -287,6 +287,7 @@ class ContextualTasksUI
 
   // Called when the contextual task context is returned by the service.
   void OnContextRetrievedForActiveTab(
+      base::WeakPtr<BrowserWindowInterface> browser,
       int32_t tab_id,
       const GURL& last_committed_url,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context);

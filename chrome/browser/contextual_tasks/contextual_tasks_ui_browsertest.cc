@@ -229,6 +229,15 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
         controller_->composebox_handler_.get());
   }
 
+  void CallOnContextRetrievedForActiveTab(
+      base::WeakPtr<BrowserWindowInterface> browser,
+      int32_t tab_id,
+      const GURL& last_committed_url,
+      std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+    controller_->OnContextRetrievedForActiveTab(
+        browser, tab_id, last_committed_url, std::move(context));
+  }
+
  protected:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
@@ -731,4 +740,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
   EXPECT_EQ(handler->input_state_model()->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUIBrowserTest,
+    OnContextRetrievedForActiveTab_NullBrowser_DoesNotCrash) {
+  // Call OnContextRetrievedForActiveTab with a null weak pointer.
+  base::WeakPtr<BrowserWindowInterface> null_browser;
+  int32_t tab_id = 1;
+  GURL url("https://example.com");
+  contextual_tasks::ContextualTask task(base::Uuid::GenerateRandomV4());
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+
+  // This should return early and not crash.
+  CallOnContextRetrievedForActiveTab(null_browser, tab_id, url,
+                                     std::move(context));
 }
