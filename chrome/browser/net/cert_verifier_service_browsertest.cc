@@ -747,6 +747,10 @@ class CertVerifierNSSMigrationTest : public PlatformBrowserTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      net::kEnableNSSCertMigration};
 };
 
 // Setup the NSS database before doing migration. The PRE_PRE_ test is run with

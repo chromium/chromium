@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -151,6 +152,9 @@ using ServerCertificateDatabaseServiceNSSMigratorTest =
     ServerCertificateDatabaseServiceTest;
 
 TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableNSSCertMigration);
+
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   // Import test certificate into NSS user database.
@@ -234,7 +238,45 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
   }
 }
 
+TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest,
+       TestMigrationDisabledByFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableNSSCertMigration);
+
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+
+  // Import test certificate into NSS user database.
+  NSSCertDatabase::ImportCertFailureList not_imported;
+  EXPECT_TRUE(nss_cert_database()->ImportCACerts(
+      x509_util::CreateCERTCertificateListFromX509Certificate(
+          root->GetX509Certificate().get()),
+      NSSCertDatabase::TRUSTED_SSL, &not_imported));
+  EXPECT_TRUE(not_imported.empty());
+
+  std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
+      CreateService();
+
+  // Call GetAllCertificates.
+  base::test::TestFuture<
+      std::vector<net::ServerCertificateDatabase::CertInformation>>
+      get_certs_waiter;
+  cert_db_service->GetAllCertificates(get_certs_waiter.GetCallback());
+  std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos =
+      get_certs_waiter.Take();
+
+  // Test that the result is empty because migration was skipped.
+  EXPECT_TRUE(cert_infos.empty());
+
+  // Migration pref should still be false.
+  EXPECT_EQ(pref_service()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
+            static_cast<int>(ServerCertificateDatabaseService::
+                                 NSSMigrationResultPref::kNotMigrated));
+}
+
 TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, SimultaneousCalls) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableNSSCertMigration);
+
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   // Import test certificate into NSS user database.

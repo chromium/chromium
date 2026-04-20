@@ -33,6 +33,12 @@ bool g_disable_nss_cert_migration_for_testing = false;
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/390333881): The NSS migration code is now deprecated and
+// disabled by default. Remove completely after a few milestones.
+BASE_FEATURE(kEnableNSSCertMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 ServerCertificateDatabaseService::ServerCertificateDatabaseService(
     base::FilePath profile_path,
     PrefService* prefs,
@@ -79,6 +85,7 @@ void ServerCertificateDatabaseService::GetAllCertificates(
   // TODO(crbug.com/390333881): Remove the migration code once sufficient time
   // has passed after the feature is launched.
   if (!g_disable_nss_cert_migration_for_testing &&
+      base::FeatureList::IsEnabled(kEnableNSSCertMigration) &&
       prefs_->GetInteger(prefs::kNSSCertsMigratedToServerCertDb) ==
           static_cast<int>(NSSMigrationResultPref::kNotMigrated)) {
     if (!nss_migrator_) {
