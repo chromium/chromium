@@ -82,11 +82,11 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "interactive_ui_tests": {
-                "shards": 13,
+                "shards": 12,
                 "try_builder": "linux-chromeos-rel"
             },
             "sync_integration_tests": {
-                "shards": 3,
+                "shards": 4,
                 "try_builder": "linux-chromeos-rel"
             },
             "unit_tests": {
