@@ -2780,6 +2780,7 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
 
     using prefs::kAccessibilityAutoclickEnabled;
     using prefs::kAccessibilityCaretHighlightEnabled;
+    using prefs::kAccessibilityCursorHighlightEnabled;
     using prefs::kAccessibilityHighContrastEnabled;
     using prefs::kAccessibilityLargeCursorEnabled;
     using prefs::kAccessibilityMonoAudioEnabled;
@@ -2797,6 +2798,7 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
       EXPECT_TRUE(accessibility->caret_highlight().enabled());
       EXPECT_TRUE(docked_magnifier->GetEnabled());
       EXPECT_FLOAT_EQ(kMagnifierScale, docked_magnifier->GetScale());
+
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
@@ -2807,13 +2809,28 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
 
       // Check locking of enabled syncable preferences.
       EXPECT_NE(nullptr, accessibility->prefs_custom_associator());
-      EXPECT_TRUE(IsPrefLockedForTesting(kAccessibilityLargeCursorEnabled));
-      EXPECT_TRUE(IsPrefLockedForTesting(kAccessibilityHighContrastEnabled));
-      EXPECT_TRUE(IsPrefLockedForTesting(kAccessibilityCaretHighlightEnabled));
-      EXPECT_TRUE(IsPrefLockedForTesting(kDockedMagnifierEnabled));
-      EXPECT_FALSE(IsPrefLockedForTesting(kAccessibilitySpokenFeedbackEnabled));
-      EXPECT_FALSE(IsPrefLockedForTesting(kAccessibilityAutoclickEnabled));
-      EXPECT_FALSE(IsPrefLockedForTesting(kAccessibilityMonoAudioEnabled));
+      EXPECT_TRUE(IsPrefLockedWithValueForTesting(
+          kAccessibilityLargeCursorEnabled, base::Value(true)));
+      EXPECT_TRUE(IsPrefLockedWithValueForTesting(
+          kAccessibilityHighContrastEnabled, base::Value(true)));
+      EXPECT_TRUE(IsPrefLockedWithValueForTesting(
+          kAccessibilityCaretHighlightEnabled, base::Value(true)));
+      EXPECT_TRUE(IsPrefLockedWithValueForTesting(kDockedMagnifierEnabled,
+                                                  base::Value(true)));
+      EXPECT_FALSE(IsPrefLockedWithValueForTesting(
+          kAccessibilitySpokenFeedbackEnabled, std::nullopt));
+      EXPECT_FALSE(IsPrefLockedWithValueForTesting(
+          kAccessibilityAutoclickEnabled, std::nullopt));
+      EXPECT_FALSE(IsPrefLockedWithValueForTesting(
+          kAccessibilityMonoAudioEnabled, std::nullopt));
+
+      // This OOBE feature preference was not toggled on by the user, is
+      // syncable and should be locked.
+      EXPECT_FALSE(accessibility->cursor_highlight().enabled());
+      EXPECT_FALSE(
+          user_prefs->GetBoolean(kAccessibilityCursorHighlightEnabled));
+      EXPECT_TRUE(IsPrefLockedWithValueForTesting(
+          kAccessibilityCursorHighlightEnabled, base::Value(false)));
     } else {
       EXPECT_FALSE(accessibility->large_cursor().enabled());
       EXPECT_FALSE(accessibility->spoken_feedback().enabled());
@@ -2823,6 +2840,7 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
       EXPECT_FALSE(accessibility->caret_highlight().enabled());
       EXPECT_FALSE(docked_magnifier->GetEnabled());
       EXPECT_NE(kMagnifierScale, docked_magnifier->GetScale());
+      EXPECT_FALSE(accessibility->cursor_highlight().enabled());
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
@@ -2830,6 +2848,8 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
       EXPECT_FALSE(user_prefs->GetBoolean(kDockedMagnifierEnabled));
+      EXPECT_FALSE(
+          user_prefs->GetBoolean(kAccessibilityCursorHighlightEnabled));
 
       // No associator should have been created.
       EXPECT_EQ(nullptr, accessibility->prefs_custom_associator());
@@ -2862,14 +2882,15 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
   }
 
  protected:
-  bool IsPrefLockedForTesting(std::string_view pref_name) {
+  bool IsPrefLockedWithValueForTesting(
+      std::string_view pref_name,
+      std::optional<base::Value> locked_value) {
     auto* associator =
         Shell::Get()->accessibility_controller()->prefs_custom_associator();
+    const base::Value kServerValue;
     std::optional<base::Value> merge_value =
-        associator->GetPreferredPrefMergeValue(pref_name, base::Value(false));
-    return merge_value.has_value() && merge_value->is_bool()
-               ? merge_value->GetBool()
-               : false;
+        associator->GetPreferredPrefMergeValue(pref_name, kServerValue);
+    return merge_value.has_value() && merge_value == locked_value;
   }
 
   static constexpr float kMagnifierScale = 4.3f;
@@ -2897,6 +2918,7 @@ TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
 
   using prefs::kAccessibilityAutoclickEnabled;
   using prefs::kAccessibilityCaretHighlightEnabled;
+  using prefs::kAccessibilityCursorHighlightEnabled;
   using prefs::kAccessibilityHighContrastEnabled;
   using prefs::kAccessibilityLargeCursorEnabled;
   using prefs::kAccessibilityMonoAudioEnabled;
@@ -2916,6 +2938,7 @@ TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
     EXPECT_FALSE(accessibility->mono_audio().enabled());
     EXPECT_FALSE(accessibility->caret_highlight().enabled());
     EXPECT_FALSE(docked_magnifier->GetEnabled());
+    EXPECT_FALSE(accessibility->cursor_highlight().enabled());
 
     EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityLargeCursorEnabled));
     EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
@@ -2925,6 +2948,8 @@ TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
     EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
     EXPECT_FALSE(signin_prefs->GetBoolean(kDockedMagnifierEnabled));
     EXPECT_NE(kMagnifierScale, docked_magnifier->GetScale());
+    EXPECT_FALSE(
+        signin_prefs->GetBoolean(kAccessibilityCursorHighlightEnabled));
   }
 
   // Toggle accessibility prefs prior to the signin process.
@@ -2937,6 +2962,16 @@ TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
     accessibility->caret_highlight().SetEnabled(true);
     docked_magnifier->SetEnabled(true);
     docked_magnifier->SetScale(kMagnifierScale);
+    // Intentionally, this test does not call
+    //
+    //   accessibility->cursor_highlight().SetEnabled(true);
+    //
+    // .. in order to keep this preference disabled and not *controlled* by the
+    // user. This allows us to exercise the case of a OOBE feature preference
+    // that isn't toggled by the user but is syncable also gets "locked".
+    EXPECT_FALSE(
+        signin_prefs->FindPreference(kAccessibilityCursorHighlightEnabled)
+            ->IsUserControlled());
   }
 
   // Verify that toggling prefs at the signin screen changes the signin setting.
@@ -2956,6 +2991,15 @@ TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
     EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
     EXPECT_TRUE(signin_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
     EXPECT_TRUE(signin_prefs->GetBoolean(kDockedMagnifierEnabled));
+
+    // This preference isn't toggled intentionally (see comment above), and
+    // remain as is.
+    EXPECT_FALSE(accessibility->cursor_highlight().enabled());
+    EXPECT_FALSE(
+        signin_prefs->GetBoolean(kAccessibilityCursorHighlightEnabled));
+    EXPECT_FALSE(
+        signin_prefs->FindPreference(kAccessibilityCursorHighlightEnabled)
+            ->IsUserControlled());
   }
 
   // The type of user (new or existing) will trigger the copying of

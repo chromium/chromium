@@ -2560,8 +2560,18 @@ void AccessibilityController::CopySigninPrefsIfNeeded(
     const PrefService::Preference* pref =
         signin_prefs->FindPreference(pref_path);
 
-    // Ignore if the pref has not been set by the user.
-    if (!pref || !pref->IsUserControlled()) {
+    if (!pref) {
+      continue;
+    }
+
+    // Ignore if the pref has not been set by the user and isn't lockable.
+    //
+    // NOTE: A preference is lockable when it is a feature accessibility
+    // preference and the user should be prompted with a conflict resolution
+    // dialog in case the values set during the OOBE differ from the value
+    // stored in the Sync.
+    if (!pref->IsUserControlled() &&
+        !prefs_custom_associator_->CanLockPref(pref_path)) {
       continue;
     }
 
@@ -2569,8 +2579,8 @@ void AccessibilityController::CopySigninPrefsIfNeeded(
     const base::Value* value_on_login = pref->GetValue();
     current_pref_service->Set(pref_path, *value_on_login);
 
-    // Try to "lock" this preference in case it is syncable and we must wait to
-    // sync until after showing the resolution dialog.
+    // Lock OOBE feature accessibility prefs (even if not user-controlled) when
+    // syncable, so syncing is deferred until after conflict resolution.
     prefs_custom_associator_->TryLockPref(pref_path, *value_on_login);
   }
 }

@@ -98,15 +98,15 @@ class ASH_EXPORT AccessibilityPrefsCustomAssociator
   // Returns the currently tracked locked prefs and account-store prefs.
   LockedAndAccountStorePrefs GetLockedAndAccountStorePrefs() const;
 
+  // Returns whether a given preference `pref_name` can be locked, i.e. it is
+  // a syncable accessibility pref that requires conflict resolution.
+  bool CanLockPref(std::string_view pref_name) const;
+
   // Prints to stderr the content of the preference/value pairs set by calling
   // TryLockPref() and TrySetAccountStorePref().
   void ToString() const;
 
  private:
-  // Returns whether a given preference `pref_name` can be locked, i.e. it is
-  // a syncable accessibility pref that requires conflict resolution.
-  bool CanLockPref(std::string_view pref_name) const;
-
   // Returns whether `pref_name` is currently locked.
   bool IsPrefLocked(std::string_view pref_name) const;
 
