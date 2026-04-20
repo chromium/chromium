@@ -8779,8 +8779,10 @@ void RenderFrameHostImpl::DispatchLoad() {
     }
   }
 
-  CHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
-        lifecycle_state() == LifecycleStateImpl::kPrerendering);
+  // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
+         lifecycle_state() == LifecycleStateImpl::kPrerendering);
 
   // Only frames with an out-of-process parent frame should be sending this
   // message.
@@ -11847,7 +11849,9 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   for (auto& update : updates_and_events.updates) {
     if (update.has_tree_data) {
-      CHECK_EQ(tree_id, update.tree_data.tree_id);
+      // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK
+      // once we are sure this isn't hit.
+      DCHECK_EQ(tree_id, update.tree_data.tree_id);
       ax_tree_data_ = update.tree_data;
       update.tree_data = GetAXTreeData();
     }
@@ -11856,7 +11860,9 @@ void RenderFrameHostImpl::HandleAXEvents(
   if (needs_ax_root_id_) {
     // This is the first update after the tree id changed. AXTree must be sent
     // a new root id, otherwise crashes are likely to result.
-    CHECK(!updates_and_events.updates.empty());
+    // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK(!updates_and_events.updates.empty());
     // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
     // we are sure this isn't hit.
     DCHECK_NE(ui::kInvalidAXNodeID, updates_and_events.updates[0].root_id);
@@ -16406,8 +16412,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // for subframes, even if the value was set to true in CommitParams in the
   // browser process.
   if (!is_same_document_navigation) {
-    CHECK_EQ(navigation_request->is_overriding_user_agent() && is_main_frame(),
-             params->is_overriding_user_agent);
+    // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK_EQ(navigation_request->is_overriding_user_agent() && is_main_frame(),
+              params->is_overriding_user_agent);
     if (navigation_request->IsPrerenderedPageActivation()) {
       // Set the NavigationStart time for
       // PerformanceNavigationTiming.activationStart.
@@ -16416,8 +16424,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     }
 
   } else {
-    CHECK_EQ(is_main_frame() && GetPage().is_overriding_user_agent(),
-             params->is_overriding_user_agent);
+    // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK_EQ(is_main_frame() && GetPage().is_overriding_user_agent(),
+              params->is_overriding_user_agent);
   }
 
   if (is_main_frame()) {
@@ -16783,13 +16793,17 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
     // The navigation could not be committed as a same-document navigation.
     // Restart the navigation cross-document.
     // TODO(crbug.com/40252449): Explain why `owner_` exists.
-    CHECK(owner_);
+    // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK(owner_);
     owner_->RestartNavigationAsCrossDocument(std::move(request->second));
     same_document_navigation_requests_.erase(navigation_token);
     return;
   }
 
-  CHECK_EQ(result, blink::mojom::CommitResult::Aborted);
+  // TODO(https://crbug.com/503784536): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK_EQ(result, blink::mojom::CommitResult::Aborted);
   // Note: if the commit was successful, the NavigationRequest is moved in
   // DidCommitSameDocumentNavigation.
   request->second->set_navigation_discard_reason(
