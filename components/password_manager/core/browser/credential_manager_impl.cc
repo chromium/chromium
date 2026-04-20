@@ -10,8 +10,11 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
@@ -19,11 +22,15 @@
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -35,6 +42,17 @@ namespace {
 
 void RunGetCallback(GetCallback callback, const CredentialInfo& info) {
   std::move(callback).Run(CredentialManagerError::SUCCESS, info);
+}
+
+void OnReauthComplete(
+    base::OnceCallback<void(const CredentialInfo&)> send_cred_callback,
+    CredentialInfo info,
+    bool auth_succeeded) {
+  if (!auth_succeeded) {
+    std::move(send_cred_callback).Run(CredentialInfo());
+    return;
+  }
+  std::move(send_cred_callback).Run(info);
 }
 
 }  // namespace
@@ -244,6 +262,37 @@ void CredentialManagerImpl::SendPasswordForm(
         base::UserMetricsAction("CredentialManager_AccountChooser_Accepted"));
     metrics_util::LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kAccountChooser, mediation);
+
+    if (client_->GetPasswordFeatureManager()
+            ->IsBiometricAuthenticationBeforeFillingEnabled()) {
+      auto authenticator = client_->GetDeviceAuthenticator();
+      if (authenticator) {
+        std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+        const std::u16string origin =
+            base::UTF8ToUTF16(password_manager::GetShownOrigin(
+                client_->GetLastCommittedOrigin()));
+        message = l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+#endif
+        auto send_cred_callback = base::BindOnce(
+            &CredentialManagerImpl::SendCredential,
+            weak_ptr_factory_.GetWeakPtr(), std::move(send_callback));
+
+        auto* authenticator_ptr = authenticator.get();
+        base::OnceClosure cleanup =
+            base::DoNothingWithBoundArgs(std::move(authenticator));
+
+        authenticator_ptr->AuthenticateWithMessage(
+            message,
+            metrics_util::TimeCallbackMediumTimes(
+                base::BindOnce(&OnReauthComplete, std::move(send_cred_callback),
+                               info)
+                    .Then(std::move(cleanup)),
+                "PasswordManager.PasswordFilling.AuthenticationTime2"));
+        return;
+      }
+    }
   } else {
     base::RecordAction(
         base::UserMetricsAction("CredentialManager_AccountChooser_Dismissed"));

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/credential_management/credential_manager_interface.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
@@ -105,6 +106,8 @@ class CredentialManagerImpl
   // `Store` (if it was available) and reset in `OnProvisionalSaveComplete`.
   // Only used on desktop.
   std::optional<PasswordForm> last_submitted_form_;
+
+  base::WeakPtrFactory<CredentialManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

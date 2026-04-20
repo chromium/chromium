@@ -24,6 +24,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
@@ -32,6 +33,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -107,6 +109,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const url::Origin&,
                (base::span<const PasswordForm>),
                bool was_autofilled_on_pageload),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (),
               (override));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
@@ -2021,5 +2027,43 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CredentialManagerImplTestWithActorLoginPermissions,
                          testing::Bool());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_P(CredentialManagerImplTest, ReauthAfterAccountSelection) {
+  ON_CALL(*client_->GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+
+  store_->AddLogin(form_);
+  RunAllPendingTasks();
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(1);
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      mock_authenticator.get();
+  EXPECT_CALL(*client_, GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(mock_authenticator)));
+
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage)
+      .WillOnce([](const std::u16string& message,
+                   device_reauth::MockDeviceAuthenticator::AuthenticateCallback
+                       callback) {
+        std::move(callback).Run(true);  // Success
+      });
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+          /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_EQ(form_.username_value, credential->id);
+}
 
 }  // namespace password_manager

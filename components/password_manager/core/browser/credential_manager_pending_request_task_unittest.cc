@@ -324,4 +324,55 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   RunAllPendingTasks();
 }
 
+TEST_F(CredentialManagerPendingRequestTaskTest,
+       SilentRequestFailsIfBiometricReauthEnabled) {
+  ON_CALL(*client()->GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+
+  form_.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(form_);
+  RunAllPendingTasks();
+
+  EXPECT_CALL(*client(), NotifyUserAutoSignin).Times(0);
+  EXPECT_CALL(*client(), PromptUserToChooseCredentials).Times(0);
+
+  EXPECT_CALL(
+      delegate_mock_,
+      SendCredential(_, testing::Field(&CredentialInfo::type,
+                                       CredentialType::CREDENTIAL_TYPE_EMPTY)));
+
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kSilent, /*include_passwords=*/true,
+      /*request_federations=*/{}, GetFormDigest());
+  RunAllPendingTasks();
+}
+
+TEST_F(CredentialManagerPendingRequestTaskTest,
+       NoAutosigninIfBiometricReauthEnabled) {
+  ON_CALL(*client()->GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+
+  profile_store_->AddLogin(form_);
+  RunAllPendingTasks();
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  form_.in_store = PasswordForm::Store::kProfileStore;
+  expected_forms.push_back(std::make_unique<PasswordForm>(form_));
+
+  EXPECT_CALL(*client(), NotifyUserAutoSignin).Times(0);
+  EXPECT_CALL(*client(),
+              PromptUserToChooseCredentials(
+                  UnorderedPasswordFormElementsAre(&expected_forms), _, _));
+  EXPECT_CALL(delegate_mock_, IsZeroClickAllowed).Times(0);
+
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+      /*request_federations=*/{}, GetFormDigest());
+  RunAllPendingTasks();
+}
+
 }  // namespace password_manager
