@@ -550,26 +550,6 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
       }
     }
 
-    void OnCopyCustomFormatAllowedResult(
-        const std::u16string& format,
-        mojo_base::BigBuffer data,
-        const ui::ClipboardFormatType& data_type,
-        const ClipboardPasteData& paste_data,
-        std::optional<std::u16string> replacement_data) override {
-      if (delay_) {
-        // We push this to same queue as other delayed allowed results so
-        // `CallOneDelayedResult()` continues to work.
-        delayed_on_copy_allowed_results_.push(
-            base::BindOnce(&ClipboardHostImpl::OnCopyCustomFormatAllowedResult,
-                           base::Unretained(this), format, std::move(data),
-                           data_type, paste_data, std::move(replacement_data)));
-      } else {
-        ClipboardHostImpl::OnCopyCustomFormatAllowedResult(
-            format, std::move(data), data_type, paste_data,
-            std::move(replacement_data));
-      }
-    }
-
     void CallOneDelayedResult() {
       delay_ = false;
       auto& front = delayed_on_copy_allowed_results_.front();
@@ -607,8 +587,6 @@ class ClipboardHostImplAsyncWriteTest : public RenderViewHostTestHarness {
   ~ClipboardHostImplAsyncWriteTest() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
-
-  mojo::Remote<blink::mojom::ClipboardHost>& remote() { return remote_; }
 
   AsyncWriteClipboardHostImpl* async_write_clipboard_host_impl() {
     return fake_clipboard_host_impl_;
@@ -848,132 +826,6 @@ TEST_F(ClipboardHostImplAsyncWriteTest, ConcurrentWrites) {
   async_write_clipboard_host_impl()->ReadSvg(ui::ClipboardBuffer::kCopyPaste,
                                              last_svg_future.GetCallback());
   EXPECT_EQ(last_svg_future.Take(), kSvg);
-}
-
-TEST_F(ClipboardHostImplAsyncWriteTest, WriteUnsanitizedCustomFormat) {
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-
-  std::string test_data = "test custom format data";
-  // The 'web ' prefix is added by blink and stripped by the browser during
-  // initial parsing.
-  const std::u16string write_format = u"text/custom-format";
-  const std::u16string read_format = u"web text/custom-format";
-  remote()->WriteUnsanitizedCustomFormat(
-      write_format, mojo_base::BigBuffer(base::as_byte_span(test_data)));
-  remote()->CommitWrite();
-  remote().FlushForTesting();
-
-  // Initially empty before policy evaluates.
-  base::test::TestFuture<mojo_base::BigBuffer> pre_policy_future;
-  remote()->ReadUnsanitizedCustomFormat(read_format,
-                                        pre_policy_future.GetCallback());
-  EXPECT_EQ(0u, pre_policy_future.Get().size());
-
-  // Wait for mojo messages to process, then for delayed policy result to
-  // propagate through `CommitWrite()`.
-  async_write_clipboard_host_impl()->CallOneDelayedResult();
-  remote().FlushForTesting();
-
-  base::test::TestFuture<mojo_base::BigBuffer> post_policy_future;
-  remote()->ReadUnsanitizedCustomFormat(read_format,
-                                        post_policy_future.GetCallback());
-  const auto& actual_result = post_policy_future.Get();
-  EXPECT_GT(actual_result.size(), 0u);
-
-  std::string read_string(actual_result.begin(), actual_result.end());
-  EXPECT_EQ(read_string, test_data);
-}
-
-class PolicyBlockBrowserClient : public TestContentBrowserClient {
- public:
-  PolicyBlockBrowserClient() = default;
-  ~PolicyBlockBrowserClient() override = default;
-
-  void IsClipboardCopyAllowedByPolicy(
-      const ClipboardEndpoint& source,
-      const ui::ClipboardMetadata& metadata,
-      const ClipboardPasteData& data,
-      IsClipboardCopyAllowedCallback callback) override {
-    // Simulate a policy block returning a replacement string.
-    std::optional<std::u16string> replacement_data = u"Policy Blocked";
-    std::move(callback).Run(metadata.format_type, data,
-                            std::move(replacement_data));
-  }
-
-  void IsClipboardPasteAllowedByPolicy(
-      const ClipboardEndpoint& source,
-      const ClipboardEndpoint& destination,
-      const ui::ClipboardMetadata& metadata,
-      ClipboardPasteData data,
-      IsClipboardPasteAllowedCallback callback) override {
-    // Simulate a policy block returning a replacement string.
-    std::optional<ClipboardPasteData> replacement_data(data);
-    replacement_data->text = u"Paste Policy Blocked";
-    std::move(callback).Run(std::move(replacement_data));
-  }
-};
-
-TEST_F(ClipboardHostImplAsyncWriteTest,
-       WriteUnsanitizedCustomFormat_PolicyBlocked) {
-  PolicyBlockBrowserClient browser_client;
-  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
-
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-
-  std::string test_data = "test custom format data";
-  // The 'web ' prefix is added by blink and stripped by the browser during
-  // initial parsing, so we use the un-prefixed format for writing to mock a
-  // browser write, but the prefixed format for reading to mock a blink read.
-  const std::u16string write_format = u"text/custom-format";
-  const std::u16string read_format = u"web text/custom-format";
-  remote()->WriteUnsanitizedCustomFormat(
-      write_format, mojo_base::BigBuffer(base::as_byte_span(test_data)));
-  remote()->CommitWrite();
-  remote().FlushForTesting();
-
-  // Wait for mojo messages to process, then for delayed policy result to
-  // propagate through `CommitWrite()`.
-  async_write_clipboard_host_impl()->CallOneDelayedResult();
-  remote().FlushForTesting();
-
-  // Custom format should not be available, and replacement text should be on
-  // clipboard instead.
-  base::test::TestFuture<mojo_base::BigBuffer> future;
-  remote()->ReadUnsanitizedCustomFormat(read_format, future.GetCallback());
-  EXPECT_EQ(0u, future.Get().size());
-
-  base::test::TestFuture<std::u16string> clipboard_text_future;
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
-      clipboard_text_future.GetCallback());
-  EXPECT_EQ(u"Policy Blocked", clipboard_text_future.Get());
-}
-
-TEST_F(ClipboardHostImplAsyncWriteTest,
-       ReadUnsanitizedCustomFormat_PolicyBlocked) {
-  PolicyBlockBrowserClient browser_client;
-  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
-
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-
-  std::string test_data = "test custom format data";
-  const std::u16string format = u"text/custom-format";
-
-  // Write directly to the OS clipboard, so we can set up a paste scenario
-  // without triggering the copy mock.
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteData(format,
-                     mojo_base::BigBuffer(base::as_byte_span(test_data)));
-  }
-
-  // Reading the custom format should be blocked by policy mock. Since custom
-  // formats cannot be string-replaced, the result should simply be an empty
-  // buffer.
-  base::test::TestFuture<mojo_base::BigBuffer> future;
-  remote()->ReadUnsanitizedCustomFormat(format, future.GetCallback());
-
-  EXPECT_EQ(0u, future.Get().size());
 }
 
 class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
