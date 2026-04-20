@@ -626,9 +626,10 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
         AssistantButtonFontSize(weakSelf.traitCollection);
 
     BOOL useEnabledColor = !weakButton || weakButton.enabled;
-    UIColor* textColor = useEnabledColor ? ButtonsForegroundColor()
-                                         : [ButtonsForegroundColor()
-                                               colorWithAlphaComponent:0.5];
+    CGFloat baseAlpha = useEnabledColor ? 1.0 : 0.5;
+    CGFloat finalAlpha = baseAlpha * weakSelf.buttonsTitleAlpha;
+    UIColor* textColor =
+        [ButtonsForegroundColor() colorWithAlphaComponent:finalAlpha];
 
     mutableAttributes[NSForegroundColorAttributeName] = textColor;
     return mutableAttributes;
