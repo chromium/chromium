@@ -1053,9 +1053,13 @@ function extractMediaData(document: Document): PageContentMediaData|undefined {
 
   const durationMilliseconds =
       Math.floor(selectedMedia.duration * SECOND_TO_MS_RATIO);
+  const currentPositionMilliseconds =
+      Math.floor(selectedMedia.currentTime * SECOND_TO_MS_RATIO);
 
-  // Duration is required for proto and must be a valid finite number.
-  if (!Number.isFinite(durationMilliseconds)) {
+  // Duration and current position are required for proto and must be a valid
+  // finite number.
+  if (!Number.isFinite(durationMilliseconds) ||
+      !Number.isFinite(currentPositionMilliseconds)) {
     return undefined;
   }
 
@@ -1070,8 +1074,7 @@ function extractMediaData(document: Document): PageContentMediaData|undefined {
   return {
     mediaDataType,
     durationMilliseconds,
-    currentPositionMilliseconds:
-        Math.floor(selectedMedia.currentTime * SECOND_TO_MS_RATIO),
+    currentPositionMilliseconds,
     isPlaying: !selectedMedia.paused && !selectedMedia.ended,
   };
 }

@@ -4542,6 +4542,59 @@ TEST_P(PageContextWrapperTest,
   EXPECT_FALSE(main_frame_data.has_media_data());
 }
 
+// Tests that media data for video is omitted if currentTime is Infinity.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_MediaData_Video_InfinityCurrentTime) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("Media Page", RawHtml("<video id='test-video' controls>"
+                                     "<source src='movie.mp4' type='video/mp4'>"
+                                     "</video>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Inject JS to mock video state with Infinity currentTime.
+  CallJavascript(R"(
+    (function() {
+      const v = document.getElementById('test-video');
+      if (!v) return "Video not found";
+
+      Object.defineProperty(v, 'duration', { value: 120.5 });
+      Object.defineProperty(v, 'currentTime', { value: Infinity });
+      Object.defineProperty(v, 'paused', { value: false });
+      Object.defineProperty(v, 'ended', { value: false });
+
+      return "Video mocked";
+    })()
+  )");
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(true);
+  builder.SetUseRichExtraction(true);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& main_frame_data =
+      page_context->annotated_page_content().main_frame_data();
+  // Media data should be omitted because currentTime is Infinity.
+  EXPECT_FALSE(main_frame_data.has_media_data());
+}
+
 // Tests that media data for audio is correctly extracted from the page.
 TEST_P(PageContextWrapperTest, PopulatePageContext_MediaData_Audio) {
   if (!IsRefactored()) {
