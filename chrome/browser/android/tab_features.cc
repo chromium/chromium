@@ -17,6 +17,7 @@
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -51,6 +53,14 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
 
   TabInterface* const tab = TabInterface::GetFromContents(web_contents);
+
+  if (base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsFirstDialogUi)) {
+    ask_before_http_dialog_controller_ =
+        GetUserDataFactory().CreateInstance<AskBeforeHttpDialogController>(*tab,
+                                                                           tab);
+  }
+
   tab_scoped_side_panel_registry_ =
       AndroidSidePanelEnabledFn::IsEnabled()
           ? std::make_unique<SidePanelRegistry>(tab)

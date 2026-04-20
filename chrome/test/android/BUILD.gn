@@ -228,6 +228,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/settings/PreferenceFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/settings/SettingsActivityPublicTransitEntryPoints.java",
     "javatests/src/org/chromium/chrome/test/transit/settings/SettingsStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/ssl/AskBeforeHttpDialogFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabCountChangedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabGroupCreatedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabGroupExistsCondition.java",

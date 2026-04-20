@@ -1659,6 +1659,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionControllerTest.java",
     "src/org/chromium/chrome/browser/sensitive_content/SensitiveContentTest.java",
     "src/org/chromium/chrome/browser/shape_detection/ShapeDetectionTest.java",
+    "src/org/chromium/chrome/browser/ssl/AskBeforeHttpDialogTest.java",
     "src/org/chromium/chrome/browser/ssl/CaptivePortalTest.java",
     "src/org/chromium/chrome/browser/status_indicator/StatusIndicatorTest.java",
     "src/org/chromium/chrome/browser/storage/BlobUrlStoreTest.java",

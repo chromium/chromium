@@ -191,7 +191,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
                 ModalDialogWrapperJni.get().negativeButtonClicked(mNativeDelegatePtr);
                 break;
             default:
-                ModalDialogWrapperJni.get().dismissed(mNativeDelegatePtr);
+                ModalDialogWrapperJni.get().dismissed(mNativeDelegatePtr, dismissalCause);
                 break;
         }
         for (JniRepeatingCallback callback : mLinkCallbacks) {
@@ -211,7 +211,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
         void menuItemClicked(long nativeModalDialogWrapper, int index);
 
-        void dismissed(long nativeModalDialogWrapper);
+        void dismissed(long nativeModalDialogWrapper, @DialogDismissalCause int dismissalCause);
 
         void destroy(long nativeModalDialogWrapper);
     }

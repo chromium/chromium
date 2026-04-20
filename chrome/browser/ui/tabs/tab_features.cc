@@ -518,7 +518,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsFirstDialogUi)) {
     ask_before_http_dialog_controller_ =
-        std::make_unique<AskBeforeHttpDialogController>(&tab);
+        GetUserDataFactory().CreateInstance<AskBeforeHttpDialogController>(
+            tab, &tab);
   }
 
   bookmarkbar_preload_pipeline_manager_ =

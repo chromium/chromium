@@ -40,6 +40,8 @@ public @interface DialogDismissalCause {
     // Dismissal causes that are fully controlled by clients (i.e. are not used inside the
     // dialog manager or the dialog presenters) are marked "Controlled by client" on comments.
 
+    // LINT.IfChange
+
     /** No specified reason for the dialog dismissal. */
     int UNKNOWN = 0;
 
@@ -108,4 +110,6 @@ public @interface DialogDismissalCause {
 
     /** Controlled by client: The dialog was automatically dismissed after a timeout. */
     int CLIENT_TIMEOUT = 17;
+
+    // LINT.ThenChange(//ui/android/modal_dialog_wrapper.h:DismissalCause)
 }

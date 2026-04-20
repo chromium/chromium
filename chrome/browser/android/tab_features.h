@@ -11,6 +11,7 @@
 #include "chrome/common/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
+class AskBeforeHttpDialogController;
 class Profile;
 class QwacWebContentsObserver;
 class NewTabPagePreloadPipelineManager;
@@ -64,6 +65,9 @@ class TabFeatures {
   static ui::UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();
 
   std::unique_ptr<SidePanelRegistry> tab_scoped_side_panel_registry_;
+
+  std::unique_ptr<AskBeforeHttpDialogController>
+      ask_before_http_dialog_controller_;
 
   std::unique_ptr<actor::ActorTabData> actor_tab_data_;
 

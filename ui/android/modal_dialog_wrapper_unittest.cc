@@ -749,4 +749,70 @@ TEST_F(ModalDialogWrapperTest, MenuItem_CallbackDismissesDialog) {
   EXPECT_TRUE(dialog_destroyed_);
 }
 
+TEST_F(ModalDialogWrapperTest, DismissalCause_ExternalDismissal) {
+  std::optional<ui::ModalDialogWrapper::DismissalCause> observed_cause;
+
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithCloseAction(base::BindLambdaForTesting([&]() {
+            // Check the cause right before the dialog is destroyed.
+            observed_cause =
+                ModalDialogWrapper::GetDialogForTesting()->GetDismissalCause();
+          }))
+          .Build();
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  // Simulate Java dismissing the dialog because the tab was destroyed.
+  fake_dialog_manager_->DismissAllDialogs(
+      static_cast<int>(ui::ModalDialogWrapper::DismissalCause::TAB_DESTROYED));
+
+  EXPECT_TRUE(dialog_destroyed_);
+  EXPECT_EQ(observed_cause,
+            ui::ModalDialogWrapper::DismissalCause::TAB_DESTROYED);
+}
+
+TEST_F(ModalDialogWrapperTest, DismissalCause_NativeClose) {
+  std::optional<ui::ModalDialogWrapper::DismissalCause> observed_cause;
+
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithCloseAction(base::BindLambdaForTesting([&]() {
+            observed_cause =
+                ModalDialogWrapper::GetDialogForTesting()->GetDismissalCause();
+          }))
+          .Build();
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  // Close the dialog explicitly from native code.
+  ModalDialogWrapper::GetDialogForTesting()->Close();
+
+  EXPECT_TRUE(dialog_destroyed_);
+  EXPECT_EQ(observed_cause,
+            ui::ModalDialogWrapper::DismissalCause::DISMISSED_BY_NATIVE);
+}
+
+TEST_F(ModalDialogWrapperTest, DismissalCause_NotSetOnPositiveButtonClick) {
+  std::optional<ui::ModalDialogWrapper::DismissalCause> observed_cause;
+
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::BindLambdaForTesting([&]() {
+            // The Java side routes POSITIVE_BUTTON_CLICKED to
+            // PositiveButtonClicked(), which doesn't populate the
+            // dismissal_cause_.
+            observed_cause =
+                ModalDialogWrapper::GetDialogForTesting()->GetDismissalCause();
+          }))
+          .Build();
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  fake_dialog_manager_->ClickPositiveButton();
+
+  EXPECT_TRUE(dialog_destroyed_);
+  EXPECT_EQ(observed_cause, std::nullopt);
+}
+
 }  // namespace ui

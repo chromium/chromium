@@ -64,6 +64,7 @@ ModalDialogWrapper::ModalDialogWrapper(
     std::unique_ptr<DialogModel> dialog_model,
     ui::WindowAndroid* window_android)
     : dialog_model_(std::move(dialog_model)), window_android_(window_android) {
+  dialog_model_->set_host(DialogModelHost::GetPassKey(), this);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_ = Java_ModalDialogWrapper_create(
       env, reinterpret_cast<uintptr_t>(this), window_android_->GetJavaObject());
@@ -409,7 +410,8 @@ void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, int32_t index) {
   menu_items_[index]->OnActivated(DialogModelFieldHost::GetPassKey(), 0);
 }
 
-void ModalDialogWrapper::Dismissed(JNIEnv* env) {
+void ModalDialogWrapper::Dismissed(JNIEnv* env, int32_t dismissalCause) {
+  dismissal_cause_ = dismissalCause;
   dialog_model_->OnDialogCloseAction(DialogModelHost::GetPassKey());
 }
 
