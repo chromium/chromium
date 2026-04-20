@@ -398,7 +398,7 @@ void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
     return;
   }
   toolbar_height_ = toolbar_height;
-  InvalidateLayout();
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
 void VerticalTabStripTopContainer::SetCaptionButtonWidthForLayout(
@@ -407,7 +407,7 @@ void VerticalTabStripTopContainer::SetCaptionButtonWidthForLayout(
     return;
   }
   caption_button_width_ = caption_button_width;
-  InvalidateLayout();
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
 void VerticalTabStripTopContainer::OnCollapseButtonContextMenuClosed() {
