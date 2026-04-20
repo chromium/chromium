@@ -1043,7 +1043,6 @@ repack("components_tests_pak") {
     "$root_gen_dir/components/strings/components_branded_strings_en-US.pak",
     "$root_gen_dir/components/strings/components_locale_settings_en-US.pak",
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
-    "$root_gen_dir/components/strings/components_variant_strings_en-US.pak",
     "$root_gen_dir/third_party/libaddressinput/address_input_strings_en-US.pak",
   ]
 
@@ -1059,7 +1058,6 @@ repack("components_tests_pak") {
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/resources",
     "//components/strings",
-    "//components/strings:components_variant_strings",
     "//third_party/libaddressinput:strings",
   ]
 }
