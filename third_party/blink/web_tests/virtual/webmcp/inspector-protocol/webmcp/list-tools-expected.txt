@@ -86,39 +86,23 @@ Adding {
         }
     ]
 }
-Unregistering one of each...
 Removing {
     tools : [
         [0] : {
-            annotations : {
-                readOnly : true
-            }
-            description : An imperative WebMCP tool
             frameId : <string>
-            name : initial_imperative_tool
-            stackTrace : {
-                callFrames : [
-                    [0] : {
-                        columnNumber : 31
-                        functionName :
-                        lineNumber : 16
-                        scriptId : <string>
-                        url :
-                    }
-                ]
-            }
+            name : new_declarative_tool
         }
     ]
 }
-Removing {
+Adding {
     tools : [
         [0] : {
             backendNodeId : <number>
-            description : A declarative WebMCP tool
+            description : Another declarative tool
             frameId : <string>
             inputSchema : {
                 properties : {
-                    text : {
+                    text_name : {
                         type : string
                     }
                 }
@@ -126,6 +110,23 @@ Removing {
                 ]
                 type : object
             }
+            name : new_declarative_tool
+        }
+    ]
+}
+Unregistering one of each...
+Removing {
+    tools : [
+        [0] : {
+            frameId : <string>
+            name : initial_imperative_tool
+        }
+    ]
+}
+Removing {
+    tools : [
+        [0] : {
+            frameId : <string>
             name : initial_declarative_tool
         }
     ]

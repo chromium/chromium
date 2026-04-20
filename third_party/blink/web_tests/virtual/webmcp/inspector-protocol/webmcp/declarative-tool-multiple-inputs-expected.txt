@@ -1,0 +1,31 @@
+Tests that declarative WebMCP tool with multiple inputs generates the correct schema.
+Enabling WebMCP Domain...
+Navigating to a new page...
+Tools Added:
+  Name: multi_input_tool
+  Description: A tool with multiple inputs
+  Schema: {}
+Tools Removed:
+  Name: multi_input_tool
+Tools Added:
+  Name: multi_input_tool
+  Description: A tool with multiple inputs
+  Schema: {
+  "type": "object",
+  "properties": {
+    "input_one": {
+      "type": "string"
+    },
+    "input_two": {
+      "type": "number",
+      "multipleOf": 1
+    },
+    "input_three": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "input_one"
+  ]
+}
+

@@ -76,11 +76,19 @@ experimental domain WebMCP
       # Array of tools that were added.
       array of Tool tools
 
+  # Definition of a tool that was removed.
+  type RemovedTool extends object
+    properties
+      # Tool name.
+      string name
+      # Frame identifier associated with the tool registration.
+      Page.FrameId frameId
+
   # Event fired when tools are removed.
   event toolsRemoved
     parameters
       # Array of tools that were removed.
-      array of Tool tools
+      array of RemovedTool tools
 
   # Event fired when a tool invocation starts.
   event toolInvoked

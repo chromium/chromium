@@ -624,6 +624,11 @@ void ModelContext::InvokeToolChangeClosure(bool force) {
   for (auto& it : tool_map_) {
     if (it.value->RefreshDeclarativeInputSchema()) {
       should_fire = true;
+      // Synthesize removed/added events so that DevTools picks up the new
+      // schema. Newly registered tools may emit added/removed/added initially,
+      // but this is necessary for dynamic schema updates to propagate.
+      probe::WebMCPToolRemoved(document_, *it.value);
+      probe::WebMCPToolAdded(document_, *it.value);
     }
   }
   if (should_fire && tool_change_closure_) {

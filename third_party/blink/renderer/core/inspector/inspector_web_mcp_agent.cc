@@ -220,8 +220,12 @@ void InspectorWebMCPAgent::WebMCPToolRemoved(Document* document,
   if (!enabled_.Get() || !frame) {
     return;
   }
-  auto tools = std::make_unique<protocol::Array<protocol::WebMCP::Tool>>();
-  tools->push_back(BuildProtocolTool(frame, tool));
+  auto tools =
+      std::make_unique<protocol::Array<protocol::WebMCP::RemovedTool>>();
+  tools->push_back(protocol::WebMCP::RemovedTool::create()
+                       .setName(tool.Name())
+                       .setFrameId(IdentifiersFactory::FrameId(frame))
+                       .build());
   GetFrontend()->toolsRemoved(std::move(tools));
 }
 
