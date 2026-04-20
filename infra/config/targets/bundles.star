@@ -5198,7 +5198,6 @@ targets.bundle(
         "cc_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter",
                 "--use-gpu-in-tests",
             ],
         ),
