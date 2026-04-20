@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
@@ -74,15 +75,7 @@ RecordAndReturnOnDemandExtractionResult(
   return result;
 }
 
-}  // namespace
-
-// static
-std::unique_ptr<AnnotatedPageContentRequest>
-AnnotatedPageContentRequest::Create(
-    content::WebContents* web_contents,
-    PageContentExtractionService& page_content_extraction_service,
-    FetchPageContextCallback fetch_page_context_callback,
-    GetTabIdCallback get_tab_id_callback) {
+blink::mojom::AIPageContentOptionsPtr CreateOptions() {
   auto options = blink::mojom::AIPageContentOptions::New();
   options->mode =
       (page_content_annotations::features::AnnotatedPageContentMode() ==
@@ -99,20 +92,20 @@ AnnotatedPageContentRequest::Create(
     options->non_salient_content_config->exclude_ad_related = true;
   }
 
-  return std::make_unique<AnnotatedPageContentRequest>(
-      web_contents, page_content_extraction_service, std::move(options),
-      std::move(fetch_page_context_callback), std::move(get_tab_id_callback));
+  return options;
 }
+
+}  // namespace
 
 AnnotatedPageContentRequest::AnnotatedPageContentRequest(
     content::WebContents* web_contents,
     PageContentExtractionService& page_content_extraction_service,
-    blink::mojom::AIPageContentOptionsPtr options,
     FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback)
-    : page_content_extraction_service_(page_content_extraction_service),
-      web_contents_(web_contents),
-      options_(std::move(options)),
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<AnnotatedPageContentRequest>(*web_contents),
+      page_content_extraction_service_(page_content_extraction_service),
+      options_(CreateOptions()),
       delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
@@ -131,7 +124,19 @@ AnnotatedPageContentRequest::~AnnotatedPageContentRequest() {
   ResolveAllCallbacksWith(std::nullopt);
 }
 
-void AnnotatedPageContentRequest::PrimaryPageChanged() {
+// static
+std::unique_ptr<AnnotatedPageContentRequest>
+AnnotatedPageContentRequest::CreateForTesting(  // IN-TEST
+    content::WebContents* web_contents,
+    PageContentExtractionService& page_content_extraction_service,
+    FetchPageContextCallback fetch_page_context_callback,
+    GetTabIdCallback get_tab_id_callback) {
+  return base::WrapUnique(new AnnotatedPageContentRequest(
+      web_contents, page_content_extraction_service,
+      std::move(fetch_page_context_callback), std::move(get_tab_id_callback)));
+}
+
+void AnnotatedPageContentRequest::PrimaryPageChanged(content::Page& page) {
   ResetForNewNavigation();
 }
 
@@ -184,18 +189,18 @@ void AnnotatedPageContentRequest::DidFinishNavigation(
 
 void AnnotatedPageContentRequest::DidStopLoading() {
   // Ensure that the main frame's Document has finished loading.
-  if (!web_contents_->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return;
   }
 
   // Once the main Document has fired the `load` event, wait for all subframes
   // currently in the FrameTree to also finish loading.
-  if (web_contents_->IsLoading()) {
+  if (web_contents()->IsLoading()) {
     return;
   }
 
   if (IsPdf() ||
-      web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
+      web_contents()->GetVisibility() == content::Visibility::HIDDEN ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPageContentAnnotationsSkipFCPWaitForTesting)) {
     // Pdfs and hidden tabs don't provide a reliable FirstContentfulPaint
@@ -225,7 +230,7 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   weak_factory_.InvalidateWeakPtrs();
 
   page_content_extraction_service_->OnNewNavigation(
-      get_tab_id_callback_.Run(web_contents_), web_contents_);
+      get_tab_id_callback_.Run(web_contents()), web_contents());
 }
 
 void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
@@ -279,19 +284,22 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
         ScreenshotOptions::ViewportOnly(std::nullopt, std::nullopt);
   }
   fetch_page_context_callback_.Run(
-      *web_contents_, options, /*progress_listener=*/nullptr,
+      *web_contents(), options, /*progress_listener=*/nullptr,
       base::BindOnce(&AnnotatedPageContentRequest::OnPageContextFetched,
                      weak_factory_.GetWeakPtr()));
 
   if (include_inner_text_) {
     content_extraction::GetInnerText(
-        *web_contents_->GetPrimaryMainFrame(), std::nullopt,
+        *web_contents()->GetPrimaryMainFrame(), std::nullopt,
         base::BindOnce(&AnnotatedPageContentRequest::OnInnerTextReceived,
                        weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   }
 }
 
 bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
+  if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
+    return false;
+  }
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
 
   // If the page is not loaded, the extraction would not work.
@@ -362,10 +370,10 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
           std::move(page_content_result->proto));
 
   page_content_extraction_service_->OnPageContentExtracted(
-      web_contents_->GetPrimaryPage(), ref_counted_content, screenshot_data,
-      get_tab_id_callback_.Run(web_contents_));
+      web_contents()->GetPrimaryPage(), ref_counted_content, screenshot_data,
+      get_tab_id_callback_.Run(web_contents()));
 
-  GURL url = web_contents_->GetLastCommittedURL();
+  GURL url = web_contents()->GetLastCommittedURL();
   bool is_eligible_for_server_upload =
       !page_context_eligibility_ ||
       optimization_guide::IsPageContextEligible(
@@ -396,7 +404,7 @@ void AnnotatedPageContentRequest::OnInnerTextReceived(
 void AnnotatedPageContentRequest::RequestPdfPageCount() {
   CHECK(IsPdf());
   auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
   if (pdf_helper) {
     pdf_helper->RegisterForDocumentLoadComplete(
         base::BindOnce(&AnnotatedPageContentRequest::OnPdfDocumentLoadComplete,
@@ -409,14 +417,14 @@ void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
   lifecycle_ = Lifecycle::kExtracted;
 
   auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
   if (pdf_helper) {
     // Fetch zero PDF bytes to just receive the total page count.
     pdf_helper->GetPdfBytes(
         /*size_limit=*/0,
         base::BindOnce(
             &RecordPdfPageCountMetrics,
-            web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
   }
 
   // Requests for PDFs are synchronously rejected in
@@ -445,10 +453,14 @@ std::optional<bool> AnnotatedPageContentRequest::GetServerUploadEligibility() {
 }
 
 bool AnnotatedPageContentRequest::IsPdf() const {
-  return web_contents_->GetContentsMimeType() == pdf::kPDFMimeType;
+  return web_contents()->GetContentsMimeType() == pdf::kPDFMimeType;
 }
 
 bool AnnotatedPageContentRequest::ShouldAsyncWaitForExtraction() const {
+  if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
+    return false;
+  }
+
   if (IsPdf()) {
     CHECK(!cached_content_.has_value());
     return false;
@@ -497,6 +509,11 @@ void AnnotatedPageContentRequest::GetServerUploadEligibilityAsync(
 void AnnotatedPageContentRequest::
     RefreshExtractedPageContentAndEligibilityForPage(
         GetExtractedPageContentAndEligibilityCallback callback) {
+  if (!page_content_extraction_service_->ShouldEnablePageContentExtraction()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentExtraction.OnDemand.IsPDF", IsPdf());
 
@@ -593,11 +610,13 @@ void AnnotatedPageContentRequest::OnVisibilityChanged(
   }
 
   page_content_extraction_service_->OnVisibilityChanged(
-      get_tab_id_callback_.Run(web_contents_), web_contents_, visibility);
+      get_tab_id_callback_.Run(web_contents()), web_contents(), visibility);
 
   if (is_hidden_) {
     MaybeScheduleExtraction(/*on_hide=*/true);
   }
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AnnotatedPageContentRequest);
 
 }  // namespace page_content_annotations

@@ -19,7 +19,6 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
-#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
@@ -270,9 +269,7 @@ PageContentExtractionService::GetAnnotatedPageContentRequestFromWebContents(
   if (!web_contents) {
     return nullptr;
   }
-  PageContentAnnotationsWebContentsObserver* observer =
-      PageContentAnnotationsWebContentsObserver::FromWebContents(web_contents);
-  return observer ? observer->GetAnnotatedPageContentRequest() : nullptr;
+  return AnnotatedPageContentRequest::FromWebContents(web_contents);
 }
 
 AnnotatedPageContentRequest*

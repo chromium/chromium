@@ -97,14 +97,7 @@ class TestPageContentAnnotationsObserver
       last_page_content_annotations_result_;
 };
 
-// Generates a unique id for tab's WebContents that's sufficient for test
-// purposes.
-// TODO(crbug.com/440643544): Update if/when a usable tab ID is implemented in
-// production for all platforms.
 
-std::optional<int64_t> MakeTabId(content::WebContents* web_contents) {
-  return reinterpret_cast<int64_t>(web_contents);
-}
 
 }  // namespace
 
@@ -646,11 +639,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       PageContentAnnotationsWebContentsObserver::GetOrCreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents(),
           *PageContentAnnotationsServiceFactory::GetForProfile(
-              browser()->profile()),
-          PageContentExtractionServiceFactory::GetForProfile(
-              browser()->profile()),
-          base::BindRepeating(&page_content_annotations::FetchPageContext),
-          base::BindRepeating(&MakeTabId))
+              browser()->profile()))
           ->content_visibility_score()
           .has_value());
 }

@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -98,7 +99,7 @@ class AnnotatePageContentRequestTest
   }
 
   void TearDown() override {
-    request_.reset();
+    request_ = nullptr;
     extraction_service_.reset();
     os_crypt_async_.reset();
     content::RenderViewHostTestHarness::TearDown();
@@ -112,7 +113,9 @@ class AnnotatePageContentRequestTest
   }
 
   void RecreateRequest() {
-    request_ = AnnotatedPageContentRequest::Create(
+    request_ = nullptr;
+    web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+    AnnotatedPageContentRequest::CreateForWebContents(
         web_contents(), extraction_service_.value(),
         base::BindRepeating(
             [](AnnotatePageContentRequestTest* test, content::WebContents&,
@@ -132,6 +135,7 @@ class AnnotatePageContentRequestTest
         base::BindRepeating([](content::WebContents* web_contents) {
           return std::make_optional(reinterpret_cast<int64_t>(web_contents));
         }));
+    request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
   }
 
   std::unique_ptr<content::MockNavigationHandle> CreateHandle(
@@ -148,7 +152,7 @@ class AnnotatePageContentRequestTest
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
         GURL("https://example.com/"), web_contents());
     navigation->Start();
-    request_->PrimaryPageChanged();
+    request_->PrimaryPageChanged(web_contents()->GetPrimaryPage());
     navigation->Commit();
     auto handle = CreateHandle(true, false);
     request_->DidFinishNavigation(handle.get());
@@ -174,7 +178,7 @@ class AnnotatePageContentRequestTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<TestPageContentExtractionService> extraction_service_;
-  std::unique_ptr<AnnotatedPageContentRequest> request_;
+  raw_ptr<AnnotatedPageContentRequest> request_ = nullptr;
   blink::mojom::AIPageContentOptionsPtr previous_options_;
 };
 
@@ -311,7 +315,7 @@ TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://example.com/2"), web_contents());
   navigation->Start();
-  request_->PrimaryPageChanged();
+  request_->PrimaryPageChanged(web_contents()->GetPrimaryPage());
   navigation->Commit();
   auto handle = CreateHandle(true, false);
   request_->DidFinishNavigation(handle.get());
@@ -435,11 +439,14 @@ TEST_F(AnnotatePageContentRequestTest,
       async_callback);
 
   // Overwrite the synchronous request with our manual mock.
-  request_ = AnnotatedPageContentRequest::Create(
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  AnnotatedPageContentRequest::CreateForWebContents(
       web_contents(), extraction_service(), manual_callback,
       base::BindRepeating([](content::WebContents* web_contents) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
 
   SimulatePageLoad();
 
@@ -525,7 +532,7 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
 
   // Create another request with an async fetcher to test batching.
   FetchPageContextResultCallback saved_callback;
-  auto async_request = AnnotatedPageContentRequest::Create(
+  auto async_request = AnnotatedPageContentRequest::CreateForTesting(
       web_contents(), extraction_service(),
       base::BindRepeating(
           [](FetchPageContextResultCallback* saved, content::WebContents&,
@@ -603,8 +610,10 @@ TEST_F(AnnotatePageContentRequestTest,
 }
 
 TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
+  // Ensures extraction is enabled for this class.
+  SetTriggeringMode("on_load");
   // Create a request with a failing fetcher.
-  auto failing_request = AnnotatedPageContentRequest::Create(
+  auto failing_request = AnnotatedPageContentRequest::CreateForTesting(
       web_contents(), extraction_service(),
       base::BindRepeating([](content::WebContents&,
                              const FetchPageContextOptions&,
@@ -627,9 +636,11 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
 }
 
 TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
+  // Ensures extraction is enabled for this class.
+  SetTriggeringMode("on_load");
   // Create a request with an async fetcher (saves the callback).
   FetchPageContextResultCallback saved_callback;
-  auto async_request = AnnotatedPageContentRequest::Create(
+  auto async_request = AnnotatedPageContentRequest::CreateForTesting(
       web_contents(), extraction_service(),
       base::BindRepeating(
           [](FetchPageContextResultCallback* saved, content::WebContents&,
@@ -643,14 +654,12 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
         return std::make_optional(reinterpret_cast<int64_t>(web_contents));
       }));
 
-  SimulatePageLoad();
-
   base::test::TestFuture<std::optional<ExtractedPageContentResult>>
       refresh_future;
   async_request->RefreshExtractedPageContentAndEligibilityForPage(
       refresh_future.GetCallback());
 
-  // Extraction should be running now.
+  // Extraction should be scheduled now.
   EXPECT_TRUE(saved_callback);
   EXPECT_EQ(extraction_service().extraction_count(), 0);
 
@@ -658,7 +667,7 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://example_new.com/"), web_contents());
   navigation->Start();
-  async_request->PrimaryPageChanged();
+  async_request->PrimaryPageChanged(web_contents()->GetPrimaryPage());
   navigation->Commit();
 
   // The callback should error out due to the navigation.
@@ -730,7 +739,7 @@ TEST_F(AnnotatePageContentRequestTest, GetAsync_InvalidateOnNavigation) {
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       GURL("https://example.com/2"), web_contents());
   navigation->Start();
-  request_->PrimaryPageChanged();
+  request_->PrimaryPageChanged(web_contents()->GetPrimaryPage());
   navigation->Commit();
 
   ASSERT_TRUE(content_future.Wait());

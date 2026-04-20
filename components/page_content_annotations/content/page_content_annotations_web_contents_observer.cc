@@ -15,8 +15,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/page_content_annotations/content/annotate_page_content_request.h"
-#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/pdf/common/constants.h"
@@ -43,37 +41,13 @@ HistoryVisit CreateHistoryVisitFromWebContents(
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
-        PageContentAnnotationsService& page_content_annotations_service,
-        PageContentExtractionService* page_content_extraction_service,
-        FetchPageContextCallback fetch_page_context_callback,
-        GetTabIdCallback get_tab_id_callback)
+        PageContentAnnotationsService& page_content_annotations_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
           *web_contents),
-      page_content_annotations_service_(page_content_annotations_service),
-      page_content_extraction_service_(page_content_extraction_service),
-      fetch_page_context_callback_(std::move(fetch_page_context_callback)),
-      get_tab_id_callback_(std::move(get_tab_id_callback)) {
+      page_content_annotations_service_(page_content_annotations_service) {
   page_content_annotations_service_->AddObserver(
       AnnotationType::kContentVisibility, this);
-}
-
-AnnotatedPageContentRequest*
-PageContentAnnotationsWebContentsObserver::GetAnnotatedPageContentRequest() {
-  bool should_enable =
-      page_content_extraction_service_ &&
-      page_content_extraction_service_->ShouldEnablePageContentExtraction();
-
-  if (should_enable) {
-    if (!annotated_page_content_request_) {
-      annotated_page_content_request_ = AnnotatedPageContentRequest::Create(
-          web_contents(), *page_content_extraction_service_,
-          fetch_page_context_callback_, get_tab_id_callback_);
-    }
-  } else {
-    annotated_page_content_request_.reset();
-  }
-  return annotated_page_content_request_.get();
 }
 
 PageContentAnnotationsWebContentsObserver::
@@ -104,39 +78,10 @@ void PageContentAnnotationsWebContentsObserver::
       true);
 }
 
-void PageContentAnnotationsWebContentsObserver::DidStopLoading() {
-  if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {
-    annotated_page_content_request->DidStopLoading();
-  }
-}
 
-void PageContentAnnotationsWebContentsObserver::PrimaryPageChanged(
-    content::Page& page) {
-  if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {
-    annotated_page_content_request->PrimaryPageChanged();
-  }
-}
-
-void PageContentAnnotationsWebContentsObserver::
-    OnFirstContentfulPaintInPrimaryMainFrame() {
-  if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {
-    annotated_page_content_request->OnFirstContentfulPaintInPrimaryMainFrame();
-  }
-}
-
-void PageContentAnnotationsWebContentsObserver::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {
-    annotated_page_content_request->OnVisibilityChanged(visibility);
-  }
-}
 
 void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (auto* annotated_page_content_request = GetAnnotatedPageContentRequest()) {
-    annotated_page_content_request->DidFinishNavigation(navigation_handle);
-  }
-
   // New navigation. Reset the content visibility score.
   content_visibility_score_ = std::nullopt;
 }

@@ -18,6 +18,8 @@
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
@@ -43,36 +45,22 @@ using GetTabIdCallback =
 
 // Class for deciding when a page is ready for getting page content, and
 // extracts page content.
-class AnnotatedPageContentRequest {
+// TODO(b/490161242): Rename this class to reflect that it's the observer.
+class AnnotatedPageContentRequest
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<AnnotatedPageContentRequest> {
  public:
-  static std::unique_ptr<AnnotatedPageContentRequest> Create(
-      content::WebContents* web_contents,
-      PageContentExtractionService& page_content_extraction_service,
-      FetchPageContextCallback fetch_page_context_callback,
-      GetTabIdCallback get_tab_id_callback);
-
-  AnnotatedPageContentRequest(
-      content::WebContents* web_contents,
-      PageContentExtractionService& page_content_extraction_service,
-      blink::mojom::AIPageContentOptionsPtr options,
-      FetchPageContextCallback fetch_page_context_callback,
-      GetTabIdCallback get_tab_id_callback);
-
   AnnotatedPageContentRequest(const AnnotatedPageContentRequest&) = delete;
   AnnotatedPageContentRequest& operator=(const AnnotatedPageContentRequest&) =
       delete;
-  ~AnnotatedPageContentRequest();
+  ~AnnotatedPageContentRequest() override;
 
-  void PrimaryPageChanged();
-
-  void DidFinishNavigation(content::NavigationHandle* navigation_handle);
-
-  void DidStopLoading();
-
-  void OnFirstContentfulPaintInPrimaryMainFrame();
-
-  void OnVisibilityChanged(content::Visibility visibility);
-
+  // Creates an instance for testing that is not attached as UserData.
+  static std::unique_ptr<AnnotatedPageContentRequest> CreateForTesting(
+      content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
+      FetchPageContextCallback fetch_page_context_callback,
+      GetTabIdCallback get_tab_id_callback);
   // Returns the cached APC for `page` and whether it is eligible for
   // server upload. Will return nullopt if not available or not supported (e.g.
   // for PDFs).
@@ -102,7 +90,23 @@ class AnnotatedPageContentRequest {
   void RefreshExtractedPageContentAndEligibilityForPage(
       GetExtractedPageContentAndEligibilityCallback callback);
 
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidStopLoading() override;
+  void OnFirstContentfulPaintInPrimaryMainFrame() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
  private:
+  friend class content::WebContentsUserData<AnnotatedPageContentRequest>;
+
+  AnnotatedPageContentRequest(
+      content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
+      FetchPageContextCallback fetch_page_context_callback,
+      GetTabIdCallback get_tab_id_callback);
+
   bool IsPdf() const;
 
   // Returns true if the async getter should wait for the extraction to
@@ -142,7 +146,6 @@ class AnnotatedPageContentRequest {
 
   raw_ref<PageContentExtractionService> page_content_extraction_service_;
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
-  const raw_ptr<content::WebContents> web_contents_;
   const blink::mojom::AIPageContentOptionsPtr options_;
   const base::TimeDelta delay_;
   const bool include_inner_text_;
@@ -189,6 +192,8 @@ class AnnotatedPageContentRequest {
   GetTabIdCallback get_tab_id_callback_;
 
   base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace page_content_annotations
