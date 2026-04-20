@@ -30,6 +30,7 @@ class AutotestConfig:
   no_single_variant: bool | None
   no_build: bool | None
   suite: bool | None
+  builder: bool | None
   files: tuple[str, ...]
   gemini: bool | None
   extras: list[str] | None = None  # To hold ctx.args
@@ -96,8 +97,8 @@ def autotest_options(f):
   def wrapper(*args, **kwargs):
     if kwargs.get('gemini') and os.environ.get('GEMINI_CLI') == '1':
       raise click.UsageError(
-          'Cannot run autotest with --gemini from within an active Gemini CLI session to prevent nested agent invocations.'
-      )
+          'Cannot run autotest with --gemini from within an active '
+          'Gemini CLI session to prevent nested agent invocations.')
     return f(*args, **kwargs)
 
   # Apply the options to the wrapper function
@@ -137,8 +138,7 @@ def autotest_options(f):
           '--path-index',
           '--path_index',
           type=int,
-          help='When the test path is ambiguous, choose the one with this index.'
-      ),
+          help='When the path is ambiguous, choose the one with this index.'),
       click.option(
           '--run-changed',
           '--run_changed',
@@ -149,8 +149,7 @@ def autotest_options(f):
           '--run-related',
           '--run_related',
           is_flag=True,
-          help=
-          'Run tests related to files modified since this branch diverged from main.'
+          help='Run tests related to files modified since diverging from main.'
       ),
       click.option('--line',
                    type=int,
@@ -198,9 +197,14 @@ def autotest_options(f):
       click.option(
           '--gemini',
           is_flag=True,
-          help=
-          'If a test fails, interactively launch the Gemini CLI to diagnose the failure and propose a fix.'
-      ),
+          help='If a test fails, interactively launch the Gemini CLI to '
+          'diagnose the failure and propose a fix.'),
+      click.option(
+          '--builder',
+          is_flag=True,
+          help='Simulate a given builder via UTR. Run with no extra '
+          'arguments to see UTR options. This option will run entire test'
+          ' suites.'),
   ]
   # Apply in reverse so the first item in the list appears first in --help
   for option in reversed(options):
