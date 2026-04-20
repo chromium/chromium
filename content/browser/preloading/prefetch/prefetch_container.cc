@@ -1422,7 +1422,22 @@ void PrefetchContainer::OnPrefetchStarted() {
   SetLoadState(PrefetchContainer::LoadState::kStarted);
   prefetch_container_metrics_.time_prefetch_started = base::TimeTicks::Now();
 
-  MakeInitialResourceRequest();
+  if (IsConstructedFromPrePrefetch()) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+    CHECK(resource_request_for_pre_prefetch_);
+
+    // TODO(crbug.com/452389538): `resource_request_for_pre_prefetch_` was
+    // constructed from a non-main thread snapshot during PrePrefetch. We can
+    // validate `resource_request_for_pre_prefetch_` by comparing it with the
+    // strictly accurate resource request that is constructed here and modified
+    // via `URLLoaderFactory`s. This can only be done after
+    // `URLLoaderFactory::CreateLoaderAndStart` on
+    // `PrefetchStreamingURLLoader::Start()`.
+    resource_request_ = std::move(resource_request_for_pre_prefetch_);
+  } else {
+    resource_request_ =
+        MakeInitialResourceRequestForPrefetch(request(), IsDecoy());
+  }
 
   if (!IsDecoy()) {
     // The status is updated to be successful or failed when it finishes.
@@ -1460,26 +1475,6 @@ PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
   PrefetchSingleRedirectHop& this_prefetch =
       GetCurrentSingleRedirectHopToPrefetch();
   return this_prefetch.response_reader().GetWeakPtr();
-}
-
-void PrefetchContainer::MakeInitialResourceRequest() {
-  if (IsConstructedFromPrePrefetch()) {
-    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
-    CHECK(resource_request_for_pre_prefetch_);
-
-    // TODO(crbug.com/452389538): `resource_request_for_pre_prefetch_` was
-    // constructed from a non-main thread snapshot during PrePrefetch. We can
-    // validate `resource_request_for_pre_prefetch_` by comparing it with the
-    // strictly accurate resource request that is constructed here and modified
-    // via `URLLoaderFactory`s. This can only be done after
-    // `URLLoaderFactory::CreateLoaderAndStart` on
-    // `PrefetchStreamingURLLoader::Start()`.
-    resource_request_ = std::move(resource_request_for_pre_prefetch_);
-    return;
-  }
-
-  resource_request_ =
-      MakeInitialResourceRequestForPrefetch(request(), IsDecoy());
 }
 
 const std::string& PrefetchContainer::GetDevtoolsRequestId() const {

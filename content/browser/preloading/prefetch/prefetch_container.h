@@ -321,12 +321,6 @@ class CONTENT_EXPORT PrefetchContainer
 
   base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
 
-  // `OnPrefetchStarted()` creates the initial resource request based on
-  // `PrefetchRequest`. `UpdateResourceRequest()`, which will be called on
-  // redirect, may update this resource request later on.
-  // TODO(crbug.com/483079815): Remove and inline
-  // `MakeInitialResourceRequest()`.
-  void MakeInitialResourceRequest();
   const network::ResourceRequest* GetResourceRequest() const {
     return resource_request_.get();
   }
@@ -777,13 +771,14 @@ class CONTENT_EXPORT PrefetchContainer
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
 
-  // Information about the current prefetch request.
-  // For normal Prefetches, this is initially created via
-  // `MakeInitialResourceRequest()`, which is called from `PrefetchService` when
-  // Prefetch is dequeued and its request is actually started. For
-  // PrePrefetches, it is given via ctor and updated when a redirect happens,
-  // whether or not the redirect is handled by the same URL loader or requires a
-  // new loader with an isolated context.
+  // The `ResourceRequest` for the current prefetch request.
+  // This is initially set in `OnPrefetchStarted()`, which is called from
+  // `PrefetchService` when Prefetch is dequeued and its request is actually
+  // started.
+  // - For normal prefetches, this is created from `PrefetchRequest`.
+  // - For PrePrefetch-initiated prefetches, this is passed from ctor.
+  // This is updated upon redirects, regardless of whether the redirect is
+  // handled by the same URL loader or requires a new loader.
   std::unique_ptr<network::ResourceRequest> resource_request_;
 
   // ResourceRequest that was used for `PrePrefetch`. This should eventually be
