@@ -271,7 +271,7 @@ BASE_FEATURE_PARAM(bool,
                    "intent_picker",
 // TODOD(crbug.com/480035938): Enable on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
-                   true
+                   false
 #else
                    true
 #endif
@@ -281,7 +281,7 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationZoom,
                    &kPageActionsMigration,
                    "zoom",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationFileSystemAccess,
@@ -293,37 +293,37 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationCookieControls,
                    &kPageActionsMigration,
                    "cookie_controls",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationAutofillMandatoryReauth,
                    &kPageActionsMigration,
                    "mandatory_reauth",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationSharingHub,
                    &kPageActionsMigration,
                    "sharing_hub",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationAiMode,
                    &kPageActionsMigration,
                    "ai_mode",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationVirtualCard,
                    &kPageActionsMigration,
                    "virtual_card",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationFilledCardInformation,
                    &kPageActionsMigration,
                    "filled_card_information",
-                   true);
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationReadingMode,
@@ -335,17 +335,17 @@ BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationSavePayments,
                    &kPageActionsMigration,
                    "save_payments",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationLensOverlayHomework,
                    &kPageActionsMigration,
                    "lens_overlay_homework",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationBookmarkStar,
                    &kPageActionsMigration,
                    "bookmark_star",
-                   true);
+                   false);
 
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 

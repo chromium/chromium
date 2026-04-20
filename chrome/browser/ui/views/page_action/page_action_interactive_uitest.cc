@@ -473,22 +473,20 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
   ShowTranslateSuggestionChip();
 
-  // Expect translate view to move to the front. It should be at index 0 if
-  // it's the only chip, but it might be pushed back if other actions are
-  // also showing chips by default.
-  size_t translate_chip_index = 0u;
+  // Expect translate view to move to the front (index 0) as it's the only chip.
   {
     auto new_translate_index = container->GetIndexOf(translate_view);
     ASSERT_TRUE(new_translate_index.has_value());
-    translate_chip_index = new_translate_index.value();
+    EXPECT_EQ(new_translate_index.value(), 0u);
   }
   // The memory saver view, now a non-chip, should follow the chip.
-  // Since translate is at translate_chip_index, the memory saver should
-  // maintain its relative order among non-chips.
+  // Since translate is at index 0, the memory saver should maintain its
+  // relative order among non-chips.
   {
     auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
     ASSERT_TRUE(new_memory_saver_index.has_value());
-    EXPECT_GT(new_memory_saver_index.value(), translate_chip_index);
+    EXPECT_EQ(new_memory_saver_index.value(),
+              initial_memory_saver_index.value());
   }
 
   // Step 2: Activate suggestion chip for the memory saver page action as well.
@@ -498,19 +496,18 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   // Now both are chips. The new logic sorts chips by their initial insertion
   // order. Since translate was initially before memory saver, translate should
-  // remain at its position, and memory saver should be immediately after it.
+  // remain at index 0.
   {
     auto new_translate_index = container->GetIndexOf(translate_view);
     ASSERT_TRUE(new_translate_index.has_value());
-    EXPECT_EQ(new_translate_index.value(), translate_chip_index);
+    EXPECT_EQ(new_translate_index.value(), 0u);
   }
-  // And the memory saver view should now be at translate_chip_index + 1,
-  // immediately after the translate chip, preserving its relative initial order
-  // among chips.
+  // And the memory saver view should now be at index 1, immediately after
+  // the translate chip, preserving its relative initial order among chips.
   {
     auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
     ASSERT_TRUE(new_memory_saver_index.has_value());
-    EXPECT_EQ(new_memory_saver_index.value(), translate_chip_index + 1);
+    EXPECT_EQ(new_memory_saver_index.value(), 1u);
   }
 
   // Step 3: Hide the translate suggestion chip.
@@ -518,21 +515,19 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // Only memory saver is a chip now.
   HideSuggestionChip(kActionShowTranslate);
 
-  // Memory saver should now be the only active chip among the two.
-  // It should be at index 0 if it's the only chip, but it might be pushed back
-  // if other actions are also showing chips by default.
-  size_t memory_saver_chip_index = 0u;
+  // Memory saver should now be the only active chip and move to index 0.
   {
     auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
     ASSERT_TRUE(new_memory_saver_index.has_value());
-    memory_saver_chip_index = new_memory_saver_index.value();
+    EXPECT_EQ(new_memory_saver_index.value(), 0u);
   }
   // Translate is no longer a chip. It should be placed after the memory saver
   // chip, maintaining its initial relative order among non-chips.
+  // In this case, it will be at index 1.
   {
     auto new_translate_index = container->GetIndexOf(translate_view);
     ASSERT_TRUE(new_translate_index.has_value());
-    EXPECT_GT(new_translate_index.value(), memory_saver_chip_index);
+    EXPECT_EQ(new_translate_index.value(), 1u);
   }
 
   // Step 4: Hide the memory saver suggestion chip.
@@ -609,18 +604,20 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   base::HistogramTester histogram_tester;
 
   // 1) Show the ephemeral Translate action in the initial tab (tab[0]) for the
-  //    very first time.
+  //    very first time. This should increment the histogram by 1.
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 1);
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 1);
+  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
+                                      PageActionIconType::kTranslate, 1);
 
   // 2) Hide and re-show the same Translate icon within the same page context
   //    (same tab, same navigation). Because it's ephemeral and already shown,
   //    the histogram should not increment again.
   HidePageAction(kActionShowTranslate);
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 1);
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 1);
+  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
+                                      PageActionIconType::kTranslate, 1);
 
   // 3) Navigate to a new URL in the same tab (tab[0]). This is now a new page
   //    context. Showing the ephemeral Translate action again in this context
@@ -628,8 +625,9 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 2);
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 2);
+  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
+                                      PageActionIconType::kTranslate, 2);
 
   // 4) Open a brand new tab (tab[1]) and activate it. Because each tab
   // maintains its own context, showing ephemeral actions for the first time in
@@ -642,11 +640,13 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   // Show ephemeral Translate action in tab[1].
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 3);
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 3);
+  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
+                                      PageActionIconType::kTranslate, 3);
 
   // Show ephemeral Memory Saver chip in tab[1].
   ShowPageAction(kActionShowMemorySaverChip);
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 4);
   histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
                                      PageActionIconType::kTranslate, 3);
   histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
@@ -657,8 +657,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // metric, since it's the same context in tab[0].
   browser()->tab_strip_model()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 3);
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 4);
 }
 
 // Verifies that "…Icon.CTR2" histograms emit kShown once-per-context.
@@ -673,51 +672,39 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   // 1. Initial page-context (tab[0], first navigation).
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount(kGeneralHistogram,
-                                     PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectUniqueSample(kGeneralHistogram,
+                                      PageActionCTREvent::kShown, 1);
   histogram_tester.ExpectUniqueSample(kTranslateHistogram,
                                       PageActionCTREvent::kShown, 1);
 
   // 2. Hide + re-show in the SAME context → no additional logging.
   HidePageAction(kActionShowTranslate);
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount(kGeneralHistogram,
-                                     PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 1);
   histogram_tester.ExpectTotalCount(kTranslateHistogram, 1);
 
   // 3. New navigation in the SAME tab → new context, logs again.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
   ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount(kGeneralHistogram,
-                                     PageActionCTREvent::kShown, 2);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 2);
   histogram_tester.ExpectBucketCount(kTranslateHistogram,
                                      PageActionCTREvent::kShown, 2);
 
   // 4. Open a new tab → brand-new context.
-  // Opening the new tab may log 1 sample for a default page action.
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   // 4-a) First show of Translate in tab[1] logs again.
   ShowPageAction(kActionShowTranslate);
-  // Expect 4: 2 from before, +1 from a default action in the new tab, +1 from
-  // Translate.
-  histogram_tester.ExpectBucketCount(kGeneralHistogram,
-                                     PageActionCTREvent::kShown, 4);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 3);
   histogram_tester.ExpectBucketCount(kTranslateHistogram,
                                      PageActionCTREvent::kShown, 3);
 
-  // 5. Switch back to tab[0]. Switching back might log another sample for a
-  // default action in that context.
   browser()->tab_strip_model()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
-  // Expect 5: 4 from before, +1 from a default action when switching back.
-  // Translate is NOT logged again because it was already logged for this
-  // context.
-  histogram_tester.ExpectBucketCount(kGeneralHistogram,
-                                     PageActionCTREvent::kShown, 5);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 3);
   histogram_tester.ExpectBucketCount(kTranslateHistogram,
                                      PageActionCTREvent::kShown, 3);
 }

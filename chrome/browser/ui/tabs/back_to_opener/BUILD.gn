@@ -43,7 +43,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/tabs:test_support",
-    "//chrome/browser/ui/views/location_bar/cookie_controls",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//content/test:test_support",

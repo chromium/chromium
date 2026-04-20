@@ -8,20 +8,17 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace back_to_opener {
@@ -53,19 +50,9 @@ class BackToOpenerControllerTest : public ChromeRenderViewHostTestHarness {
         .WillRepeatedly(testing::Return(tab_strip_model_.get()));
     EXPECT_CALL(*browser_window_interface_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(user_data_host_));
-
-    root_action_item_ = actions::ActionItem::Builder().Build();
-    root_action_item_->AddChild(actions::ActionItem::Builder()
-                                    .SetActionId(kActionShowCookieControls)
-                                    .Build());
-    cookie_controls_coordinator_ =
-        std::make_unique<CookieControlsBubbleCoordinator>(
-            browser_window_interface_.get(), root_action_item_.get());
   }
 
   void TearDown() override {
-    cookie_controls_coordinator_.reset();
-    root_action_item_.reset();
     tab_strip_model_.reset();
     tab_strip_model_delegate_.reset();
     browser_window_interface_.reset();
@@ -86,8 +73,6 @@ class BackToOpenerControllerTest : public ChromeRenderViewHostTestHarness {
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
 
  private:
-  std::unique_ptr<actions::ActionItem> root_action_item_;
-  std::unique_ptr<CookieControlsBubbleCoordinator> cookie_controls_coordinator_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   base::test::ScopedFeatureList feature_list_;
   ui::UnownedUserDataHost user_data_host_;
