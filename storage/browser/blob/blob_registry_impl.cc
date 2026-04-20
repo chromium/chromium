@@ -535,13 +535,23 @@ void BlobRegistryImpl::Register(
   for (auto& element : elements) {
     BlobUnderConstruction::ElementEntry entry(std::move(element));
     if (entry.element->is_file()) {
-      if (!delegate->CanReadFile(entry.element->get_file()->path)) {
+      const blink::mojom::DataElementFilePtr& file = entry.element->get_file();
+      if (!delegate->CanReadFile(file->path)) {
         std::unique_ptr<BlobDataHandle> handle = context_->AddBrokenBlob(
             uuid, content_type, content_disposition,
             BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
         BlobImpl::Create(std::move(handle), std::move(blob));
         std::move(callback).Run();
         return;
+      }
+      if (file->length == std::numeric_limits<uint64_t>::max()) {
+        // A blob can have at most one file element with unknown length, in
+        // which case it must have an offset of 0 and be the only element.
+        if (file->offset != 0 || elements.size() > 1) {
+          receivers_.ReportBadMessage(
+              "Invalid blob passed to BlobRegistry::Register");
+          return;
+        }
       }
     }
     element_entries.push_back(std::move(entry));

@@ -103,6 +103,7 @@ void MockBlobStorageContext::WriteBlobToFile(
     const base::FilePath& path,
     bool flush_on_write,
     std::optional<base::Time> last_modified,
+    uint64_t expected_size,
     WriteBlobToFileCallback callback) {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -127,16 +128,20 @@ void MockBlobStorageContext::WriteBlobToFile(
 
   writes_.emplace_back(std::move(remote), path);
 
-  if (client.result() == net::Error::OK && write_files_to_disk_) {
-    base::ImportantFileWriter::WriteFileAtomically(path, received);
+  storage::mojom::WriteBlobToFileResult result;
+  if (client.result() != net::Error::OK) {
+    result = storage::mojom::WriteBlobToFileResult::kIOError;
+  } else if (received.size() > expected_size) {
+    result = storage::mojom::WriteBlobToFileResult::kInvalidBlob;
+  } else {
+    if (write_files_to_disk_) {
+      base::ImportantFileWriter::WriteFileAtomically(path, received);
+    }
+    result = storage::mojom::WriteBlobToFileResult::kSuccess;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     client.result() == net::Error::OK
-                         ? storage::mojom::WriteBlobToFileResult::kSuccess
-                         : storage::mojom::WriteBlobToFileResult::kIOError));
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void MockBlobStorageContext::Clone(

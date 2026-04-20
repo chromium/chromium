@@ -11,22 +11,23 @@
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "storage/browser/blob/blob_entry.h"
 
 namespace storage {
 
-// Writes the blob at |blob_handle| to the file at |file_path|. If a file
-// already exists, then it is overwritten. If |flush_on_write| is true, then the
-// Flush will be called on the file before it is closed. If |last_modified| is
+// Writes the blob at `blob_handle` to the file at `file_path`. If a file
+// already exists, then it is overwritten. If `flush_on_write` is true, then the
+// Flush will be called on the file before it is closed. If `last_modified` is
 // populated, then the file's last modified & last accessed time will be set to
-// |last_modified|.
-// If successful, |callback| is called with the resulting file size. If not,
+// `last_modified`. If the size of the blob doesn't match `expected_size`, then
+// the write will fail and the callback will be called with `kInvalidBlob`.
+// If successful, `callback` is called with the resulting file size. If not,
 // then a net error code is used ( < 0).
 void WriteBlobToFile(
     std::unique_ptr<BlobDataHandle> blob_handle,
     const base::FilePath& file_path,
     bool flush_on_write,
     std::optional<base::Time> last_modified,
+    uint64_t expected_size,
     mojom::BlobStorageContext::WriteBlobToFileCallback callback);
 
 }  // namespace storage

@@ -67,8 +67,9 @@ FileWriterDelegate::DelegateWriteCallback IgnoreProgressWrapper(
         }
 
         write_state->total_bytes += bytes;
-        if (write_status == FileWriterDelegate::SUCCESS_IO_PENDING)
+        if (write_status == FileWriterDelegate::SUCCESS_IO_PENDING) {
           return;
+        }
         std::move(write_state->callback)
             .Run(result, write_state->total_bytes.ValueOrDie(), write_status);
         // This is necessary because FileWriterDelegate owns this repeating
@@ -78,11 +79,22 @@ FileWriterDelegate::DelegateWriteCallback IgnoreProgressWrapper(
       base::Owned(new WriteState{std::move(delegate), std::move(callback), 0}));
 }
 
-// Copied from file_util_posix.cc, with the addition of |offset| and |max_size|
-// parameters. The parameters apply to the |infile|. The |bytes_copied|
-// parameter keeps track of the number of bytes written to |outfile|.
-// Note - this function can still succeed if the size |infile| is less than
-// |max_size|. The caller should use |bytes_copied| to know exactly how many
+mojom::WriteBlobToFileResult SetFileModificationTime(base::FilePath file_path,
+                                                     base::Time last_modified) {
+  if (!base::TouchFile(file_path, last_modified, last_modified)) {
+    base::DeleteFile(file_path);
+    // If the file modification time isn't set correctly, then reading the blob
+    // later will fail. Thus, failing to save it is an error.
+    return mojom::WriteBlobToFileResult::kTimestampError;
+  }
+  return mojom::WriteBlobToFileResult::kSuccess;
+}
+
+// Copied from file_util_posix.cc, with the addition of `offset` and `max_size`
+// parameters. The parameters apply to the `infile`. The `bytes_copied`
+// parameter keeps track of the number of bytes written to `outfile`.
+// Note - this function can still succeed if the size `infile` is less than
+// `max_size`. The caller should use `bytes_copied` to know exactly how many
 // bytes were copied.
 bool CopyFileContentsWithOffsetAndSize(base::File* infile,
                                        base::File* outfile,
@@ -133,42 +145,46 @@ bool CopyFileContentsWithOffsetAndSize(base::File* infile,
   NOTREACHED();
 }
 
-// Copies the contents of |copy_from| to |copy_to|, with the given |offset| and
-// optional |size| applied to the |copy_from| file. The
-// |expected_last_modified_copy_from| must match, within a second, the last
-// modified time of the |copy_from| file. Afterwards, the |last_modified| date
-// is optionally saved as the last modified & last accessed time of |copy_to|.
-// If |flush_on_close| is true, then Flush is called on the |copy_to| file
+// Copies the contents of `copy_from` to `copy_to`, with the given `offset` and
+// `size` applied to the `copy_from` file. The
+// `expected_last_modified_copy_from` must match, within a second, the last
+// modified time of the `copy_from` file. Afterwards, the `last_modified` date
+// is optionally saved as the last modified & last accessed time of `copy_to`.
+// If `flush_on_close` is true, then Flush is called on the `copy_to` file
 // before it is closed. The `file_access::ScopedFileAccess` parameter is
 // expected to allow access to the source file. It has to be kept in scope of
 // this function because it must be alive while the copy operation is happening.
+// If `enforce_exact_size` is true, the source file's size must equal `size`.
 mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
     const base::FilePath& copy_from,
     base::Time expected_last_modified_copy_from,
     const base::FilePath& copy_to,
     int64_t offset,
-    std::optional<int64_t> size,
+    int64_t size,
+    bool enforce_exact_size,
     std::optional<base::Time> last_modified,
     bool flush_on_close,
     file_access::ScopedFileAccess) {
+  base::File::Info info;
+  if (!base::GetFileInfo(copy_from, &info)) {
+    return mojom::WriteBlobToFileResult::kIOError;
+  }
+  if (!FileStreamReader::VerifySnapshotTime(expected_last_modified_copy_from,
+                                            info) ||
+      (enforce_exact_size && info.size != size)) {
+    return mojom::WriteBlobToFileResult::kInvalidBlob;
+  }
+
   // Do a full file copy if the sizes match and there is no offset.
-  if (offset == 0) {
-    base::File::Info info;
-    base::GetFileInfo(copy_from, &info);
-    if (!FileStreamReader::VerifySnapshotTime(expected_last_modified_copy_from,
-                                              info)) {
-      return mojom::WriteBlobToFileResult::kInvalidBlob;
+  if (info.size == size && offset == 0) {
+    if (!base::CopyFile(copy_from, copy_to)) {
+      base::DeleteFile(copy_to);
+      return mojom::WriteBlobToFileResult::kIOError;
     }
-    if (!size || info.size == size.value()) {
-      bool success = base::CopyFile(copy_from, copy_to);
-      if (!success)
-        return mojom::WriteBlobToFileResult::kIOError;
-      if (last_modified && !base::TouchFile(copy_to, last_modified.value(),
-                                            last_modified.value())) {
-        return mojom::WriteBlobToFileResult::kTimestampError;
-      }
-      return mojom::WriteBlobToFileResult::kSuccess;
-    }
+    // TODO(crbug.com/503013398): Flush `copy_to` if `flush_on_close` is true.
+    return last_modified
+               ? SetFileModificationTime(copy_to, last_modified.value())
+               : mojom::WriteBlobToFileResult::kSuccess;
   }
 
   // Do a manual file-to-file copy. This will overwrite the file if there
@@ -177,33 +193,34 @@ mojom::WriteBlobToFileResult CopyFileAndMaybeWriteTimeModified(
       base::File(copy_from, base::File::FLAG_OPEN | base::File::FLAG_READ);
   base::File outfile(copy_to,
                      base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
-  if (!outfile.IsValid())
+  if (!outfile.IsValid()) {
     return mojom::WriteBlobToFileResult::kIOError;
-
-  base::File::Info info;
-  infile.GetInfo(&info);
-  if (!FileStreamReader::VerifySnapshotTime(expected_last_modified_copy_from,
-                                            info)) {
-    return mojom::WriteBlobToFileResult::kInvalidBlob;
   }
 
   int64_t bytes_copied = 0;
-  if (!CopyFileContentsWithOffsetAndSize(
-          &infile, &outfile, &bytes_copied, offset,
-          size.value_or(std::numeric_limits<int64_t>::max()))) {
+  if (!CopyFileContentsWithOffsetAndSize(&infile, &outfile, &bytes_copied,
+                                         offset, size)) {
+    outfile.Close();
+    base::DeleteFile(copy_to);
     return mojom::WriteBlobToFileResult::kIOError;
   }
-  if (size && bytes_copied != size.value())
+  if (bytes_copied != size) {
+    outfile.Close();
+    base::DeleteFile(copy_to);
     return mojom::WriteBlobToFileResult::kInvalidBlob;
+  }
 
   if (last_modified &&
       !outfile.SetTimes(last_modified.value(), last_modified.value())) {
     // If the file modification time isn't set correctly, then reading will
     // fail.
+    outfile.Close();
+    base::DeleteFile(copy_to);
     return mojom::WriteBlobToFileResult::kTimestampError;
   }
-  if (flush_on_close)
+  if (flush_on_close) {
     outfile.Flush();
+  }
   outfile.Close();
   return mojom::WriteBlobToFileResult::kSuccess;
 }
@@ -218,17 +235,13 @@ mojom::WriteBlobToFileResult CreateEmptyFileAndMaybeSetModifiedTime(
   if (!file_success) {
     return mojom::WriteBlobToFileResult::kIOError;
   }
-  if (flush_on_write)
+  if (flush_on_write) {
     file.Flush();
-  file.Close();
-  if (last_modified && !base::TouchFile(file_path, last_modified.value(),
-                                        last_modified.value())) {
-    // If the file modification time isn't set correctly, then reading
-    // the blob later will fail. Thus, failing to save it is an error.
-    file.Close();
-    return mojom::WriteBlobToFileResult::kTimestampError;
   }
-  return mojom::WriteBlobToFileResult::kSuccess;
+  file.Close();
+  return last_modified
+             ? SetFileModificationTime(file_path, last_modified.value())
+             : mojom::WriteBlobToFileResult::kSuccess;
 }
 
 void HandleModifiedTimeOnBlobFileWriteComplete(
@@ -239,39 +252,37 @@ void HandleModifiedTimeOnBlobFileWriteComplete(
     base::File::Error rv,
     int64_t bytes_written,
     FileWriterDelegate::WriteProgressStatus write_status) {
-  bool success = write_status == FileWriterDelegate::SUCCESS_COMPLETED;
-  if (!success) {
-    std::move(callback).Run(mojom::WriteBlobToFileResult::kIOError);
+  if (write_status != FileWriterDelegate::SUCCESS_COMPLETED) {
+    // Clean up partial output if any and report failure.
+    // TODO(crbug.com/504432256): This cleanup should live inside
+    // `FileWriterDelegate`/`FileStreamWriter` so all callers benefit without
+    // needing an extra thread hop.
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                       std::move(file_path)),
+        base::BindOnce(std::move(callback),
+                       mojom::WriteBlobToFileResult::kIOError));
     return;
   }
-  if (success && !bytes_written) {
-    // Special Case 1: Success but no bytes were written, so just create
-    // an empty file (LocalFileStreamWriter only creates a file
-    // if data is actually written).
+  if (!bytes_written) {
+    // Special Case 1: Success but no bytes were written, so just create an
+    // empty file (LocalFileStreamWriter only creates a file if data is actually
+    // written).
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(CreateEmptyFileAndMaybeSetModifiedTime,
                        std::move(file_path), last_modified, flush_on_write),
         std::move(callback));
     return;
-  } else if (success && last_modified) {
-    // Special Case 2: Success and |last_modified| needs to be set. Set
+  }
+  if (last_modified) {
+    // Special Case 2: Success and `last_modified` needs to be set. Set
     // that before reporting write completion.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(
-            [](int64_t bytes_written, base::FilePath file_path,
-               std::optional<base::Time> last_modified) {
-              if (!base::TouchFile(file_path, last_modified.value(),
-                                   last_modified.value())) {
-                // If the file modification time isn't set correctly, then
-                // reading the blob later will fail. Thus, failing to save it is
-                // an error.
-                return mojom::WriteBlobToFileResult::kTimestampError;
-              }
-              return mojom::WriteBlobToFileResult::kSuccess;
-            },
-            bytes_written, std::move(file_path), last_modified),
+        base::BindOnce(&SetFileModificationTime, std::move(file_path),
+                       last_modified.value()),
         std::move(callback));
     return;
   }
@@ -297,6 +308,7 @@ void WriteConstructedBlobToFile(
     const base::FilePath& file_path,
     bool flush_on_write,
     std::optional<base::Time> last_modified,
+    uint64_t expected_size,
     mojom::BlobStorageContext::WriteBlobToFileCallback callback,
     BlobStatus status) {
   DCHECK(!last_modified || !last_modified.value().is_null());
@@ -305,47 +317,57 @@ void WriteConstructedBlobToFile(
     std::move(callback).Run(mojom::WriteBlobToFileResult::kInvalidBlob);
     return;
   }
-  // Check if we can do a copy optimization.
+
+  // If the blob is a single file, it may be eligible to be copied whole.
   // TODO(dmurph): Optimize the case of IDB blobs, which have a type
   // kReadableDataHandle.
-  std::unique_ptr<BlobDataSnapshot> snapshot = blob_handle->CreateSnapshot();
-  const auto& items = snapshot->items();
-  if (items.size() == 1) {
-    const BlobDataItem& item = *items[0];
-    if (item.type() == BlobDataItem::Type::kFile) {
-      // The File API cannot handle uint64_t.
-      std::optional<int64_t> optional_size = item.length();
-      if (item.length() == blink::BlobUtils::kUnknownSize) {
-        // The blob system uses a special value (max uint64_t) to denote an
-        // unknown file size. This means the whole file should be copied.
-        optional_size = std::nullopt;
-      } else if (item.length() > std::numeric_limits<int64_t>::max()) {
-        std::move(callback).Run(mojom::WriteBlobToFileResult::kError);
-        return;
-      }
-      if (item.offset() > std::numeric_limits<int64_t>::max()) {
-        std::move(callback).Run(mojom::WriteBlobToFileResult::kError);
-        return;
-      }
-
-      base::OnceCallback<void(file_access::ScopedFileAccess)> post_copy_task =
-          base::BindOnce(
-              PostCopyTaskToFileThreadIfAllowed,
-              base::BindOnce(CopyFileAndMaybeWriteTimeModified, item.path(),
-                             item.expected_modification_time(), file_path,
-                             item.offset(), std::move(optional_size),
-                             std::move(last_modified), flush_on_write),
-              std::move(callback));
-      if (item.file_access()) {
-        item.file_access().Run({item.path()}, std::move(post_copy_task));
-      } else {
-        std::move(post_copy_task).Run(file_access::ScopedFileAccess::Allowed());
-      }
+  if (std::unique_ptr<BlobDataSnapshot> snapshot =
+          blob_handle->CreateSnapshot();
+      snapshot->items().size() == 1 &&
+      snapshot->items().front()->type() == BlobDataItem::Type::kFile) {
+    const BlobDataItem& item = *snapshot->items().front();
+    bool enforce_exact_size = false;
+    if (item.length() == blink::BlobUtils::kUnknownSize) {
+      // The blob system uses a special value (max uint64_t) to denote an
+      // unknown file size. This means the whole file should be copied.
+      // `CopyFileAndMaybeWriteTimeModified()` enforces that the file size is
+      // exactly `expected_size`.
+      CHECK_EQ(item.offset(), 0u);
+      enforce_exact_size = true;
+    } else if (item.length() != expected_size) {
+      std::move(callback).Run(mojom::WriteBlobToFileResult::kInvalidBlob);
       return;
     }
+    // The File API cannot handle uint64_t.
+    if (expected_size > std::numeric_limits<int64_t>::max() ||
+        item.offset() > std::numeric_limits<int64_t>::max()) {
+      std::move(callback).Run(mojom::WriteBlobToFileResult::kError);
+      return;
+    }
+
+    base::OnceCallback<void(file_access::ScopedFileAccess)> post_copy_task =
+        base::BindOnce(
+            PostCopyTaskToFileThreadIfAllowed,
+            base::BindOnce(CopyFileAndMaybeWriteTimeModified, item.path(),
+                           item.expected_modification_time(), file_path,
+                           item.offset(), expected_size, enforce_exact_size,
+                           std::move(last_modified), flush_on_write),
+            std::move(callback));
+    if (item.file_access()) {
+      item.file_access().Run({item.path()}, std::move(post_copy_task));
+    } else {
+      std::move(post_copy_task).Run(file_access::ScopedFileAccess::Allowed());
+    }
+    return;
   }
 
-  // If not, copy the BlobReader and FileStreamWriter.
+  // Only single-file blobs can have an unknown size.
+  CHECK(blob_handle->size() != blink::BlobUtils::kUnknownSize);
+  if (blob_handle->size() != expected_size) {
+    std::move(callback).Run(mojom::WriteBlobToFileResult::kInvalidBlob);
+    return;
+  }
+
   std::unique_ptr<FileStreamWriter> writer =
       FileStreamWriter::CreateForLocalFile(
           base::ThreadPool::CreateTaskRunner(
@@ -377,11 +399,12 @@ void WriteBlobToFile(
     const base::FilePath& file_path,
     bool flush_on_write,
     std::optional<base::Time> last_modified,
+    uint64_t expected_size,
     mojom::BlobStorageContext::WriteBlobToFileCallback callback) {
   auto* blob_handle_ptr = blob_handle.get();
   blob_handle_ptr->RunOnConstructionComplete(base::BindOnce(
       &WriteConstructedBlobToFile, std::move(blob_handle), file_path,
-      flush_on_write, last_modified, std::move(callback)));
+      flush_on_write, last_modified, expected_size, std::move(callback)));
 }
 
 }  // namespace storage

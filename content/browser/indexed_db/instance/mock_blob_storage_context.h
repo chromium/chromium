@@ -40,6 +40,7 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
                        const base::FilePath& path,
                        bool flush_on_write,
                        std::optional<base::Time> last_modified,
+                       uint64_t expected_size,
                        WriteBlobToFileCallback callback) override;
   void Clone(mojo::PendingReceiver<::storage::mojom::BlobStorageContext>
                  receiver) override;

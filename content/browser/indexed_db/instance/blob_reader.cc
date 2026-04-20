@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
@@ -30,12 +31,16 @@ void BlobReader::AsDataPipeGetter(
   data_pipe_getter_receivers_.Add(this, std::move(receiver));
 }
 
+uint64_t BlobReader::ClampReadLength(uint64_t offset, uint64_t length) const {
+  return base::ClampMin(length, base::ClampSub(blob_length_, offset));
+}
+
 void BlobReader::ReadRange(
     uint64_t offset,
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle handle,
     mojo::PendingRemote<blink::mojom::BlobReaderClient> pending_client) {
-  uint64_t read_length = std::min(blob_length_, length);
+  uint64_t read_length = ClampReadLength(offset, length);
   mojo::Remote<blink::mojom::BlobReaderClient> client;
   if (pending_client) {
     client.Bind(std::move(pending_client));
@@ -113,7 +118,7 @@ void BlobReader::Read(
     mojo::ScopedDataPipeProducerHandle pipe,
     storage::mojom::BlobDataItemReader::ReadCallback callback) {
   OpenFileAndReadIntoPipe(
-      file_path_, offset, length, std::move(pipe),
+      file_path_, offset, ClampReadLength(offset, length), std::move(pipe),
       base::BindOnce(
           [](base::OnceCallback<void(net::Error)> on_read_complete,
              storage::mojom::BlobDataItemReader::ReadCallback callback,

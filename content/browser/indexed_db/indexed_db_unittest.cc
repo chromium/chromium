@@ -2621,4 +2621,84 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
             next_idle_maintenance_time_after_partial_read);
 }
 
+// Regression test for a compromised renderer forging the declared size of an
+// IndexedDB blob to be smaller than its actual data: crbug.com/497660733.
+TEST_P(IndexedDBTest, BlobWithForgedSize) {
+  const int64_t kTransactionId = 1;
+  const int64_t kObjectStoreId = 10;
+  const char16_t kObjectStoreName[] = u"os";
+  const IndexedDBKey kKey(u"key");
+
+  const std::string kBlobData(10000, 'A');
+  const int64_t kForgedBlobSize = 100;
+
+  blob_storage_context_.SetWriteFilesToDisk(true);
+
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
+
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  MockMojoFactoryClient client;
+  MockMojoDatabaseCallbacks database_callbacks;
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+
+  // Wait for UpgradeNeeded.
+  base::RunLoop upgrade_loop;
+  EXPECT_CALL(client, MockedUpgradeNeeded)
+      .WillOnce(
+          testing::DoAll(MoveArgPointee<0>(&pending_database),
+                         ::base::test::RunClosure(upgrade_loop.QuitClosure())));
+  factory_remote_->Open(client.CreateInterfacePtrAndBind(),
+                        database_callbacks.CreateInterfacePtrAndBind(),
+                        kDatabaseName, /*version=*/1,
+                        transaction_remote.BindNewEndpointAndPassReceiver(),
+                        kTransactionId, /*priority=*/0);
+  upgrade_loop.Run();
+
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> database(
+      std::move(pending_database));
+  ASSERT_TRUE(database.is_bound());
+
+  transaction_remote->CreateObjectStore(kObjectStoreId, kObjectStoreName,
+                                        blink::IndexedDBKeyPath(), false);
+
+  // Create a FakeBlob with a large body but declare a small (forged) size.
+  auto fake_blob = std::make_unique<storage::FakeBlob>("test-uuid");
+  fake_blob->set_body(kBlobData);
+
+  std::vector<blink::mojom::IDBExternalObjectPtr> external_objects;
+  external_objects.push_back(blink::mojom::IDBExternalObject::NewBlobOrFile(
+      blink::mojom::IDBBlobInfo::New(fake_blob->Clone(), u"text/plain",
+                                     kForgedBlobSize,
+                                     /*file=*/nullptr)));
+
+  auto new_value = blink::mojom::IDBValue::New();
+  new_value->bits = mojo_base::BigBuffer(base::as_byte_span("value"));
+  new_value->external_objects = std::move(external_objects);
+
+  transaction_remote->Put(kObjectStoreId, std::move(new_value), kKey.Clone(),
+                          blink::mojom::IDBPutMode::AddOnly,
+                          std::vector<IndexedDBIndexKeys>(), base::DoNothing());
+  transaction_remote->Commit(0);
+
+  // The blob write should fail because the actual blob size doesn't match the
+  // declared size, aborting the transaction.
+  base::RunLoop error_loop;
+  base::RepeatingClosure quit_closure =
+      base::BarrierClosure(2, error_loop.QuitClosure());
+
+  EXPECT_CALL(database_callbacks,
+              Abort(kTransactionId, blink::mojom::IDBException::kDataError, _))
+      .WillOnce(RunClosure(quit_closure));
+
+  EXPECT_CALL(client, Error(blink::mojom::IDBException::kAbortError, _))
+      .WillOnce(RunClosure(std::move(quit_closure)));
+
+  error_loop.Run();
+}
+
 }  // namespace content::indexed_db

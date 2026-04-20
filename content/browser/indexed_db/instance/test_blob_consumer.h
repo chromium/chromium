@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace content::indexed_db {
@@ -28,6 +29,12 @@ class TestBlobConsumer : public mojo::DataPipeDrainer::Client,
   static void ReadWholeBlob(mojo::Remote<blink::mojom::Blob>& blob,
                             base::OnceCallback<void(std::string)> on_complete,
                             base::OnceClosure on_some_written = {});
+
+  // Reads `blob` through the `DataPipeGetter` path.
+  static void ReadIntoDataPipe(
+      mojo::Remote<blink::mojom::Blob>& blob,
+      base::OnceCallback<void(uint64_t declared_size, std::string data)>
+          on_complete);
 
  private:
   TestBlobConsumer(base::OnceCallback<void(std::string)> on_complete,

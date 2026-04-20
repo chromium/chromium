@@ -594,6 +594,69 @@ TEST_F(BlobRegistryImplTest, Register_ValidFile) {
   EXPECT_EQ(0u, BlobsUnderConstruction());
 }
 
+TEST_F(BlobRegistryImplTest, Register_SingleUnknownSizeFile) {
+  delegate_ptr_->can_read_file_result = true;
+
+  const std::string kId = "id";
+  const base::FilePath path(FILE_PATH_LITERAL("foobar"));
+
+  std::vector<blink::mojom::DataElementPtr> elements;
+  elements.push_back(
+      blink::mojom::DataElement::NewFile(blink::mojom::DataElementFile::New(
+          path, 0, std::numeric_limits<uint64_t>::max(), std::nullopt)));
+
+  mojo::PendingRemote<blink::mojom::Blob> blob;
+  EXPECT_TRUE(registry_->Register(blob.InitWithNewPipeAndPassReceiver(), kId,
+                                  "", "", std::move(elements)));
+  EXPECT_TRUE(bad_messages_.empty());
+
+  std::unique_ptr<BlobDataHandle> handle = context_->GetBlobDataFromUUID(kId);
+  WaitForBlobCompletion(handle.get());
+
+  EXPECT_FALSE(handle->IsBroken());
+  EXPECT_EQ(BlobStatus::DONE, handle->GetBlobStatus());
+  EXPECT_EQ(std::numeric_limits<uint64_t>::max(), handle->size());
+}
+
+TEST_F(BlobRegistryImplTest, Register_UnknownSizeFileWithOtherElements) {
+  delegate_ptr_->can_read_file_result = true;
+
+  const std::string kId = "id";
+  const base::FilePath path(FILE_PATH_LITERAL("foobar"));
+  const std::string kData = "hello world";
+
+  std::vector<blink::mojom::DataElementPtr> elements;
+  elements.push_back(
+      blink::mojom::DataElement::NewFile(blink::mojom::DataElementFile::New(
+          path, 0, std::numeric_limits<uint64_t>::max(), std::nullopt)));
+  elements.push_back(
+      blink::mojom::DataElement::NewBytes(blink::mojom::DataElementBytes::New(
+          kData.size(), std::vector<uint8_t>(kData.begin(), kData.end()),
+          CreateBytesProvider(kData))));
+
+  mojo::PendingRemote<blink::mojom::Blob> blob;
+  EXPECT_FALSE(registry_->Register(blob.InitWithNewPipeAndPassReceiver(), kId,
+                                   "", "", std::move(elements)));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_F(BlobRegistryImplTest, Register_UnknownSizeFileWithNonZeroOffset) {
+  delegate_ptr_->can_read_file_result = true;
+
+  const std::string kId = "id";
+  const base::FilePath path(FILE_PATH_LITERAL("foobar"));
+
+  std::vector<blink::mojom::DataElementPtr> elements;
+  elements.push_back(
+      blink::mojom::DataElement::NewFile(blink::mojom::DataElementFile::New(
+          path, 10, std::numeric_limits<uint64_t>::max(), std::nullopt)));
+
+  mojo::PendingRemote<blink::mojom::Blob> blob;
+  EXPECT_FALSE(registry_->Register(blob.InitWithNewPipeAndPassReceiver(), kId,
+                                   "", "", std::move(elements)));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
 TEST_F(BlobRegistryImplTest, Register_BytesInvalidEmbeddedData) {
   const std::string kId = "id";
 
@@ -849,10 +912,11 @@ TEST_F(BlobRegistryImplTest, Register_ValidBytesAsFile) {
   for (const auto& item : snapshot->items()) {
     EXPECT_EQ(BlobDataItem::Type::kFile, item->type());
     EXPECT_EQ(0u, item->offset());
-    if (remaining_size > kTestBlobStorageMaxFileSizeBytes)
+    if (remaining_size > kTestBlobStorageMaxFileSizeBytes) {
       EXPECT_EQ(kTestBlobStorageMaxFileSizeBytes, item->length());
-    else
+    } else {
       EXPECT_EQ(remaining_size, item->length());
+    }
     remaining_size -= item->length();
   }
   EXPECT_EQ(0u, remaining_size);

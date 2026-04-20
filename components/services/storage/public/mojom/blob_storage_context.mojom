@@ -79,11 +79,13 @@ interface BlobStorageContext {
   // that contains the file at |path| does not exist, then this function will
   // return kIOError. If a file already exists at |path| then it is
   // overwritten. If |flush_on_write| is true, then Flush will be called on the
-  // new file before it is closed.
+  // new file before it is closed. If the blob's actual size does not match
+  // |expected_size|, kInvalidBlob is returned without writing.
   WriteBlobToFile(pending_remote<blink.mojom.Blob> blob,
                   mojo_base.mojom.FilePath path,
                   bool flush_on_write,
-                  mojo_base.mojom.Time? last_modified)
+                  mojo_base.mojom.Time? last_modified,
+                  uint64 expected_size)
       => (WriteBlobToFileResult result);
 
   // Binds another Mojo connection to this context.
