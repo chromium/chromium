@@ -39,11 +39,28 @@ def CheckChange(input_api, output_api):
     return filtered
 
   input_api.AffectedFiles = filtered_affected_files
+
+  results = []
   try:
-    results = input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                          check_js=True,
-                                                          check_python=False)
+    results += input_api.canned_checks.CheckPatchFormatted(input_api,
+                                                           output_api,
+                                                           check_js=True,
+                                                           check_python=False)
   finally:
     input_api.AffectedFiles = original_affected_files
+
+  # Run eslint.
+  try:
+    import sys
+    old_sys_path = sys.path[:]
+    cwd = input_api.PresubmitLocalPath()
+    sys.path += [input_api.os_path.join(
+        cwd, '..', '..', '..', '..', 'tools')]
+    import web_dev_style.presubmit_support
+    results += web_dev_style.presubmit_support.CheckStyleESLint(
+        input_api, output_api)
+
+  finally:
+    sys.path = old_sys_path
 
   return results

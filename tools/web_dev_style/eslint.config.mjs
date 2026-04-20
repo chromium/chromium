@@ -122,9 +122,25 @@ export default [
       'chrome/browser/resources/chromeos/**/*',
       'chrome/test/data/webui/chromeos/**/*.js',
 
-      // TODO(https://crbug.com/41446521): Bring extension test files into
+      // TODO(https://crbug.com/41446521): Bring these extension test files into
       // conformance.
-      'chrome/test/data/extensions/**/*',
+      // Temporarily omitted until files are updated.
+      'chrome/test/data/extensions/api_test/*',
+      // Temporarily omitted. These files contain scripts that are wrapped on
+      // the C++ side in functions, and so they currently have "floating"
+      // return statements. This causes eslint to fail in parsing and can't be
+      // manually disabled with an `eslint-disable` comment (because it's a
+      // parsing error, rather than an actual linting issue).
+      'chrome/test/data/extensions/webui/*',
+      'chrome/test/data/extensions/webui_untrusted/*',
+
+      // Omitted: These are "raw" dumps from user data dirs. We shouldn't bother
+      // formatting / linting them.
+      'chrome/test/data/extensions/profiles/*',
+      'chrome/test/data/extensions/good/*',
+
+      // Omitted: Platform apps are deprecated on all platforms.
+      'chrome/test/data/extensions/platform_apps/*',
     ],
   },
   {
