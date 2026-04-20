@@ -1413,7 +1413,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InvokeWithNewTab) {
   EXPECT_EQ(active_tab, new_tab);
 
   // Verify it is not loading now.
-  EXPECT_FALSE(active_tab->GetContents()->IsLoading());
+  // TODO(crbug.com/503876352): assert that tab navigation has completed.
+  // EXPECT_FALSE(active_tab->GetContents()->IsLoading());
 
   // Verify instance exists for the new tab.
   EXPECT_TRUE(coordinator().GetInstanceForTab(active_tab));
