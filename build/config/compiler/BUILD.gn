@@ -533,18 +533,6 @@ config("compiler") {
     # linker for Rust targets as well.
     rustflags += [ "-Csplit-debuginfo=unpacked" ]
 
-    if (use_thin_lto && current_cpu == "x64") {
-      # These passes were recently added to the mach-o lld thintlo link step,
-      # but cause timeouts in certain build configs. Disable them until that's
-      # fixed (crbug.com/489711936).
-      ldflags += [
-        "-Wl,-mllvm",
-        "-Wl,-vectorize-loops=false",
-        "-Wl,-mllvm",
-        "-Wl,-vectorize-slp=false",
-      ]
-    }
-
     # TODO(crbug.com/500431896): Figure out why constant literals breaks tests.
     cflags_objc = [ "-fno-objc-constant-literals" ]
     cflags_objcc = [ "-fno-objc-constant-literals" ]
