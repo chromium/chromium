@@ -626,6 +626,47 @@ public class LocationBarMediatorTest {
         testLoadUrl_base();
     }
 
+    @Test
+    public void testLoadUrlFromVoice_clearsFocus() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mView).when(mTab).getView();
+
+        mMediator.onUrlFocusChange(true);
+        assertTrue(mMediator.isUrlBarFocused());
+
+        mMediator.loadUrlFromVoice(new GURL(TEST_URL));
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mView).requestFocus();
+        verify(mAutocompleteCoordinator).endInput();
+    }
+
+    @Test
+    public void testLoadUrl_clearsFocus() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(true).when(mLocationBarDataProvider).hasTab();
+        doReturn(mView).when(mTab).getView();
+
+        mMediator.onUrlFocusChange(true);
+        assertTrue(mMediator.isUrlBarFocused());
+
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mView).requestFocus();
+        verify(mAutocompleteCoordinator).endInput();
+    }
+
     public void testLoadUrlWithAutocompleteLoadCallback_base() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);

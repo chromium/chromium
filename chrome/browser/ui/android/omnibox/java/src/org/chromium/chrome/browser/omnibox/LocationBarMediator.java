@@ -930,7 +930,7 @@ class LocationBarMediator
             // running navigation code.
             PostTask.postDelayedTask(
                     TaskTraits.UI_USER_VISIBLE,
-                    this::focusCurrentTab,
+                    this::endInputAndFocusCurrentTab,
                     OmniboxFeatures.sPostDelayedTaskFocusTabTimeMillis.getValue());
         }
     }
@@ -1522,11 +1522,19 @@ class LocationBarMediator
         mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
     }
 
-    private void focusCurrentTab() {
-        try (TraceEvent traceEvent = TraceEvent.scoped("LocationBarMediator.focusCurrentTab")) {
+    /**
+     * Used when suggestions are done and it's time to pass focus back to the tab. However caution
+     * needs to be exercised when calling this from cases where input session is intentionally
+     * active (e.g. NTP on Desktop) such that we don't accidentally clear Omnibox input when, say,
+     * returning to the NTP.
+     */
+    private void endInputAndFocusCurrentTab() {
+        try (TraceEvent traceEvent =
+                TraceEvent.scoped("LocationBarMediator.endInputAndFocusCurrentTab")) {
             assert mLocationBarDataProvider != null;
             if (mLocationBarDataProvider.hasTab()) {
                 View view = assumeNonNull(mLocationBarDataProvider.getTab()).getView();
+                if (mCurrentInput != null) endInput();
                 if (view != null) view.requestFocus();
             }
         }
@@ -2249,10 +2257,9 @@ class LocationBarMediator
             return;
         }
 
-        endInput();
         // Revert the URL to match the current page.
         setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
-        focusCurrentTab();
+        endInputAndFocusCurrentTab();
     }
 
     @Override
