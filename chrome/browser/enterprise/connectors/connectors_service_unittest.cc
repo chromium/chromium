@@ -15,8 +15,11 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -25,6 +28,7 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +71,10 @@ constexpr char kCustomUrl[] = "https://learn.more.com";
 constexpr char kFakeDmToken[] = "fake-token";
 #if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kFakeDeviceId[] = "fake-device-id";
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+constexpr char kAffiliationId1[] = "affiliation-id-1";
+constexpr char kAffiliationId2[] = "affiliation-id-2";
+#endif
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -510,5 +518,91 @@ TEST_F(ConnectorsServiceProfileTypeBrowserTest, IsEnabled) {
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENTERPRISE_WATERMARK)
+
+struct IdentifierTestParams {
+  std::string profile_affiliation_id;
+  std::string device_affiliation_id;
+  policy::PolicyScope policy_scope;
+
+  // DM Token is not known at the point of defining the test cases.
+  bool has_device_token;
+  bool has_profile_email;
+} kIdentifierTestCases[] = {
+    // Affiliated cases
+    {.profile_affiliation_id = kAffiliationId1,
+     .device_affiliation_id = kAffiliationId1,
+     .policy_scope = policy::POLICY_SCOPE_MACHINE,
+     .has_device_token = true,
+     .has_profile_email = true},
+    // Unaffiliated cases
+    {.profile_affiliation_id = kAffiliationId1,
+     .device_affiliation_id = kAffiliationId2,
+     .policy_scope = policy::POLICY_SCOPE_MACHINE,
+     .has_device_token = true,
+     .has_profile_email = false}};
+
+class ConnectorsServiceRealTimeURLIdentifierTest
+    : public testing::Test,
+      public testing::WithParamInterface<IdentifierTestParams> {
+ public:
+  ConnectorsServiceRealTimeURLIdentifierTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    EXPECT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("test-user");
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken(kFakeDmToken));
+  }
+
+  void SetUp() override {
+    fake_browser_dm_token_storage_.SetClientId(kFakeDeviceId);
+    policy::BrowserDMTokenStorage::SetForTesting(
+        &fake_browser_dm_token_storage_);
+    fake_browser_dm_token_storage_.ResetForTesting();
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  raw_ptr<TestingProfile> profile_;
+  policy::FakeBrowserDMTokenStorage fake_browser_dm_token_storage_;
+};
+
+TEST_P(ConnectorsServiceRealTimeURLIdentifierTest, ReturnsCorrectIdentifier) {
+  // Set Affiliation IDs, matching affiliation ids => affiliated profile
+  profile_->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {GetParam().profile_affiliation_id});
+  TestingBrowserProcess::GetGlobal()
+      ->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({GetParam().device_affiliation_id});
+
+  // Set the profile email.
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+
+  profile_->GetPrefs()->SetInteger(
+      kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile_->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                   GetParam().policy_scope);
+
+  std::string identifier =
+      ConnectorsServiceFactory::GetForBrowserContext(profile_)
+          ->GetRealTimeUrlCheckIdentifier();
+
+  // Check identifier
+  EXPECT_EQ(GetParam().has_device_token,
+            identifier.find(kFakeDeviceId) != std::string::npos);
+  EXPECT_EQ(GetParam().has_profile_email,
+            identifier.find("user@example.com") != std::string::npos);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceRealTimeURLIdentifierTest,
+                         testing::ValuesIn(kIdentifierTestCases));
+
+#endif  // !BUILDFLOAG(IS_CHROMEOS) && BUILDFLAG(ENTERPRISE_WATERMARK)
 
 }  // namespace enterprise_connectors

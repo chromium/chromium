@@ -48,6 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -55,6 +56,7 @@
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
 #else
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #endif
 
@@ -77,6 +79,43 @@ std::string GetClientId(Profile* profile) {
   client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 #endif
   return client_id;
+}
+
+// TODO(alshawwa): Refactor IncludeDeviceInfo() to call this function.
+bool IsAffiliated(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  const user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  return user && user->IsAffiliated();
+#else
+  return enterprise_util::IsProfileAffiliated(profile);
+#endif
+}
+
+std::string GetDeviceClientId(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  auto* device_settings_service = ash::DeviceSettingsService::Get();
+  const auto* policy_data = device_settings_service->policy_data();
+  if (policy_data && policy_data->has_device_id()) {
+    return policy_data->device_id();
+  }
+#endif
+  // This actually won't return the device client ID for ChromeOS, it's just
+  // a fallback in that case.
+  return GetClientId(profile);
+}
+
+std::string MaybeGetProfileEmail(Profile* profile) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return std::string();
+  }
+
+  return GetProfileEmail(identity_manager);
+#else
+  return std::string();
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -245,27 +284,20 @@ std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
   }
 
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (dm_token->scope == policy::POLICY_SCOPE_MACHINE) {
-#if BUILDFLAG(IS_CHROMEOS)
-    auto* device_settings_service = ash::DeviceSettingsService::Get();
-    const auto* policy_data = device_settings_service->policy_data();
-    if (policy_data && policy_data->has_device_id()) {
-      return policy_data->device_id();
+  if (IsAffiliated(profile)) {
+    std::string result = GetDeviceClientId(profile);
+    std::string email = MaybeGetProfileEmail(profile);
+    if (!email.empty()) {
+      return base::StrCat({result, "\n", email});
     }
-#endif
-    return GetClientId(profile);
+    return result;
   }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return std::string();
+  if (dm_token->scope == policy::POLICY_SCOPE_MACHINE) {
+    return GetDeviceClientId(profile);
   }
 
-  return GetProfileEmail(identity_manager);
-#else
-  return std::string();
-#endif
+  return MaybeGetProfileEmail(profile);
 }
 
 std::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
