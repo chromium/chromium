@@ -50,6 +50,22 @@ suite('LineFocusController', () => {
     return container;
   }
 
+  function keyDown(key: string): KeyboardEvent {
+    return new KeyboardEvent('keydown', {key});
+  }
+
+  function toggleKey(): KeyboardEvent {
+    return keyDown('l');
+  }
+
+  function downKey(): KeyboardEvent {
+    return keyDown('ArrowDown');
+  }
+
+  function upKey(): KeyboardEvent {
+    return keyDown('ArrowUp');
+  }
+
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -413,7 +429,7 @@ suite('LineFocusController', () => {
     lineFocusController.restoreFromPrefs(
         chrome.readingMode.lineFocusLargeCursorWindow, /*isOn=*/ false,
         defaultContainer, defaultHeight);
-    lineFocusController.toggle(defaultContainer, defaultHeight);
+    lineFocusController.onKeyDown(toggleKey(), defaultContainer, defaultHeight);
 
     assertEquals(
         LineFocusStyle.LARGE_WINDOW,
@@ -479,12 +495,12 @@ suite('LineFocusController', () => {
     lineFocusMoved = false;
     const startingTop = lineFocusController.getTop();
 
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, height);
     assertFalse(lineFocusMoved);
     assertEquals(startingTop, lineFocusController.getTop());
 
-    lineFocusController.snapToNextLine(true);
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, height);
+    lineFocusController.onKeyDown(downKey(), container, height);
     lineFocusController.onScrollEnd(height);
     assertTrue(lineFocusMoved);
     assertLT(startingTop, lineFocusController.getTop());
@@ -530,7 +546,7 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
 
-    lineFocusController.toggle(container, defaultHeight);
+    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
 
     assertTrue(lineFocusToggled);
     assertEquals(
@@ -543,7 +559,7 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.OFF, container, defaultHeight);
 
-    lineFocusController.toggle(container, defaultHeight);
+    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
 
     assertTrue(lineFocusToggled);
     assertEquals(
@@ -562,7 +578,7 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.OFF, container, defaultHeight);
 
-    lineFocusController.toggle(container, defaultHeight);
+    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
 
     assertTrue(lineFocusToggled);
     assertEquals(
@@ -575,11 +591,11 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.OFF, container, defaultHeight);
 
-    lineFocusController.toggle(container, defaultHeight);
+    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
     assertTrue(await metrics.whenCalled('recordLineFocusToggled'));
 
     metrics.reset();
-    lineFocusController.toggle(container, defaultHeight);
+    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
     assertFalse(await metrics.whenCalled('recordLineFocusToggled'));
   });
 
@@ -996,15 +1012,15 @@ suite('LineFocusController', () => {
         LineFocusStyle.UNDERLINE, container, defaultHeight);
     let oldTop = lineFocusController.getTop();
 
-    // Snap to the second line.
-    lineFocusController.snapToNextLine(true);
+    // Snap to the first line.
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
     let newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
     assertEquals(1, keyboardLines);
 
     // Snap to the last line.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
     assertEquals(2, keyboardLines);
@@ -1012,28 +1028,28 @@ suite('LineFocusController', () => {
     // The container only has three lines, so moving forward should not change
     // position.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
     assertEquals(2, keyboardLines);
 
     // Snap back to the second line.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
     assertEquals(3, keyboardLines);
 
     // Snap back to the first line.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
     assertEquals(4, keyboardLines);
 
     // Moving back again should not change position.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
     assertEquals(4, keyboardLines);
@@ -1051,7 +1067,7 @@ suite('LineFocusController', () => {
     let oldScrollDiff = scrollDiffReceived;
 
     // Snap to the first line.
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, 100);
     let newTop = lineFocusController.getTop();
     let newScrollDiff = scrollDiffReceived;
     assertEquals(oldTop, newTop);
@@ -1061,7 +1077,7 @@ suite('LineFocusController', () => {
     // Snap to the last line.
     oldTop = newTop;
     oldScrollDiff = newScrollDiff;
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, 100);
     newTop = lineFocusController.getTop();
     newScrollDiff = scrollDiffReceived;
     assertEquals(oldTop, newTop);
@@ -1071,7 +1087,7 @@ suite('LineFocusController', () => {
     // Snap back to the first line.
     oldTop = newTop;
     oldScrollDiff = newScrollDiff;
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, 100);
     newTop = lineFocusController.getTop();
     newScrollDiff = scrollDiffReceived;
     assertEquals(oldTop, newTop);
@@ -1100,13 +1116,13 @@ suite('LineFocusController', () => {
     let oldTop = lineFocusController.getTop();
 
     // Snap to the first line.
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, height);
     let newTop = lineFocusController.getTop();
     // Continue moving to the next line until scrolling occurs.
     while (oldTop < newTop) {
       assertEquals(0, scrollDiffReceived);
       oldTop = newTop;
-      lineFocusController.snapToNextLine(true);
+      lineFocusController.onKeyDown(downKey(), container, height);
       newTop = lineFocusController.getTop();
     }
 
@@ -1133,9 +1149,9 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, height);
 
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, height);
     lineFocusController.onScrollEnd(height);
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, height);
 
     // The window is 3 lines high. If the line index was kept then the second
     // snapToNextLine call would move by one line, and this would be 4. But
@@ -1165,13 +1181,13 @@ suite('LineFocusController', () => {
     let oldTop = lineFocusController.getTop();
 
     // Snap to the first line.
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, height);
     let newTop = lineFocusController.getTop();
     // Continue moving to the previous line until scrolling occurs.
     while (oldTop > newTop) {
       assertEquals(0, scrollDiffReceived);
       oldTop = newTop;
-      lineFocusController.snapToNextLine(false);
+      lineFocusController.onKeyDown(upKey(), container, height);
       newTop = lineFocusController.getTop();
     }
 
@@ -1195,21 +1211,21 @@ suite('LineFocusController', () => {
     let oldTop = lineFocusController.getTop();
 
     // Snap to the second line.
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
     let newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
     assertEquals(1, keyboardLines);
 
     // Moving forward should not change position.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
     assertEquals(1, keyboardLines);
 
     // Snap back to the second line.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
     assertEquals(2, keyboardLines);
@@ -1217,7 +1233,7 @@ suite('LineFocusController', () => {
     // Moving back again should not change position since the window is 3 lines
     // long and we are already surrounding the second line.
     oldTop = newTop;
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
     assertEquals(2, keyboardLines);
@@ -1238,8 +1254,8 @@ suite('LineFocusController', () => {
     speechController.onPlayPauseToggle(container);
     lineFocusMoved = false;
 
-    lineFocusController.snapToNextLine(true);
-    lineFocusController.snapToNextLine(false);
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
+    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
 
     assertFalse(lineFocusMoved);
   });
@@ -1253,7 +1269,7 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
 
     // Simulate text bounds being available
-    lineFocusController.snapToNextLine(true);
+    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
 
     // Now simulate font size changing or another text layout update
     scrollDiffReceived = 0;

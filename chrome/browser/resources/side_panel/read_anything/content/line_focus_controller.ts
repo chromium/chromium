@@ -7,6 +7,7 @@ import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} fr
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import {getTextNodeOffsets} from '../shared/dom_queries.js';
+import {isForwardArrow, isLineFocusShortcut, isVerticalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {LineFocusModel} from './line_focus_model.js';
@@ -69,7 +70,7 @@ export class LineFocusController {
         this.getCurrentLineFocusType() !== LineFocusType.NONE);
   }
 
-  toggle(container: HTMLElement, height: number) {
+  private toggle_(container: HTMLElement, height: number) {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
@@ -80,6 +81,25 @@ export class LineFocusController {
         newStyle, this.model_.getCurrentLineFocusMovement(), container, height);
     this.logger_.logLineFocusToggled(this.isEnabled());
     this.listeners_.forEach(l => l.onLineFocusToggled());
+  }
+
+  onKeyDown(e: KeyboardEvent, container: HTMLElement, height: number): boolean {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return false;
+    }
+
+    if (isLineFocusShortcut(e)) {
+      this.toggle_(container, height);
+      return true;
+    }
+
+    if (this.isEnabled() && isVerticalArrow(e.key) &&
+        !this.speechController_.isSpeechActive()) {
+      this.snapToNextLine_(isForwardArrow(e.key));
+      return true;
+    }
+
+    return false;
   }
 
   onScrollEnd(newScrollTop: number) {
@@ -313,8 +333,8 @@ export class LineFocusController {
     return key ? Number(key) : null;
   }
 
-  snapToNextLine(isForward: boolean) {
-    if (!this.isEnabled() || this.speechController_.isSpeechActive()) {
+  private snapToNextLine_(isForward: boolean) {
+    if (!this.isEnabled()) {
       return;
     }
 
