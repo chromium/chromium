@@ -241,6 +241,13 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return GetRareField(FieldId::kScrollableOverflow);
   }
 
+  bool HasBorders() const { return !!GetRareField(FieldId::kBorders); }
+  bool HasScrollbar() const { return !!GetRareField(FieldId::kScrollbar); }
+  bool HasPadding() const { return !!GetRareField(FieldId::kPadding); }
+  bool HasInflowBounds() const {
+    return !!GetRareField(FieldId::kInflowBounds);
+  }
+
   const PhysicalBoxStrut Borders() const {
     if (const auto* field = GetRareField(FieldId::kBorders)) {
       return field->borders;
@@ -664,11 +671,6 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   }
   bool IncludeBorderLeft() const {
     return bit_field_.get<IncludeBorderLeftFlag>();
-  }
-  bool HasBorders() const { return !!GetRareField(FieldId::kBorders); }
-  bool HasPadding() const { return !!GetRareField(FieldId::kPadding); }
-  bool HasInflowBounds() const {
-    return !!GetRareField(FieldId::kInflowBounds);
   }
 
   static size_t AdditionalByteSize(bool has_fragment_items);

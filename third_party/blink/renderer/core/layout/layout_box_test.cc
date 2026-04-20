@@ -2022,6 +2022,42 @@ TEST_F(LayoutBoxTest,
   EXPECT_EQ(PhysicalRect(-2, -2, 4, 4), span->VisualOverflowRect());
 }
 
+TEST_F(LayoutBoxTest, ContentBoxFragmentedHtb) {
+  SetBodyInnerHTML(R"HTML(
+<div style="columns:3; column-fill:auto; block-size:100px; writing-mode:horizontal-tb;">
+  <div id="elm" style="border:solid; border-width:1px 2px 3px 4px; padding:5px 10px 15px 20px; inline-size:50px; block-size:200px;">
+    <div style="block-size:1000px;"></div>
+  </div>
+</div>
+)HTML");
+  const LayoutBox* box = GetLayoutBoxByElementId("elm");
+  EXPECT_EQ(box->PhysicalContentBoxRect(), PhysicalRect(24, 6, 50, 200));
+}
+
+TEST_F(LayoutBoxTest, ContentBoxFragmentedVlr) {
+  SetBodyInnerHTML(R"HTML(
+<div style="columns:3; column-fill:auto; block-size:100px; writing-mode:vertical-lr;">
+  <div id="elm" style="border:solid; border-width:1px 2px 3px 4px; padding:5px 10px 15px 20px; inline-size:50px; block-size:200px;">
+    <div style="block-size:1000px;"></div>
+  </div>
+</div>
+)HTML");
+  const LayoutBox* box = GetLayoutBoxByElementId("elm");
+  EXPECT_EQ(box->PhysicalContentBoxRect(), PhysicalRect(24, 6, 200, 50));
+}
+
+TEST_F(LayoutBoxTest, ContentBoxFragmentedVrl) {
+  SetBodyInnerHTML(R"HTML(
+<div style="columns:3; column-fill:auto; block-size:100px; writing-mode:vertical-rl;">
+  <div id="elm" style="border:solid; border-width:1px 2px 3px 4px; padding:5px 10px 15px 20px; inline-size:50px; block-size:200px;">
+    <div style="block-size:1000px;"></div>
+  </div>
+</div>
+)HTML");
+  const LayoutBox* box = GetLayoutBoxByElementId("elm");
+  EXPECT_EQ(box->PhysicalContentBoxRect(), PhysicalRect(24, 6, 200, 50));
+}
+
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

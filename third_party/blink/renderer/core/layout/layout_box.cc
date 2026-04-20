@@ -484,6 +484,54 @@ bool IsAppearanceAutoMenuList(const LayoutBox& obj) {
          obj.StyleRef().EffectiveAppearance() != AppearanceValue::kBaseSelect;
 }
 
+const PhysicalBoxFragment* FragmentForEdge(const LayoutBox& box,
+                                           const PhysicalBoxSides& edges) {
+  // Should only be here if there are multiple fragments. There's a fast-path
+  // otherwise.
+  DCHECK_GT(box.PhysicalFragmentCount(), 1u);
+
+  // One, and only one, edge should be set.
+  DCHECK_EQ(edges.top + edges.right + edges.bottom + edges.left, 1);
+
+  LogicalBoxSides logical_edges =
+      edges.ToLogical(box.StyleRef().GetWritingDirection());
+  if (logical_edges.block_end) {
+    // The edge we're looking for is the block-end. It is found in the last
+    // non-overflowing fragment.
+    for (wtf_size_t idx = box.PhysicalFragmentCount() - 1; idx > 0; idx--) {
+      const PhysicalBoxFragment* fragment = box.GetPhysicalFragment(idx);
+      if (!FindPreviousBreakToken(*fragment)->IsAtBlockEnd()) {
+        return fragment;
+      }
+    }
+  }
+  return box.GetPhysicalFragment(0);
+}
+
+const PhysicalBoxFragment* FragmentForLeftEdge(const LayoutBox& box) {
+  PhysicalBoxSides edges(false);
+  edges.left = true;
+  return FragmentForEdge(box, edges);
+}
+
+const PhysicalBoxFragment* FragmentForRightEdge(const LayoutBox& box) {
+  PhysicalBoxSides edges(false);
+  edges.right = true;
+  return FragmentForEdge(box, edges);
+}
+
+const PhysicalBoxFragment* FragmentForTopEdge(const LayoutBox& box) {
+  PhysicalBoxSides edges(false);
+  edges.top = true;
+  return FragmentForEdge(box, edges);
+}
+
+const PhysicalBoxFragment* FragmentForBottomEdge(const LayoutBox& box) {
+  PhysicalBoxSides edges(false);
+  edges.bottom = true;
+  return FragmentForEdge(box, edges);
+}
+
 }  // namespace
 
 LayoutBoxRareData::LayoutBoxRareData()
@@ -950,43 +998,60 @@ void LayoutBox::LayoutSubtreeRoot() {
   }
 }
 
+DISABLE_CFI_PERF
+LayoutUnit LayoutBox::ClientLeft() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    if (CanSkipComputeScrollbars()) {
+      return BorderLeft();
+    }
+    return BorderLeft() + ComputeScrollbarsInternal(kClampToContentBox).left;
+  }
+  return PhysicalContractedBoxRect(kContractToPaddingEdge).X();
+}
+
+DISABLE_CFI_PERF
+LayoutUnit LayoutBox::ClientTop() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    if (CanSkipComputeScrollbars()) {
+      return BorderTop();
+    }
+    return BorderTop() + ComputeScrollbarsInternal(kClampToContentBox).top;
+  }
+  return PhysicalContractedBoxRect(kContractToPaddingEdge).Y();
+}
+
 // ClientWidth and ClientHeight represent the interior of an object excluding
 // border and scrollbar.
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientWidth() const {
   NOT_DESTROYED();
-  // We need to clamp negative values. This function may be called during layout
-  // before frame_size_ gets the final proper value. Another reason: While
-  // border side values are currently limited to 2^20px (a recent change in the
-  // code), if this limit is raised again in the future, we'd have ill effects
-  // of saturated arithmetic otherwise.
   LayoutUnit width = StitchedSize().width;
-  if (CanSkipComputeScrollbars()) {
-    return (width - BorderLeft() - BorderRight()).ClampNegativeToZero();
-  } else {
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    if (CanSkipComputeScrollbars()) {
+      return (width - BorderLeft() - BorderRight()).ClampNegativeToZero();
+    }
     return (width - BorderLeft() - BorderRight() -
             ComputeScrollbarsInternal(kClampToContentBox).HorizontalSum())
         .ClampNegativeToZero();
   }
+  return PhysicalContractedBoxRect(kContractToPaddingEdge).Width();
 }
 
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientHeight() const {
   NOT_DESTROYED();
-  // We need to clamp negative values. This function can be called during layout
-  // before frame_size_ gets the final proper value. The scrollbar may be wider
-  // than the padding box. Another reason: While border side values are
-  // currently limited to 2^20px (a recent change in the code), if this limit is
-  // raised again in the future, we'd have ill effects of saturated arithmetic
-  // otherwise.
   LayoutUnit height = StitchedSize().height;
-  if (CanSkipComputeScrollbars()) {
-    return (height - BorderTop() - BorderBottom()).ClampNegativeToZero();
-  } else {
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    if (CanSkipComputeScrollbars()) {
+      return (height - BorderTop() - BorderBottom()).ClampNegativeToZero();
+    }
     return (height - BorderTop() - BorderBottom() -
             ComputeScrollbarsInternal(kClampToContentBox).VerticalSum())
         .ClampNegativeToZero();
   }
+  return PhysicalContractedBoxRect(kContractToPaddingEdge).Height();
 }
 
 LayoutUnit LayoutBox::ClientWidthWithTableSpecialBehavior() const {
@@ -1195,6 +1260,44 @@ void LayoutBox::UpdateAfterLayout() {
       context->DidLayoutChildren();
     }
   }
+}
+
+DISABLE_CFI_PERF
+LayoutUnit LayoutBox::ContentLeft() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return ClientLeft() + PaddingLeft();
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge).X();
+}
+
+DISABLE_CFI_PERF
+LayoutUnit LayoutBox::ContentTop() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return ClientTop() + PaddingTop();
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge).Y();
+}
+
+DISABLE_CFI_PERF
+LayoutUnit LayoutBox::ContentWidth() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return (ClientWidth() - PaddingLeft() - PaddingRight())
+        .ClampNegativeToZero();
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge).Width();
+}
+
+DISABLE_CFI_PERF
+LayoutUnit LayoutBox::ContentHeight() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return (ClientHeight() - PaddingTop() - PaddingBottom())
+        .ClampNegativeToZero();
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge).Height();
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentInlineSize() const {
@@ -3759,6 +3862,90 @@ LayoutBox* LayoutBox::LocationContainer() const {
   while (container && !container->IsBox())
     container = container->Container();
   return To<LayoutBox>(container);
+}
+
+DISABLE_CFI_PERF
+PhysicalRect LayoutBox::PhysicalContractedBoxRect(ContractionEdge edge) const {
+  NOT_DESTROYED();
+  PhysicalRect rect(PhysicalOffset(), StitchedSize());
+  PhysicalBoxStrut inset;
+  if (PhysicalFragmentCount() == 1u) {
+    // Optimize for the common case - one fragment.
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    if (fragment->HasBorders()) {
+      inset += fragment->Borders();
+    }
+    if (fragment->HasScrollbar()) {
+      inset += fragment->Scrollbar();
+    }
+    if (edge == kContractToContentEdge && fragment->HasPadding()) {
+      inset += fragment->Padding();
+    }
+  } else if (PhysicalFragmentCount()) {
+    const PhysicalBoxFragment* top_fragment = FragmentForTopEdge(*this);
+    const PhysicalBoxFragment* right_fragment = FragmentForRightEdge(*this);
+    const PhysicalBoxFragment* bottom_fragment = FragmentForBottomEdge(*this);
+    const PhysicalBoxFragment* left_fragment = FragmentForLeftEdge(*this);
+    inset.top += top_fragment->Borders().top + top_fragment->Scrollbar().top;
+    inset.right +=
+        right_fragment->Borders().right + right_fragment->Scrollbar().right;
+    inset.bottom +=
+        bottom_fragment->Borders().bottom + bottom_fragment->Scrollbar().bottom;
+    inset.left +=
+        left_fragment->Borders().left + left_fragment->Scrollbar().left;
+
+    if (edge == kContractToContentEdge) {
+      inset.top += top_fragment->Padding().top;
+      inset.right += right_fragment->Padding().right;
+      inset.bottom += bottom_fragment->Padding().bottom;
+      inset.left += left_fragment->Padding().left;
+    }
+  }
+
+  rect.Contract(inset);
+
+  // We need to clamp negative values. This function can be called during layout
+  // before the size of the box has been updated. The scrollbar may also be
+  // wider than the padding box.
+  rect.size.width = rect.size.width.ClampNegativeToZero();
+  rect.size.height = rect.size.height.ClampNegativeToZero();
+
+  return rect;
+}
+
+PhysicalRect LayoutBox::PhysicalPaddingBoxRect() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return PhysicalRect(ClientLeft(), ClientTop(), ClientWidth(),
+                        ClientHeight());
+  }
+  return PhysicalContractedBoxRect(kContractToPaddingEdge);
+}
+
+DISABLE_CFI_PERF
+PhysicalRect LayoutBox::PhysicalContentBoxRect() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return PhysicalRect(ContentLeft(), ContentTop(), ContentWidth(),
+                        ContentHeight());
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge);
+}
+
+PhysicalOffset LayoutBox::PhysicalContentBoxOffset() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return PhysicalOffset(ContentLeft(), ContentTop());
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge).offset;
+}
+
+PhysicalSize LayoutBox::PhysicalContentBoxSize() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
+    return PhysicalSize(ContentWidth(), ContentHeight());
+  }
+  return PhysicalContractedBoxRect(kContractToContentEdge).size;
 }
 
 ShapeOutsideInfo* LayoutBox::GetShapeOutsideInfo() const {

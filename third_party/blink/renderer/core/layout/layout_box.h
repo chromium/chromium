@@ -277,28 +277,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return PhysicalRect(PhysicalOffset(), StitchedSize());
   }
 
-  // Client rect and padding box rect are the same concept.
-  DISABLE_CFI_PERF PhysicalRect PhysicalPaddingBoxRect() const {
-    NOT_DESTROYED();
-    return PhysicalRect(ClientLeft(), ClientTop(), ClientWidth(),
-                        ClientHeight());
-  }
+  enum ContractionEdge {
+    kContractToPaddingEdge,
+    kContractToContentEdge,
+  };
+  PhysicalRect PhysicalContractedBoxRect(ContractionEdge) const;
 
-  // The content area of the box (excludes padding - and intrinsic padding for
-  // table cells, etc... - and scrollbars and border).
-  DISABLE_CFI_PERF PhysicalRect PhysicalContentBoxRect() const {
-    NOT_DESTROYED();
-    return PhysicalRect(ContentLeft(), ContentTop(), ContentWidth(),
-                        ContentHeight());
-  }
-  PhysicalOffset PhysicalContentBoxOffset() const {
-    NOT_DESTROYED();
-    return PhysicalOffset(ContentLeft(), ContentTop());
-  }
-  PhysicalSize PhysicalContentBoxSize() const {
-    NOT_DESTROYED();
-    return PhysicalSize(ContentWidth(), ContentHeight());
-  }
+  // Get the padding box rectangle (same as "client rect").
+  PhysicalRect PhysicalPaddingBoxRect() const;
+  // Get the content box rectangle.
+  PhysicalRect PhysicalContentBoxRect() const;
+  // Get the content box left/top edge.
+  PhysicalOffset PhysicalContentBoxOffset() const;
+  // Get the content box size.
+  PhysicalSize PhysicalContentBoxSize() const;
+
   // The content box converted to absolute coords (taking transforms into
   // account).
   gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
@@ -381,36 +374,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual void UpdateAfterLayout();
 
-  DISABLE_CFI_PERF LayoutUnit ContentLeft() const {
-    NOT_DESTROYED();
-    return ClientLeft() + PaddingLeft();
-  }
-  DISABLE_CFI_PERF LayoutUnit ContentTop() const {
-    NOT_DESTROYED();
-    return ClientTop() + PaddingTop();
-  }
-  DISABLE_CFI_PERF LayoutUnit ContentWidth() const {
-    NOT_DESTROYED();
-    // We're dealing with LayoutUnit and saturated arithmetic here, so we need
-    // to guard against negative results. The value returned from clientWidth()
-    // may in itself be a victim of saturated arithmetic; e.g. if both border
-    // sides were sufficiently wide (close to LayoutUnit::max()).  Here we
-    // subtract two padding values from that result, which is another source of
-    // saturated arithmetic.
-    return (ClientWidth() - PaddingLeft() - PaddingRight())
-        .ClampNegativeToZero();
-  }
-  DISABLE_CFI_PERF LayoutUnit ContentHeight() const {
-    NOT_DESTROYED();
-    // We're dealing with LayoutUnit and saturated arithmetic here, so we need
-    // to guard against negative results. The value returned from clientHeight()
-    // may in itself be a victim of saturated arithmetic; e.g. if both border
-    // sides were sufficiently wide (close to LayoutUnit::max()).  Here we
-    // subtract two padding values from that result, which is another source of
-    // saturated arithmetic.
-    return (ClientHeight() - PaddingTop() - PaddingBottom())
-        .ClampNegativeToZero();
-  }
+  // Content-box offset and size getters (i.e. what's on the inside of borders,
+  // scrollbars, and padding).
+  LayoutUnit ContentLeft() const;
+  LayoutUnit ContentTop() const;
+  LayoutUnit ContentWidth() const;
+  LayoutUnit ContentHeight() const;
   PhysicalSize ContentSize() const {
     NOT_DESTROYED();
     return PhysicalSize(ContentWidth(), ContentHeight());
@@ -443,22 +412,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // ClientLeft, ClientTop, ClientWidth and ClientHeight) represents the
   // interior of an object excluding borders and scrollbars.
   // Clamps the left scrollbar size so it is not wider than the content box.
-  DISABLE_CFI_PERF LayoutUnit ClientLeft() const {
-    NOT_DESTROYED();
-    if (CanSkipComputeScrollbars())
-      return BorderLeft();
-    else
-      return BorderLeft() + ComputeScrollbarsInternal(kClampToContentBox).left;
-  }
-  DISABLE_CFI_PERF LayoutUnit ClientTop() const {
-    NOT_DESTROYED();
-    if (CanSkipComputeScrollbars())
-      return BorderTop();
-    else
-      return BorderTop() + ComputeScrollbarsInternal(kClampToContentBox).top;
-  }
-
-  // Size without borders and scrollbars.
+  LayoutUnit ClientLeft() const;
+  LayoutUnit ClientTop() const;
   LayoutUnit ClientWidth() const;
   LayoutUnit ClientHeight() const;
   DISABLE_CFI_PERF LayoutUnit ClientLogicalWidth() const {

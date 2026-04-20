@@ -3520,6 +3520,15 @@
       public: true,
     },
     {
+      // The following LayoutBox functions are implemented using information
+      // from physical fragments, rather than computed style, and containing
+      // block walking (was needed for percentage padding):
+      //   ClientLeft(), ClientTop(), ClientWidth(), ClientHeight(),
+      //   ContentLeft(), ContentTop(), ContentWidth(), ContentHeight().
+      name: "LayoutBoxRectGettersUseFragments",
+      status: "stable",
+    },
+    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
