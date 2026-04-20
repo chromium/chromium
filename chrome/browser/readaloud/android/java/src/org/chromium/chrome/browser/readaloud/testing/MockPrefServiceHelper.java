@@ -31,6 +31,7 @@ public class MockPrefServiceHelper {
      * @param mockNatives Mock ReadAloudPrefs.Natives.
      * @param voices Voice settings map to be output from {@link ReadAloudPrefs.getVoices()}.
      */
+    @SuppressWarnings("unchecked") // InvocationOnMock args are Object[]; cast is unavoidable.
     public static void setVoices(ReadAloudPrefs.Natives mockNatives, Map<String, String> voices) {
         doAnswer(
                         invocation -> {

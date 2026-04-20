@@ -393,7 +393,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
         mHandleBackPressSupplier.set(shouldHandleBackPress);
     }
 
-    @SuppressWarnings("NullAway")
+    @SuppressWarnings({"NullAway", "unchecked"}) // Unavoidable raw -> parameterized Callback cast.
     private <T> Callback<T> castCallback(Callback callback) {
         return (Callback<T>) callback;
     }

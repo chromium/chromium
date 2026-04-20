@@ -706,6 +706,8 @@ class AccountSelectionViewBinder {
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
+    @SuppressWarnings(
+            "unchecked") // PropertyKey erases generics; item sub-models are PropertyModel.
     static void bindContentView(PropertyModel model, View view, PropertyKey key) {
         View itemView = null;
         if (key == ItemProperties.SPINNER_ENABLED) {

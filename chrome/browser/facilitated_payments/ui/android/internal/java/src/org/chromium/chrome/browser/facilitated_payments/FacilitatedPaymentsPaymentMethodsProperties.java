@@ -28,7 +28,7 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static final WritableIntPropertyKey VISIBLE_STATE = new WritableIntPropertyKey("visible_state");
     static final WritableIntPropertyKey SCREEN = new WritableIntPropertyKey("screen");
     static final WritableObjectPropertyKey<PropertyModel> SCREEN_VIEW_MODEL =
-            new WritableObjectPropertyKey("screen_view_model");
+            new WritableObjectPropertyKey<>("screen_view_model");
     static final ReadableObjectPropertyKey<Callback<Integer>> UI_EVENT_LISTENER =
             new ReadableObjectPropertyKey<>("ui_event_listener");
     static final WritableBooleanPropertyKey SURVIVES_NAVIGATION =
@@ -95,7 +95,7 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static class FopSelectorProperties {
         /** A list containing all the view items. They will be shown in a {@link RecyclerView}. */
         static final ReadableObjectPropertyKey<ModelList> SCREEN_ITEMS =
-                new ReadableObjectPropertyKey("screen_items");
+                new ReadableObjectPropertyKey<>("screen_items");
 
         /** All the properties of FOP selector screen. */
         static final PropertyKey[] ALL_KEYS = {SCREEN_ITEMS};
@@ -106,15 +106,15 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     /** Properties for a payment instrument entry in the facilitated payments bottom sheet. */
     static class BankAccountProperties {
         static final ReadableObjectPropertyKey<String> BANK_NAME =
-                new ReadableObjectPropertyKey("bank_name");
+                new ReadableObjectPropertyKey<>("bank_name");
         static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_PAYMENT_RAIL =
-                new ReadableObjectPropertyKey("bank_account_payment_rail");
+                new ReadableObjectPropertyKey<>("bank_account_payment_rail");
         static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_TYPE =
-                new ReadableObjectPropertyKey("bank_account_type");
+                new ReadableObjectPropertyKey<>("bank_account_type");
         static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_NUMBER =
-                new ReadableObjectPropertyKey("bank_account_number");
+                new ReadableObjectPropertyKey<>("bank_account_number");
         static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_TRANSACTION_LIMIT =
-                new ReadableObjectPropertyKey("bank_account_transaction_limit");
+                new ReadableObjectPropertyKey<>("bank_account_transaction_limit");
         static final ReadableObjectPropertyKey<Drawable> BANK_ACCOUNT_ICON =
                 new ReadableObjectPropertyKey<>("bank_account_icon");
         static final ReadableObjectPropertyKey<Runnable> ON_BANK_ACCOUNT_CLICK_ACTION =
@@ -134,9 +134,9 @@ class FacilitatedPaymentsPaymentMethodsProperties {
 
     static class EwalletProperties {
         static final ReadableObjectPropertyKey<String> EWALLET_NAME =
-                new ReadableObjectPropertyKey("ewallet_name");
+                new ReadableObjectPropertyKey<>("ewallet_name");
         static final ReadableObjectPropertyKey<String> ACCOUNT_DISPLAY_NAME =
-                new ReadableObjectPropertyKey("account_display_name");
+                new ReadableObjectPropertyKey<>("account_display_name");
         static final ReadableIntPropertyKey EWALLET_DRAWABLE_ID =
                 new ReadableIntPropertyKey("ewallet_drawable_id");
         static final ReadableObjectPropertyKey<Runnable> ON_EWALLET_CLICK_ACTION =
@@ -157,7 +157,7 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     /** Properties for a payment app entry in the facilitated payments bottom sheet. */
     static class PaymentAppProperties {
         static final ReadableObjectPropertyKey<String> PAYMENT_APP_NAME =
-                new ReadableObjectPropertyKey("payment_app_name");
+                new ReadableObjectPropertyKey<>("payment_app_name");
         static final ReadableObjectPropertyKey<Drawable> PAYMENT_APP_ICON =
                 new ReadableObjectPropertyKey<>("payment_app_icon");
         static final ReadableObjectPropertyKey<Runnable> ON_PAYMENT_APP_CLICK_ACTION =
@@ -183,7 +183,7 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final ReadableIntPropertyKey SECURITY_CHECK_DRAWABLE_ID =
                 new ReadableIntPropertyKey("security_check_drawable_id");
         static final ReadableObjectPropertyKey<String> TITLE =
-                new ReadableObjectPropertyKey("title");
+                new ReadableObjectPropertyKey<>("title");
         static final ReadableIntPropertyKey DESCRIPTION_ID =
                 new ReadableIntPropertyKey("description_id");
         static final ReadableIntPropertyKey PAYMENT_LINK_TITLE_TOP_MARGIN =

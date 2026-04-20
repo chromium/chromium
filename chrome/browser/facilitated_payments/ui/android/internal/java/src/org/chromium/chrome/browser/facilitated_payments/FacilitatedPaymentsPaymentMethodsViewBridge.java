@@ -91,8 +91,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      * @param bankAccounts User's bank accounts which passed from facilitated payments client.
      */
     @CalledByNative
-    public void requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
-        mComponent.showSheetForPix((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+    public void requestShowContent(@JniType("std::vector") List<BankAccount> bankAccounts) {
+        mComponent.showSheetForPix(bankAccounts);
     }
 
     /**
@@ -102,13 +102,12 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      * @param apps User's installed apps which passed from facilitated payments client.
      */
     @CalledByNative
+    @SuppressWarnings("unchecked") // `apps` is Object[] from jobjectArray; cast is unavoidable.
     public void requestShowContentForPaymentLink(
-            @JniType("std::vector") Object[] eWallets, Object[] apps) {
-        List<Ewallet> eWalletList =
-                (eWallets == null) ? List.of() : (List<Ewallet>) (List<?>) Arrays.asList(eWallets);
+            @JniType("std::vector") List<Ewallet> eWallets, Object[] apps) {
         List<ResolveInfo> appList =
                 (apps == null) ? List.of() : (List<ResolveInfo>) (List<?>) Arrays.asList(apps);
-        mComponent.showSheetForPaymentLink(eWalletList, appList);
+        mComponent.showSheetForPaymentLink(eWallets, appList);
     }
 
     /**

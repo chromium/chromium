@@ -192,7 +192,7 @@ public class TabGroupSyncIntegrationTestHelper {
      * @return a list of {@link GroupInfo} representing the synced groups.
      */
     public List<GroupInfo> constructGroupInfoFromSyncEntities(List<SyncEntity> syncEntities) {
-        Map<String, GroupInfo> groupInfos = new HashMap();
+        Map<String, GroupInfo> groupInfos = new HashMap<>();
 
         // Group specifics.
         for (SyncEntity entity : syncEntities) {

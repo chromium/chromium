@@ -36,8 +36,8 @@ public class XrPanelEntityHolderImpl extends XrEntityHolderImpl<PanelEntity>
 
     private XrPanelEntityHolderImpl(Session xrSession, PanelEntity panelEntity) {
         super(xrSession, panelEntity);
-        mMovableComponent = new XrMovableComponentImpl(xrSession, panelEntity);
-        mResizableComponent = new XrResizableComponentImpl(xrSession, panelEntity);
+        mMovableComponent = new XrMovableComponentImpl<>(xrSession, panelEntity);
+        mResizableComponent = new XrResizableComponentImpl<>(xrSession, panelEntity);
         mResizableComponent.addResizeListener(
                 new XrResizableComponent.OnResizeListener() {
                     @Override

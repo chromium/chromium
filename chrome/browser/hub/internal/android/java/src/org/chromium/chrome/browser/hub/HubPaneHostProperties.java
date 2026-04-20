@@ -23,7 +23,7 @@ class HubPaneHostProperties {
      * previous value should be removed.
      */
     public static final WritableObjectPropertyKey<View> PANE_ROOT_VIEW =
-            new WritableObjectPropertyKey();
+            new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey SLIDE_ANIMATE_LEFT_TO_RIGHT =
             new WritableBooleanPropertyKey();

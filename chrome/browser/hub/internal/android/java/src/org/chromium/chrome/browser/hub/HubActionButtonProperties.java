@@ -18,7 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class HubActionButtonProperties {
     // When set then an interactable button for the primary pane action should be shown.
     public static final WritableObjectPropertyKey<@Nullable FullButtonData> ACTION_BUTTON_DATA =
-            new WritableObjectPropertyKey();
+            new WritableObjectPropertyKey<>();
 
     // The visibility of the action button.
     public static final WritableBooleanPropertyKey ACTION_BUTTON_VISIBLE =

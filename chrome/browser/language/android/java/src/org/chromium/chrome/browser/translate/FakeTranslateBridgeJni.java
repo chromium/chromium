@@ -49,20 +49,20 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
         for (LanguageItem item : chromeLanguages) {
             mChromeLanguages.put(item.getDisplayName(), item);
         }
-        mUserAcceptLanguages = new ArrayList(userAcceptLanguages);
-        mDefaultUserAcceptLanguages = new LinkedHashSet(userAcceptLanguages);
-        mNeverLanguages = new HashSet(neverLanguages);
-        mAlwaysLanguages = new HashSet(alwaysLanguages);
+        mUserAcceptLanguages = new ArrayList<>(userAcceptLanguages);
+        mDefaultUserAcceptLanguages = new LinkedHashSet<>(userAcceptLanguages);
+        mNeverLanguages = new HashSet<>(neverLanguages);
+        mAlwaysLanguages = new HashSet<>(alwaysLanguages);
         mTargetLanguage = targetLanguage;
     }
 
     /** Create a basic fake translate bridge with English as the default language. */
     public FakeTranslateBridgeJni() {
         mChromeLanguages = new TreeMap<>();
-        mUserAcceptLanguages = new ArrayList(Arrays.asList("en"));
-        mDefaultUserAcceptLanguages = new LinkedHashSet(Arrays.asList("en"));
-        mNeverLanguages = new HashSet(Arrays.asList("en"));
-        mAlwaysLanguages = new HashSet();
+        mUserAcceptLanguages = new ArrayList<>(Arrays.asList("en"));
+        mDefaultUserAcceptLanguages = new LinkedHashSet<>(Arrays.asList("en"));
+        mNeverLanguages = new HashSet<>(Arrays.asList("en"));
+        mAlwaysLanguages = new HashSet<>();
         mTargetLanguage = "en";
     }
 

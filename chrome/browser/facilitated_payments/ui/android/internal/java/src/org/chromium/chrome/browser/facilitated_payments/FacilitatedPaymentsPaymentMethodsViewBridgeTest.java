@@ -47,58 +47,60 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /** Unit tests for {@link FacilitatedPaymentsPaymentMethodsViewBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
-    private static final BankAccount[] BANK_ACCOUNTS = {
-        new BankAccount.Builder()
-                .setPaymentInstrument(
-                        new PaymentInstrument.Builder()
-                                .setInstrumentId(100)
-                                .setNickname("nickname1")
-                                .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
-                                .build())
-                .setBankName("bankName1")
-                .setAccountNumberSuffix("1111")
-                .setAccountType(AccountType.CHECKING)
-                .build(),
-        new BankAccount.Builder()
-                .setPaymentInstrument(
-                        new PaymentInstrument.Builder()
-                                .setInstrumentId(200)
-                                .setNickname("nickname2")
-                                .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
-                                .build())
-                .setBankName("bankName2")
-                .setAccountNumberSuffix("2222")
-                .setAccountType(AccountType.CHECKING)
-                .build()
-    };
+    private static final List<BankAccount> BANK_ACCOUNTS =
+            List.of(
+                    new BankAccount.Builder()
+                            .setPaymentInstrument(
+                                    new PaymentInstrument.Builder()
+                                            .setInstrumentId(100)
+                                            .setNickname("nickname1")
+                                            .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
+                                            .build())
+                            .setBankName("bankName1")
+                            .setAccountNumberSuffix("1111")
+                            .setAccountType(AccountType.CHECKING)
+                            .build(),
+                    new BankAccount.Builder()
+                            .setPaymentInstrument(
+                                    new PaymentInstrument.Builder()
+                                            .setInstrumentId(200)
+                                            .setNickname("nickname2")
+                                            .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
+                                            .build())
+                            .setBankName("bankName2")
+                            .setAccountNumberSuffix("2222")
+                            .setAccountType(AccountType.CHECKING)
+                            .build());
 
-    private static final Ewallet[] EWALLETS = {
-        new Ewallet.Builder()
-                .setPaymentInstrument(
-                        new PaymentInstrument.Builder()
-                                .setInstrumentId(100)
-                                .setNickname("nickname")
-                                .setSupportedPaymentRails(new int[] {2})
-                                .setIsFidoEnrolled(true)
-                                .build())
-                .setEwalletName("eWallet name 1")
-                .setAccountDisplayName("account display name 1")
-                .build(),
-        new Ewallet.Builder()
-                .setPaymentInstrument(
-                        new PaymentInstrument.Builder()
-                                .setInstrumentId(200)
-                                .setNickname("nickname2")
-                                .setSupportedPaymentRails(new int[] {2})
-                                .setIsFidoEnrolled(false)
-                                .build())
-                .setEwalletName("eWallet name 2")
-                .setAccountDisplayName("account display name 2")
-                .build()
-    };
+    private static final List<Ewallet> EWALLETS =
+            List.of(
+                    new Ewallet.Builder()
+                            .setPaymentInstrument(
+                                    new PaymentInstrument.Builder()
+                                            .setInstrumentId(100)
+                                            .setNickname("nickname")
+                                            .setSupportedPaymentRails(new int[] {2})
+                                            .setIsFidoEnrolled(true)
+                                            .build())
+                            .setEwalletName("eWallet name 1")
+                            .setAccountDisplayName("account display name 1")
+                            .build(),
+                    new Ewallet.Builder()
+                            .setPaymentInstrument(
+                                    new PaymentInstrument.Builder()
+                                            .setInstrumentId(200)
+                                            .setNickname("nickname2")
+                                            .setSupportedPaymentRails(new int[] {2})
+                                            .setIsFidoEnrolled(false)
+                                            .build())
+                            .setEwalletName("eWallet name 2")
+                            .setAccountDisplayName("account display name 2")
+                            .build());
 
     private static final ResolveInfo[] APPS = {new ResolveInfo(), new ResolveInfo()};
 

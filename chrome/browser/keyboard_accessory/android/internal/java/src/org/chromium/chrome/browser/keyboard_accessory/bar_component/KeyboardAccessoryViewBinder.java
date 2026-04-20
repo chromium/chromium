@@ -167,6 +167,7 @@ class KeyboardAccessoryViewBinder {
         }
 
         @Override
+        @SuppressWarnings({"rawtypes", "unchecked"}) // Heterogeneous viewHolder dispatch by type.
         protected void bind(GroupBarItem group, KeyboardAccessoryChipGroup chipGroup) {
             chipGroup.removeAllViews();
             for (ActionBarItem item : group.getActionBarItems()) {

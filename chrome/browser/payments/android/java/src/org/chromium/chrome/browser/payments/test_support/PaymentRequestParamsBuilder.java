@@ -239,6 +239,7 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
+    @SuppressWarnings("unchecked") // Mockito.mock(WeakReference.class) erases generics.
     public WindowAndroid getWindowAndroid(RenderFrameHost renderFrameHost) {
         WindowAndroid window = Mockito.mock(WindowAndroid.class);
         Context context = Mockito.mock(Context.class);

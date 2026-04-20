@@ -72,7 +72,7 @@ class HubToolbarProperties {
     }
 
     public static final WritableObjectPropertyKey<Callback<PaneButtonLookup>>
-            PANE_BUTTON_LOOKUP_CALLBACK = new WritableObjectPropertyKey();
+            PANE_BUTTON_LOOKUP_CALLBACK = new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
         PANE_SWITCHER_BUTTON_DATA,

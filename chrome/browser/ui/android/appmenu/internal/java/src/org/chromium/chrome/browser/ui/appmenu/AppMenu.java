@@ -326,7 +326,7 @@ class AppMenu implements OnKeyListener {
             boolean isMenuIconAtStart,
             @ControlsPosition int controlsPosition,
             boolean addTopPaddingBeforeFirstRow,
-            FlyoutHandler flyoutHandler) {
+            FlyoutHandler<AppMenuPopup> flyoutHandler) {
         mContext = context;
         PopupWindow popup = new PopupWindow(context);
         popup.setFocusable(true);
