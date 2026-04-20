@@ -55,18 +55,6 @@ class ContentFacilitatedPaymentsDriverFactory
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
       OnTextCopiedToClipboard_FrameNotActive_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_UrlTypeLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_IframeUrlIsAboutBlank_IsSameOriginLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_IframeUrlIsAboutBlank_IsNotSameOriginLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      ContentFacilitatedPaymentsDriverFactoryTest,
-      OnTextCopiedToClipboard_PixCodeInIFrame_RegularUrl_IsSameOriginNotLogged);
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostStateChanged(

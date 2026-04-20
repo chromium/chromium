@@ -89,12 +89,14 @@ TEST_P(FacilitatedPaymentsMetricsPixIframeUrlTypeTest, LogPixIframeUrlType) {
                                       /*expected_bucket_count=*/1);
 }
 
-INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsMetricsTest,
-                         FacilitatedPaymentsMetricsPixIframeUrlTypeTest,
-                         testing::Values(PixIframeUrlType::kOtherNonEmptyUrl,
-                                         PixIframeUrlType::kAboutBlank,
-                                         PixIframeUrlType::kEmpty,
-                                         PixIframeUrlType::kAboutSrcDoc));
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsPixIframeUrlTypeTest,
+    testing::Values(PixIframeUrlType::kOtherNonEmptyUrl,
+                    PixIframeUrlType::kAboutBlank,
+                    PixIframeUrlType::kEmpty,
+                    PixIframeUrlType::kAboutSrcDoc,
+                    PixIframeUrlType::kNonEmptyAndSameOriginAsMainFrame));
 
 TEST(FacilitatedPaymentsMetricsTest, LogPixIframeIsSameOrigin) {
   base::HistogramTester histogram_tester;

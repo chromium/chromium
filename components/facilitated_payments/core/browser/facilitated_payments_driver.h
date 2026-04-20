@@ -49,11 +49,14 @@ class FacilitatedPaymentsDriver {
 
   // Inform the `PixManager` about `copied_text` being copied to
   // the clipboard.
+  // `is_same_origin` indicates whether the iframe from which the Pix code is
+  // copied has the same origin as the main frame.
   virtual void OnTextCopiedToClipboard(const GURL& main_frame_url,
                                        const std::optional<GURL>& iframe_url,
                                        const url::Origin& main_frame_origin,
                                        const std::u16string& copied_text,
-                                       ukm::SourceId ukm_source_id);
+                                       ukm::SourceId ukm_source_id,
+                                       bool is_same_origin = false);
 
   // Inform the `PaymentLinkManager` to trigger the payment link push payment
   // flow. The payment information is included in the `payment_link_url`
