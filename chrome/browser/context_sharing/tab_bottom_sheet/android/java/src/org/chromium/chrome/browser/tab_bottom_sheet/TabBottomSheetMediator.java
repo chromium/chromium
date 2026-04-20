@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.MotionEvent;
-import android.view.View;
 
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer.TouchHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -47,27 +47,40 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mKeyboardShowingHeightRatio = keyboardShowingHeightRatio;
     }
 
-    void onSheetStateChanged(@SheetState int state, boolean hasPeekView) {
+    void onSheetStateChanged(@SheetState int state) {
         mCurrentSheetState = state;
-        if (!hasPeekView) return;
         if (state == SheetState.PEEK) {
-            showPeekViewAndHideExpandedContent();
-        } else {
-            hidePeekViewAndShowExpandedContent();
+            mModel.set(TabBottomSheetProperties.PEEK_STATE_ALPHA, 1.0f);
+        } else if (state == SheetState.FULL || state == SheetState.HALF) {
+            mModel.set(TabBottomSheetProperties.PEEK_STATE_ALPHA, 0.0f);
         }
     }
 
-    private void showPeekViewAndHideExpandedContent() {
-        // TODO(crbug.com/494311176): Implement cross-fade animation for peek view.
-        mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA, 1.0f);
-        mModel.set(
-                TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY, View.VISIBLE);
-    }
+    /**
+     * Updates the alpha for the cross-fade effect.
+     *
+     * @param offsetPx The current offset height in pixels for the sheet.
+     */
+    void updateCrossFadeAlpha(float offsetPx) {
+        if (mPeekHeight == 0) {
+            // No peek view, so set the alpha to 0.0f (expanded content visible).
+            mModel.set(TabBottomSheetProperties.PEEK_STATE_ALPHA, 0.0f);
+            return;
+        }
 
-    private void hidePeekViewAndShowExpandedContent() {
-        // TODO(crbug.com/494311176): Implement cross-fade animation for peek view.
-        mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA, 0.0f);
-        mModel.set(TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY, View.GONE);
+        float alpha;
+        int crossFadeMaxHeight = getSheetCrossFadeMaxHeight();
+        if (offsetPx <= mPeekHeight) {
+            alpha = 1.0f;
+        } else if (offsetPx >= crossFadeMaxHeight) {
+            alpha = 0.0f;
+        } else {
+            // Linear interpolation between mPeekHeight and crossFadeMaxHeight.
+            // Alpha goes from 1.0 to 0.0.
+            alpha = 1.0f - (offsetPx - mPeekHeight) / (float) (crossFadeMaxHeight - mPeekHeight);
+        }
+
+        mModel.set(TabBottomSheetProperties.PEEK_STATE_ALPHA, alpha);
     }
 
     /** Sets the peek state header height for touch arbitration. */
@@ -82,7 +95,7 @@ public class TabBottomSheetMediator extends GestureStateListener {
     }
 
     /** Returns the touch handler for the WebUI container. */
-    TabBottomSheetWebUiContainer.TouchHandler getWebUiTouchHandler() {
+    TouchHandler getWebUiTouchHandler() {
         return mTouchArbitrator;
     }
 
@@ -94,8 +107,12 @@ public class TabBottomSheetMediator extends GestureStateListener {
         return mCurrentSheetState != SheetState.HIDDEN;
     }
 
+    private int getSheetCrossFadeMaxHeight() {
+        return mPeekHeight * 2;
+    }
+
     /** Inner class that arbitrates between scrolling the content and dragging the bottom sheet. */
-    private class TouchArbitrator implements TabBottomSheetWebUiContainer.TouchHandler {
+    private class TouchArbitrator implements TouchHandler {
         private boolean mInterceptForSheet;
 
         @Override

@@ -12,7 +12,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the Tab Bottom Sheet. */
@@ -39,17 +38,11 @@ public class TabBottomSheetProperties {
             new WritableObjectPropertyKey<>("resizing_state");
     public static final WritableBooleanPropertyKey IS_RESIZING =
             new WritableBooleanPropertyKey("is_resizing");
-    public static final WritableFloatPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA =
-            new WritableFloatPropertyKey("peek_view_alpha_and_expanded_content_alpha");
-    public static final WritableIntPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY =
-            new WritableIntPropertyKey("peek_view_and_expanded_content_visibility");
+    public static final WritableFloatPropertyKey PEEK_STATE_ALPHA =
+            new WritableFloatPropertyKey("peek_state_alpha");
 
     public static final PropertyKey[] ALL_KEYS = {
-        BOTTOM_SHEET_VIEWS,
-        RESIZING_STATE,
-        IS_RESIZING,
-        PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA,
-        PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY,
+        BOTTOM_SHEET_VIEWS, RESIZING_STATE, IS_RESIZING, PEEK_STATE_ALPHA
     };
 
     /**
