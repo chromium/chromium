@@ -105,8 +105,9 @@ UkmDatabaseClient& UkmDatabaseClientHolder::GetClientInstance(
   if (!instance.clients_for_testing_.empty()) {
     CHECK_IS_TEST();
     CHECK(profile);
-    CHECK(instance.clients_for_testing_.count(profile));
-    return *instance.clients_for_testing_[profile];
+    auto it = instance.clients_for_testing_.find(profile);
+    CHECK(it != instance.clients_for_testing_.end());
+    return *it->second;
   }
   return *instance.main_client_;
 }
