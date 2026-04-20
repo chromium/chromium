@@ -3,3 +3,6 @@ file://chromeos/components/kiosk/OWNERS
 
 # Policy stack owners
 file://chrome/browser/ash/policy/OWNERS
+
+# Device Attributes backup owner
+pchodur@google.com  #{LAST_RESORT_SUGGESTION}
