@@ -309,7 +309,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   virtual InputManager* GetInputManager();  // virtual for testing.
 
-  void SubmitHitTestRegionList(
+  bool SubmitHitTestRegionList(
       const SurfaceId& surface_id,
       uint64_t frame_index,
       std::optional<HitTestRegionList> hit_test_region_list);
