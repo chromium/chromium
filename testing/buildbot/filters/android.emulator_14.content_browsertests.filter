@@ -24,3 +24,6 @@
 
 # crbug.com/364371348
 -All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
+
+# crbug.com/501324952
+-MediaColorTest.Yuvj420pH264
