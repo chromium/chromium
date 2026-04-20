@@ -36,7 +36,7 @@ suite('TravelPage', function() {
     return page;
   }
 
-  teardown(function() {
+  suiteTeardown(function() {
     CrSettingsPrefs.resetForTesting();
   });
 
