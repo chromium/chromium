@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_observer.h"
@@ -233,6 +235,13 @@ class ManagedUserProfileNoticeUIWindowPixelTest
 
 IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIWindowPixelTest,
                        InvokeUi_default) {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See b/477426026.";
+  }
+#endif
+
   ShowAndVerifyUi();
 }
 
