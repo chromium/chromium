@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <variant>
@@ -101,9 +100,8 @@ struct MemorySearchResult {
   // Whether the value is obfuscated.
   bool is_obfuscated = false;
 
-  // The identifier of the entry (e.g. IBAN Guid or InstrumentId). If
-  // `EntryType` does not support identifiers, it will be unset (monostate).
-  std::variant<std::monostate, std::string, int64_t> identifier;
+  // Callback to reveal the real, unobfuscated, value.
+  base::RepeatingCallback<std::u16string()> reveal_callback;
 };
 
 enum class MemorySearchStatus {

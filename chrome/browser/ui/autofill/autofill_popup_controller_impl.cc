@@ -472,7 +472,11 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
   if (!suggestion.IsAcceptable()) {
     return;
   }
-
+  if (Suggestion::AtMemoryPayload* payload =
+          std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload);
+      payload && payload->reveal_callback) {
+    payload->value = payload->reveal_callback.Run();
+  }
   NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);

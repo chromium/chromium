@@ -361,22 +361,13 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchIbanData() {
   std::vector<MemorySearchResult> entries;
   for (const Iban* iban :
        personal_data_manager_->payments_data_manager().GetIbans()) {
-    std::u16string obfuscated_value =
-        iban->GetIdentifierStringForAutofillDisplay();
     MemorySearchResult entry(
         EntryType::kIban, GetEntryTypeNameForI18n(EntryType::kIban),
-        obfuscated_value,
+        GetObfuscatedIban(iban->value()),
         iban->usage_history().GetRankingScore(base::Time::Now()));
     entry.is_obfuscated = true;
-    switch (iban->record_type()) {
-      case Iban::kLocalIban:
-        entry.identifier = iban->guid();
-        break;
-      default:
-        entry.identifier = iban->instrument_id();
-        break;
-    }
-
+    entry.reveal_callback = base::BindRepeating(
+        [](std::u16string value) { return value; }, iban->value());
     if (!iban->nickname().empty()) {
       entry.metadata_list.emplace_back(
           EntryType::kIbanNickname,
