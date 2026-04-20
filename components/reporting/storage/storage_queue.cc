@@ -342,8 +342,12 @@ Status StorageQueue::SetOrConfirmGenerationId(const base::FilePath& full_name) {
   }
 
   int64_t file_generation_id = 0;
-  const bool success =
-      base::StringToInt64(generation_extension.substr(1), &file_generation_id);
+  // StringViewType for FilePath is platform-dependent, so import the symbol
+  // from there. On Windows it is std::wstring_view, on other platforms it is
+  // std::string_view.
+  const bool success = base::StringToInt64(
+      base::FilePath::StringViewType(generation_extension).substr(1),
+      &file_generation_id);
   if (!success || file_generation_id <= 0) {
     base::UmaHistogramEnumeration(
         reporting::kUmaDataLossErrorReason,
