@@ -328,7 +328,7 @@ bool PopupViewViews::Show(
     }
   }
 
-  MaybeAnnounceCurrentTab();
+  MaybeAnnounceCurrentTabAndFootnote();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
   MaybeA11yFocusInformationalSuggestion();
@@ -870,8 +870,7 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
 void PopupViewViews::TabSelectedAt(int index) {
   CHECK_LT(base::checked_cast<size_t>(index), tabbed_pane_config_->tabs.size());
   controller_->OnTabSelected(index, tabbed_pane_config_->tabs[index].type);
-  MaybeAnnounceCurrentTab();
-  MaybeAnnounceBnplFootnotePopup();
+  MaybeAnnounceCurrentTabAndFootnote();
 }
 
 void PopupViewViews::SetSelectedCell(
@@ -964,24 +963,6 @@ void PopupViewViews::ShowIPHFeaturePromos() {
   }
 }
 
-void PopupViewViews::MaybeAnnounceCurrentTab() {
-  if (tabbed_pane_) {
-    size_t index = tabbed_pane_->GetSelectedTabIndex();
-    size_t total = tabbed_pane_->GetTabCount();
-    std::u16string tab_title(tabbed_pane_->GetTabAt(index)->GetTitleText());
-
-    // Constructs the accessibility announcement for the currently selected tab.
-    // The message reads out the tab's title, its current index out of the total
-    // number of tabs, and instructions for using the keyboard's left or right
-    // arrow keys to switch between tabs.
-    std::u16string announcement = l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
-        tab_title, base::NumberToString16(index + 1),
-        base::NumberToString16(total));
-    a11y_announcer_.Run(announcement, /*polite=*/true);
-  }
-}
-
 void PopupViewViews::MaybeAnnouncePasswordRecoveryPopup() {
   if (!controller_ || controller_->GetSuggestions().empty()) {
     return;
@@ -1009,12 +990,40 @@ void PopupViewViews::MaybeAnnounceLoadingState() {
   }
 }
 
-void PopupViewViews::MaybeAnnounceBnplFootnotePopup() {
+void PopupViewViews::MaybeAnnounceCurrentTabAndFootnote() {
+  std::u16string announcement;
+
+  if (tabbed_pane_) {
+    size_t index = tabbed_pane_->GetSelectedTabIndex();
+    size_t total = tabbed_pane_->GetTabCount();
+    std::u16string tab_title(tabbed_pane_->GetTabAt(index)->GetTitleText());
+
+    announcement = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+        tab_title, base::NumberToString16(index + 1),
+        base::NumberToString16(total));
+  }
+
+  std::u16string footnote_text;
   for (const RowPointer& row : rows_) {
     if (const auto* footnote = std::get_if<PopupBnplFootnoteView*>(&row)) {
-      a11y_announcer_.Run((*footnote)->GetFullText(), /*polite=*/true);
-      return;
+      footnote_text = (*footnote)->GetFullText();
+      break;
     }
+  }
+
+  if (!footnote_text.empty()) {
+    if (!announcement.empty()) {
+      announcement = l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_A11Y_ANNOUNCEMENT_CONCATENATE_TWO_STRINGS, announcement,
+          footnote_text);
+    } else {
+      announcement = footnote_text;
+    }
+  }
+
+  if (!announcement.empty()) {
+    a11y_announcer_.Run(announcement, /*polite=*/true);
   }
 }
 

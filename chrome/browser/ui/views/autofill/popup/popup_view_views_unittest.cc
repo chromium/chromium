@@ -2772,17 +2772,21 @@ TEST_F(PopupViewViewsTest, TabSelected_A11yAnnouncesBnplFootnote) {
   test_api(view()).SetA11yAnnouncer(announcement.Get());
 
   EXPECT_CALL(controller(), OnTabSelected(1, TabbedPaneTabType::kPayLater));
-  EXPECT_CALL(
-      announcement,
-      Run(l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
-              u"Pay Later Test", u"2", u"2"),
-          true));
-  std::u16string expected_announcement_text = l10n_util::GetStringFUTF16(
+
+  std::u16string tab_announcement = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+      u"Pay Later Test", u"2", u"2");
+
+  std::u16string footnote_announcement = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CARD_BNPL_PAY_LATER_OPTIONS_AI_FOOTNOTE,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT));
-  EXPECT_CALL(announcement, Run(expected_announcement_text, true));
+
+  EXPECT_CALL(announcement,
+              Run(l10n_util::GetStringFUTF16(
+                      IDS_AUTOFILL_A11Y_ANNOUNCEMENT_CONCATENATE_TWO_STRINGS,
+                      tab_announcement, footnote_announcement),
+                  true));
   SimulateKeyPress(ui::VKEY_RIGHT);
 }
 
