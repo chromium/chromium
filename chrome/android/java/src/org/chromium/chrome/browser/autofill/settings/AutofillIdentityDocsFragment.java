@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.lifecycle.Lifecycle;
+
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -33,6 +35,10 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_identity_docs_title));
+
+        requireActivity()
+                .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
+
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_identity_docs_preferences);
     }
 
