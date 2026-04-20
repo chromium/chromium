@@ -242,6 +242,12 @@ class GlicSharingManager {
   // Queries whether the given tab has been explicitly pinned.
   virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
 
+  // Queries whether the given tab is focused.
+  // Note: this signal should only be used by features that care about live mode
+  // where "focused" notion is still relevant. Use IsTabPinned() if the feature
+  // is not compatible with live mode.
+  virtual bool IsTabFocused(tabs::TabHandle tab_handle) const = 0;
+
   virtual std::optional<GlicPinnedTabUsage> GetPinnedTabUsage(
       tabs::TabHandle tab_handle) = 0;
 

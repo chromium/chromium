@@ -86,6 +86,13 @@ bool GlicDelegatingSharingManagerBase::IsTabPinned(
              : false;
 }
 
+bool GlicDelegatingSharingManagerBase::IsTabFocused(
+    tabs::TabHandle tab_handle) const {
+  return sharing_manager_delegate_
+             ? sharing_manager_delegate_->IsTabFocused(tab_handle)
+             : false;
+}
+
 base::CallbackListSubscription
 GlicDelegatingSharingManagerBase::AddFocusedBrowserChangedCallback(
     FocusedBrowserChangedCallback callback) {
