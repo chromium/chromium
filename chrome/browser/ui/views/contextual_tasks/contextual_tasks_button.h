@@ -34,12 +34,16 @@ class ContextualTasksButton
       override;
   void OnControllerDestroyed() override;
 
+ protected:
+  void UpdateColorsAndInsets() override;
+
  private:
   void OnButtonPress();
   void OnPinStateChanged();
   void OnSidePanelAlignmentChanged();
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
+  bool ShouldApplyCircularBackgroundShadow() const;
   void MaybeUpdateVisibility();
 
   BooleanPrefMember pin_state_;
