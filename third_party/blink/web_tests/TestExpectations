@@ -9740,4 +9740,5 @@ crbug.com/501845333 [ Linux ] external/wpt/css/filter-effects/crashtests/fecompo
 crbug.com/501845333 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Failure Pass ]
 
 # Gardener 2026-04-20
+crbug.com/40318224 http/tests/perf/large-inlined-script.html [ Timeout ]
 crbug.com/504423491 [ Linux Debug ] virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/subresource-blocking.sub.window.html [ Failure ]
