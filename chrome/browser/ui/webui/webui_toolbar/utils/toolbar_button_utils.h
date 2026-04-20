@@ -13,6 +13,10 @@
 
 class BrowserWindowInterface;
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 namespace webui_toolbar {
 
 // Get the list of ElementIdentifiers for the WebUI-specific pinned toolbar
@@ -26,9 +30,9 @@ bool IsButtonPinned(BrowserWindowInterface* browser_interface,
 // Convert Pinned Toolbar Action `action` into an ElementIdentifier.
 ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action);
 
-// Convert Pinned Toolbar Action `action` to a mojo'able enum value.
+// Convert Pinned Toolbar Action `item` to a mojo'able enum value.
 std::optional<toolbar_ui_api::mojom::PinnedToolbarAction>
-ActionIdToPinnedToolbarAction(actions::ActionId action);
+ActionItemToPinnedToolbarAction(actions::ActionItem* item);
 
 // Convert Pinned Toolbar Action `action` from a mojo'able enum value.
 std::optional<actions::ActionId> PinnedToolbarActionToActionId(

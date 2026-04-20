@@ -64,6 +64,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -2555,6 +2556,66 @@ class WebUIPinnedToolbarActionsBrowserTest
                                  : actions::ActionPinnableState::kNotPinnable));
   }
 
+  void PinAction(actions::ActionId action_id,
+                 toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
+    auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    auto* web_contents =
+        webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
+    auto* pinned_actions = webui_toolbar_view->GetPinnedToolbarActions();
+    ui::ElementIdentifier id =
+        pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
+
+    // Verify it's not pinned initially.
+    if (id) {
+      CHECK_EQ(id, webui_toolbar::ActionIdToElementIdentifier(action_id));
+      EXPECT_FALSE(BrowserElements::From(browser())->GetElement(id));
+    }
+    EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+
+    model_->UpdatePinnedState(action_id, true);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+    // Verify it's not highlighted.
+    EXPECT_TRUE(EvalJsOnPinnedButton(web_contents, mojom_action,
+                                     "return !!btn && "
+                                     "!btn.hasAttribute('is-menu-open');")
+                    .ExtractBool());
+
+    // Verify it's trackable.
+    if (id) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return BrowserElements::From(browser())->GetElement(id) != nullptr;
+      }));
+    }
+    // Once pinned, GetBubbleAnchor() should eventually return a non-null
+    // BubbleAnchor.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return !pinned_actions->GetBubbleAnchor(action_id).IsNull();
+    }));
+  }
+
+  void UnpinAction(actions::ActionId action_id,
+                   toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
+    auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    auto* web_contents =
+        webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
+    auto* pinned_actions = webui_toolbar_view->GetPinnedToolbarActions();
+    ui::ElementIdentifier id =
+        pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
+
+    model_->UpdatePinnedState(action_id, false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+    if (id) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return BrowserElements::From(browser())->GetElement(id) == nullptr;
+      }));
+    }
+    EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+  }
+
   raw_ptr<PinnedToolbarActionsModel> model_;
 
   const std::vector<
@@ -2595,7 +2656,7 @@ class WebUIPinnedToolbarActionsBrowserTest
           {kActionQrCodeGenerator,
            toolbar_ui_api::mojom::PinnedToolbarAction::kQrCodeGenerator},
           {kActionRouteMedia,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia},
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle},
           {kActionSidePanelShowReadAnything,
            toolbar_ui_api::mojom::PinnedToolbarAction::
                kSidePanelShowReadAnything},
@@ -2634,67 +2695,46 @@ class WebUIPinnedToolbarActionsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                        PinUnpinIndividually) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  content::WebContents* web_contents = web_view->GetWebContents();
-  auto* pinned_actions = webui_toolbar_view->GetPinnedToolbarActions();
-
   for (const auto& [action_id, mojom_action] : kActionMappings) {
-    ui::ElementIdentifier id =
-        pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
-    if (id) {
-      CHECK_EQ(id, webui_toolbar::ActionIdToElementIdentifier(action_id));
-      EXPECT_FALSE(BrowserElements::From(browser())->GetElement(id));
-    }
-    EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
-
-    model_->UpdatePinnedState(action_id, true);
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
-
-    // Verify it's not highlighted.
-    EXPECT_TRUE(EvalJsOnPinnedButton(web_contents, mojom_action,
-                                     "return !!btn && "
-                                     "!btn.hasAttribute('is-menu-open');")
-                    .ExtractBool());
-
-    // Verify it's trackable.
-    if (id) {
-      EXPECT_TRUE(base::test::RunUntil([&]() {
-        return BrowserElements::From(browser())->GetElement(id) != nullptr;
-      }));
-    }
-    // Once pinned, GetBubbleAnchor() should eventually return a non-null
-    // BubbleAnchor.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return !pinned_actions->GetBubbleAnchor(action_id).IsNull();
-    }));
-
-    model_->UpdatePinnedState(action_id, false);
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
-
-    if (id) {
-      EXPECT_TRUE(base::test::RunUntil([&]() {
-        return BrowserElements::From(browser())->GetElement(id) == nullptr;
-      }));
-    }
-    EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+    PinAction(action_id, mojom_action);
+    UnpinAction(action_id, mojom_action);
   }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinAllTogether) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  content::WebContents* web_contents = web_view->GetWebContents();
-
   for (const auto& [action_id, mojom_action] : kActionMappings) {
-    model_->UpdatePinnedState(action_id, true);
+    PinAction(action_id, mojom_action);
   }
 
   for (const auto& [action_id, mojom_action] : kActionMappings) {
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+    UnpinAction(action_id, mojom_action);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
+  auto* action_item = static_cast<actions::StatefulImageActionItem*>(
+      actions::ActionManager::Get().FindAction(
+          kActionRouteMedia, browser()->GetActions()->root_action_item()));
+
+  const std::vector<std::pair<const gfx::VectorIcon&,
+                              toolbar_ui_api::mojom::PinnedToolbarAction>>
+      kRouteMediaIcons = {
+          {vector_icons::kMediaRouterIdleChromeRefreshIcon,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle},
+          {vector_icons::kMediaRouterWarningChromeRefreshIcon,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning},
+          {vector_icons::kMediaRouterPausedIcon,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused},
+          {vector_icons::kMediaRouterActiveChromeRefreshIcon,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive},
+          {kCastChromeRefreshIcon,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia},
+      };
+
+  for (const auto& [icon, mojom_action] : kRouteMediaIcons) {
+    action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(icon));
+    PinAction(kActionRouteMedia, mojom_action);
+    UnpinAction(kActionRouteMedia, mojom_action);
   }
 }
 

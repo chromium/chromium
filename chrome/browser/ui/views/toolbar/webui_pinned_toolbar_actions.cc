@@ -63,7 +63,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         IsActionPinned(id)) {
       return;
     }
-    auto mojo_id = webui_toolbar::ActionIdToPinnedToolbarAction(id);
+    auto mojo_id = webui_toolbar::ActionItemToPinnedToolbarAction(item);
     CHECK(mojo_id) << "Unsupported pinned action type " << id;
     auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
     state->action = *mojo_id;

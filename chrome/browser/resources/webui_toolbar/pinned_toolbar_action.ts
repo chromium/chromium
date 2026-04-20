@@ -97,6 +97,10 @@ export class PinnedToolbarActionElement extends CrLitElement {
       case PinnedToolbarAction.kShowTranslate:
       case PinnedToolbarAction.kQrCodeGenerator:
       case PinnedToolbarAction.kRouteMedia:
+      case PinnedToolbarAction.kRouteMediaIdle:
+      case PinnedToolbarAction.kRouteMediaWarning:
+      case PinnedToolbarAction.kRouteMediaPaused:
+      case PinnedToolbarAction.kRouteMediaActive:
       case PinnedToolbarAction.kSidePanelShowReadAnything:
       case PinnedToolbarAction.kCopyUrl:
       case PinnedToolbarAction.kSendTabToSelf:
