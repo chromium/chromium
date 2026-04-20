@@ -213,10 +213,10 @@ base::expected<void, std::string> CreateLayer(
       break;
     }
 
-    default:
-      // TODO(rockot): Support other layer types.
-      layer = cc::SolidColorLayerImpl::Create(&tree, id);
-      break;
+    case cc::mojom::LayerType::kHeadsUpDisplay:
+    case cc::mojom::LayerType::kPicture:
+    case cc::mojom::LayerType::kVideo:
+      return base::unexpected("Invalid LayerType for CreateLayer.");
   }
   return base::ok();
 }
@@ -985,8 +985,13 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
             general.layer_extra->get_view_transition_content_layer_extra(),
             static_cast<cc::ViewTransitionContentLayerImpl&>(layer));
         break;
-      default:
-        // TODO(zmo): handle other types of LayerImpl.
+      case cc::mojom::LayerType::kHeadsUpDisplay:
+      case cc::mojom::LayerType::kPicture:
+      case cc::mojom::LayerType::kVideo:
+        return base::unexpected("Invalid LayerType for UpdateLayer.");
+      case cc::mojom::LayerType::kLayer:
+      case cc::mojom::LayerType::kSolidColor:
+        // TODO(b/503346329) - handle other types of LayerImpl.
         break;
     }
   }
