@@ -32,6 +32,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/ui_utils.h"
 #include "components/search_engines/util.h"
 #include "components/search_provider_logos/switches.h"
 #include "components/url_formatter/url_fixer.h"
@@ -692,8 +693,17 @@ std::vector<const TemplateURL*>
 TemplateUrlServiceAndroid::GetTemplateUrlsByCategory(
     JNIEnv* env,
     TemplateUrlCategory category) {
-  return FilterTemplateUrlsByCategory(template_url_service_->GetTemplateURLs(),
-                                      category);
+  auto template_urls = FilterTemplateUrlsByCategory(
+      template_url_service_->GetTemplateURLs(), category);
+
+  // Sort the list for site search sections only. Search engines will preserve
+  // the original order returned by {@link GetTemplateURLs}.
+  if (category == TemplateUrlCategory::kActiveSiteSearch ||
+      category == TemplateUrlCategory::kInactiveSiteSearch) {
+    std::ranges::sort(template_urls,
+                      internal::OrderTemplateUrlsByManagedAndAlphabetically());
+  }
+  return template_urls;
 }
 
 base::android::ScopedJavaLocalRef<jobject>
