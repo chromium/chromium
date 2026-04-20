@@ -936,6 +936,7 @@ TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled) {
   expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
   expected_event.set_content_transfer_method(
       chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_FILE_PICKER);
+  expected_event.set_content_size(7);
 
   std::set<std::string> expected_mimetypes = {""};
   validator.ExpectUnscannedFileEvents(
@@ -947,6 +948,76 @@ TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled) {
 
   // Triggering the process
   fake_files_request_handler_->UploadData();
+
+  // Deleting the handler while the scan is ongoing to simulate cancellation.
+  fake_files_request_handler_.reset();
+
+  run_loop.Run();
+}
+
+TEST_F(FilesRequestHandlerTest, DestructorReportsCancelled_FileDeleted) {
+  enterprise_connectors::test::EventReportValidatorHelper
+      event_report_validator_helper(profile_);
+
+  GURL url(kTestUrl);
+  std::vector<base::FilePath> paths = CreateFilesForTest(
+      {FILE_PATH_LITERAL("foo.doc"), FILE_PATH_LITERAL("bar.doc")});
+
+  std::optional<AnalysisSettings> settings = GetSettings();
+  ASSERT_TRUE(settings.has_value());
+
+  TestContentAnalysisInfo info(*settings, paths.size());
+
+  using ResultFuture =
+      base::test::TestFuture<std::vector<RequestHandlerResult>>;
+  ResultFuture future;
+
+  fake_files_request_handler_ = std::make_unique<test::FakeFilesRequestHandler>(
+      base::BindRepeating(
+          &FilesRequestHandlerTest_DestructorReportsCancelled_FileDeleted_Test::
+              FakeFileUploadCallback,
+          weak_ptr_factory_.GetWeakPtr(),
+          settings->cloud_or_local_settings.is_cloud_analysis()),
+      /*content_analysis_info=*/&info,
+      /*upload_service=*/nullptr, profile_, GURL(kTestUrl), "", "",
+      kContentTransferMethod, DeepScanAccessPoint::UPLOAD, paths,
+      future.GetCallback());
+
+  base::RunLoop run_loop;
+
+  auto validator = event_report_validator_helper.CreateValidator();
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
+  expected_event.set_url(kTestUrl);
+  expected_event.set_tab_url(kTestUrl);
+  expected_event.set_source("");
+  expected_event.set_destination("");
+  expected_event.set_trigger(chrome::cros::reporting::proto::FILE_UPLOAD);
+  expected_event.set_unscanned_reason(
+      chrome::cros::reporting::proto::UnscannedFileEvent::USER_CANCELLED);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_CANCELLED_BY_USER);
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+  expected_event.set_content_transfer_method(
+      chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_FILE_PICKER);
+  expected_event.set_content_size(0);
+
+  std::set<std::string> expected_mimetypes = {""};
+  validator.ExpectUnscannedFileEvents(
+      std::move(expected_event),
+      /*expected_filenames=*/{paths[0].AsUTF8Unsafe(), paths[1].AsUTF8Unsafe()},
+      /*expected_sha256s=*/{"", ""},
+      /*expected_scan_ids=*/{"", ""},
+      /*expected_mimetypes=*/&expected_mimetypes);
+
+  // Triggering the process
+  fake_files_request_handler_->UploadData();
+
+  // Delete the files from disk to simulate fetching failure.
+  base::DeleteFile(paths[0]);
+  base::DeleteFile(paths[1]);
 
   // Deleting the handler while the scan is ongoing to simulate cancellation.
   fake_files_request_handler_.reset();

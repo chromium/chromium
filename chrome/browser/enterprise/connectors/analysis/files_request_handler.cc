@@ -8,12 +8,15 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +31,8 @@
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace enterprise_connectors {
 
@@ -79,6 +84,52 @@ std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
     default:
   }
   NOTREACHED();
+}
+
+struct UnreportedFileInfo {
+  base::FilePath path;
+  FilesRequestHandlerBase::FileInfo file_info;
+};
+
+void ReportCancellationsOnUIThread(
+    base::WeakPtr<Profile> profile_weak,
+    std::string source,
+    std::string destination,
+    std::string access_point_trigger,
+    std::string content_transfer_method,
+    GURL url,
+    GURL tab_url,
+    std::vector<UnreportedFileInfo> unreported_files) {
+  Profile* profile = profile_weak.get();
+  if (!profile) {
+    return;
+  }
+
+  auto* router = ReportingEventRouterFactory::GetForBrowserContext(profile);
+  if (!router) {
+    return;
+  }
+
+  for (const auto& unreported : unreported_files) {
+    router->OnUnscannedFileEvent(
+        url, tab_url, source, destination, unreported.path.AsUTF8Unsafe(),
+        unreported.file_info.sha256_or_cb, unreported.file_info.mime_type,
+        access_point_trigger, /*scan_id=*/"",
+        enterprise_connectors::kUserCancelledUnscannedReason,
+        content_transfer_method, unreported.file_info.size,
+        EventResult::CANCELLED);
+  }
+}
+
+std::vector<UnreportedFileInfo> FetchFileSizes(
+    std::vector<UnreportedFileInfo> unreported_files) {
+  for (auto& unreported : unreported_files) {
+    if (unreported.file_info.size == 0) {
+      int64_t file_size = base::GetFileSize(unreported.path).value_or(0);
+      unreported.file_info.size = file_size;
+    }
+  }
+  return unreported_files;
 }
 
 }  // namespace
@@ -150,8 +201,12 @@ void FilesRequestHandler::ResetFactoryForTesting() {
 }
 
 FilesRequestHandler::~FilesRequestHandler() {
+  MaybeCancelAndReport();
+}
+
+void FilesRequestHandler::MaybeCancelAndReport() {
   // If all files have been reported, then we can return early without
-  // reporting a cancellation.
+  // reporting a cancellation / cancelling the file opening job.
   if (file_result_count_ >= paths_.size()) {
     return;
   }
@@ -169,19 +224,21 @@ FilesRequestHandler::~FilesRequestHandler() {
     return;
   }
 
-  // Report a user cancellation for each file that has not been reported yet.
-  std::ranges::for_each(unreported_files_, [this](size_t index) {
-    MaybeReportDeepScanningVerdict(
-        ReportingEventRouterFactory::GetForBrowserContext(profile_),
-        content_analysis_info_.get(), source_, destination_,
-        paths_[index].AsUTF8Unsafe(), file_info_[index].sha256_or_cb,
-        file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
-        content_transfer_method_,
-        content_analysis_info_->GetContentAreaAccountEmail(),
-        file_info_[index].size, ScanRequestUploadResult::kUserCancelled,
-        enterprise_connectors::ContentAnalysisResponse(),
-        EventResult::CANCELLED);
-  });
+  std::vector<UnreportedFileInfo> unreported_files;
+  unreported_files.reserve(unreported_files_.size());
+  for (size_t index : unreported_files_) {
+    unreported_files.push_back(
+        {std::move(paths_[index]), std::move(file_info_[index])});
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&FetchFileSizes, std::move(unreported_files)),
+      base::BindOnce(
+          &ReportCancellationsOnUIThread, profile_->GetWeakPtr(), source_,
+          destination_, AccessPointToTriggerString(access_point_),
+          content_transfer_method_, GURL(content_analysis_info_->url()),
+          content_analysis_info_->tab_url()));
 }
 
 void FilesRequestHandler::ReportWarningBypass(
