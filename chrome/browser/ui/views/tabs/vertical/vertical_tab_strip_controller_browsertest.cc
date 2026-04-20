@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -36,6 +37,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -165,6 +167,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
                        ClickTabInImmersiveMode) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+
   // Add another tab to switch to.
   AppendTab();
 
