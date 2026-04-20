@@ -8,18 +8,20 @@ import type {SignInPromoRefreshElement} from './sign_in_promo_refresh.js';
 
 export function getHtml(this: SignInPromoRefreshElement) {
   // clang-format off
+  // TODO(crbug.com/504301457): Enable animations once there is a mechanism to
+  // pause/stop them.
   return html`<!--_html_template_start_-->
 <cr-lottie id="left-animation" class="animation"
     animation-url="${this.getAnimationUrl_('left')}"
-    ?autoplay="${!this.shouldDisableAnimations_}">
+    ?autoplay=false>
 </cr-lottie>
 <cr-lottie id="right-animation" class="animation"
     animation-url="${this.getAnimationUrl_('right')}"
-    ?autoplay="${!this.shouldDisableAnimations_}">
+    ?autoplay=false>
 </cr-lottie>
 <cr-lottie id="bottom-animation" class="animation"
     animation-url="${this.getAnimationUrl_('bottom')}"
-    ?autoplay="${!this.shouldDisableAnimations_}">
+    ?autoplay=false>
 </cr-lottie>
 
 ${this.isTopRightCornerVariation_() ? html`
