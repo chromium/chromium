@@ -52,6 +52,20 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   static const webapps::AppId* GetAppId(
       const content::WebContents* web_contents);
 
+  // Returns the app ID of the web app that controls the given |url|.
+  // This is the algorithm used to determine if a given app_id controls
+  // WebContents both in an app window and as a browser tab.
+  //
+  // Nuance with IWAs: An Isolated Web App (IWA) can never exist in a regular
+  // browser tab. This method still checks for IWAs first because it is used
+  // for all tabs (including app windows).
+  // To prevent accidentally associating a regular browser tab (loading an https
+  // URL) with an IWA that has an https scope extension, this method explicitly
+  // EXCLUDES scope extensions when searching for IWAs.
+  static std::optional<webapps::AppId> FindAppIdForUrl(
+      WebAppRegistrar& registrar,
+      const GURL& url);
+
 #if BUILDFLAG(IS_MAC)
   // Like the above method, but also checks if notification attribution should
   // apply to the app in the web contents. This checks the base::Feature as well

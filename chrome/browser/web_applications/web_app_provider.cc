@@ -464,6 +464,8 @@ void WebAppProvider::ConnectSubsystems() {
   generated_icon_fix_manager_->SetProvider(pass_key, *this);
   profile_deletion_manager_->SetProvider(pass_key, *this);
 
+  web_contents_manager_->SetProvider(this);
+
   connected_ = true;
 }
 

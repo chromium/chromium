@@ -125,6 +125,8 @@ class FakeWebContentsManager : public WebContentsManager {
   base::CallbackListSubscription GetPrimaryPageAllSpecifiedManifests(
       content::WebContents& web_contents,
       AllManifestsCallbackList::CallbackType callback) override;
+  std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) const override;
   FakeWebContentsManager* AsFakeWebContentsManagerForTesting() override;
 
   // Set the behavior for calls to `GetIcons` from wrappers returned by this

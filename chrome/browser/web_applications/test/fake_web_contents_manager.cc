@@ -17,6 +17,9 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
@@ -551,6 +554,28 @@ void FakeWebContentsManager::TrackLoadUrlCalls(
 
 base::WeakPtr<FakeWebContentsManager> FakeWebContentsManager::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+std::optional<webapps::AppId> FakeWebContentsManager::GetAppIdForWebContents(
+    content::WebContents* web_contents) const {
+  auto url_it = loaded_urls_.find(web_contents);
+  if (url_it == loaded_urls_.end()) {
+    return std::nullopt;
+  }
+
+  if (!provider()) {
+    return std::nullopt;
+  }
+
+  std::optional<webapps::AppId> app_id = WebAppTabHelper::FindAppIdForUrl(
+      provider()->registrar_unsafe(), url_it->second);
+  if (app_id) {
+    const WebApp* app = provider()->registrar_unsafe().GetAppById(*app_id);
+    if (app) {
+      return app->app_id();
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace web_app
