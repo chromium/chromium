@@ -444,13 +444,13 @@ void SelectionOverlayController::RenderRegions() {
 
   page_->SetPostRegionSelections(std::move(regions_mojo));
 
-  mojom::AdditionalContextPtr additional_context =
-      CreateAdditionalContext(gfx_regions);
   GlicKeyedService* service =
       GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
-  service->SendAdditionalContext(tab_->GetHandle(),
-                                 std::move(additional_context));
   if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
+    mojom::AdditionalContextPtr additional_context =
+        CreateAdditionalContext(gfx_regions);
+    service->SendAdditionalContext(tab_->GetHandle(),
+                                   std::move(additional_context));
     instance->OnSelectionAreasChanged(selected_regions_.size());
     if (instance->IsActive()) {
       if (content::WebContents* web_contents =
