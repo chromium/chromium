@@ -10,6 +10,8 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 import {calculateTextBounds} from '../shared/rect_calculations.js';
 
 import {LineFocusModel} from './line_focus_model.js';
+import {LineFocusCursorMoveMode, LineFocusNoneMoveMode, LineFocusStaticMoveMode} from './line_focus_move_mode.js';
+import {LineFocusLineStyleMode, LineFocusNoneStyleMode, LineFocusWindowStyleMode} from './line_focus_style_mode.js';
 
 export interface LineFocusListener {
   onLineFocusMove(): void;
@@ -31,6 +33,13 @@ export class LineFocusController {
   private speechController_ = SpeechController.getInstance();
   private logger_ = ReadAnythingLogger.getInstance();
 
+  constructor() {
+    this.model_.setCurrentStyleMode(
+        new LineFocusNoneStyleMode(LineFocusStyle.OFF));
+    this.model_.setCurrentMoveMode(
+        new LineFocusNoneMoveMode(LineFocusMovement.STATIC));
+  }
+
   getTop(): number {
     return this.model_.getTop();
   }
@@ -42,21 +51,20 @@ export class LineFocusController {
   }
 
   getCurrentLineFocusType(): LineFocusType {
-    return this.getCurrentLineFocusStyle().type;
+    return this.model_.getCurrentStyleMode().getStyle().type;
   }
 
   getCurrentLineFocusStyle(): LineFocusStyle {
-    return this.model_.getCurrentLineFocusStyle();
+    return this.model_.getCurrentStyleMode().getStyle();
   }
 
   getCurrentLineFocusMovement(): LineFocusMovement {
-    return this.model_.getCurrentLineFocusMovement();
+    return this.model_.getCurrentMoveMode().getMovement();
   }
 
   // Whether the current line focus mode is static.
   isStatic(): boolean {
-    return this.model_.getCurrentLineFocusMovement() ===
-        LineFocusMovement.STATIC;
+    return this.getCurrentLineFocusMovement() === LineFocusMovement.STATIC;
   }
 
   addListener(listener: LineFocusListener) {
@@ -77,7 +85,7 @@ export class LineFocusController {
     const lastStyle = this.model_.getLastEnabledLineFocusStyle();
     const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
     this.setStyleAndMovement_(
-        newStyle, this.model_.getCurrentLineFocusMovement(), container, height);
+        newStyle, this.getCurrentLineFocusMovement(), container, height);
     this.logger_.logLineFocusToggled(this.isEnabled());
     this.listeners_.forEach(l => l.onLineFocusToggled());
   }
@@ -240,7 +248,7 @@ export class LineFocusController {
 
   onStyleChange(style: LineFocusStyle, container: HTMLElement, height: number) {
     this.setStyleAndMovement_(
-        style, this.model_.getCurrentLineFocusMovement(), container, height);
+        style, this.getCurrentLineFocusMovement(), container, height);
   }
 
   onMovementChange(
@@ -253,14 +261,33 @@ export class LineFocusController {
       style: LineFocusStyle, movement: LineFocusMovement,
       container: HTMLElement, height: number) {
     const wasEnabled = this.isEnabled();
-    this.model_.setCurrentLineFocusStyle(style);
-    this.model_.setCurrentLineFocusMovement(movement);
+    this.updateStrategies_(style, movement);
     this.propagateLineFocus_(style, movement);
     const isOff = style === LineFocusStyle.OFF;
     if (!isOff) {
       this.model_.setLastEnabledLineFocusStyle(style);
     }
     this.updateLineFocus_(isOff, wasEnabled, container, height);
+  }
+
+  private updateStrategies_(
+      style: LineFocusStyle, movement: LineFocusMovement) {
+    if (style.type === LineFocusType.NONE) {
+      const styleMode = new LineFocusNoneStyleMode(style);
+      this.model_.setCurrentStyleMode(styleMode);
+      this.model_.setCurrentMoveMode(new LineFocusNoneMoveMode(movement));
+      return;
+    }
+
+    const styleMode = style.type === LineFocusType.LINE ?
+        new LineFocusLineStyleMode(style) :
+        new LineFocusWindowStyleMode(style);
+    this.model_.setCurrentStyleMode(styleMode);
+
+    const moveMode = movement === LineFocusMovement.STATIC ?
+        new LineFocusStaticMoveMode() :
+        new LineFocusCursorMoveMode();
+    this.model_.setCurrentMoveMode(moveMode);
   }
 
   private updateLineFocus_(

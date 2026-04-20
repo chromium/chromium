@@ -1,8 +1,11 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {assert} from '//resources/js/assert.js';
 
-import {LineFocusMovement, LineFocusStyle} from './read_anything_types.js';
+import type {LineFocusMoveMode} from './line_focus_move_mode.js';
+import type {LineFocusStyleMode} from './line_focus_style_mode.js';
+import {LineFocusStyle} from './read_anything_types.js';
 
 export class LineFocusModel {
   // The min y position allowed for the line focus element.
@@ -23,10 +26,10 @@ export class LineFocusModel {
   // otherwise.
   private windowHeight_: number = 0;
 
-  // The current line focus mode.
-  private currentLineFocusStyle_: LineFocusStyle = LineFocusStyle.OFF;
-  private currentLineFocusMovement_: LineFocusMovement =
-      LineFocusMovement.STATIC;
+  // The current style and move mode strategy instances.
+  private currentStyleMode_?: LineFocusStyleMode;
+  private currentMoveMode_?: LineFocusMoveMode;
+
   // The last line focus mode that was used when it was on. Used for toggling on
   // line focus with the last used line focus mode.
   private lastEnabledLineFocusStyle_: LineFocusStyle =
@@ -84,20 +87,22 @@ export class LineFocusModel {
     this.windowHeight_ = height;
   }
 
-  getCurrentLineFocusStyle(): LineFocusStyle {
-    return this.currentLineFocusStyle_;
+  getCurrentStyleMode(): LineFocusStyleMode {
+    assert(this.currentStyleMode_, 'You must set the default style mode!');
+    return this.currentStyleMode_;
   }
 
-  setCurrentLineFocusStyle(style: LineFocusStyle): void {
-    this.currentLineFocusStyle_ = style;
+  setCurrentStyleMode(styleMode: LineFocusStyleMode): void {
+    this.currentStyleMode_ = styleMode;
   }
 
-  getCurrentLineFocusMovement(): LineFocusMovement {
-    return this.currentLineFocusMovement_;
+  getCurrentMoveMode(): LineFocusMoveMode {
+    assert(this.currentMoveMode_, 'You must set the default move mode!');
+    return this.currentMoveMode_;
   }
 
-  setCurrentLineFocusMovement(movement: LineFocusMovement): void {
-    this.currentLineFocusMovement_ = movement;
+  setCurrentMoveMode(moveMode: LineFocusMoveMode): void {
+    this.currentMoveMode_ = moveMode;
   }
 
   getLastEnabledLineFocusStyle(): LineFocusStyle {

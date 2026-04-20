@@ -24,6 +24,8 @@ build_webui("build") {
     "content/readability_image_classifier.ts",
     "content/line_focus_controller.ts",
     "content/line_focus_model.ts",
+    "content/line_focus_move_mode.ts",
+    "content/line_focus_style_mode.ts",
     "content/node_store.ts",
     "content/read_anything_types.ts",
     "content/selection_controller.ts",
