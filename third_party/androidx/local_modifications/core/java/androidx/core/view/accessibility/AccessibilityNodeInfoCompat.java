@@ -50,12 +50,10 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.RequiresFlag;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StringDef;
 import androidx.core.R;
 import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat;
-import androidx.core.flagging.Flags;
 import androidx.core.os.BuildCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityViewCommand.CommandArguments;
@@ -1591,8 +1589,8 @@ public class AccessibilityNodeInfoCompat {
          */
         @Nullable
         public String getTag() {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-                return FlagA11yMathApiImpl.getStructuredDataInfoTag(mStructuredDataInfo);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                return Api37Impl.getStructuredDataInfoTag(mStructuredDataInfo);
             }
 
             return null;
@@ -1611,9 +1609,8 @@ public class AccessibilityNodeInfoCompat {
          */
         public void putAttribute(@NonNull String attributeKey,
                 @NonNull String value) {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-                FlagA11yMathApiImpl.putStructuredDataInfoAttribute(
-                        mStructuredDataInfo, attributeKey, value);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                Api37Impl.putStructuredDataInfoAttribute(mStructuredDataInfo, attributeKey, value);
             }
         }
 
@@ -1628,9 +1625,8 @@ public class AccessibilityNodeInfoCompat {
          * </ul>
          */
         public void removeAttribute(@NonNull String attributeKey) {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-                FlagA11yMathApiImpl.removeStructuredDataInfoAttribute(mStructuredDataInfo,
-                        attributeKey);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                Api37Impl.removeStructuredDataInfoAttribute(mStructuredDataInfo, attributeKey);
             }
         }
 
@@ -1647,9 +1643,8 @@ public class AccessibilityNodeInfoCompat {
          */
         @Nullable
         public String getAttribute(@NonNull String attributeKey) {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-                return FlagA11yMathApiImpl.getStructuredDataInfoAttribute(
-                        mStructuredDataInfo, attributeKey);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                return Api37Impl.getStructuredDataInfoAttribute(mStructuredDataInfo, attributeKey);
             }
 
             return null;
@@ -1665,8 +1660,8 @@ public class AccessibilityNodeInfoCompat {
          */
         @NonNull
         public Map<String, String> getAttributes() {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-                return FlagA11yMathApiImpl.getStructuredDataInfoAttributes(mStructuredDataInfo);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                return Api37Impl.getStructuredDataInfoAttributes(mStructuredDataInfo);
             }
 
             return Collections.emptyMap();
@@ -1680,8 +1675,8 @@ public class AccessibilityNodeInfoCompat {
          */
         @Override
         public int hashCode() {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-                return FlagA11yMathApiImpl.structuredDataInfoHashCode(mStructuredDataInfo);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                return Api37Impl.structuredDataInfoHashCode(mStructuredDataInfo);
             }
 
             return 0;
@@ -1696,9 +1691,9 @@ public class AccessibilityNodeInfoCompat {
          */
         @Override
         public boolean equals(Object obj) {
-            if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
                 if (obj instanceof StructuredDataInfoCompat) {
-                    return FlagA11yMathApiImpl.structuredDataInfoEquals(mStructuredDataInfo,
+                    return Api37Impl.structuredDataInfoEquals(mStructuredDataInfo,
                             ((StructuredDataInfoCompat) obj).mStructuredDataInfo);
                 }
             }
@@ -1853,8 +1848,8 @@ public class AccessibilityNodeInfoCompat {
          * @param tag The MathML tag for this node.
          */
         public MathInfoCompat(@NonNull @MathTag String tag) {
-            super(Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")
-                    ? (StructuredDataInfo) FlagA11yMathApiImpl.createMathInfo(tag) : null);
+            super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                    ? (StructuredDataInfo) Api37Impl.createMathInfo(tag) : null);
         }
 
         /**
@@ -1863,7 +1858,7 @@ public class AccessibilityNodeInfoCompat {
          * @param mathInfo The underlying MathInfo to wrap.
          */
         public MathInfoCompat(@Nullable MathInfo mathInfo) {
-            super(Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")
+            super(Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
                     ? (StructuredDataInfo) mathInfo : null);
         }
 
@@ -2199,11 +2194,8 @@ public class AccessibilityNodeInfoCompat {
          * </ul>
          */
         public @Nullable View getView() {
-            if (BuildCompat.isAtLeastB_1()
-                    && Flags.getBooleanFlagValue(
-                            "android.view.accessibility",
-                            "a11y_selection_position_app_getters_api")) {
-                return FlagA11ySelectionPositionAppGettersApiImpl.getView(mPosition);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                return Api37Impl.getView(mPosition);
             } else {
                 return null;
             }
@@ -2219,11 +2211,8 @@ public class AccessibilityNodeInfoCompat {
          * </ul>
          */
         public int getVirtualDescendantId() {
-            if (BuildCompat.isAtLeastB_1()
-                    && Flags.getBooleanFlagValue(
-                            "android.view.accessibility",
-                            "a11y_selection_position_app_getters_api")) {
-                return FlagA11ySelectionPositionAppGettersApiImpl.getVirtualDescendantId(mPosition);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                return Api37Impl.getVirtualDescendantId(mPosition);
             } else {
                 return -1;
             }
@@ -4995,9 +4984,8 @@ public class AccessibilityNodeInfoCompat {
      */
     @Nullable
     public StructuredDataInfoCompat getStructuredDataInfo() {
-        if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-            StructuredDataInfo structuredDataInfo =
-                    FlagA11yMathApiImpl.getStructuredDataInfo(mInfo);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            StructuredDataInfo structuredDataInfo = Api37Impl.getStructuredDataInfo(mInfo);
             if (structuredDataInfo == null) {
                 return null;
             }
@@ -5025,8 +5013,8 @@ public class AccessibilityNodeInfoCompat {
      * </ul>
      */
     public void setStructuredDataInfo(@Nullable StructuredDataInfoCompat structuredDataInfoCompat) {
-        if (Flags.getBooleanFlagValue("android.view.accessibility", "a11y_math_api")) {
-            FlagA11yMathApiImpl.setStructuredDataInfo(mInfo, structuredDataInfoCompat == null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            Api37Impl.setStructuredDataInfo(mInfo, structuredDataInfoCompat == null
                     ? null : structuredDataInfoCompat.mStructuredDataInfo);
         }
     }
@@ -6811,27 +6799,18 @@ public class AccessibilityNodeInfoCompat {
         }
     }
 
-    @RequiresApi(37)
-    @RequiresFlag("android.view.accessibility.a11y_selection_position_app_getters_api")
-    private static class FlagA11ySelectionPositionAppGettersApiImpl {
-        private FlagA11ySelectionPositionAppGettersApiImpl() {
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
+    private static class Api37Impl {
+        private Api37Impl() {
             // This class is non instantiable.
         }
 
-        static View getView(SelectionPosition selectionPosition) {
+        public static View getView(SelectionPosition selectionPosition) {
             return selectionPosition.getView();
         }
 
-        static int getVirtualDescendantId(SelectionPosition selectionPosition) {
+        public static int getVirtualDescendantId(SelectionPosition selectionPosition) {
             return selectionPosition.getVirtualDescendantId();
-        }
-    }
-
-    @RequiresApi(10000)
-    @RequiresFlag("android.view.accessibility.a11y_math_api")
-    private static class FlagA11yMathApiImpl {
-        private FlagA11yMathApiImpl() {
-            // This class is non instantiable.
         }
 
         @NonNull
