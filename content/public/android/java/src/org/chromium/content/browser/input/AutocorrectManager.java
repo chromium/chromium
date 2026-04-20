@@ -111,8 +111,8 @@ public class AutocorrectManager {
         return last;
     }
 
-    public void onCommitText() {
-        if (DEBUG_LOGS) Log.i(TAG, "onCommitText");
+    public void onCommitTextOrSendKeyEvent() {
+        if (DEBUG_LOGS) Log.i(TAG, "onCommitTextOrSendKeyEvent");
         if (mRemainingUserActionsBeforeClear == 0) return;
         mRemainingUserActionsBeforeClear--;
         if (mRemainingUserActionsBeforeClear == 0) {

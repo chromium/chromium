@@ -360,6 +360,30 @@ public class ImeAdapterImplUnitTest {
     }
 
     @Test
+    public void testSendKeyEventKeyDownCallsonCommitTextOrSendKeyEvent() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setAutocorrectManagerForTesting(mAutocorrectManager);
+        adapter.onConnectedToRenderProcess();
+
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A);
+        adapter.sendKeyEvent(event);
+
+        verify(mAutocorrectManager).onCommitTextOrSendKeyEvent();
+    }
+
+    @Test
+    public void testSendKeyEventKeyUpDoesNotCallonCommitTextOrSendKeyEvent() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setAutocorrectManagerForTesting(mAutocorrectManager);
+        adapter.onConnectedToRenderProcess();
+
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_A);
+        adapter.sendKeyEvent(event);
+
+        verify(mAutocorrectManager, never()).onCommitTextOrSendKeyEvent();
+    }
+
+    @Test
     @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
     public void testAutocorrectManagerInitialisationWhenFlagEnabled() {
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);

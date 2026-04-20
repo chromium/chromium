@@ -93,37 +93,37 @@ public class AutocorrectManagerUnitTest {
     }
 
     @Test
-    public void testOnCommitTextWhenCounterNotZero() {
+    public void testOnCommitTextOrSendKeyEventWhenCounterNotZero() {
         // Ensuring that AutocorrectManager has Underline
         CorrectionInfo correctionInfo = new CorrectionInfo(0, "", "testing");
         mAutocorrectManager.handlePendingCorrection(correctionInfo);
         mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
 
         for (int i = 0; i < AutocorrectManager.USER_ACTION_CLEAR_UNDERLINE_THRESHOLD - 1; i++) {
-            mAutocorrectManager.onCommitText();
+            mAutocorrectManager.onCommitTextOrSendKeyEvent();
         }
 
         verify(mImeAdapterImpl, never()).clearAllAutocorrectUnderlineSpans();
     }
 
     @Test
-    public void testOnCommitTextWhenCounterZero() {
+    public void testOnCommitTextOrSendKeyEventWhenCounterZero() {
         // Ensuring that AutocorrectManager has Underline
         CorrectionInfo correctionInfo = new CorrectionInfo(0, "", "testing");
         mAutocorrectManager.handlePendingCorrection(correctionInfo);
         mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
 
         for (int i = 0; i < AutocorrectManager.USER_ACTION_CLEAR_UNDERLINE_THRESHOLD; i++) {
-            mAutocorrectManager.onCommitText();
+            mAutocorrectManager.onCommitTextOrSendKeyEvent();
         }
 
         verify(mImeAdapterImpl).clearAllAutocorrectUnderlineSpans();
     }
 
     @Test
-    public void testOnCommitTextWhileHasNoUnderline() {
+    public void testOnCommitTextOrSendKeyEventWhileHasNoUnderline() {
         for (int i = 0; i < AutocorrectManager.USER_ACTION_CLEAR_UNDERLINE_THRESHOLD; i++) {
-            mAutocorrectManager.onCommitText();
+            mAutocorrectManager.onCommitTextOrSendKeyEvent();
         }
 
         verify(mImeAdapterImpl, never()).clearAllAutocorrectUnderlineSpans();

@@ -1277,7 +1277,7 @@ public class ImeAdapterImpl
                                 lastKeyDownEvent.getUnicodeChar());
 
                 if (mAutocorrectManager != null) {
-                    mAutocorrectManager.onCommitText();
+                    mAutocorrectManager.onCommitTextOrSendKeyEvent();
                 }
                 return true;
             }
@@ -1308,7 +1308,7 @@ public class ImeAdapterImpl
             // must be committed before the span can be applied to it.
             if (mAutocorrectManager != null) {
                 mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
-                mAutocorrectManager.onCommitText();
+                mAutocorrectManager.onCommitTextOrSendKeyEvent();
             }
 
         } else {
@@ -1361,6 +1361,10 @@ public class ImeAdapterImpl
 
         for (ImeEventObserver observer : mEventObservers) observer.onBeforeSendKeyEvent(event);
         onImeEvent();
+
+        if (action == KeyEvent.ACTION_DOWN && mAutocorrectManager != null) {
+            mAutocorrectManager.onCommitTextOrSendKeyEvent();
+        }
 
         return ImeAdapterImplJni.get()
                 .sendKeyEvent(
