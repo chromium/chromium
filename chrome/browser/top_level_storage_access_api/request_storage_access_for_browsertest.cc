@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(
                   TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
 
-  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::
