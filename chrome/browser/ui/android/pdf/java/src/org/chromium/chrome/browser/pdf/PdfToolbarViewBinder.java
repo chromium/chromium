@@ -35,9 +35,17 @@ class PdfToolbarViewBinder {
             View.OnClickListener listener = model.get(PdfToolbarProperties.ON_CLICK_LISTENER);
             view.findViewById(R.id.page_increase_button).setOnClickListener(listener);
             view.findViewById(R.id.page_decrease_button).setOnClickListener(listener);
+            view.findViewById(R.id.zoom_increase_button).setOnClickListener(listener);
+            view.findViewById(R.id.zoom_decrease_button).setOnClickListener(listener);
         } else if (PdfToolbarProperties.TITLE == key) {
             TextView title = view.findViewById(R.id.pdf_title);
             title.setText(model.get(PdfToolbarProperties.TITLE));
+        } else if (PdfToolbarProperties.ZOOM_DECREASE_BUTTON_ENABLED == key) {
+            view.findViewById(R.id.zoom_decrease_button)
+                    .setEnabled(model.get(PdfToolbarProperties.ZOOM_DECREASE_BUTTON_ENABLED));
+        } else if (PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED == key) {
+            view.findViewById(R.id.zoom_increase_button)
+                    .setEnabled(model.get(PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED));
         }
     }
 }

@@ -30,6 +30,7 @@ public interface PdfActionsDelegate {
      * Called when the PDF page is changed.
      *
      * @param pageIndex The 0-based index of the current page.
+     * @param zoomLevel The current zoom level.
      */
-    void onPageChanged(int pageIndex);
+    void onViewportChanged(int pageIndex, float zoomLevel);
 }

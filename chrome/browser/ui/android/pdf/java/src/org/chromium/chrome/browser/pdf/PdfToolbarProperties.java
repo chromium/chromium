@@ -8,6 +8,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -26,11 +27,20 @@ class PdfToolbarProperties {
     /** The zoom value text. */
     static final WritableObjectPropertyKey<String> ZOOM_VALUE = new WritableObjectPropertyKey<>();
 
+    /** Whether the zoom decrease button is enabled. */
+    static final WritableBooleanPropertyKey ZOOM_DECREASE_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the zoom increase button is enabled. */
+    static final WritableBooleanPropertyKey ZOOM_INCREASE_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** The callback for toolbar actions. */
     static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        CURRENT_PAGE_NUMBER, TITLE, TOTAL_PAGE_COUNT, ZOOM_VALUE, ON_CLICK_LISTENER
+        CURRENT_PAGE_NUMBER, TITLE, TOTAL_PAGE_COUNT, ZOOM_VALUE, ON_CLICK_LISTENER,
+        ZOOM_DECREASE_BUTTON_ENABLED, ZOOM_INCREASE_BUTTON_ENABLED
     };
 }

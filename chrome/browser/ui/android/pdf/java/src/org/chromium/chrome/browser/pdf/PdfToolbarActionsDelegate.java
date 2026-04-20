@@ -15,4 +15,11 @@ public interface PdfToolbarActionsDelegate {
      * @param pageIndex The 0-based index of the page to navigate to.
      */
     void navigateToPage(int pageIndex);
+
+    /**
+     * Changes the zoom level of the PDF viewer.
+     *
+     * @param zoomLevel The new zoom level.
+     */
+    void changeZoomLevel(float zoomLevel);
 }

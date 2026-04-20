@@ -215,7 +215,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                 mPdfView.addOnViewportChangedListener(
                         (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) -> {
                             if (mDelegate != null) {
-                                mDelegate.onPageChanged(firstVisiblePage);
+                                mDelegate.onViewportChanged(firstVisiblePage, zoomLevel);
                             }
                         });
             }
@@ -289,6 +289,12 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                 // 4. Use the single-argument scrollToPosition.
                 // The internal logic will center this offset, resulting in a top-aligned page.
                 mPdfView.scrollToPosition(new PdfPoint(pageIndex, 0f, yOffsetPoints));
+            }
+        }
+
+        void zoomTo(float zoomLevel) {
+            if (mPdfView != null) {
+                mPdfView.setZoom(zoomLevel);
             }
         }
     }
@@ -483,6 +489,16 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         mChromePdfViewerFragment.scrollToPage(pageIndex);
     }
 
+    /**
+     * Sets the zoom level to a specified amount.
+     *
+     * @param zoomLevel The new value of the zoom.
+     */
+    @Override
+    public void changeZoomLevel(float zoomLevel) {
+        mChromePdfViewerFragment.zoomTo(zoomLevel);
+    }
+
     // Implementation of PdfActionsDelegate
 
     @Override
@@ -505,8 +521,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     }
 
     @Override
-    public void onPageChanged(int pageIndex) {
+    public void onViewportChanged(int pageIndex, float zoomLevel) {
         assert mToolbarCoordinator != null;
-        mToolbarCoordinator.onViewportChanged(pageIndex);
+        mToolbarCoordinator.onViewportChanged(pageIndex, zoomLevel);
     }
 }

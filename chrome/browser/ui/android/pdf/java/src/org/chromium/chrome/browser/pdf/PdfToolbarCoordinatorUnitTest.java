@@ -72,27 +72,29 @@ public class PdfToolbarCoordinatorUnitTest {
 
     @Test
     public void testViewportChanged() {
-        mPdfToolbarCoordinator.onViewportChanged(5);
+        mPdfToolbarCoordinator.onViewportChanged(5, 1);
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
         TextView pageCountDivider = mPdfPageView.findViewById(R.id.page_count_divider);
         TextView pageCount = mPdfPageView.findViewById(R.id.page_count);
+        TextView zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
         // Current page is firstVisiblePage + 1
         Assert.assertEquals(
                 "6 / 100",
                 currentPage.getText().toString()
                         + pageCountDivider.getText().toString()
                         + pageCount.getText().toString());
+        Assert.assertEquals("100%", zoomValue.getText().toString());
     }
 
     @Test
     public void testOnViewportChanged_indexing() {
         // Input is 0-indexed (page 0), output should be 1-indexed ("1")
-        mPdfToolbarCoordinator.onViewportChanged(0);
+        mPdfToolbarCoordinator.onViewportChanged(0, 1);
         TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
         Assert.assertEquals("1", currentPage.getText().toString());
 
         // Input is 0-indexed (page 5), output should be 1-indexed ("6")
-        mPdfToolbarCoordinator.onViewportChanged(5);
+        mPdfToolbarCoordinator.onViewportChanged(5, 1);
         Assert.assertEquals("6", currentPage.getText().toString());
     }
 

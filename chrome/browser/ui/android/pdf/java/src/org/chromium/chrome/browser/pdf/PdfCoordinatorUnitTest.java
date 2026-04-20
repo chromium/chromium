@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pdf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.FragmentActivity;
@@ -128,7 +130,66 @@ public class PdfCoordinatorUnitTest {
     public void testNavigateToPage_PdfViewNull() {
         createPdfCoordinator();
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(null);
+
+        // Verify that no exception is thrown when mPdfView is null.
         mPdfCoordinator.navigateToPage(2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testChangeZoomLevel() {
+        createPdfCoordinator();
+        float zoomLevel = 2.0f;
+
+        // Test
+        mPdfCoordinator.changeZoomLevel(zoomLevel);
+
+        // Assert
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertEquals(zoomLevel, shadowPdfView.mZoom, 0.001f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testChangeZoomLevel_PdfViewNull() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(null);
+
+        // Verify that no exception is thrown when mPdfView is null.
+        mPdfCoordinator.changeZoomLevel(2.0f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testZoomButtons() {
+        createPdfCoordinator();
+
+        View zoomInButton = mPdfCoordinator.getView().findViewById(R.id.zoom_increase_button);
+        View zoomOutButton = mPdfCoordinator.getView().findViewById(R.id.zoom_decrease_button);
+
+        // Initial state at normal zoom
+        mPdfCoordinator.onViewportChanged(0, 1.0f);
+        assertTrue("Zoom in button should be enabled at 1.0f zoom", zoomInButton.isEnabled());
+        assertTrue("Zoom out button should be enabled at 1.0f zoom", zoomOutButton.isEnabled());
+
+        // Click zoom in
+        zoomInButton.performClick();
+
+        // Assert zoom level increased
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertEquals(1.1f, shadowPdfView.mZoom, 0.001f);
+
+        // Simulate minimum zoom level (0.25f)
+        mPdfCoordinator.onViewportChanged(0, 0.25f);
+        assertTrue("Zoom in button should be enabled at min zoom", zoomInButton.isEnabled());
+        assertFalse("Zoom out button should be disabled at min zoom", zoomOutButton.isEnabled());
+
+        // Simulate maximum zoom level (5.0f)
+        mPdfCoordinator.onViewportChanged(0, 5.0f);
+        assertFalse("Zoom in button should be disabled at max zoom", zoomInButton.isEnabled());
+        assertTrue("Zoom out button should be enabled at max zoom", zoomOutButton.isEnabled());
     }
 
     private void runOnLinkClickedTest(boolean isIncognito) {
@@ -188,13 +249,18 @@ public class PdfCoordinatorUnitTest {
     @Implements(PdfView.class)
     public static class ShadowPdfView extends ShadowView {
         public PdfPoint mPdfPoint;
-        public float mZoom = 2.0f;
+        public float mZoom = 1.0f;
 
         public ShadowPdfView() {}
 
         @Implementation
         public void scrollToPosition(PdfPoint pdfPoint) {
             mPdfPoint = pdfPoint;
+        }
+
+        @Implementation
+        public void setZoom(float zoomLevel) {
+            mZoom = zoomLevel;
         }
 
         @Implementation
