@@ -22,6 +22,9 @@
 
 namespace {
 
+constexpr CGFloat kSaveFormTopPadding = 16.0;
+constexpr CGFloat kUpdateFormSectionSpacing = 32.0;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierNewEntity = 0,
   SectionIdentifierOldEntity,
@@ -132,7 +135,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   }
 
   autofill::EntityTypeName typeName = _newEntity->type().name();
-  NSString* title = _oldEntity.has_value()
+  NSString* title = [self isUpdateDialog]
                         ? autofill::GetDialogTitleForUpdateEntity(typeName)
                         : autofill::GetDialogTitleForSaveEntity(typeName);
   [self setTitle:title];
@@ -160,7 +163,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
   AddEntity(snapshot, *_newEntity, SectionIdentifierNewEntity);
 
-  if (_oldEntity.has_value()) {
+  if ([self isUpdateDialog]) {
     AddEntity(snapshot, *_oldEntity, SectionIdentifierOldEntity);
   }
 
@@ -188,7 +191,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
-  if (!_oldEntity.has_value()) {
+  if (![self isUpdateDialog]) {
     return nil;
   }
 
@@ -216,8 +219,8 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
         DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
     footer.delegate = self;
     if ([self isSaveToWallet]) {
-      GURL url = _oldEntity.has_value() ? autofill::GetGoogleWalletPassesURL()
-                                        : autofill::GetManageYourInfoURL();
+      GURL url = [self isUpdateDialog] ? autofill::GetGoogleWalletPassesURL()
+                                       : autofill::GetManageYourInfoURL();
       footer.urls = @[ [[CrURL alloc] initWithGURL:url] ];
     }
     [footer setText:[self footerText]
@@ -235,8 +238,13 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
   if ((sectionIdentifier == SectionIdentifierNewEntity ||
        sectionIdentifier == SectionIdentifierOldEntity) &&
-      _oldEntity.has_value()) {
+      [self isUpdateDialog]) {
     return UITableViewAutomaticDimension;
+  }
+
+  if (![self isUpdateDialog] &&
+      sectionIdentifier == SectionIdentifierNewEntity) {
+    return kSaveFormTopPadding;
   }
 
   return 0;
@@ -251,6 +259,11 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
     return UITableViewAutomaticDimension;
   }
 
+  if (sectionIdentifier == SectionIdentifierNewEntity &&
+      [self isUpdateDialog]) {
+    return kUpdateFormSectionSpacing;
+  }
+
   return 0;
 }
 
@@ -261,6 +274,12 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
       [_dataSource sectionIdentifierForIndex:section].integerValue);
 }
 
+// Returns if the current dialog is the `Update` dialog. If it returns `NO`, the
+// current dialog is the `Save` dialog.
+- (BOOL)isUpdateDialog {
+  return _oldEntity.has_value();
+}
+
 - (BOOL)isSaveToWallet {
   return _newEntity.has_value() &&
          _newEntity->record_type() ==
@@ -269,7 +288,7 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
 
 - (NSString*)footerText {
   if ([self isSaveToWallet]) {
-    if (_oldEntity.has_value()) {
+    if ([self isUpdateDialog]) {
       return autofill::GetUpdateEntitySavedInWalletFooterText(
           base::SysUTF16ToNSString(_userEmail));
     } else {
