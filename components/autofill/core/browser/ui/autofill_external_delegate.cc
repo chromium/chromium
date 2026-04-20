@@ -81,7 +81,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -729,15 +728,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kExistingPlusAddressChosen);
         plus_address_delegate->DidFillPlusAddress();
-        if (trigger_source_ ==
-            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
-          manager_->client().TriggerPlusAddressUserPerceptionSurvey(
-              plus_addresses::hats::SurveyType::
-                  kFilledPlusAddressViaManualFallack);
-        } else {
-          manager_->client().TriggerPlusAddressUserPerceptionSurvey(
-              plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail);
-        }
       }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
@@ -1215,21 +1205,6 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
                 kEmailSelected);
       }
 
-      // Email suggestions don't have a separate suggestion type. Check that
-      // the suggestions are triggered on an email field and that the popup
-      // contains a plus address filling suggestion as well.
-      const bool email_and_plus_address_shown =
-          autofill_trigger_field &&
-          autofill_trigger_field->Type().GetGroups().contains(
-              FieldTypeGroup::kEmail) &&
-          std::ranges::contains(shown_suggestion_types_,
-                                SuggestionType::kFillExistingPlusAddress);
-      if (const AutofillPlusAddressDelegate* plus_address_delegate =
-              manager_->client().GetPlusAddressDelegate();
-          plus_address_delegate && email_and_plus_address_shown) {
-        manager_->client().TriggerPlusAddressUserPerceptionSurvey(
-            plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress);
-      }
 
       AutofillForm(suggestion.type, suggestion.payload, metadata,
                    /*is_preview=*/false, GetTriggerSource());

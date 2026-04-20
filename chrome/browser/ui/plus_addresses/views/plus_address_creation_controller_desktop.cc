@@ -166,9 +166,6 @@ void PlusAddressCreationControllerDesktop::OnCanceled() {
   if (!modal_error_status_) {
     RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalCanceled,
                             was_notice_shown);
-    if (was_notice_shown) {
-      TriggerUserPerceptionSurvey(hats::SurveyType::kDeclinedFirstTimeCreate);
-    }
     return;
   }
 
@@ -266,7 +263,6 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
         interface->MaybeShowFeaturePromo(
             feature_engagement::kIPHPlusAddressFirstSaveFeature);
       }
-      TriggerUserPerceptionSurvey(hats::SurveyType::kAcceptedFirstTimeCreate);
     }
 
     RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalConfirmed,
@@ -283,13 +279,6 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   }
 }
 
-void PlusAddressCreationControllerDesktop::TriggerUserPerceptionSurvey(
-    hats::SurveyType survey_type) {
-  if (autofill::ContentAutofillClient* autofill_client =
-          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())) {
-    autofill_client->TriggerPlusAddressUserPerceptionSurvey(survey_type);
-  }
-}
 
 bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {
   // `this` is never created as a `const` member - therefore the cast is safe.

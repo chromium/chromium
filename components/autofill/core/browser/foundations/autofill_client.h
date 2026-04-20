@@ -56,9 +56,6 @@ namespace optimization_guide::proto {
 class AnnotatedPageContent;
 }
 
-namespace plus_addresses::hats {
-enum class SurveyType;
-}
 
 namespace signin {
 class IdentityManager;
@@ -724,10 +721,6 @@ class AutofillClient {
       FormGlobalId form_id,
       FieldGlobalId field_id) const;
 
-  // Triggers the HaTS survey of the `survey_type`.
-  // TODO: crbug.com/348139343 - Move back for components/plus_addresses.
-  virtual void TriggerPlusAddressUserPerceptionSurvey(
-      plus_addresses::hats::SurveyType survey_type);
 
   // Returns the service used in order to log metrics into MQLS.
   virtual optimization_guide::ModelQualityLogsUploaderService*

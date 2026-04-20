@@ -22,7 +22,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/core/browser/fake_plus_address_service.h"
 #include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/core/browser/plus_address_service.h"
@@ -67,15 +66,6 @@ std::string FormatModalWithNoticeDurationMetrics(
       {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
-
-class MockAutofillClient : public autofill::TestContentAutofillClient {
- public:
-  using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(void,
-              TriggerPlusAddressUserPerceptionSurvey,
-              (plus_addresses::hats::SurveyType),
-              (override));
-};
 
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
@@ -122,7 +112,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
             browser_context()));
   }
 
-  MockAutofillClient& autofill_client() {
+  autofill::TestContentAutofillClient& autofill_client() {
     return *autofill_client_injector_[web_contents()];
   }
 
@@ -141,7 +131,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   base::HistogramTester histogram_tester_;
-  autofill::TestAutofillClientInjector<MockAutofillClient>
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
 };
 
@@ -159,9 +149,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
-  EXPECT_CALL(autofill_client(),
-              TriggerPlusAddressUserPerceptionSurvey(
-                  plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate));
   controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -197,9 +184,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   task_environment()->FastForwardBy(kDuration);
   // HaTS survey should be shown if the user declined the first time plus
   // address creation flow.
-  EXPECT_CALL(autofill_client(),
-              TriggerPlusAddressUserPerceptionSurvey(
-                  plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate));
 
   controller().OnCanceled();
 
@@ -238,10 +222,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   plus_address_service().set_should_fail_to_confirm(true);
 
   task_environment()->FastForwardBy(kDuration);
-  // Feature perception surveys shown after the first plus address creation
-  // flow should not be triggered if the plus address wasn't confirmed.
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey)
-      .Times(0);
 
   controller().OnConfirmed();
 
@@ -279,8 +259,6 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey)
-      .Times(0);
   controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(

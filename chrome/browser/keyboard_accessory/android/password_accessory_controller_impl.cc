@@ -878,12 +878,6 @@ void PasswordAccessoryControllerImpl::FillSelection(
           autofill::AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
     plus_address_service_->DidFillPlusAddress();
-    if (autofill::ContentAutofillClient* autofill_client =
-            autofill::ContentAutofillClient::FromWebContents(
-                &GetWebContents())) {
-      autofill_client->TriggerPlusAddressUserPerceptionSurvey(
-          plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack);
-    }
   }
 }
 

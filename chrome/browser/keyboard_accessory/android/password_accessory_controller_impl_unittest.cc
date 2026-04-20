@@ -232,15 +232,6 @@ class MockPasswordManagerDriver
               (override));
 };
 
-class MockAutofillClient : public autofill::TestContentAutofillClient {
- public:
-  using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(void,
-              TriggerPlusAddressUserPerceptionSurvey,
-              (plus_addresses::hats::SurveyType),
-              (override));
-};
-
 std::u16string password_for_str(const std::u16string& user) {
   return l10n_util::GetStringFUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, user);
@@ -457,7 +448,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return webauthn_credentials_delegate_.get();
   }
 
-  MockAutofillClient& autofill_client() {
+  autofill::TestContentAutofillClient& autofill_client() {
     return *autofill_client_injector_[web_contents()];
   }
 
@@ -505,7 +496,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<MockPasswordGenerationFrameHelper> mock_frame_helper_;
   std::unique_ptr<password_manager::MockWebAuthnCredentialsDelegate>
       webauthn_credentials_delegate_;
-  autofill::TestAutofillClientInjector<NiceMock<MockAutofillClient>>
+  autofill::TestAutofillClientInjector<
+      NiceMock<autofill::TestContentAutofillClient>>
       autofill_client_injector_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
       window_android_;
@@ -1695,27 +1687,6 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   EXPECT_CALL(*mock_authenticator_ptr, Cancel());
 }
 
-TEST_F(PasswordAccessoryControllerTest, FillsPlusAddressSuggestion) {
-  CreateSheetController();
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
-                                     plus_addresses::hats::SurveyType::
-                                         kFilledPlusAddressViaManualFallack));
-  EXPECT_CALL(*driver(),
-              FillIntoFocusedField(
-                  false, Eq(plus_addresses::test::kFakePlusAddressU16)));
-  controller()->OnFillingTriggered(
-      autofill::FieldGlobalId(),
-      AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
-          .SetDisplayText(plus_addresses::test::kFakePlusAddressU16)
-          .SetSelectable(true)
-          .Build());
-  EXPECT_TRUE(plus_address_service().was_plus_address_suggestion_filled());
-}
 
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
   WebAuthnCredManDelegate::override_cred_man_support_for_testing(

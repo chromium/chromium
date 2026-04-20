@@ -109,10 +109,6 @@ class MockAutofillClient : public TestContentAutofillClient {
               GetLastCommittedPrimaryMainFrameOrigin,
               (),
               (const, override));
-  MOCK_METHOD(void,
-              TriggerPlusAddressUserPerceptionSurvey,
-              (plus_addresses::hats::SurveyType),
-              (override));
 };
 
 class MockAutofillDriver : public TestContentAutofillDriver {
@@ -486,24 +482,5 @@ TEST_F(AddressAccessoryControllerTest, SelectPlusAddressItemFromMenu) {
             1);
 }
 
-TEST_F(AddressAccessoryControllerTest, FillsPlusAddressSuggestion) {
-  FieldGlobalId field_id = test::MakeFieldGlobalId();
-  const std::u16string plus_address = u"example@gmail.com";
-
-  EXPECT_CALL(main_frame_autofill_driver(),
-              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
-                               mojom::ActionPersistence::kFill, field_id,
-                               plus_address));
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
-                                     plus_addresses::hats::SurveyType::
-                                         kFilledPlusAddressViaManualFallack));
-  controller()->OnFillingTriggered(
-      field_id, AccessorySheetField::Builder()
-                    .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
-                    .SetDisplayText(plus_address)
-                    .SetSelectable(true)
-                    .Build());
-  EXPECT_TRUE(plus_address_service().was_plus_address_suggestion_filled());
-}
 
 }  // namespace autofill

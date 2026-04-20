@@ -355,67 +355,6 @@ TEST_F(ChromeAutofillClientTest,
 #if !BUILDFLAG(IS_ANDROID)
 // Test the scenario when the plus address survey delay is not configured. The
 // random delay of the survey should be between the 10s and 60s.
-TEST_F(ChromeAutofillClientTest,
-       TriggerPlusAddressUserPerceptionSurvey_DelayNotConfigured) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kPlusAddressAcceptedFirstTimeCreateSurvey};
-
-  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
-      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(&BuildMockHatsService)));
-  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
-      .WillRepeatedly(Return(true));
-
-  EXPECT_CALL(
-      *mock_hats_service,
-      LaunchDelayedSurveyForWebContents(
-          kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate, _,
-          AllOf(Ge(10000), Le(60000)), _,
-          UnorderedElementsAre(
-              Pair(plus_addresses::hats::kPlusAddressesCount, std::string("0")),
-              Pair(plus_addresses::hats::kFirstPlusAddressCreationTime,
-                   std::string("-1")),
-              Pair(plus_addresses::hats::kLastPlusAddressFillingTime,
-                   std::string("-1"))),
-          HatsService::NavigationBehavior::ALLOW_ANY, _, _, _, _));
-
-  client()->TriggerPlusAddressUserPerceptionSurvey(
-      plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate);
-}
-
-// Test that the hats service is called with the expected params for different
-// surveys.
-TEST_F(ChromeAutofillClientTest, TriggerPlusAddressUserPerceptionSurvey) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::
-                                 kPlusAddressAcceptedFirstTimeCreateSurvey,
-                             {{plus_addresses::hats::kMinDelayMs, "10"},
-                              {plus_addresses::hats::kMaxDelayMs, "60"}}}},
-      /*disabled_features=*/{});
-
-  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
-      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(&BuildMockHatsService)));
-  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
-      .WillRepeatedly(Return(true));
-
-  EXPECT_CALL(
-      *mock_hats_service,
-      LaunchDelayedSurveyForWebContents(
-          kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate, _,
-          AllOf(Ge(10), Le(60)), _,
-          UnorderedElementsAre(
-              Pair(plus_addresses::hats::kPlusAddressesCount, std::string("0")),
-              Pair(plus_addresses::hats::kFirstPlusAddressCreationTime,
-                   std::string("-1")),
-              Pair(plus_addresses::hats::kLastPlusAddressFillingTime,
-                   std::string("-1"))),
-          HatsService::NavigationBehavior::ALLOW_ANY, _, _, _, _));
-
-  client()->TriggerPlusAddressUserPerceptionSurvey(
-      plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate);
-}
 
 // Test that the hats service is called with the expected params for different
 // surveys. Note that Surveys are only launched on Desktop.
