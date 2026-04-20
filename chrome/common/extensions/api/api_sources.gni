@@ -45,7 +45,6 @@ schema_sources_ = [
 
   # Despite the name, these APIs do not rely on any WebRTC-specific bits and
   # as such do not belong in a conditional.
-  "webrtc_audio_private.idl",
   "webrtc_logging_private.idl",
   "webstore_private.json",
   "windows.json",

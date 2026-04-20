@@ -1073,10 +1073,6 @@
     "dependencies": ["permission:webNavigation"],
     "contexts": ["privileged_extension"]
   },
-  "webrtcAudioPrivate": {
-    "dependencies": ["permission:webrtcAudioPrivate"],
-    "contexts": ["privileged_extension"]
-  },
   "webrtcDesktopCapturePrivate": {
     "dependencies": ["permission:webrtcDesktopCapturePrivate"],
     "contexts": ["privileged_extension"]

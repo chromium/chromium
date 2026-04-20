@@ -194,8 +194,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kVirtualKeyboardPrivate, "virtualKeyboardPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebcamPrivate, "webcamPrivate"},
-    {APIPermissionID::kWebrtcAudioPrivate, "webrtcAudioPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebrtcDesktopCapturePrivate,
      "webrtcDesktopCapturePrivate", APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebrtcLoggingPrivate, "webrtcLoggingPrivate",

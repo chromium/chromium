@@ -1673,7 +1673,6 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/user_scripts/user_scripts_apitest.h",
       "../browser/extensions/api/web_navigation/web_navigation_apitest.cc",
       "../browser/extensions/api/web_request/web_request_apitest.cc",
-      "../browser/extensions/api/webrtc_audio_private/webrtc_audio_private_browsertest.cc",
       "../browser/extensions/api/webrtc_logging_private/webrtc_logging_private_apitest.cc",
       "../browser/extensions/api/webstore_private/webstore_private_apitest.cc",
       "../browser/extensions/background_script_executor_browsertest.cc",

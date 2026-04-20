@@ -1104,18 +1104,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
-  "webrtcAudioPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "allowlist": [
-      // Hangouts test extension
-      "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",
-      // Hangout Services component extension.
-      "DF84F03F9B960409CCDE0D895B9650EBE81C0A8E",
-      // Extension used for API test.
-      "ADFA45434ABA2F1A4647E673F53FF37F8F6047A3"
-    ]
-  },
   "webrtcDesktopCapturePrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
