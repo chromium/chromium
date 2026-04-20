@@ -40,8 +40,6 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -189,11 +187,9 @@ public class CollaborationTestUtils {
     /** Signs in and sets selected types for tab groups. */
     public void setUpSyncAndSignIn() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSyncTestRule.setSelectedTypes(
-                true,
-                new HashSet<>(
-                        Arrays.asList(
-                                UserSelectableType.TABS, UserSelectableType.SAVED_TAB_GROUPS)));
+        mSyncTestRule.enableDataType(UserSelectableType.HISTORY);
+        mSyncTestRule.enableDataType(UserSelectableType.TABS);
+        mSyncTestRule.enableDataType(UserSelectableType.SAVED_TAB_GROUPS);
     }
 
     /** Returns the local tab group id. */

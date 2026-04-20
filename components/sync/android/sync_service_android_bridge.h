@@ -67,9 +67,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   void TriggerLocalDataMigration(const std::vector<int32_t>& types);
   bool IsTypeManagedByPolicy(int32_t type);
   bool IsTypeManagedByCustodian(int32_t type);
-  void SetSelectedTypes(
-      bool sync_everything,
-      const std::vector<int32_t>& user_selectable_types_vector);
   void SetSelectedType(int32_t type, bool is_type_on);
   bool IsCustomPassphraseAllowed();
   bool IsEncryptEverythingEnabled();
@@ -92,7 +89,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   bool HasSyncConsent();
   bool IsPassphrasePromptMutedForCurrentProductVersion();
   void MarkPassphrasePromptMutedForCurrentProductVersion();
-  bool HasKeepEverythingSynced();
   bool ShouldOfferTrustedVaultOptIn();
   void TriggerRefresh();
   // Returns a timestamp for when a sync was last executed. The return value is

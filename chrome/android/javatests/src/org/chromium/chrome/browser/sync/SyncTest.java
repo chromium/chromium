@@ -30,8 +30,6 @@ import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.TransportState;
 import org.chromium.components.sync.UserSelectableType;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 /** Test suite for Sync. */
@@ -120,10 +118,9 @@ public class SyncTest {
         mSyncTestRule.disableDataType(UserSelectableType.HISTORY);
         waitForIsSyncingUnencryptedUrls(false);
 
-        // Now enable only history datatypes and verify that isSyncingUnencryptedUrls() returns true
+        // Now enable history datatypes and verify that isSyncingUnencryptedUrls() returns true
         // again.
-        mSyncTestRule.setSelectedTypes(
-                false, new HashSet<>(Arrays.asList(UserSelectableType.HISTORY)));
+        mSyncTestRule.enableDataType(UserSelectableType.HISTORY);
         waitForIsSyncingUnencryptedUrls(true);
     }
 
@@ -149,10 +146,9 @@ public class SyncTest {
         mSyncTestRule.disableDataType(UserSelectableType.HISTORY);
         waitForIsSyncingUnencryptedUrls(false);
 
-        // Now enable only history datatypes and verify that isSyncingUnencryptedUrls() returns true
+        // Now enable history datatype and verify that isSyncingUnencryptedUrls() returns true
         // again.
-        mSyncTestRule.setSelectedTypes(
-                false, new HashSet<>(Arrays.asList(UserSelectableType.HISTORY)));
+        mSyncTestRule.enableDataType(UserSelectableType.HISTORY);
         waitForIsSyncingUnencryptedUrls(true);
     }
 

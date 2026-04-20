@@ -183,24 +183,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean hasKeepEverythingSynced() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().hasKeepEverythingSynced(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes) {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        SyncServiceImplJni.get()
-                .setSelectedTypes(
-                        mSyncServiceAndroidBridge,
-                        syncEverything,
-                        userSelectableTypeSetToArray(enabledTypes));
-    }
-
-    @Override
     public void setSelectedType(@UserSelectableType int type, boolean isTypeOn) {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -567,11 +549,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         boolean isTypeManagedByCustodian(long nativeSyncServiceAndroidBridge, int type);
 
-        void setSelectedTypes(
-                long nativeSyncServiceAndroidBridge,
-                boolean syncEverything,
-                @JniType("std::vector<int32_t>") int[] userSelectableTypeArray);
-
         void setSelectedType(
                 long nativeSyncServiceAndroidBridge,
                 @UserSelectableType int type,
@@ -618,8 +595,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
                 long nativeSyncServiceAndroidBridge);
 
         void markPassphrasePromptMutedForCurrentProductVersion(long nativeSyncServiceAndroidBridge);
-
-        boolean hasKeepEverythingSynced(long nativeSyncServiceAndroidBridge);
 
         boolean shouldOfferTrustedVaultOptIn(long nativeSyncServiceAndroidBridge);
 

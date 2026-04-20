@@ -84,7 +84,6 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -488,7 +487,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     /** Gets the state from data type switches and saves this state into {@link SyncService}. */
     private void updateSyncStateFromSelectedTypes() {
-        mSyncService.setSelectedTypes(false, getUserSelectedTypes());
+        for (var entry : mSyncTypeSwitchPreferencesMap.entrySet()) {
+            mSyncService.setSelectedType(entry.getKey(), entry.getValue().isChecked());
+        }
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(
@@ -540,16 +541,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         final int errorColor = getContext().getColor(R.color.input_underline_error_color);
         summary.setSpan(new ForegroundColorSpan(errorColor), 0, summary.length(), 0);
         mSyncEncryption.setSummary(summary);
-    }
-
-    private Set<Integer> getUserSelectedTypes() {
-        Set<Integer> ret = new HashSet<>();
-        for (var entry : mSyncTypeSwitchPreferencesMap.entrySet()) {
-            if (entry.getValue().isChecked()) {
-                ret.add(entry.getKey());
-            }
-        }
-        return ret;
     }
 
     private void displayPassphraseTypeDialog() {

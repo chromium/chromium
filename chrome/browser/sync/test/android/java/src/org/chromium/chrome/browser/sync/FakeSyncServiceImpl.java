@@ -266,11 +266,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public boolean hasKeepEverythingSynced() {
-        return mDelegate.hasKeepEverythingSynced();
-    }
-
-    @Override
     public boolean isTypeManagedByPolicy(int type) {
         return mDelegate.isTypeManagedByPolicy(type);
     }
@@ -278,11 +273,6 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public boolean isTypeManagedByCustodian(int type) {
         return mDelegate.isTypeManagedByCustodian(type);
-    }
-
-    @Override
-    public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes) {
-        mDelegate.setSelectedTypes(syncEverything, enabledTypes);
     }
 
     @Override

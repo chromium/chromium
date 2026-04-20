@@ -54,7 +54,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -314,19 +313,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public void enableDataType(final int userSelectableType) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Set<Integer> chosenTypes = mSyncService.getSelectedTypes();
-                    chosenTypes.add(userSelectableType);
-                    mSyncService.setSelectedTypes(false, chosenTypes);
-                });
-    }
-
-    /*
-     * Enables the |selectedTypes| in USER_SELECTABLE_TYPES.
-     */
-    public void setSelectedTypes(boolean syncEverything, Set<Integer> selectedTypes) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSyncService.setSelectedTypes(syncEverything, selectedTypes);
+                    mSyncService.setSelectedType(userSelectableType, true);
                 });
     }
 
@@ -336,9 +323,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public void disableDataType(final int userSelectableType) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Set<Integer> chosenTypes = mSyncService.getSelectedTypes();
-                    chosenTypes.remove(userSelectableType);
-                    mSyncService.setSelectedTypes(false, chosenTypes);
+                    mSyncService.setSelectedType(userSelectableType, false);
                 });
     }
 

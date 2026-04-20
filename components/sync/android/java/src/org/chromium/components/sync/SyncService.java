@@ -119,24 +119,12 @@ public interface SyncService {
 
     void triggerLocalDataMigration(Set<Integer> types);
 
-    boolean hasKeepEverythingSynced();
-
     boolean isTypeManagedByPolicy(@UserSelectableType int type);
 
     boolean isTypeManagedByCustodian(@UserSelectableType int type);
 
     /**
-     * Enables syncing for the passed types.
-     *
-     * @param syncEverything Set to true if the user wants to sync all data types (including new
-     *     data types we add in the future).
-     * @param enabledTypes The set of types to enable.
-     */
-    void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
-
-    /**
-     * Sets an individual type selection. For Sync-the-feature mode, invoking this function is only
-     * allowed while IsSyncEverythingEnabled() returns false.
+     * Sets an individual type selection.
      *
      * @param type The type that should be enabled or disabled.
      * @param isTypeOn Set to true if the type should be enabled, false otherwise.

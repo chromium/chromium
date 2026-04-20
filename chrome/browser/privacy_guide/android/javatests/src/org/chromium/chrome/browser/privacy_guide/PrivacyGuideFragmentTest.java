@@ -84,10 +84,8 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Tests {@link PrivacyGuideFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -223,17 +221,10 @@ public class PrivacyGuideFragmentTest {
     }
 
     private void setHistorySyncState(boolean isHistorySyncOn) {
-        Set<Integer> selectedTypes = new HashSet<>();
-        if (isHistorySyncOn) {
-            selectedTypes.add(UserSelectableType.HISTORY);
-        } else {
-            selectedTypes.remove(UserSelectableType.HISTORY);
-        }
-
         runOnUiThreadBlocking(
                 () ->
                         SyncTestUtil.getSyncServiceForLastUsedProfile()
-                                .setSelectedTypes(false, selectedTypes));
+                                .setSelectedType(UserSelectableType.HISTORY, isHistorySyncOn));
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int safeBrowsingState) {

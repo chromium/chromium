@@ -271,28 +271,6 @@ bool SyncServiceAndroidBridge::IsTypeManagedByCustodian(int32_t type) {
       IntToUserSelectableTypeChecked(type));
 }
 
-void SyncServiceAndroidBridge::SetSelectedTypes(
-    bool sync_everything,
-    const std::vector<int32_t>& user_selectable_types_vector) {
-  if (native_sync_service_->GetAccountInfo().account_id.empty()) {
-    // This function shouldn't be called while signed out, but evidence
-    // suggests it sometimes does get called.
-    // TODO(crbug.com/369301153): Remove workaround and adopt CHECK/NOTREACHED
-    // once crashes are no longer reported. This could also be cleaned up once
-    // crbug.com/40066949 is tackled.
-    DUMP_WILL_BE_NOTREACHED();
-    return;
-  }
-
-  UserSelectableTypeSet user_selectable_types;
-  for (int32_t type : user_selectable_types_vector) {
-    user_selectable_types.Put(IntToUserSelectableTypeChecked(type));
-  }
-
-  native_sync_service_->GetUserSettings()->SetSelectedTypes(
-      sync_everything, user_selectable_types);
-}
-
 void SyncServiceAndroidBridge::SetSelectedType(int32_t type, bool is_type_on) {
   if (native_sync_service_->GetAccountInfo().account_id.empty()) {
     // This function shouldn't be called while signed out, but evidence
@@ -408,10 +386,6 @@ void SyncServiceAndroidBridge::
     MarkPassphrasePromptMutedForCurrentProductVersion() {
   native_sync_service_->GetUserSettings()
       ->MarkPassphrasePromptMutedForCurrentProductVersion();
-}
-
-bool SyncServiceAndroidBridge::HasKeepEverythingSynced() {
-  return native_sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
 
 bool SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn() {
