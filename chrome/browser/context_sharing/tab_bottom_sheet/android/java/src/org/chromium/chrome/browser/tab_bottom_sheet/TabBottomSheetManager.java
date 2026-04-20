@@ -247,27 +247,14 @@ public class TabBottomSheetManager implements Destroyable {
     }
 
     /**
-     * Shows the peek view from the bottom sheet and hides the expanded content.
+     * Sets whether the bottom sheet is expanded.
      *
-     * @return Whether the operation was successful.
+     * @param expanded Whether the bottom sheet should be expanded.
      */
-    public boolean showPeekViewAndHideExpandedContent() {
+    public void setSheetExpanded(boolean expanded) {
         if (mTabBottomSheetCoordinator != null) {
-            return mTabBottomSheetCoordinator.showPeekViewAndHideExpandedContent();
+            mTabBottomSheetCoordinator.setSheetExpanded(expanded);
         }
-        return false;
-    }
-
-    /**
-     * Hides the peek view from the bottom sheet and shows the expanded content.
-     *
-     * @return Whether the operation was successful.
-     */
-    public boolean hidePeekViewAndShowExpandedContent() {
-        if (mTabBottomSheetCoordinator != null) {
-            return mTabBottomSheetCoordinator.hidePeekViewAndShowExpandedContent();
-        }
-        return false;
     }
 
     public boolean isSheetInitialized() {

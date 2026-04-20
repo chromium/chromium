@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA;
-import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.PEEK_STATE_ALPHA;
 
 import android.view.View;
 
@@ -36,20 +35,14 @@ public class TabBottomSheetViewBinder {
             if (coBrowseViews != null && resizingState != null) {
                 coBrowseViews.setIsResizing(model.get(TabBottomSheetProperties.IS_RESIZING));
             }
-        } else if (PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA == propertyKey) {
+        } else if (PEEK_STATE_ALPHA == propertyKey) {
+            float alpha = model.get(PEEK_STATE_ALPHA);
             View peekContainer = view.findViewById(R.id.actor_control_container);
-            peekContainer.setAlpha(model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA));
             View expandedContent = view.findViewById(R.id.expanded_content_group);
-            expandedContent.setAlpha(1.0f - model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA));
-        } else if (PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY == propertyKey) {
-            int webContainerVisibility =
-                    model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY) == View.VISIBLE
-                            ? View.GONE
-                            : View.VISIBLE;
-            View peekContainer = view.findViewById(R.id.actor_control_container);
-            peekContainer.setVisibility(model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY));
-            View expandedContent = view.findViewById(R.id.expanded_content_group);
-            expandedContent.setVisibility(webContainerVisibility);
+            peekContainer.setAlpha(alpha);
+            peekContainer.setVisibility(alpha == 0.0f ? View.GONE : View.VISIBLE);
+            expandedContent.setAlpha(1.0f - alpha);
+            expandedContent.setVisibility(alpha == 1.0f ? View.GONE : View.VISIBLE);
         }
     }
 }
