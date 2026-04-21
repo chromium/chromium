@@ -2268,9 +2268,9 @@ crbug.com/40268415 [ Debug Mac13-arm64 ] webaudio/internals/audioworkletprocesso
 crbug.com/40268415 [ Debug Mac14-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Timeout ]
 crbug.com/40268415 [ Debug Mac15-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Timeout ]
 crbug.com/40268415 [ Debug Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Timeout ]
-crbug.com/40268415 [ Release Mac13-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Crash Timeout ]
-crbug.com/40268415 [ Release Mac15-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Crash Timeout ]
-crbug.com/40268415 [ Release Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Crash Timeout ]
+crbug.com/40268415 [ Mac13-arm64 Release ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
+crbug.com/40268415 [ Mac15-arm64 Release ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
+crbug.com/40268415 [ Release Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure Timeout ]
 crbug.com/40268415 [ Debug Mac13-arm64 ] external/wpt/webaudio/idlharness.https.window.html [ Crash ]
 crbug.com/40268415 [ Debug Mac14-arm64 ] external/wpt/webaudio/idlharness.https.window.html [ Crash ]
 crbug.com/40268415 [ Debug Mac15-arm64 ] external/wpt/webaudio/idlharness.https.window.html [ Crash ]
@@ -2746,6 +2746,7 @@ crbug.com/503882535 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_
 crbug.com/503882535 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+virtual/jxl-enabled/external/wpt/jpegxl/cmyk-basic-conversion-reftest.html [ Failure ]
 crbug.com/504767674 [ Win ] external/wpt/fullscreen/api/document-fullscreen-keyboard-lock-change.tentative.window.html [ Pass Timeout ]
 crbug.com/504770562 external/wpt/mixed-content/gen/sharedworker-classic-data.meta/unset/websocket.https.html [ Skip Timeout ]
 crbug.com/504770562 external/wpt/mixed-content/gen/sharedworker-classic.http-rp/unset/websocket.https.html [ Skip Timeout ]
