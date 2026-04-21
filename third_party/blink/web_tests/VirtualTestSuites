@@ -1696,7 +1696,7 @@
     "expires": "never"
   },
   {
-    "prefix": "indexeddb_sqlite",
+    "prefix": "indexeddb_leveldb",
     "owners": [
       "abhishek.shanthkumar@microsoft.com",
       "evanstade@microsoft.com",
@@ -1726,12 +1726,11 @@
       "external/wpt/webcodecs/video-frame-serialization.any.html",
       "external/wpt/workers/data-url-shared.html",
       "external/wpt/workers/data-url.html",
-      "http/tests/devtools/indexeddb/database-names.js",
-      "http/tests/devtools/indexeddb/upgrade-events.js",
+      "http/tests/devtools/indexeddb",
       "http/tests/inspector-protocol/storage/indexed-db-storage-key-request-database-names.js"
     ],
     "args": [
-      "--enable-features=IdbSqliteBackingStore"
+      "--enable-features=IdbSqliteOnDiskRollout:stage/UseLevelDbOnly"
     ],
     "expires": "never"
   },

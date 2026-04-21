@@ -13867,6 +13867,38 @@
             ]
         }
     ],
+    "IdbSqliteOnDiskRollout": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UseSqliteForNewStores",
+                    "params": {
+                        "stage": "UseSqliteForNewStores"
+                    },
+                    "enable_features": [
+                        "IdbSqliteOnDiskRollout"
+                    ]
+                },
+                {
+                    "name": "UseLevelDbAsControl",
+                    "params": {
+                        "stage": "UseLevelDbAsControl"
+                    },
+                    "enable_features": [
+                        "IdbSqliteOnDiskRollout"
+                    ]
+                }
+            ]
+        }
+    ],
     "IgnoreDiscardAttemptMarker": [
         {
             "platforms": [

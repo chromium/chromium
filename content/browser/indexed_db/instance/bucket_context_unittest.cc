@@ -290,23 +290,27 @@ TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
     auto release = std::move(sqlite_override_);
   }
   int bucket_counter = 0;
-  auto is_sqlite_used_by_new_bucket = [&]() {
+  auto create_new_bucket_context = [&]() {
     storage::BucketInfo info =
         GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
             base::StringPrintf("https://test%d.example/", bucket_counter++)));
-    return InitBucketContext(info)->IsUsingSqlite();
+    return InitBucketContext(info);
   };
-  bucket_context_->InitBackingStore(/*create_if_missing=*/true);
+  // `bucket_context_` was created before deleting `sqlite_override_`, so we
+  // have to make a new one to verify what happens without any override.
+  base::WeakPtr<BucketContext> bucket_context_no_override =
+      create_new_bucket_context();
   {
     base::AutoReset<std::optional<bool>> scoped_override =
         BucketContext::OverrideShouldUseSqliteForTesting(false);
-    EXPECT_FALSE(is_sqlite_used_by_new_bucket());
+    EXPECT_FALSE(create_new_bucket_context()->IsUsingSqlite());
   }
-  EXPECT_EQ(bucket_context_->IsUsingSqlite(), is_sqlite_used_by_new_bucket());
+  EXPECT_EQ(bucket_context_no_override->IsUsingSqlite(),
+            create_new_bucket_context()->IsUsingSqlite());
   {
     base::AutoReset<std::optional<bool>> scoped_override =
         BucketContext::OverrideShouldUseSqliteForTesting(true);
-    EXPECT_TRUE(is_sqlite_used_by_new_bucket());
+    EXPECT_TRUE(create_new_bucket_context()->IsUsingSqlite());
   }
 }
 

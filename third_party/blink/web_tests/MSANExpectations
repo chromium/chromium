@@ -21,22 +21,14 @@ crbug.com/420606 [ Linux ] external/wpt/workers/constructors/Worker/Worker-const
 # Flaky under MSan (hang forever).
 crbug.com/422982 [ Linux ] virtual/threaded/* [ Skip ]
 
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.serviceworker.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.sharedworker.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.worker.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.serviceworker.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.sharedworker.html [ Timeout ]
-crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.serviceworker.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.sharedworker.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-small.any.worker.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.serviceworker.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.sharedworker.html [ Skip Timeout ]
-crbug.com/708175 [ Linux ] virtual/indexeddb_sqlite/external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.serviceworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.sharedworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.any.worker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.serviceworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.sharedworker.html [ Skip Timeout ]
+crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.any.worker.html [ Skip Timeout ]
 
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
@@ -199,7 +191,6 @@ crbug.com/446167772 [ Linux ] external/wpt/webcodecs/audio-encoder-codec-specifi
 # Flaky timing out on MSAN.
 crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.html [ Pass Timeout ]
 crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.worker.html [ Pass Timeout ]
-crbug.com/487895128 [ Linux ] virtual/indexeddb_sqlite/external/wpt/storage/estimate-indexeddb.https.any.html [ Pass Timeout ]
 
 crbug.com/499535771 [ Linux ] external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Skip ]
 crbug.com/499535771 [ Linux ] virtual/permission-element/external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Skip ]

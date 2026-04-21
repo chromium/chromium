@@ -22,7 +22,7 @@ virtual/js-shared-memory/wpt_internal/*
 virtual/text-size-adjust/wpt_internal/*
 virtual/generic-sensor-extra-classes/wpt_internal/*
 virtual/unload-allowed/wpt_internal/*
-virtual/indexeddb_sqlite/wpt_internal/*
+virtual/indexeddb_leveldb/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.
