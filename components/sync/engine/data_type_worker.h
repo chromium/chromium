@@ -329,6 +329,10 @@ class DataTypeWorker : public UpdateHandler,
   // encryption scheme.
   void EncryptSpecifics(CommitRequestDataList* request_data_list);
 
+  // Encrypts `page_context` field for `SEND_TAB_TO_SELF` specifics.
+  void EncryptSendTabToSelfPageContext(
+      CommitRequestDataList* request_data_list);
+
   // The (up to kMaxPayloads) most recent invalidations received since the last
   // successful sync cycle.
   std::vector<PendingInvalidation> pending_invalidations_;

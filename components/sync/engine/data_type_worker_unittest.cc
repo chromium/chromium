@@ -2927,6 +2927,285 @@ TEST_F(DataTypeWorkerPasswordsTest,
       entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
+class DataTypeWorkerSendTabToSelfTest : public DataTypeWorkerTest {
+ protected:
+  DataTypeWorkerSendTabToSelfTest()
+      : DataTypeWorkerTest(SEND_TAB_TO_SELF, /*is_encrypted_type=*/false) {}
+
+  ClientTagHash GenerateSTTSHash(const std::string& guid) {
+    return ClientTagHash::FromUnhashed(SEND_TAB_TO_SELF, guid);
+  }
+};
+
+TEST_F(DataTypeWorkerSendTabToSelfTest, SendTabToSelfCommitWithPageContext) {
+  NormalInitialize();
+
+  // Init the Cryptographer with a key, but don't enable encryption for the
+  // whole type.
+  AddPendingKeyWithoutEnablingEncryption();
+  DecryptPendingKey();
+
+  EntitySpecifics specifics;
+  sync_pb::SendTabToSelfSpecifics* stts_specifics =
+      specifics.mutable_send_tab_to_self();
+  stts_specifics->set_guid("guid");
+  stts_specifics->set_url("https://example.com");
+  stts_specifics->mutable_page_context()
+      ->mutable_scroll_position()
+      ->mutable_text_fragment()
+      ->set_text_start("sensitive context");
+
+  // Normal commit request stuff.
+  const ClientTagHash hash = GenerateSTTSHash("guid");
+  processor()->SetCommitRequest(GenerateCommitRequest(hash, specifics));
+  std::unique_ptr<CommitContribution> contribution =
+      worker()->GetContribution(INT_MAX);
+  ASSERT_NE(nullptr, contribution);
+  DoSuccessfulCommit(std::move(contribution));
+
+  ASSERT_EQ(1U, server()->GetNumCommitMessages());
+  ASSERT_TRUE(server()->HasCommitEntity(hash));
+  const SyncEntity& entity = server()->GetLastCommittedEntity(hash);
+
+  EXPECT_TRUE(entity.specifics().has_send_tab_to_self());
+  const sync_pb::SendTabToSelfSpecifics& committed_stts =
+      entity.specifics().send_tab_to_self();
+
+  // URL and Title should remain in plaintext.
+  EXPECT_EQ(committed_stts.url(), "https://example.com");
+  // Page context should be encrypted and cleared from plaintext.
+  EXPECT_FALSE(committed_stts.has_page_context());
+  EXPECT_TRUE(committed_stts.has_encrypted_page_context());
+  EXPECT_FALSE(committed_stts.encrypted_page_context().blob().empty());
+}
+
+TEST_F(DataTypeWorkerSendTabToSelfTest,
+       SendTabToSelfReceiveWithEncryptedPageContext) {
+  NormalInitialize();
+
+  AddPendingKeyWithoutEnablingEncryption();
+  DecryptPendingKey();
+  worker()->OnCryptographerChange();
+
+  const std::string guid = "guid";
+  const ClientTagHash hash = GenerateSTTSHash(guid);
+
+  // Create an entity with field-level encryption.
+  sync_pb::PageContext page_context;
+  page_context.mutable_scroll_position()
+      ->mutable_text_fragment()
+      ->set_text_start("sensitive context");
+
+  EntitySpecifics specifics;
+  specifics.mutable_send_tab_to_self()->set_guid(guid);
+  specifics.mutable_send_tab_to_self()->set_url("https://example.com");
+  // Use a different cryptographer to encrypt, simulating another device.
+  auto other_cryptographer =
+      FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1));
+  ASSERT_TRUE(other_cryptographer->Encrypt(
+      page_context,
+      specifics.mutable_send_tab_to_self()->mutable_encrypted_page_context()));
+
+  sync_pb::SyncEntity update = server()->UpdateFromServer(10, hash, specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&update},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // Expect at least 1 update response. OnCryptographerChange might have been
+  // called multiple times during setup.
+  ASSERT_GE(processor()->GetNumUpdateResponses(), 1U);
+  const UpdateResponseData* response_ptr = nullptr;
+  for (size_t i = 0; i < processor()->GetNumUpdateResponses(); ++i) {
+    for (const auto* update_data : processor()->GetNthUpdateResponse(i)) {
+      if (update_data->entity.client_tag_hash == hash) {
+        response_ptr = update_data;
+      }
+    }
+  }
+  ASSERT_NE(response_ptr, nullptr);
+  const UpdateResponseData& response = *response_ptr;
+  // Note: Even though the `page_context` is encrypted, the encryption key name
+  // (used for full encryption) should not be set.
+  EXPECT_TRUE(response.encryption_key_name.empty());
+
+  const sync_pb::SendTabToSelfSpecifics& received_stts =
+      response.entity.specifics.send_tab_to_self();
+
+  EXPECT_EQ(received_stts.url(), "https://example.com");
+  // Page context should be decrypted.
+  EXPECT_TRUE(received_stts.has_page_context());
+  EXPECT_EQ(received_stts.page_context()
+                .scroll_position()
+                .text_fragment()
+                .text_start(),
+            "sensitive context");
+  EXPECT_FALSE(received_stts.has_encrypted_page_context());
+}
+
+TEST_F(DataTypeWorkerSendTabToSelfTest,
+       SendTabToSelfReceiveWithEncryptedPageContextButMissingKeys) {
+  NormalInitialize();
+
+  const std::string guid = "guid";
+  const ClientTagHash hash = GenerateSTTSHash(guid);
+
+  // Create an entity with field-level encryption.
+  sync_pb::PageContext page_context;
+  page_context.mutable_scroll_position()
+      ->mutable_text_fragment()
+      ->set_text_start("sensitive context");
+
+  EntitySpecifics specifics;
+  specifics.mutable_send_tab_to_self()->set_guid(guid);
+  specifics.mutable_send_tab_to_self()->set_url("https://example.com");
+  // Use a different cryptographer to encrypt, simulating another device, using
+  // a key that the worker does not have yet.
+  auto other_cryptographer =
+      FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1));
+  ASSERT_TRUE(other_cryptographer->Encrypt(
+      page_context,
+      specifics.mutable_send_tab_to_self()->mutable_encrypted_page_context()));
+  ASSERT_FALSE(cryptographer()->CanDecrypt(
+      specifics.send_tab_to_self().encrypted_page_context()));
+
+  sync_pb::SyncEntity update = server()->UpdateFromServer(10, hash, specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&update},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // Expect at least 1 update response. OnCryptographerChange might have been
+  // called multiple times during setup.
+  ASSERT_GE(processor()->GetNumUpdateResponses(), 1U);
+  const UpdateResponseData* response_ptr = nullptr;
+  for (size_t i = 0; i < processor()->GetNumUpdateResponses(); ++i) {
+    for (const auto* update_data : processor()->GetNthUpdateResponse(i)) {
+      if (update_data->entity.client_tag_hash == hash) {
+        response_ptr = update_data;
+      }
+    }
+  }
+  ASSERT_NE(response_ptr, nullptr);
+  const UpdateResponseData& response = *response_ptr;
+  const sync_pb::SendTabToSelfSpecifics& received_stts =
+      response.entity.specifics.send_tab_to_self();
+
+  EXPECT_EQ(received_stts.url(), "https://example.com");
+  // Page context should be absent, since it could not be decrypted.
+  EXPECT_FALSE(received_stts.has_page_context());
+  EXPECT_FALSE(received_stts.has_encrypted_page_context());
+}
+
+TEST_F(DataTypeWorkerSendTabToSelfTest,
+       SendTabToSelfCommitWithPageContextAndFullEncryption) {
+  NormalInitialize();
+  AddPendingKey();
+  DecryptPendingKey();
+  worker()->OnCryptographerChange();
+
+  EntitySpecifics specifics;
+  sync_pb::SendTabToSelfSpecifics* stts_specifics =
+      specifics.mutable_send_tab_to_self();
+  stts_specifics->set_guid("guid");
+  stts_specifics->set_url("https://example.com");
+  stts_specifics->mutable_page_context()
+      ->mutable_scroll_position()
+      ->mutable_text_fragment()
+      ->set_text_start("sensitive context");
+
+  const ClientTagHash hash = GenerateSTTSHash("guid");
+  processor()->SetCommitRequest(GenerateCommitRequest(hash, specifics));
+  std::unique_ptr<CommitContribution> contribution =
+      worker()->GetContribution(INT_MAX);
+  ASSERT_NE(nullptr, contribution);
+  DoSuccessfulCommit(std::move(contribution));
+
+  ASSERT_EQ(1U, server()->GetNumCommitMessages());
+  ASSERT_TRUE(server()->HasCommitEntity(hash));
+  const SyncEntity& entity = server()->GetLastCommittedEntity(hash);
+
+  // The entire specifics should be encrypted.
+  // AddDefaultFieldValue re-adds the SendTabToSelfSpecifics after encryption,
+  // but it should be empty.
+  EXPECT_TRUE(entity.specifics().has_send_tab_to_self());
+  EXPECT_TRUE(entity.specifics().send_tab_to_self().url().empty());
+  EXPECT_TRUE(entity.specifics().send_tab_to_self().guid().empty());
+  ASSERT_TRUE(entity.specifics().has_encrypted());
+
+  // Decrypt the whole thing to verify the contents.
+  EntitySpecifics decrypted_specifics;
+  ASSERT_TRUE(cryptographer()->Decrypt(entity.specifics().encrypted(),
+                                       &decrypted_specifics));
+
+  const sync_pb::SendTabToSelfSpecifics& stts =
+      decrypted_specifics.send_tab_to_self();
+  EXPECT_EQ(stts.url(), "https://example.com");
+  // Since the entire specifics was encrypted, the `page_context` field should
+  // not be encrypted again.
+  EXPECT_TRUE(stts.has_page_context());
+  EXPECT_FALSE(stts.has_encrypted_page_context());
+}
+
+TEST_F(DataTypeWorkerSendTabToSelfTest,
+       SendTabToSelfReceiveWithPageContextAndFullEncryption) {
+  NormalInitialize();
+  AddPendingKeyWithoutEnablingEncryption();
+  DecryptPendingKey();
+  worker()->EnableEncryption();
+  worker()->OnCryptographerChange();
+
+  const std::string guid = "guid";
+  const ClientTagHash hash = GenerateSTTSHash(guid);
+
+  // Create an entity with full encryption.
+  sync_pb::SendTabToSelfSpecifics stts;
+  stts.set_guid(guid);
+  stts.set_url("https://example.com");
+  stts.mutable_page_context()
+      ->mutable_scroll_position()
+      ->mutable_text_fragment()
+      ->set_text_start("sensitive context");
+
+  EntitySpecifics specifics;
+  *specifics.mutable_send_tab_to_self() = std::move(stts);
+
+  sync_pb::EntitySpecifics encrypted_specifics;
+  // Use a different cryptographer to encrypt, simulating another device.
+  auto other_cryptographer =
+      FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1));
+  // Since the entire specifics is encrypted, the `page_context` field does not
+  // get encrypted separately.
+  ASSERT_TRUE(other_cryptographer->Encrypt(
+      specifics, encrypted_specifics.mutable_encrypted()));
+  ASSERT_TRUE(cryptographer()->CanDecrypt(encrypted_specifics.encrypted()));
+
+  sync_pb::SyncEntity update =
+      server()->UpdateFromServer(10, hash, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&update},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  ASSERT_GE(processor()->GetNumUpdateResponses(), 1U);
+  const UpdateResponseData& response = processor()->GetUpdateResponse(hash);
+  EXPECT_FALSE(response.encryption_key_name.empty());
+
+  const sync_pb::SendTabToSelfSpecifics& received_stts =
+      response.entity.specifics.send_tab_to_self();
+
+  // The worker should have decrypted the specifics, and both "regular" fields
+  // and the page context should be available.
+  EXPECT_EQ(received_stts.url(), "https://example.com");
+  EXPECT_TRUE(received_stts.has_page_context());
+  EXPECT_EQ(received_stts.page_context()
+                .scroll_position()
+                .text_fragment()
+                .text_start(),
+            "sensitive context");
+  EXPECT_FALSE(received_stts.has_encrypted_page_context());
+}
+
 TEST_F(DataTypeWorkerTest, LoadPersistedInvalidations) {
   InitializeWithInvalidations();
 

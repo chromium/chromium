@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -45,6 +46,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -132,6 +134,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldReceiveFormFields) {
+  ASSERT_TRUE(SetupSync());
+
   const std::string kName = "John";
   const std::string kEmail = "john@example.com";
   const GURL kUrl =
@@ -163,14 +167,19 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
     field->set_form_control_type("text");
     field->set_value(kEmail);
   }
+  ASSERT_TRUE(
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
+          syncer::KeyDerivationParams::CreateForPbkdf2())
+          ->Encrypt(send_tab_to_self->page_context(),
+                    send_tab_to_self->mutable_encrypted_page_context()));
+  send_tab_to_self->clear_page_context();
 
   fake_server_->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           "non_unique_name", kGuid, specifics,
           /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
           /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
-
-  ASSERT_TRUE(SetupSync());
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -180,6 +189,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const send_tab_to_self::SendTabToSelfEntry* entry =
       service->GetSendTabToSelfModel()->GetEntryByGUID(kGuid);
   ASSERT_NE(nullptr, entry);
+
+  EXPECT_FALSE(entry->GetPageContext().form_field_info.fields.empty());
 
   // Mimic the user opening the received tab.
   content::WebContents* web_contents =
@@ -265,11 +276,20 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
 
   ASSERT_EQ(specifics.url(), kUrl.spec());
   ASSERT_EQ(specifics.target_device_sync_cache_guid(), target_guid);
-  ASSERT_TRUE(specifics.has_page_context());
-  ASSERT_TRUE(specifics.page_context().has_form_field_info());
+  EXPECT_FALSE(specifics.has_page_context());
+  ASSERT_TRUE(specifics.has_encrypted_page_context());
+
+  sync_pb::PageContext decrypted_context;
+  ASSERT_TRUE(
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
+          syncer::KeyDerivationParams::CreateForPbkdf2())
+          ->Decrypt(specifics.encrypted_page_context(), &decrypted_context));
+
+  ASSERT_TRUE(decrypted_context.has_form_field_info());
 
   const sync_pb::FormFieldInfo& form_field_info =
-      specifics.page_context().form_field_info();
+      decrypted_context.form_field_info();
 
   EXPECT_THAT(
       form_field_info.fields(),
@@ -462,7 +482,9 @@ void SimulateOpeningReceivedTab(
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
-                       ReceiveTextFragment) {
+                       ShouldReceiveTextFragment) {
+  ASSERT_TRUE(SetupSync());
+
   const GURL kUrl =
       embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
   constexpr char kGuid[] = "kGuid";
@@ -482,13 +504,19 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
       scroll_position->mutable_text_fragment();
   text_fragment->set_text_start(kTextStart);
 
+  ASSERT_TRUE(
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
+          syncer::KeyDerivationParams::CreateForPbkdf2())
+          ->Encrypt(send_tab_to_self->page_context(),
+                    send_tab_to_self->mutable_encrypted_page_context()));
+  send_tab_to_self->clear_page_context();
+
   fake_server_->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           "non_unique_name", kGuid, specifics,
           /*creation_time=*/syncer::TimeToProtoTime(base::Time::Now()),
           /*last_modified_time=*/syncer::TimeToProtoTime(base::Time::Now())));
-
-  ASSERT_TRUE(SetupSync());
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -527,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
-                       SendTextFragment) {
+                       ShouldSendTextFragment) {
   ASSERT_TRUE(SetupSync());
 
   GURL test_url =
@@ -569,21 +597,30 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
 
   ASSERT_EQ(specifics.url(), test_url.spec());
   ASSERT_EQ(specifics.target_device_sync_cache_guid(), kTargetGuid);
-  ASSERT_TRUE(specifics.has_page_context());
-  ASSERT_TRUE(specifics.page_context().has_scroll_position());
-  ASSERT_TRUE(specifics.page_context().scroll_position().has_text_fragment());
+  EXPECT_FALSE(specifics.has_page_context());
+  ASSERT_TRUE(specifics.has_encrypted_page_context());
+
+  sync_pb::PageContext decrypted_context;
+  ASSERT_TRUE(
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          base::Base64Encode(fake_server_->GetKeystoreKeys().back()),
+          syncer::KeyDerivationParams::CreateForPbkdf2())
+          ->Decrypt(specifics.encrypted_page_context(), &decrypted_context));
+
+  ASSERT_TRUE(decrypted_context.has_scroll_position());
+  ASSERT_TRUE(decrypted_context.scroll_position().has_text_fragment());
 
   // Text fragment generation can be non-deterministic depending on the exact
   // viewport size and layout on different platforms/bots.
   const sync_pb::TextFragmentData& tf =
-      specifics.page_context().scroll_position().text_fragment();
+      decrypted_context.scroll_position().text_fragment();
   EXPECT_THAT(tf.text_start(), testing::AnyOf(testing::HasSubstr("fox"),
                                               testing::HasSubstr("jumps"),
                                               testing::HasSubstr("dog")));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
-                       SendEmptyPage) {
+                       ShouldSendEmptyPage) {
   ASSERT_TRUE(SetupSync());
 
   GURL test_url = embedded_test_server()->GetURL("/empty.html");

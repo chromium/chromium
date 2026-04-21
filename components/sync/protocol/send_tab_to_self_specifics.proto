@@ -12,6 +12,7 @@ syntax = "proto2";
 package sync_pb;
 
 import "components/sync/protocol/tab_navigation.proto";
+import "components/sync/protocol/encryption.proto";
 
 option java_multiple_files = true;
 option java_package = "org.chromium.components.sync.protocol";
@@ -44,7 +45,16 @@ message SendTabToSelfSpecifics {
   reserved "navigation_time_usec";
   reserved 6;
 
+  // Additional information about the sent tab, e.g. scroll position and form
+  // field data. Unless custom passphrase encryption is enabled, this is used
+  // only locally while on the wire, `encrypted_page_context` is used instead.
+  // New in M147.
   optional PageContext page_context = 10;
+
+  // Encrypted version of the `page_context` field. Used only when custom
+  // passphrase encryption is NOT enabled.
+  // New in M149.
+  optional EncryptedData encrypted_page_context = 15;
 
   // Navigation history for the shared tab. If not empty, the `url` and `title`
   // fields above should match the navigation at `current_navigation_index`.

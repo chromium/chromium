@@ -684,6 +684,29 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
       return FAILED_TO_DECRYPT;
     }
     specifics_were_encrypted = true;
+  } else if (specifics.has_send_tab_to_self()) {
+    // Special case: For SendTabToSelf, the `page_context` field is encrypted
+    // if full encryption is not enabled.
+    data.specifics = specifics;
+    // The (non-encrypted) `page_context` field should not be set in this case.
+    // If it is, ignore it.
+    data.specifics.mutable_send_tab_to_self()->clear_page_context();
+
+    // Try to decrypt the `encrypted_page_context` field. In case of failure,
+    // just carry on - better to receive the tab without the extra context than
+    // not at all.
+    if (data.specifics.send_tab_to_self().has_encrypted_page_context()) {
+      if (!cryptographer.Decrypt(
+              data.specifics.send_tab_to_self().encrypted_page_context(),
+              data.specifics.mutable_send_tab_to_self()
+                  ->mutable_page_context())) {
+        // If the decryption failed, make sure the `page_context` field is
+        // unset (`mutable_page_context()` above would have created an empty
+        // one).
+        data.specifics.mutable_send_tab_to_self()->clear_page_context();
+      }
+      data.specifics.mutable_send_tab_to_self()->clear_encrypted_page_context();
+    }
   } else {
     // No encryption.
     data.specifics = specifics;
@@ -933,6 +956,10 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
     EncryptPasswordSpecificsData(&response);
   } else if (encryption_enabled_) {
     EncryptSpecifics(&response);
+  } else if (type_ == SEND_TAB_TO_SELF) {
+    // For SendTabToSelf, the page_context field is encrypted even if
+    // `encryption_enabled_` is false).
+    EncryptSendTabToSelfPageContext(&response);
   }
 
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
@@ -1467,8 +1494,35 @@ void DataTypeWorker::EncryptOutgoingPasswordSharingInvitations(
   }
 }
 
+void DataTypeWorker::EncryptSendTabToSelfPageContext(
+    CommitRequestDataList* request_data_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(cryptographer_);
+  CHECK_EQ(type_, SEND_TAB_TO_SELF);
+  CHECK(!encryption_enabled_);
+
+  for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
+    EntityData* entity_data = request_data->entity.get();
+    if (entity_data->is_deleted()) {
+      continue;
+    }
+
+    sync_pb::SendTabToSelfSpecifics* specifics =
+        entity_data->specifics.mutable_send_tab_to_self();
+    if (!specifics->has_page_context()) {
+      continue;
+    }
+
+    bool success = cryptographer_->Encrypt(
+        specifics->page_context(), specifics->mutable_encrypted_page_context());
+    LogEncryptionResult(type_, success);
+    specifics->clear_page_context();
+  }
+}
+
 void DataTypeWorker::EncryptSpecifics(
     CommitRequestDataList* request_data_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(cryptographer_);
   CHECK(encryption_enabled_);
   CHECK_NE(type_, PASSWORDS);
