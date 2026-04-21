@@ -11,6 +11,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+class RenderViewContextMenuBase;
+
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kComposeWebviewElementId);
 
 // A view for the contents area of the Compose dialog.
@@ -51,11 +53,18 @@ class ComposeDialogView : public WebUIBubbleDialogView {
     return bubble_wrapper_.get();
   }
 
+  const ui::MenuModel* GetContextMenuModelForTesting() const {
+    return context_menu_model_for_testing_;
+  }
+
   base::WeakPtr<ComposeDialogView> GetWeakPtr();
 
  private:
+  void OnBuildMenuComplete(std::unique_ptr<RenderViewContextMenuBase> menu);
+
   gfx::Rect anchor_bounds_;
   std::unique_ptr<WebUIContentsWrapperT<ComposeUntrustedUI>> bubble_wrapper_;
+  raw_ptr<const ui::MenuModel> context_menu_model_for_testing_ = nullptr;
   base::WeakPtrFactory<ComposeDialogView> weak_ptr_factory_{this};
 };
 

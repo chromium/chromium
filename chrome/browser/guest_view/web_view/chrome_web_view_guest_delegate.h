@@ -46,6 +46,9 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
   WebViewGuest* web_view_guest() const { return web_view_guest_; }
 
  private:
+  void OnBuildMenuComplete(int request_id,
+                           std::unique_ptr<RenderViewContextMenuBase> menu);
+
   // A counter to generate a unique request id for a context menu request.
   // We only need the ids to be unique for a given WebViewGuest.
   int pending_context_menu_request_id_;

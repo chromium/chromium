@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/compose/compose_dialog_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -27,7 +30,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace compose {
@@ -43,7 +51,7 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
 
-  void TearDown() override {}
+  void TearDown() override { InteractiveBrowserTest::TearDown(); }
 
   feature_engagement::test::ScopedIphFeatureList* feature_list() {
     return &feature_list_;
@@ -75,6 +83,75 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
   // close window right away
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
+}
+
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, ContextMenuPasteEnabled) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/compose/test2.html")));
+  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
+
+  test_clipboard_scope.SetText("Test clipboard text");
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::string clipboard_text;
+    test_clipboard_scope.GetText(&clipboard_text);
+    return clipboard_text == "Test clipboard text";
+  }));
+
+  // get point of element
+  gfx::PointF textarea_center =
+      content::GetCenterCoordinatesOfElementWithId(web_contents, "elem1");
+  autofill::FormFieldData field_data;
+  field_data.set_bounds(gfx::RectF((textarea_center), gfx::SizeF(1, 1)));
+
+  auto* client = ChromeComposeClient::FromWebContents(web_contents);
+  client->ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+      field_data, base::NullCallback());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+               ComposeDialogView::kComposeDialogId,
+               BrowserView::GetBrowserViewForBrowser(browser())
+                   ->GetElementContext()) != nullptr;
+  }));
+
+  ComposeDialogView* dialog_view = static_cast<ComposeDialogView*>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          ComposeDialogView::kComposeDialogId,
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetElementContext()));
+  ASSERT_TRUE(dialog_view);
+
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  params.edit_flags = blink::ContextMenuDataEditFlags::kCanPaste;
+  // Simulate the context menu request on the dialog's WebContents
+  content::RenderFrameHost* render_frame_host =
+      dialog_view->bubble_wrapper()->web_contents()->GetPrimaryMainFrame();
+  dialog_view->HandleContextMenu(*render_frame_host, params);
+
+  // Wait for the async clipboard read to complete
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return dialog_view->GetContextMenuModelForTesting() != nullptr;
+  }));
+
+  const ui::MenuModel* menu_model =
+      dialog_view->GetContextMenuModelForTesting();
+  ASSERT_TRUE(menu_model);
+
+  bool paste_found = false;
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    if (menu_model->GetCommandIdAt(i) == IDC_CONTENT_CONTEXT_PASTE ||
+        menu_model->GetCommandIdAt(i) ==
+            IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE) {
+      paste_found = true;
+    }
+  }
+  EXPECT_TRUE(paste_found);
 }
 
 IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
