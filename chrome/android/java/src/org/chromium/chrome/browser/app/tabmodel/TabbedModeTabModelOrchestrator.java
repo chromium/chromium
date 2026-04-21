@@ -62,6 +62,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     private final boolean mTabMergingEnabled;
     private final Supplier<Boolean> mIsRecreatingSupplier;
+    private final boolean mIsFromRecreating;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CipherFactory mCipherFactory;
     // Effectively final after createTabModels().
@@ -87,16 +88,19 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      *     valid when running deferred tasks.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @param isRecreatingSupplier A supplier of whether the current activity is recreating.
+     * @param isFromRecreating Whether the activity is launched from recreating.
      */
     public TabbedModeTabModelOrchestrator(
             boolean tabMergingEnabled,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             CipherFactory cipherFactory,
-            Supplier<Boolean> isRecreatingSupplier) {
+            Supplier<Boolean> isRecreatingSupplier,
+            boolean isFromRecreating) {
         mTabMergingEnabled = tabMergingEnabled;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mCipherFactory = cipherFactory;
         mIsRecreatingSupplier = isRecreatingSupplier;
+        mIsFromRecreating = isFromRecreating;
     }
 
     @Override
@@ -206,7 +210,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                         tabWindowManager,
                         windowTag,
                         mCipherFactory,
-                        /* recordLegacyTabCountMetrics= */ true);
+                        /* recordLegacyTabCountMetrics= */ true,
+                        mIsFromRecreating);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

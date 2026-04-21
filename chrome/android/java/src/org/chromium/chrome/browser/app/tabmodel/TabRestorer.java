@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabmodel.TabPersistenceUtils.shouldSkipTab;
 
 import androidx.annotation.IntDef;
-import androidx.core.util.Supplier;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -30,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
@@ -40,6 +40,7 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /** Manages the tab restoration process after loading tabs from storage. */
 @NullMarked
@@ -130,6 +131,7 @@ class TabRestorer {
     private final Supplier<ScopedStorageBatch> mBatchFactory;
     private final TabModelSelector mTabModelSelector;
     private final List<Integer> mTabIdsToIgnore = new ArrayList<>();
+    private final boolean mIsFromRecreating;
 
     private @State int mState = State.EMPTY;
     private @Nullable StorageLoadedData mData;
@@ -150,18 +152,21 @@ class TabRestorer {
      * @param tabCreator The tab creator to use to create tabs.
      * @param batchFactory The factory to create scoped storage batches.
      * @param tabModelSelector The tab model selector.
+     * @param isFromRecreating Whether the current activity is launched from recreating.
      */
     TabRestorer(
             boolean incognito,
             TabRestorerDelegate delegate,
             TabCreator tabCreator,
             Supplier<ScopedStorageBatch> batchFactory,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            boolean isFromRecreating) {
         mIncognito = incognito;
         mDelegate = delegate;
         mTabCreator = tabCreator;
         mBatchFactory = batchFactory;
         mTabModelSelector = tabModelSelector;
+        mIsFromRecreating = isFromRecreating;
     }
 
     /**
@@ -185,7 +190,13 @@ class TabRestorer {
         mTabIdsToIgnore.add(loadedTabState.tabId);
 
         int tabCount = mTabModelSelector.getModel(mIncognito).getCount();
-        Tab tab = resolveTab(tabState, loadedTabState.tabId, tabCount, /* isActiveTab= */ true);
+        Tab tab =
+                resolveTab(
+                        tabState,
+                        loadedTabState.tabId,
+                        tabCount,
+                        /* isActiveTab= */ true,
+                        mIsFromRecreating);
 
         if (tab == null) destroyLoadedTabState(loadedTabState);
         mCachedRestoredActiveTabId = loadedTabState.tabId;
@@ -417,7 +428,7 @@ class TabRestorer {
         assert mData != null;
         assert mCachedRestoredActiveTabId == null || tabId != mCachedRestoredActiveTabId;
 
-        Tab tab = resolveTab(loadedTabState.tabState, tabId, index, isActive);
+        Tab tab = resolveTab(loadedTabState.tabState, tabId, index, isActive, mIsFromRecreating);
         if (tab == null) {
             destroyLoadedTabState(loadedTabState);
             return;
@@ -468,24 +479,32 @@ class TabRestorer {
     }
 
     private @Nullable Tab resolveTab(
-            TabState tabState, @TabId int tabId, int index, boolean isActiveTab) {
-        if (!isActiveTab && shouldSkipTab(tabState)) {
-            mRestoreFilteredTabCount++;
-            return null;
+            TabState tabState, int tabId, int index, boolean isActiveTab, boolean isRecreating) {
+        if (!isActiveTab) {
+            if (isRecreating) {
+                // If activity is recreating, we restore non-active NTPs.
+                boolean isNtp = tabState.url != null && UrlUtilities.isNtpUrl(tabState.url);
+                if (isNtp) {
+                    if (tabState.contentsState != null) {
+                        return createFrozenTab(tabState, tabId, index);
+                    } else {
+                        return createTabWithoutContentsState(assumeNonNull(tabState.url), index);
+                    }
+                }
+            }
+            if (shouldSkipTab(tabState)) {
+                mRestoreFilteredTabCount++;
+                return null;
+            }
         }
 
         Tab tab = null;
         GURL url = tabState.url;
         if (isActiveTab && tabState.contentsState == null && url != null) {
             // Use fallback url if no contents state is available.
-            tab =
-                    mTabCreator.createNewTab(
-                            new LoadUrlParams(url), TabLaunchType.FROM_RESTORE, null, index);
+            tab = createTabWithoutContentsState(url, index);
         } else if (tabState.contentsState != null) {
-            if (url != null) {
-                tabState.contentsState.setFallbackUrlForRestorationFailure(url.getSpec());
-            }
-            tab = mTabCreator.createFrozenTab(tabState, tabId, index);
+            tab = createFrozenTab(tabState, tabId, index);
         }
 
         if (isActiveTab && tab != null) {
@@ -494,6 +513,23 @@ class TabRestorer {
             mDelegate.onActiveTabRestored(mIncognito);
         }
         return tab;
+    }
+
+    /** Creates a Tab from the given URL when tabState.contentsState is null. */
+    private @Nullable Tab createTabWithoutContentsState(GURL url, int index) {
+        return mTabCreator.createNewTab(
+                new LoadUrlParams(url), TabLaunchType.FROM_RESTORE, null, index);
+    }
+
+    /** Creates a frozen Tab from a non-null contentsState. */
+    private @Nullable Tab createFrozenTab(TabState tabState, int tabId, int index) {
+        assert tabState.contentsState != null;
+
+        GURL url = tabState.url;
+        if (url != null) {
+            tabState.contentsState.setFallbackUrlForRestorationFailure(url.getSpec());
+        }
+        return mTabCreator.createFrozenTab(tabState, tabId, index);
     }
 
     private void maybeDestroyActiveTabState() {

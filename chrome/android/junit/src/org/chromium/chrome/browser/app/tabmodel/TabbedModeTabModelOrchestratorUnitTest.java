@@ -99,7 +99,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                     /* tabMergingEnabled= */ false,
                     mActivityLifecycleDispatcher,
                     mCipherFactory,
-                    ObservableSuppliers.createNonNull(false));
+                    ObservableSuppliers.createNonNull(false),
+                    /* isFromRecreating= */ false);
         }
 
         @Override

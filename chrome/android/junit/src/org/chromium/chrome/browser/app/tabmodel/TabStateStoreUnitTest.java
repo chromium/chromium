@@ -132,7 +132,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ true);
+                        /* isAuthoritative= */ true,
+                        /* isFromRecreating= */ false);
         mTabStateStore.addObserver(mObserver);
 
         when(mRegularTabModel.getCurrentTabSupplier()).thenReturn(mRegularTabSupplier);
@@ -181,7 +182,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ true);
+                        /* isAuthoritative= */ true,
+                        /* isFromRecreating= */ false);
         when(mMigrationManager.shouldRazeStoreForWindow(true)).thenReturn(true);
 
         mTabStateStore.onNativeLibraryReady();
@@ -206,7 +208,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ true);
+                        /* isAuthoritative= */ true,
+                        /* isFromRecreating= */ false);
         when(mMigrationManager.shouldRazeStoreForWindow(true)).thenReturn(false);
 
         mTabStateStore.onNativeLibraryReady();
@@ -231,7 +234,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
         when(mMigrationManager.shouldRazeStoreForWindow(false)).thenReturn(true);
 
         mTabStateStore.onNativeLibraryReady();
@@ -256,7 +260,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
         when(mMigrationManager.shouldRazeStoreForWindow(false)).thenReturn(false);
 
         mTabStateStore.onNativeLibraryReady();
@@ -298,7 +303,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ true);
+                        /* isAuthoritative= */ true,
+                        /* isFromRecreating= */ false);
         mTabStateStore.onNativeLibraryReady();
 
         verify(mCipherFactory).setKeyForTabStateStorage(newKey);
@@ -432,7 +438,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
         mTabStateStore.addObserver(mObserver);
 
         mTabStateStore.onNativeLibraryReady();
@@ -476,7 +483,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
 
         mTabStateStore.onNativeLibraryReady();
         mTabStateStore.onAuthoritativeStateLoaded();
@@ -582,7 +590,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
         mTabStateStore.addObserver(mObserver);
 
         mTabStateStore.onNativeLibraryReady();
@@ -665,7 +674,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
         mTabStateStore.addObserver(mObserver);
 
         mTabStateStore.onNativeLibraryReady();
@@ -735,7 +745,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ true);
+                        /* isAuthoritative= */ true,
+                        /* isFromRecreating= */ false);
         noCipherTabStateStore.addObserver(mObserver);
         noCipherTabStateStore.onNativeLibraryReady();
 
@@ -773,7 +784,8 @@ public class TabStateStoreUnitTest {
                         mTabCountTracker,
                         mModelTrackingOrchestratorFactory,
                         mActiveTabCacheFactory,
-                        /* isAuthoritative= */ false);
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
 
         mTabStateStore.onNativeLibraryReady();
         mTabStateStore.clearCurrentWindow();

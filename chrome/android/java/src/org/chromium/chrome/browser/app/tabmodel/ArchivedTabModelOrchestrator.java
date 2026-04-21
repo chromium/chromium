@@ -432,7 +432,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mTabWindowManager,
                         ARCHIVED_WINDOW_TAG,
                         cipherFactory,
-                        /* recordLegacyTabCountMetrics= */ false);
+                        /* recordLegacyTabCountMetrics= */ false,
+                        /* isFromRecreating= */ false);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

@@ -60,6 +60,7 @@ public class TabStateStore implements TabPersistentStore {
             this::onTabStateDirtinessChanged;
     private final ObserverList<TabPersistentStoreObserver> mObservers = new ObserverList<>();
     private final ActiveTabCache mActiveTabCache;
+    private final boolean mIsFromRecreating;
     private @MonotonicNonNull ModelTrackingOrchestrator mModelTrackingManager;
     private boolean mHasCipherFactory;
 
@@ -170,6 +171,7 @@ public class TabStateStore implements TabPersistentStore {
      * @param activeTabCacheFactory The factory to create {@link ModelTrackingOrchestrator}
      *     instances.
      * @param isAuthoritative Whether the store is authoritative for the window.
+     * @param isFromRecreating Whether the current activity is launched from recreating.
      */
     public TabStateStore(
             TabModelSelector tabModelSelector,
@@ -181,7 +183,8 @@ public class TabStateStore implements TabPersistentStore {
             TabCountTracker tabCountTracker,
             ModelTrackingOrchestrator.Factory orchestratorFactory,
             ActiveTabCache.Factory activeTabCacheFactory,
-            boolean isAuthoritative) {
+            boolean isAuthoritative,
+            boolean isFromRecreating) {
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
@@ -191,6 +194,7 @@ public class TabStateStore implements TabPersistentStore {
         mIsAuthoritative = isAuthoritative;
         mOrchestratorFactory = orchestratorFactory;
         mTabCountTracker = tabCountTracker;
+        mIsFromRecreating = isFromRecreating;
 
         // Begins fetching the active tab immediately.
         mActiveTabCache =
@@ -290,7 +294,8 @@ public class TabStateStore implements TabPersistentStore {
                         mTabCreatorManager,
                         mTabStateStorageService::createBatch,
                         mTabModelSelector,
-                        /* logRestoreDuration= */ true);
+                        /* logRestoreDuration= */ true,
+                        mIsFromRecreating);
 
         boolean[] restoreOrder =
                 mTabModelSelector.isIncognitoSelected()
@@ -350,7 +355,8 @@ public class TabStateStore implements TabPersistentStore {
                         mTabCreatorManager,
                         mTabStateStorageService::createBatch,
                         mTabModelSelector,
-                        /* logRestoreDuration= */ false);
+                        /* logRestoreDuration= */ false,
+                        mIsFromRecreating);
 
         for (boolean incognito : new boolean[] {false, true}) {
             final boolean incognitoFinal = incognito;

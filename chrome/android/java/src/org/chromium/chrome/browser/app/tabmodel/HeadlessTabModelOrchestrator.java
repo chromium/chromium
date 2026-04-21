@@ -86,7 +86,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         tabWindowManager,
                         windowTag,
                         sCipherInstance,
-                        /* recordLegacyTabCountMetrics= */ true);
+                        /* recordLegacyTabCountMetrics= */ true,
+                        /* isFromRecreating= */ false);
 
         AccumulatingTabCreator regularShadowTabCreator = new AccumulatingTabCreator();
         AccumulatingTabCreator incognitoShadowTabCreator = new AccumulatingTabCreator();

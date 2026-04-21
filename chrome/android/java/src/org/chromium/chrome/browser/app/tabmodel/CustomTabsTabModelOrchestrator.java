@@ -97,7 +97,8 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         tabWindowManager,
                         getCustomTabsWindowTag(activity.getTaskId()),
                         cipherFactory,
-                        /* recordLegacyTabCountMetrics= */ true);
+                        /* recordLegacyTabCountMetrics= */ true,
+                        /* isFromRecreating= */ false);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

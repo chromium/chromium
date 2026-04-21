@@ -3545,12 +3545,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     protected TabModelOrchestrator createTabModelOrchestrator() {
         boolean tabMergingEnabled =
                 mMultiInstanceManager != null && mMultiInstanceManager.isTabModelMergingEnabled();
+        Bundle bundle = getSavedInstanceState();
+        boolean isFromRecreating = false;
+        if (bundle != null) {
+            isFromRecreating = bundle.getBoolean(IS_FROM_RECREATING);
+        }
         mTabModelOrchestrator =
                 new TabbedModeTabModelOrchestrator(
                         tabMergingEnabled,
                         getLifecycleDispatcher(),
                         CipherLazyHolder.sCipherInstance,
-                        () -> mIsRecreating);
+                        () -> mIsRecreating,
+                        isFromRecreating);
         mTabModelStartupInfoSupplier = ObservableSuppliers.createMonotonic();
         mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
         return mTabModelOrchestrator;
