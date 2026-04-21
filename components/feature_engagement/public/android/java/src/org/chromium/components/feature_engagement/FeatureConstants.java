@@ -83,6 +83,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
     FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
+    FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS_FEATURE,
@@ -334,6 +335,8 @@ public @interface FeatureConstants {
             "IPH_AutofillAccountNameEmailSuggestion";
 
     String KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE = "IPH_KeyboardAccessoryAddressFilling";
+
+    String KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE = "IPH_AutofillAtMemory";
 
     String KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_FEATURE = "IPH_AutofillAiValuables";
 

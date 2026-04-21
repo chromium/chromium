@@ -150,6 +150,11 @@ public class KeyboardAccessoryViewTest {
     private static class TestTracker implements Tracker {
         private boolean mWasDismissed;
         private @Nullable String mEmittedEvent;
+        private final String mFeature;
+
+        public TestTracker(String feature) {
+            mFeature = feature;
+        }
 
         @Override
         public void notifyEvent(String event) {
@@ -162,7 +167,7 @@ public class KeyboardAccessoryViewTest {
 
         @Override
         public boolean shouldTriggerHelpUi(String feature) {
-            return true;
+            return mFeature.equals(feature);
         }
 
         @Override
@@ -172,7 +177,7 @@ public class KeyboardAccessoryViewTest {
 
         @Override
         public boolean wouldTriggerHelpUi(String feature) {
-            return true;
+            return mFeature.equals(feature);
         }
 
         @Override
@@ -549,7 +554,9 @@ public class KeyboardAccessoryViewTest {
         itemWithIph.setFeatureForIph(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
 
-        TestTracker tracker = new TestTracker();
+        TestTracker tracker =
+                new TestTracker(
+                        FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
         TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -588,7 +595,9 @@ public class KeyboardAccessoryViewTest {
         itemWithIph.setFeatureForIph(
                 FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE);
 
-        TestTracker tracker = new TestTracker();
+        TestTracker tracker =
+                new TestTracker(
+                        FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE);
         TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -624,7 +633,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
-        TestTracker tracker = new TestTracker();
+        TestTracker tracker =
+                new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
         TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -662,7 +672,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
-        TestTracker tracker = new TestTracker();
+        TestTracker tracker =
+                new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
         TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -698,7 +709,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
-        TestTracker tracker = new TestTracker();
+        TestTracker tracker =
+                new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
         TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -723,7 +735,7 @@ public class KeyboardAccessoryViewTest {
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263973")
     public void testDismissesSwipingEducationBubbleOnTap() throws InterruptedException {
         TestTracker tracker =
-                new TestTracker() {
+                new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE) {
                     @Override
                     public int getTriggerState(String feature) {
                         // Pretend that an autofill IPH was shown already.
@@ -772,7 +784,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
-        TestTracker tracker = new TestTracker();
+        TestTracker tracker =
+                new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
         TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1069,6 +1082,26 @@ public class KeyboardAccessoryViewTest {
                 "Third button's left margin is incorrect.", expectedMargin, params3.leftMargin);
         assertEquals(
                 "Third button's right margin is incorrect.", expectedMargin, params3.rightMargin);
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissesAtMemoryEducationBubbleOnTap() throws InterruptedException {
+        TestTracker tracker =
+                new TestTracker(FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE);
+        TrackerFactory.setTrackerForTests(tracker);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {createSheetOpener()});
+                });
+
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_at_memory));
+        assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_at_memory)).perform(click());
+
+        assertThat(tracker.wasDismissed(), is(true));
     }
 
     @Test

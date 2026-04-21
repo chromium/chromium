@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,8 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     private final ArrayList<ImageButton> mButtons = new ArrayList<>();
     private @Nullable KeyboardAccessoryButtonGroupListener mListener;
     private @Nullable Runnable mAtMemoryCallback;
+    private @Nullable Runnable mAtMemoryIphCallback;
+    private @Nullable ImageButton mAtMemoryButton;
 
     /**
      * This interface should be implemented by classes which want to observe clicks on the buttons
@@ -45,6 +48,10 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
 
     public void setAtMemoryCallback(Runnable callback) {
         mAtMemoryCallback = callback;
+    }
+
+    public void setAtMemoryIphCallback(Runnable callback) {
+        mAtMemoryIphCallback = callback;
     }
 
     @Override
@@ -93,16 +100,17 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     }
 
     public void addAtMemoryButton() {
-        ImageButton button =
+        mAtMemoryButton =
                 createButton(
                         R.drawable.search_spark,
                         getContext().getString(R.string.at_memory_icon_description));
-        button.setOnClickListener(
+        mAtMemoryButton.setOnClickListener(
                 v -> {
+                    if (mAtMemoryIphCallback != null) mAtMemoryIphCallback.run();
                     if (mAtMemoryCallback != null) mAtMemoryCallback.run();
                 });
-        mButtons.add(button);
-        addView(button);
+        mButtons.add(mAtMemoryButton);
+        addView(mAtMemoryButton);
     }
 
     @Override
@@ -120,6 +128,14 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     void removeAllButtons() {
         mButtons.clear();
         removeAllViews();
+        mAtMemoryButton = null;
+    }
+
+    public @Nullable ViewRectProvider getAtMemoryIphRectProvider() {
+        if (mAtMemoryButton == null) return null;
+        ViewRectProvider provider = new ViewRectProvider(mAtMemoryButton);
+        provider.setIncludePadding(true);
+        return provider;
     }
 
     void setButtonSelectionListener(KeyboardAccessoryButtonGroupListener listener) {

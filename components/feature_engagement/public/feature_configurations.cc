@@ -1976,6 +1976,35 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+
+  if (kIPHAutofillAtMemoryFeature.name == feature->name) {
+    // A config that allows the Autofill At Memory IPH to be shown when:
+    // * it has been shown less than 3 times in the last 90 days;
+    // * the feature has not been used yet.
+    // The IPH will not be shown if any other IPH has been shown in the same
+    // session.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("autofill_at_memory_iph_trigger",
+                                 Comparator(LESS_THAN, 3), 90, 360);
+    config.used = EventConfig("autofill_at_memory_iph_used",
+                              Comparator(EQUAL, 0), 90, 360);
+
+    // This promo blocks specific promos in the same session.
+    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config.session_rate_impact.affected_features.emplace();
+    config.session_rate_impact.affected_features->push_back(
+        "IPH_AutofillVirtualCardSuggestion");
+    config.session_rate_impact.affected_features->push_back(
+        "IPH_AutofillVirtualCardCVCSuggestion");
+    config.session_rate_impact.affected_features->push_back(
+        "IPH_AutofillCardInfoRetrievalSuggestion");
+
+    return config;
+  }
+
   if (kIPHAutofillCardInfoRetrievalSuggestionFeature.name == feature->name) {
     // A config that allows the card info retrieval suggestion IPH to be shown
     // when it has been shown less than three times in last 90 days and only

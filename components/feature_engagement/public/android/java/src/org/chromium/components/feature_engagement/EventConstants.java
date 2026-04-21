@@ -152,6 +152,9 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED =
             "keyboard_accessory_address_suggestion_accepted";
 
+    /** The keyboard accessory At Memory feature was used. */
+    public static final String KEYBOARD_ACCESSORY_AT_MEMORY_USED = "autofill_at_memory_iph_used";
+
     /** The keyboard accessory was used to fill autofill valuables data into a form. */
     public static final String KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_AUTOFILLED =
             "autofill_ai_valuables_feature_used";

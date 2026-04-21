@@ -50,12 +50,14 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.GroupBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -88,7 +90,7 @@ class KeyboardAccessoryViewBinder {
                         uiConfiguration.suggestionDrawableFunction,
                         viewType);
             case BarItem.Type.TAB_LAYOUT:
-                return new SheetOpenerViewHolder(parent);
+                return new SheetOpenerViewHolder(parent, keyboarAccessory);
             case BarItem.Type.ACTION_BUTTON:
             case BarItem.Type.DISMISS_CHIP:
                 return new BarItemTextViewHolder(parent, viewType);
@@ -476,16 +478,31 @@ class KeyboardAccessoryViewBinder {
         }
     }
 
-    static class SheetOpenerViewHolder extends BarItemViewHolder<SheetOpenerBarItem, View> {
+    static class SheetOpenerViewHolder
+            extends BarItemViewHolder<SheetOpenerBarItem, KeyboardAccessoryButtonGroupView> {
         private @MonotonicNonNull SheetOpenerBarItem mSheetOpenerItem;
+        private final KeyboardAccessoryView mKeyboardAccessory;
 
-        SheetOpenerViewHolder(ViewGroup parent) {
+        SheetOpenerViewHolder(ViewGroup parent, KeyboardAccessoryView keyboardAccessory) {
             super(parent, R.layout.keyboard_accessory_buttons);
+            mKeyboardAccessory = keyboardAccessory;
+
+            KeyboardAccessoryButtonGroupView view = (KeyboardAccessoryButtonGroupView) itemView;
+            view.setAtMemoryIphCallback(
+                    () -> {
+                        Tracker tracker = mKeyboardAccessory.getFeatureEngagementTracker();
+                        if (tracker != null) {
+                            KeyboardAccessoryIphUtils.emitFillingEvent(
+                                    tracker,
+                                    FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE);
+                        }
+                    });
         }
 
         @Override
         @EnsuresNonNull("mSheetOpenerItem")
-        protected void bind(SheetOpenerBarItem sheetOpenerItem, View view) {
+        protected void bind(
+                SheetOpenerBarItem sheetOpenerItem, KeyboardAccessoryButtonGroupView view) {
             mSheetOpenerItem = sheetOpenerItem;
             int state = sheetOpenerItem.getViewState();
             view.setEnabled(state == ActionBarItem.ViewState.ENABLED);
@@ -494,6 +511,34 @@ class KeyboardAccessoryViewBinder {
                             ? GRAYED_OUT_OPACITY_ALPHA
                             : COMPLETE_OPACITY_ALPHA);
             sheetOpenerItem.notifyAboutViewCreation(itemView);
+
+            // The `ViewRectProvider` used by `getAtMemoryIphRectProvider()` requires
+            // the view to be attached to the window. `post()` ensures that the view
+            // is attached and laid out before attempting to show the IPH.
+            view.post(
+                    () -> {
+                        // The ViewHolder might be recycled before the posted runnable executes.
+                        if (mSheetOpenerItem != sheetOpenerItem) return;
+
+                        RectProvider atMemoryIphRectProvider = view.getAtMemoryIphRectProvider();
+                        if (atMemoryIphRectProvider != null) {
+                            boolean isIphShown =
+                                    showHelpBubble(
+                                            mKeyboardAccessory.getFeatureEngagementTracker(),
+                                            FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE,
+                                            atMemoryIphRectProvider,
+                                            view.getContext(),
+                                            view.getRootView(),
+                                            () ->
+                                                    mKeyboardAccessory.setAllowClicksWhileObscured(
+                                                            false));
+                            // Only set to true so we don't overwrite a true value that was set by
+                            // another IPH.
+                            // The value is reset to false when the user clicks anywhere on the
+                            // screen.
+                            if (isIphShown) mKeyboardAccessory.setAllowClicksWhileObscured(true);
+                        }
+                    });
         }
 
         @Override
