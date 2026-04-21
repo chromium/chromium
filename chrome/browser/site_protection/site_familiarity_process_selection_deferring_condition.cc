@@ -8,8 +8,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -40,6 +42,13 @@ SiteFamiliarityProcessSelectionDeferringCondition::OnWillSelectFinalProcess(
   UMA_HISTOGRAM_BOOLEAN(
       "SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity",
       !verdict_);
+
+  if (IsDefaultSearchEngineNavigation()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram,
+        !verdict_);
+  }
+
   if (verdict_) {
     SetVerdictOnHandle();
     return content::ProcessSelectionDeferringCondition::Result::kProceed;
@@ -65,6 +74,23 @@ void SiteFamiliarityProcessSelectionDeferringCondition::OnComputedVerdict(
     SetVerdictOnHandle();
     std::move(callback_).Run();
   }
+}
+
+bool SiteFamiliarityProcessSelectionDeferringCondition::
+    IsDefaultSearchEngineNavigation() {
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle().GetWebContents()->GetBrowserContext());
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  if (!template_url_service) {
+    return false;
+  }
+  const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
+  if (!dse) {
+    return false;
+  }
+  return template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+      navigation_handle().GetURL());
 }
 
 void SiteFamiliarityProcessSelectionDeferringCondition::SetVerdictOnHandle() {

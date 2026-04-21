@@ -3260,6 +3260,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.SiteFamiliarity.DeferNavigation.DefaultSearchEngine"
+    enum="BooleanOccurred" expires_after="2026-10-16">
+  <owner>tiffanysong@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Recorded during navigation to the default search engine's search results
+    page. Records whether the navigation was delayed due to computing site
+    familiarity.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
     enum="SiteFamiliarityHeuristicName" expires_after="2026-08-01">
   <owner>jacastro@chromium.org</owner>
