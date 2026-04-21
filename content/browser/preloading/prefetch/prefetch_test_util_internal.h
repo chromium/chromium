@@ -353,6 +353,8 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
 struct PrefetchRearchParam final {
  public:
   static std::vector<PrefetchRearchParam> Params();
+
+  bool force_off_the_main_thread;
 };
 
 class WithPrefetchRearchParam {
@@ -366,6 +368,7 @@ class WithPrefetchRearchParam {
 
  private:
   PrefetchRearchParam param_;
+  base::test::ScopedFeatureList feature_list_force_off_the_main_thread_;
 };
 
 // A wrapper for `PrefetchService::SetInjectedEligibilityCheckForTesting`.

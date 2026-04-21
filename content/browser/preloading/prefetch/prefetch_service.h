@@ -328,6 +328,12 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       std::unique_ptr<const PrefetchRequest> prefetch_request,
       std::unique_ptr<PrePrefetchContainer> pre_prefetch_container);
 
+  // Forces to create `PrefetchContainer` via the off-the-main-thread code path
+  // for testing.
+  base::WeakPtr<PrefetchContainer>
+  CreatePrefetchContainerFromPrePrefetchForTesting(
+      std::unique_ptr<const PrefetchRequest> prefetch_request);
+
   // The prefetch is reset after
   // `PrefetchContainerDefaultTtlInPrefetchService()`
   // or the overridden TTL duration. If

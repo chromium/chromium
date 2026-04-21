@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/synchronization/waitable_event.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -438,9 +439,87 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
   }
 }
 
+base::WeakPtr<PrefetchContainer>
+PrefetchService::CreatePrefetchContainerFromPrePrefetchForTesting(  // IN-TEST
+    std::unique_ptr<const PrefetchRequest> prefetch_request) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPrefetchOffTheMainThreadForceForTesting));
+  CHECK(GetBrowserContext());
+
+  std::unique_ptr<PrePrefetchHandle> pre_prefetch_handle;
+  std::unique_ptr<PrePrefetchService> pre_prefetch_service =
+      PrePrefetchService::Create(
+          GetBrowserContext(),
+          url::Origin::Create(prefetch_request->key().url()),
+          /*initial_javascript_enabled_hint=*/
+          prefetch_request->is_javascript_enabled(),
+          /*initial_should_append_variations_header_hint=*/
+          prefetch_request->should_append_variations_header());
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](PrePrefetchService* service_ptr,
+             std::unique_ptr<const PrefetchRequest> prefetch_request,
+             std::unique_ptr<PrePrefetchHandle>* pre_prefetch_handle,
+             base::WaitableEvent* event) {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            CHECK(service_ptr);
+            CHECK(prefetch_request);
+            *pre_prefetch_handle =
+                static_cast<PrePrefetchServiceImpl*>(service_ptr)
+                    ->StartPrePrefetchRequestForTesting(  // IN-TEST
+                        std::move(prefetch_request));
+            event->Signal();
+          },
+          pre_prefetch_service.get(), std::move(prefetch_request),
+          &pre_prefetch_handle, base::Unretained(&event)));
+
+  {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+    event.Wait();
+  }
+
+  if (!pre_prefetch_handle) {
+    return nullptr;
+  }
+
+  std::unique_ptr<PrePrefetchContainer> pre_prefetch_container =
+      static_cast<PrePrefetchHandleImpl&>(*pre_prefetch_handle)
+          .TakePrePrefetchContainerOnUI();
+  CHECK(pre_prefetch_container);
+  std::unique_ptr<const PrefetchRequest> prefetch_request_of_pre_prefetch =
+      pre_prefetch_container->TakePrefetchRequestOnUI();
+  return CreatePrefetchContainer(std::move(prefetch_request_of_pre_prefetch),
+                                 std::move(pre_prefetch_container));
+}
+
 base::WeakPtr<PrefetchContainer> PrefetchService::CreatePrefetchContainer(
     std::unique_ptr<const PrefetchRequest> prefetch_request,
     std::unique_ptr<PrePrefetchContainer> pre_prefetch_container) {
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchOffTheMainThreadForceForTesting)) {
+    // - If `pre_prefetch_container` is non-null, it's already from the
+    //   off-the-main-thread path and thus don't force the off-the-main-thread
+    //   path again.
+    // - Currently off-the-main-thread prefetch is only for same-site requests.
+    if (!pre_prefetch_container &&
+        !prefetch_request->IsCrossSiteRequest(
+            url::Origin::Create(prefetch_request->key().url()))) {
+      base::WeakPtr<PrefetchContainer> prefetch_container =
+          CreatePrefetchContainerFromPrePrefetchForTesting(  // IN-TEST
+              std::move(prefetch_request));
+      // While theoretically `prefetch_container` can be null here, we `CHECK()`
+      // here just to simplify the tests, assuming such theoretical failures
+      // don't occur on the existing tests.
+      CHECK(prefetch_container);
+      return prefetch_container;
+    }
+  }
+
   auto owned_prefetch_container = PrefetchContainer::Create(
       base::PassKey<PrefetchService>(), std::move(prefetch_request),
       std::move(pre_prefetch_container));

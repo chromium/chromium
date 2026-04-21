@@ -2593,6 +2593,25 @@
       "almaher@microsoft.com"
     ]
   },
+  {
+    "prefix": "prefetch-force-off-the-main-thread",
+    "owners": [
+      "hiroshige@chromium.org",
+      "taiyo@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch/"
+    ],
+    "args": [
+      "--enable-features=PrefetchOffTheMainThread,PrefetchOffTheMainThreadForceForTesting"
+    ],
+    "expires": "Dec 31, 2026"
+  },
   "These tests involve requiring a prefetch proxy, but since WPT origins are ",
   "not allowed to use the proxy in Chromium, we pass an argument telling ",
   "Chromium to bypass the proxy and pretend it was used instead. See also",

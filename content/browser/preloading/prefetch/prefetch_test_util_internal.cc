@@ -824,11 +824,18 @@ WithPrefetchRearchParam::~WithPrefetchRearchParam() = default;
 // static
 std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
   return {
-      PrefetchRearchParam{},
+      PrefetchRearchParam{.force_off_the_main_thread = false},
+      PrefetchRearchParam{.force_off_the_main_thread = true},
   };
 }
 
 void WithPrefetchRearchParam::InitRearchFeatures() {
+  if (param_.force_off_the_main_thread) {
+    feature_list_force_off_the_main_thread_.InitWithFeatures(
+        {features::kPrefetchOffTheMainThread,
+         features::kPrefetchOffTheMainThreadForceForTesting},
+        {});
+  }
 }
 
 PrefetchServiceInjectedEligibilityCheckFuture::
