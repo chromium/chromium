@@ -176,8 +176,11 @@
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
+#include "chrome/browser/autofill/android/at_memory_bottom_sheet_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
@@ -1065,6 +1068,23 @@ const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void ChromeAutofillClient::ShowAtMemoryBottomSheet() {
+  if (AtMemoryBottomSheetBridge* bridge =
+          GetOrCreateAtMemoryBottomSheetBridge()) {
+    bridge->RequestShowContent(
+        std::make_unique<AtMemoryBottomSheetDelegateAndroid>(this));
+  }
+}
+
+AtMemoryBottomSheetBridge*
+ChromeAutofillClient::GetOrCreateAtMemoryBottomSheetBridge() {
+  if (!at_memory_bottom_sheet_bridge_) {
+    at_memory_bottom_sheet_bridge_ =
+        std::make_unique<AtMemoryBottomSheetBridge>(web_contents());
+  }
+  return at_memory_bottom_sheet_bridge_.get();
+}
+
 AutofillSnackbarControllerImpl*
 ChromeAutofillClient::GetAutofillSnackbarController() {
   if (!autofill_snackbar_controller_impl_) {

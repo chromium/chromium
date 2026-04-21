@@ -69,6 +69,7 @@ namespace autofill {
 class AutofillAiSaveUpdateEntityFlowManager;
 class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
+class AtMemoryBottomSheetBridge;
 #endif
 
 class ActorKeyMetricsRecorder;
@@ -230,6 +231,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // on Android.
   AutofillSnackbarControllerImpl* GetAutofillSnackbarController() final;
 
+  void ShowAtMemoryBottomSheet() final;
+
+  // Returns the AtMemoryBottomSheetBridge for the current tab.
+  AtMemoryBottomSheetBridge* GetOrCreateAtMemoryBottomSheetBridge();
+
   // The AutofillMessageController is used to show native Android messages via
   // the messages API.
   AutofillMessageController* GetAutofillMessageController();
@@ -362,6 +368,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       save_update_address_profile_flow_manager_;
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;
+  std::unique_ptr<AtMemoryBottomSheetBridge> at_memory_bottom_sheet_bridge_;
 #else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;

@@ -197,6 +197,8 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void AutofillClient::ShowAtMemoryBottomSheet() {}
+
 AutofillSnackbarControllerImpl*
 AutofillClient::GetAutofillSnackbarController() {
   return nullptr;

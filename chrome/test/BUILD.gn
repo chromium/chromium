@@ -7993,6 +7993,8 @@ test("unit_tests") {
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
       "../browser/signin/android/signin_manager_android_unittest.cc",
       "../browser/sync/glue/synced_tab_delegate_android_unittest.cc",
+      "../browser/ui/android/autofill/at_memory_bottom_sheet_bridge_unittest.cc",
+      "../browser/ui/android/autofill/at_memory_bottom_sheet_delegate_android_unittest.cc",
       "../browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager_unittest.cc",
       "../browser/ui/android/autofill/autofill_cvc_save_message_delegate_unittest.cc",
       "../browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge_unittest.cc",

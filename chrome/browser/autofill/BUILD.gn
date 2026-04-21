@@ -102,6 +102,7 @@ static_library("autofill") {
       "android/android_autofill_availability_status.h",
       "android/android_sms_otp_backend_factory.cc",
       "android/android_sms_otp_backend_factory.h",
+      "android/at_memory_bottom_sheet_delegate.h",
       "android/attribute_instance_android.cc",
       "android/attribute_instance_android.h",
       "android/attribute_type_android.cc",
