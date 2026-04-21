@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module system [system] {
+  textual header "../system/string"
+  textual header "../sysroot/usr/include/valid"
+  private textual header "../sysroot/usr/include/private"
+}
+
+module "//tests:strict_deps_test_Private" {
+  use "//:impl_dep"
+  use "//direct:direct"
+  use "//tests:strict_deps_test"
+  use system
+}
+
+module "//tests:strict_deps_test" {
+  textual header "strict_deps_test.h"
+  use "//direct:direct"
+  use system
+}
+
+module "//:impl_dep" {
+  textual header "impl_dep.h"
+}
+
+module "//direct:direct" {
+  textual header "direct.h"
+  use "//tests:indirect"
+}
+
+module "//tests:indirect" {
+  textual header "indirect.h"
+}

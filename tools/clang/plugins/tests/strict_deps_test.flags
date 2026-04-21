@@ -1,0 +1,3 @@
+-fmodule-name=//tests:strict_deps_test_Private -fmodule-map-file=strict_deps_test/module.modulemap
+-fmodules-strict-decluse -Wprivate-header
+--sysroot=sysroot -Istrict_deps_test -isystem sysroot/usr/include
