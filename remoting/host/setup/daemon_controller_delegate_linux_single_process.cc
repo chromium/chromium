@@ -276,6 +276,10 @@ bool DaemonControllerDelegateLinuxSingleProcess::is_privileged() const {
   return true;
 }
 
+bool DaemonControllerDelegateLinuxSingleProcess::is_multi_process() const {
+  return false;
+}
+
 void DaemonControllerDelegateLinuxSingleProcess::set_start_host_after_setup(
     bool start_host) {
   start_host_after_setup = start_host;

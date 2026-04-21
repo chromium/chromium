@@ -37,6 +37,7 @@ class DaemonControllerDelegateLinuxMultiProcess
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
   bool is_privileged() const override;
+  bool is_multi_process() const override;
 };
 
 }  // namespace remoting

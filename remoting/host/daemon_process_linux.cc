@@ -221,9 +221,9 @@ bool DaemonProcessLinux::SetupPairingRegistry() {
     return false;
   }
 
-  // Set permissions to 700.
-  if (!base::SetPosixFilePermissions(pairing_dir,
-                                     base::FILE_PERMISSION_USER_MASK)) {
+  // Set permissions to 755 to allow any users to read the unprivileged pairing
+  // files.
+  if (!base::SetPosixFilePermissions(pairing_dir, 0755)) {
     LOG(ERROR) << "Failed to set permissions on pairing registry directory";
     return false;
   }

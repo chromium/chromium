@@ -150,6 +150,11 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
     // the daemon. Note that read-only operations such as GetState() are always
     // unprivileged.
     virtual bool is_privileged() const = 0;
+
+#if BUILDFLAG(IS_LINUX)
+    // Returns true if the host has a multi-process architecture.
+    virtual bool is_multi_process() const = 0;
+#endif
   };
 
 #if BUILDFLAG(IS_LINUX)
@@ -232,6 +237,11 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // the daemon. Note that read-only operations such as GetState() are always
   // unprivileged.
   bool is_privileged() const;
+
+#if BUILDFLAG(IS_LINUX)
+  // Returns true if the host has a multi-process architecture.
+  bool is_multi_process() const;
+#endif
 
  private:
   friend class base::RefCountedThreadSafe<DaemonController>;

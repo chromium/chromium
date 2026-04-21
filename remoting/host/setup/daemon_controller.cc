@@ -63,6 +63,12 @@ bool DaemonController::is_privileged() const {
   return delegate_->is_privileged();
 }
 
+#if BUILDFLAG(IS_LINUX)
+bool DaemonController::is_multi_process() const {
+  return delegate_->is_multi_process();
+}
+#endif
+
 DaemonController::State DaemonController::GetState() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   return delegate_->GetState();

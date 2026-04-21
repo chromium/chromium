@@ -183,6 +183,9 @@ class MockDaemonControllerDelegate : public DaemonController::Delegate {
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
   bool is_privileged() const override;
+#if BUILDFLAG(IS_LINUX)
+  bool is_multi_process() const override;
+#endif
 };
 
 MockDaemonControllerDelegate::MockDaemonControllerDelegate() = default;
@@ -242,6 +245,12 @@ MockDaemonControllerDelegate::GetUsageStatsConsent() {
 bool MockDaemonControllerDelegate::is_privileged() const {
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool MockDaemonControllerDelegate::is_multi_process() const {
+  return false;
+}
+#endif
 
 class Me2MeNativeMessagingHostTest : public testing::Test {
  public:

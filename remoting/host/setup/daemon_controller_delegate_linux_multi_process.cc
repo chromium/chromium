@@ -281,4 +281,8 @@ bool DaemonControllerDelegateLinuxMultiProcess::is_privileged() const {
   return getuid() == 0;  // Run as root.
 }
 
+bool DaemonControllerDelegateLinuxMultiProcess::is_multi_process() const {
+  return true;
+}
+
 }  // namespace remoting

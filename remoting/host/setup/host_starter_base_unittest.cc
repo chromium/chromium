@@ -70,6 +70,9 @@ class TestDaemonControllerDelegate : public DaemonController::Delegate {
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
   bool is_privileged() const override;
+#if BUILDFLAG(IS_LINUX)
+  bool is_multi_process() const override;
+#endif
 
   // Methods used for controlling behavior of the fake instance.
   void set_result_for_config_and_start(DaemonController::AsyncResult result) {
@@ -138,6 +141,12 @@ TestDaemonControllerDelegate::GetUsageStatsConsent() {
 bool TestDaemonControllerDelegate::is_privileged() const {
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool TestDaemonControllerDelegate::is_multi_process() const {
+  return false;
+}
+#endif
 
 class TestHostStarter : public HostStarterBase {
  public:

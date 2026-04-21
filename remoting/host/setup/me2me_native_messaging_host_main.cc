@@ -43,6 +43,8 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/base/crash/crash_reporting_crashpad.h"
+#include "remoting/base/file_path_util_linux.h"
+#include "remoting/host/pairing_registry_delegate_linux.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -266,9 +268,20 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   pairing_registry =
       new PairingRegistry(io_thread.task_runner(), std::move(delegate));
-#else   // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_LINUX)
+  if (daemon_controller->is_multi_process()) {
+    pairing_registry = base::MakeRefCounted<PairingRegistry>(
+        io_thread.task_runner(),
+        std::make_unique<PairingRegistryDelegateLinux>(
+            GetMultiProcessHostGlobalConfigDir().Append(
+                PairingRegistryDelegateLinux::kRegistryDirectory),
+            /*use_unprivileged_file=*/true));
+  } else {
+    pairing_registry = CreatePairingRegistry(io_thread.task_runner());
+  }
+#else  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
   pairing_registry = CreatePairingRegistry(io_thread.task_runner());
-#endif  // !BUILDFLAG(IS_WIN)
+#endif
 
   std::unique_ptr<NativeMessagingPipe> native_messaging_pipe(
       new NativeMessagingPipe());
