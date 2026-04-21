@@ -12,7 +12,9 @@ export function getHtml(this: IndigoImageReplacementAppElement) {
 <h1>$i18n{indigoTitle}</h1>
 
 ${this.showOverlay_ ? html`
-  <indigo-motion-overlay @motion-complete="${this.onMotionComplete_}">
+  <indigo-motion-overlay
+      .animationState="${this.overlayAnimationState_}"
+      @motion-complete="${this.onMotionComplete_}">
   </indigo-motion-overlay>
 ` : ''}
 <!--_html_template_end_-->`;

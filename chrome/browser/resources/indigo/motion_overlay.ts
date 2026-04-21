@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './motion_overlay.css.js';
 import {getHtml} from './motion_overlay.html.js';
 
-const EXIT_ANIMATION_DELAY_MS: number = 8000;
 const LOADING_CIRCLES_START_DELAY_MS: number = 1300;
 const FINISHED_TIMEOUT_MS: number = 2000;
 
@@ -36,7 +36,7 @@ export class IndigoMotionOverlayElement extends CrLitElement {
 
   static override get properties() {
     return {
-      animationState_: {
+      animationState: {
         type: String,
         reflect: true,
         attribute: 'animation-state',
@@ -49,45 +49,29 @@ export class IndigoMotionOverlayElement extends CrLitElement {
     };
   }
 
-  protected accessor animationState_: 'entry'|'exit'|'none' = 'none';
+  accessor animationState: 'entry'|'exit'|'none' = 'none';
   protected accessor showLoadingCircles_: boolean = false;
-
   private loadingTimeout_: number|null = null;
 
-  override firstUpdated() {
-    this.startTransitionAnimation_();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('animationState')) {
+      const oldState = changedProperties.get('animationState') as string;
+      const newState = this.animationState;
+
+      if (newState === 'entry' && oldState !== 'entry') {
+        this.startTransitionAnimation_();
+      } else if (newState === 'exit' && oldState !== 'exit') {
+        this.startExitAnimation_();
+      }
+    }
   }
 
   private startTransitionAnimation_() {
     this.calculateDimensions_();
-
-    this.animationState_ = 'entry';
     this.loadingTimeout_ = window.setTimeout(() => {
       this.showLoadingCircles_ = true;
     }, LOADING_CIRCLES_START_DELAY_MS);
-
-    // TODO(b/486887445): Remove the hardcoded duration once there is a way
-    // to receive the transformed image.
-    window.setTimeout(() => {
-      this.startExitAnimation_();
-    }, EXIT_ANIMATION_DELAY_MS);
-  }
-
-  private calculateDimensions_() {
-    const rect = this.getBoundingClientRect();
-    const w = rect.width || window.innerWidth;
-    const h = rect.height || window.innerHeight;
-    const diagonal = Math.sqrt(w * w + h * h);
-
-    const majorAxis = diagonal * 4;
-    const minorAxis = majorAxis * 0.7;
-    const borderWidth = (h + w) / 4;
-    const gap = h * 0.7;
-
-    this.style.setProperty('--major-axis', `${majorAxis}px`);
-    this.style.setProperty('--minor-axis', `${minorAxis}px`);
-    this.style.setProperty('--border-width', `${borderWidth}px`);
-    this.style.setProperty('--gap', `${gap}px`);
   }
 
   private startExitAnimation_() {
@@ -109,12 +93,27 @@ export class IndigoMotionOverlayElement extends CrLitElement {
     }
 
     this.showLoadingCircles_ = false;
-    this.animationState_ = 'exit';
 
     window.setTimeout(() => {
-      this.animationState_ = 'none';
       this.fire('motion-complete');
     }, FINISHED_TIMEOUT_MS);
+  }
+
+  private calculateDimensions_() {
+    const rect = this.getBoundingClientRect();
+    const w = rect.width || window.innerWidth;
+    const h = rect.height || window.innerHeight;
+    const diagonal = Math.sqrt(w * w + h * h);
+
+    const majorAxis = diagonal * 4;
+    const minorAxis = majorAxis * 0.7;
+    const borderWidth = (h + w) / 4;
+    const gap = h * 0.7;
+
+    this.style.setProperty('--major-axis', `${majorAxis}px`);
+    this.style.setProperty('--minor-axis', `${minorAxis}px`);
+    this.style.setProperty('--border-width', `${borderWidth}px`);
+    this.style.setProperty('--gap', `${gap}px`);
   }
 }
 
