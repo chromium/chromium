@@ -81,7 +81,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_Running() {
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.ACTING);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.ACTING, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -118,7 +119,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_Paused() {
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.PAUSED_BY_USER);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.PAUSED_BY_USER, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -155,7 +157,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_WaitingOnUser() {
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.WAITING_ON_USER, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -192,7 +195,8 @@ public class ActorNotificationFactoryTest {
         when(mServiceController.createTrustedBringTabToFrontIntent(mTask)).thenReturn(mockIntent);
 
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.WAITING_ON_USER, /* isSilent= */ false);
 
         verify(mServiceController, atLeastOnce()).createTrustedBringTabToFrontIntent(mTask);
         Notification notification = wrapper.getNotification();
@@ -210,7 +214,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_Complete() {
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.FINISHED);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.FINISHED, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -246,7 +251,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_Reflecting() {
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.REFLECTING);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.REFLECTING, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -265,7 +271,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_PausedByActor() {
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.PAUSED_BY_ACTOR);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.PAUSED_BY_ACTOR, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -285,7 +292,8 @@ public class ActorNotificationFactoryTest {
     public void testBuildNotification_Interrupted() {
         // Use an unhandled state to trigger the fallback
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.FAILED);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.FAILED, /* isSilent= */ false);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -315,7 +323,8 @@ public class ActorNotificationFactoryTest {
         when(mServiceController.createTrustedBringTabToFrontIntent(mTask)).thenReturn(null);
 
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.ACTING);
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.ACTING, /* isSilent= */ false);
 
         Notification notification = wrapper.getNotification();
         // Acting notification normally has 2 actions: View and Pause.
@@ -335,27 +344,10 @@ public class ActorNotificationFactoryTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
-        assertFalse("Notification should not be silent in background", wrapper.isSilent());
-    }
+                ActorNotificationFactory.buildNotification(
+                        mTask, ActorTaskState.ACTING, /* isSilent= */ true);
 
-    @Test
-    public void testBuildNotification_Silencing_Foreground() {
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
-        when(mActivity.isInPictureInPictureMode()).thenReturn(false);
-
-        NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
-        assertTrue("Notification should be silent in foreground", wrapper.isSilent());
-    }
-
-    @Test
-    public void testBuildNotification_Silencing_PiP() {
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
-        when(mActivity.isInPictureInPictureMode()).thenReturn(true);
-
-        NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
-        assertFalse("Notification should not be silent in PiP", wrapper.isSilent());
+        assertNotNull("Notification wrapper should not be null", wrapper);
+        assertTrue("Notification should be silent", wrapper.isSilent());
     }
 }

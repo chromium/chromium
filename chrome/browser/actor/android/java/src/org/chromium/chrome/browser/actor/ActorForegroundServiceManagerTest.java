@@ -80,7 +80,8 @@ public class ActorForegroundServiceManagerTest {
         when(mKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mTask));
         when(mKeyedService.getCurrentActiveTask()).thenReturn(mTask);
-        when(mNotificationService.getForegroundNotification(any())).thenReturn(mNotification);
+        when(mNotificationService.getForegroundNotification(any(), anyBoolean()))
+                .thenReturn(mNotification);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
 

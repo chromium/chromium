@@ -139,7 +139,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     @Override
     public void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
         if (mNotificationService == null || mKeyedService == null) return;
-        mNotificationService.updateNotificationForTask(taskId, newState);
+        mNotificationService.updateNotificationForTask(
+                taskId, newState, isActivityVisibleForTask(taskId));
 
         // Any task that is not completed is considered active for the foreground service.
         if (!isCompletedState(newState)) {
@@ -148,6 +149,16 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mActiveTaskIds.remove(taskId);
         }
         processTaskUpdateQueue();
+    }
+
+    /**
+     * Returns true if there is a visible Chrome activity that has one of the tabs, the given task
+     * is acting on.
+     */
+    public boolean isActivityVisibleForTask(int taskId) {
+        if (mNotificationService == null) return false;
+        ActorTask task = mNotificationService.getTask(taskId);
+        return task != null && mServiceController.isActivityVisibleForTabs(task.getTabs());
     }
 
     private boolean isCompletedState(@ActorTaskState int state) {
@@ -193,7 +204,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             if (currentTask != null) {
                 int notificationId = currentTask.getId();
                 Notification notification =
-                        mNotificationService.getForegroundNotification(currentTask);
+                        mNotificationService.getForegroundNotification(
+                                currentTask, isActivityVisibleForTask(notificationId));
 
                 startOrUpdateForegroundService(notificationId, notification);
             }
@@ -202,7 +214,9 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             // (e.g. Success/Failed status) before we wait to stop it.
             if (mPinnedNotificationId != INVALID_NOTIFICATION_ID) {
                 Notification notification =
-                        mNotificationService.getCachedNotification(mPinnedNotificationId);
+                        mNotificationService.getCachedNotification(
+                                mPinnedNotificationId,
+                                isActivityVisibleForTask(mPinnedNotificationId));
                 if (notification != null) {
                     startOrUpdateForegroundService(mPinnedNotificationId, notification);
                 }

@@ -29,10 +29,16 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 
 import java.util.Collections;
 
@@ -46,6 +52,10 @@ public class ActorForegroundServiceControllerImplTest {
     @Mock private ActorForegroundServiceImpl.LocalBinder mBinder;
     @Mock private Notification mNotification;
     @Mock private ActorTask mActorTask;
+    @Mock private AsyncInitializationActivity mChromeActivity;
+    @Mock private SettingsActivity mSettingsActivity;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab;
 
     private ActorForegroundServiceControllerImpl mController;
     private ShadowApplication mShadowApplication;
@@ -55,6 +65,9 @@ public class ActorForegroundServiceControllerImplTest {
         mController = new ActorForegroundServiceControllerImpl();
         mShadowApplication = shadowOf(RuntimeEnvironment.getApplication());
         when(mBinder.getService()).thenReturn(mServiceImpl);
+        ApplicationStatus.destroyForJUnitTests();
+        ApplicationStatus.initialize(RuntimeEnvironment.getApplication());
+        TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
     }
 
     @Test
@@ -162,5 +175,55 @@ public class ActorForegroundServiceControllerImplTest {
                 "Intent should have the correct taskId.",
                 taskId,
                 intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoActivities() {
+        assertFalse(mController.isActivityVisibleForTabs(Collections.emptySet()));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_WithTabs_SilencesWhenTabInActivity() {
+        int tabId = 123;
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+        when(mTabModelSelector.getTabById(tabId)).thenReturn(mTab);
+
+        assertTrue(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_WithTabs_NoSilenceWhenTabNotInActivity() {
+        int tabId = 123;
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        when(mTabModelSelector.getTabById(tabId)).thenReturn(null);
+
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoSilenceWhenInPiP() {
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        when(mChromeActivity.isInPictureInPictureMode()).thenReturn(true);
+
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoSilenceWhenInIncognito() {
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_SettingsActivity_NotVisible() {
+        ApplicationStatus.onStateChangeForTesting(mSettingsActivity, ActivityState.CREATED);
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    public ServiceConnection getServiceConnectionForTesting() {
+        return mController.getServiceConnectionForTesting();
     }
 }

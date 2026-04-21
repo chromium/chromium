@@ -10,6 +10,8 @@ import android.content.Intent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Set;
+
 /** No-op implementation of {@link ActorForegroundServiceController}. */
 @NullMarked
 public class NoOpActorForegroundServiceController implements ActorForegroundServiceController {
@@ -48,5 +50,10 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
     @Override
     public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {
         return null;
+    }
+
+    @Override
+    public boolean isActivityVisibleForTabs(Set<Integer> tabIds) {
+        return false;
     }
 }

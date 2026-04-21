@@ -1,10 +1,8 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.chrome.browser.actor;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,8 +10,6 @@ import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApplicationState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,6 +25,9 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Builds all types of notifications for Actor tasks. */
 @NullMarked
 public class ActorNotificationFactory {
@@ -43,7 +42,7 @@ public class ActorNotificationFactory {
         NotificationCategory.SUCCESS,
         NotificationCategory.INTERRUPTED
     })
-    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE)
+    @Retention(RetentionPolicy.SOURCE)
     private @interface NotificationCategory {
         int RUNNING = 0;
         int PAUSED = 1;
@@ -57,13 +56,13 @@ public class ActorNotificationFactory {
      *
      * @param task The {@link ActorTask} to build the notification for.
      * @param state The {@link ActorTaskState} of the task.
+     * @param isSilent Whether the notification should be silent.
      * @return The built {@link NotificationWrapper}.
      */
-    public static NotificationWrapper buildNotification(ActorTask task, @ActorTaskState int state) {
+    public static NotificationWrapper buildNotification(
+            ActorTask task, @ActorTaskState int state, boolean isSilent) {
         int notificationId = task.getId();
         Context context = ContextUtils.getApplicationContext();
-        boolean isSilent = shouldSilenceNotifications();
-
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.ACTOR,
@@ -76,7 +75,9 @@ public class ActorNotificationFactory {
                         .setLocalOnly(true)
                         .setSilent(isSilent);
 
-        if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
+        if (state == ActorTaskState.ACTING
+                || state == ActorTaskState.REFLECTING
+                || state == ActorTaskState.CREATED) {
             return buildRunningNotification(builder, context, task, notificationId);
         } else if (state == ActorTaskState.PAUSED_BY_ACTOR
                 || state == ActorTaskState.PAUSED_BY_USER) {
@@ -88,17 +89,6 @@ public class ActorNotificationFactory {
         } else {
             return buildInterruptedNotification(builder, context, task, notificationId);
         }
-    }
-
-    private static boolean shouldSilenceNotifications() {
-        // TODO(crbug.com/494093802): Behavior for the WORKING state notification
-        // visibility will need to be changed.
-        boolean isForeground =
-                ApplicationStatus.getStateForApplication()
-                        == ApplicationState.HAS_RUNNING_ACTIVITIES;
-        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        boolean isPiP = activity != null && activity.isInPictureInPictureMode();
-        return isForeground && !isPiP;
     }
 
     /**
@@ -114,7 +104,9 @@ public class ActorNotificationFactory {
     }
 
     private static @NotificationCategory int getNotificationCategory(@ActorTaskState int state) {
-        if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
+        if (state == ActorTaskState.ACTING
+                || state == ActorTaskState.REFLECTING
+                || state == ActorTaskState.CREATED) {
             return NotificationCategory.RUNNING;
         }
         if (state == ActorTaskState.PAUSED_BY_ACTOR || state == ActorTaskState.PAUSED_BY_USER) {

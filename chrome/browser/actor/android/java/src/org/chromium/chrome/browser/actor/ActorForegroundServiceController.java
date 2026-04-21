@@ -12,6 +12,8 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Set;
+
 /**
  * Interface for controlling the ActorForegroundService lifecycle and interaction from the browser
  * layer.
@@ -56,6 +58,12 @@ public interface ActorForegroundServiceController {
      * @return Created Intent.
      */
     @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task);
+
+    /**
+     * Returns true if there is a visible Chrome activity that has one of the tabs, the given task
+     * is acting on.
+     */
+    boolean isActivityVisibleForTabs(Set<Integer> tabIds);
 
     /** Returns the singleton instance. */
     static ActorForegroundServiceController get() {
