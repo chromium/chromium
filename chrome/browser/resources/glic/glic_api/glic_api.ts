@@ -2907,7 +2907,6 @@ export enum FeatureMode {
   UNSPECIFIED = 0,
   IMAGE_GENERATION = 1,
   ACTUATION = 2,
-  BLUEDOG = 2,
 }
 
 ///////////////////////////////////////////////

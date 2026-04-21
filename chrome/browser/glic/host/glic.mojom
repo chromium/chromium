@@ -1653,7 +1653,6 @@ enum FeatureMode {
   [Default] kUnspecified = 0,
   kImageGeneration = 1,
   kActuation = 2,
-  kBluedog = 2,
 };
 
 // @generate glic_api
