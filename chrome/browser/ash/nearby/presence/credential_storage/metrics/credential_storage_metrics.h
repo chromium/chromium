@@ -12,7 +12,6 @@ namespace ash::nearby::presence::metrics {
 void RecordCredentialStorageInitializationResult(bool success);
 
 void RecordCredentialStorageLocalPublicInitializationResult(bool success);
-void RecordCredentialStorageRemotePublicInitializationResult(bool success);
 void RecordCredentialStoragePrivateInitializationResult(bool success);
 
 void RecordCredentialStorageLocalPublicDatabaseInitializationDuration(

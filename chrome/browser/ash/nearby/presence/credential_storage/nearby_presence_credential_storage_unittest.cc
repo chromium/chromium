@@ -427,10 +427,6 @@ TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_Successful) {
       "Nearby.Presence.Credentials.Storage."
       "LocalPublicDatabaseInitializationResult",
       /*bucket: success=*/true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Nearby.Presence.Credentials.Storage."
-      "RemotePublicDatabaseInitializationResult",
-      /*bucket: success=*/true, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, InitializeDatabases_PrivateFails) {
@@ -492,10 +488,6 @@ TEST_F(NearbyPresenceCredentialStorageTest,
       "Nearby.Presence.Credentials.Storage."
       "LocalPublicDatabaseInitializationResult",
       /*bucket: success=*/true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Nearby.Presence.Credentials.Storage."
-      "RemotePublicDatabaseInitializationResult",
-      /*bucket: success=*/false, 1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {

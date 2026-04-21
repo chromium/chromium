@@ -474,16 +474,11 @@ void NearbyPresenceCredentialStorage::OnRemotePublicDatabaseInitialized(
     leveldb_proto::Enums::InitStatus remote_public_db_initialization_status) {
   if (remote_public_db_initialization_status ==
       leveldb_proto::Enums::InitStatus::kOK) {
-    metrics::RecordCredentialStorageRemotePublicInitializationResult(
-        /*success=*/true);
-
     base::TimeDelta initialization_duration =
         base::TimeTicks::Now() - initialization_start_time;
     metrics::RecordCredentialStorageRemotePublicDatabaseInitializationDuration(
         initialization_duration);
   } else {
-    metrics::RecordCredentialStorageRemotePublicInitializationResult(
-        /*success=*/false);
     LOG(ERROR) << __func__
                << ": failed to initialize remote public credential database "
                   "with initialization status: "

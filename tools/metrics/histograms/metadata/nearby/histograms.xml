@@ -1004,20 +1004,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Nearby.Presence.Credentials.Storage.RemotePublicDatabaseInitializationResult"
-    enum="BooleanSuccess" expires_after="M136">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Obsolete metric, the effort associated with this metric is de-prioritized.
-
-    Records the result of an initialization attempt of the remote public
-    credential database in the Nearby Presence Credential Storage component.
-    Emitted after an initialization attempt completes.
-  </summary>
-</histogram>
-
-<histogram
     name="Nearby.Presence.Credentials.Storage.RemoteSharedCredentials.Count"
     units="count" expires_after="M136">
   <owner>hansberry@chromium.org</owner>

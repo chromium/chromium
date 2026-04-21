@@ -20,13 +20,6 @@ void RecordCredentialStorageLocalPublicInitializationResult(bool success) {
       success);
 }
 
-void RecordCredentialStorageRemotePublicInitializationResult(bool success) {
-  base::UmaHistogramBoolean(
-      "Nearby.Presence.Credentials.Storage."
-      "RemotePublicDatabaseInitializationResult",
-      success);
-}
-
 void RecordCredentialStoragePrivateInitializationResult(bool success) {
   base::UmaHistogramBoolean(
       "Nearby.Presence.Credentials.Storage.PrivateDatabaseInitializationResult",
