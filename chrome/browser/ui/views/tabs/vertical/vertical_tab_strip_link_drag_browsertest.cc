@@ -8,6 +8,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -26,8 +27,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
-#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view_utils.h"
 
@@ -438,4 +439,35 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest,
     ASSERT_TRUE(drop_index.has_value());
     EXPECT_EQ(drop_index->index, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, ExpandOnHoverOnLinkDrag) {
+  // Set up collapsed vertical tab strip with expand on hover enabled.
+  VerticalTabStripRegionView* view = region_view();
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetExpandOnHoverEnabled(true);
+  tabs::VerticalTabStripStateController::From(browser())->RequestCollapse(true);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tabs::VerticalTabStripStateController::From(browser())
+        ->IsCollapsed();
+  }));
+
+  // Simulate a drag update by calling HandleDragUpdate directly.
+  BrowserRootView::DropIndex index;
+  index.index = 0;
+  index.relative_to_index =
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+  view->HandleDragUpdate(index);
+
+  // Verify that the tab strip enters the expand on hover state.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return view->is_expanded_on_hover(); }));
+
+  // Simulate drag exit.
+  view->HandleDragExited();
+
+  // Verify that the tab strip exits the expand on hover state.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !view->is_expanded_on_hover(); }));
 }

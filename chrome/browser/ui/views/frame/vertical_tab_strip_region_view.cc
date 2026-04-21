@@ -401,6 +401,12 @@ void VerticalTabStripRegionView::Layout(PassKey) {
                                         0, resize_area_width_,
                                         bounds().height()));
   shadow_frame_->SetBoundsRect(GetLocalBounds());
+
+  // Ensure that we update the drop arrow position so that it does not render in
+  // the collapsed state when expand on hover is active.
+  if (drop_arrow_) {
+    drop_arrow_->SetIndex(drop_arrow_->index());
+  }
 }
 
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
@@ -808,10 +814,17 @@ VerticalTabStripRegionView::GetExpandOnHoverLock(
 void VerticalTabStripRegionView::HandleDragUpdate(
     const std::optional<BrowserRootView::DropIndex>& index) {
   SetLinkDropArrow(index);
+  UpdateExpandOnHoverState(true);
+  if (is_expanded_on_hover_ && !link_drag_lock_) {
+    link_drag_lock_ =
+        GetExpandOnHoverLock(ExpandOnHoverLockType::kKeepExpanded);
+  }
 }
 
 void VerticalTabStripRegionView::HandleDragExited() {
   SetLinkDropArrow(std::nullopt);
+  link_drag_lock_.reset();
+  UpdateExpandOnHoverState(false);
 }
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,
