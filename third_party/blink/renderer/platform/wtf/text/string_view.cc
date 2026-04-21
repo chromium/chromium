@@ -66,7 +66,7 @@ StringView::~StringView() {
 
 // Helper to write a three-byte UTF-8 code point to the buffer, caller must
 // check room is available.
-static inline void PutUTF8Triple(base::span<uint8_t, 3u> buffer, UChar ch) {
+static inline void PutUtf8Triple(base::span<uint8_t, 3u> buffer, UChar ch) {
   DCHECK_GE(ch, 0x0800);
   buffer[0] = ((ch >> 12) & 0x0F) | 0xE0;
   buffer[1] = ((ch >> 6) & 0x3F) | 0x80;
@@ -122,7 +122,7 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
           DCHECK_LE(characters[result.consumed], 0xDFFF);
           // There should be room left, since one UChar hasn't been
           // converted.
-          PutUTF8Triple(buffer.take_first<3u>(), uchar::kReplacementCharacter);
+          PutUtf8Triple(buffer.take_first<3u>(), uchar::kReplacementCharacter);
           result.consumed++;
         }
         characters = characters.subspan(result.consumed);
@@ -158,7 +158,7 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
         // There should be room left, since one UChar hasn't been
         // converted.
         auto unpaired_surrogate_buffer = buffer.first<3u>();
-        PutUTF8Triple(unpaired_surrogate_buffer, characters[result.consumed]);
+        PutUtf8Triple(unpaired_surrogate_buffer, characters[result.consumed]);
         buffer_written = unpaired_surrogate_buffer.size();
       }
       buffer_written += result.converted.size();

@@ -12,9 +12,9 @@
 
 namespace blink::unicode {
 
-class UTF8PerfTest : public testing::Test {};
+class Utf8PerfTest : public testing::Test {};
 
-TEST_F(UTF8PerfTest, ConvertUtf16ToUtf8_ASCII) {
+TEST_F(Utf8PerfTest, ConvertUtf16ToUtf8_Ascii) {
   const int kSize = 10000;
   const int kNumIterations = 100000;
 
@@ -31,10 +31,10 @@ TEST_F(UTF8PerfTest, ConvertUtf16ToUtf8_ASCII) {
   }
   base::TimeTicks end = base::TimeTicks::Now();
   double time_per_op = (end - start).InMicrosecondsF() / kNumIterations;
-  LOG(INFO) << "ConvertUtf16ToUtf8_ASCII (10k): " << time_per_op << " us/op";
+  LOG(INFO) << "ConvertUtf16ToUtf8_Ascii (10k): " << time_per_op << " us/op";
 }
 
-TEST_F(UTF8PerfTest, ConvertUtf16ToUtf8_NonASCII) {
+TEST_F(Utf8PerfTest, ConvertUtf16ToUtf8_NonAscii) {
   const int kSize = 10000;
   const int kNumIterations = 100000;
 
@@ -51,10 +51,10 @@ TEST_F(UTF8PerfTest, ConvertUtf16ToUtf8_NonASCII) {
   }
   base::TimeTicks end = base::TimeTicks::Now();
   double time_per_op = (end - start).InMicrosecondsF() / kNumIterations;
-  LOG(INFO) << "ConvertUtf16ToUtf8_NonASCII (10k): " << time_per_op << " us/op";
+  LOG(INFO) << "ConvertUtf16ToUtf8_NonAscii (10k): " << time_per_op << " us/op";
 }
 
-TEST_F(UTF8PerfTest, ConvertUtf16ToUtf8_Strict_NonASCII) {
+TEST_F(Utf8PerfTest, ConvertUtf16ToUtf8_Strict_NonAscii) {
   const int kSize = 10000;
   const int kNumIterations = 100000;
 
@@ -71,7 +71,7 @@ TEST_F(UTF8PerfTest, ConvertUtf16ToUtf8_Strict_NonASCII) {
   }
   base::TimeTicks end = base::TimeTicks::Now();
   double time_per_op = (end - start).InMicrosecondsF() / kNumIterations;
-  LOG(INFO) << "ConvertUtf16ToUtf8_Strict_NonASCII (10k): " << time_per_op
+  LOG(INFO) << "ConvertUtf16ToUtf8_Strict_NonAscii (10k): " << time_per_op
             << " us/op";
 }
 
