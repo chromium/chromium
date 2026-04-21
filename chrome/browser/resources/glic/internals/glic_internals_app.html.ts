@@ -165,6 +165,23 @@ export function getHtml(this: GlicInternalsAppElement) {
             `)}
           </select>
 
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <label>
+              <input type="checkbox" .checked="${this.invokeZssOverride_}"
+                  @change="${this.onInvokeZssOverrideChange_}">
+              ZSS Override
+            </label>
+          </div>
+          ${this.invokeZssOverride_ ? html`
+            <label for="invokeZssAdditionalContentInput">
+              ZSS Additional Content
+            </label>
+            <input id="invokeZssAdditionalContentInput"
+                .value="${this.invokeZssAdditionalContent_}"
+                @input="${this.onInvokeZssAdditionalContentInput_}">
+            </input>
+          ` : html``}
+
           <div style="display: flex; gap: 8px; align-items: center;">
             <label for="invokeSurfaceTypeSelect">Target Surface</label>
             <select id="invokeSurfaceTypeSelect"

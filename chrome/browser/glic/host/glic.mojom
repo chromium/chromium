@@ -275,6 +275,14 @@ enum AllowedInflightNavigation {
   kAll,
 };
 
+// @generate glic_api
+// Configuration to override the default ZSS behavior for the invocation,
+// only having an impact if ZSS would be shown for the invocation.
+struct ZssConfig {
+  // Additional content to inject into the body of the ZSS message.
+  string? additional_content;
+};
+
 // Configuration options for invoking Glic from the internals page.
 struct TriggerInvokeFromInternalsOptions {
   InvocationSource invocation_source;
@@ -283,6 +291,7 @@ struct TriggerInvokeFromInternalsOptions {
   InvokeConversationSelection conversation;
   FeatureMode? feature_mode;
   bool disable_zss;
+  ZssConfig? zss_config;
   string? skill_id;
   string? error_message;
   mojo_base.mojom.TimeDelta? timeout;
@@ -1633,14 +1642,6 @@ enum FeatureMode {
   kImageGeneration = 1,
   kActuation = 2,
   kBluedog = 2,
-};
-
-// @generate glic_api
-// Configuration to override the default ZSS behavior for the invocation,
-// only having an impact if ZSS would be shown for the invocation.
-struct ZssConfig {
-  // Additional content to inject into the body of the ZSS message.
-  string? additional_content;
 };
 
 // @generate glic_api

@@ -198,6 +198,10 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
 
   options.feature_mode = mojo_options->feature_mode;
   options.disable_zss = mojo_options->disable_zss;
+  if (mojo_options->zss_config) {
+    options.zss_config =
+        ZssConfig(mojo_options->zss_config->additional_content);
+  }
   options.skill_id = std::move(mojo_options->skill_id);
   options.error_message = std::move(mojo_options->error_message);
   options.timeout = mojo_options->timeout;
