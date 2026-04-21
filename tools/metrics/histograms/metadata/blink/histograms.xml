@@ -1262,6 +1262,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.DigitalCredentials.Create.HasTransientUserActivation"
+    enum="Boolean" expires_after="2026-09-05">
+  <owner>mamir@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether a create() request to the digital credentials API had
+    transient user activation at the time of the call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.DigitalCredentials.Get.HasTransientUserActivation"
+    enum="Boolean" expires_after="2026-09-05">
+  <owner>mamir@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether a get() request to the digital credentials API had transient
+    user activation at the time of the call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.DigitalIdentityRequest.InterstitialClosedReason"
     enum="DigitalIdentityInterstitialClosedReason" expires_after="2026-12-01">
   <owner>mamir@chromium.org</owner>

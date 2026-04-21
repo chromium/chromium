@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
@@ -269,9 +270,13 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  if (!LocalFrame::ConsumeTransientUserActivation(
-          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
-          UserActivationUpdateSource::kRenderer)) {
+  bool has_activation = LocalFrame::ConsumeTransientUserActivation(
+      To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
+      UserActivationUpdateSource::kRenderer);
+  base::UmaHistogramBoolean(
+      "Blink.DigitalCredentials.Get.HasTransientUserActivation",
+      has_activation);
+  if (!has_activation) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'digital-credentials-get' feature requires transient "
@@ -361,9 +366,13 @@ void CreateDigitalIdentityCredentialInExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  if (!LocalFrame::ConsumeTransientUserActivation(
-          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
-          UserActivationUpdateSource::kRenderer)) {
+  bool has_activation = LocalFrame::ConsumeTransientUserActivation(
+      To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
+      UserActivationUpdateSource::kRenderer);
+  base::UmaHistogramBoolean(
+      "Blink.DigitalCredentials.Create.HasTransientUserActivation",
+      has_activation);
+  if (!has_activation) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'digital-credentials-create' feature requires transient "

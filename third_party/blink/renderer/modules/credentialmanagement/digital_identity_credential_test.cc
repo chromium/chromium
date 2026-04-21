@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
@@ -337,6 +338,7 @@ TEST_F(DigitalIdentityCredentialTest,
 TEST_F(DigitalIdentityCredentialTest,
        IdentityDigitalCredentialGetConsumesUserActivation) {
   V8TestingScope context(::blink::KURL("https://example.test"));
+  base::HistogramTester histogram_tester;
 
   // Mock user activation to pass the transient activation check.
   LocalFrame::NotifyUserActivation(
@@ -371,6 +373,9 @@ TEST_F(DigitalIdentityCredentialTest,
 
   test::RunPendingTasks();
 
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DigitalCredentials.Get.HasTransientUserActivation", true, 1);
+
   // Activation should be consumed after the call.
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&context.GetFrame()));
 
@@ -382,6 +387,7 @@ TEST_F(DigitalIdentityCredentialTest,
 TEST_F(DigitalIdentityCredentialTest,
        IdentityDigitalCredentialGetFailsWithoutUserActivation) {
   V8TestingScope context(::blink::KURL("https://example.test"));
+  base::HistogramTester histogram_tester;
 
   // Ensure no user activation.
   ASSERT_FALSE(LocalFrame::HasTransientUserActivation(&context.GetFrame()));
@@ -399,6 +405,9 @@ TEST_F(DigitalIdentityCredentialTest,
 
   ScriptPromiseTester tester(script_state, resolver->Promise());
   tester.WaitUntilSettled();
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DigitalCredentials.Get.HasTransientUserActivation", false, 1);
 
   ASSERT_TRUE(tester.IsRejected());
   auto* dom_exception = V8DOMException::ToWrappable(script_state->GetIsolate(),
@@ -415,6 +424,7 @@ TEST_F(DigitalIdentityCredentialTest,
 TEST_F(DigitalIdentityCredentialTest,
        IdentityDigitalCredentialCreateConsumesUserActivation) {
   V8TestingScope context(::blink::KURL("https://example.test"));
+  base::HistogramTester histogram_tester;
 
   // Mock user activation to pass the transient activation check.
   LocalFrame::NotifyUserActivation(
@@ -448,6 +458,9 @@ TEST_F(DigitalIdentityCredentialTest,
 
   test::RunPendingTasks();
 
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DigitalCredentials.Create.HasTransientUserActivation", true, 1);
+
   // Activation should be consumed after the call.
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&context.GetFrame()));
 
@@ -459,6 +472,7 @@ TEST_F(DigitalIdentityCredentialTest,
 TEST_F(DigitalIdentityCredentialTest,
        IdentityDigitalCredentialCreateFailsWithoutUserActivation) {
   V8TestingScope context(::blink::KURL("https://example.test"));
+  base::HistogramTester histogram_tester;
 
   // Ensure no user activation.
   ASSERT_FALSE(LocalFrame::HasTransientUserActivation(&context.GetFrame()));
@@ -475,6 +489,9 @@ TEST_F(DigitalIdentityCredentialTest,
 
   ScriptPromiseTester tester(script_state, resolver->Promise());
   tester.WaitUntilSettled();
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DigitalCredentials.Create.HasTransientUserActivation", false, 1);
 
   ASSERT_TRUE(tester.IsRejected());
   auto* dom_exception = V8DOMException::ToWrappable(script_state->GetIsolate(),
