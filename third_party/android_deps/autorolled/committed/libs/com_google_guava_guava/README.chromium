@@ -1,7 +1,7 @@
 Name: Guava: Google Core Libraries for Java
 Short Name: guava
-URL: https://repo.maven.apache.org/maven2/com/google/guava/guava/33.5.0-jre/guava-33.5.0-jre.jar
-Version: 33.5.0-jre
+URL: https://repo.maven.apache.org/maven2/com/google/guava/guava/33.6.0-jre/guava-33.6.0-jre.jar
+Version: 33.6.0-jre
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

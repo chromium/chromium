@@ -1467,7 +1467,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-alpha10"
+        "version": "1.14.0-beta01"
     },
     {
         "name": "core-common",
@@ -1592,7 +1592,7 @@
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "33.5.0-jre"
+        "version": "33.6.0-jre"
     },
     {
         "name": "listenablefuture",
@@ -1982,27 +1982,27 @@
     {
         "name": "kotlinx-coroutines-android",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.2"
+        "version": "1.11.0-rc01"
     },
     {
         "name": "kotlinx-coroutines-bom",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.2"
+        "version": "1.11.0-rc01"
     },
     {
         "name": "kotlinx-coroutines-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.2"
+        "version": "1.11.0-rc01"
     },
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.2"
+        "version": "1.11.0-rc01"
     },
     {
         "name": "kotlinx-coroutines-guava",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.2"
+        "version": "1.11.0-rc01"
     },
     {
         "name": "kotlinx-coroutines-play-services",

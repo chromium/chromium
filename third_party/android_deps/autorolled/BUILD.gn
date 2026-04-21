@@ -2058,7 +2058,6 @@ template("define_autorolled_targets") {
         ":*",
         "//third_party/androidx:*",
       ]
-      testonly = true
       deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java" ]
     }
 
@@ -2076,7 +2075,6 @@ template("define_autorolled_targets") {
         ":*",
         "//third_party/androidx:*",
       ]
-      testonly = true
       deps = [
         "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
