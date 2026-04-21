@@ -58,7 +58,7 @@ class MockAddressDataCleaner : public AddressDataCleaner {
   using AddressDataCleaner::AddressDataCleaner;
   MOCK_METHOD(void,
               ApplyDeduplicationRoutine,
-              (const std::vector<AutofillProfile>&),
+              (std::vector<ProfileWithAction>&),
               (override));
 };
 

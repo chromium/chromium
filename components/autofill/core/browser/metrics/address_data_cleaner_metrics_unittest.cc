@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,14 +21,15 @@ TEST(AddressDataCleanerMetricsTest,
   // Create profiles with different country codes.
   // 2 profiles from the US, 1 from CA, 1 from PL and 3 with missing country
   // code ("").
-  std::vector<AutofillProfile> profiles = {
-      AutofillProfile(AddressCountryCode("US")),
-      AutofillProfile(AddressCountryCode("US")),
-      AutofillProfile(AddressCountryCode("CA")),
-      AutofillProfile(AddressCountryCode("PL")),
-      AutofillProfile(AddressCountryCode("")),
-      AutofillProfile(AddressCountryCode("")),
-      AutofillProfile(AddressCountryCode(""))};
+  using ProfileWithAction = AddressDataCleaner::ProfileWithAction;
+  std::vector<AddressDataCleaner::ProfileWithAction> profiles = {
+      ProfileWithAction{AutofillProfile(AddressCountryCode("US"))},
+      ProfileWithAction{AutofillProfile(AddressCountryCode("US"))},
+      ProfileWithAction{AutofillProfile(AddressCountryCode("CA"))},
+      ProfileWithAction{AutofillProfile(AddressCountryCode("PL"))},
+      ProfileWithAction{AutofillProfile(AddressCountryCode(""))},
+      ProfileWithAction{AutofillProfile(AddressCountryCode(""))},
+      ProfileWithAction{AutofillProfile(AddressCountryCode(""))}};
 
   base::HistogramTester histogram_tester;
   autofill_metrics::LogNumberOfProfilesConsideredForDedupePerCountryCode(

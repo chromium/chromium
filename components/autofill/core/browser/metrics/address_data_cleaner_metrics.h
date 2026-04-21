@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 
 namespace autofill::autofill_metrics {
@@ -16,7 +17,7 @@ void LogNumberOfNamesMigratedDuringCleanup(size_t num_names);
 void LogNumberOfProfilesConsideredForDedupe(size_t num_considered);
 
 void LogNumberOfProfilesConsideredForDedupePerCountryCode(
-    const std::vector<AutofillProfile>& profiles);
+    const std::vector<AddressDataCleaner::ProfileWithAction>& profiles);
 
 void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed);
 

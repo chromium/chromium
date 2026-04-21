@@ -31,6 +31,15 @@ namespace autofill {
 class AddressDataCleaner : public AddressDataManager::Observer,
                            public syncer::SyncServiceObserver {
  public:
+  // Specifies the deferred database operation to execute for a given profile
+  // once all cleanup phases have finished.
+  enum class ProfileAction { kNone = 0, kUpdate = 1, kRemove = 2 };
+
+  struct ProfileWithAction {
+    AutofillProfile profile;
+    ProfileAction action = ProfileAction::kNone;
+  };
+
   AddressDataCleaner(
       AddressDataManager& address_data_manager,
       syncer::SyncService* sync_service,
@@ -70,20 +79,23 @@ class AddressDataCleaner : public AddressDataManager::Observer,
   friend class AddressDataCleanerTestApi;
 
   // Deduplicates the PDMs profiles, by merging profile pairs where one is a
-  // subset of the other. Account profiles are never deduplication.
-  // Virtual for testing.
+  // subset of the other. Account profiles are never deduplicated.
+  // Modifies `profiles` in place to reflect the merged data. Profiles to be
+  // removed are not deleted from the vector but are marked in
+  // `profiles_action`. Virtual for testing.
   virtual void ApplyDeduplicationRoutine(
-      const std::vector<AutofillProfile>& profiles);
+      std::vector<ProfileWithAction>& profiles);
 
   // Migrates the phonetic names that were stored in the regular name fields to
-  // alternative name fields.
+  // alternative name fields. Modifies `profiles` in place to reflect the
+  // migrated phonetic names.
   // TODO(crbug.com/359768803): Remove this method once the migration is done.
-  virtual void MigratePhoneticNames(
-      const std::vector<AutofillProfile>& profiles);
+  virtual void MarkProfilesForPhoneticNameMigration(
+      std::vector<ProfileWithAction>& profiles);
 
-  // Delete profiles from `profiles` that were unused for at least
-  // `kDisusedDataModelDeletionTimeDelta`.
-  void DeleteDisusedAddresses(const std::vector<AutofillProfile>& profiles);
+  // Mark profiles from `profiles` that were unused for at least
+  // `kDisusedDataModelDeletionTimeDelta` for deletion.
+  void MarkDisusedProfilesForDeletion(std::vector<ProfileWithAction>& profiles);
 
   // AddressDataManager::Observer
   void OnAddressDataChanged() override;
@@ -91,6 +103,10 @@ class AddressDataCleaner : public AddressDataManager::Observer,
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
+
+  // Iterates over `profiles` and executes the pending database
+  // operations (Update/Remove) through the AddressDataManager.
+  void ApplyProfileActions(const std::vector<ProfileWithAction>& profiles);
 
   // Used to ensure that cleanups are only performed once per profile startup.
   bool are_cleanups_pending_ = true;
