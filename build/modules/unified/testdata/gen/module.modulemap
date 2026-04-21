@@ -1,0 +1,12 @@
+module root {
+  requires gnuinlineasm, !systemz
+  header "../libc++/root.h"
+
+  module submodule {
+    requires arm64
+    requires x64, gnuinlineasm
+    header "../libc++/subdir/requires_unmet.h"
+  }
+  textual header "../libc++/textual.h"
+  private header "../libc++/private.h"
+}

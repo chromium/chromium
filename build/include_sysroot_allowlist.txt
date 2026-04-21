@@ -1,0 +1,29 @@
+# This is a list of files from the sysroot that are allowed to included from
+# chromium code.
+# Keep this list in sorted order.
+
+# Note that this is filtered to only headers that are actually present.
+# ie. If you add 'android/foo.h', it will silently ignore it on non-android
+# platforms.
+
+# go/keep-sorted start
+alloca.h
+assert.h
+avx512dqintrin.h
+endian.h
+features.h
+linux/limits.h
+locale.h
+pthread.h
+sched.h
+setjmp.h
+signal.h
+stdio.h
+strings.h
+sys/cdefs.h
+sys/select.h
+sys/types.h
+sys/ucontext.h
+time.h
+unistd.h
+# go/keep-sorted end

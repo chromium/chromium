@@ -1,0 +1,10 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef BUILD_MODULES_UNIFIED_TESTDATA_SYSROOT_USR_INCLUDE_NEVER_REFERENCED_H_
+#define BUILD_MODULES_UNIFIED_TESTDATA_SYSROOT_USR_INCLUDE_NEVER_REFERENCED_H_
+
+#error "This file is unable to be compiled"
+
+#endif  // BUILD_MODULES_UNIFIED_TESTDATA_SYSROOT_USR_INCLUDE_NEVER_REFERENCED_H_

@@ -1,0 +1,9 @@
+import("//testing/test.gni")
+
+script_test("generate_system_modulemap_test") {
+  script = "generate_system_modulemap_test.py"
+  data = [
+    "generate_system_modulemap.py",
+    "testdata/",
+  ]
+}

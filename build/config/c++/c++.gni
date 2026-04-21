@@ -50,9 +50,17 @@ declare_args() {
   # case.
   use_llvm_libatomic = !is_apple
 
+  # Unified modules controls whether we unify sysroot, libc++, and builtins
+  # into a single module.
+  use_unified_system_module = false
+
   # Whether to enable strict deps checks. This ensures that your dependencies
   # are correctly declared (no missing deps and no accessing transitive deps).
   enable_strict_deps = false
+}
+
+if (enable_strict_deps) {
+  assert(use_unified_system_module, "strict deps requires unified modules")
 }
 
 use_custom_libcxx =
@@ -127,7 +135,7 @@ if (is_android && export_libcxxabi_from_executables) {
   libcxx_is_shared = true
 }
 
-if (use_clang_modules) {
+if (use_clang_modules && !use_unified_system_module) {
   libcxx_prefix = "${root_build_dir}/gen/third_party/libc++/src"
   libcxx_modulemap =
       read_file("//third_party/libc++/src/include/module.modulemap.in",

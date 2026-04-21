@@ -62,7 +62,7 @@ modulemap_config("libcxx_modulemap") {
       "${root_build_dir}/gen/third_party/libc++/src/include/module.modulemap"
 }
 
-if (current_toolchain == default_toolchain) {
+if (current_toolchain == default_toolchain && !use_unified_system_module) {
   # The Clang modules build requires libc++ headers, __assertion_handler, and
   # __config_site to be in the same directory.
   #
@@ -104,7 +104,9 @@ if (current_toolchain == default_toolchain) {
 # TODO(https://crbug.com/440260716): This intermediate target can be removed
 # once Cronet's gn2bp supports copy targets with multiple outputs.
 group("headers") {
-  if (use_clang_modules) {
+  # Unified modules don't need to worry about the custom headers and libcxx
+  # headers being in the same directory, so don't need to copy them.
+  if (use_clang_modules && !use_unified_system_module) {
     deps = [
       ":copy_custom_headers($default_toolchain)",
       ":copy_libcxx_headers($default_toolchain)",

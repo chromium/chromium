@@ -58,5 +58,8 @@ build_dotfile_settings = {
     # And the files contained within are outside of our control since it's in
     # third_party.
     "//buildtools/third_party/libc++/libcxx_headers.gni",
+
+    # Requires the sysroot as input.
+    "//build/modules/unified/unified.gni",
   ]
 }
