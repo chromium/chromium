@@ -72,7 +72,13 @@ enum class AutofillAiAction {
   // Whether the user should see a promotion to allow Wallet to share data with
   // Chrome.
   kWalletDataSharingPromotion,
-  kMaxValue = kWalletDataSharingPromotion,
+  // When true autofill AI will offer personalized suggestions.
+  // TODO(crbug.com/503319530): Correctly implement this action, it is currently
+  // hardcoded to false.
+  kAccessibilityAnnotatorInfraAvailable,
+  // Returns true if the entity type supports accessibility annotation data.
+  kTypeSupportsAccessibilityAnnotatorData,
+  kMaxValue = kTypeSupportsAccessibilityAnnotatorData,
 };
 
 // Opt-in status for the AutofillAI feature.
@@ -102,7 +108,8 @@ enum class AutofillAiOptInStatus {
 // - Account state (sign-in status).
 // - Whether the `action` can be performed for the `entity_type`.
 //   `entity_type` is only considered to kFilling, kIphForOptIn, kImport,
-//   kImportToWallet and must be non-empty in these cases.
+//   kImportToWallet, kTypeSupportsAccessibilityAnnotatorData and must be
+//   non-empty in these cases.
 // - Miscellaneous state (OTR, locale, GeoIP).
 //
 // See go/forms-ai:permissions for more detail.

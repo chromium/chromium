@@ -190,6 +190,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kImportToWallet:
     case AutofillAiAction::kWalletDataSharingPromotion:
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
       return false;
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kListEntityInstancesInSettings:
@@ -259,9 +261,12 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
       return true;
     case AutofillAiAction::kEnableOrDisable:
       return is_enabled(features::kAutofillAiAvailableByDefault);
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+      return false;
   }
   NOTREACHED();
 }
@@ -289,6 +294,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kEnableOrDisable:
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
       return true;
   }
   NOTREACHED();
@@ -346,6 +353,25 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       return policy_pref_enabled && autofill_ai_available;
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
+      if (action == AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData) {
+        if (!entity_type) {
+          return false;
+        }
+        switch (entity_type->name()) {
+          case EntityTypeName::kPassport:
+          case EntityTypeName::kDriversLicense:
+          case EntityTypeName::kNationalIdCard:
+          case EntityTypeName::kFlightReservation:
+          case EntityTypeName::kShipment:
+          case EntityTypeName::kOrder:
+            break;
+          case EntityTypeName::kVehicle:
+          case EntityTypeName::kRedressNumber:
+          case EntityTypeName::kKnownTravelerNumber:
+            return false;
+        }
+      }
       if (!EntityTypeIsEnabledInSettings(*prefs, *entity_type)) {
         return false;
       }
@@ -387,6 +413,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kListEntityInstancesInSettings:
       return true;
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+      return false;
   }
   NOTREACHED();
 }
@@ -453,6 +481,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kWalletDataSharingPromotion:
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
       break;
   }
   return true;
@@ -481,7 +511,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kImportToWallet:
     case AutofillAiAction::kWalletDataSharingPromotion:
-    case AutofillAiAction::kServerClassificationModel: {
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData: {
       if (is_off_the_record) {
         MaybeOutputReason(debug_message, "Off the record.");
         return false;
@@ -514,6 +546,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
       break;
   }
 
@@ -545,6 +579,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
       break;
   }
 

@@ -76,6 +76,10 @@ std::string GetTestSuffix(
       return "kImportToWallet";
     case AutofillAiAction::kWalletDataSharingPromotion:
       return "kWalletDataSharingPromotion";
+    case AutofillAiAction::kAccessibilityAnnotatorInfraAvailable:
+      return "kAccessibilityAnnotatorInfraAvailable";
+    case AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData:
+      return "kTypeSupportsAccessibilityAnnotatorData";
   }
   NOTREACHED();
 }
@@ -245,7 +249,8 @@ TEST_P(AutofillAiMayPerformActionTest,
                 AutofillAiAction::kEditAndDeleteEntityInstanceInSettings,
                 AutofillAiAction::kFilling, AutofillAiAction::kImport,
                 AutofillAiAction::kListEntityInstancesInSettings,
-                AutofillAiAction::kUseCachedServerClassificationModelResults});
+                AutofillAiAction::kUseCachedServerClassificationModelResults,
+                AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
       kAllowedActions.contains(GetParam()));
@@ -282,7 +287,8 @@ TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
                 AutofillAiAction::kFilling, AutofillAiAction::kImport,
                 AutofillAiAction::kListEntityInstancesInSettings,
                 AutofillAiAction::kOptIn,
-                AutofillAiAction::kUseCachedServerClassificationModelResults});
+                AutofillAiAction::kUseCachedServerClassificationModelResults,
+                AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
       kAllowedActions.contains(GetParam()));
@@ -456,7 +462,6 @@ TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIp) {
   constexpr auto kForbiddenActions =
       DenseSet({AutofillAiAction::kIphForOptIn,
                 AutofillAiAction::kWalletDataSharingPromotion});
-
   client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
@@ -538,6 +543,21 @@ TEST_P(AutofillAiMayPerformActionTest,
       !kForbiddenActions.contains(GetParam()));
 }
 
+TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAccessibilityAnnotatorData) {
+  for (const EntityTypeName type : {kPassport, kDriversLicense, kNationalIdCard,
+                                    kFlightReservation, kShipment, kOrder}) {
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData,
+        EntityType(type)));
+  }
+  for (const EntityTypeName type :
+       {kVehicle, kRedressNumber, kKnownTravelerNumber}) {
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData,
+        EntityType(type)));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillAiMayPerformActionTest,
@@ -552,7 +572,8 @@ INSTANTIATE_TEST_SUITE_P(
            AutofillAiAction::kOptIn,
            AutofillAiAction::kServerClassificationModel,
            AutofillAiAction::kUseCachedServerClassificationModelResults,
-           AutofillAiAction::kWalletDataSharingPromotion),
+           AutofillAiAction::kWalletDataSharingPromotion,
+           AutofillAiAction::kTypeSupportsAccessibilityAnnotatorData),
     GetTestSuffix);
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
