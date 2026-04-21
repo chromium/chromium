@@ -21,6 +21,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.graphics.Region;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
@@ -485,13 +486,24 @@ public class WindowAndroid
      * Sets whether the window is occluded.
      *
      * @param isOccluded Whether the window is occluded.
+     * @param windowBounds The screen bounds of the window in absolute screen coordinates in pixels,
+     *     or null if unknown.
+     * @param visibleRegion The visible region of the window in absolute screen coordinates in
+     *     pixels, or null if unknown. The meaning of null changes depending on if isOccluded is
+     *     true or false. When isOccluded is true, a null region is interpreted as the window being
+     *     fully occluded. If isOccluded is false, a null region is interpreted as the window being
+     *     fully visible.
      */
-    public void setOccluded(boolean isOccluded) {
+    public void setOccluded(
+            boolean isOccluded, @Nullable Rect windowBounds, @Nullable Region visibleRegion) {
         assumeNonNull(sThreadChecker).assertOnValidThread();
         // If the Trusted Presentation API is already tracking occlusion, it takes precedence.
         if (!mOcclusionTrackingAllowed || shouldTrackOcclusionWithTrustedPresentationApi()) {
             return;
         }
+
+        // TODO(crbug.com/488882847) Use windowBounds and visibleRegion to record metrics.
+
         updateOcclusionState(isOccluded);
     }
 

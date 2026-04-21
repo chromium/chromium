@@ -37,6 +37,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.GraphicsMode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -55,6 +56,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
 @EnableFeatures({UiAndroidFeatures.ANDROID_USE_CORRECT_WINDOW_BOUNDS})
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class WindowAndroidTest {
 
     @Mock private final Context mContext = mock(Context.class);
@@ -185,9 +187,9 @@ public class WindowAndroidTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Window.OcclusionExperimental.Duration", 5000);
 
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
-        mWindowAndroid.setOccluded(false);
+        mWindowAndroid.setOccluded(false, null, null);
 
         histogramWatcher.assertExpected();
     }
@@ -201,7 +203,7 @@ public class WindowAndroidTest {
         WindowAndroid.postPeriodicMetricRunner();
 
         mWindowAndroid.setIsOcclusionTracked(true);
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -214,7 +216,7 @@ public class WindowAndroidTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Window.OcclusionExperimental.Duration", 5000);
 
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
         mWindowAndroid.destroy();
 
@@ -255,10 +257,10 @@ public class WindowAndroidTest {
     public void testOcclusionOptimizationsEnabled() {
         UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.setForTesting(true);
 
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
         assertTrue(mWindowAndroid.getOcclusionSupplier().get());
 
-        mWindowAndroid.setOccluded(false);
+        mWindowAndroid.setOccluded(false, null, null);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
     }
 
@@ -266,10 +268,10 @@ public class WindowAndroidTest {
     public void testOcclusionOptimizationsDisabled() {
         UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.setForTesting(false);
 
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
 
-        mWindowAndroid.setOccluded(false);
+        mWindowAndroid.setOccluded(false, null, null);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
     }
 
@@ -282,9 +284,9 @@ public class WindowAndroidTest {
         mWindowAndroid.setIsOcclusionTracked(true);
 
         ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(1));
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
         ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(4));
-        mWindowAndroid.setOccluded(false);
+        mWindowAndroid.setOccluded(false, null, null);
         ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(5));
 
         mWindowAndroid.destroy();
@@ -302,9 +304,9 @@ public class WindowAndroidTest {
         // Do not call setIsOcclusionTracked().
 
         ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(1));
-        mWindowAndroid.setOccluded(true);
+        mWindowAndroid.setOccluded(true, null, null);
         ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(4));
-        mWindowAndroid.setOccluded(false);
+        mWindowAndroid.setOccluded(false, null, null);
         ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(5));
 
         mWindowAndroid.destroy();

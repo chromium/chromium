@@ -22,9 +22,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Monitors the position, size, and z-order of Chrome windows for occlusion tracking. */
 @NullMarked
@@ -44,7 +42,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
                         .getValue();
 
         if (windowZOrderTracker == null) {
-            mWindowZOrderTracker = new WindowZOrderTracker(this::forwardOcclusionState);
+            mWindowZOrderTracker = new WindowZOrderTracker(this::calculateOcclusion);
         } else {
             mWindowZOrderTracker = windowZOrderTracker;
         }
@@ -102,14 +100,14 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
             // Calculate occlusion state here in case the window was removed for some reason that
             // didn't trigger a focus change or position update (such as a crash or kill).
-            forwardOcclusionState();
+            calculateOcclusion();
         }
     }
 
     // State listener callbacks.
     @Override
     public void onGlobalLayout() {
-        forwardOcclusionState();
+        calculateOcclusion();
     }
 
     // End of state listener callbacks.
@@ -119,36 +117,20 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         return window == null ? null : window.getDecorView();
     }
 
-    private void forwardOcclusionState() {
-        Map<ActivityWindowAndroid, Boolean> occlusionState = calculateOcclusion();
-
-        if (DEBUG_LOGGING) {
-            for (Map.Entry<ActivityWindowAndroid, Boolean> entry : occlusionState.entrySet()) {
-                Log.i(TAG, "Window: %s is occluded: %b", entry.getKey(), entry.getValue());
-            }
-        }
-
-        for (Map.Entry<ActivityWindowAndroid, Boolean> entry : occlusionState.entrySet()) {
-            entry.getKey().setOccluded(entry.getValue());
-        }
-    }
-
     @VisibleForTesting
-    Map<ActivityWindowAndroid, Boolean> calculateOcclusion() {
+    void calculateOcclusion() {
         final SparseArray<List<ActivityWindowAndroid>> zOrder =
                 mWindowZOrderTracker.getWindowZOrder();
-
-        Map<ActivityWindowAndroid, Boolean> occlusionState = new HashMap<>();
-        // Default to unoccluded for all windows. In the case of any error, the unoccluded state
-        // will be forwarded to the window.
-        for (ActivityWindowAndroid window : mWindowZOrderTracker.getAllWindowAndroids()) {
-            occlusionState.put(window, false);
-        }
 
         for (int i = 0; i < zOrder.size(); i++) {
             int displayId = zOrder.keyAt(i);
             List<ActivityWindowAndroid> windows = zOrder.valueAt(i);
-            if (windows.size() < 2) continue;
+            if (windows.size() < 2) {
+                if (windows.size() == 1) {
+                    windows.get(0).setOccluded(false, null, null);
+                }
+                continue;
+            }
 
             DisplayAndroid displayAndroid = windows.get(0).getDisplay();
             int displayWidth = displayAndroid.getDisplayWidth();
@@ -163,16 +145,12 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
                         displayHeight);
             }
 
-            calculateOcclusionForDisplay(windows, displayWidth, displayHeight, occlusionState);
+            calculateOcclusionForDisplay(windows, displayWidth, displayHeight);
         }
-        return occlusionState;
     }
 
     private void calculateOcclusionForDisplay(
-            List<ActivityWindowAndroid> windows,
-            int displayWidth,
-            int displayHeight,
-            Map<ActivityWindowAndroid, Boolean> occlusionState) {
+            List<ActivityWindowAndroid> windows, int displayWidth, int displayHeight) {
         Region cumulativeOccludedRegion = new Region();
         Region viewVisibleRegion = new Region();
 
@@ -181,6 +159,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             ActivityWindowAndroid window = windows.get(i);
             View view = getPrimaryView(window);
             if (view == null) {
+                window.setOccluded(false, null, null);
                 WindowOcclusionMetrics.recordCalculateResult(
                         WindowOcclusionMetrics.CalculateResult.VIEW_NOT_FOUND);
                 continue;
@@ -194,6 +173,9 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
                 // In case of an error, continue the calculation for subsequent windows. Since the
                 // occluded area is cumulative, any zero-sized view will not affect the correctness
                 // of the occlusion state for subsequent windows.
+                // Setting null for the bounds and visible region causes the window to be considered
+                // fully visible which is the safest fallback in this case.
+                window.setOccluded(false, null, null);
                 WindowOcclusionMetrics.recordCalculateResult(
                         WindowOcclusionMetrics.CalculateResult.VISIBLE_RECT_EMPTY);
                 continue;
@@ -204,13 +186,19 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
 
             if (cumulativeOccludedRegion.quickContains(viewScreenRect)) {
                 // The window is fully occluded.
-                occlusionState.put(window, true);
+                if (DEBUG_LOGGING) {
+                    Log.i(TAG, "Window: %s is occluded: true", window);
+                }
+                window.setOccluded(true, viewScreenRect, null);
                 continue;
             }
 
             if (cumulativeOccludedRegion.quickReject(viewScreenRect)) {
                 // The window does not overlap with the occluded region.
-                occlusionState.put(window, false);
+                if (DEBUG_LOGGING) {
+                    Log.i(TAG, "Window: %s is occluded: false", window);
+                }
+                window.setOccluded(false, viewScreenRect, null);
                 cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
                 continue;
             }
@@ -223,7 +211,11 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             // Add the view to the cumulative occluded region.
             cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
 
-            occlusionState.put(window, !isNoticeablyVisible(viewVisibleRegion));
+            boolean isOccluded = !isNoticeablyVisible(viewVisibleRegion);
+            if (DEBUG_LOGGING) {
+                Log.i(TAG, "Window: %s is occluded: %b", window, isOccluded);
+            }
+            window.setOccluded(isOccluded, viewScreenRect, viewVisibleRegion);
         }
     }
 
