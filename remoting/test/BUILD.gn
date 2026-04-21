@@ -70,20 +70,6 @@ static_library("test_support") {
 }
 
 if (enable_remoting_host && !is_android && !is_chromeos) {
-  static_library("fake_connection_event_logger") {
-    testonly = true
-
-    sources = [
-      "fake_connection_event_logger.cc",
-      "fake_connection_event_logger.h",
-    ]
-
-    deps = [
-      "//remoting/host:common",
-      "//remoting/protocol:test_support",
-    ]
-  }
-
   if (!is_win) {
     # A binary for starting an IT2ME host from command line.
     executable("it2me_cli_host") {
@@ -104,59 +90,6 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
         "//remoting/host:resources",
         "//remoting/host/it2me:common",
         "//remoting/host/native_messaging",
-      ]
-    }
-  }
-
-  static_library("it2me_standalone_host") {
-    testonly = true
-
-    sources = [
-      "it2me_standalone_host.cc",
-      "it2me_standalone_host.h",
-    ]
-
-    deps = [
-      ":fake_connection_event_logger",
-      "//base/test:test_support",
-      "//remoting/base:session_policies",
-      "//remoting/protocol",
-      "//remoting/protocol:test_support",
-      "//remoting/signaling",
-      "//third_party/webrtc_overrides:webrtc_component",
-    ]
-
-    public_deps = [
-      "//remoting/host:test_support",
-      "//testing/gmock",
-    ]
-  }
-
-  executable("it2me_standalone_host_main") {
-    testonly = true
-    defines = []
-    libs = []
-
-    sources = [ "it2me_standalone_host_main.cc" ]
-
-    deps = [
-      ":it2me_standalone_host",
-      "//remoting/host:resources",
-    ]
-
-    if (is_linux && remoting_use_x11) {
-      deps += [
-        "//build/config/linux/gtk",
-        "//ui/events/platform/x11",
-      ]
-    }
-
-    if (is_win) {
-      defines += [ "_ALT_NO_EXCEPTIONS" ]
-      deps += [ "//remoting/host/win:dpi_aware_exe_manifest" ]
-      libs += [
-        "rpcrt4.lib",
-        "wtsapi32.lib",
       ]
     }
   }
