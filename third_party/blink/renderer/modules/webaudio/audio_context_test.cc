@@ -1477,7 +1477,9 @@ TEST_F(AudioContextStatsTest, HasPendingActivityAfterClose) {
 
 // Test that AudioWorklet and its messaging proxy are signaled to terminate
 // when the AudioContext is closed.
-TEST_F(AudioContextTest, AudioWorkletTerminatedOnClose) {
+// TODO(https://crbug.com/505063231): This test is causing a data race on
+// TSAN bots.
+TEST_F(AudioContextTest, DISABLED_AudioWorkletTerminatedOnClose) {
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(
       GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
