@@ -117,7 +117,10 @@ source_set("libutil") {
     "src/src/util-strings.c",
   ]
   deps = [ ":generate_brei_proto_headers" ]
-  configs += [ ":libei_config" ]
+  configs += [
+    ":libei_config",
+    "//build/config/sanitizers:cfi_icall_disable",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -152,7 +155,10 @@ static_library("libei") {
     ":libutil",
   ]
 
-  configs += [ ":libei_config" ]
+  configs += [
+    ":libei_config",
+    "//build/config/sanitizers:cfi_icall_disable",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
@@ -188,7 +194,10 @@ static_library("libeis") {
     ":libutil",
   ]
 
-  configs += [ ":libei_config" ]
+  configs += [
+    ":libei_config",
+    "//build/config/sanitizers:cfi_icall_disable",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
