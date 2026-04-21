@@ -8,12 +8,12 @@
 #include <algorithm>
 #include <memory>
 #include <ranges>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -34,7 +34,7 @@ class CC_EXPORT OwnedLayerImplList {
  public:
   typedef std::vector<std::unique_ptr<LayerImpl>> VectorType;
   typedef base::flat_map<int, VectorType::iterator::difference_type> MapType;
-  typedef std::unordered_set<int> SetType;
+  typedef base::flat_set<int> SetType;
 
   using size_type = VectorType::size_type;
   using difference_type = VectorType::difference_type;
@@ -93,113 +93,115 @@ class CC_EXPORT OwnedLayerImplList {
   bool contains(int id) const;
 
   // Used to iterate over the various tracked subsets of LayerImpls stored as
-  // SetType members of OwnedLayerImplList (e.g. picture_layers_). SetType
-  // stored indexes into the main layer_list_; this iterator class internally
-  // converts those indexes into the underlying LayerImpl*.
-  template <typename LayerType>
-  class SetIterator {
+  // members of OwnedLayerImplList.
+  template <typename LayerType, typename ContainerType>
+  class Iterator {
    public:
-    using difference_type = SetType::iterator::difference_type;
+    using difference_type = ContainerType::iterator::difference_type;
     using value_type = LayerType*;
 
-    SetIterator() = default;
-    SetIterator(const OwnedLayerImplList& layer_list,
-                SetType::const_iterator cur)
+    Iterator() = default;
+    Iterator(const OwnedLayerImplList& layer_list,
+             ContainerType::const_iterator cur,
+             ContainerType::const_iterator end)
         : layer_list_(&layer_list), cur_(cur) {}
-    SetIterator(const SetIterator<LayerType>&) = default;
-    SetIterator(SetIterator<LayerType>&&) = default;
-    SetIterator& operator=(const SetIterator<LayerType>&) = default;
-    SetIterator& operator=(SetIterator<LayerType>&&) = default;
-    LayerType* operator*() const {
-      if (!cur_layer_) {
-        cur_layer_ = static_cast<LayerType*>(layer_list_->find(*cur_)->get());
-      }
-      return cur_layer_;
-    }
+    Iterator(const Iterator<LayerType, ContainerType>&) = default;
+    Iterator(Iterator<LayerType, ContainerType>&&) = default;
+    Iterator& operator=(const Iterator<LayerType, ContainerType>&) = default;
+    Iterator& operator=(Iterator<LayerType, ContainerType>&&) = default;
+    LayerType* operator*() const;
     LayerType* operator->() const { return this->operator*(); }
-    SetIterator<LayerType>& operator++() {
-      ++cur_;
+    Iterator<LayerType, ContainerType>& operator++() {
+      if (cur_ != end_) {
+        ++cur_;
+      }
       cur_layer_ = nullptr;
       return *this;
     }
-    SetIterator<LayerType> operator++(int) {
-      SetIterator<LayerType> result(*this);
+    Iterator<LayerType, ContainerType> operator++(int) {
+      Iterator<LayerType, ContainerType> result(*this);
       ++*this;
       return result;
     }
-    bool operator==(const SetIterator<LayerType>& other) const {
+    bool operator==(const Iterator<LayerType, ContainerType>& other) const {
       return layer_list_ == other.layer_list_ && cur_ == other.cur_;
     }
 
    private:
     raw_ptr<const OwnedLayerImplList> layer_list_{nullptr};
-    SetType::const_iterator cur_;
+    ContainerType::const_iterator cur_;
+    ContainerType::const_iterator end_;
     mutable raw_ptr<LayerType> cur_layer_{nullptr};
   };
 
   // Functions as an iterable std::ranges::range over the various tracked
-  // subsets of LayerImpls stored as SetType members of OwnedLayerImplList
-  // (e.g. picture_layers_).
-  template <typename LayerType>
+  // subsets of LayerImpls stored as members of OwnedLayerImplList.
+  template <typename LayerType, typename ContainerType>
   class Range {
    public:
-    using iterator = SetIterator<LayerType>;
+    using iterator = Iterator<LayerType, ContainerType>;
 
     Range() {}
-    Range(const OwnedLayerImplList& layer_list, const SetType& set)
-        : layer_list_(&layer_list), set_(&set) {}
+    Range(const OwnedLayerImplList& layer_list, const ContainerType& container)
+        : layer_list_(&layer_list), container_(&container) {}
     Range(const Range&) = default;
     Range(Range&&) = default;
     Range& operator=(const Range&) = default;
     Range& operator=(Range&&) = default;
     iterator begin() const {
-      return layer_list_ && set_ ? iterator(*layer_list_, set_->begin())
-                                 : iterator();
+      return layer_list_ && container_
+                 ? iterator(*layer_list_, container_->begin(),
+                            container_->end())
+                 : iterator();
     }
     iterator end() const {
-      return layer_list_ && set_ ? iterator(*layer_list_, set_->end())
-                                 : iterator();
+      return layer_list_ && container_
+                 ? iterator(*layer_list_, container_->end(), container_->end())
+                 : iterator();
     }
-    size_type size() const { return set_ ? set_->size() : 0u; }
+    size_type size() const { return container_ ? container_->size() : 0u; }
     bool empty() const { return size() == 0u; }
 
    private:
     raw_ptr<const OwnedLayerImplList> layer_list_{nullptr};
-    raw_ptr<const SetType> set_{nullptr};
+    raw_ptr<const ContainerType> container_{nullptr};
   };
 
-  Range<LayerImpl> LayersThatShouldPushProperties() const;
+  Range<LayerImpl, SetType> LayersThatShouldPushProperties() const;
   void SetShouldPushProperties(LayerImpl* layer);
   void ClearLayersShouldPushProperties();
 
-  Range<PictureLayerImpl> PictureLayers() const;
+  Range<PictureLayerImpl, MapType> PictureLayers() const;
 
-  Range<PictureLayerImpl> PictureLayersWithAnimatedImages() const;
+  Range<PictureLayerImpl, SetType> PictureLayersWithAnimatedImages() const;
   void SetPictureLayerWithAnimatedImages(PictureLayerImpl* layer);
   void RemovePictureLayerWithAnimatedImages(PictureLayerImpl* layer);
 
-  Range<PictureLayerImpl> PictureLayersWithWorklets() const;
+  Range<PictureLayerImpl, SetType> PictureLayersWithWorklets() const;
   void SetPictureLayerWithWorklet(PictureLayerImpl* layer);
   void RemovePictureLayerWithWorklet(PictureLayerImpl* layer);
 
  private:
   VectorType layers_;
   SetType layers_that_should_push_properties_;
-  SetType picture_layers_;
   SetType picture_layers_with_animated_images_;
   SetType picture_layers_with_worklets_;
+  uint32_t num_picture_layers_ = 0u;
   mutable MapType layer_map_;
-  mutable bool layer_map_needs_rebuild_ = false;
+  mutable MapType picture_layer_map_;
+  mutable bool layer_maps_need_rebuild_ = false;
 
-  void RebuildLayerMap() const;
+  void RebuildLayerMaps() const;
 };
 
 using LayerList = std::vector<scoped_refptr<Layer>>;
 // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler stacks.
 using LayerImplList = RAW_PTR_EXCLUSION std::vector<LayerImpl*>;
 using RenderSurfaceList = RAW_PTR_EXCLUSION std::vector<RenderSurfaceImpl*>;
-using LayerImplRange = OwnedLayerImplList::Range<LayerImpl>;
-using PictureLayerImplRange = OwnedLayerImplList::Range<PictureLayerImpl>;
+using LayerImplRange =
+    OwnedLayerImplList::Range<LayerImpl, OwnedLayerImplList::MapType>;
+using PictureLayerImplRange =
+    OwnedLayerImplList::Range<PictureLayerImpl, OwnedLayerImplList::MapType>;
 
 }  // namespace cc
 
