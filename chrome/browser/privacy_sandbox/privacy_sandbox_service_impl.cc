@@ -60,7 +60,6 @@
 namespace {
 
 using NoticeSurfaceType = ::privacy_sandbox::SurfaceType;
-using PromptStartupState = ::PrivacySandboxService::PromptStartupState;
 using ::privacy_sandbox::EligibilityLevel;
 using ::privacy_sandbox::PrivacySandboxNoticeServiceInterface;
 using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
@@ -365,20 +364,6 @@ bool PrivacySandboxServiceImpl::IsRelatedWebsiteSetsDataAccessManaged() const {
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
-void PrivacySandboxServiceImpl::RecordPromptStartupStateHistograms(
-    PromptStartupState state) {
-  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
-
-  if (!profile_bucket.empty()) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Settings.PrivacySandbox.", profile_bucket,
-                      ".PromptStartupState"}),
-        state);
-  }
-  base::UmaHistogramEnumeration("Settings.PrivacySandbox.PromptStartupState",
-                                state);
-}
-
 std::optional<net::SchemefulSite>
 PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwner(
     const GURL& site_url) const {
@@ -480,7 +465,14 @@ void PrivacySandboxServiceImpl::RecordTrackingProtectionStateHistogram() {
       pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
 }
 
-void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
+void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
+  // Do not record metrics for non-regular profiles.
+  if (!IsRegularProfile(profile_type_)) {
+    return;
+  }
+  RecordFirstPartySetsStateHistogram();
+  RecordTrackingProtectionStateHistogram();
+
   // Record the status of the APIs.
   const bool topics_enabled =
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
@@ -492,100 +484,6 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   RecordTopicsEnabledHistograms(profile_, topics_enabled);
   RecordProtectedAudienceEnabledHistograms(profile_, fledge_enabled);
   RecordAdMeasurementEnabledHistograms(profile_, ad_measurement_enabled);
-
-  const bool user_reported_restricted =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
-  const bool user_is_currently_unrestricted =
-      privacy_sandbox_settings_->IsPrivacySandboxCurrentlyUnrestricted();
-
-
-
-
-
-  const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
-      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
-
-  // Check for users waiting for graduation: If a user was ever reported as
-  // restricted and is currently unrestricted it means they are ready for
-  // graduation.
-  if (user_reported_restricted && user_is_currently_unrestricted) {
-    RecordPromptStartupStateHistograms(
-        restricted_notice_acknowledged
-            ? PromptStartupState::
-                  kWaitingForGraduationRestrictedNoticeFlowCompleted
-            : PromptStartupState::
-                  kWaitingForGraduationRestrictedNoticeFlowNotCompleted);
-
-    return;
-  }
-
-  const bool row_notice_acknowledged =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged);
-  const bool eaa_notice_acknowledged =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged);
-  // Restricted Notice
-  // Note that ordering is important: one of consent or notice will always be
-  // required when the restricted prompt is shown, and both return
-  // unconditionally.
-  if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
-    // Acknowledgement of any of the prompt types implies acknowledgement of
-    // the restricted notice as well.
-    if (row_notice_acknowledged || eaa_notice_acknowledged) {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::
-              kRestrictedNoticeNotShownDueToFullNoticeAcknowledged);
-
-      return;
-    }
-    RecordPromptStartupStateHistograms(
-        restricted_notice_acknowledged
-            ? PromptStartupState::kRestrictedNoticeFlowCompleted
-            : PromptStartupState::kRestrictedNoticePromptWaiting);
-    return;
-  }
-
-  // EEA
-  if (IsConsentRequired()) {
-    // Consent decision not made
-    if (!pref_service_->GetBoolean(
-            prefs::kPrivacySandboxM1ConsentDecisionMade)) {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kEEAConsentPromptWaiting);
-      return;
-    }
-
-    // Consent decision made at this point.
-
-    // Notice Acknowledged
-    if (eaa_notice_acknowledged) {
-      RecordPromptStartupStateHistograms(
-          topics_enabled
-              ? PromptStartupState::kEEAFlowCompletedWithTopicsAccepted
-              : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
-    } else {
-      RecordPromptStartupStateHistograms(
-          PromptStartupState::kEEANoticePromptWaiting);
-    }
-    return;
-  }
-
-  // ROW
-  if (IsNoticeRequired()) {
-    RecordPromptStartupStateHistograms(
-        row_notice_acknowledged ? PromptStartupState::kROWNoticeFlowCompleted
-                                : PromptStartupState::kROWNoticePromptWaiting);
-    return;
-  }
-}
-
-void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
-  // Do not record metrics for non-regular profiles.
-  if (!IsRegularProfile(profile_type_)) {
-    return;
-  }
-  RecordFirstPartySetsStateHistogram();
-  RecordTrackingProtectionStateHistogram();
-  RecordPrivacySandbox4StartupMetrics();
 }
 
 void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(

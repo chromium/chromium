@@ -494,39 +494,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/profile_bucket_metrics.h:SettingsPrivacySandboxProfileEnabledState) -->
 
-<!-- LINT.IfChange(SettingsPrivacySandboxPromptStartupState) -->
-
-<enum name="SettingsPrivacySandboxPromptStartupState">
-  <int value="0" label="EEA consent prompt waiting to show"/>
-  <int value="1" label="EEA notice prompt waiting to show"/>
-  <int value="2" label="ROW notice prompt waiting to show"/>
-  <int value="3" label="EEA flow completed with topics accepted"/>
-  <int value="4" label="EEA flow completed with topics declined"/>
-  <int value="5" label="ROW notice flow completed"/>
-  <int value="6"
-      label="Prompt not shown because privacy sandbox is restricted"/>
-  <int value="7"
-      label="Prompt not shown because third-party cookies are blocked"/>
-  <int value="8"
-      label="Prompt not shown because the trial consent was declined"/>
-  <int value="9"
-      label="Prompt not shown because the trials were disabled after seeing
-             the notice"/>
-  <int value="10" label="Prompt not shown because it is managed"/>
-  <int value="11"
-      label="Prompt not shown because of a notice shown to guardian"/>
-  <int value="12" label="Restricted notice prompt waiting to show"/>
-  <int value="13" label="Restricted notice flow completed"/>
-  <int value="14"
-      label="Restricted notice not shown due to full notice acknowledged"/>
-  <int value="15"
-      label="User is waiting for graduation and notice flow is not completed"/>
-  <int value="16"
-      label="User is waiting for graduation and notice flow is completed"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:SettingsPrivacySandboxPromptStartupState) -->
-
 <enum name="SettingsSafetyCheckInteractions">
   <int value="0" label="Safety check started"/>
   <int value="1" label="Updates, relaunch after updates"/>

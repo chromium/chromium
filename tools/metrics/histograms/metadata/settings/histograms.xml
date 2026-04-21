@@ -549,16 +549,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.PrivacySandbox.PromptStartupState"
-    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2026-09-13">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the startup state of the privacy sandbox prompt for Privacy Sandbox
-    GA M1. This is recorded during the profile start up.
-  </summary>
-</histogram>
-
 <histogram name="Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched"
     enum="Boolean" expires_after="2026-09-13">
   <owner>boujane@google.com</owner>
@@ -587,17 +577,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     Records the startup state of the topics API on a Profile for Privacy Sandbox
     GA M1. This is recorded during the profile start up.
   </summary>
-</histogram>
-
-<histogram name="Settings.PrivacySandbox.{Profile}.PromptStartupState"
-    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2026-05-07">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the startup state of the privacy sandbox prompt on a {Profile} for
-    Privacy Sandbox GA M1. This is recorded during the prompt start up.
-  </summary>
-  <token key="Profile" variants="ProfileBucketName"/>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.Interactions"

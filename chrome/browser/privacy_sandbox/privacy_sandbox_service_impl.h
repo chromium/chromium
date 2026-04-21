@@ -157,36 +157,11 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
                            RelatedWebsiteSetsEnabledMetric);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            RelatedWebsiteSetsDisabledMetric);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceTest,
-      RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceTest,
-      RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Implicitly);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceTest,
-      RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed_EEA);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceTest,
-      RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed_ROW);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandbox4StartupMetricsNonRegularProfilesTest,
-                           APIs);
+  FRIEND_TEST_ALL_PREFIXES(LogPrivacySandboxStateNonRegularProfilesTest, APIs);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           RecordPrivacySandbox4StartupMetrics_APIs);
+                           LogPrivacySandboxState_APIs);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
                            ReturnsCorrectStatus);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1RestrictedNoticePromptTest,
-      RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
-      RecordPrivacySandbox4StartupMetrics_GraduationFlow);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted,
-      RecordPrivacySandbox4StartupMetrics_GraduationFlow);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
-      RecordPrivacySandbox4StartupMetrics_GraduationFlowWhenNoticeShownToGuardian);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxQueueTestNoticeWithSearchEngine,
                            PromptSuppressed);
 
@@ -262,13 +237,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // Helper function to log tracking protection state.
   void RecordTrackingProtectionStateHistogram();
 
-  // Logs the state of the privacy sandbox and cookie settings. Called once per
-  // profile startup.
+  // Logs the state of the Privacy Sandbox APIs (Topics, Protected Audience,
+  // Ad Measurement) and cookie-related settings (FPS, Tracking Protection).
+  // Called once per profile startup.
   void LogPrivacySandboxState();
-
-  // Logs the state of privacy sandbox 4 in regards to prompts. Called once per
-  // profile startup.
-  void RecordPrivacySandbox4StartupMetrics();
 
   // Converts the provided list of |top_frames| into eTLD+1s for display, and
   // provides those to |callback|.
@@ -314,11 +286,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // potential initialization order issues.
   std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_;
   std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_;
-
-  // Record user startup state metrics based on the |state| on both client and
-  // profile level.
-  void RecordPromptStartupStateHistograms(
-      PrivacySandboxService::PromptStartupState state);
 
   // Called when the Topics preference is changed.
   void OnTopicsPrefChanged();
