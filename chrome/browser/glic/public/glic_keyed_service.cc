@@ -87,7 +87,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/glic_occlusion_notifier.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
@@ -111,26 +110,6 @@ base::TimeDelta GetWarmingDelay() {
     return RandTimeDelta(delay_start, delay_limit);
   }
   return delay_start;
-}
-
-std::unique_ptr<GlicInstanceCoordinator> CreateWindowController(
-    Profile* profile,
-    signin::IdentityManager* identity_manager,
-    GlicKeyedService* glic_service,
-    GlicEnabling* glic_enabling,
-    ContextualCueingService* contextual_cueing_service) {
-  return std::make_unique<GlicInstanceCoordinatorImpl>(
-      profile, identity_manager, glic_service, glic_enabling,
-      contextual_cueing_service);
-}
-
-std::unique_ptr<GlicSharingManager> CreateSharingManager(
-    Profile* profile,
-    GlicInstanceCoordinator* instance_coordinator,
-    GlicEnabling* glic_enabling) {
-  return std::make_unique<GlicActiveInstanceSharingManager>(
-      profile, glic_enabling,
-      static_cast<GlicInstanceCoordinatorImpl*>(instance_coordinator));
 }
 
 void WriteGuestUrlPresetToPrefs(const char* switch_name,
@@ -174,14 +153,16 @@ GlicKeyedService::GlicKeyedService(
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
-      window_controller_(CreateWindowController(profile,
-                                                identity_manager,
-                                                this,
-                                                enabling_.get(),
-                                                contextual_cueing_service)),
-      sharing_manager_(CreateSharingManager(profile,
-                                            &instance_coordinator(),
-                                            enabling_.get())),
+      instance_coordinator_(std::make_unique<GlicInstanceCoordinatorImpl>(
+          profile,
+          identity_manager,
+          this,
+          enabling_.get(),
+          contextual_cueing_service)),
+      sharing_manager_(std::make_unique<GlicActiveInstanceSharingManager>(
+          profile,
+          enabling_.get(),
+          &instance_coordinator())),
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion
       region_capture_controller_(
           std::make_unique<GlicRegionCaptureController>()),
@@ -189,14 +170,10 @@ GlicKeyedService::GlicKeyedService(
       auth_controller_(
           std::make_unique<AuthController>(profile, identity_manager)),
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-      occlusion_notifier_(nullptr),
-#endif
       tab_data_observer_(std::make_unique<GlicTabDataObserver>(profile)),
       tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)),
       web_contents_warming_pool_(
-          std::make_unique<GlicWebContentsWarmingPool>(profile)),
-      contextual_cueing_service_(contextual_cueing_service) {
+          std::make_unique<GlicWebContentsWarmingPool>(profile)) {
 
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
 
@@ -399,8 +376,8 @@ void GlicKeyedService::CloseFloatingPanel() {
 }
 
 GlicInstanceCoordinator& GlicKeyedService::instance_coordinator() const {
-  CHECK(window_controller_);
-  return *window_controller_.get();
+  CHECK(instance_coordinator_);
+  return *instance_coordinator_.get();
 }
 
 GlicFreController& GlicKeyedService::fre_controller() {

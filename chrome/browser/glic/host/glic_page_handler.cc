@@ -2105,9 +2105,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_actuation_pref_subscription_ = {};
     consent_subscription_ = {};
     browser_attach_observation_.reset();
-    if (glic_service_->zero_state_suggestions_manager()) {
-      glic_service_->zero_state_suggestions_manager()->Reset();
-    }
     if (skills_service_) {
       skills_service_->RemoveObserver(this);
     }

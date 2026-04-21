@@ -312,8 +312,6 @@ source_set("impl") {
 
     # Desktop only
     sources += [
-      "glic_occlusion_notifier.cc",
-      "glic_occlusion_notifier.h",
       "glic_selection_observer.cc",
       "glic_settings_util_desktop.cc",
       "host/context/glic_focused_browser_manager_impl.cc",
