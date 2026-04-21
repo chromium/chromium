@@ -296,10 +296,9 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
       wavy_offset = -double_offset_from_thickness;
       break;
     case TextDecorationLine::kLineThrough:
-      // Floor double_offset in order to avoid double-line gap to appear
-      // of different size depending on position where the double line
-      // is drawn because of rounding downstream in
-      // GraphicsContext::DrawLineForText.
+      // Floor double_offset in order to avoid double-line gap to appear of
+      // different size depending on position where the double line is drawn
+      // because of rounding downstream in DecorationLinePainter.
       double_offset = floorf(double_offset_from_thickness);
       wavy_offset = 0;
       break;
