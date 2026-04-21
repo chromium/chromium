@@ -118,11 +118,30 @@ struct BuildGemmAttributes {
   bool b_transpose;
 };
 
+struct BuildLstmAttributes {
+  std::optional<OperandId> bias_operand_id;
+  std::optional<OperandId> recurrent_bias_operand_id;
+  std::optional<OperandId> peephole_weight_operand_id;
+  std::optional<OperandId> initial_hidden_state_operand_id;
+  std::optional<OperandId> initial_cell_state_operand_id;
+  bool return_sequence;
+  mojom::RecurrentNetworkDirection direction;
+  mojom::LstmWeightLayout layout;
+  std::vector<mojom::RecurrentNetworkActivation> activations;
+};
+
 struct BuildPool2dAttributes {
   std::vector<uint32_t> window_dimensions;
   std::vector<uint32_t> padding;
   std::vector<uint32_t> strides;
   std::vector<uint32_t> dilations;
+};
+
+// Tri-state for optional operands: not present, constant, or input.
+enum class OptionalOperandKind : uint8_t {
+  kNone = 0,
+  kConstant = 1,
+  kInput = 2,
 };
 
 enum class GemmCShapeKind : uint8_t {
@@ -233,6 +252,26 @@ struct ScatterElementsParams {
   bool is_updates_constant;
 };
 
+struct LstmParams {
+  OperandDataType data_type;
+  uint32_t steps;
+  uint32_t batch_size;
+  uint32_t input_size;
+  uint32_t hidden_size;
+  mojom::RecurrentNetworkDirection direction;
+  mojom::LstmWeightLayout layout;
+  OptionalOperandKind bias_kind;
+  OptionalOperandKind recurrent_bias_kind;
+  OptionalOperandKind peephole_weight_kind;
+  OptionalOperandKind initial_hidden_state_kind;
+  OptionalOperandKind initial_cell_state_kind;
+  bool return_sequence;
+  bool is_input_constant;
+  bool is_weight_constant;
+  bool is_recurrent_weight_constant;
+  std::array<mojom::RecurrentNetworkActivation, 3> activations;
+};
+
 auto AnyConv2dKind() {
   return fuzztest::ElementOf<mojom::Conv2d::Kind>(
       {mojom::Conv2d::Kind::kDirect, mojom::Conv2d::Kind::kTransposed});
@@ -253,6 +292,31 @@ auto AnyQuantizationKind() {
 auto AnyRoundingType() {
   return fuzztest::ElementOf<RoundingType>(
       {RoundingType::kFloor, RoundingType::kCeil});
+}
+
+auto AnyOptionalOperandKind() {
+  return fuzztest::ElementOf<OptionalOperandKind>(
+      {OptionalOperandKind::kNone, OptionalOperandKind::kConstant,
+       OptionalOperandKind::kInput});
+}
+
+auto AnyRecurrentNetworkActivation() {
+  return fuzztest::ElementOf<mojom::RecurrentNetworkActivation>(
+      {mojom::RecurrentNetworkActivation::kRelu,
+       mojom::RecurrentNetworkActivation::kSigmoid,
+       mojom::RecurrentNetworkActivation::kTanh});
+}
+
+auto AnyLstmDirection() {
+  return fuzztest::ElementOf<mojom::RecurrentNetworkDirection>(
+      {mojom::RecurrentNetworkDirection::kForward,
+       mojom::RecurrentNetworkDirection::kBackward,
+       mojom::RecurrentNetworkDirection::kBoth});
+}
+
+auto AnyLstmWeightLayout() {
+  return fuzztest::ElementOf<mojom::LstmWeightLayout>(
+      {mojom::LstmWeightLayout::kIofg, mojom::LstmWeightLayout::kIfgo});
 }
 
 // Use fuzztest::OneOf to split the range into multiple sub-domains each with
@@ -416,6 +480,29 @@ auto AnyScatterElementsParams() {
       fuzztest::Arbitrary<bool>(),                      // is_input_constant
       fuzztest::Arbitrary<bool>(),                      // is_indices_constant
       fuzztest::Arbitrary<bool>()                       // is_updates_constant
+  );
+}
+
+auto AnyLstmParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<LstmParams>(
+      AnyOperandDataTypeFor(limits.lstm_input.data_types),
+      AnyDimSize(),                 // steps
+      AnyDimSize(),                 // batch_size
+      AnyDimSize(),                 // input_size
+      AnyDimSize(),                 // hidden_size
+      AnyLstmDirection(),           // direction
+      AnyLstmWeightLayout(),        // layout
+      AnyOptionalOperandKind(),     // bias_kind
+      AnyOptionalOperandKind(),     // recurrent_bias_kind
+      AnyOptionalOperandKind(),     // peephole_weight_kind
+      AnyOptionalOperandKind(),     // initial_hidden_state_kind
+      AnyOptionalOperandKind(),     // initial_cell_state_kind
+      fuzztest::Arbitrary<bool>(),  // return_sequence
+      fuzztest::Arbitrary<bool>(),  // is_input_constant
+      fuzztest::Arbitrary<bool>(),  // is_weight_constant
+      fuzztest::Arbitrary<bool>(),  // is_recurrent_weight_constant
+      fuzztest::ArrayOf<3>(AnyRecurrentNetworkActivation())  // activations
   );
 }
 
@@ -999,6 +1086,7 @@ class WebNNGraphImplFuzzerImpl
   void SingleOpConv2d(Conv2dParams params, uint8_t seed_for_data);
   void SingleOpGatherND(GatherNDParams params, uint8_t seed_for_data);
   void SingleOpGemm(GemmParams params, uint8_t seed_for_data);
+  void SingleOpLstm(LstmParams params, uint8_t seed_for_data);
   void SingleOpPool2d(Pool2dParams params, uint8_t seed_for_data);
   void SingleOpScatterElements(ScatterElementsParams params,
                                uint8_t seed_for_data);
@@ -1055,9 +1143,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_input_constant) {
-    input_id = builder.BuildConstant(conv2d_descs.input_desc.shape(),
-                                     conv2d_descs.input_desc.data_type(),
-                                     base::as_byte_span(input_data));
+    input_id =
+        builder.BuildConstant(conv2d_descs.input_desc.shape(),
+                              conv2d_descs.input_desc.data_type(), input_data);
   } else {
     input_id = builder.BuildInput("input", conv2d_descs.input_desc.shape(),
                                   conv2d_descs.input_desc.data_type());
@@ -1066,16 +1154,16 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpConv2d(
   if (params.is_filter_constant) {
     filter_id = builder.BuildConstant(conv2d_descs.filter_desc.shape(),
                                       conv2d_descs.filter_desc.data_type(),
-                                      base::as_byte_span(filter_data));
+                                      filter_data);
   } else {
     filter_id = builder.BuildInput("filter", conv2d_descs.filter_desc.shape(),
                                    conv2d_descs.filter_desc.data_type());
     named_inputs.insert({"filter", filter_data});
   }
   if (params.is_bias_constant) {
-    bias_id = builder.BuildConstant(conv2d_descs.bias_desc.shape(),
-                                    conv2d_descs.bias_desc.data_type(),
-                                    base::as_byte_span(bias_data));
+    bias_id =
+        builder.BuildConstant(conv2d_descs.bias_desc.shape(),
+                              conv2d_descs.bias_desc.data_type(), bias_data);
   } else {
     bias_id = builder.BuildInput("bias", conv2d_descs.bias_desc.shape(),
                                  conv2d_descs.bias_desc.data_type());
@@ -1149,16 +1237,15 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGatherND(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_input_constant) {
     input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
-                                     base::as_byte_span(input_data));
+                                     input_data);
   } else {
     input_id =
         builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
     named_inputs.insert({"input", input_data});
   }
   if (params.is_indices_constant) {
-    indices_id =
-        builder.BuildConstant(indices_desc.shape(), indices_desc.data_type(),
-                              base::as_byte_span(indices_data));
+    indices_id = builder.BuildConstant(indices_desc.shape(),
+                                       indices_desc.data_type(), indices_data);
   } else {
     indices_id = builder.BuildInput("indices", indices_desc.shape(),
                                     indices_desc.data_type());
@@ -1201,8 +1288,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_a_constant) {
     a_id = builder.BuildConstant(gemm_descs.a_desc.shape(),
-                                 gemm_descs.a_desc.data_type(),
-                                 base::as_byte_span(a_data));
+                                 gemm_descs.a_desc.data_type(), a_data);
   } else {
     a_id = builder.BuildInput("a", gemm_descs.a_desc.shape(),
                               gemm_descs.a_desc.data_type());
@@ -1210,8 +1296,7 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
   }
   if (params.is_b_constant) {
     b_id = builder.BuildConstant(gemm_descs.b_desc.shape(),
-                                 gemm_descs.b_desc.data_type(),
-                                 base::as_byte_span(b_data));
+                                 gemm_descs.b_desc.data_type(), b_data);
   } else {
     b_id = builder.BuildInput("b", gemm_descs.b_desc.shape(),
                               gemm_descs.b_desc.data_type());
@@ -1228,9 +1313,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
   if (params.has_c) {
     c_data.assign(gemm_descs.c_desc->PackedByteLength(), seed_for_data);
     if (params.is_c_constant) {
-      OperandId c_id = builder.BuildConstant(gemm_descs.c_desc->shape(),
-                                             gemm_descs.c_desc->data_type(),
-                                             base::as_byte_span(c_data));
+      OperandId c_id = builder.BuildConstant(
+          gemm_descs.c_desc->shape(), gemm_descs.c_desc->data_type(), c_data);
       gemm_attr.c_operand_id = c_id;
     } else {
       OperandId c_id = builder.BuildInput("c", gemm_descs.c_desc->shape(),
@@ -1245,6 +1329,243 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpGemm(
                           gemm_descs.output_desc.data_type());
 
   builder.BuildGemm(a_id, b_id, output_id, gemm_attr);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpLstm(
+    LstmParams params,
+    uint8_t seed_for_data) {
+  if (params.hidden_size > std::numeric_limits<uint32_t>::max() / 4) {
+    return;
+  }
+  const uint32_t four_hidden_size = params.hidden_size * 4;
+  const uint32_t direction_count =
+      params.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+
+  // input: [steps, batch_size, input_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto input_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{params.steps, params.batch_size,
+                                params.input_size},
+          ""));
+
+  // weight: [direction_count, 4 * hidden_size, input_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto weight_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{direction_count, four_hidden_size,
+                                params.input_size},
+          ""));
+
+  // recurrent_weight: [direction_count, 4 * hidden_size, hidden_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto recurrent_weight_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{direction_count, four_hidden_size,
+                                params.hidden_size},
+          ""));
+
+  LstmAttributes attributes;
+  attributes.return_sequence = params.return_sequence;
+  attributes.direction =
+      params.direction == mojom::RecurrentNetworkDirection::kForward
+          ? RecurrentNetworkDirection::kForward
+      : params.direction == mojom::RecurrentNetworkDirection::kBackward
+          ? RecurrentNetworkDirection::kBackward
+          : RecurrentNetworkDirection::kBoth;
+  attributes.activation_count = 3;
+
+  // Optional: bias [direction_count, 4 * hidden_size]
+  std::optional<OperandDescriptor> bias_desc;
+  if (params.bias_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        bias_desc,
+        OperandDescriptor::Create(
+            this->context_properties(), params.data_type,
+            std::vector<uint32_t>{direction_count, four_hidden_size}, ""));
+    attributes.bias = bias_desc;
+  }
+
+  // Optional: recurrent_bias [direction_count, 4 * hidden_size]
+  std::optional<OperandDescriptor> recurrent_bias_desc;
+  if (params.recurrent_bias_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        recurrent_bias_desc,
+        OperandDescriptor::Create(
+            this->context_properties(), params.data_type,
+            std::vector<uint32_t>{direction_count, four_hidden_size}, ""));
+    attributes.recurrent_bias = recurrent_bias_desc;
+  }
+
+  // Optional: peephole_weight [direction_count, 3 * hidden_size]
+  std::optional<OperandDescriptor> peephole_weight_desc;
+  if (params.peephole_weight_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        peephole_weight_desc,
+        OperandDescriptor::Create(
+            this->context_properties(), params.data_type,
+            std::vector<uint32_t>{direction_count, 3 * params.hidden_size},
+            ""));
+    attributes.peephole_weight = peephole_weight_desc;
+  }
+
+  // Optional: initial_hidden_state [direction_count, batch_size, hidden_size]
+  std::optional<OperandDescriptor> initial_hidden_state_desc;
+  if (params.initial_hidden_state_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        initial_hidden_state_desc,
+        OperandDescriptor::Create(
+            this->context_properties(), params.data_type,
+            std::vector<uint32_t>{direction_count, params.batch_size,
+                                  params.hidden_size},
+            ""));
+    attributes.initial_hidden_state = initial_hidden_state_desc;
+  }
+
+  // Optional: initial_cell_state [direction_count, batch_size, hidden_size]
+  std::optional<OperandDescriptor> initial_cell_state_desc;
+  if (params.initial_cell_state_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        initial_cell_state_desc,
+        OperandDescriptor::Create(
+            this->context_properties(), params.data_type,
+            std::vector<uint32_t>{direction_count, params.batch_size,
+                                  params.hidden_size},
+            ""));
+    attributes.initial_cell_state = initial_cell_state_desc;
+  }
+
+  ASSIGN_OR_RETURN_VOID(
+      auto output_descs,
+      ValidateLstmAndInferOutput(this->context_properties(), input_desc,
+                                 weight_desc, recurrent_weight_desc,
+                                 params.steps, params.hidden_size, attributes));
+
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  std::vector<uint8_t> input_data(input_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> weight_data(weight_desc.PackedByteLength(),
+                                   seed_for_data);
+  std::vector<uint8_t> recurrent_weight_data(
+      recurrent_weight_desc.PackedByteLength(), seed_for_data);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+
+  OperandId input_id;
+  if (params.is_input_constant) {
+    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
+                                     input_data);
+  } else {
+    input_id =
+        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
+    named_inputs.insert({"input", input_data});
+  }
+
+  OperandId weight_id;
+  if (params.is_weight_constant) {
+    weight_id = builder.BuildConstant(weight_desc.shape(),
+                                      weight_desc.data_type(), weight_data);
+  } else {
+    weight_id = builder.BuildInput("weight", weight_desc.shape(),
+                                   weight_desc.data_type());
+    named_inputs.insert({"weight", weight_data});
+  }
+  OperandId recurrent_weight_id;
+  if (params.is_recurrent_weight_constant) {
+    recurrent_weight_id = builder.BuildConstant(
+        recurrent_weight_desc.shape(), recurrent_weight_desc.data_type(),
+        recurrent_weight_data);
+  } else {
+    recurrent_weight_id =
+        builder.BuildInput("recurrent_weight", recurrent_weight_desc.shape(),
+                           recurrent_weight_desc.data_type());
+    named_inputs.insert({"recurrent_weight", recurrent_weight_data});
+  }
+
+  BuildLstmAttributes lstm_attr;
+  lstm_attr.return_sequence = params.return_sequence;
+  lstm_attr.direction = params.direction;
+  lstm_attr.layout = params.layout;
+  lstm_attr.activations.assign(params.activations.begin(),
+                               params.activations.end());
+
+  // Owns data buffers for optional operands built as inputs.
+  std::vector<std::vector<uint8_t>> optional_operand_data;
+  optional_operand_data.reserve(5);
+
+  auto build_optional_operand =
+      [&](const std::optional<OperandDescriptor>& desc,
+          OptionalOperandKind state,
+          std::string name) -> std::optional<OperandId> {
+    switch (state) {
+      case OptionalOperandKind::kNone: {
+        return std::nullopt;
+      }
+      case OptionalOperandKind::kConstant: {
+        // `BuildConstant()` copies the data internally.
+        std::vector<uint8_t> data(desc->PackedByteLength(), seed_for_data);
+        return builder.BuildConstant(desc->shape(), desc->data_type(), data);
+      }
+      case OptionalOperandKind::kInput: {
+        optional_operand_data.emplace_back(desc->PackedByteLength(),
+                                           seed_for_data);
+        OperandId id =
+            builder.BuildInput(name, desc->shape(), desc->data_type());
+        named_inputs.insert({std::move(name), optional_operand_data.back()});
+        return id;
+      }
+    }
+  };
+
+  lstm_attr.bias_operand_id =
+      build_optional_operand(bias_desc, params.bias_kind, "bias");
+  lstm_attr.recurrent_bias_operand_id = build_optional_operand(
+      recurrent_bias_desc, params.recurrent_bias_kind, "recurrent_bias");
+  lstm_attr.peephole_weight_operand_id = build_optional_operand(
+      peephole_weight_desc, params.peephole_weight_kind, "peephole_weight");
+  lstm_attr.initial_hidden_state_operand_id = build_optional_operand(
+      initial_hidden_state_desc, params.initial_hidden_state_kind,
+      "initial_hidden_state");
+  lstm_attr.initial_cell_state_operand_id = build_optional_operand(
+      initial_cell_state_desc, params.initial_cell_state_kind,
+      "initial_cell_state");
+
+  std::vector<OperandId> output_operand_ids;
+  OperandId output_hidden_state_id =
+      builder.BuildOutput("output_hidden_state", output_descs[0].shape(),
+                          output_descs[0].data_type());
+  output_operand_ids.push_back(output_hidden_state_id);
+
+  OperandId output_cell_state_id =
+      builder.BuildOutput("output_cell_state", output_descs[1].shape(),
+                          output_descs[1].data_type());
+  output_operand_ids.push_back(output_cell_state_id);
+
+  if (params.return_sequence) {
+    ASSERT_EQ(output_descs.size(), 3);
+    OperandId output_sequence_id =
+        builder.BuildOutput("output_sequence", output_descs[2].shape(),
+                            output_descs[2].data_type());
+    output_operand_ids.push_back(output_sequence_id);
+  }
+
+  builder.BuildLstm(input_id, weight_id, recurrent_weight_id,
+                    std::move(output_operand_ids), params.steps,
+                    params.hidden_size, lstm_attr);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -1273,9 +1594,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpPool2d(
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_input_constant) {
-    input_id = builder.BuildConstant(pool2d_descs.input_desc.shape(),
-                                     pool2d_descs.input_desc.data_type(),
-                                     base::as_byte_span(input_data));
+    input_id =
+        builder.BuildConstant(pool2d_descs.input_desc.shape(),
+                              pool2d_descs.input_desc.data_type(), input_data);
   } else {
     input_id = builder.BuildInput("input", pool2d_descs.input_desc.shape(),
                                   pool2d_descs.input_desc.data_type());
@@ -1351,25 +1672,23 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SingleOpScatterElements(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
   if (params.is_input_constant) {
     input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
-                                     base::as_byte_span(input_data));
+                                     input_data);
   } else {
     input_id =
         builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
     named_inputs.insert({"input", input_data});
   }
   if (params.is_indices_constant) {
-    indices_id =
-        builder.BuildConstant(indices_desc.shape(), indices_desc.data_type(),
-                              base::as_byte_span(indices_data));
+    indices_id = builder.BuildConstant(indices_desc.shape(),
+                                       indices_desc.data_type(), indices_data);
   } else {
     indices_id = builder.BuildInput("indices", indices_desc.shape(),
                                     indices_desc.data_type());
     named_inputs.insert({"indices", indices_data});
   }
   if (params.is_updates_constant) {
-    updates_id =
-        builder.BuildConstant(updates_desc.shape(), updates_desc.data_type(),
-                              base::as_byte_span(updates_data));
+    updates_id = builder.BuildConstant(updates_desc.shape(),
+                                       updates_desc.data_type(), updates_data);
   } else {
     updates_id = builder.BuildInput("updates", updates_desc.shape(),
                                     updates_desc.data_type());
@@ -1528,27 +1847,24 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
   if (conv2d_params.is_input_constant) {
-    input_dq_id =
-        builder.BuildConstant(input_dq_desc.shape(), input_dq_desc.data_type(),
-                              base::as_byte_span(input_dq_data));
+    input_dq_id = builder.BuildConstant(
+        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
   } else {
     input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
                                      input_dq_desc.data_type());
     named_inputs.insert({"input", input_dq_data});
   }
   if (conv2d_params.is_filter_constant) {
-    filter_dq_id = builder.BuildConstant(filter_dq_desc.shape(),
-                                         filter_dq_desc.data_type(),
-                                         base::as_byte_span(filter_dq_data));
+    filter_dq_id = builder.BuildConstant(
+        filter_dq_desc.shape(), filter_dq_desc.data_type(), filter_dq_data);
   } else {
     filter_dq_id = builder.BuildInput("filter", filter_dq_desc.shape(),
                                       filter_dq_desc.data_type());
     named_inputs.insert({"filter", filter_dq_data});
   }
   if (conv2d_params.is_bias_constant) {
-    bias_dq_id =
-        builder.BuildConstant(bias_dq_desc.shape(), bias_dq_desc.data_type(),
-                              base::as_byte_span(bias_dq_data));
+    bias_dq_id = builder.BuildConstant(bias_dq_desc.shape(),
+                                       bias_dq_desc.data_type(), bias_dq_data);
   } else {
     bias_dq_id = builder.BuildInput("bias", bias_dq_desc.shape(),
                                     bias_dq_desc.data_type());
@@ -1558,23 +1874,19 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQConv2dQ(
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
   OperandId input_zero_id = builder.BuildConstant(
-      input_zero_desc.shape(), input_zero_desc.data_type(),
-      base::as_byte_span(input_zero_data));
+      input_zero_desc.shape(), input_zero_desc.data_type(), input_zero_data);
   OperandId filter_scale_id =
       BuildFloatConstant(builder, filter_scale_desc, filter_scale_data);
   OperandId filter_zero_id = builder.BuildConstant(
-      filter_zero_desc.shape(), filter_zero_desc.data_type(),
-      base::as_byte_span(filter_zero_data));
+      filter_zero_desc.shape(), filter_zero_desc.data_type(), filter_zero_data);
   OperandId bias_scale_id =
       BuildFloatConstant(builder, bias_scale_desc, bias_scale_data);
-  OperandId bias_zero_id =
-      builder.BuildConstant(bias_zero_desc.shape(), bias_zero_desc.data_type(),
-                            base::as_byte_span(bias_zero_data));
+  OperandId bias_zero_id = builder.BuildConstant(
+      bias_zero_desc.shape(), bias_zero_desc.data_type(), bias_zero_data);
   OperandId output_scale_id =
       BuildFloatConstant(builder, output_scale_desc, output_scale_data);
   OperandId output_zero_id = builder.BuildConstant(
-      output_zero_desc.shape(), output_zero_desc.data_type(),
-      base::as_byte_span(output_zero_data));
+      output_zero_desc.shape(), output_zero_desc.data_type(), output_zero_data);
 
   OperandId conv2d_input_id = builder.BuildIntermediateOperand(
       conv2d_descs.input_desc.shape(), conv2d_descs.input_desc.data_type());
@@ -1687,15 +1999,15 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
   std::optional<OperandDescriptor> c_scale_desc;
   std::optional<OperandDescriptor> c_zero_desc;
   if (gemm_params.has_c) {
-    // C shape is {1}, {N}, {1, N}, or {M, N}. For 1D shapes, axis 0 is the only
-    // option. For 2D shapes, quantize along the N dimension at axis 1.
+    // C shape is {1}, {N}, {1, N}, or {M, N}. For 1D shapes, axis 0 is the
+    // only option. For 2D shapes, quantize along the N dimension at axis 1.
     const uint32_t c_channel_axis =
         gemm_descs.c_desc->shape().size() == 1 ? 0u : 1u;
     auto c_scale_shape = ComputeQuantizationScaleShape(
         gemm_descs.c_desc->shape(), c_channel_axis, quantization_params);
 
-    // The specific values and data types in this test are used to exercise the
-    // fusiable path for TFLite backend:
+    // The specific values and data types in this test are used to exercise
+    // the fusiable path for TFLite backend:
     // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2079;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
     // TODO(crbug.com/498987226): Remove these restrictions to increase test
     // coverage.
@@ -1756,14 +2068,14 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
 
   if (gemm_params.is_a_constant) {
     a_dq_id = builder.BuildConstant(a_dq_desc.shape(), a_dq_desc.data_type(),
-                                    base::as_byte_span(a_dq_data));
+                                    a_dq_data);
   } else {
     a_dq_id = builder.BuildInput("a", a_dq_desc.shape(), a_dq_desc.data_type());
     named_inputs.insert({"a", a_dq_data});
   }
   if (gemm_params.is_b_constant) {
     b_dq_id = builder.BuildConstant(b_dq_desc.shape(), b_dq_desc.data_type(),
-                                    base::as_byte_span(b_dq_data));
+                                    b_dq_data);
   } else {
     b_dq_id = builder.BuildInput("b", b_dq_desc.shape(), b_dq_desc.data_type());
     named_inputs.insert({"b", b_dq_data});
@@ -1771,19 +2083,16 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
 
   OperandId a_scale_id =
       BuildFloatConstant(builder, a_scale_desc, a_scale_data);
-  OperandId a_zero_id =
-      builder.BuildConstant(a_zero_desc.shape(), a_zero_desc.data_type(),
-                            base::as_byte_span(a_zero_data));
+  OperandId a_zero_id = builder.BuildConstant(
+      a_zero_desc.shape(), a_zero_desc.data_type(), a_zero_data);
   OperandId b_scale_id =
       BuildFloatConstant(builder, b_scale_desc, b_scale_data);
-  OperandId b_zero_id =
-      builder.BuildConstant(b_zero_desc.shape(), b_zero_desc.data_type(),
-                            base::as_byte_span(b_zero_data));
+  OperandId b_zero_id = builder.BuildConstant(
+      b_zero_desc.shape(), b_zero_desc.data_type(), b_zero_data);
   OperandId output_scale_id =
       BuildFloatConstant(builder, output_scale_desc, output_scale_data);
   OperandId output_zero_id = builder.BuildConstant(
-      output_zero_desc.shape(), output_zero_desc.data_type(),
-      base::as_byte_span(output_zero_data));
+      output_zero_desc.shape(), output_zero_desc.data_type(), output_zero_data);
 
   OperandId gemm_a_id = builder.BuildIntermediateOperand(
       gemm_descs.a_desc.shape(), gemm_descs.a_desc.data_type());
@@ -1809,9 +2118,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
 
     OperandId c_dq_id;
     if (gemm_params.is_c_constant) {
-      c_dq_id =
-          builder.BuildConstant(c_dq_desc->shape(), c_dq_desc->data_type(),
-                                base::as_byte_span(c_dq_data));
+      c_dq_id = builder.BuildConstant(c_dq_desc->shape(),
+                                      c_dq_desc->data_type(), c_dq_data);
     } else {
       c_dq_id =
           builder.BuildInput("c", c_dq_desc->shape(), c_dq_desc->data_type());
@@ -1820,9 +2128,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQGemmQ(
 
     OperandId c_scale_id =
         BuildFloatConstant(builder, *c_scale_desc, c_scale_data);
-    OperandId c_zero_id =
-        builder.BuildConstant(c_zero_desc->shape(), c_zero_desc->data_type(),
-                              base::as_byte_span(c_zero_data));
+    OperandId c_zero_id = builder.BuildConstant(
+        c_zero_desc->shape(), c_zero_desc->data_type(), c_zero_data);
 
     OperandId gemm_c_id = builder.BuildIntermediateOperand(
         gemm_descs.c_desc->shape(), gemm_descs.c_desc->data_type());
@@ -1928,9 +2235,8 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
   if (pool2d_params.is_input_constant) {
-    input_dq_id =
-        builder.BuildConstant(input_dq_desc.shape(), input_dq_desc.data_type(),
-                              base::as_byte_span(input_dq_data));
+    input_dq_id = builder.BuildConstant(
+        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
   } else {
     input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
                                      input_dq_desc.data_type());
@@ -1940,13 +2246,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::SubgraphDQPool2dQ(
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
   OperandId input_zero_id = builder.BuildConstant(
-      input_zero_desc.shape(), input_zero_desc.data_type(),
-      base::as_byte_span(input_zero_data));
+      input_zero_desc.shape(), input_zero_desc.data_type(), input_zero_data);
   OperandId output_scale_id =
       BuildFloatConstant(builder, output_scale_desc, output_scale_data);
   OperandId output_zero_id = builder.BuildConstant(
-      output_zero_desc.shape(), output_zero_desc.data_type(),
-      base::as_byte_span(output_zero_data));
+      output_zero_desc.shape(), output_zero_desc.data_type(), output_zero_data);
 
   OperandId pool2d_input_id = builder.BuildIntermediateOperand(
       pool2d_descs.input_desc.shape(), pool2d_descs.input_desc.data_type());
@@ -2050,6 +2354,34 @@ WEBNN_FUZZ_TEST_F(SingleOpGemm,
                                        /*is_c_constant=*/true,
                                    },
                                    /*seed_for_data=*/3}}));
+
+WEBNN_FUZZ_TEST_F(
+    SingleOpLstm,
+    .WithDomains(AnyLstmParams(), fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds(
+            {{LstmParams{
+                  /*data_type=*/OperandDataType::kFloat32,
+                  /*steps=*/2,
+                  /*batch_size=*/1,
+                  /*input_size=*/3,
+                  /*hidden_size=*/4,
+                  /*direction=*/mojom::RecurrentNetworkDirection::kForward,
+                  /*layout=*/mojom::LstmWeightLayout::kIofg,
+                  /*bias_kind=*/OptionalOperandKind::kConstant,
+                  /*recurrent_bias_kind=*/OptionalOperandKind::kConstant,
+                  /*peephole_weight_kind=*/OptionalOperandKind::kNone,
+                  /*initial_hidden_state_kind=*/OptionalOperandKind::kInput,
+                  /*initial_cell_state_kind=*/OptionalOperandKind::kInput,
+                  /*return_sequence=*/false,
+                  /*is_input_constant=*/false,
+                  /*is_weight_constant=*/true,
+                  /*is_recurrent_weight_constant=*/true,
+                  /*activations=*/
+                  {mojom::RecurrentNetworkActivation::kSigmoid,
+                   mojom::RecurrentNetworkActivation::kTanh,
+                   mojom::RecurrentNetworkActivation::kTanh},
+              },
+              /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(SingleOpPool2d,
                   .WithDomains(AnyPool2dParams(),
