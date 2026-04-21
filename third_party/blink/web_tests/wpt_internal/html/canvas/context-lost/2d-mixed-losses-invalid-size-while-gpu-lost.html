@@ -37,10 +37,9 @@ canvasPromiseTest(async (canvas, {test}) => {
 
   // Check that the context isn't automatically restored. That would normally
   // occur after 500ms, wait a whole second to be sure.
-  canvas.oncontextrestored = () =>
-    assert_unreached('Context should not have been restored.');
   for (let i = 0; i < 10; ++i) {
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await resolvedWithoutContextEvent(
+        new Promise(resolve => setTimeout(resolve, 100)), ctx);
   }
 
   // Specifying a valid canvas size will restore the context.

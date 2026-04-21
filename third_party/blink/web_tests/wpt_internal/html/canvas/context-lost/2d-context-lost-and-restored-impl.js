@@ -53,10 +53,6 @@ async function Test2dContextNeverLost(test, canvas,
     desynchronized: desynchronized,
   });
 
-  canvas.oncontextlost = test.step_func(() => {
-    assert_unreached('The context should not have been lost.');
-  });
-
   // Draw something and crash the GPU process.
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
@@ -69,7 +65,7 @@ async function Test2dContextNeverLost(test, canvas,
       ctx.getImageData(2, 2, 1, 1).data, [255, 0, 0, 255],
       'The canvas should still be healthy after the GPU process died.');
 
-  await gpuProcessRestoredPromise;
+  await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
 
   assert_false(ctx.isContextLost());
   assert_array_equals(
