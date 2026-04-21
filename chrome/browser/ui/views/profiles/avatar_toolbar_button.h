@@ -23,10 +23,8 @@
 #include "ui/events/event.h"
 
 class AvatarToolbarButtonStateManager;
-class Browser;
 class BrowserView;
 struct AccountInfo;
-class GaiaId;
 class StateProvider;
 
 // This class takes care the Profile Avatar Button.
@@ -35,8 +33,7 @@ class StateProvider;
 // `AvatarToolbarButtonStateManager`, when relying on Chrome and Profile changes
 // in order to adapt the expected content shown in the button.
 class AvatarToolbarButton : public ToolbarButton,
-                            public AvatarToolbarButtonInterface,
-                            signin::IdentityManager::Observer {
+                            public AvatarToolbarButtonInterface {
   METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
  public:
   using Observer = AvatarToolbarButtonInterface::Observer;
@@ -98,11 +95,6 @@ class AvatarToolbarButton : public ToolbarButton,
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,
                            HighlightMeetsMinimumContrast);
 
-  // signin::IdentityManager::Observer:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
@@ -131,25 +123,7 @@ class AvatarToolbarButton : public ToolbarButton,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  // Lists of observers.
-  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
-  base::ObserverList<
-      Observer,
-      /*check_empty=*/true,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
-      observer_list_;
-
   std::unique_ptr<AvatarToolbarButtonStateManager> state_manager_;
-
-  const raw_ptr<Browser> browser_;
-
-  // Time when this object was created.
-  const base::TimeTicks creation_time_;
-
-  // Gaia Id of the account that was signed in from having it's choice
-  // remembered following a web sign-in event but waiting for the available
-  // account information to be fetched in order to show the sign in IPH.
-  GaiaId gaia_id_for_signin_choice_remembered_;
 
   // Cached icons for the placeholder avatar in forced-colors mode, to avoid
   // recomputing on every ink drop highlight change. Empty when not in
@@ -161,10 +135,6 @@ class AvatarToolbarButton : public ToolbarButton,
   base::CallbackListSubscription ink_drop_highlight_subscription_;
 
   gfx::SlideAnimation slide_animation_;
-
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

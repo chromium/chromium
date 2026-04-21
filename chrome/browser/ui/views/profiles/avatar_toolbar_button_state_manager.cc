@@ -48,16 +48,22 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -72,6 +78,8 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "content/public/common/url_utils.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -83,7 +91,7 @@
 
 namespace {
 
-using ButtonState = ::AvatarToolbarButtonStateManager::ButtonState;
+using ButtonState = ::AvatarToolbarButtonState;
 
 // Timings used for testing purposes. Infinite time for the tests to confidently
 // test the behaviors while a delay is ongoing.
@@ -104,6 +112,15 @@ std::optional<base::TimeDelta> g_signed_out_promo_trigger_delay_for_testing;
 
 constexpr base::TimeDelta kOnSigninDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_on_signin_duration_for_testing;
+
+}  // namespace
+
+// static
+base::TimeDelta
+    AvatarToolbarButtonStateManager::g_iph_min_delay_after_creation =
+        base::Seconds(2);
+
+namespace {
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -610,10 +627,8 @@ class OnSigninStateProvider : public StateProvider {
   base::CallbackListSubscription state_changed_callback_subscription_;
 };
 
-class ShowIdentityNameStateProvider
-    : public StateProvider,
-      public signin::IdentityManager::Observer,
-      public AvatarToolbarButtonInterface::Observer {
+class ShowIdentityNameStateProvider : public StateProvider,
+                                      public signin::IdentityManager::Observer {
  public:
   explicit ShowIdentityNameStateProvider(
       Profile* profile,
@@ -625,12 +640,9 @@ class ShowIdentityNameStateProvider
         IdentityManagerFactory::GetForProfile(profile);
     CHECK(identity_manager);
     identity_manager_observation_.Observe(identity_manager);
-    avatar_control_observation_.Observe(avatar_control);
   }
 
-  ~ShowIdentityNameStateProvider() override {
-    avatar_control_observation_.Reset();
-  }
+  ~ShowIdentityNameStateProvider() override = default;
 
   // StateProvider:
   bool IsActive() const override { return show_identity_request_count_ > 0; }
@@ -710,7 +722,6 @@ class ShowIdentityNameStateProvider
     identity_manager_observation_.Reset();
   }
 
-  // AvatarToolbarButtonInterface::Observer
   void OnMouseExited() override { MaybeHideIdentityAnimation(); }
 
   void OnBlur() override { MaybeHideIdentityAnimation(); }
@@ -808,7 +819,7 @@ class ShowIdentityNameStateProvider
     RequestUpdate();
   }
 
-  const raw_ref<const AvatarToolbarButtonInterface> avatar_control_;
+  const raw_ref<AvatarToolbarButtonInterface> avatar_control_;
 
   // Count of the show identity pill name timeouts that are currently scheduled.
   // Multiple timeouts are scheduled when multiple show requests triggers happen
@@ -822,9 +833,6 @@ class ShowIdentityNameStateProvider
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  base::ScopedObservation<AvatarToolbarButtonInterface,
-                          AvatarToolbarButtonInterface::Observer>
-      avatar_control_observation_{this};
 
   base::WeakPtrFactory<ShowIdentityNameStateProvider> weak_ptr_factory_{this};
 };
@@ -832,9 +840,9 @@ class ShowIdentityNameStateProvider
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class PromoStateProviderCoordinator
     : public base::SupportsUserData::Data,
-      public AvatarToolbarButtonStateManager::Observer,
       public signin::IdentityManager::Observer,
-      public syncer::SyncServiceObserver {
+      public syncer::SyncServiceObserver,
+      public AvatarToolbarButtonStateManager::Observer {
  public:
   static PromoStateProviderCoordinator& GetOrCreateForProfile(
       Profile& profile) {
@@ -1723,7 +1731,7 @@ class SigninPendingStateProvider : public StateProvider,
   explicit SigninPendingStateProvider(
       Profile* profile,
       StateObserver* state_observer,
-      const AvatarToolbarButtonInterface* avatar_control)
+      AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile, state_observer),
         identity_manager_(*IdentityManagerFactory::GetForProfile(profile)),
         avatar_control_(*avatar_control) {
@@ -1863,7 +1871,7 @@ class SigninPendingStateProvider : public StateProvider,
   }
 
   raw_ref<signin::IdentityManager> identity_manager_;
-  const raw_ref<const AvatarToolbarButtonInterface> avatar_control_;
+  const raw_ref<AvatarToolbarButtonInterface> avatar_control_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -1877,10 +1885,9 @@ class ManagementStateProvider : public StateProvider,
                                 public policy::ManagementService::Observer,
                                 public BrowserCollectionObserver {
  public:
-  explicit ManagementStateProvider(
-      Profile* profile,
-      StateObserver* state_observer,
-      const AvatarToolbarButtonInterface* avatar_control)
+  explicit ManagementStateProvider(Profile* profile,
+                                   StateObserver* state_observer,
+                                   AvatarToolbarButtonInterface* avatar_control)
       : StateProvider(profile, state_observer),
         avatar_control_(*avatar_control) {
     browser_collection_observer_.Observe(
@@ -1932,7 +1939,7 @@ class ManagementStateProvider : public StateProvider,
   // ManagementService::Observer
   void OnEnterpriseLabelUpdated() override { RequestUpdate(); }
 
-  const raw_ref<const AvatarToolbarButtonInterface> avatar_control_;
+  const raw_ref<AvatarToolbarButtonInterface> avatar_control_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};
@@ -2026,6 +2033,19 @@ StateProvider::GetButtonActionOverride() {
   return std::nullopt;
 }
 
+void StateProvider::OnButtonPressed() {}
+
+void StateProvider::OnIconUpdated() {}
+
+void StateProvider::OnMouseExited() {}
+
+void StateProvider::OnBlur() {}
+
+void StateProvider::OnIPHPromoChanged(bool has_promo) {}
+
+void StateProvider::OnButtonStateChanged(std::optional<ButtonState> old_state,
+                                         ButtonState new_state) {}
+
 void StateProvider::ClearForTesting() {
   NOTREACHED();
 }
@@ -2041,27 +2061,38 @@ void StateProvider::RequestUpdate() {
 AvatarToolbarButtonStateManager::AvatarToolbarButtonStateManager(
     AvatarToolbarButtonInterface& avatar_control,
     Browser* browser)
-    : avatar_control_(avatar_control), profile_(*browser->profile()) {
-  // Creates the main states and listeners.
-  CreateStatesAndListeners(browser);
-  ComputeButtonActiveState();
+    : avatar_control_(avatar_control),
+      browser_(browser),
+      profile_(*browser->profile()),
+      creation_time_(base::TimeTicks::Now()) {}
+
+AvatarToolbarButtonStateManager::~AvatarToolbarButtonStateManager() {
+  // States should be cleared before the observer list is destroyed, since some
+  // states might be observers of the button.
+  states_.clear();
 }
 
-AvatarToolbarButtonStateManager::~AvatarToolbarButtonStateManager() = default;
-
 void AvatarToolbarButtonStateManager::InitializeStates() {
-  // States should initialize here, making sure that this should happen after
-  // all main states are created. This would allow the `Init()` functions of
-  // state to call `ComputeButtonActiveState()`. If this was done in their
-  // constructor there could be a chance that no active state exist yet.
-  for (auto& state : states_) {
-    state.second->Init();
+  {
+    base::AutoReset<bool> initializing_reset(&is_initializing_, true);
+
+    // Creates the main states and listeners.
+    CreateStatesAndListeners(browser_);
+
+    // States should initialize here, making sure that this should happen after
+    // all main states are created. This would allow the `Init()` functions of
+    // state to call `ComputeButtonActiveState()`. If this was done in their
+    // constructor there could be a chance that no active state exist yet.
+    for (auto& state : states_) {
+      state.second->Init();
+    }
   }
   ComputeButtonActiveState();
 }
 
 StateProvider* AvatarToolbarButtonStateManager::GetActiveStateProvider() const {
-  return current_active_state_pair_->second.get();
+  return current_active_state_pair_ ? current_active_state_pair_->second.get()
+                                    : nullptr;
 }
 
 base::ScopedClosureRunner AvatarToolbarButtonStateManager::SetExplicitState(
@@ -2103,6 +2134,144 @@ bool AvatarToolbarButtonStateManager::HasExplicitButtonState() const {
   return current_active_state_pair_->first == ButtonState::kExplicitTextShowing;
 }
 
+void AvatarToolbarButtonStateManager::AddObserver(
+    AvatarToolbarButtonInterface::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AvatarToolbarButtonStateManager::RemoveObserver(
+    AvatarToolbarButtonInterface::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void AvatarToolbarButtonStateManager::RegisterObserver(Observer* observer) {
+  state_manager_observers_.emplace_back(*observer);
+}
+
+void AvatarToolbarButtonStateManager::HandleButtonPressed(
+    bool is_source_accelerator) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (browser_ &&
+      BrowserUserEducationInterface::From(browser_)->IsFeaturePromoActive(
+          feature_engagement::kIPHPasswordsSavePrimingPromoFeature)) {
+    BrowserUserEducationInterface::From(browser_)
+        ->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+
+  if (browser_ &&
+      webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
+    webauthn::PasskeyUnlockManager* passkey_unlock_manager =
+        webauthn::PasskeyUnlockManagerFactory::GetForProfile(
+            browser_->profile());
+    if (passkey_unlock_manager &&
+        passkey_unlock_manager->ShouldDisplayErrorUi()) {
+      webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::
+              kAvatarButtonPressed);
+    }
+  }
+#endif
+
+  // Notify observers before the action is performed to allow them to close any
+  // open dialogs.
+  NotifyButtonPressed();
+
+  StateProvider* active_state_provider = GetActiveStateProvider();
+  CHECK(active_state_provider);
+  std::optional<base::RepeatingCallback<void(bool)>> action_override =
+      active_state_provider->GetButtonActionOverride();
+  if (action_override.has_value()) {
+    action_override->Run(is_source_accelerator);
+    return;
+  }
+
+  // By default, show the profile menu.
+  if (browser_ && browser_->GetFeatures().profile_menu_coordinator()) {
+    browser_->GetFeatures().profile_menu_coordinator()->Show(
+        is_source_accelerator);
+  }
+}
+
+std::pair<std::u16string, std::u16string>
+AvatarToolbarButtonStateManager::GetAccessibilityLabels(
+    std::u16string_view button_text) const {
+  StateProvider* state_provider = GetActiveStateProvider();
+  if (!state_provider) {
+    return {std::u16string(), std::u16string()};
+  }
+  std::optional<std::u16string> accessibility_label =
+      state_provider->GetAccessibilityLabel();
+
+  std::u16string name;
+  std::u16string description;
+
+  // The button content text as well as the button action are modified
+  // dynamically with very different contexts. The accessibility label is not
+  // always present, but when it is, it is either used as the main text (through
+  // name) or as the secondary text (through description) if the button content
+  // exists. Adapt the description to match it's default when it is not the
+  // accessibility label: the tooltip or no text if the button content has no
+  // text initially. All the values needs to be overridden every time in order
+  // clear the previous state effect.
+  if (accessibility_label.has_value()) {
+    if (button_text.empty()) {
+      name = accessibility_label.value();
+      description = state_provider->GetAvatarTooltipText();
+    } else {
+      name = std::u16string(button_text);
+      description = accessibility_label.value();
+    }
+  } else {
+    if (button_text.empty()) {
+      name = state_provider->GetAvatarTooltipText();
+      description = std::u16string();
+    } else {
+      name = std::u16string(button_text);
+      description = state_provider->GetAvatarTooltipText();
+    }
+  }
+  return {name, description};
+}
+
+void AvatarToolbarButtonStateManager::NotifyMouseExited() {
+  for (auto& state : states_) {
+    state.second->OnMouseExited();
+  }
+  observer_list_.Notify(&AvatarToolbarButtonInterface::Observer::OnMouseExited);
+}
+
+void AvatarToolbarButtonStateManager::NotifyBlur() {
+  for (auto& state : states_) {
+    state.second->OnBlur();
+  }
+  observer_list_.Notify(&AvatarToolbarButtonInterface::Observer::OnBlur);
+}
+
+void AvatarToolbarButtonStateManager::NotifyButtonPressed() {
+  for (auto& state : states_) {
+    state.second->OnButtonPressed();
+  }
+  observer_list_.Notify(
+      &AvatarToolbarButtonInterface::Observer::OnButtonPressed);
+}
+
+void AvatarToolbarButtonStateManager::NotifyIconUpdated() {
+  for (auto& state : states_) {
+    state.second->OnIconUpdated();
+  }
+  observer_list_.Notify(&AvatarToolbarButtonInterface::Observer::OnIconUpdated);
+}
+
+void AvatarToolbarButtonStateManager::NotifyIPHPromoChanged(bool has_promo) {
+  for (auto& state : states_) {
+    state.second->OnIPHPromoChanged(has_promo);
+  }
+  observer_list_.Notify(
+      &AvatarToolbarButtonInterface::Observer::OnIPHPromoChanged, has_promo);
+}
+
 void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
     Browser* browser) {
   // Add each possible state for each Profile type or browser configuration,
@@ -2121,8 +2290,8 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
 
   if (profile->IsRegularProfile()) {
     if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-      state_manager_observers_.emplace_back(
-          OnSigninCoordinator::GetForProfile(*profile));
+      RegisterObserver(static_cast<Observer*>(
+          &OnSigninCoordinator::GetForProfile(*profile)));
       states_[ButtonState::kOnSignin] =
           std::make_unique<OnSigninStateProvider>(browser,
                                                   /*state_observer=*/this);
@@ -2163,8 +2332,8 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
       auto promo_state_provider =
           std::make_unique<PromoStateProvider>(browser,
                                                /*state_observer=*/this);
-      state_manager_observers_.emplace_back(
-          PromoStateProviderCoordinator::GetOrCreateForProfile(*profile));
+      RegisterObserver(static_cast<Observer*>(
+          &PromoStateProviderCoordinator::GetOrCreateForProfile(*profile)));
       states_[ButtonState::kPromo] = std::move(promo_state_provider);
     }
 
@@ -2184,9 +2353,9 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
       states_[ButtonState::kPasskeysLockedError] =
           std::make_unique<PasskeyStateProvider>(profile,
                                                  /*state_observer=*/this);
-      state_manager_observers_.emplace_back(
-          AvatarToolbarButtonPasskeyStateChangeReporter::GetOrCreateForProfile(
-              *profile));
+      RegisterObserver(static_cast<Observer*>(
+          &AvatarToolbarButtonPasskeyStateChangeReporter::GetOrCreateForProfile(
+              *profile)));
     }
 
     signin::IdentityManager* identity_manager =
@@ -2246,27 +2415,215 @@ void AvatarToolbarButtonStateManager::OnStateProviderUpdateRequest(
 }
 
 void AvatarToolbarButtonStateManager::ComputeButtonActiveState() {
-  // Traverse the map of states sorted by their priority set in `ButtonState`.
-  for (auto& state_pair : states_) {
-    // Sets first state that is active.
-    if (state_pair.second->IsActive()) {
-      std::optional<ButtonState> old_state;
-      if (current_active_state_pair_) {
-        if (current_active_state_pair_->first == state_pair.first) {
-          return;
+  if (is_initializing_) {
+    return;
+  }
+
+  if (is_updating_) {
+    was_update_requested_ = true;
+    return;
+  }
+
+  base::AutoReset<bool> updating_reset(&is_updating_, true);
+  while (true) {
+    was_update_requested_ = false;
+
+    // Traverse the map of states sorted by their priority set in `ButtonState`.
+    for (auto& state_pair : states_) {
+      // Sets first state that is active.
+      if (state_pair.second->IsActive()) {
+        std::optional<ButtonState> old_state;
+        if (current_active_state_pair_) {
+          if (current_active_state_pair_->first == state_pair.first) {
+            break;
+          }
+          old_state = current_active_state_pair_->first;
         }
-        old_state = current_active_state_pair_->first;
+        current_active_state_pair_ = &state_pair;
+        ButtonState new_state = current_active_state_pair_->first;
+
+        for (auto& state : states_) {
+          state.second->OnButtonStateChanged(old_state, new_state);
+        }
+        for (auto observer : state_manager_observers_) {
+          observer->OnButtonStateChanged(old_state, new_state);
+        }
+        break;
       }
-      current_active_state_pair_ = &state_pair;
-      for (auto observer : state_manager_observers_) {
-        observer->OnButtonStateChanged(old_state,
-                                       current_active_state_pair_->first);
+    }
+
+    if (!was_update_requested_) {
+      break;
+    }
+  }
+}
+
+void AvatarToolbarButtonStateManager::MaybeShowProfileSwitchIPH() {
+  // Prevent showing the promo right when the browser was created. Wait a small
+  // delay for a smoother animation.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AvatarToolbarButtonStateManager::MaybeShowProfileSwitchIPH,
+            weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  // This will show the promo only after the IPH system is properly initialized.
+  if (!web_app::AppBrowserController::IsWebApp(browser_)) {
+    BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHProfileSwitchFeature);
+  } else {
+    // Installable PasswordManager WebUI is the only web app that has an avatar
+    // toolbar button.
+    auto app_url = browser_->app_controller()->GetAppStartUrl();
+    CHECK(
+        content::HasWebUIScheme(app_url) &&
+        (app_url.GetHost() == password_manager::kChromeUIPasswordManagerHost));
+    BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
+  }
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void AvatarToolbarButtonStateManager::MaybeShowSupervisedUserSignInIPH() {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
+    return;
+  }
+  if (!browser_) {
+    return;
+  }
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  CHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  auto account_info = identity_manager->FindExtendedAccountInfoByAccountId(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  if (account_info.GetAccountCapabilities().is_subject_to_parental_controls() !=
+      signin::Tribool::kTrue) {
+    return;
+  }
+  if (account_info.IsEmpty()) {
+    return;
+  }
+
+  // Prevent showing the promo right when the browser was created.
+  // This is not just used for smoother animation, but it gives the anchor
+  // element enough time to become visible and display the IPH.
+  // TODO(crbug.com/372689164): investigate alternative rescheduling,
+  // using `WouldShowFeaturePromo`.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AvatarToolbarButtonStateManager::MaybeShowSupervisedUserSignInIPH,
+            weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature);
+  params.title_params =
+      base::UTF8ToUTF16(account_info.GetGivenName().value_or(""));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      std::move(params));
+}
+
+void AvatarToolbarButtonStateManager::MaybeShowSignInBenefitsIPH() {
+  const bool show_new_signin =
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSigninPromosNewSignin) &&
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSignInBenefitsNewSigninFeature);
+  const bool show_legacy = base::FeatureList::IsEnabled(
+                               syncer::kReplaceSyncPromosWithSignInPromos) &&
+                           base::FeatureList::IsEnabled(
+                               feature_engagement::kIPHSignInBenefitsFeature);
+
+  if (!show_new_signin && !show_legacy) {
+    return;
+  }
+
+  // Prevent showing the IPH bubble right when the browser was created. Wait a
+  // small delay for a smoother animation.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AvatarToolbarButtonStateManager::MaybeShowSignInBenefitsIPH,
+            weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  Profile* profile = browser_->profile();
+  CHECK(profile);
+
+  // The IPH only concerns signed-in, non-syncing profiles.
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  // Users who sign in after the migration and users migrated from DICe will be
+  // notified with other promos communicating sign-in benefits.
+  if (prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration) ||
+      prefs->GetBoolean(kDiceMigrationMigrated)) {
+    return;
+  }
+
+  if (show_new_signin && !show_legacy) {
+    auto* const edu_service =
+        UserEducationServiceFactory::GetForBrowserContext(profile);
+    if (edu_service) {
+      auto data = edu_service->user_education_storage_service().ReadPromoData(
+          feature_engagement::kIPHSignInBenefitsFeature);
+      if (data && data->show_count > 0) {
+        return;
       }
-      return;
     }
   }
 
-  NOTREACHED() << "There should at least be one active state in the map.";
+  // It should not matter in practice, but if both features are enabled, show
+  // the legacy IPH.
+  const base::Feature& feature_to_show =
+      show_legacy ? feature_engagement::kIPHSignInBenefitsFeature
+                  : feature_engagement::kIPHSignInBenefitsNewSigninFeature;
+
+  BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
+      feature_to_show);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+void AvatarToolbarButtonStateManager::
+    MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
+        const AccountInfo& account_info) {
+  if (!browser_) {
+    return;
+  }
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+      account_info.GetGaiaId().ToString());
+  params.title_params =
+      base::UTF8ToUTF16(account_info.GetGivenName().value_or(""));
+  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
+      std::move(params));
 }
 
 void AvatarToolbarButtonStateManager::UpdateButtonIcon() {
@@ -2278,8 +2635,24 @@ void AvatarToolbarButtonStateManager::UpdateButtonText() {
 }
 
 void AvatarToolbarButtonStateManager::UpdateAvatarButton() {
-  UpdateButtonText();
-  UpdateButtonIcon();
+  if (is_initializing_) {
+    return;
+  }
+
+  if (is_updating_) {
+    was_update_requested_ = true;
+    return;
+  }
+
+  base::AutoReset<bool> updating_reset(&is_updating_, true);
+  while (true) {
+    was_update_requested_ = false;
+    UpdateButtonText();
+    UpdateButtonIcon();
+    if (!was_update_requested_) {
+      break;
+    }
+  }
 }
 
 void AvatarToolbarButtonStateManager::OnIdentityManagerShutdown(
@@ -2298,12 +2671,52 @@ void AvatarToolbarButtonStateManager::OnAccountsInCookieUpdated(
 }
 
 void AvatarToolbarButtonStateManager::OnExtendedAccountInfoUpdated(
-    const AccountInfo&) {
+    const AccountInfo& info) {
+  if (info.GetGaiaId() == gaia_id_for_signin_choice_remembered_ &&
+      info.GetGivenName().has_value()) {
+    gaia_id_for_signin_choice_remembered_ = GaiaId();
+    MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(info);
+  }
   UpdateButtonIcon();
 }
 
 void AvatarToolbarButtonStateManager::OnExtendedAccountInfoRemoved(
     const AccountInfo&) {
+  UpdateButtonIcon();
+}
+
+void AvatarToolbarButtonStateManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  // Try showing the IPH for signin preference remembered.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+          signin::PrimaryAccountChangeEvent::Type::kSet &&
+      event_details.GetSetPrimaryAccountAccessPoint() ==
+          signin_metrics::AccessPoint::kSigninChoiceRemembered) {
+    GaiaId gaia_id = event_details.GetCurrentState().primary_account.gaia;
+    Profile* profile = browser_->profile();
+    CHECK(profile);
+    PrefService* prefs = profile->GetPrefs();
+    CHECK(prefs);
+    const SigninPrefs signin_prefs(*prefs);
+    std::optional<base::Time> last_signout_time =
+        signin_prefs.GetChromeLastSignoutTime(gaia_id);
+    if (!last_signout_time ||
+        base::Time::Now() - last_signout_time.value() >= base::Days(14)) {
+      // More than two weeks since the last sign out event or first time.
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      CHECK(identity_manager);
+
+      AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+          event_details.GetCurrentState().primary_account);
+      if (account_info.GetGivenName().has_value()) {
+        MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
+      } else {
+        gaia_id_for_signin_choice_remembered_ = account_info.GetGaiaId();
+      }
+    }
+  }
+
   UpdateButtonIcon();
 }
 
@@ -2349,6 +2762,14 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
+}
+
+// static
+base::AutoReset<base::TimeDelta> AvatarToolbarButtonStateManager::
+    SetScopedIPHMinDelayAfterCreationForTesting(  // IN-TEST
+        base::TimeDelta delay) {
+  return base::AutoReset<base::TimeDelta>(&g_iph_min_delay_after_creation,
+                                          delay);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

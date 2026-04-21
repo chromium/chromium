@@ -104,33 +104,15 @@ class AvatarToolbarButtonInterface {
   [[nodiscard]] static base::AutoReset<base::TimeDelta>
   SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
-  // These helper functions allow tests to be time independent; tests that are
-  // time dependent tend to create a lot of flakiness.
-  //
-  // This function allows to set an infinite delay for time dependent parts. By
-  // default tests should have this function called for all types, and then
-  // calling `TriggerTimeoutForTesting()` when needing to force trigger the
-  // ending of the delay. This allows to properly test the behavior before and
-  // after delay expiry while controlling those events..
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
-  // Clears the active state (makes it inactive).
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Specific override for the SigninPending text delay. Setting a zero value
-  // make it possible to test the creation of browser after the delay has
-  // reached.
-  // The delay start time is shared in a ProfileUserData which makes it harder
-  // to access in case no browser are visible anymore, making the
-  // `TriggerTimeoutForTesting()` not enough for testing.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  protected:
-  // Do not show the IPH right when creating the window, so that the IPH has a
-  // separate animation.
-  static base::TimeDelta g_iph_min_delay_after_creation;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_AVATAR_TOOLBAR_BUTTON_INTERFACE_H_

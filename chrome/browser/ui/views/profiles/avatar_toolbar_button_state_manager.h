@@ -32,6 +32,35 @@ class ColorProvider;
 
 class StateObserver;
 
+// States of the button ordered in priority of getting displayed.
+// The order of those values is used with the `StateManager` to make sure the
+// active state with the highest priority is shown.
+// The lower the value of the enum, the higher the priority.
+enum class AvatarToolbarButtonState {
+  kGuestSession,
+  kIncognitoProfile,
+  kExplicitTextShowing,
+  kOnSignin,
+  kShowIdentityName,
+  kSigninPending,
+  kSyncPaused,
+  kUpgradeClientError,
+  kPassphraseError,
+  kBookmarksLimitExceeded,
+  // Catch-all for remaining errors in sync-the-feature or sync-the-transport
+  // (this includes Trusted Vault locked Sync error).
+  kSyncError,
+  kPasskeysLockedError,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Any promo presented through expanding the button. This includes any promo
+  // listed in `signin::ProfileMenuAvatarButtonPromoInfo::Type`.
+  kPromo,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Includes Work and School.
+  kManagement,
+  kNormal
+};
+
 // Provides the information needed to display a specific button state.
 // This class provides a default implementation for button appearance/behavior,
 // the derived classes can override any of the `StateProvider` methods to
@@ -100,6 +129,16 @@ class StateProvider {
   virtual std::optional<base::RepeatingCallback<void(bool)>>
   GetButtonActionOverride();
 
+  virtual void OnButtonPressed();
+  virtual void OnIconUpdated();
+  virtual void OnMouseExited();
+  virtual void OnBlur();
+  virtual void OnIPHPromoChanged(bool has_promo);
+
+  virtual void OnButtonStateChanged(
+      std::optional<AvatarToolbarButtonState> old_state,
+      AvatarToolbarButtonState new_state);
+
   // Clears the state (makes it inactive). Should be used only for testing
   // purposes.
   virtual void ClearForTesting();
@@ -141,34 +180,7 @@ class AvatarToolbarButtonStateManager
       public signin::IdentityManager::Observer,
       public ProfileAttributesStorage::Observer {
  public:
-  // States of the button ordered in priority of getting displayed.
-  // The order of those values is used with the `StateManager` to make sure the
-  // active state with the highest priority is shown.
-  // The lower the value of the enum, the higher the priority.
-  enum class ButtonState {
-    kGuestSession,
-    kIncognitoProfile,
-    kExplicitTextShowing,
-    kOnSignin,
-    kShowIdentityName,
-    kSigninPending,
-    kSyncPaused,
-    kUpgradeClientError,
-    kPassphraseError,
-    kBookmarksLimitExceeded,
-    // Catch-all for remaining errors in sync-the-feature or sync-the-transport
-    // (this includes Trusted Vault locked Sync error).
-    kSyncError,
-    kPasskeysLockedError,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    // Any promo presented through expanding the button. This includes any promo
-    // listed in `signin::ProfileMenuAvatarButtonPromoInfo::Type`.
-    kPromo,
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-    // Includes Work and School.
-    kManagement,
-    kNormal
-  };
+  using ButtonState = AvatarToolbarButtonState;
 
   // Observer is used to observe changes in the active button state.
   //
@@ -180,8 +192,9 @@ class AvatarToolbarButtonStateManager
     // Called by `StateManager` when the active button state changes.
     // `old_state` will be `std::nullopt` if there was no active state before
     // (i.e. initialization).
-    virtual void OnButtonStateChanged(std::optional<ButtonState> old_state,
-                                      ButtonState new_state) = 0;
+    virtual void OnButtonStateChanged(
+        std::optional<AvatarToolbarButtonState> old_state,
+        ButtonState new_state) = 0;
 
     virtual ~Observer() = default;
   };
@@ -195,7 +208,22 @@ class AvatarToolbarButtonStateManager
   // updates, which will try to access the `StateManager`.
   void InitializeStates();
 
+  Browser* browser() const { return browser_; }
+
   StateProvider* GetActiveStateProvider() const;
+
+  // Methods to register or remove observers of the button.
+  void AddObserver(AvatarToolbarButtonInterface::Observer* observer);
+  void RemoveObserver(AvatarToolbarButtonInterface::Observer* observer);
+
+  // Methods to register observers of the button state.
+  void RegisterObserver(Observer* observer);
+
+  void NotifyMouseExited();
+  void NotifyBlur();
+  void NotifyButtonPressed();
+  void NotifyIconUpdated();
+  void NotifyIPHPromoChanged(bool has_promo);
 
   // Special setter for the explicit state as it is controlled externally.
   base::ScopedClosureRunner SetExplicitState(
@@ -207,9 +235,33 @@ class AvatarToolbarButtonStateManager
   // Returns whether the explicit state is set.
   bool HasExplicitButtonState() const;
 
+  // Shared button press logic.
+  void HandleButtonPressed(bool is_source_accelerator);
+
+  // Shared IPH methods.
+  void MaybeShowProfileSwitchIPH();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  void MaybeShowSupervisedUserSignInIPH();
+  void MaybeShowSignInBenefitsIPH();
+#endif
+  void MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
+      const AccountInfo& account_info);
+
+  // Shared accessibility logic. Returns the name and description.
+  std::pair<std::u16string, std::u16string> GetAccessibilityLabels(
+      std::u16string_view button_text) const;
+
   // Testing functions: check `AvatarToolbarButton` equivalent functions.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
+
+  // static
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
+
+  // Do not show the IPH right when creating the window, so that the IPH has a
+  // separate animation.
+  static base::TimeDelta g_iph_min_delay_after_creation;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
@@ -258,6 +310,9 @@ class AvatarToolbarButtonStateManager
 
   void OnExtendedAccountInfoRemoved(const AccountInfo&) override;
 
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
   //  ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath&) override;
 
@@ -266,13 +321,24 @@ class AvatarToolbarButtonStateManager
   void OnProfileNameChanged(const base::FilePath&,
                             const std::u16string&) override;
 
+  base::ObserverList<
+      AvatarToolbarButtonInterface::Observer,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
+
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
   raw_ref<AvatarToolbarButtonInterface> avatar_control_;
+  const raw_ptr<Browser> browser_;
 
   // Active state per the last request to `ComputeButtonActiveState()`.
   // Pointer to the active element of `states_` with the highest priority.
   raw_ptr<std::pair<ButtonState, std::unique_ptr<StateProvider>>>
       current_active_state_pair_ = nullptr;
+
+  bool is_updating_ = false;
+  bool is_initializing_ = false;
+  bool was_update_requested_ = false;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -283,7 +349,17 @@ class AvatarToolbarButtonStateManager
 
   const raw_ref<Profile> profile_;
 
+  // Gaia Id of the account that was signed in from having it's choice
+  // remembered following a web sign-in event but waiting for the available
+  // account information to be fetched in order to show the sign in IPH.
+  GaiaId gaia_id_for_signin_choice_remembered_;
+
+  // Time when this object was created.
+  const base::TimeTicks creation_time_;
+
   std::vector<raw_ref<Observer>> state_manager_observers_;
+
+  base::WeakPtrFactory<AvatarToolbarButtonStateManager> weak_ptr_factory_{this};
 };
 
 void SigninDetectionServiceFactoryEnsureFactoryBuilt();
