@@ -99,8 +99,6 @@ struct CORE_EXPORT Timing {
   // position on a view timeline. As part of the normalization process, a
   // timeline offsets are converted to time-based delays.
   struct Delay {
-    // TODO(crbug.com/7575): Support percent delays in addition to time-based
-    // delays.
     AnimationTimeDelta time_delay;
     std::optional<double> relative_delay;
 
