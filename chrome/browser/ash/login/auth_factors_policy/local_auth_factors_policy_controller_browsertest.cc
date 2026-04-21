@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller_factory.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -34,6 +36,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
@@ -48,6 +51,8 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   LocalAuthFactorsPolicyControllerTest() {
     LocalAuthFactorsPolicyController::SetPrefProcessedCallbackForTesting(
         on_pref_processed_future_.GetRepeatingCallback());
+    LocalAuthFactorsPolicyController::SetNotificationShownCallbackForTesting(
+        on_notification_shown_future_.GetRepeatingCallback());
     ignore_sync_errors_for_test_ =
         SigninErrorNotifier::IgnoreSyncErrorsForTesting();
   }
@@ -72,6 +77,11 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
            "callback";
   }
 
+  void WaitForNotificationShownCallback() {
+    ASSERT_TRUE(on_notification_shown_future_.WaitAndClear())
+        << "Failed waiting for complexity update notification shown callback";
+  }
+
   void ClearPendingPrefProcessedCallback() {
     on_pref_processed_future_.Clear();
   }
@@ -86,6 +96,23 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
 
  protected:
   void UpdatePolicy() { provider_.UpdateChromePolicy(policy_map_); }
+
+  void OnFactorChanged(const AccountId& account_id,
+                       ash::auth::mojom::AuthFactor factor) {
+    LocalAuthFactorsPolicyController* controller =
+        LocalAuthFactorsPolicyControllerFactory::GetForProfile(
+            GetProfile(account_id));
+    CHECK(controller);
+    controller->OnFactorChanged(factor);
+  }
+
+  void SetComplexityPolicy(LocalAuthFactorsComplexity complexity) {
+    policy_map_.Set(policy::key::kLocalAuthFactorsComplexity,
+                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                    policy::POLICY_SOURCE_CLOUD,
+                    base::Value(static_cast<int>(complexity)), nullptr);
+    UpdatePolicy();
+  }
 
   void DisableAllAllowedAuthFactorsPolicy() {
     policy_map_.Set(policy::key::kAllowedLocalAuthFactors,
@@ -142,7 +169,12 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
       UserAuthConfig::Create({AshAuthFactor::kGaiaPassword})
           .RequireReauth(/*require_reauth=*/false)};
 
+  Profile* GetProfile(const AccountId& account_id) {
+    return ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  }
+
   base::test::TestFuture<void> on_pref_processed_future_;
+  base::test::TestFuture<void> on_notification_shown_future_;
   CryptohomeMixin cryptohome_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   LoginManagerMixin login_mixin_{
@@ -262,4 +294,52 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(
       gaia_password_and_pin_user_.account_id));
 }
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       ShowComplexityUpdateNotificationOnPolicyUpdate) {
+  const AccountId& account_id = local_password_and_pin_user_.account_id;
+  LoginUser(account_id);
+  Profile* profile = GetProfile(account_id);
+  NotificationDisplayServiceTester tester(profile);
+
+  // Set complexity policy to Low.
+  SetComplexityPolicy(LocalAuthFactorsComplexity::kLow);
+
+  // The notification is shown after an async call to
+  // GetAuthFactorsConfiguration.
+  WaitForNotificationShownCallback();
+
+  std::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          "local_auth_factors_policy_controller.complexity_update");
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), u"Change your PIN and password");
+  EXPECT_EQ(notification->message(),
+            u"Your administrator updated the security requirements for your "
+            u"device");
+}
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       NotificationDismissedOnFactorChanged) {
+  const AccountId& account_id = local_password_and_pin_user_.account_id;
+  LoginUser(account_id);
+  Profile* profile = GetProfile(account_id);
+  NotificationDisplayServiceTester tester(profile);
+
+  // Set complexity policy to Low to trigger notification.
+  SetComplexityPolicy(LocalAuthFactorsComplexity::kLow);
+
+  WaitForNotificationShownCallback();
+
+  const std::string notification_id =
+      "local_auth_factors_policy_controller.complexity_update";
+  EXPECT_TRUE(tester.GetNotification(notification_id).has_value());
+
+  // Simulate factor update.
+  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kLocalPassword);
+
+  // Notification should be dismissed.
+  EXPECT_FALSE(tester.GetNotification(notification_id).has_value());
+}
+
 }  // namespace ash

@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -16,8 +18,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_notification_delegate.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -25,6 +32,7 @@
 #include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
+#include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -32,14 +40,64 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_manager.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
 
 namespace {
 
+using AuthFactor = ash::auth::mojom::AuthFactor;
+
+constexpr char kComplexityUpdateNotificationId[] =
+    "local_auth_factors_policy_controller.complexity_update";
+
 base::RepeatingClosure& GetOnPrefProcessedClosure() {
   static base::NoDestructor<base::RepeatingClosure> on_pref_processed;
   return *on_pref_processed;
+}
+
+base::RepeatingClosure& GetOnNotificationShownClosure() {
+  static base::NoDestructor<base::RepeatingClosure> on_notification_shown;
+  return *on_notification_shown;
+}
+
+ash::auth::mojom::AuthFactorConfig& auth_factor_config(
+    PrefService& local_state) {
+  return ash::auth::GetAuthFactorConfig(
+      quick_unlock::QuickUnlockFactory::GetDelegate(), &local_state);
+}
+
+void ShowNotification(Profile* profile,
+                      const std::u16string& title,
+                      const std::u16string& message,
+                      const std::u16string& button_title) {
+  message_center::RichNotificationData optional_fields;
+  optional_fields.buttons.emplace_back(button_title);
+  optional_fields.remove_on_click = false;
+  optional_fields.never_timeout = true;
+
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kComplexityUpdateNotificationId,
+      NotificationCatalogName::kLocalAuthFactorsComplexity);
+
+  auto notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kComplexityUpdateNotificationId,
+      title, message, /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(), notifier_id, optional_fields,
+      base::MakeRefCounted<LocalAuthFactorsNotificationDelegate>(profile),
+      vector_icons::kBusinessIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+  notification.SetSystemPriority();
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
+
+  if (auto& callback = GetOnNotificationShownClosure()) {
+    callback.Run();
+  }
 }
 
 }  // namespace
@@ -50,15 +108,22 @@ void LocalAuthFactorsPolicyController::SetPrefProcessedCallbackForTesting(
   GetOnPrefProcessedClosure() = std::move(on_pref_processed);
 }
 
+// static
+void LocalAuthFactorsPolicyController::SetNotificationShownCallbackForTesting(
+    base::RepeatingClosure on_notification_shown) {
+  GetOnNotificationShownClosure() = std::move(on_notification_shown);
+}
+
 PrefService& LocalAuthFactorsPolicyController::prefs() {
   return *pref_change_registrar_.prefs();
 }
 
 LocalAuthFactorsPolicyController::LocalAuthFactorsPolicyController(
-    PrefService& pref_service,
+    PrefService& local_state,
+    Profile* profile,
     const AccountId& account_id)
-    : account_id_(account_id) {
-  pref_change_registrar_.Init(&pref_service);
+    : profile_(profile), account_id_(account_id) {
+  pref_change_registrar_.Init(profile->GetPrefs());
   // `base::Unretained(this)` is safe as `this` outlives the registrar.
   pref_change_registrar_.Add(
       ash::prefs::kAllowedLocalAuthFactors,
@@ -71,6 +136,15 @@ LocalAuthFactorsPolicyController::LocalAuthFactorsPolicyController(
           &LocalAuthFactorsPolicyController::OnAllowedAuthFactorsPrefUpdated,
           base::Unretained(this)));
   OnAllowedAuthFactorsPrefUpdated();
+
+  auth_factor_config(local_state)
+      .ObserveFactorChanges(receiver_.BindNewPipeAndPassRemote());
+  pref_change_registrar_.Add(
+      ash::prefs::kLocalAuthFactorsComplexity,
+      base::BindRepeating(
+          &LocalAuthFactorsPolicyController::OnComplexityPrefUpdated,
+          base::Unretained(this)));
+  OnComplexityPrefUpdated();
 }
 
 LocalAuthFactorsPolicyController::~LocalAuthFactorsPolicyController() = default;
@@ -151,6 +225,103 @@ LocalAuthFactorsPolicyController::GetAllowedAuthFactors() {
   auto& allowed_auth_factors =
       prefs().GetList(ash::prefs::kAllowedLocalAuthFactors);
   return ash::GetAuthFactorsSetFromPolicyList(&allowed_auth_factors);
+}
+
+void LocalAuthFactorsPolicyController::OnFactorChanged(AuthFactor factor) {
+  const int enforced_complexity =
+      prefs().GetInteger(ash::prefs::kLocalAuthFactorsComplexity);
+
+  switch (factor) {
+    case AuthFactor::kPrefBasedPin:
+    case AuthFactor::kCryptohomePin:
+    case AuthFactor::kCryptohomePinV2:
+    case AuthFactor::kLocalPassword:
+      // A secret was updated successfully. The new secret naturally complies
+      // with the currently enforced policy, so we can mark the current policy
+      // as verified.
+      // TODO: b/445628211 - Separate verified complexity for PIN and password.
+      prefs().SetInteger(ash::prefs::kLocalAuthFactorsVerifiedComplexity,
+                         enforced_complexity);
+      DismissComplexityUpdateNotification();
+      break;
+    case AuthFactor::kRecovery:
+    case AuthFactor::kGaiaPassword:
+      break;
+  }
+}
+
+void LocalAuthFactorsPolicyController::OnComplexityPrefUpdated() {
+  const int enforced_complexity =
+      prefs().GetInteger(ash::prefs::kLocalAuthFactorsComplexity);
+  const int verified_complexity =
+      prefs().GetInteger(ash::prefs::kLocalAuthFactorsVerifiedComplexity);
+
+  // If the policy requires a higher complexity than the user has verified,
+  // trigger the notification.
+  if (enforced_complexity > verified_complexity) {
+    ShowComplexityUpdateNotification();
+  } else {
+    DismissComplexityUpdateNotification();
+  }
+}
+
+void LocalAuthFactorsPolicyController::ShowComplexityUpdateNotification() {
+  auto user_context = std::make_unique<ash::UserContext>();
+  user_context->SetAccountId(account_id_);
+  GetAuthFactorEditor()->GetAuthFactorsConfiguration(
+      std::move(user_context),
+      base::BindOnce(
+          &LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification,
+          weak_factory_.GetWeakPtr()));
+}
+
+void LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification(
+    std::unique_ptr<ash::UserContext> user_context,
+    std::optional<ash::AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to get auth factors: "
+               << error->get_cryptohome_error();
+    return;
+  }
+  CHECK(user_context);
+  const auto& config = user_context->GetAuthFactorsConfiguration();
+  auto* password_factor =
+      config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+  auto* pin_factor = config.FindFactorByType(cryptohome::AuthFactorType::kPin);
+
+  bool has_password =
+      password_factor && ash::auth::IsLocalPassword(*password_factor);
+  bool has_pin = !!pin_factor;
+
+  if (!has_password && !has_pin) {
+    LOG(WARNING) << "Complexity update required but no local password or PIN "
+                    "found for user.";
+    return;
+  }
+
+  // TODO: b/445628211 - Use localized strings.
+  std::u16string title;
+  std::u16string message =
+      u"Your administrator updated the security requirements for your device";
+  std::u16string button_title;
+
+  if (has_password && has_pin) {
+    title = u"Change your PIN and password";
+    button_title = u"Go to Settings";
+  } else if (has_password) {
+    title = u"Change your password";
+    button_title = u"Change password";
+  } else {
+    title = u"Change your PIN";
+    button_title = u"Change PIN";
+  }
+
+  ShowNotification(profile_, title, message, button_title);
+}
+
+void LocalAuthFactorsPolicyController::DismissComplexityUpdateNotification() {
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
+      NotificationHandler::Type::TRANSIENT, kComplexityUpdateNotificationId);
 }
 
 }  // namespace ash

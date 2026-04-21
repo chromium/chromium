@@ -21859,6 +21859,7 @@ Called by update_net_error_codes.py.-->
   <int value="202" label="Camera Upload"/>
   <int value="203" label="Frozen Update Notification"/>
   <int value="204" label="Geolocation Reported"/>
+  <int value="205" label="Local Auth Factors Complexity"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/constants/notifier_catalogs.h:NotificationCatalogName) -->

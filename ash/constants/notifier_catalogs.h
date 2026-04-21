@@ -222,7 +222,8 @@ enum class NotificationCatalogName {
   kCameraUpload = 202,
   kFrozenUpdateNotification = 203,
   kDeviceCommandGeolocation = 204,
-  kMaxValue = kDeviceCommandGeolocation
+  kLocalAuthFactorsComplexity = 205,
+  kMaxValue = kLocalAuthFactorsComplexity
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:NotificationCatalogName)
 

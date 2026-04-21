@@ -6,11 +6,13 @@ assert(is_chromeos)
 
 static_library("auth_factors_policy") {
   public = [
+    "local_auth_factors_notification_delegate.h",
     "local_auth_factors_policy_controller.h",
     "local_auth_factors_policy_controller_factory.h",
   ]
 
   sources = [
+    "local_auth_factors_notification_delegate.cc",
     "local_auth_factors_policy_controller.cc",
     "local_auth_factors_policy_controller_factory.cc",
   ]
@@ -22,7 +24,9 @@ static_library("auth_factors_policy") {
   deps = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/notifications",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/auth_factor_config",
     "//components/session_manager/core",
   ]
@@ -47,6 +51,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common:test_support",
