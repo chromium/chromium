@@ -50,13 +50,13 @@ struct ReloadControlState {
   bool is_navigation_loading;
   bool is_context_menu_visible;
 
-  // Number of times the state of the reload button has been forcibly reset.
-  // When its value changes, the reload button changes immediately to the
-  // state corresponding to the value of `is_navigation_loading`, ignoring all
-  // debounding logic and double click delays.
-  //
-  // Incremented when switching tabs, and possibly other times as well.
-  int32 reset_state_count;
+  // This changes whenever the state should be reset, typically due to a change
+  // in context (i.e., a switch between tabs). When a `state_token` is received
+  // that has different from the most recently recently received token, the
+  // reload button icon changes immediately to the state corresponding to the
+  // value of `is_navigation_loading`, ignoring all debouncing logic and double
+  // click delays, and any timers are stopped.
+  int32 state_token;
 };
 
 struct SplitTabsControlState {

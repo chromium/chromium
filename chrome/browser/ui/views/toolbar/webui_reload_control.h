@@ -81,11 +81,11 @@ class WebUIReloadControl : public ReloadControl {
   ReloadControl::Mode mode_ = ReloadControl::Mode::kReload;
   bool is_initialized_ = false;
 
-  // The number of times ChangeMode() has been called with `force`. Passed to
-  // Javascript, which will unconditionally reset button state whenever the
-  // value changes. Overflow is unlikely, but benign, since the exact value is
-  // checked.
-  int reset_state_count_ = 0;
+  // The is is incremented whenever ChangeMode() has been called with `force`.
+  // Passed to Javascript, which will unconditionally reset button state
+  // whenever the value changes. Overflow is unlikely, but benign, since the
+  // value is only compared to the most recently received one.
+  int state_token_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_RELOAD_CONTROL_H_

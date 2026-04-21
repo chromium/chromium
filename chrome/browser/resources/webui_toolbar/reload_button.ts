@@ -58,7 +58,7 @@ export class ReloadButtonElement extends CrLitElement {
     canShowMenu: false,
     isNavigationLoading: false,
     isContextMenuVisible: false,
-    resetStateCount: 0,
+    stateToken: 0,
   };
   protected accessor tooltip: string =
       loadTimeData.getString(RELOAD_BUTTON_TOOLTIP_RELOAD);
@@ -220,8 +220,7 @@ export class ReloadButtonElement extends CrLitElement {
               (this.state.canShowMenu ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
                                         RELOAD_BUTTON_TOOLTIP_RELOAD));
       this.updateState_(/*force=*/ !previousState ||
-                        this.state.resetStateCount !==
-                            previousState.resetStateCount);
+                        this.state.stateToken !== previousState.stateToken);
     }
   }
 

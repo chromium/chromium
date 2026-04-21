@@ -45,7 +45,7 @@ void WebUIReloadControl::Init() {
 void WebUIReloadControl::ChangeMode(ReloadControl::Mode mode, bool force) {
   mode_ = mode;
   if (force) {
-    ++reset_state_count_;
+    ++state_token_;
   }
   UpdateState();
 }
@@ -103,6 +103,6 @@ void WebUIReloadControl::UpdateState() {
       is_dev_tools_connected_ && (mode_ == ReloadControl::Mode::kReload);
   state->is_navigation_loading = (mode_ == ReloadControl::Mode::kStop);
   state->is_context_menu_visible = menu_runner_->IsRunning();
-  state->reset_state_count = reset_state_count_;
+  state->state_token = state_token_;
   webui_toolbar_web_view_->OnReloadControlStateChanged(std::move(state));
 }
