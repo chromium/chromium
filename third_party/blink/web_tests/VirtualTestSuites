@@ -2660,7 +2660,8 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/speculation-rules/prerender/activation-by-form-submission.https.html"
+      "external/wpt/speculation-rules/prerender/activation-by-form-submission.https.html",
+      "external/wpt/speculation-rules/prerender/csp-form-action.https.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
