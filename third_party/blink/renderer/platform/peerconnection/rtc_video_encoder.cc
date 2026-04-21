@@ -77,7 +77,6 @@
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "third_party/webrtc/modules/video_coding/svc/create_scalability_structure.h"
-#include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
@@ -723,6 +722,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // its own thread, hence the |init_event| argument.
   void CreateAndInitializeVEA(
       const media::VideoEncodeAccelerator::Config& vea_config,
+      std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter,
       SignaledValue init_event);
 
   // Enqueue a frame from WebRTC for encoding. This function is called
@@ -767,9 +767,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   void Drain(SignaledValue event);
   void DrainCompleted(bool success);
-
-  void SetSimulcastToSvcConverter(std::optional<webrtc::SimulcastToSvcConverter>
-                                      simulcast_to_svc_converter);
 
  private:
   enum {
@@ -1080,11 +1077,13 @@ RTCVideoEncoder::Impl::Impl(
 
 void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
     const media::VideoEncodeAccelerator::Config& vea_config,
+    std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter,
     SignaledValue init_event) {
   TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::CreateAndInitializeVEA");
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  simulcast_to_svc_converter_ = std::move(simulcast_to_svc_converter);
   status_ = WEBRTC_VIDEO_CODEC_UNINITIALIZED;
   async_init_event_ = ScopedSignaledValue(std::move(init_event));
 
@@ -1284,11 +1283,6 @@ void RTCVideoEncoder::Impl::DrainCompleted(bool success) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
                        "Failed to flush VideoEncodeAccelerator"});
   }
-}
-
-void RTCVideoEncoder::Impl::SetSimulcastToSvcConverter(
-    std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter) {
-  simulcast_to_svc_converter_ = std::move(simulcast_to_svc_converter);
 }
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
@@ -2607,7 +2601,8 @@ int32_t RTCVideoEncoder::DrainEncoderAndUpdateFrameSize(
 }
 
 int32_t RTCVideoEncoder::InitializeEncoder(
-    const media::VideoEncodeAccelerator::Config& vea_config) {
+    const media::VideoEncodeAccelerator::Config& vea_config,
+    std::optional<webrtc::SimulcastToSvcConverter> simulcast_to_svc_converter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::InitEncode", "config",
                vea_config.AsHumanReadableString());
@@ -2627,7 +2622,7 @@ int32_t RTCVideoEncoder::InitializeEncoder(
         *gpu_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(
             &RTCVideoEncoder::Impl::CreateAndInitializeVEA, weak_impl_,
-            vea_config,
+            vea_config, std::move(simulcast_to_svc_converter),
             SignaledValue(&initialization_waiter, &initialization_retval)));
     // webrtc::VideoEncoder expects this call to be synchronous.
     initialization_waiter.Wait();
@@ -2878,12 +2873,11 @@ int32_t RTCVideoEncoder::InitEncode(
         media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
   }
 
-  int32_t initialization_ret = InitializeEncoder(vea_config);
+  int32_t initialization_ret =
+      InitializeEncoder(vea_config, std::move(simulcast_to_svc_converter));
   if (initialization_ret != WEBRTC_VIDEO_CODEC_OK) {
     ReleaseImpl();
     CHECK(!impl_);
-  } else {
-    impl_->SetSimulcastToSvcConverter(std::move(simulcast_to_svc_converter));
   }
   return initialization_ret;
 }
