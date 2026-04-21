@@ -14037,31 +14037,6 @@
             ]
         }
     ],
-    "InfoBarPrioritizationAndUIRefresh": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "kMaxLowQueued": "1",
-                        "kMaxVisibleCritical": "2",
-                        "kMaxVisibleDefault": "1",
-                        "kMaxVisibleLow": "1"
-                    },
-                    "enable_features": [
-                        "InfobarPrioritization",
-                        "InfobarRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "InhibitSQLPreload": [
         {
             "platforms": [
