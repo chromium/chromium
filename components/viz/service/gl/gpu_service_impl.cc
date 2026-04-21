@@ -654,14 +654,9 @@ void GpuServiceImpl::CreateWebNNContextProviderIfNeeded() {
     return;
   }
 
-  scoped_refptr<gpu::SharedContextState> shared_context_state =
-      GetContextState();
-  // `shared_context_state` may be nullptr if there is no GPU acceleration.
-  // For such case, WebNN CPU backend, e.g. TFLite XNNPACK, is still useful.
-
   webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
-      std::move(shared_context_state), gpu_feature_info_, gpu_info_,
-      shared_image_manager(), gpu_channel_manager_->peak_memory_monitor(),
+      gpu_feature_info_, gpu_info_, shared_image_manager(),
+      gpu_channel_manager_->peak_memory_monitor(),
       base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_),
       main_runner(), GetGpuScheduler(), gpu_host_);
 }

@@ -72,42 +72,6 @@ component("webnn_service") {
     "//third_party/tflite:buildflags",
   ]
 
-  if (is_win) {
-    sources += [
-      "dml/adapter.cc",
-      "dml/adapter.h",
-      "dml/command_queue.cc",
-      "dml/command_queue.h",
-      "dml/command_recorder.cc",
-      "dml/command_recorder.h",
-      "dml/context_impl_dml.cc",
-      "dml/context_impl_dml.h",
-      "dml/context_provider_dml.cc",
-      "dml/context_provider_dml.h",
-      "dml/error.h",
-      "dml/graph_builder_dml.cc",
-      "dml/graph_builder_dml.h",
-      "dml/graph_impl_dml.cc",
-      "dml/graph_impl_dml.h",
-      "dml/platform_functions.cc",
-      "dml/platform_functions.h",
-      "dml/tensor_desc.cc",
-      "dml/tensor_desc.h",
-      "dml/tensor_impl_dml.cc",
-      "dml/tensor_impl_dml.h",
-      "dml/utils.cc",
-      "dml/utils.h",
-    ]
-    deps += [
-      "//third_party/fp16",
-      "//third_party/microsoft_dxheaders:dxguids",
-      "//ui/gl",
-      "//ui/gl/init",
-    ]
-
-    libs = [ "dxgi.lib" ]
-  }
-
   if (is_apple) {
     sources += [
       "coreml/buffer_content_coreml.h",
@@ -224,7 +188,7 @@ component("webnn_service") {
       "//third_party/windows_app_sdk_headers",
     ]
 
-    libs += [ "runtimeobject.lib" ]
+    libs = [ "runtimeobject.lib" ]
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.

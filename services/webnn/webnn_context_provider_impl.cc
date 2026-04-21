@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/config/gpu_feature_type.h"
+#include "gpu/ipc/common/command_buffer_id.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
@@ -32,7 +33,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <string>
 
-#include "services/webnn/dml/context_provider_dml.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/context_provider_ort.h"
 #include "services/webnn/ort/environment.h"
@@ -117,7 +117,6 @@ void AsanUnsafeFeatureWarning(const char* reason,
 }  // namespace
 
 WebNNContextProviderImpl::WebNNContextProviderImpl(
-    scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
     gpu::GPUInfo gpu_info,
     gpu::SharedImageManager* shared_image_manager,
@@ -126,8 +125,7 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
     mojo::SharedRemote<viz::mojom::GpuHost> gpu_host)
-    : shared_context_state_(std::move(shared_context_state)),
-      gpu_feature_info_(std::move(gpu_feature_info)),
+    : gpu_feature_info_(std::move(gpu_feature_info)),
       gpu_info_(std::move(gpu_info)),
       shared_image_manager_(shared_image_manager),
       lose_all_contexts_callback_(std::move(lose_all_contexts_callback)),
@@ -154,7 +152,6 @@ WebNNContextProviderImpl::~WebNNContextProviderImpl() {
 }
 
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
-    scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
     gpu::GPUInfo gpu_info,
     gpu::SharedImageManager* shared_image_manager,
@@ -163,15 +160,10 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
     mojo::SharedRemote<viz::mojom::GpuHost> gpu_host) {
-  // `shared_context_state` is only used by DirectML backend for GPU context. It
-  // may be nullptr when GPU acceleration is not available. For such case, WebNN
-  // GPU feature (`gpu::GPU_FEATURE_TYPE_WEBNN`) is not enabled and creating a
-  // GPU context will result in a not-supported error.
   return base::WrapUnique(new WebNNContextProviderImpl(
-      std::move(shared_context_state), std::move(gpu_feature_info),
-      std::move(gpu_info), shared_image_manager, std::move(peak_memory_monitor),
-      std::move(lose_all_contexts_callback), std::move(main_thread_task_runner),
-      scheduler, std::move(gpu_host)));
+      std::move(gpu_feature_info), std::move(gpu_info), shared_image_manager,
+      std::move(peak_memory_monitor), std::move(lose_all_contexts_callback),
+      std::move(main_thread_task_runner), scheduler, std::move(gpu_host)));
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
@@ -278,12 +270,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   bool use_main_thread = (g_backend_for_testing != nullptr);
 
-#if BUILDFLAG(IS_WIN)
-  const bool should_create_dml_context = dml::ShouldCreateDmlContext(*options);
-  // DirectML contexts are created and owned on the main thread.
-  use_main_thread |= should_create_dml_context;
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_APPLE)
   bool should_create_coreml_context = false;
   if (__builtin_available(macOS 14.4, *)) {
@@ -380,21 +366,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(receiver), std::move(remote), std::move(callback),
         params.is_incognito, std::move(memory_tracker)));
     return;
-  } else if (should_create_dml_context) {
-    base::expected<WebNNContextImplPtr, mojom::ErrorPtr>
-        context_creation_results = dml::CreateContextFromOptions(
-            std::move(options), std::move(write_tensor_consumer),
-            std::move(read_tensor_producer), gpu_feature_info_, gpu_info_,
-            shared_context_state_.get(), std::move(receiver), AsWeakPtr(),
-            std::move(gpu_sequence), std::move(memory_tracker),
-            owning_task_runner, shared_image_manager_,
-            main_thread_task_runner_);
-    if (!context_creation_results.has_value()) {
-      std::move(callback).Run(mojom::CreateContextResult::NewError(
-          std::move(context_creation_results.error())));
-      return;
-    }
-    context_impl = std::move(context_creation_results.value());
   }
 #endif  // BUILDFLAG(IS_WIN)
 

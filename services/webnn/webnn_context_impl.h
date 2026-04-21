@@ -77,8 +77,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     kTFLite = 2,
     kLiteRT = 3,
     kONNXRuntime = 4,
-    kDirectML = 5,
-    kMaxValue = kDirectML,
+    kDirectML_Obsolete = 5,
+    kMaxValue = kDirectML_Obsolete,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:ContextBackendUma)
 

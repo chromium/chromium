@@ -576,7 +576,7 @@ struct Elu {
 // Therefore, the implementation must "sanitize" `indices` before using it to
 // perform memory addressing operations on `input`.
 //
-// For some backends like DirectML, the native ML APIs have already done the
+// For some backends, the native ML APIs have already done the
 // "sanitization" so `indices` can be passed directly to the API. For other
 // backends, the specific "sanitization" relies on the browser implementation.
 //

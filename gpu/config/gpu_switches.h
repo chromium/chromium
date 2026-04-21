@@ -55,7 +55,6 @@ GPU_CONFIG_EXPORT extern const char kDisableSkiaGraphite[];
 GPU_CONFIG_EXPORT extern const char kEnableSkiaGraphite[];
 GPU_CONFIG_EXPORT extern const char kDisableSkiaGraphitePrecompilation[];
 GPU_CONFIG_EXPORT extern const char kEnableSkiaGraphitePrecompilation[];
-GPU_CONFIG_EXPORT extern const char kUseRedistributableDirectML[];
 GPU_CONFIG_EXPORT extern const char kEnableGpuMainTimeKeeperMetrics[];
 GPU_CONFIG_EXPORT extern const char kSuppressPerformanceLogs[];
 

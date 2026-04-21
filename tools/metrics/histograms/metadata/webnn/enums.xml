@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="TFLite"/>
   <int value="3" label="LiteRT"/>
   <int value="4" label="ONNXRuntime"/>
-  <int value="5" label="DirectML"/>
+  <int value="5" label="DirectML(Obsolete)"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/webnn/webnn_context_impl.h:ContextBackendUma) -->

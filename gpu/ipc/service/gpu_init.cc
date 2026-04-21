@@ -716,16 +716,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       }
 #endif  // defined(DAWN_USE_BUILT_DXC)
 
-      // Preload a redistributable DirectML.dll that allows testing WebNN
-      // against newer release of DirectML before it is integrated into
-      // Windows OS. Don't handle errors as failure here is non-fatal. The
-      // DirectML.dll within system folder will be loaded at a later point if
-      // the redistributable one fails to be loaded.
-      if (command_line->HasSwitch(switches::kUseRedistributableDirectML)) {
-        TRACE_EVENT("gpu,startup", "Load directml.dll");
-        base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr);
-      }
-
 #if BUILDFLAG(ENABLE_ML_INTERNAL)
       if (base::FeatureList::IsEnabled(
               webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {

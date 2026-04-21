@@ -157,12 +157,6 @@ const char kDisableSkiaGraphitePrecompilation[] =
 const char kEnableSkiaGraphitePrecompilation[] =
     "enable-skia-graphite-precompilation";
 
-// Try to use a redistributable DirectML.dll. Used for testing WebNN
-// against newer DirectML release before it is integrated into Windows OS.
-// Please see more info about DirectML releases at:
-// https://learn.microsoft.com/en-us/windows/ai/directml/dml-version-history
-const char kUseRedistributableDirectML[] = "use-redist-dml";
-
 // Enables ThreadControllerWithMessagePumpImpl's TimeKeeper UMA metrics using
 // CrGpuMain as suffix.
 const char kEnableGpuMainTimeKeeperMetrics[] =

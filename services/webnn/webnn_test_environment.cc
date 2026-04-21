@@ -116,8 +116,7 @@ WebNNTestEnvironment::WebNNTestEnvironment(
   mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
   fake_gpu_host_.Bind(gpu_host_proxy.InitWithNewPipeAndPassReceiver());
   context_provider_ = WebNNContextProviderImpl::Create(
-      /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-      std::move(gpu_info),
+      std::move(gpu_feature_info), std::move(gpu_info),
       /*shared_image_manager=*/nullptr, /*peak_memory_monitor=*/nullptr,
       std::move(lose_all_contexts_callback),
       task_environment_->GetMainThreadTaskRunner(), g_webnn_scheduler.get(),

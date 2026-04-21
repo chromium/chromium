@@ -8309,10 +8309,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-    {"webnn-directml", flag_descriptions::kWebNNDirectMLName,
-     flag_descriptions::kWebNNDirectMLDescription, kOsWin,
-     FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNDirectML)},
-
     {"webnn-onnxruntime", flag_descriptions::kWebNNOnnxRuntimeName,
      flag_descriptions::kWebNNOnnxRuntimeDescription, kOsWin,
      FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNOnnxRuntime)},
