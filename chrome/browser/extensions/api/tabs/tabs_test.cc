@@ -1792,8 +1792,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
+// TODO(crbug.com/504781983): Fails on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DiscardedProperty DISABLED_DiscardedProperty
+#else
+#define MAYBE_DiscardedProperty DiscardedProperty
+#endif
 // TODO(georgesak): change this browsertest to an unittest.
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_DiscardedProperty) {
   ASSERT_TRUE(g_browser_process && g_browser_process->GetTabManager());
   resource_coordinator::TabManager* tab_manager =
       g_browser_process->GetTabManager();
