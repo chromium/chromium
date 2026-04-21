@@ -669,6 +669,13 @@ void FileSelectHelper::RunFileChooserOnUIThread(
 // dialog or if the renderer was destroyed. Perform any cleanup and release the
 // reference we added in RunFileChooser().
 void FileSelectHelper::RunFileChooserEnd() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Ensure picture-in-picture occlusion mitigation stops, even if we need to
+  // keep this instance alive for temporary files.
+  scoped_disallow_picture_in_picture_.reset();
+  scoped_tuck_picture_in_picture_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // If there are temporary files, then this instance needs to stick around
   // until web_contents_ is destroyed, so that this instance can delete the
   // temporary files.
@@ -684,11 +691,6 @@ void FileSelectHelper::RunFileChooserEnd() {
     select_file_dialog_->ListenerDestroyed();
     select_file_dialog_.reset();
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  scoped_disallow_picture_in_picture_.reset();
-  scoped_tuck_picture_in_picture_.reset();
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   Release();
 }
