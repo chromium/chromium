@@ -127,7 +127,7 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowsGPayPillIcon) {
       ([NSString stringWithFormat:
                      @"%@, %@", @"Visa",
                      l10n_util::GetNSString(
-                         IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)]));
+                         IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)]));
 #else
   // If not a branded build, the trailing configuration should remain nil.
   TableViewCellContentConfiguration* config =
