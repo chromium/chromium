@@ -226,7 +226,7 @@ void GetPromptFromId(Profile& profile,
           .SetUrl(GURL(extensions_features::kProdPromptEndpointUrlParam.Get()))
           .SetAuthType(endpoint_fetcher::AuthType::OAUTH)
           .SetOAuthConsumerId(signin::OAuthConsumerId::kGlicInvokeApi)
-          .SetContentType("application/x-protobuf")
+          .SetContentType("application/json")
           .SetConsentLevel(signin::ConsentLevel::kSignin)
           .SetPostData(post_data)
           .Build());
