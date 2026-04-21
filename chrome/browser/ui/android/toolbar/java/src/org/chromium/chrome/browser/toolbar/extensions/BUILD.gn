@@ -58,6 +58,7 @@ android_library("java") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:core_java",
     "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java",

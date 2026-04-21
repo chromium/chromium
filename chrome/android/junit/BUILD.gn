@@ -221,6 +221,7 @@ if (is_android) {
       "//chrome/browser/ui/android/tabstrip:enums_java",
       "//chrome/browser/ui/android/theme:java",
       "//chrome/browser/ui/android/toolbar:java",
+      "//chrome/browser/ui/android/toolbar:optional_button_java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/ui/side_ui/public:java",
@@ -741,6 +742,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/android:chrome_java",
+      "//chrome/browser/ui/android/toolbar:optional_button_java",
     ]
   }
 
@@ -1070,6 +1072,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/browser/tab_group_suggestion:toolbar_java",
+      "//chrome/browser/ui/android/toolbar:optional_button_java",
     ]
   }
 
@@ -1201,6 +1204,7 @@ if (is_android) {
       "//chrome/browser/glic/android:java",
       "//chrome/browser/ui/android/extensions:buildflags_java",
       "//chrome/browser/ui/android/extensions:java",
+      "//chrome/browser/ui/android/toolbar:optional_button_java",
       "//components/browser_ui/accessibility/android:page_zoom_utils_java",
       "//components/supervised_user/android:content_filters_observer_bridge_java",
     ]
@@ -1376,7 +1380,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/ui/android/toolbar:optional_button_java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.ui") {

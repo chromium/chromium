@@ -561,7 +561,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
 
   sources = [ "src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragmentTest.java" ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
@@ -733,6 +736,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/android/customtabs/branding:branding_common_java",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
   ]
 }
 
@@ -1236,6 +1240,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java",
   ]
 }
@@ -1261,6 +1266,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.share") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/paint_preview/common/mojom:mojom_java",
   ]
 }
@@ -1551,6 +1557,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/user_education:java",
   ]
 }
@@ -1700,6 +1707,7 @@ android_library("chrome_test_java_various") {
     "//base/test:leak_canary_java",
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/ntp_customization:java",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/browser_ui/http_auth/android:java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",

@@ -1061,6 +1061,7 @@ static_library("ui") {
       "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:impl",
+      "//chrome/browser/ui/android/toolbar:adaptive_jni_headers",
       "//chrome/browser/ui/android/toolbar:jni_headers",
       "//chrome/browser/ui/autofill:autofill_ai_ui_utils",
       "//chrome/browser/ui/autofill:autofill_ai_ui_utils_impl",

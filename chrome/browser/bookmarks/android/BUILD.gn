@@ -138,6 +138,7 @@ android_library("java") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/url_constants/android:java",
     "//chrome/browser/user_education:java",
@@ -238,6 +239,7 @@ robolectric_library("junit") {
 
   deps = [
     "//chrome/android/junit:chrome_junit_tests_helper",
+    "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   ]
 }
