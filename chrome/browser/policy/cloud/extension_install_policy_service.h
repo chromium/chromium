@@ -104,6 +104,8 @@ class ExtensionInstallPolicyServiceImpl
       ExtensionInstallPolicyService::Observer* observer) override;
 
   // PolicyService::Observer impl:
+  void OnPolicyServiceInitialized(PolicyDomain domain) override;
+  void OnFirstPoliciesLoaded(PolicyDomain domain) override;
   void OnPolicyUpdated(const PolicyNamespace& ns,
                        const PolicyMap& previous,
                        const PolicyMap& current) override;
