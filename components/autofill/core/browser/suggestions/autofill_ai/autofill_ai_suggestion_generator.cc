@@ -361,13 +361,19 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
   return deduped_entities;
 }
 
-Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
+Suggestion::Icon GetSuggestionIcon(
+    EntityType trigger_entity_type,
+    EntityInstance::RecordType trigger_entity_record_type) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillAiNoFillingIconsExperiment)) {
     return Suggestion::Icon::kNoIcon;
   }
 #endif
+  if (trigger_entity_record_type ==
+      EntityInstance::RecordType::kAccessibilityAnnotator) {
+    return Suggestion::Icon::kSpark;
+  }
   switch (trigger_entity_type.name()) {
     case EntityTypeName::kDriversLicense:
       return Suggestion::Icon::kIdCard;
@@ -511,7 +517,7 @@ Suggestion GetSuggestionForEntity(
       entity, form, trigger_field.field->section(), app_locale);
   suggestion.payload =
       Suggestion::AutofillAiPayload(entity.guid(), requires_server_fetch);
-  suggestion.icon = GetSuggestionIcon(entity.type());
+  suggestion.icon = GetSuggestionIcon(entity.type(), entity.record_type());
   if (entity.record_type() == EntityInstance::RecordType::kServerWallet) {
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillAiValuablesFeature);

@@ -376,6 +376,7 @@ struct Suggestion {
     kBnplZip,
     kSaveAndFill,
     kAndroidMessages,
+    kSpark,
   };
 
   // This enum is used to control filtration of suggestions (see it's used in

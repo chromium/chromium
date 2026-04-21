@@ -482,6 +482,18 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 }
 #endif
 
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_AccessibilityAnnotatorEntity_UseSparkIcon) {
+  SetEntities({GetFlightReservationEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kAccessibilityAnnotator})});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER, FLIGHT_RESERVATION_TICKET_NUMBER,
+           FLIGHT_RESERVATION_CONFIRMATION_CODE});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions[0], HasIcon(Suggestion::Icon::kSpark));
+}
+
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {
   EntityInstance passport_prefix_matches =
       GetPassportEntityInstanceWithRandomGuid({.name = u"Jon Doe"});

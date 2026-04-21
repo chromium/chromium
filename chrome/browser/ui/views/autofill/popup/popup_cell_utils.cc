@@ -192,6 +192,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kUndo:
     case Suggestion::Icon::kAndroidMessages:
+    case Suggestion::Icon::kSpark:
       return std::u16string();
   }
   NOTREACHED();
@@ -373,6 +374,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return std::nullopt;
     case Suggestion::Icon::kHome:
       return ImageModelFromVectorIcon(vector_icons::kHomeIcon, kIconSize);
+    case Suggestion::Icon::kSpark:
+      return ImageModelFromVectorIcon(omnibox::kSparkIcon, kIconSize);
     case Suggestion::Icon::kWork:
       return ImageModelFromVectorIcon(vector_icons::kWorkIcon, kIconSize);
     case Suggestion::Icon::kAccount:
@@ -685,8 +688,7 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view) {
-  bool should_show_new_fop_format =
-      IsPaymentMethodSuggestion(suggestion);
+  bool should_show_new_fop_format = IsPaymentMethodSuggestion(suggestion);
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
   if (!subtext_views.empty() || should_show_new_fop_format) {
