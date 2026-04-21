@@ -253,6 +253,17 @@ bool IsLandscape(UIWindow* window) {
   return UIInterfaceOrientationIsLandscape(GetInterfaceOrientation(window));
 }
 
+bool IsWindowedMode(UIWindow* window) {
+  if (!window) {
+    return false;
+  }
+  UIWindowScene* scene = window.windowScene;
+  if (!scene) {
+    return false;
+  }
+  return !CGRectEqualToRect(window.bounds, scene.screen.bounds);
+}
+
 bool CanShowTabStrip(UITraitCollection* traitCollection) {
   if (IsRegularXRegularSizeClass(traitCollection)) {
     return true;

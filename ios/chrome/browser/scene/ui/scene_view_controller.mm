@@ -51,6 +51,7 @@
   NSArray<NSLayoutConstraint*>* _assistantSheetConstraints;
   NSArray<NSLayoutConstraint*>* _assistantPanelConstraints;
   NSLayoutConstraint* _assistantLeadingConstraint;
+  NSLayoutConstraint* _assistantTopConstraint;
   NSLayoutConstraint* _sideAppContentTopConstraint;
   NSLayoutConstraint* _sideAppContentTrailingConstraint;
   NSLayoutConstraint* _sideAppContentBottomConstraint;
@@ -139,9 +140,17 @@
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  self.layoutState.windowedMode = IsWindowedMode(self.view.window);
+  [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
   if (!IsFullscreenRefactoringEnabled()) {
     [self applyFrameForLayout];
   }
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
+  [self.view layoutIfNeeded];
 }
 
 #pragma mark - Public
@@ -314,21 +323,45 @@
 
 - (void)layoutState:(LayoutState*)layoutState
     didChangeContainedLayoutSupported:(BOOL)supported {
+  if (supported && _assistantContainerViewController) {
+    layoutState.containedLayoutActive = YES;
+  } else if (!supported) {
+    layoutState.containedLayoutActive = NO;
+  }
   [self updateAssistantLayout];
+}
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeWindowedMode:(BOOL)windowedMode {
+  [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
+  [self.view layoutIfNeeded];
 }
 
 #pragma mark - Private
 
+// This method updates the top constraints for the assistant and app content.
+- (void)updateAssistantTopConstraints:(BOOL)active {
+  CGFloat constant = 0.0;
+
+  if (active) {
+    // The constant equals the safe area inset if anchored to the status bar.
+    if (self.view.safeAreaInsets.top > 0) {
+      constant = self.view.safeAreaInsets.top;
+    } else {
+      // Otherwise, it uses the standard container margin.
+      constant = kAssistantContainerMargin;
+    }
+  }
+
+  _assistantTopConstraint.constant = constant;
+  _sideAppContentTopConstraint.constant = constant;
+}
+
 // Updates the layout state when system traits change.
 - (void)onSystemTraitChange {
-  BOOL supported = IsSidePanelLayout(self.traitCollection);
-  self.layoutState.containedLayoutSupported = supported;
-
-  if (supported && _assistantContainerViewController) {
-    self.layoutState.containedLayoutActive = YES;
-  } else if (!supported) {
-    self.layoutState.containedLayoutActive = NO;
-  }
+  self.layoutState.containedLayoutSupported =
+      IsSidePanelLayout(self.traitCollection);
+  self.layoutState.windowedMode = IsWindowedMode(self.view.window);
 }
 
 // Helper to update app content constraints for panel layout.
@@ -338,13 +371,10 @@
   // safeAreaLayoutGuide.top).
   if (active) {
     CHECK(AppBarPositionForView(self.view) == AppBarPosition::kNone);
-    CGFloat safeAreaTop = self.view.safeAreaInsets.top;
-    _sideAppContentTopConstraint.constant =
-        safeAreaTop + kAssistantContainerMargin;
+    [self updateAssistantTopConstraints:active];
     _sideAppContentTrailingConstraint.constant = -kAssistantContainerMargin;
     _sideAppContentBottomConstraint.constant = -kAssistantContainerMargin;
   } else {
-    _sideAppContentTopConstraint.constant = 0;
     _sideAppContentTrailingConstraint.constant = 0;
     _sideAppContentBottomConstraint.constant = 0;
   }
@@ -433,6 +463,7 @@
     _assistantContainerViewController.presentationContext =
         AssistantPresentationContext::kPanel;
     _activeAssistantConstraints = _assistantPanelConstraints;
+    [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
   } else {
     _assistantContainerViewController.presentationContext =
         AssistantPresentationContext::kSheet;
@@ -523,10 +554,13 @@
       _assistantContainerViewController && panelWidth > 0) {
     CGFloat safeAreaTop = self.view.safeAreaInsets.top;
     CGFloat margin = _assistantVisible ? kAssistantContainerMargin : 0.0;
+    // The base top inset uses the safe area if anchored to the status bar,
+    // otherwise it uses the container margin.
+    CGFloat baseTop =
+        (safeAreaTop > 0) ? safeAreaTop : kAssistantContainerMargin;
 
     insets.right += margin;
-    insets.top +=
-        _assistantVisible ? (safeAreaTop + kAssistantContainerMargin) : 0.0;
+    insets.top += _assistantVisible ? baseTop : 0.0;
     insets.bottom += margin;
   }
 
@@ -642,11 +676,13 @@
       constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor
                      constant:-kAssistantSidePanelMaxWidth];
 
-  NSArray* panelConstraints = @[
+  _assistantTopConstraint =
+      [assistantView.topAnchor constraintEqualToAnchor:view.topAnchor
+                                              constant:0];
+
+  _assistantPanelConstraints = @[
     _assistantLeadingConstraint,
-    [assistantView.topAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor
-                       constant:kAssistantContainerMargin],
+    _assistantTopConstraint,
     [assistantView.bottomAnchor
         constraintEqualToAnchor:view.bottomAnchor
                        constant:-kAssistantContainerMargin],
@@ -657,9 +693,9 @@
         constraintLessThanOrEqualToConstant:kAssistantSidePanelMaxWidth],
   ];
 
-  _assistantPanelConstraints = panelConstraints;
   if (IsFullscreenRefactoringEnabled()) {
     [self setupAppContentConstraintsForPanel:assistantView];
+    [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
   }
 }
 
@@ -667,9 +703,11 @@
 // active.
 - (void)setupAppContentConstraintsForPanel:(UIView*)assistantView {
   UIView* view = self.view;
+
   _sideAppContentTopConstraint =
       [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor
                                                          constant:0];
+
   _sideAppContentTrailingConstraint = [_appContentContainerView.trailingAnchor
       constraintEqualToAnchor:view.trailingAnchor
                      constant:0];
@@ -677,15 +715,17 @@
       constraintEqualToAnchor:view.bottomAnchor
                      constant:0];
 
-  _assistantPanelConstraints =
-      [_assistantPanelConstraints arrayByAddingObjectsFromArray:@[
-        [_appContentContainerView.leadingAnchor
-            constraintEqualToAnchor:assistantView.trailingAnchor
-                           constant:kAssistantContainerMargin],
-        _sideAppContentTrailingConstraint,
-        _sideAppContentTopConstraint,
-        _sideAppContentBottomConstraint,
-      ]];
+  NSArray* appContentConstraints = @[
+    [_appContentContainerView.leadingAnchor
+        constraintEqualToAnchor:assistantView.trailingAnchor
+                       constant:kAssistantContainerMargin],
+    _sideAppContentTrailingConstraint,
+    _sideAppContentBottomConstraint,
+    _sideAppContentTopConstraint,
+  ];
+
+  _assistantPanelConstraints = [_assistantPanelConstraints
+      arrayByAddingObjectsFromArray:appContentConstraints];
 }
 
 // Sets up sheet constraints for bottom sheet layout.

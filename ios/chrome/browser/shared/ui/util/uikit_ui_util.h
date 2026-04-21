@@ -136,6 +136,9 @@ bool IsPortrait(UIWindow* window);
 // Returns true if the window is in landscape orientation.
 bool IsLandscape(UIWindow* window);
 
+// Returns true if the window is in windowed mode (multitasking).
+bool IsWindowedMode(UIWindow* window);
+
 // C does not support function overloading.
 #ifdef __cplusplus
 // Whether tab strip can be shown with the current `traitCollection` or

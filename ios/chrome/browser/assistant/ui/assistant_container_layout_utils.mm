@@ -36,7 +36,7 @@ const CGFloat kMaxBackgroundDimmingAlpha = 0.11;
 
 const CGFloat kAssistantSidePanelMaxWidth = 400.0;
 const CGFloat kAssistantSidePanelWidthMultiplier = 1.0 / 3.0;
-const CGFloat kAssistantContainerMargin = 8.0;
+const CGFloat kAssistantContainerMargin = 10.0;
 const CGFloat kAssistantSidePanelCornerRadius = 22.0;
 
 const NSTimeInterval kAssistantSheetSpringDuration = 0.3;

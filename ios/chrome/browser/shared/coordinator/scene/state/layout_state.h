@@ -28,6 +28,10 @@
 - (void)layoutState:(LayoutState*)layoutState
     didChangeContainedLayoutSupported:(BOOL)supported;
 
+// Called when the windowed mode state changes.
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeWindowedMode:(BOOL)windowedMode;
+
 @end
 
 // Object containing the state of the layout.
@@ -42,6 +46,9 @@
 // Indicates whether the contained layout is supported in the current
 // environment. Updated by `SceneViewController` in response to trait changes.
 @property(nonatomic, assign) BOOL containedLayoutSupported;
+
+// Indicates whether the app is in windowed mode (multitasking).
+@property(nonatomic, assign) BOOL windowedMode;
 
 // Sets `containedLayoutActive` with a transition coordinator to
 // synchronize animations. `coordinator` must not be nil.

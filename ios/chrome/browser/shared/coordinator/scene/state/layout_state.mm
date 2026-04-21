@@ -58,6 +58,14 @@
       didChangeContainedLayoutSupported:containedLayoutSupported];
 }
 
+- (void)setWindowedMode:(BOOL)windowedMode {
+  if (_windowedMode == windowedMode) {
+    return;
+  }
+  _windowedMode = windowedMode;
+  [_observers layoutState:self didChangeWindowedMode:windowedMode];
+}
+
 - (void)addObserver:(id<LayoutStateObserver>)observer {
   [_observers addObserver:observer];
 }

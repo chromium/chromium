@@ -71,4 +71,17 @@ TEST_F(LayoutStateTest, ContainedLayoutSupported) {
   [mock_observer verify];
 }
 
+// Tests that windowedMode updates observers.
+TEST_F(LayoutStateTest, WindowedMode) {
+  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  [layout_state_ addObserver:mock_observer];
+
+  OCMExpect([mock_observer layoutState:layout_state_
+                 didChangeWindowedMode:YES]);
+
+  layout_state_.windowedMode = YES;
+
+  [mock_observer verify];
+}
+
 }  // namespace
