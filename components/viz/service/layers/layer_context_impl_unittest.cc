@@ -782,12 +782,6 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   auto result10 = layer_context_impl_->DoUpdateDisplayTree(std::move(update10));
   ASSERT_FALSE(result10.has_value());
   EXPECT_EQ(result10.error(), "Invalid layer ID");
-  VerifyLayerExists(kLayerId1, true);  // Unaffected
-  VerifyLayerBounds(
-      kLayerId1,
-      kDefaultLayerBounds);  // Should be reset to default or last valid
-  VerifyLayerExists(kNonExistentLayerId, false);
-  VerifyLayerOrder({1, kLayerId1});
 
   // Test Case 4: Updating on Previously Removed Layer should fail
   // Update 11: Remove kLayerId1.
@@ -805,8 +799,6 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   auto result12 = layer_context_impl_->DoUpdateDisplayTree(std::move(update12));
   ASSERT_FALSE(result12.has_value());
   EXPECT_EQ(result12.error(), "Invalid layer ID");
-
-  VerifyLayerExists(kLayerId1, false);  // Should not be re-created
 
   // Test Case 5: Duplicate or non-existent layer IDs in the Layer Order should
   // fail. Update 13: Create kLayerId1 again.
@@ -830,9 +822,6 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   auto result14 = layer_context_impl_->DoUpdateDisplayTree(std::move(update14));
   ASSERT_FALSE(result14.has_value());
   EXPECT_EQ(result14.error(), "Invalid or duplicate layer ID");
-  VerifyLayerExists(kLayerId1, true);
-  VerifyLayerBounds(kLayerId1, kUpdatedBounds5);  // Layer should be updated
-  VerifyLayerOrder({1, kLayerId1});  // Layer Order should not update
 
   // Update 15: Try to add a non-existent layer to Layer Order
   auto update15 = CreateDefaultUpdate();

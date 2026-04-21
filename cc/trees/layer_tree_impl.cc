@@ -653,7 +653,8 @@ OwnedLayerImplList LayerTreeImpl::DetachLayers() {
 
 OwnedLayerImplList LayerTreeImpl::DetachLayersKeepingRootLayerForTesting() {
   auto layers = DetachLayers();
-  SetRootLayerForTesting(std::move(layers[0]));
+  SetRootLayerForTesting(                               // IN-TEST
+      layers.ReleaseLayerForTesting(layers[0]->id()));  // IN-TEST
   return layers;
 }
 

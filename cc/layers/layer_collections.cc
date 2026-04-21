@@ -63,14 +63,6 @@ void OwnedLayerImplList::push_back(std::unique_ptr<LayerImpl>&& value) {
   }
 }
 
-OwnedLayerImplList::iterator OwnedLayerImplList::find(int id) {
-  if (layer_maps_need_rebuild_) {
-    RebuildLayerMaps();
-  }
-  auto iter = layer_map_.find(id);
-  return iter == layer_map_.end() ? end() : begin() + iter->second;
-}
-
 void OwnedLayerImplList::SetShouldPushProperties(LayerImpl* layer) {
   layers_that_should_push_properties_.insert(layer->id());
 }
@@ -161,6 +153,24 @@ void OwnedLayerImplList::RebuildLayerMaps() const {
   picture_layer_map_ =
       MapType(base::sorted_unique, std::move(picture_layer_indices_vector));
   layer_maps_need_rebuild_ = false;
+}
+
+std::unique_ptr<LayerImpl>
+OwnedLayerImplList::ReleaseLayerForTesting(  // IN-TEST
+    int layer_id) {
+  return ReleaseLayer(layer_id);
+}
+
+std::unique_ptr<LayerImpl> OwnedLayerImplList::ReleaseLayer(int layer_id) {
+  if (layer_maps_need_rebuild_) {
+    RebuildLayerMaps();
+  }
+  auto iter = layer_map_.find(layer_id);
+  if (iter == layer_map_.end()) {
+    return nullptr;
+  }
+  CHECK_GE(iter->second, 0);
+  return std::move(layers_[iter->second]);
 }
 
 template <>

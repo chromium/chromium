@@ -24,6 +24,7 @@ class Layer;
 class LayerImpl;
 class PictureLayerImpl;
 class RenderSurfaceImpl;
+class TreeSynchronizer;
 
 // OwnedLayerImplList handles ownership and all bookkeeping for a set of
 // LayerImpls.  It allows fast random access and lookup by layer->id(), as well
@@ -64,31 +65,22 @@ class CC_EXPORT OwnedLayerImplList {
   void push_back(std::unique_ptr<LayerImpl>&& value);
 
   // Vector-style iteration
-  iterator begin() { return layers_.begin(); }
   const_iterator begin() const { return layers_.begin(); }
   const_iterator cbegin() const { return layers_.cbegin(); }
-  iterator end() { return layers_.end(); }
   const_iterator end() const { return layers_.end(); }
   const_iterator cend() const { return layers_.cend(); }
-  reverse_iterator rbegin() { return layers_.rbegin(); }
   const_reverse_iterator rbegin() const { return layers_.rbegin(); }
   const_reverse_iterator crbegin() const { return layers_.crbegin(); }
-  reverse_iterator rend() { return layers_.rend(); }
   const_reverse_iterator rend() const { return layers_.rend(); }
   const_reverse_iterator crend() const { return layers_.crend(); }
 
   // Vector-style random access
-  reference at(size_type pos) { return layers_.at(pos); }
   const_reference at(size_type pos) const { return layers_.at(pos); }
-  reference operator[](size_type pos) { return at(pos); }
   const_reference operator[](size_type pos) const { return at(pos); }
-  reference front() { return layers_.front(); }
   const_reference front() const { return layers_.front(); }
-  reference back() { return layers_.back(); }
   const_reference back() const { return layers_.back(); }
 
   // Map-style lookup
-  iterator find(int id);
   const_iterator find(int id) const;
   bool contains(int id) const;
 
@@ -181,7 +173,20 @@ class CC_EXPORT OwnedLayerImplList {
   void SetPictureLayerWithWorklet(PictureLayerImpl* layer);
   void RemovePictureLayerWithWorklet(PictureLayerImpl* layer);
 
+  std::unique_ptr<LayerImpl> ReleaseLayerForTesting(int layer_id);
+
  private:
+  iterator begin() { return layers_.begin(); }
+  iterator end() { return layers_.end(); }
+  reverse_iterator rbegin() { return layers_.rbegin(); }
+  reverse_iterator rend() { return layers_.rend(); }
+
+  // std::move() a LayerImpl out of the list, leaving behind a nullptr entry.
+  // Only TreeSynchronizer is allowed to do this for the purpose of recycling
+  // layers from a soon-to-be-defunct OwnedLayerImplList.
+  std::unique_ptr<LayerImpl> ReleaseLayer(int layer_id);
+  friend class TreeSynchronizer;
+
   VectorType layers_;
   SetType layers_that_should_push_properties_;
   SetType picture_layers_with_animated_images_;

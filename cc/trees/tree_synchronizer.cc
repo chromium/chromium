@@ -61,45 +61,6 @@ static bool LayerWillPushProperties(const LayerTreeImpl* tree,
 }
 #endif
 
-template <typename LayerType>
-std::unique_ptr<LayerImpl> ReuseOrCreateLayerImpl(
-    OwnedLayerImplList& old_layers,
-    const LayerType* layer,
-    LayerTreeImpl* tree_impl) {
-  if (!layer)
-    return nullptr;
-
-  std::unique_ptr<LayerImpl> layer_impl;
-  auto it = old_layers.find(layer->id());
-
-  if (it != old_layers.end()) {
-    DCHECK(*it);
-    layer_impl = std::move(*it);
-  }
-
-  if (!layer_impl) {
-    layer_impl = layer->CreateLayerImpl(tree_impl);
-  }
-  return layer_impl;
-}
-
-template <typename SyncLayerRange>
-OwnedLayerImplList DoSynchronizeTrees(const SyncLayerRange& sync_layers,
-                                      OwnedLayerImplList& recycle_layer_list,
-                                      LayerTreeImpl* tree_impl) {
-  TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
-  OwnedLayerImplList result;
-  result.reserve(sync_layers.num_layers());
-  for (const auto* sync_layer : sync_layers) {
-    std::unique_ptr<LayerImpl> layer_impl(
-        ReuseOrCreateLayerImpl(recycle_layer_list, sync_layer, tree_impl));
-    // TODO(crbug.com/40778609): remove diagnostic CHECK
-    CHECK(layer_impl);
-    result.push_back(std::move(layer_impl));
-  }
-  return result;
-}
-
 }  // namespace
 
 void TreeSynchronizer::SynchronizeTrees(
@@ -113,9 +74,19 @@ void TreeSynchronizer::SynchronizeTrees(
   }
 #endif
 
+  TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
   OwnedLayerImplList recycle_layer_list = pending_tree->DetachLayers();
-  pending_tree->SwapLayers(
-      DoSynchronizeTrees(unsafe_state, recycle_layer_list, pending_tree));
+  OwnedLayerImplList new_layer_list;
+  new_layer_list.reserve(unsafe_state.num_layers());
+  for (const auto* sync_layer : unsafe_state) {
+    std::unique_ptr<LayerImpl> layer_impl =
+        recycle_layer_list.ReleaseLayer(sync_layer->id());
+    if (!layer_impl) {
+      layer_impl = sync_layer->CreateLayerImpl(pending_tree);
+    }
+    new_layer_list.push_back(std::move(layer_impl));
+  }
+  pending_tree->SwapLayers(std::move(new_layer_list));
 
 #if DCHECK_IS_ON()
   // Every LayerImpl should have valid property tree indices or be marked for
@@ -137,9 +108,20 @@ void TreeSynchronizer::SynchronizeTrees(LayerTreeImpl* pending_tree,
   }
 #endif
 
+  TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
   OwnedLayerImplList recycle_layer_list = active_tree->DetachLayers();
-  active_tree->SwapLayers(
-      DoSynchronizeTrees(*pending_tree, recycle_layer_list, active_tree));
+  OwnedLayerImplList new_layer_list;
+
+  new_layer_list.reserve(pending_tree->num_layers());
+  for (const auto* sync_layer : *pending_tree) {
+    std::unique_ptr<LayerImpl> layer_impl =
+        recycle_layer_list.ReleaseLayer(sync_layer->id());
+    if (!layer_impl) {
+      layer_impl = sync_layer->CreateLayerImpl(active_tree);
+    }
+    new_layer_list.push_back(std::move(layer_impl));
+  }
+  active_tree->SwapLayers(std::move(new_layer_list));
 
 #if DCHECK_IS_ON()
   // Every active tree layer should have valid property tree indices or be
@@ -184,6 +166,23 @@ void TreeSynchronizer::PushLayerProperties(
     CHECK(target_layer);
     source_layer->PushPropertiesTo(target_layer, commit_state);
   }
+}
+
+base::expected<void, std::string> TreeSynchronizer::SynchronizeLayerOrder(
+    const std::vector<int32_t>& layer_order,
+    LayerTreeImpl& tree) {
+  OwnedLayerImplList recycle_layer_list = tree.DetachLayers();
+  OwnedLayerImplList new_layer_list;
+  new_layer_list.reserve(layer_order.size());
+  for (auto id : layer_order) {
+    std::unique_ptr<LayerImpl> layer_impl = recycle_layer_list.ReleaseLayer(id);
+    if (!layer_impl) {
+      return base::unexpected("Invalid or duplicate layer ID");
+    }
+    new_layer_list.push_back(std::move(layer_impl));
+  }
+  tree.SwapLayers(std::move(new_layer_list));
+  return base::ok();
 }
 
 }  // namespace cc

@@ -1251,7 +1251,8 @@ TEST_F(DamageTrackerTest, VerifyDamageForAddingAndRemovingLayer) {
         host_impl()->active_tree()->DetachLayersKeepingRootLayerForTesting();
     ASSERT_EQ(3u, layers.size());
     ASSERT_EQ(child1, layers[1].get());
-    host_impl()->active_tree()->AddLayer(std::move(layers[2]));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[2]->id()));
   }
   EmulateDrawingOneFrame(root);
 
@@ -1831,10 +1832,12 @@ TEST_F(DamageTrackerTest, VerifyDamageForMask) {
   auto layers =
       root->layer_tree_impl()->DetachLayersKeepingRootLayerForTesting();
   ASSERT_EQ(layers[1].get(), child);
-  root->layer_tree_impl()->AddLayer(std::move(layers[1]));
+  root->layer_tree_impl()->AddLayer(
+      layers.ReleaseLayerForTesting(layers[1]->id()));
   ASSERT_EQ(layers[2].get(), mask_layer);
   ASSERT_EQ(layers[3].get(), grand_child);
-  root->layer_tree_impl()->AddLayer(std::move(layers[3]));
+  root->layer_tree_impl()->AddLayer(
+      layers.ReleaseLayerForTesting(layers[3]->id()));
   CopyProperties(root, child);
   CreateEffectNode(child).render_surface_reason = RenderSurfaceReason::kTest;
   CopyProperties(child, grand_child);
@@ -2384,11 +2387,16 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
     ASSERT_EQ(child2_, layers[6].get());
     // Prevent dangling pointer when `layers` is deleted.
     grand_child1_ = nullptr;
-    host_impl()->active_tree()->AddLayer(std::move(layers[1]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[3]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[4]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[5]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[6]));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[1]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[3]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[4]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[5]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[6]->id()));
   }
   EmulateDrawingOneFrame(root);
   EXPECT_FALSE(GetRenderSurface(grand_child4_)->intersects_damage_under());
@@ -2408,10 +2416,14 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
     ASSERT_EQ(child2_, layers[5].get());
     // Prevent dangling pointer when `layers` is deleted.
     grand_child2_ = nullptr;
-    host_impl()->active_tree()->AddLayer(std::move(layers[1]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[3]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[4]));
-    host_impl()->active_tree()->AddLayer(std::move(layers[5]));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[1]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[3]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[4]->id()));
+    host_impl()->active_tree()->AddLayer(
+        layers.ReleaseLayerForTesting(layers[5]->id()));
   }
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(grand_child4_)->intersects_damage_under());

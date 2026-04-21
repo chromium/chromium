@@ -5,6 +5,9 @@
 #ifndef CC_TREES_TREE_SYNCHRONIZER_H_
 #define CC_TREES_TREE_SYNCHRONIZER_H_
 
+#include <string>
+#include <vector>
+
 #include "cc/cc_export.h"
 #include "cc/trees/layer_tree_host.h"
 
@@ -30,6 +33,11 @@ class CC_EXPORT TreeSynchronizer {
                                LayerTreeImpl* active_tree);
   static void PushLayerProperties(LayerTreeImpl* pending_tree,
                                   LayerTreeImpl* active_tree);
+
+  // Reorders layers for trees-in-viz
+  static base::expected<void, std::string> SynchronizeLayerOrder(
+      const std::vector<int32_t>& layer_order,
+      LayerTreeImpl& tree);
 };
 
 }  // namespace cc

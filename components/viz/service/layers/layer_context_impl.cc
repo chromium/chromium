@@ -45,6 +45,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/task_runner_provider.h"
+#include "cc/trees/tree_synchronizer.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -1006,53 +1007,31 @@ base::expected<void, std::string> CreateOrUpdateLayers(
     cc::LayerTreeImpl& layers) {
   TRACE_EVENT1("viz", "CreateOrUpdateLayers", "LayerCount", updates.size());
 
-  // First, apply all updates. This may create new layers or update existing
-  // ones.
+  // First add new layers to the tree
   for (auto& wire : updates) {
     cc::LayerImpl* layer = layers.LayerById(wire->id);
-    if (layer) {
-      RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
-    } else {
+    if (!layer) {
       if (!layer_order) {
         // If there's a new layer, there must also be a new |layer_order|.
         return base::unexpected("Invalid layer ID");
       }
       std::unique_ptr<cc::LayerImpl> new_layer;
       RETURN_IF_ERROR(CreateLayer(host_impl, layers, *wire, new_layer));
-      cc::LayerImpl* layer_ptr = new_layer.get();
-      RETURN_IF_ERROR(UpdateLayer(*wire, *layer_ptr));
       layers.AddLayer(std::move(new_layer));
     }
   }
 
+  // Reorder layers if necessary; obsolete layers will be deleted.
   if (layer_order) {
-    cc::OwnedLayerImplList old_layers = layers.DetachLayers();
-    std::vector<std::pair<int, size_t>> layer_indices_vector;
-    layer_indices_vector.reserve(old_layers.size());
-    for (size_t i = 0; i < old_layers.size(); ++i) {
-      layer_indices_vector.emplace_back(old_layers[i]->id(), i);
-    }
+    RETURN_IF_ERROR(cc::TreeSynchronizer::SynchronizeLayerOrder(
+        layer_order.value(), layers));
+  }
 
-    // Layer ids should be unique here, so doing a std::sort and
-    // base::sorted_unique initializer is the most efficient, avoiding
-    // a std::stable_sort inside base::flat_map.
-    std::sort(layer_indices_vector.begin(), layer_indices_vector.end());
-    base::flat_map<int, size_t> layer_indices(base::sorted_unique,
-                                              std::move(layer_indices_vector));
-
-    layers.ReserveLayers(layer_order->size());
-    for (auto id : *layer_order) {
-      auto it = layer_indices.find(id);
-      if (it == layer_indices.end()) {
-        return base::unexpected("Invalid or duplicate layer ID");
-      }
-      size_t index = it->second;
-      auto& layer = old_layers[index];
-      if (!layer) {
-        return base::unexpected("Invalid or duplicate layer ID");
-      }
-      layers.AddLayer(std::move(layer));
-    }
+  // Apply layer updates
+  for (auto& wire : updates) {
+    cc::LayerImpl* layer = layers.LayerById(wire->id);
+    CHECK(layer);
+    RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
   }
 
   return base::ok();
