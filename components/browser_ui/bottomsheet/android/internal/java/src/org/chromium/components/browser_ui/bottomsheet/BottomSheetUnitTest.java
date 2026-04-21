@@ -67,8 +67,11 @@ public class BottomSheetUnitTest {
                 (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
         when(mSheetContainer.getLayoutParams()).thenReturn(mSheetLayoutParams);
         when(mSheetContainer.getHeight()).thenReturn(SHEET_CONTAINER_HEIGHT);
+        when(mSheetContainer.getParent()).thenReturn(mSheetContainer);
         mBottomSheet.setSheetContainerForTesting(mSheetContainer);
         mBottomSheet.setToolbarHolderForTesting(mToolbarHolder);
+        mBottomSheet.setBottomSheetContentContainerForTesting(
+                mBottomSheet.findViewById(R.id.bottom_sheet_content));
         mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
         mBottomSheet.setShadowLayerForTesting(mShadowLayerView);
     }
@@ -226,6 +229,84 @@ public class BottomSheetUnitTest {
                 "Sheet bg color should be the override color.",
                 overrideColor,
                 mBottomSheet.getSheetBackgroundColor());
+    }
+
+    @Test
+    public void testGetFullRatio_ResizeContent() {
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        mBottomSheet.showContent(mSheetContent);
+
+        assertEquals(
+                "Full ratio for RESIZE_CONTENT should be MAX_HEIGHT_RATIO.",
+                1.0f,
+                mBottomSheet.getFullRatio(),
+                0.0f);
+    }
+
+    @Test
+    public void testGetFullRatio_ResizeContent_HalfStateDisabled() {
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
+        mBottomSheet.showContent(mSheetContent);
+
+        assertEquals(
+                "Full ratio for RESIZE_CONTENT with half state disabled should be 1.0f.",
+                1.0f,
+                mBottomSheet.getFullRatio(),
+                0.0f);
+    }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_ResizeContent() {
+        BottomSheet.setSmallScreenForTesting(false);
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+
+        // Return 0.5 for half height to make the min height 100 (container height is 200)
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+        doReturn(R.string.bottom_sheet_accessibility_description)
+                .when(mSheetContent)
+                .getSheetClosedAccessibilityStringId();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        mBottomSheet.showContent(mSheetContent);
+
+        mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
+
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+
+        mBottomSheet.setSheetOffsetFromBottom(150.0f, BottomSheetController.StateChangeReason.NONE);
+        // Container height should be max(100, 150) = 150.
+        assertEquals(150, contentContainer.getLayoutParams().height);
+
+        mBottomSheet.setSheetOffsetFromBottom(50.0f, BottomSheetController.StateChangeReason.NONE);
+        // Container height should be max(100, 50) = 100.
+        assertEquals(100, contentContainer.getLayoutParams().height);
+    }
+
+    @Test
+    public void testOnSheetContentChanged_ResizeContentRestore() {
+        BottomSheet.setSmallScreenForTesting(false);
+
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+        doReturn(R.string.bottom_sheet_accessibility_description)
+                .when(mSheetContent)
+                .getSheetClosedAccessibilityStringId();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        mBottomSheet.showContent(mSheetContent);
+
+        mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
+
+        mBottomSheet.setSheetOffsetFromBottom(150.0f, BottomSheetController.StateChangeReason.NONE);
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        assertEquals(150, contentContainer.getLayoutParams().height);
+
+        // Hide content (which means content == null in onSheetContentChanged)
+        mBottomSheet.showContent(null);
+        // The container's layout params height should be restored to MATCH_PARENT
+        assertEquals(
+                ViewGroup.LayoutParams.MATCH_PARENT, contentContainer.getLayoutParams().height);
     }
 
     @Test

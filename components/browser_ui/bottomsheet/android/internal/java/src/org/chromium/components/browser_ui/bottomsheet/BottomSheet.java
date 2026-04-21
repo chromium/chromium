@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
@@ -84,6 +85,9 @@ class BottomSheet extends FrameLayout
 
     /** The height ratio for the sheet in the SheetState.HALF state. */
     private static final float HALF_HEIGHT_RATIO = 0.75f;
+
+    /** The maximum height ratio for the sheet. */
+    private static final float MAX_HEIGHT_RATIO = 1.0f;
 
     /** The desired height of a content that has just been shown or whose height was invalidated. */
     private static final float HEIGHT_UNSPECIFIED = -1.0f;
@@ -430,6 +434,7 @@ class BottomSheet extends FrameLayout
                                     mBottomSheetContentContainer.getPaddingTop(),
                                     mBottomSheetContentContainer.getPaddingRight(),
                                     bottomPadding);
+                            updateContentContainerHeight();
                         }
 
                         if (previousHeight != mContainerHeight
@@ -742,7 +747,7 @@ class BottomSheet extends FrameLayout
         if (mAlwaysFullWidth
                 && state == SheetState.SCROLLING
                 && mTargetState == SheetState.PEEK
-                && mBrowserControlsHiddenRatio == 1.f) {
+                && mBrowserControlsHiddenRatio == MAX_HEIGHT_RATIO) {
             state = mTargetState;
         }
         if (state != SheetState.PEEK && state != SheetState.HALF) return 0;
@@ -785,6 +790,9 @@ class BottomSheet extends FrameLayout
         if (isSheetOpen() && MathUtils.areFloatsEqual(translationY, getTranslationY())) return;
 
         setTranslationY(translationY);
+
+        updateContentContainerHeight();
+
         // The snackbar is anchored to the bottom of the BottomSheet, so it needs to be translated
         // to the inverse of the BottomSheet's translation so it remains visible onscreen.
         if (mSnackbarContainer != null) {
@@ -834,18 +842,18 @@ class BottomSheet extends FrameLayout
         }
     }
 
-    /** @return The ratio of the height of the screen that the hidden state is. */
+    /** Returns the ratio of the height of the screen that the hidden state is. */
     @VisibleForTesting
     float getHiddenRatio() {
         return 0;
     }
 
-    /** @return Whether the peeking state for the sheet's content is enabled. */
+    /** Return whether the peeking state for the sheet's content is enabled. */
     boolean isPeekStateEnabled() {
         return mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DISABLED;
     }
 
-    /** @return Whether the half-height of the sheet is enabled. */
+    /** Return whether the half-height of the sheet is enabled. */
     private boolean isHalfStateEnabled() {
         if (mSheetContent == null) return false;
 
@@ -856,10 +864,17 @@ class BottomSheet extends FrameLayout
                 && mSheetContent.getFullHeightRatio() != HeightMode.WRAP_CONTENT;
     }
 
-    /** @return Whether the height mode for the full state is WRAP_CONTENT. */
+    /** Return whether the height mode for the full state is WRAP_CONTENT. */
     private boolean isFullHeightWrapContent() {
         return mSheetContent != null
                 && mSheetContent.getFullHeightRatio() == HeightMode.WRAP_CONTENT;
+    }
+
+    /** Return whether the height mode for the full state is RESIZE_CONTENT. */
+    private boolean isFullHeightResizeContent() {
+        return mSheetContent != null
+                && isHalfStateEnabled()
+                && mSheetContent.getFullHeightRatio() == HeightMode.RESIZE_CONTENT;
     }
 
     /** Returns the resolved PEEK height in pixels for the current content. */
@@ -943,9 +958,15 @@ class BottomSheet extends FrameLayout
         if (isFullHeightWrapContent()) {
             ensureContentDesiredHeightIsComputed();
             return Math.min(getMaxContentHeight(), mContentDesiredHeight) / getMaxContentHeight();
+        } else if (isFullHeightResizeContent()) {
+            return MAX_HEIGHT_RATIO;
         }
 
-        return customFullRatio == HeightMode.DEFAULT ? 1 : customFullRatio;
+        // If the customFullRatio is RESIZE_CONTENT, but half height is not enabled, set the full
+        // ratio to 1.0f.
+        return customFullRatio == HeightMode.DEFAULT || customFullRatio == HeightMode.RESIZE_CONTENT
+                ? 1
+                : customFullRatio;
     }
 
     /** @return The height of the container that the bottom sheet exists in. */
@@ -1395,6 +1416,8 @@ class BottomSheet extends FrameLayout
                 content == null ? false : content.shouldLongPressMoveSheet();
         mGestureDetector.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
+        updateContentContainerHeight();
+
         if (content != null && isFullHeightWrapContent()) {
             // Listen for layout/size changes.
             content.getContentView().addOnLayoutChangeListener(this);
@@ -1414,6 +1437,26 @@ class BottomSheet extends FrameLayout
             o.onSheetContentChanged(content);
         }
         mToolbarHolder.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    private void updateContentContainerHeight() {
+        ViewGroup.LayoutParams params = mBottomSheetContentContainer.getLayoutParams();
+        if (params == null) return;
+
+        if (isFullHeightResizeContent()) {
+            @Px float minContentHeight = getSheetHeightForState(SheetState.HALF);
+            @Px int newHeight = (int) Math.max(minContentHeight, mCurrentOffsetPx);
+            newHeight = Math.min(mVisibleViewportRect.height(), newHeight);
+            if (params.height != newHeight) {
+                params.height = newHeight;
+                mBottomSheetContentContainer.setLayoutParams(params);
+                notifyContainerSizeChanged();
+            }
+        } else if (params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            mBottomSheetContentContainer.setLayoutParams(params);
+            notifyContainerSizeChanged();
+        }
     }
 
     /** Called when the sheet content layout changed. */
@@ -1557,6 +1600,12 @@ class BottomSheet extends FrameLayout
         mShadowLayer.setShadowLength(size);
     }
 
+    private void notifyContainerSizeChanged() {
+        for (BottomSheetObserver obs : mObservers) {
+            obs.onContainerSizeChanged(mContainerWidth, mBottomSheetContentContainer.getHeight());
+        }
+    }
+
     private void ensureContentIsWrapped(boolean animate) {
         if (mCurrentState == SheetState.HIDDEN || mCurrentState == SheetState.PEEK) return;
 
@@ -1608,9 +1657,19 @@ class BottomSheet extends FrameLayout
         mToolbarHolder = toolbarHolder;
     }
 
+    void setBottomSheetContentContainerForTesting(
+            TouchRestrictingFrameLayout bottomSheetContentContainer) {
+        mBottomSheetContentContainer = bottomSheetContentContainer;
+    }
+
     void setEdgeToEdgeBottomInsetSupplierForTesting(
             Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+    }
+
+    @VisibleForTesting
+    Rect getVisibleViewportRectForTesting() {
+        return mVisibleViewportRect;
     }
 
     /**

@@ -127,7 +127,9 @@ public class TabBottomSheetContent implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         // TODO(crbug.com/502611927): Update this for AIM.
-        return HeightMode.WRAP_CONTENT;
+        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
+                ? HeightMode.RESIZE_CONTENT
+                : HeightMode.WRAP_CONTENT;
     }
 
     @Override

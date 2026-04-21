@@ -427,11 +427,13 @@ public class TabBottomSheetCoordinator {
         if (mWindowAndroid.getWindow() == null) return;
 
         float defaultHeightRatio = getDefaultHeightRatio();
+        @Px int visibleHeight = getVisibleViewportHeight();
+
         mMediator.updateResizingState(
                 defaultHeightRatio,
                 defaultHeightRatio,
                 mBottomSheetController.getCurrentOffset(),
-                (int) (getVisibleViewportHeight() * getDefaultHeightRatio()));
+                (int) (visibleHeight * getDefaultHeightRatio()));
     }
 
     private int getVisibleViewportHeight() {
