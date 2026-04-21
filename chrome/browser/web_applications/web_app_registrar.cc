@@ -1146,6 +1146,11 @@ bool WebAppRegistrar::CanUserUninstallWebApp(
   return web_app && web_app->CanUserUninstallWebApp();
 }
 
+bool WebAppRegistrar::IsPreinstalledOnly(const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->HasOnlySource(WebAppManagement::kDefault);
+}
+
 bool WebAppRegistrar::IsPreventCloseEnabled(
     const webapps::AppId& app_id) const {
   return provider_->policy_manager().IsPreventCloseEnabled(app_id);

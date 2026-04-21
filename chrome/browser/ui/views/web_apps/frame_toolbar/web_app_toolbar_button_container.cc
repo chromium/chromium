@@ -142,9 +142,12 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 
   // Add the uninstall button to the web app frame toolbar if this was a first
-  // launch after installing, next to the origin display.
+  // launch after installing, next to the origin display. Filter out
+  // preinstalled apps by default, even though the user can still uninstall
+  // them.
   if (base::FeatureList::IsEnabled(features::kWebAppInstallDialog) &&
       app_controller->CanUserUninstall() &&
+      !app_controller->IsPreinstalledOnly() &&
       app_controller->IsFirstLaunchAfterInstall()) {
     auto* button = AddChildView(
         std::make_unique<WebAppUninstallToolbarButton>(base::BindRepeating(

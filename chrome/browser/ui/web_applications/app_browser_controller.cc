@@ -558,6 +558,10 @@ bool AppBrowserController::CanUserUninstall() const {
   return false;
 }
 
+bool AppBrowserController::IsPreinstalledOnly() const {
+  return false;
+}
+
 void AppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   NOTREACHED();

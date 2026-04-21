@@ -102,6 +102,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;
   bool CanUserUninstall() const override;
+  bool IsPreinstalledOnly() const override;
   void Uninstall(
       webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;

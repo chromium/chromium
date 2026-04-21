@@ -3563,3 +3563,21 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest, AppRemoved) {
               base::BucketsAre(base::Bucket(
                   webapps::WebappUninstallSource::kToolbarPostInstall, 1)));
 }
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
+                       NotVisibleForPreinstalledApp) {
+  const GURL app_url("https://test.org");
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  web_app_info->scope = app_url;
+  web_app_info->title = u"preinstalled app";
+  webapps::AppId app_id = web_app::test::InstallWebApp(
+      browser()->profile(), std::move(web_app_info),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+
+  WebAppToolbarButtonContainer* toolbar_right_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  EXPECT_EQ(toolbar_right_container->uninstall_button(), nullptr);
+}

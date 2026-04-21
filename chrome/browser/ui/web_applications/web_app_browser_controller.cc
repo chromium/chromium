@@ -719,6 +719,10 @@ bool WebAppBrowserController::CanUserUninstall() const {
   return registrar().CanUserUninstallWebApp(app_id());
 }
 
+bool WebAppBrowserController::IsPreinstalledOnly() const {
+  return registrar().IsPreinstalledOnly(app_id());
+}
+
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   provider_->ui_manager().PresentUserUninstallDialog(

@@ -246,6 +246,10 @@ class WebAppRegistrar {
   // e.g. it is not policy installed.
   bool CanUserUninstallWebApp(const webapps::AppId& app_id) const;
 
+  // Returns true if the app only has the WebAppManagement::kDefault source,
+  // denoting that it was only installed by default in Chrome.
+  bool IsPreinstalledOnly(const webapps::AppId& app_id) const;
+
   // Returns true if the prevent-close feature is enabled for the given app
   bool IsPreventCloseEnabled(const webapps::AppId& app_id) const;
 

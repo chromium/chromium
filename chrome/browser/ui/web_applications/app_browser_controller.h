@@ -225,6 +225,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   virtual bool CanUserUninstall() const;
 
+  // Returns whether the app was preinstalled only, and not installed
+  // by any other sources.
+  virtual bool IsPreinstalledOnly() const;
+
   virtual void Uninstall(
       webapps::WebappUninstallSource webapp_uninstall_source);
 
