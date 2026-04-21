@@ -102,6 +102,8 @@ const float kProbabilityForSendingSampleRequest = 0.000001;
 const float kProbabilityForAcceptingHCAllowlistTrigger = 0.9999;
 // Threshold value used to skip the intelligent scan.
 const int kInnerTextMinThresholdBytes = 5;
+// How long to wait to run the user report callback.
+const int kUserReportCallbackTimer = 30;
 
 // Normalizes a potential command to account for capitalization, pathing, and
 // file extensions.
@@ -860,6 +862,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
+  MaybeRunUserReportCallback();
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
@@ -905,18 +908,37 @@ void ClientSideDetectionHost::RegisterAutofillManager() {
           kObservePreexistingManagers);
 }
 
-void ClientSideDetectionHost::ReportUnsafeSite(SkBitmap screenshot) {
+void ClientSideDetectionHost::MaybeRunUserReportCallback() {
+  user_report_timeout_timer_.Stop();
+  if (user_report_callback_) {
+    std::move(user_report_callback_).Run();
+  }
+}
+
+void ClientSideDetectionHost::ReportUnsafeSite(SkBitmap screenshot,
+                                               base::OnceClosure callback) {
   if (!screenshot.drawsNothing() &&
       screenshot.width() <= kMaxHighResScreenshotWidth &&
       screenshot.height() <= kMaxHighResScreenshotHeight) {
     screenshot_ = screenshot;
   }
+  MaybeRunUserReportCallback();
+  user_report_callback_ = std::move(callback);
+
+  // Start a 30-second timer that will run the callback if it hasn't been run
+  // yet.
+  user_report_timeout_timer_.Start(
+      FROM_HERE, base::Seconds(kUserReportCallbackTimer),
+      base::BindOnce(&ClientSideDetectionHost::MaybeRunUserReportCallback,
+                     weak_factory_.GetWeakPtr()));
+
   MaybeStartPreClassification(ClientSideDetectionType::USER_REPORT);
 }
 
 void ClientSideDetectionHost::MaybeStartPreClassification(
     ClientSideDetectionType request_type) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    MaybeRunUserReportCallback();
     return;
   }
 
@@ -939,6 +961,9 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   }
 
   if (!csd_service_) {
+    if (request_type == ClientSideDetectionType::USER_REPORT) {
+      MaybeRunUserReportCallback();
+    }
     return;
   }
 
@@ -1001,6 +1026,8 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   should_send_as_force_request_ = false;
+
+  MaybeRunUserReportCallback();
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification) &&
       !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
@@ -1395,6 +1422,9 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   }
 
   if (!should_classify) {
+    if (request_type == ClientSideDetectionType::USER_REPORT) {
+      MaybeRunUserReportCallback();
+    }
     return;
   }
 
@@ -1419,6 +1449,9 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector_);
 
   if (!phishing_detector_.is_bound()) {
+    if (request_type == ClientSideDetectionType::USER_REPORT) {
+      MaybeRunUserReportCallback();
+    }
     return;
   }
 
@@ -1521,6 +1554,9 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   if (result != mojom::PhishingDetectorResult::SUCCESS &&
       result != mojom::PhishingDetectorResult::CLASSIFICATION_SKIPPED) {
     is_csd_running_ = false;
+    if (request_type == ClientSideDetectionType::USER_REPORT) {
+      MaybeRunUserReportCallback();
+    }
     return;
   }
 
@@ -1566,6 +1602,10 @@ void ClientSideDetectionHost::PhishingDetectionDone(
         did_match_high_confidence_allowlist, result);
   } else {
     is_csd_running_ = false;
+    if (request_type == ClientSideDetectionType::USER_REPORT) {
+      MaybeRunUserReportCallback();
+    }
+    return;
   }
 }
 
@@ -2445,6 +2485,10 @@ void ClientSideDetectionHost::SendRequest(
 
   LogClientSideDetectionEvent(ClientSideDetectionEvent::kNetworkRequestSent,
                               verdict->client_side_detection_type());
+  if (verdict->client_side_detection_type() ==
+      ClientSideDetectionType::USER_REPORT) {
+    MaybeRunUserReportCallback();
+  }
   ClientSideDetectionService::ClientReportPhishingRequestCallback callback =
       base::BindOnce(&ClientSideDetectionHost::MaybeShowPhishingWarning,
                      weak_factory_.GetWeakPtr(),

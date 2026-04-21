@@ -222,7 +222,7 @@ class ClientSideDetectionHost
 
   // User requests to report a site as unsafe. The screenshot values come from
   // the report dialog view.
-  void ReportUnsafeSite(SkBitmap screenshot);
+  void ReportUnsafeSite(SkBitmap screenshot, base::OnceClosure callback);
 
   // Sets a callback to be notified when preclassification is started.
   void set_preclassification_started_callback_for_testing(
@@ -602,6 +602,15 @@ class ClientSideDetectionHost
   // Fills in the screenshot data for the given `request`. Only fill if the
   // report type is USER_REPORT.
   void MaybeFillScreenshotData(ClientPhishingRequest* request);
+
+  // Helper method to run the callback.
+  void MaybeRunUserReportCallback();
+
+  // The callback for the report a scam dialog.
+  base::OnceClosure user_report_callback_;
+
+  // Timer to call the user report callback.
+  base::OneShotTimer user_report_timeout_timer_;
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.

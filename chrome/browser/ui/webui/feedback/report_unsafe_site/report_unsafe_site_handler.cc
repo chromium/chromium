@@ -90,8 +90,8 @@ void ReportUnsafeSitePageHandler::SendReport(bool include_screenshot,
   if (!include_screenshot) {
     screenshot_ = SkBitmap();
   }
-  client_side_detection_host->ReportUnsafeSite(screenshot_);
-  std::move(callback).Run();
+  client_side_detection_host->ReportUnsafeSite(screenshot_,
+                                               std::move(callback));
 }
 
 void ReportUnsafeSitePageHandler::CloseDialog() {

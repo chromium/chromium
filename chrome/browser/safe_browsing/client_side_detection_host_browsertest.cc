@@ -591,7 +591,9 @@ class ClientSideDetectionHostPrerenderBrowserTest_Screenshot
 
     const SkBitmap screenshot =
         gfx::test::CreateBitmap(screenshot_width, screenshot_height);
-    csd_host->ReportUnsafeSite(screenshot);
+
+    base::test::TestFuture<void> future;
+    csd_host->ReportUnsafeSite(screenshot, future.GetCallback());
 
     // Bypass the pre-classification check to directly test the screenshot
     // plumbing.
@@ -601,6 +603,8 @@ class ClientSideDetectionHostPrerenderBrowserTest_Screenshot
         /*did_match_high_confidence_allowlist=*/false);
 
     run_loop.Run();
+
+    EXPECT_TRUE(future.IsReady());
 
     return fake_csd_service.saved_request();
   }

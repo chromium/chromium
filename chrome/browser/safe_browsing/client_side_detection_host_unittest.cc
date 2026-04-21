@@ -920,9 +920,12 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsAllowlist) {
 
   // Now trigger USER_REPORT. It should skip allowlist and start classification.
   // CheckCsdAllowlistUrl should NOT be called again.
-  csd_host_->ReportUnsafeSite(SkBitmap());
+  base::test::TestFuture<void> future;
+  csd_host_->ReportUnsafeSite(SkBitmap(), future.GetCallback());
 
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(future.IsReady());
 
   fake_phishing_detector_.CheckMessage(&url);
 }
@@ -953,9 +956,12 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
 
   // Now trigger USER_REPORT. It should skip report limit and start
   // classification.
-  csd_host_->ReportUnsafeSite(SkBitmap());
+  base::test::TestFuture<void> future;
+  csd_host_->ReportUnsafeSite(SkBitmap(), future.GetCallback());
 
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(future.IsReady());
 
   fake_phishing_detector_.CheckMessage(&url);
 }
