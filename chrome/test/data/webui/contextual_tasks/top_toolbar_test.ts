@@ -377,8 +377,11 @@ suite('TopToolbarTest', () => {
     setup(() => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-      loadTimeData.overrideValues(
-          {expandButtonEnabled: false, hideMenuOnAiPageEnabled: false});
+      loadTimeData.overrideValues({
+        expandButtonEnabled: false,
+        hideMenuOnAiPageEnabled: false,
+        isAiPage: true,
+      });
 
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
@@ -396,14 +399,32 @@ suite('TopToolbarTest', () => {
       const buttons = topToolbar.$.menu.get().querySelectorAll('button');
       assertEquals(3, buttons.length);
     });
+
+    test('menu button visibility independent of ai page state', async () => {
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+      assertTrue(!!moreButton);
+
+      // Initially visible because hideMenuOnAiPageEnabled is false, even
+      // though isAiPage is initialized to true.
+      assertTrue(topToolbar.isAiPage);
+      assertFalse(moreButton.hidden);
+
+      topToolbar.isAiPage = false;
+      await microtasksFinished();
+      assertFalse(moreButton.hidden);
+    });
   });
 
   suite('Menu for lens flows only', () => {
     setup(() => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-      loadTimeData.overrideValues(
-          {expandButtonEnabled: false, hideMenuOnAiPageEnabled: true});
+      loadTimeData.overrideValues({
+        expandButtonEnabled: false,
+        hideMenuOnAiPageEnabled: true,
+        isAiPage: true,
+      });
 
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
@@ -414,13 +435,18 @@ suite('TopToolbarTest', () => {
           topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
       assertTrue(!!moreButton);
 
-      topToolbar.isAiPage = true;
-      await microtasksFinished();
+      // Hidden initially because `isAiPage` is initialized to true via
+      // loadTimeData.
+      assertTrue(topToolbar.isAiPage);
       assertTrue(moreButton.hidden);
 
       topToolbar.isAiPage = false;
       await microtasksFinished();
       assertFalse(moreButton.hidden);
+
+      topToolbar.isAiPage = true;
+      await microtasksFinished();
+      assertTrue(moreButton.hidden);
     });
   });
 

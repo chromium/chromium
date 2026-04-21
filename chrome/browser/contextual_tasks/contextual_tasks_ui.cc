@@ -280,6 +280,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, kContextualTasksResources,
                               IDR_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_HTML);
 
+  AddInitialTaskStateToDataSource(source,
+                                  web_ui->GetWebContents()->GetVisibleURL());
+
   // TODO(447633840): This is a placeholder URL until the real page is ready.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
@@ -910,6 +913,26 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
   }
 
   UpdateSuggestedTabContext(tab);
+}
+
+void ContextualTasksUI::AddInitialTaskStateToDataSource(
+    content::WebUIDataSource* source,
+    const GURL& url) {
+  // Set initial state based on task state to avoid UI flickers.
+  std::string task_id_str;
+  base::Uuid task_id;
+  if (net::GetValueForKeyInQuery(url, contextual_tasks::kTaskQueryParam,
+                                 &task_id_str)) {
+    task_id = base::Uuid::ParseLowercase(task_id_str);
+  }
+
+  std::optional<GURL> task_creation_url =
+      ui_service_ ? ui_service_->GetCreationUrlForTask(task_id) : std::nullopt;
+  bool show_ghost_loader = task_creation_url && task_creation_url->is_empty();
+  source->AddBoolean("isGhostLoaderVisible", show_ghost_loader);
+  source->AddBoolean("isAiPage",
+                     ui_service_ && task_creation_url &&
+                         ui_service_->IsAiUrl(task_creation_url.value()));
 }
 
 void ContextualTasksUI::UpdateSuggestedTabContext(tabs::TabInterface* tab) {

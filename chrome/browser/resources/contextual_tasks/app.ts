@@ -233,7 +233,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   // Whether top-level navigation failed. Initialized based on online status
   // though top-level navigation could fail for numerous reasons.
   protected accessor isLoadError_: boolean = !window.navigator.onLine;
-  protected accessor isAiPage_: boolean = true;
+  protected accessor isAiPage_: boolean = loadTimeData.getBoolean('isAiPage');
   protected accessor isLensOverlayShowing_: boolean = false;
   protected accessor isOverlayOpenForAimVisualSearch_: boolean = false;
   // Indicates if in tab mode. Most start in a tab.
@@ -244,10 +244,15 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor threadTitle_: string = '';
   protected accessor isInBasicMode_: boolean = false;
   protected accessor isErrorPageVisible_: boolean = false;
-  protected accessor isZeroState_: boolean|undefined = undefined;
+  // Whether no queries have been submitted in the current AIM thread. This
+  // can be undefined on initial load to prevent the composebox from flashing
+  // briefly before the zero state is rendered.
+  protected accessor isZeroState_: boolean|undefined =
+      loadTimeData.getBoolean('isGhostLoaderVisible') ? false : undefined;
   protected accessor enableNativeZeroStateSuggestions_: boolean =
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
-  protected accessor isGhostLoaderVisible_: boolean = false;
+  protected accessor isGhostLoaderVisible_: boolean =
+      loadTimeData.getBoolean('isGhostLoaderVisible');
   protected accessor useStratusDarkModeColors_: boolean =
       loadTimeData.getBoolean('useStratusDarkModeColors');
   protected accessor isInputLocked_: boolean = false;
@@ -709,9 +714,14 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private async onThreadFrameLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
+    // It is possible for a redirect to abort a load before committing. To
+    // prevent ghost loader flickers in this case, only hide the ghost loader if
+    // the frame was previously set to loading.
+    if (this.isFrameLoading) {
+      this.setIsGhostLoaderVisible(false);
+    }
     this.isFrameLoading = false;
     this.isLoadingZeroStateFromResults_ = false;
-    this.setIsGhostLoaderVisible(false);
 
     // The navigation aborted, so reset the last thread frame load start event,
     // since the frame is no longer loading. Without this, every

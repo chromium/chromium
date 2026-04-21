@@ -113,7 +113,6 @@ constexpr net::BackoffEntry::Policy
 };
 
 constexpr char kAiPageHost[] = "https://google.com";
-constexpr char kTaskQueryParam[] = "chrome_task_id";
 constexpr char kDebugParam[] = "deb";
 constexpr char kDebugNoCobrowseValue[] = "nocobrowse1";
 
@@ -1166,6 +1165,15 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: GetInitialUrlForTask "
          "returning nullopt";
+  return std::nullopt;
+}
+
+std::optional<GURL> ContextualTasksUiService::GetCreationUrlForTask(
+    const base::Uuid& task_id) {
+  auto it = task_id_to_creation_url_.find(task_id);
+  if (it != task_id_to_creation_url_.end()) {
+    return it->second;
+  }
   return std::nullopt;
 }
 

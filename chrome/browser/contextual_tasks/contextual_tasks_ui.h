@@ -52,6 +52,7 @@ namespace content {
 struct OpenURLParams;
 class BrowserContext;
 class WebContentsObserver;
+class WebUIDataSource;
 }  // namespace content
 
 namespace contextual_tasks {
@@ -294,6 +295,11 @@ class ContextualTasksUI
 
   // Called to update the suggested tab chip on composebox.
   void UpdateSuggestedTabContext(tabs::TabInterface* tab);
+
+  // Adds the initial task state to the WebUIDataSource for the initial UI
+  // state rendering.
+  void AddInitialTaskStateToDataSource(content::WebUIDataSource* source,
+                                       const GURL& url);
 
   // Update the task's details in the WebUI.
   void PushTaskDetailsToPage();
