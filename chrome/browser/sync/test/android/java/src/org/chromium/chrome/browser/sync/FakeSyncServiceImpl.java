@@ -214,11 +214,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public boolean isSyncFeatureActive() {
-        return mDelegate.isSyncFeatureActive();
-    }
-
-    @Override
     public boolean isSyncDisabledByEnterprisePolicy() {
         return mDelegate.isSyncDisabledByEnterprisePolicy();
     }

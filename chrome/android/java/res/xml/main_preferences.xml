@@ -19,11 +19,6 @@ found in the LICENSE file.
         android:key="sign_in"
         android:order="2"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="manage_sync"
-        android:order="3"
-        android:layout="@layout/account_management_account_row"
-        android:title="@string/sync_category_title"/>
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="google_services"
         android:order="4"
         android:layout="@layout/account_management_account_row"

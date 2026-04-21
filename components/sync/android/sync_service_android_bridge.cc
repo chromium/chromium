@@ -188,10 +188,6 @@ bool SyncServiceAndroidBridge::IsSyncFeatureEnabled() {
   return native_sync_service_->IsSyncFeatureEnabled();
 }
 
-bool SyncServiceAndroidBridge::IsSyncFeatureActive() {
-  return native_sync_service_->IsSyncFeatureActive();
-}
-
 bool SyncServiceAndroidBridge::IsSyncDisabledByEnterprisePolicy() {
   return native_sync_service_->HasDisableReason(
       SyncService::DISABLE_REASON_ENTERPRISE_POLICY);

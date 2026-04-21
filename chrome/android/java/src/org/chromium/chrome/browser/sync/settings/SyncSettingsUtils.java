@@ -10,14 +10,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
@@ -45,8 +43,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
-import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
-import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -170,110 +166,11 @@ public class SyncSettingsUtils {
         }
     }
 
-    /** Return a short summary of the current sync status. */
-    public static String getSyncStatusSummary(Context context, Profile profile) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        if (syncService == null) {
-            return context.getString(R.string.sync_off);
-        }
-
-        if (!syncService.hasSyncConsent()) {
-            // There is no account with sync consent available.
-            return context.getString(R.string.sync_off);
-        }
-
-        if (syncService.isSyncDisabledByEnterprisePolicy()) {
-            return context.getString(R.string.sync_is_disabled_by_administrator);
-        }
-
-        if (syncService.getSelectedTypes().isEmpty()) {
-            return context.getString(R.string.sync_data_types_off);
-        }
-
-        @UserActionableError int userActionableError = syncService.getUserActionableError();
-
-        switch (userActionableError) {
-            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-                return getSyncStatusSummaryForAuthError(
-                        context, syncService.getAuthError().getState());
-            case UserActionableError.NEEDS_CLIENT_UPGRADE:
-                return context.getString(
-                        R.string.sync_error_upgrade_client, ApkInfo.getHostPackageLabel());
-            case UserActionableError.NEEDS_PASSPHRASE:
-                return context.getString(R.string.sync_need_passphrase);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                return context.getString(R.string.sync_error_card_title);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return context.getString(R.string.password_sync_error_summary);
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.sync_needs_verification_title);
-            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
-                return context.getString(R.string.sync_error_outdated_gms);
-            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                return context.getString(R.string.bookmark_sync_limit_error_title);
-            case UserActionableError.NONE:
-                break;
-        }
-
-        if (!syncService.isSyncFeatureActive()) {
-            return context.getString(R.string.sync_setup_progress);
-        }
-
-        return context.getString(R.string.sync_on);
-    }
-
     /**
-     * Gets the sync status summary for a given {@link GoogleServiceAuthErrorState}.
+     * Creates a wrapper around {@link Runnable} that calls the runnable only if {@link
+     * PreferenceFragmentCompat} is still in resumed state. Click events that arrive after the
+     * fragment has been paused will be ignored. See http://b/5983282.
      *
-     * @param context The application context, used by the method to get string resources.
-     * @param state Must not be GoogleServiceAuthError.State.None.
-     */
-    private static String getSyncStatusSummaryForAuthError(
-            Context context, @GoogleServiceAuthErrorState int state) {
-        return switch (state) {
-            case GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS -> context.getString(
-                    R.string.sync_error_ga);
-            case GoogleServiceAuthErrorState.CONNECTION_FAILED -> context.getString(
-                    R.string.sync_error_connection);
-            case GoogleServiceAuthErrorState.SERVICE_UNAVAILABLE -> context.getString(
-                    R.string.sync_error_service_unavailable);
-            case GoogleServiceAuthErrorState.REQUEST_CANCELED,
-                    GoogleServiceAuthErrorState.UNEXPECTED_SERVICE_RESPONSE,
-                    GoogleServiceAuthErrorState.SERVICE_ERROR -> context.getString(
-                    R.string.sync_error_generic);
-            case GoogleServiceAuthErrorState.NONE -> {
-                assert false : "No summary if there's no auth error";
-                yield "";
-            }
-            default -> {
-                assert false : "Unknown auth error state";
-                yield "";
-            }
-        };
-    }
-
-    /** Returns an icon that represents the current sync state. */
-    public static @Nullable Drawable getSyncStatusIcon(Context context, Profile profile) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        if (syncService == null
-                || !syncService.hasSyncConsent()
-                || syncService.getSelectedTypes().isEmpty()
-                || syncService.isSyncDisabledByEnterprisePolicy()) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
-        }
-
-        if (getSyncError(profile) != UserActionableError.NONE) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp);
-        }
-
-        return AppCompatResources.getDrawable(context, R.drawable.ic_sync_on_48dp);
-    }
-
-    /**
-     * Creates a wrapper around {@link Runnable} that calls the runnable only if
-     * {@link PreferenceFragmentCompat} is still in resumed state. Click events that arrive after
-     * the fragment has been paused will be ignored. See http://b/5983282.
      * @param fragment The fragment that hosts the preference.
      * @param runnable The runnable to call from {@link Preference.OnPreferenceClickListener}.
      */
@@ -455,19 +352,6 @@ public class SyncSettingsUtils {
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
         openTrustedVaultDialogForPendingIntent(
                 fragment, requestCode, TrustedVaultClient.get().createOptInIntent(accountInfo));
-    }
-
-    /**
-     * Shows a toast indicating that sync is disabled for the account by the system administrator.
-     *
-     * @param context The context where the toast will be shown.
-     */
-    public static void showSyncDisabledByAdministratorToast(Context context) {
-        Toast.makeText(
-                        context,
-                        context.getString(R.string.sync_is_disabled_by_administrator),
-                        Toast.LENGTH_LONG)
-                .show();
     }
 
     /**

@@ -311,9 +311,6 @@ public class MainSettingsFragmentTest {
                 mMainSettings
                         .findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
                         .isVisible());
-        Assert.assertFalse(
-                "Sync preference should be hidden",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
 
         // Assert for "Basics" section
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
@@ -607,21 +604,6 @@ public class MainSettingsFragmentTest {
         Assert.assertTrue(
                 "Search Engine preference should be disabled when service is not ready.",
                 TextUtils.isEmpty(searchEngineSettings.getSummary()));
-    }
-
-    @Test
-    @SmallTest
-    public void testManageSyncRowIsNotShownWithoutSyncConsent() throws InterruptedException {
-        startSettings();
-
-        Assert.assertFalse(
-                "Sync preference should be hidden when the user is signed out.",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
-
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        Assert.assertFalse(
-                "Sync preference should not be shown when the user is signed in.",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
     }
 
     @Test

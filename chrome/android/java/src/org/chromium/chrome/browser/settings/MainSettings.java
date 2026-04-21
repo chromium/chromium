@@ -34,7 +34,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -70,7 +69,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
@@ -123,7 +121,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
     public static final String PREF_SIGN_IN = "sign_in";
-    public static final String PREF_MANAGE_SYNC = "manage_sync";
     public static final String PREF_GOOGLE_SERVICES = "google_services";
     public static final String PREF_BASICS_SECTION = "basics_section";
     public static final String PREF_SEARCH_ENGINE = "search_engine";
@@ -162,7 +159,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
-    private ChromeBasePreference mManageSync;
     private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     // TODO(crbug.com/354927682): This should be removed when the snackbar issue is addressed.
     // Will be true if `onSignedOut()` was called when the current activity state is not
@@ -468,14 +464,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
      * Stores all preferences in memory so that, if they needed to be added/removed from the
      * PreferenceScreen, there would be no need to reload them from 'main_preferences.xml'.
      */
-    @EnsuresNonNull("mManageSync")
     private void cachePreferences() {
         int preferenceCount = getPreferenceScreen().getPreferenceCount();
         for (int index = 0; index < preferenceCount; index++) {
             Preference preference = getPreferenceScreen().getPreference(index);
             mAllPreferences.put(preference.getKey(), preference);
         }
-        mManageSync = (ChromeBasePreference) findPreference(PREF_MANAGE_SYNC);
     }
 
     @Override
@@ -558,7 +552,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
             removePreferenceIfPresent(PREF_SIGN_IN);
         }
 
-        updateManageSyncPreference();
         updateSearchEnginePreference();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
@@ -626,52 +619,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private void removePreferenceIfPresent(String key) {
         Preference preference = getPreferenceScreen().findPreference(key);
         if (preference != null) getPreferenceScreen().removePreference(preference);
-    }
-
-    private void updateManageSyncPreference() {
-        // TODO(crbug.com/40067770): Remove usage of ConsentLevel.SYNC after kSync users are
-        // migrated to kSignin in phase 3. See ConsentLevel::kSync documentation for details.
-        boolean shouldManageSyncPref = shouldShowManageSyncPref(getProfile());
-        mManageSync.setVisible(shouldManageSyncPref);
-        if (!shouldManageSyncPref) return;
-
-        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity(), getProfile()));
-        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity(), getProfile()));
-
-        mManageSync.setOnPreferenceClickListener(
-                pref -> {
-                    onPreferenceSelected(pref);
-                    Context context = getContext();
-                    Profile profile = getProfile();
-                    openManageSyncPref(context, profile, false, null);
-                    return true;
-                });
-    }
-
-    private static boolean shouldShowManageSyncPref(Profile profile) {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        assumeNonNull(identityManager);
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null;
-    }
-
-    public static boolean openManageSyncPref(
-            Context context, Profile profile, boolean addToBackStack, @Nullable String tag) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        assumeNonNull(syncService);
-        if (syncService.isSyncDisabledByEnterprisePolicy()) {
-            SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
-            return false;
-        } else {
-            var settingsNavigation = SettingsNavigationFactory.createSettingsNavigation();
-            settingsNavigation.startSettings(
-                    context,
-                    ManageSyncSettings.class,
-                    /* fragmentArgs= */ null,
-                    addToBackStack,
-                    tag);
-            return true;
-        }
     }
 
     private void updateSearchEnginePreference() {
@@ -798,9 +745,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
             MainSettings.showPasswordSettings(context, profile, modalDialogManager);
             // Open an external activity. Keep the state as is.
             return false;
-        } else if (key.equals(PREF_MANAGE_SYNC)) {
-            openManageSyncPref(context, profile, true, RESULT_BACKSTACK);
-            return true;
         } else if (key.equals(PREF_NOTIFICATIONS)) {
             Intent intent = new Intent();
             if (shouldShowNotificationPref(context, intent)) context.startActivity(intent);
@@ -1029,7 +973,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void syncStateChanged() {
-        updateManageSyncPreference();
         updateAutofillPreferences();
     }
 
@@ -1079,17 +1022,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
-                    SyncService syncService = SyncServiceFactory.getForProfile(profile);
-                    if (!shouldShowManageSyncPref(profile)
-                            || (syncService != null
-                                    && syncService.isSyncDisabledByEnterprisePolicy())) {
-                        indexData.removeEntry(getUniqueId(PREF_MANAGE_SYNC));
-                    } else {
-                        String frag = MainSettings.class.getName();
-                        String targetFrag = ManageSyncSettings.class.getName();
-                        indexData.updateEntryForKey(
-                                frag, PREF_MANAGE_SYNC, R.string.sync_category_title, targetFrag);
-                    }
                     indexData.removeEntry(getUniqueId(PREF_SETTINGS_PROMO_CARD));
                     if (!shouldAddPlusAddressesPref()) {
                         indexData.removeEntry(getUniqueId(PREF_PLUS_ADDRESSES));

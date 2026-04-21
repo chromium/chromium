@@ -53,16 +53,6 @@ public interface SyncService {
     // codebase. See ConsentLevel::kSync documentation for details.
     boolean isSyncFeatureEnabled();
 
-    /**
-     * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
-     * active even if this is false.
-     *
-     * @return true if Sync is active, false otherwise.
-     */
-    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
-    // codebase. See ConsentLevel::kSync documentation for details.
-    boolean isSyncFeatureActive();
-
     GoogleServiceAuthError getAuthError();
 
     /**

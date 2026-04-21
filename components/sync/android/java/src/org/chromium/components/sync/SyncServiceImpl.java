@@ -88,13 +88,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean isSyncFeatureActive() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().isSyncFeatureActive(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public GoogleServiceAuthError getAuthError() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -467,8 +460,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
                 long nativeSyncServiceAndroidBridge, int source);
 
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
-
-        boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);
 
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
 

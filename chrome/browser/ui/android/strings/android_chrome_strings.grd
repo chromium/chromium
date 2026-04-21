@@ -352,9 +352,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SIGN_OUT_AND_TURN_OFF_SYNC" desc="The text for a preferences row that for signs out the user and turns off sync.">
         Sign out and turn off sync
       </message>
-      <message name="IDS_SYNC_CATEGORY_TITLE" desc="Title for the group of Sync-related entries in Settings. This group contains preferences for data tied to user's Google Account.">
-        Sync
-      </message>
       <message name="IDS_PREFS_GOOGLE_SERVICES" desc="Title for the group of preferences that control non-personalized Google services. This group contains preferences for data that is not tied to user's Google Account. [CHAR_LIMIT=40]">
         Google services
       </message>
@@ -2315,23 +2312,8 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Sync strings in account management dialog -->
-      <message name="IDS_SYNC_ON" desc="The text is displayed as a gray subtitle of a settings item titled 'Sync' and indicates that sync is on.">
-        On
-      </message>
-      <message name="IDS_SYNC_OFF" desc="The text is displayed as a gray subtitle of a settings item titled 'Sync' and indicates that sync is off.">
-        Off
-      </message>
-      <message name="IDS_SYNC_DATA_TYPES_OFF" desc="Message to show when all sync data types are off">
-        No data selected to sync
-      </message>
-      <message name="IDS_SYNC_IS_DISABLED_BY_ADMINISTRATOR" desc="Message to show when Chrome sync is disabled by administrator">
-        Sync is disabled by your administrator
-      </message>
       <message name="IDS_SYNC_NEED_PASSPHRASE" desc="Error message when a passphrase is needed for decrypting sync data.">
         Passphrase required
-      </message>
-      <message name="IDS_SYNC_SETUP_PROGRESS" desc="Message indicating that sync setup is in progress">
-        Setup in progress…
       </message>
 
       <!-- Legal information preferences -->
@@ -2699,21 +2681,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Sync error strings -->
-      <message name="IDS_SYNC_ERROR_GENERIC" desc="Sync error string for generic error. [CHAR_LIMIT=80]">
-        Sync has stopped working
-      </message>
-      <message name="IDS_SYNC_ERROR_GA" desc="Sync error string for when the needs to update the sign-in details [CHAR_LIMIT=80]">
-        Please update your sign-in details.
-      </message>
-      <message name="IDS_SYNC_ERROR_CONNECTION" desc="Sync error string for network connection. [CHAR_LIMIT=80]">
-        Could not connect to the sync server.
-      </message>
-      <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT" desc="Sync error string for out-of-date client. [CHAR_LIMIT=80]">
-        <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> is out of date.
-      </message>
-      <message name="IDS_SYNC_ERROR_SERVICE_UNAVAILABLE" desc="Sync error string for service unavailable. [CHAR_LIMIT=80]">
-        The service is not available; try again later.
-      </message>
       <message name="IDS_WIPING_PROFILE_DATA_TITLE" desc="Title for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
         Deleting account data
       </message>
