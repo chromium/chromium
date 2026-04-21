@@ -143,6 +143,7 @@ void GpuSharedImageVideoFactory::CreateImage(
   scoped_refptr<gpu::GpuChannelSharedImageInterface>
       gpu_channel_shared_image_interface =
           stub_->channel()->shared_image_stub()->shared_image_interface();
+  CHECK(spec.color_space.IsValid());
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       gpu_channel_shared_image_interface->CreateSharedImageForAndroidVideo(
           spec.coded_size, spec.color_space, codec_image, drdc_lock);
