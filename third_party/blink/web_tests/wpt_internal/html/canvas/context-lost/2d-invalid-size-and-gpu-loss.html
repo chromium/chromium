@@ -44,13 +44,13 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
                 internals.runtimeFlags.accelerated2dCanvasEnabled,
                 'Accelerated canvas should start with acceleration enabled.');
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
 
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     await waitForContextLost(ctx);
     await waitForContextRestored(ctx);
@@ -71,7 +71,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
 subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
 
   // Try to create a provider while the GPU process is down.
   if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
@@ -86,7 +86,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     // The provider created while the GPU process was down still gets notified.
     await waitForContextLost(ctx);
@@ -116,7 +116,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
 
   // Kill the GPU process and resize the canvas before it's notified of the GPU
   // process loss.
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   canvas.width = 64;
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
   if (internals.runtimeFlags.accelerated2dCanvasEnabled) {
@@ -130,7 +130,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     // The provider created while the GPU process was down still gets notified.
     await waitForContextLost(ctx);
@@ -165,7 +165,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     // TODO: crbug.com/348445884 - `HTMLCanvasElement` and `OffscreenCanvas`
     // behave differently. This test is merely testing existing behavior, but
@@ -236,7 +236,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
 
   // Make sure the canvas has a provider and kill the GPU process.
   drawAndReadBack(ctx);
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   canvas.width = 100000000;
   canvas.width = 64;
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
@@ -246,7 +246,7 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     await waitForContextLost(ctx);
     await waitForContextRestored(ctx);
@@ -269,13 +269,13 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
                 internals.runtimeFlags.accelerated2dCanvasEnabled,
                 'Accelerated canvas should start with acceleration enabled.');
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
 
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     await waitForContextLost(ctx);
 
@@ -306,13 +306,13 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
                 internals.runtimeFlags.accelerated2dCanvasEnabled,
                 'Accelerated canvas should start with acceleration enabled.');
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
 
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     await waitForContextLost(ctx);
     // We are now inside the contextlost event handler. Wait until the task is
@@ -347,13 +347,13 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
                 internals.runtimeFlags.accelerated2dCanvasEnabled,
                 'Accelerated canvas should start with acceleration enabled.');
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
 
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     await waitForContextLost(ctx);
 
@@ -389,13 +389,13 @@ subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   assert_equals(internals.isCanvasImageSourceAccelerated(canvas),
                 internals.runtimeFlags.accelerated2dCanvasEnabled,
                 'Accelerated canvas should start with acceleration enabled.');
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
   assert_false(ctx.isContextLost(), `Canvas doesn't yet know the GPU is gone.`);
 
   if (canvasType === CanvasTestType.OFFSCREEN &&
       !internals.runtimeFlags.accelerated2dCanvasEnabled) {
     // Unaccelerated `OffscreenCanvas` never lose the context.
-    await waitFramesAndRejectOnContextEvents(ctx);
+    await resolvedWithoutContextEvent(gpuProcessRestoredPromise, ctx);
   } else {
     await waitForContextLost(ctx);
     // We are now inside the contextlost event handler. Wait until the task is

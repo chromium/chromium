@@ -61,7 +61,7 @@ async function Test2dContextNeverLost(test, canvas,
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
 
-  terminateGpuProcess(test);
+  const gpuProcessRestoredPromise = terminateGpuProcess(test);
 
   // The canvas should still be alive.
   assert_false(ctx.isContextLost());
@@ -69,10 +69,8 @@ async function Test2dContextNeverLost(test, canvas,
       ctx.getImageData(2, 2, 1, 1).data, [255, 0, 0, 255],
       'The canvas should still be healthy after the GPU process died.');
 
-  // Wait for a few frames and check that the canvas is still healthy.
-  for (let i = 0; i < 10; ++i) {
-    await new Promise(resolve => requestAnimationFrame(resolve));
-  }
+  await gpuProcessRestoredPromise;
+
   assert_false(ctx.isContextLost());
   assert_array_equals(
     ctx.getImageData(2, 2, 1, 1).data, [255, 0, 0, 255],

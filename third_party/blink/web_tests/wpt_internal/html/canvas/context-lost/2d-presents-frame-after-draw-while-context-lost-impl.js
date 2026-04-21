@@ -14,14 +14,11 @@ async function TestDrawWhile2dContextLost(canvas,
   chrome.gpuBenchmarking.terminateGpuProcessNormally();
   await waitForContextLost(ctx);
 
-  // Draw a few frames while the context is lost. These should be no-op.
-  for (let i = 0; i < 10; ++i) {
-    ctx.fillStyle = 'blue';
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.getImageData(0, 0, 10, 10)
-    ctx.putImageData(ctx.createImageData(10, 10), 30, 30);
-    await new Promise(resolve => requestAnimationFrame(resolve));
-  }
+  // Drawing frames while the context is lost should be no-op.
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(0, 0, 100, 100);
+  ctx.getImageData(0, 0, 10, 10)
+  ctx.putImageData(ctx.createImageData(10, 10), 30, 30);
 
   await waitForContextRestored(ctx);
 
