@@ -91,11 +91,10 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
     public PropertyModel getModel() {
         ModelList viewData = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(viewData);
-        // TODO: b/348595414 - Create a new view binder class.
         adapter.registerType(
                 HEADER,
-                FacilitatedPaymentsPaymentMethodsViewBinder::createHeaderItemView,
-                FacilitatedPaymentsPaymentMethodsViewBinder::bindHeaderView);
+                HeaderViewBinder::createHeaderItemView,
+                HeaderViewBinder::bindHeaderView);
         adapter.registerType(
                 BANK_ACCOUNT,
                 BankAccountViewBinder::createBankAccountItemView,
@@ -110,16 +109,16 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
                 PaymentAppViewBinder::bindPaymentAppItemView);
         adapter.registerType(
                 ADDITIONAL_INFO,
-                FacilitatedPaymentsPaymentMethodsViewBinder::createAdditionalInfoView,
-                FacilitatedPaymentsPaymentMethodsViewBinder::bindAdditionalInfoView);
+                AdditionalInfoViewBinder::createAdditionalInfoView,
+                AdditionalInfoViewBinder::bindAdditionalInfoView);
         adapter.registerType(
                 CONTINUE_BUTTON,
-                FacilitatedPaymentsPaymentMethodsViewBinder::createContinueButtonView,
-                FacilitatedPaymentsPaymentMethodsViewBinder::bindContinueButtonView);
+                ContinueButtonViewBinder::createContinueButtonView,
+                ContinueButtonViewBinder::bindContinueButtonView);
         adapter.registerType(
                 FOOTER,
-                FacilitatedPaymentsPaymentMethodsViewBinder::createFooterItemView,
-                FacilitatedPaymentsPaymentMethodsViewBinder::bindFooterView);
+                FooterViewBinder::createFooterItemView,
+                FooterViewBinder::bindFooterView);
         mView.setAdapter(adapter);
         return new PropertyModel.Builder(FopSelectorProperties.ALL_KEYS)
                 .with(SCREEN_ITEMS, viewData)

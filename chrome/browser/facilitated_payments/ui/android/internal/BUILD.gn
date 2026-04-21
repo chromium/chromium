@@ -16,7 +16,9 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.facilitated_payments"
 
   sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/AdditionalInfoViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/BankAccountViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/ContinueButtonViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/EwalletViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsErrorScreen.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsFopSelectorScreen.java",
@@ -28,6 +30,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsProgressScreen.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FooterViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/HeaderViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/PaymentAppViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/PixAccountLinkingPrompt.java",
   ]
