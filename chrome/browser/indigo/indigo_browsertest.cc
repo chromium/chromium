@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
@@ -97,7 +98,13 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
+// TODO(crbug.com/504741803): Re-enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ToolbarPositioning DISABLED_ToolbarPositioning
+#else
+#define MAYBE_ToolbarPositioning ToolbarPositioning
+#endif
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, MAYBE_ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   gfx::Rect toolbar_bounds;
   gfx::Rect image_bounds;
@@ -136,7 +143,7 @@ class IndigoHighDsfBrowserTest : public IndigoBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
+IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, MAYBE_ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   gfx::Rect toolbar_bounds;
   gfx::Rect image_bounds;
