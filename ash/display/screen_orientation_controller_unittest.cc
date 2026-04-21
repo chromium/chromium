@@ -40,6 +40,8 @@
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using base::kMeanGravityFloat;
@@ -130,7 +132,7 @@ class ScreenOrientationControllerTest : public AshTestBase {
  protected:
   aura::Window* CreateAppWindowInShellWithId(int id) {
     aura::Window* window = CreateTestWindowInShell({.window_id = id}).release();
-    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
+    window->SetProperty(chromeos::kAppTypeKey, AppType::CHROME_APP);
     return window;
   }
 
@@ -807,8 +809,8 @@ TEST_F(ScreenOrientationControllerTest,
 
 TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
   UpdateDisplay("0+0-400x300,+400+0-500x400");
-  auto win0 = CreateAppWindow(gfx::Rect{100, 200});
-  auto win1 = CreateAppWindow(gfx::Rect{460, 10, 100, 200});
+  auto win0 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 200});
+  auto win1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {460, 10, 100, 200});
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());
   EXPECT_EQ(win0->GetRootWindow(), roots[0]);
@@ -901,7 +903,7 @@ TEST_F(ScreenOrientationControllerTest,
   ASSERT_EQ(2u, roots.size());
 
   // Create a window that locks the orientation to portriat-primary.
-  auto win0 = CreateAppWindow(gfx::Rect{100, 200});
+  auto win0 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 200});
   EXPECT_EQ(win0->GetRootWindow(), roots[0]);
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
   auto* screen_orientation_controller =
@@ -957,7 +959,8 @@ TEST_F(ScreenOrientationControllerTest, IgnoreFloatWindowOrientationLock) {
   EnableTabletMode(true);
 
   std::unique_ptr<aura::Window> child_window = CreateControlWindow();
-  std::unique_ptr<aura::Window> focus_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> focus_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   ASSERT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   ASSERT_FALSE(RotationLocked());
 

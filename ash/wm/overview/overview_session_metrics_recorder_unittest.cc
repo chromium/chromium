@@ -24,6 +24,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class OverviewSessionMetricsRecorderTest : public AshTestBase {
  protected:
   void WaitForNextFramePresentation() {
@@ -90,8 +92,10 @@ TEST_F(OverviewSessionMetricsRecorderTest,
   // With 1 normal (not maximized) window, the desk bar should be rendered after
   // the overview enter animation completes.
   constexpr gfx::Rect kBounds(0, 0, 10, 10);
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(kBounds));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(kBounds));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, kBounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, kBounds);
   ASSERT_FALSE(WindowState::Get(window1.get())->IsMaximized());
   ASSERT_FALSE(WindowState::Get(window2.get())->IsMaximized());
 

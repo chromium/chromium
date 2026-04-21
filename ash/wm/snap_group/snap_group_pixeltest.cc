@@ -32,6 +32,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 // Visual regression tests for Snap Groups feature, comparing visuals against
 // established benchmarks.
 class SnapGroupPixelTest : public AshTestBase {
@@ -80,10 +82,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Visual regression test for divider component (default and hover states).
 TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
   auto* w1_widget = views::Widget::GetWidgetForNativeView(w1.get());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
   auto* w2_widget = views::Widget::GetWidgetForNativeView(w2.get());
 
@@ -112,10 +116,12 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
 
 // Visual regression test partial split screen layout.
 TEST_F(SnapGroupPixelTest, PartialSplit) {
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
   auto* w1_widget = views::Widget::GetWidgetForNativeView(w1.get());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
   auto* w2_widget = views::Widget::GetWidgetForNativeView(w2.get());
 
@@ -141,9 +147,11 @@ TEST_F(SnapGroupPixelTest, PartialSplit) {
 TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
 
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
 
   SnapTwoTestWindows(w1.get(), /*window2=*/w2.get(), /*horizontal=*/true,
@@ -177,9 +185,11 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
 TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleView) {
   WindowCycleList::SetDisableInitialDelayForTesting(true);
 
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
 
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
@@ -244,10 +254,12 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleView) {
 TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   UpdateDisplay("900x1200");
 
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
   auto* w1_widget = views::Widget::GetWidgetForNativeView(w1.get());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
   auto* w2_widget = views::Widget::GetWidgetForNativeView(w2.get());
 
@@ -282,9 +294,11 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
 
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
 
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
 
   SnapTwoTestWindows(w1.get(), /*window2=*/w2.get(), /*horizontal=*/false,
@@ -311,9 +325,11 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleViewInPortrait) {
 
   WindowCycleList::SetDisableInitialDelayForTesting(true);
 
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
 
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/false,

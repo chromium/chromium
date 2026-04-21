@@ -32,6 +32,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class SplitViewDragIndicatorsTest : public AshTestBase {
  public:
   SplitViewDragIndicatorsTest() = default;
@@ -112,7 +114,8 @@ TEST_F(SplitViewDragIndicatorsTest, DraggingBasic) {
   base::HistogramTester histogram_tester;
   aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   ToggleOverview();
@@ -162,8 +165,10 @@ TEST_F(SplitViewDragIndicatorsTest, DraggingBasic) {
 TEST_F(SplitViewDragIndicatorsTest, DraggingStartingInPreviewArea) {
   UpdateDisplay("800x600");
 
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   ToggleOverview();
@@ -601,7 +606,8 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest, IndicatorSize) {
   // The displays need to be different widths for the bug to repro.
   UpdateDisplay("800x600,800+0-1000x600");
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(300, 300));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
 
   ToggleOverview();
   auto* item = GetOverviewItemForWindow(window.get());

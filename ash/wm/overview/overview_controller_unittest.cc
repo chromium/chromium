@@ -47,6 +47,8 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 gfx::PointF CalculateDragPoint(const WindowResizer& resizer,
@@ -224,8 +226,10 @@ TEST_F(OverviewControllerTest, OcclusionTestWithSnapshot) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   constexpr gfx::Rect kBounds(0, 0, 100, 100);
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(kBounds));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(kBounds));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, kBounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, kBounds);
   // Wait for show/hide animation because occlusion tracker because
   // the test depends on opacity.
   WaitForShowAnimation(window1.get());
@@ -513,9 +517,10 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
 TEST_F(OverviewControllerTest, CloseWindowDuringAnimation) {
   // Create two windows. They should both be visible so that they both get
   // animated.
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(250, 100));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
   std::unique_ptr<aura::Window> window2 =
-      CreateAppWindow(gfx::Rect(250, 250, 250, 100));
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 250, 250, 100});
 
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -747,15 +752,14 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
              browser_window_count + arc_window_count>
       created_windows;
   for (int i = 0; i < browser_window_count; ++i) {
-    created_windows[i] =
-        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+    created_windows[i] = CreateWindowWithAppType(AppType::BROWSER);
     created_windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
 
   std::vector<aura::Window*> arc_windows(arc_window_count, nullptr);
   for (int i = 0; i < arc_window_count; ++i) {
     created_windows[i + browser_window_count] =
-        CreateAppWindow(gfx::Rect(), chromeos::AppType::ARC_APP);
+        CreateWindowWithAppType(AppType::ARC_APP);
     arc_windows[i] = created_windows[i + browser_window_count].get();
   }
 

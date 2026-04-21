@@ -139,6 +139,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 using ::ui::mojom::CursorType;
@@ -2088,7 +2090,8 @@ TEST_P(CaptureModeTest, DimmingOfUnRecordedWindows) {
 }
 
 TEST_P(CaptureModeTest, DimmingWithDesks) {
-  auto recorded_window = CreateAppWindow(gfx::Rect(250, 100));
+  auto recorded_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
   auto* controller = StartSessionAndRecordWindow(recorded_window.get());
   auto* recording_watcher = controller->video_recording_watcher_for_testing();
   EXPECT_TRUE(recording_watcher->should_paint_layer());
@@ -2100,7 +2103,7 @@ TEST_P(CaptureModeTest, DimmingWithDesks) {
 
   // A window on a different desk than that of the recorded window should not be
   // dimmed.
-  auto win1 = CreateAppWindow(gfx::Rect(200, 200));
+  auto win1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
 
   // However, moving it to the desk of the recorded window should give it a
@@ -2123,7 +2126,8 @@ TEST_P(CaptureModeTest, DimmingWithDesks) {
 
 TEST_P(CaptureModeTest, DimmingWithDisplays) {
   UpdateDisplay("500x400,401+0-800x700");
-  auto recorded_window = CreateAppWindow(gfx::Rect(250, 100));
+  auto recorded_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
   auto* controller = StartSessionAndRecordWindow(recorded_window.get());
   auto* recording_watcher = controller->video_recording_watcher_for_testing();
   EXPECT_TRUE(recording_watcher->should_paint_layer());
@@ -2196,7 +2200,6 @@ TEST_P(CaptureModeTest, MultiDisplayWindowRecording) {
   EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, window->layer()));
   EXPECT_EQ(shield_layer->bounds(), roots[1]->bounds());
 }
-
 
 TEST_P(CaptureModeTest, RotateDisplayWhileRecording) {
   UpdateDisplay("600x800");
@@ -2685,7 +2688,8 @@ TEST_P(CaptureModeTest, OnlyAdvanceFocusWhenTabShiftPressed) {
 // Tests that the capture region will be refreshed if in overview to reflect the
 // bounds of the overview item for this window in `kWindow` mode.
 TEST_P(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
-  auto window = CreateAppWindow(gfx::Rect(100, 50, 200, 200));
+  auto window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 50, 200, 200});
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
   auto* session = controller->capture_mode_session();

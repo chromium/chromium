@@ -14,6 +14,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class MultiDisplayMetricsControllerTest : public AshTestBase {
  public:
   MultiDisplayMetricsControllerTest() = default;
@@ -60,7 +62,7 @@ class MultiDisplayMetricsControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     for (int i = 0; i < 4; ++i) {
-      test_windows_.push_back(CreateAppWindow());
+      test_windows_.push_back(CreateWindowWithAppType(AppType::SYSTEM_APP));
     }
   }
 
@@ -197,7 +199,7 @@ TEST_F(MultiDisplayMetricsControllerTest, WindowAddedAfterDisplayChangeMoved) {
   UpdateDisplay("1200x800");
 
   // Add a new window after the display has changed and move the window.
-  auto new_window = CreateAppWindow();
+  auto new_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   MoveWindow(new_window.get());
   ResizeWindow(new_window.get());
 

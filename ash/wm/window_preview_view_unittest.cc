@@ -14,6 +14,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using WindowPreviewViewTest = AshTestBase;
@@ -29,7 +31,7 @@ std::unique_ptr<views::Widget> CreateTransientChild(
   params.bounds = gfx::Rect{40, 50};
   params.context = params.parent = parent_widget->GetNativeWindow();
   params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
-                                               chromeos::AppType::ARC_APP);
+                                               AppType::ARC_APP);
   widget->Init(std::move(params));
   widget->Show();
   return widget;
@@ -58,7 +60,7 @@ TEST_F(WindowPreviewViewTest, Basic) {
 TEST_F(WindowPreviewViewTest, AspectRatio) {
   // Default frame header is 32dp, so we expect a window of size 300, 300 to
   // have a preview of 1:1 ratio.
-  auto window = CreateAppWindow(gfx::Rect(300, 332));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 332});
   auto preview_view = std::make_unique<WindowPreviewView>(window.get());
 
   const gfx::SizeF preferred_size(preview_view->GetPreferredSize());

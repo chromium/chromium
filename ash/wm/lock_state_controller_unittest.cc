@@ -61,6 +61,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 constexpr char kShelfShutdownConfirmationHistogramName[] =
@@ -1267,7 +1269,8 @@ TEST_F(LockStateControllerInformedRestoreTest, PinnedState) {
 
   base::HistogramTester histogram_tester;
   // Create and pin a window before requesting shutdown.
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
 
@@ -1306,7 +1309,8 @@ TEST_F(LockStateControllerInformedRestoreTest, AllWindowsMinimized) {
 // window.
 TEST_F(LockStateControllerInformedRestoreTest, ShutdownWithFloatWindow) {
   base::HistogramTester histogram_tester;
-  std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> floated_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 

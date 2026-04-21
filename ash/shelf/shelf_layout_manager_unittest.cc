@@ -123,6 +123,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using ::chromeos::kHideShelfWhenFullscreenKey;
@@ -3479,8 +3481,10 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(400, 400));
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -3556,8 +3560,10 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitViewWithOverview) {
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(400, 400));
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -3603,8 +3609,10 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(400, 400));
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());

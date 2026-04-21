@@ -16,6 +16,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class TabletModeMultitaskCueControllerTest : public AshTestBase {
  public:
   TabletModeMultitaskCueControllerTest() = default;
@@ -41,7 +43,7 @@ class TabletModeMultitaskCueControllerTest : public AshTestBase {
 
 // Tests that the cue layer is created properly.
 TEST_F(TabletModeMultitaskCueControllerTest, BasicShowCue) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   gfx::Rect window_bounds = window->bounds();
 
   auto* multitask_cue_controller = GetMultitaskCue();
@@ -64,7 +66,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, SplitCueBounds) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
 
@@ -79,7 +81,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, SplitCueBounds) {
   ASSERT_TRUE(cue_layer);
   EXPECT_EQ(cue_layer->bounds(), split_bounds);
 
-  auto window2 = CreateAppWindow();
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   cue_layer = GetMultitaskCue()->cue_layer();
@@ -92,7 +94,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, DismissTimerFiring) {
   gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   auto* multitask_cue_controller = GetMultitaskCue();
   ui::Layer* cue_layer = multitask_cue_controller->cue_layer();
@@ -114,7 +116,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, DismissEarly) {
   gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   auto* multitask_cue_controller = GetMultitaskCue();
   ui::Layer* cue_layer = multitask_cue_controller->cue_layer();
@@ -131,7 +133,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, DismissEarly) {
 // Tests that the cue dismisses properly when the float keyboard accelerator is
 // pressed.
 TEST_F(TabletModeMultitaskCueControllerTest, FloatWindow) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
 
@@ -141,10 +143,10 @@ TEST_F(TabletModeMultitaskCueControllerTest, FloatWindow) {
 }
 
 TEST_F(TabletModeMultitaskCueControllerTest, TransientChildFocus) {
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Create a second window with a transient child.
-  auto window2 = CreateAppWindow();
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   auto transient_child2 =
       CreateTestWindowInShell({.bounds = gfx::Rect(100, 10),
                                .window_type = aura::client::WINDOW_TYPE_POPUP});
@@ -177,7 +179,7 @@ TEST_F(TabletModeMultitaskCueControllerTest,
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Dismiss the cue so it can (attempt to) be shown again later.
   auto* multitask_cue_controller = GetMultitaskCue();

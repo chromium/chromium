@@ -22,6 +22,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using WindowPositionerTest = AshTestBase;
 
 TEST_F(WindowPositionerTest, OpenDefaultWindowOnSecondDisplay) {
@@ -114,13 +116,13 @@ TEST_F(WindowPositionerTest, IgnoreFullscreenInAutoRearrange) {
 // opened.
 TEST_F(WindowPositionerTest, AutoRearrangeOnHideOrRemove) {
   // Create 2 browser windows.
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(
-      gfx::Rect(200, 200, 330, 230), chromeos::AppType::BROWSER);
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow(
-      gfx::Rect(400, 600, 330, 230), chromeos::AppType::BROWSER);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::BROWSER, {200, 200, 330, 230});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::BROWSER, {400, 600, 330, 230});
   // Create 1 app window.
-  std::unique_ptr<aura::Window> window3 = CreateAppWindow(
-      gfx::Rect(300, 200, 330, 230), chromeos::AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 200, 330, 230});
 
   WindowState::Get(window1.get())->SetWindowPositionManaged(true);
   WindowState::Get(window2.get())->SetWindowPositionManaged(true);

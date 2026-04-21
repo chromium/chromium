@@ -34,6 +34,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using ui::HapticTouchpadEffect;
 using ui::HapticTouchpadEffectStrength;
 
@@ -342,7 +344,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackForMultitaskMenu) {
   auto input_controller =
       std::make_unique<HapticsTrackingTestInputController>();
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Show the clamshell multitask menu via hover. Test that kSnap feedback is
   // sent.

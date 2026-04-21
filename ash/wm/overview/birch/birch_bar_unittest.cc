@@ -58,6 +58,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 // Returns the pref service to use for Birch bar prefs.
@@ -488,10 +490,10 @@ TEST_F(BirchBarTest, RecordsHistogramForCoralChips) {
 // screen.
 TEST_F(BirchBarTest, HideBirchBarInPartialSplitScreen) {
   // Create two windows.
-  auto window_1 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window_1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
   // Need another window to keep partial Overview when `window_1` is snapped in
   // Overview session.
-  auto window_2 = CreateAppWindow(gfx::Rect(100, 200));
+  auto window_2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 200});
 
   EnterOverview();
 

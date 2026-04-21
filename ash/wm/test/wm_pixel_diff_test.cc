@@ -38,6 +38,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 // TODO(b/261084863): For now, add some basic tests. Further investigation is
 // needed to determine the location of the test files, whether the tests should
 // cover more user journeys and whether we should parameterize for RTL,
@@ -74,9 +76,11 @@ TEST_P(WmPixelDiffTest, OverviewAndDesksBarBasic) {
   // Create windows of different positions and sizes so they aren't all stacked
   // on top of each other in the desk preview view, and that we can pixel test
   // extreme cases in overview.
-  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
-  auto window2 = CreateAppWindow(gfx::Rect(600, 600, 500, 200));
-  auto window3 = CreateAppWindow(gfx::Rect(100, 400, 100, 600));
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
+  auto window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {600, 600, 500, 200});
+  auto window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 400, 100, 600});
 
   DecorateWindow(window1.get(), u"Window1", SK_ColorDKGRAY);
   DecorateWindow(window2.get(), u"Window2", SK_ColorBLUE);
@@ -105,9 +109,9 @@ TEST_P(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
 
   ShellTestApi().SetTabletModeEnabledForTest(true);
 
-  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
-  auto window2 = CreateAppWindow(gfx::Rect(300, 300));
-  auto window3 = CreateAppWindow(gfx::Rect(300, 300));
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
 
   DecorateWindow(window1.get(), u"Window1", SK_ColorDKGRAY);
   DecorateWindow(window2.get(), u"Window2", SK_ColorBLUE);
@@ -151,10 +155,10 @@ TEST_P(WmPixelDiffTest, WindowCycleBasic) {
   desks_controller->desks()[1]->SetName(u"Desk2", /*set_by_user=*/true);
 
   // Create a couple windows of different sizes.
-  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
-  auto window2 = CreateAppWindow(gfx::Rect(500, 200));
-  auto window3 = CreateAppWindow(gfx::Rect(100, 600));
-  auto window4 = CreateAppWindow(gfx::Rect(800, 600));
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {500, 200});
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 600});
+  auto window4 = CreateWindowWithAppType(AppType::SYSTEM_APP, {800, 600});
 
   DecorateWindow(window1.get(), u"Window1", SK_ColorDKGRAY);
   DecorateWindow(window2.get(), u"Window2", SK_ColorBLUE);

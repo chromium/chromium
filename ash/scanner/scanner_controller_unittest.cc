@@ -76,6 +76,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 using ::base::test::EqualsProto;
@@ -285,7 +287,8 @@ TEST_F(ScannerControllerTest, CannotStartSessionInPinnedMode) {
           CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
   ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
@@ -311,7 +314,8 @@ TEST_F(ScannerControllerTest, DoesNotShowFeatureSettingsToggleInPinnedMode) {
           CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
   ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
@@ -418,7 +422,8 @@ TEST_F(ScannerControllerTest, CannotShowUiInPinnedMode) {
           CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
   ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
@@ -433,7 +438,8 @@ TEST_F(ScannerControllerTest, CanShowUiAfterExitingPinnedMode) {
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
           CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
   ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
@@ -483,7 +489,8 @@ TEST_F(ScannerControllerTest, CanShowUiForShellFalseWhenPinnedMetrics) {
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
           CheckFeatureAccess)
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
   ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());

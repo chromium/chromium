@@ -70,6 +70,8 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 // Aliases.
@@ -1364,7 +1366,7 @@ TEST_F(WelcomeTourControllerRunTest, ToastPause) {
 
 // Verifies that windows are minimized iff the Welcome Tour is in progress.
 TEST_F(WelcomeTourControllerRunTest, WindowMinimizer) {
-  auto window_1 = CreateAppWindow();
+  auto window_1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Case: Before Welcome Tour.
   EXPECT_THAT(window_1, Minimized(Eq(false)));
@@ -1373,13 +1375,13 @@ TEST_F(WelcomeTourControllerRunTest, WindowMinimizer) {
   ASSERT_NO_FATAL_FAILURE(
       Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
         EXPECT_TRUE(WaitUntilMinimized(window_1.get()));
-        auto window_2 = CreateAppWindow();
+        auto window_2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
         EXPECT_TRUE(WaitUntilMinimized(window_2.get()));
       })));
 
   // Case: After Welcome Tour.
   EXPECT_THAT(window_1, Minimized(Eq(true)));
-  auto window_3 = CreateAppWindow();
+  auto window_3 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   EXPECT_THAT(window_3, Minimized(Eq(false)));
 }
 

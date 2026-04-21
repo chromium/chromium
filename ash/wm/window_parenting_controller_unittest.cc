@@ -11,13 +11,15 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using WindowParentingControllerTest = AshTestBase;
 
 // Verifies a window with a transient parent is in the same container as its
 // transient parent.
 TEST_F(WindowParentingControllerTest, TransientParent) {
   // Normal window.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Move the window to a container that isn't a default container.
   aura::Window* shelf = Shell::GetContainer(Shell::GetPrimaryRootWindow(),

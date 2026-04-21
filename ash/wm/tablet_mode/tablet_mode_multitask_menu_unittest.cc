@@ -39,6 +39,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 // The vertical distance used to end drag to show and start drag to hide.
@@ -147,7 +149,7 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
 // Tests that a scroll down gesture from the top center activates the
 // multitask menu.
 TEST_F(TabletModeMultitaskMenuTest, BasicShowMenu) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ShowMultitaskMenu(*window);
 
@@ -211,7 +213,7 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownTargetArea) {
 
 // Tests that a slight touch moved in the menu will trigger a button press.
 TEST_F(TabletModeMultitaskMenuTest, PressMoveAndReleaseTouch) {
-  auto window = CreateAppWindow(gfx::Rect(800, 600));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {800, 600});
   ShowMultitaskMenu(*window);
 
   // Press and move the touch slightly to mimic a real tap.
@@ -284,7 +286,8 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitViewWhileAnimating) {
 // Tests that the multitask menu cannot be shown while in pinned state.
 TEST_F(TabletModeMultitaskMenuTest, SwipeDownInPinnedWindow) {
   // Create and pin a window.
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/true);
 
@@ -364,7 +367,7 @@ TEST_F(TabletModeMultitaskMenuTest, OnWindowDestroying) {
 TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnTap) {
   // Create a display and window that is bigger than the menu.
   UpdateDisplay("1600x1000");
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ShowMultitaskMenu(*window);
   ASSERT_TRUE(GetMultitaskMenu());
@@ -381,7 +384,7 @@ TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnButtonPress) {
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Swipe down the menu partially to start an animation.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   GenerateScroll(window->bounds().CenterPoint().x(), 0,
                  /*end_y=*/60);
   GestureTapOn(chromeos::MultitaskMenuViewTestApi(
@@ -643,7 +646,7 @@ TEST_F(TabletModeMultitaskMenuTest, HiddenButtons) {
 // Tests that the cue is still showing when the menu is opened, and it has been
 // transformed to the correct position below the menu.
 TEST_F(TabletModeMultitaskMenuTest, CueTransformOnShowMenu) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   auto* multitask_cue_controller =
       GetMultitaskMenuController()->multitask_cue_controller();
@@ -677,9 +680,9 @@ TEST_F(TabletModeMultitaskMenuTest, CueTransformOnShowMenu) {
 // Tests that the cue appears on the correct window when the multitask menu is
 // activated on different windows in split view.
 TEST_F(TabletModeMultitaskMenuTest, CueCorrectWindowInSplitView) {
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressPartialPrimary(*window1);
-  auto window2 = CreateAppWindow();
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressPartialSecondary(*window2);
 
   auto* split_view_controller =
@@ -719,8 +722,10 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  std::unique_ptr<aura::Window> top_window(CreateAppWindow());
-  std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> top_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> bottom_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   split_view_controller->SnapWindow(top_window.get(), SnapPosition::kPrimary);
   split_view_controller->SnapWindow(bottom_window.get(),
                                     SnapPosition::kSecondary);
@@ -758,8 +763,10 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
-  std::unique_ptr<aura::Window> top_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> bottom_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> top_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   split_view_controller->SnapWindow(bottom_window.get(),
                                     SnapPosition::kPrimary);
   split_view_controller->SnapWindow(top_window.get(), SnapPosition::kSecondary);
@@ -790,7 +797,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ShowMultitaskMenu(*window);
   TabletModeControllerTestApi().LeaveTabletMode();
 }
@@ -799,7 +806,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
 TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Partially drag down to start an animation. `end_y` must be less than half
   // the menu height to animate toward close.
@@ -844,7 +851,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   UpdateDisplay("1600x1000");
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressPartialPrimary(*window);
 
   // Start dragging on the menu.
@@ -873,7 +880,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, ReleaseCapture) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ASSERT_FALSE(views::Widget::GetTopLevelWidgetForNativeView(window.get())
                    ->IsFullscreen());
@@ -903,7 +910,7 @@ TEST_F(TabletModeMultitaskMenuTest, ReleaseCapture) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ShowMultitaskMenu(*window);
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
@@ -914,7 +921,7 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
 
 TEST_F(TabletModeMultitaskMenuTest, NoTabletModeWindowManagerInKiosk) {
   SimulateKioskMode(user_manager::UserType::kKioskChromeApp);
-  auto window = CreateAppWindow(gfx::Rect(800, 600));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {800, 600});
 
   // In Kiosk session there is no `TabletModeWindowManager` since the UI tablet
   // mode is blocked.
@@ -960,7 +967,7 @@ TEST_F(TabletModeMultitaskMenuTest, BlockSwipeDown) {
   TestHandler test_handler;
   root->AddPreTargetHandler(&test_handler);
 
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   auto* generator = GetEventGenerator();
 
   // Start slightly off the edge.

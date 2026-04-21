@@ -74,6 +74,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using base::kMeanGravityFloat;
@@ -1842,7 +1844,8 @@ TEST_F(TabletModeControllerTest, TabletModeTransitionHistogramsSnappedWindows) {
 // Tests that closing a window during the tablet mode enter animation does not
 // cause a crash.
 TEST_F(TabletModeControllerTest, CloseWindowDuringEnterAnimation) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
 
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -1854,7 +1857,8 @@ TEST_F(TabletModeControllerTest, CloseWindowDuringEnterAnimation) {
 // Tests that closing a window during the tablet mode exit animation does not
 // cause a crash.
 TEST_F(TabletModeControllerTest, CloseWindowDuringExitAnimation) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
   tablet_mode_controller()->SetEnabledForTest(true);
 
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -2261,7 +2265,7 @@ TEST_F(TabletModeControllerScreenshotTest, TransientChildTypeWindow) {
 // Floated window in tablet mode only covers a portion of the work area, so we
 // don't take a screenshot.
 TEST_F(TabletModeControllerScreenshotTest, NoScreenshotFloatedWindow) {
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
   window->layer()->GetAnimator()->StopAnimating();

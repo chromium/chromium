@@ -29,6 +29,8 @@
 
 namespace exo {
 
+using chromeos::AppType;
+
 using ::ui::mojom::DragOperation;
 using WMHelperTest = test::ExoTestBase;
 
@@ -47,9 +49,9 @@ TEST_F(WMHelperTest, FrameThrottling) {
 
   // Create two arc windows.
   std::unique_ptr<aura::Window> arc_window_1 =
-      CreateAppWindow(gfx::Rect(), chromeos::AppType::ARC_APP);
+      CreateWindowWithAppType(AppType::ARC_APP);
   std::unique_ptr<aura::Window> arc_window_2 =
-      CreateAppWindow(gfx::Rect(), chromeos::AppType::ARC_APP);
+      CreateWindowWithAppType(AppType::ARC_APP);
 
   // Starting throttling on one of the two arc windows will have no effect on
   // vsync time.

@@ -51,6 +51,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class CoralControllerTest : public AshTestBase {
  public:
   CoralControllerTest() = default;
@@ -139,7 +141,7 @@ TEST_F(CoralControllerTest, NoCrashOnTitleUpdate) {
 // Tests that a window that launches onto a coral desk maintains its visible on
 // all desks property.
 TEST_F(CoralControllerTest, VisibleOnAllDesks) {
-  auto app_window = CreateAppWindow();
+  auto app_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   // This is the property of one of the apps in the group
   // `CreateDefaultTestGroup()`, which is used in the test setup harness.
   app_window->SetProperty(kAppIDKey,
@@ -165,12 +167,12 @@ TEST_F(CoralControllerTest, VisibleOnAllDesks) {
 // Tests that when we have a snap group with one window in the coral group, only
 // the window in the coral group gets moved to the new coral desk.
 TEST_F(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
-  auto app_window_in_group = CreateAppWindow();
+  auto app_window_in_group = CreateWindowWithAppType(AppType::SYSTEM_APP);
   // This is the property of one of the apps in the group
   // `CreateDefaultTestGroup()`, which is used in the test setup harness.
   app_window_in_group->SetProperty(
       kAppIDKey, std::string("odknhmnlageboeamepcngndbggdpaobj"));
-  auto app_window_not_in_group = CreateAppWindow();
+  auto app_window_not_in_group = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   SnapTwoTestWindows(app_window_in_group.get(), app_window_not_in_group.get(),
                      /*horizontal=*/true, GetEventGenerator());
@@ -198,10 +200,10 @@ TEST_F(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
 TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
   // These are the properties of two of the apps in the group
   // `CreateDefaultTestGroup()`, which is used in the test setup harness.
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   window1->SetProperty(kAppIDKey,
                        std::string("odknhmnlageboeamepcngndbggdpaobj"));
-  auto window2 = CreateAppWindow();
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   window2->SetProperty(kAppIDKey,
                        std::string("fkiggjmkendpmbegkagpmagjepfkpmeb"));
 
@@ -256,12 +258,12 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
 TEST_F(CoralControllerTest, VisibleOnAllDeskWindows) {
   // Create two apps with the same app id's as the test coral group. Set one to
   // be visible on all desks.
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   window1->SetProperty(kAppIDKey,
                        std::string("odknhmnlageboeamepcngndbggdpaobj"));
   window1->SetProperty(aura::client::kWindowWorkspaceKey,
                        aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
-  auto window2 = CreateAppWindow();
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   window2->SetProperty(kAppIDKey,
                        std::string("fkiggjmkendpmbegkagpmagjepfkpmeb"));
   CreateTestGroup({{"Settings", "odknhmnlageboeamepcngndbggdpaobj"},
@@ -498,9 +500,9 @@ TEST_F(CoralSavedGroupTest, SaveNullTitleGroup) {
 // Tests saving a group that has a couple apps in it.
 TEST_F(CoralSavedGroupTest, SaveAppsInGroup) {
   // Create some windows with app ids.
-  auto window1 = CreateAppWindow();
-  auto window2 = CreateAppWindow();
-  auto window3 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   window1->SetProperty(kAppIDKey, std::string("window1_app_id"));
   window2->SetProperty(kAppIDKey, std::string("window2_app_id"));
   window3->SetProperty(kAppIDKey, std::string("window3_app_id"));
@@ -626,8 +628,8 @@ TEST_F(CoralSavedGroupTest, CheckGridItems) {
 // Tests that the suppression context will be saved in the desk template.
 TEST_F(CoralSavedGroupTest, SaveSuppressionContext) {
   // Create some windows with app ids.
-  auto window1 = CreateAppWindow();
-  auto window2 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   window1->SetProperty(kAppIDKey, std::string("window1_app_id"));
   window2->SetProperty(kAppIDKey, std::string("window2_app_id"));
 

@@ -39,6 +39,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class OverviewWindowDragHistogramTest : public AshTestBase {
  public:
   OverviewWindowDragHistogramTest() = default;
@@ -50,7 +52,7 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    window_ = CreateAppWindow();
+    window_ = CreateWindowWithAppType(AppType::SYSTEM_APP);
   }
 
   void TearDown() override {

@@ -58,6 +58,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 using ::chromeos::FrameCaptionButtonContainerView;
@@ -187,7 +189,7 @@ class FrameSizeButtonTest : public AshTestBase {
     widget_delegate_ = new FrameSizeButtonTestWidgetDelegate(resizable_);
     widget_ = CreateWidget(widget_delegate_);
     widget_->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
-                                            chromeos::AppType::BROWSER);
+                                            AppType::BROWSER);
     window_state_ = WindowState::Get(widget_->GetNativeWindow());
 
     FrameCaptionButtonContainerView::TestApi test(
@@ -1331,7 +1333,8 @@ TEST_F(SnapGroupFrameSizeButtonTest, SnapCaptionButton) {
   EXPECT_EQ(views::Button::STATE_NORMAL, size_button()->GetState());
 
   // Create an opposite snapped window with non-default snap ratio.
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   const WindowSnapWMEvent snap_primary(
       WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
       WindowSnapActionSource::kSnapByWindowLayoutMenu);
@@ -1371,7 +1374,8 @@ TEST_F(SnapGroupFrameSizeButtonTest, ReSnapViaWindowLayoutMenu) {
   // Create a snap group with `window`, whose frame contains the multitask menu,
   // and an `opposite` snapped window.
   aura::Window* window = window_state()->window();
-  std::unique_ptr<aura::Window> opposite(CreateAppWindow());
+  std::unique_ptr<aura::Window> opposite =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   const WindowSnapWMEvent snap_primary(
       WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
       WindowSnapActionSource::kSnapByWindowLayoutMenu);
@@ -1386,8 +1390,8 @@ TEST_F(SnapGroupFrameSizeButtonTest, ReSnapViaWindowLayoutMenu) {
       snap_group_controller->AreWindowsInSnapGroup(window, opposite.get()));
 
   // Create a partially occluding window on top of `opposite`.
-  std::unique_ptr<aura::Window> occlude(
-      CreateAppWindow(gfx::Rect(410, 10, 200, 200)));
+  std::unique_ptr<aura::Window> occlude =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {410, 10, 200, 200});
   ASSERT_TRUE(
       opposite->GetBoundsInScreen().Contains(occlude->GetBoundsInScreen()));
 
@@ -1419,7 +1423,8 @@ TEST_F(SnapGroupFrameSizeButtonTest, ReSnapToOppositeSide) {
   aura::Window* window = window_state()->window();
   SnapOneTestWindow(window, chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kTwoThirdSnapRatio);
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   SnapOneTestWindow(window2.get(), chromeos::WindowStateType::kSecondarySnapped,
                     chromeos::kOneThirdSnapRatio);
   auto* snap_group_controller = SnapGroupController::Get();

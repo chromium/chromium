@@ -33,6 +33,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using ::chromeos::FrameCaptionButtonContainerView;
 
 class FrameCaptionButtonContainerViewTest : public AshTestBase {
@@ -402,7 +404,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, TabletSizeButtonVisibility) {
 
   // Create a window in tablet mode. It should be maximized and the size button
   // should be hidden.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   auto* window_state = WindowState::Get(window.get());
   ASSERT_TRUE(window_state->IsMaximized());
 
@@ -428,7 +430,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, FloatButtonVisibility) {
   auto* widget1 = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
                                    CLOSE_BUTTON_VISIBLE);
   widget1->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
-                                          chromeos::AppType::ARC_APP);
+                                          AppType::ARC_APP);
   FrameCaptionButtonContainerView container1(widget1);
   InitContainer(&container1);
   views::test::RunScheduledLayout(&container1);
@@ -445,7 +447,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, FloatButtonVisibility) {
   auto* widget2 = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
                                    CLOSE_BUTTON_VISIBLE);
   widget2->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
-                                          chromeos::AppType::ARC_APP);
+                                          AppType::ARC_APP);
   FrameCaptionButtonContainerView container2(widget2);
   InitContainer(&container2);
   views::test::RunScheduledLayout(&container2);
@@ -462,7 +464,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, TestFloatButtonBehavior) {
   auto* widget = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
                                   CLOSE_BUTTON_VISIBLE);
   auto* window = widget->GetNativeWindow();
-  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
+  window->SetProperty(chromeos::kAppTypeKey, AppType::BROWSER);
   widget->Show();
 
   FrameCaptionButtonContainerView container(widget);

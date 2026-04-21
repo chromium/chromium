@@ -30,6 +30,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class OverviewFocusCyclerTest : public OverviewTestBase,
                                 public testing::WithParamInterface<bool> {
  public:
@@ -58,8 +60,10 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
 
 // Tests traversing some windows in overview mode with the tab key.
 TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigation) {
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ToggleOverview();
   const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
@@ -84,9 +88,12 @@ TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigation) {
 
 // Same as above but for tablet mode.
 TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigationTablet) {
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window3 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   TabletModeControllerTestApi().EnterTabletMode();
   ToggleOverview();
@@ -109,7 +116,8 @@ TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigationTablet) {
 
 // Tests that pressing Ctrl+W while a window is selected in overview closes it.
 TEST_P(OverviewFocusCyclerTest, CloseWindowWithKey) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   ToggleOverview();
 
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, GetEventGenerator());
@@ -124,7 +132,8 @@ TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
   const size_t test_windows = 9;
   std::vector<std::unique_ptr<aura::Window>> windows;
   for (size_t i = test_windows; i > 0; --i) {
-    std::unique_ptr<aura::Window> window = CreateAppWindow();
+    std::unique_ptr<aura::Window> window =
+        CreateWindowWithAppType(AppType::SYSTEM_APP);
     window->SetId(i);
     windows.push_back(std::move(window));
   }
@@ -186,10 +195,14 @@ TEST_P(OverviewFocusCyclerTest, BasicMultiMonitorArrowKeyNavigation) {
   // Create two windows on each display.
   const gfx::Rect bounds1(100, 100);
   const gfx::Rect bounds2(550, 0, 100, 100);
-  std::unique_ptr<aura::Window> window4 = CreateAppWindow(bounds2);
-  std::unique_ptr<aura::Window> window3 = CreateAppWindow(bounds2);
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow(bounds1);
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(bounds1);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds2);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds2);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds1);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds1);
 
   ToggleOverview();
 
@@ -216,9 +229,10 @@ TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::LEFT, 0));
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
   std::unique_ptr<aura::Window> window1 =
-      CreateAppWindow(gfx::Rect(-450, 0, 100, 100));
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {-450, 0, 100, 100});
   ASSERT_EQ(root_windows[1], window1->GetRootWindow());
   ASSERT_EQ(root_windows[0], window2->GetRootWindow());
 
@@ -247,10 +261,11 @@ TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
   UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window3 =
-      CreateAppWindow(gfx::Rect(1000, 0, 100, 100));
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {1000, 0, 100, 100});
   std::unique_ptr<aura::Window> window2 =
-      CreateAppWindow(gfx::Rect(500, 0, 100, 100));
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(100, 100));
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {500, 0, 100, 100});
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
   EXPECT_EQ(root_windows[0], window1->GetRootWindow());
   EXPECT_EQ(root_windows[1], window2->GetRootWindow());
   EXPECT_EQ(root_windows[2], window3->GetRootWindow());
@@ -288,8 +303,10 @@ TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
 
 // Tests selecting a window in overview mode with the return key.
 TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   ToggleOverview();
 
   // Pressing the return key on an item that is not focused should not do
@@ -316,9 +333,12 @@ TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
 // Tests that the location of the overview focus ring is as expected while
 // dragging an overview item.
 TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window3 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ToggleOverview();
 
@@ -351,8 +371,10 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
 // entered via snapping a window while already in overview. Regression test for
 // http://b/369539129 for more details.
 TEST_P(OverviewFocusCyclerTest, TabbingWithSplitview) {
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ToggleOverview();
   SplitViewController::Get(Shell::GetPrimaryRootWindow())
@@ -427,8 +449,10 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   base::AutoReset<bool> disable_app_id_check =
       OverviewController::Get()->SetDisableAppIdCheckForTests();
 
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
 
   ToggleOverview();
   const auto* desk_bar_view =
@@ -479,8 +503,10 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   base::AutoReset<bool> disable_app_id_check =
       OverviewController::Get()->SetDisableAppIdCheckForTests();
 
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
 
   ToggleOverview();
   const auto* desk_bar_view =
@@ -532,12 +558,14 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
 
   // Create two windows on the first display, and one each on the second and
   // third displays.
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
-  std::unique_ptr<aura::Window> window3(
-      CreateAppWindow(gfx::Rect(600, 0, 200, 200)));
-  std::unique_ptr<aura::Window> window4(
-      CreateAppWindow(gfx::Rect(1200, 0, 200, 200)));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {600, 0, 200, 200});
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {1200, 0, 200, 200});
   ASSERT_EQ(roots[0], window1->GetRootWindow());
   ASSERT_EQ(roots[0], window2->GetRootWindow());
   ASSERT_EQ(roots[1], window3->GetRootWindow());

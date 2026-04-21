@@ -125,6 +125,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 using ::chromeos::WindowStateType;
@@ -798,7 +800,7 @@ TEST_F(AcceleratorControllerTest, WindowSnapUpsideDown) {
   ASSERT_FALSE(chromeos::IsDisplayLayoutPrimary(current_display));
 
   // Snap the window. Test that it goes to the physical left/right as expected.
-  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   controller_->PerformActionIfEnabled(AcceleratorAction::kWindowCycleSnapLeft,
                                       {});
   EXPECT_EQ(gfx::Point(0, 0), window->GetBoundsInScreen().origin());
@@ -818,7 +820,7 @@ TEST_F(AcceleratorControllerTest, WindowSnapUpsideDown) {
   ASSERT_FALSE(current_display.is_landscape());
   ASSERT_FALSE(chromeos::IsDisplayLayoutPrimary(current_display));
 
-  window = CreateAppWindow(gfx::Rect(300, 300));
+  window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   work_area_bounds = current_display.work_area();
 
   // Snap the window. Test that it goes to the physical top/bottom as expected.
@@ -1193,8 +1195,8 @@ TEST_F(AcceleratorControllerTest, RotateScreenWithWindowLockingOrientation) {
       Shell::Get()->screen_orientation_controller();
   EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
-  auto win0 = CreateAppWindow(gfx::Rect{100, 300});
-  auto win1 = CreateAppWindow(gfx::Rect{200, 200});
+  auto win0 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 300});
+  auto win1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
   screen_orientation_controller->LockOrientationForWindow(
       win0.get(), chromeos::OrientationType::kPortraitPrimary);
   screen_orientation_controller->LockOrientationForWindow(
@@ -1625,7 +1627,8 @@ TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
   // targeting.
   Shell::Get()->ash_accelerator_configuration()->Initialize();
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   ui::Accelerator accelerator(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
   // Pressing accelerator once should show the multitask menu.
   EXPECT_TRUE(ProcessInController(accelerator));
@@ -3758,7 +3761,7 @@ TEST_F(AcceleratorControllerTest, ToggleGameDashboardAccelerator) {
 
   // Create an ARC app window.
   std::unique_ptr<aura::Window> window =
-      CreateAppWindow(gfx::Rect(5, 5, 20, 20), chromeos::AppType::ARC_APP);
+      CreateWindowWithAppType(AppType::ARC_APP, {5, 5, 20, 20});
   window->SetProperty(kAppIDKey,
                       std::string(TestGameDashboardDelegate::kGameAppId));
   // Verify the accelerator is not processed until the game controls status is
@@ -3774,7 +3777,7 @@ TEST_F(AcceleratorControllerTest, ToggleGameDashboardAccelerator) {
   EXPECT_FALSE(ProcessInController(accelerator));
 
   // Create a non-ARC app window.
-  window = CreateAppWindow(gfx::Rect(5, 5, 20, 20), chromeos::AppType::BROWSER);
+  window = CreateWindowWithAppType(AppType::BROWSER, {5, 5, 20, 20});
   window->SetProperty(
       kAppIDKey, std::string(TestGameDashboardDelegate::kAllowlistedAppId));
   EXPECT_TRUE(ProcessInController(accelerator));

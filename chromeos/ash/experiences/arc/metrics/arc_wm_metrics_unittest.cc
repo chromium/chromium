@@ -18,6 +18,8 @@
 
 namespace arc {
 
+using chromeos::AppType;
+
 class ArcWmMetricsTest : public ash::AshTestBase {
  public:
   ArcWmMetricsTest() = default;
@@ -52,8 +54,8 @@ class ArcWmMetricsTest : public ash::AshTestBase {
 };
 
 TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
-  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  AppType app_type = AppType::ARC_APP;
+  auto window = CreateWindowWithAppType(app_type, {100, 100});
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanMaximize);
   window->Show();
@@ -82,8 +84,8 @@ TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowMinimizeDelayMetrics) {
-  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  AppType app_type = AppType::ARC_APP;
+  auto window = CreateWindowWithAppType(app_type, {100, 100});
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanMinimize);
   window->Show();
@@ -105,8 +107,7 @@ TEST_F(ArcWmMetricsTest, TestWindowMinimizeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowCloseDelayMetrics) {
-  auto window =
-      CreateAppWindow(gfx::Rect(0, 0, 100, 100), chromeos::AppType::ARC_APP);
+  auto window = CreateWindowWithAppType(AppType::ARC_APP, {100, 100});
   window->Show();
 
   base::HistogramTester histogram_tester;
@@ -122,8 +123,8 @@ TEST_F(ArcWmMetricsTest, TestWindowCloseDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowEnterTabletModeDelayMetrics) {
-  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  AppType app_type = AppType::ARC_APP;
+  auto window = CreateWindowWithAppType(app_type, {100, 100});
   window->Show();
 
   base::HistogramTester histogram_tester;
@@ -140,20 +141,16 @@ TEST_F(ArcWmMetricsTest, TestWindowEnterTabletModeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestMultipleWindowsEnterTabletModeDelayMetrics) {
-  auto lower_window =
-      CreateAppWindow(gfx::Rect(0, 0, 100, 100), chromeos::AppType::BROWSER);
+  auto lower_window = CreateWindowWithAppType(AppType::BROWSER, {100, 100});
   lower_window->Show();
-  auto upper_window =
-      CreateAppWindow(gfx::Rect(0, 0, 100, 100), chromeos::AppType::ARC_APP);
+  auto upper_window = CreateWindowWithAppType(AppType::ARC_APP, {100, 100});
   upper_window->Show();
 
   base::HistogramTester histogram_tester;
   const auto histogram_name_lower_window =
-      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
-          chromeos::AppType::BROWSER);
+      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(AppType::BROWSER);
   const auto histogram_name_upper_window =
-      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
-          chromeos::AppType::ARC_APP);
+      ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(AppType::ARC_APP);
 
   histogram_tester.ExpectTotalCount(histogram_name_lower_window, 0);
   histogram_tester.ExpectTotalCount(histogram_name_upper_window, 0);
@@ -165,8 +162,8 @@ TEST_F(ArcWmMetricsTest, TestMultipleWindowsEnterTabletModeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowLeaveTabletModeDelayMetrics) {
-  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  AppType app_type = AppType::ARC_APP;
+  auto window = CreateWindowWithAppType(app_type, {100, 100});
   window->Show();
 
   base::HistogramTester histogram_tester;
@@ -191,8 +188,8 @@ TEST_F(ArcWmMetricsTest, TestWindowLeaveTabletModeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowRotateDelayOnDisplayRotationMetrics) {
-  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  AppType app_type = AppType::ARC_APP;
+  auto window = CreateWindowWithAppType(app_type, {100, 100});
   window->Show();
 
   base::HistogramTester histogram_tester;

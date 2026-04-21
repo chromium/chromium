@@ -91,6 +91,8 @@
 using session_manager::SessionState;
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 // Constants -------------------------------------------------------------------
@@ -340,9 +342,9 @@ std::unique_ptr<views::Widget> AshTestBase::CreateFramelessTestWidget(
   }
 }
 
-std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
+std::unique_ptr<aura::Window> AshTestBase::CreateWindowWithAppType(
+    AppType app_type,
     const gfx::Rect& bounds_in_screen,
-    chromeos::AppType app_type,
     int shell_window_id,
     views::WidgetDelegate* delegate,
     bool show) {
@@ -353,7 +355,7 @@ std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     builder.SetDelegate(CreateTestWidgetBuilderDelegate());
   }
   builder.SetWindowTitle(u"Window " + base::NumberToString16(shell_window_id));
-  if (app_type != chromeos::AppType::NON_APP) {
+  if (app_type != AppType::NON_APP) {
     builder.SetWindowProperty(chromeos::kAppTypeKey, app_type);
   }
 
@@ -374,8 +376,8 @@ std::unique_ptr<aura::Window> AshTestBase::CreateTestWindow(
     aura::client::WindowType type,
     int shell_window_id) {
   CHECK_EQ(type, aura::client::WINDOW_TYPE_NORMAL);
-  return CreateAppWindow(bounds_in_screen, chromeos::AppType::NON_APP,
-                         shell_window_id);
+  return CreateWindowWithAppType(AppType::NON_APP, bounds_in_screen,
+                                 shell_window_id);
 }
 
 std::unique_ptr<aura::Window> AshTestBase::CreateToplevelTestWindow(

@@ -60,6 +60,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using ::chromeos::WindowStateType;
 
 // A helper function to set the shelf auto-hide preference. This has the same
@@ -952,7 +954,8 @@ TEST_F(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
 // Tests that if we minimize a snapped window, it is snapped upon unminimizing.
 TEST_F(TabletModeWindowManagerTest, UnminimizeSnapInTabletMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   auto* window_state = WindowState::Get(window.get());
   WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&event);
@@ -2035,12 +2038,12 @@ TEST_F(TabletModeWindowManagerTest, StateTypeOnAttachNewDragWindow) {
   // Simulate tab drag out of maximized window.
   {
     std::unique_ptr<aura::Window> source_window =
-        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+        CreateWindowWithAppType(AppType::BROWSER);
     WindowState* source_window_state = WindowState::Get(source_window.get());
 
-    std::unique_ptr<aura::Window> drag_window = CreateAppWindow(
-        gfx::Rect(), chromeos::AppType::BROWSER, kShellWindowId_Invalid,
-        /*delegate=*/nullptr, /*show=*/false);
+    std::unique_ptr<aura::Window> drag_window =
+        CreateWindowWithAppType(AppType::BROWSER, {}, kShellWindowId_Invalid,
+                                /*delegate=*/nullptr, /*show=*/false);
     WindowState* drag_window_state = WindowState::Get(drag_window.get());
     drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
     drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,
@@ -2055,14 +2058,14 @@ TEST_F(TabletModeWindowManagerTest, StateTypeOnAttachNewDragWindow) {
   // Simulate tab drag out of snapped window.
   {
     std::unique_ptr<aura::Window> source_window =
-        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+        CreateWindowWithAppType(AppType::BROWSER);
     WindowState* source_window_state = WindowState::Get(source_window.get());
     const WindowSnapWMEvent primary_snap_event(WM_EVENT_SNAP_PRIMARY);
     source_window_state->OnWMEvent(&primary_snap_event);
 
-    std::unique_ptr<aura::Window> drag_window = CreateAppWindow(
-        gfx::Rect(), chromeos::AppType::BROWSER, kShellWindowId_Invalid,
-        /*delegate=*/nullptr, /*show=*/false);
+    std::unique_ptr<aura::Window> drag_window =
+        CreateWindowWithAppType(AppType::BROWSER, {}, kShellWindowId_Invalid,
+                                /*delegate=*/nullptr, /*show=*/false);
     WindowState* drag_window_state = WindowState::Get(drag_window.get());
     drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
     drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,

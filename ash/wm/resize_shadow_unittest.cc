@@ -41,6 +41,8 @@ using chromeos::kResizeOutsideBoundsSize;
 
 namespace ash {
 
+using chromeos::AppType;
+
 class ResizeShadowTest : public AshTestBase {
  public:
   ResizeShadowTest() = default;
@@ -592,7 +594,8 @@ TEST_F(ResizeShadowTest, KeepShadowBeneathFloatWindow) {
   // Create a resizable test window whose size should be larger than the normal
   // floating window size.
   auto test_window =
-      CreateAppWindow(/*bounds_in_screen=*/gfx::Rect(10, 10, 800, 600));
+      CreateWindowWithAppType(AppType::SYSTEM_APP,
+                              /*bounds_in_screen=*/{10, 10, 800, 600});
 
   // Create a resize shadow for the native window.
   auto* resize_shadow_controller = Shell::Get()->resize_shadow_controller();

@@ -60,6 +60,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 ShelfWidget* GetShelfWidget() {
   return AshTestBase::GetPrimaryShelf()->shelf_widget();
@@ -1316,7 +1318,8 @@ TEST_P(HotseatWidgetTest, InAppToOverviewAndBack) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
 
   // Make sure shelf (and overview button) are visible - this is moves the
   // hotseat into kExtended state.
@@ -1358,7 +1361,8 @@ TEST_P(HotseatWidgetTest, ShowShelfAndGoHomeDuringInAppToOverviewTransition) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
 
   // Make sure shelf (and overview button) are visible - this is moves the
   // hotseat into kExtended state.

@@ -25,6 +25,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using DeskActivationAnimationTest = AshTestBase;
 
 // Tests that there is no crash when ending a swipe animation before the
@@ -131,7 +133,8 @@ TEST_F(DeskActivationAnimationTest, CloseWindowDuringAnimation) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
 
   DeskActivationAnimation animation(desks_controller, 0, 1,
                                     DesksSwitchSource::kDeskSwitchTouchpad,

@@ -10,6 +10,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 // Aliases ---------------------------------------------------------------------
@@ -28,7 +30,8 @@ using WelcomeTourWindowMinimizerTest = UserEducationAshTestBase;
 // Verifies that minimization only occurs when `WelcomeTourWindowMinimizer` is
 // in scope.
 TEST_F(WelcomeTourWindowMinimizerTest, Scope) {
-  std::unique_ptr<aura::Window> window_1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window_1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   std::unique_ptr<aura::Window> window_2;
 
   // Initial state. Windows should not be minimized by default.
@@ -40,7 +43,7 @@ TEST_F(WelcomeTourWindowMinimizerTest, Scope) {
     WelcomeTourWindowMinimizer minimizer;
     EXPECT_TRUE(WaitUntilMinimized(window_1.get()));
 
-    window_2 = CreateAppWindow();
+    window_2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
     EXPECT_TRUE(WaitUntilMinimized(window_2.get()));
   }
 
@@ -49,7 +52,7 @@ TEST_F(WelcomeTourWindowMinimizerTest, Scope) {
   EXPECT_THAT(window_2, Minimized(Eq(true)));
 
   // Case: Window created out of scope.
-  auto window_3 = CreateAppWindow();
+  auto window_3 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   EXPECT_THAT(window_3, Minimized(Eq(false)));
 }
 
@@ -60,7 +63,8 @@ TEST_F(WelcomeTourWindowMinimizerTest, NewDisplay) {
 
   UpdateDisplay("500x400,500x400");
 
-  auto window = CreateAppWindow(GetSecondaryDisplay().bounds());
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP,
+                                        GetSecondaryDisplay().bounds());
   EXPECT_TRUE(WaitUntilMinimized(window.get()));
 }
 
@@ -69,7 +73,7 @@ TEST_F(WelcomeTourWindowMinimizerTest, NewDisplay) {
 TEST_F(WelcomeTourWindowMinimizerTest, SquelchUnminimization) {
   WelcomeTourWindowMinimizer minimizer;
 
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   EXPECT_TRUE(WaitUntilMinimized(window.get()));
 
   auto* state = WindowState::Get(window.get());

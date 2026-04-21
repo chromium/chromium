@@ -97,6 +97,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 class SavedDeskTest : public OverviewTestBase {
  public:
   SavedDeskTest() = default;
@@ -570,7 +572,7 @@ TEST_F(SavedDeskTest, NoWindowsLabelOnSavedDeskGridShow) {
 TEST_F(SavedDeskTest, NoItemsLabelOnDeletingLastSavedDesk) {
   UpdateDisplay("800x600,800x600");
   // Create a test window.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
@@ -639,7 +641,7 @@ TEST_F(SavedDeskTest, HideOverviewItemsOnSavedDeskGridShow) {
   AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Start overview mode. The window is visible in the overview mode.
   ToggleOverview();
@@ -662,7 +664,7 @@ TEST_F(SavedDeskTest, HideMinimizedWindowOverviewItemsOnSavedDeskGridShow) {
   AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState::Get(test_window.get())->Minimize();
 
   // Enter overview mode and the saved desk library. Entering the library will
@@ -685,7 +687,7 @@ TEST_F(SavedDeskTest, OverviewItemsStayHiddenInSavedDeskGridOnDeskClose) {
 
   // Create a test window in the current desk.
   DesksController* desks_controller = DesksController::Get();
-  auto test_window_1 = CreateAppWindow();
+  auto test_window_1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
   EXPECT_EQ(1ul, desks_controller->active_desk()->windows().size());
 
@@ -693,7 +695,7 @@ TEST_F(SavedDeskTest, OverviewItemsStayHiddenInSavedDeskGridOnDeskClose) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
   Desk* desk = desks_controller->desks().back().get();
   ActivateDesk(desk);
-  auto test_window_2 = CreateAppWindow();
+  auto test_window_2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   // Check that the active desk is the second desk, and that it contains one
   // window.
   ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
@@ -832,7 +834,7 @@ TEST_F(SavedDeskTest, DeleteTemplate) {
            DeskTemplateType::kTemplate);
 
   // This window should be hidden whenever the saved desk grid is open.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   OpenOverviewAndShowSavedDeskGrid();
 
@@ -862,7 +864,7 @@ TEST_F(SavedDeskTest, DeleteTemplate) {
 TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
   // Prepare the test environment, like creating an app window which should be
   // supported.
-  auto no_app_id_window = CreateAppWindow();
+  auto no_app_id_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   auto* delegate = Shell::Get()->saved_desk_delegate();
   ASSERT_TRUE(delegate->IsWindowSupportedForSavedDesk(no_app_id_window.get()));
@@ -972,7 +974,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
 // grid.
 TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsSavedDeskGrid) {
   // There are no saved desk entries and one test window initially.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ToggleOverview();
 
   // The "Save desk as template" option is visible when at least one window is
@@ -994,7 +996,7 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
 
   // Release the window since it will be automatically destroyed when the desk
   // is saved.
-  auto* test_window = CreateAppWindow().release();
+  auto* test_window = CreateWindowWithAppType(AppType::SYSTEM_APP).release();
   ASSERT_FALSE(WindowState::Get(test_window)->IsMaximized());
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -1034,7 +1036,7 @@ TEST_F(SavedDeskTest, SaveTemplateNudgesNameView) {
   DesksController* desks_controller = DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Capture the current desk as a template, which is by default named "Desk 1".
   // We open overview and save template without clicking out of the newly
@@ -1063,7 +1065,7 @@ TEST_F(SavedDeskTest, LaunchTemplate) {
   DesksController* desks_controller = DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Capture the current desk and open the templates grid.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
@@ -1685,7 +1687,7 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
 
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up in clamshell mode either.
-  auto test_window_1 = CreateAppWindow();
+  auto test_window_1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
@@ -1709,7 +1711,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
 
   // Create a window and add a test entry. Otherwise the library button wouldn't
   // show up.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
@@ -1750,7 +1752,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
 TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
-  auto test_window_1 = CreateAppWindow();
+  auto test_window_1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
@@ -1791,7 +1793,7 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
 // in overview mode. Regression test for https://crbug.com/1277769.
 TEST_F(SavedDeskTest, TabletModeActivationIssues) {
   // Create a test window.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
@@ -1809,7 +1811,7 @@ TEST_F(SavedDeskTest, OverviewTabbing) {
   const base::Time saved_desk_creation_time =
       base::Time::FromSecondsSinceUnixEpoch(10);
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "template1",
            saved_desk_creation_time, DeskTemplateType::kTemplate);
   AddEntry(base::Uuid::GenerateRandomV4(), "template2",
@@ -1925,12 +1927,11 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
 // an active desk with unsupported apps.
 TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
   // Create a crostini window.
-  auto crostini_window = CreateAppWindow();
-  crostini_window->SetProperty(chromeos::kAppTypeKey,
-                               chromeos::AppType::CROSTINI_APP);
+  auto crostini_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  crostini_window->SetProperty(chromeos::kAppTypeKey, AppType::CROSTINI_APP);
 
   // Create a normal window.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
@@ -1977,13 +1978,14 @@ TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
 
   disable_app_id_check_.reset();
 
-  // Use `CreateTestWindow()` instead of `CreateAppWindow()`, which by default
+  // Use `CreateTestWindow()` instead of
+  // `CreateWindowWithAppType(AppType::SYSTEM_APP)`, which by default
   // creates a supported window.
   auto test_window = CreateTestWindow();
 
   // Also create an app window which should not have an app id, making it
   // "unsupported".
-  auto no_app_id_window = CreateAppWindow();
+  auto no_app_id_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   auto* delegate = Shell::Get()->saved_desk_delegate();
   ASSERT_TRUE(delegate->IsWindowSupportedForSavedDesk(no_app_id_window.get()));
   ASSERT_TRUE(saved_desk_util::GetAppId(no_app_id_window.get()).empty());
@@ -2036,7 +2038,7 @@ TEST_F(SavedDeskTest, AddRemoveUnsupportedWindows) {
 
 // Tests the mouse and touch hover behavior on the saved desk item view.
 TEST_F(SavedDeskTest, HoverOnTemplateItemView) {
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "template1", base::Time::Now(),
            DeskTemplateType::kTemplate);
   AddEntry(base::Uuid::GenerateRandomV4(), "template2", base::Time::Now(),
@@ -2096,7 +2098,7 @@ TEST_F(SavedDeskTest, DialogDoesntShowForSupportedAppsWithoutLaunchInfo) {
   constexpr int kInvalidWindowKey = -10000;
 
   // Create a normal window.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Set its `app_restore::kWindowIdKey` to an untracked window id. This
   // simulates a supported window not having a corresponding app launch info.
@@ -2113,7 +2115,7 @@ TEST_F(SavedDeskTest, DialogDoesntShowForSupportedAppsWithoutLaunchInfo) {
 // launching a template. Regression test for https://crbug.com/1271337.
 TEST_F(SavedDeskTest, LaunchTemplateWithMinimizedOverviewWindow) {
   // Create a test minimized window.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState::Get(window.get())->Minimize();
 
   // Open overview and save a template.
@@ -2135,7 +2137,7 @@ TEST_F(SavedDeskTest, LaunchTemplateAfterClosingActiveDesk) {
     desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
 
   // One window is needed to save a template.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Open overview and save a template. This will also take us to the desks
   // templates grid view.
@@ -2155,7 +2157,7 @@ TEST_F(SavedDeskTest, LaunchTemplateAfterClosingActiveDesk) {
 // Tests that the desks templates are organized in alphabetical order.
 TEST_F(SavedDeskTest, ShowTemplatesInAlphabeticalOrder) {
   // Create a window and add three test entry in different names.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "B_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
   AddEntry(base::Uuid::GenerateRandomV4(), "1_template", base::Time::Now(),
@@ -2232,7 +2234,7 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
 // overview get activated and restored when selected.
 TEST_F(SavedDeskTest, WindowActivatableAfterSaveAndDeleteTemplate) {
   // Create a test window.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Open overview and save a template.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
@@ -2340,7 +2342,7 @@ TEST_F(SavedDeskTest, AccessibleProperties) {
 
 // Tests that we are able to edit the saved desk name.
 TEST_F(SavedDeskTest, EditSavedDeskName) {
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   const std::string template_name = "desk name";
   AddEntry(base::Uuid::GenerateRandomV4(), template_name, base::Time::Now(),
@@ -2412,7 +2414,7 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
 // Tests for checking that certain conditions will revert the saved desk name to
 // its original name, even if the text in the textfield has been updated.
 TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   const std::string template_name = "desk name";
   AddEntry(base::Uuid::GenerateRandomV4(), template_name, base::Time::Now(),
@@ -2452,7 +2454,7 @@ TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
 // lose focus (since it's within a button), and that whitespaces are handled
 // correctly.
 TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   const std::string template_name = "desk name";
   AddEntry(base::Uuid::GenerateRandomV4(), template_name, base::Time::Now(),
@@ -2631,7 +2633,7 @@ TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
 // Tests that accessibility overrides are set as expected after entering
 // library view.
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInLibrary) {
-  auto window = CreateAppWindow(gfx::Rect(100, 100));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
 
   AddEntry(base::Uuid::GenerateRandomV4(), "test_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
@@ -2717,7 +2719,7 @@ TEST_F(SavedDeskTest, LayoutItemsInLandscape) {
   UpdateDisplay("800x600");
 
   // Create a window and add four test entries.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "A_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
   AddEntry(base::Uuid::GenerateRandomV4(), "B_template", base::Time::Now(),
@@ -2745,7 +2747,7 @@ TEST_F(SavedDeskTest, LayoutItemsInPortrait) {
   UpdateDisplay("600x800");
 
   // Create a window and add four test entries.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   AddEntry(base::Uuid::GenerateRandomV4(), "A_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
   AddEntry(base::Uuid::GenerateRandomV4(), "B_template", base::Time::Now(),
@@ -2854,7 +2856,7 @@ TEST_F(SavedDeskTest, LaunchTemplateRecordsMetric) {
   DesksController* desks_controller = DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Log histogram recording
   base::HistogramTester histogram_tester;
@@ -2888,7 +2890,7 @@ TEST_F(SavedDeskTest, LaunchTemplateRecordsMetric) {
 // new template histogram.
 TEST_F(SavedDeskTest, SaveDeskAsTemplateRecordsMetric) {
   // There are no saved template entries and one test window initially.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ToggleOverview();
 
   // Record histogram.
@@ -2921,12 +2923,11 @@ TEST_F(SavedDeskTest, UnsupportedAppDialogRecordsMetric) {
   base::HistogramTester histogram_tester;
 
   // Create a crostini window.
-  auto crostini_window = CreateAppWindow();
-  crostini_window->SetProperty(chromeos::kAppTypeKey,
-                               chromeos::AppType::CROSTINI_APP);
+  auto crostini_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  crostini_window->SetProperty(chromeos::kAppTypeKey, AppType::CROSTINI_APP);
 
   // Create a normal window.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
@@ -3010,7 +3011,7 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
   // Create three new templates through the UI.
   for (unsigned long num_templates = 0; num_templates < 3; ++num_templates) {
     // There are no saved template entries and one test window initially.
-    auto test_window = CreateAppWindow();
+    auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
     ASSERT_FALSE(GetOverviewSession());
 
@@ -3140,7 +3141,7 @@ TEST_F(SavedDeskTest, NoAnimationWhenRemovingDesk) {
   // Create and a new desk, and create a test window on the active desk.
   DesksController* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
   ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window.get()));
 
@@ -3172,9 +3173,9 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterImmediateExit) {
   // desk.
   DesksController* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  auto test_window1 = CreateAppWindow();
-  auto test_window2 = CreateAppWindow();
-  auto test_window3 = CreateAppWindow();
+  auto test_window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto test_window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto test_window3 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
   ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window1.get()));
   ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window2.get()));
@@ -3208,8 +3209,8 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterLeavingOverview) {
   // desk.
   DesksController* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  auto test_window1 = CreateAppWindow();
-  auto test_window2 = CreateAppWindow();
+  auto test_window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto test_window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
   ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window1.get()));
   ASSERT_TRUE(desks_controller->BelongsToActiveDesk(test_window2.get()));
@@ -3344,7 +3345,7 @@ TEST_F(SavedDeskTest, TimeStrFormat) {
 
 // Test that desk templates can launch snapped windows properly.
 TEST_F(SavedDeskTest, SnapWindowTest) {
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   WindowState* window_state = WindowState::Get(test_window.get());
   const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
@@ -3548,7 +3549,7 @@ TEST_F(SavedDeskTest, VisibleOnAllDesksWindowShownProperly) {
            DeskTemplateType::kTemplate);
 
   // Create a window which is shown on all desks.
-  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
   widget->SetVisibleOnAllWorkspaces(true);
   ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
@@ -3572,7 +3573,7 @@ TEST_F(SavedDeskTest, VisibleOnAllDesksWindowShownProperly) {
 // view for the second template.
 TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   // There are no saved desk entries and one test window initially.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ToggleOverview();
 
   // The "Save desk as template" option is visible when at least one window is
@@ -3676,7 +3677,7 @@ TEST_F(SavedDeskTest, SelectAllAfterSavingDuplicateTemplate) {
   AddEntry(base::Uuid::GenerateRandomV4(), "Desk 1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   ToggleOverview();
 
   // Click on the "Save desk as template" option.
@@ -3701,7 +3702,7 @@ TEST_F(SavedDeskTest, SelectAllAfterSavingDuplicateTemplate) {
 // once the name is confirmed.
 TEST_F(SavedDeskTest, NoSortBeforeNameConfirmed) {
   // Create a window to enable the save as template button.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Add an entry with a low lexiconic value for the template name to test that
   // the new saved template is always preceding this one.
@@ -3744,7 +3745,7 @@ TEST_F(SavedDeskTest, NudgeOnTheCorrectDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   OpenOverviewAndSaveTemplate(Shell::GetPrimaryRootWindow());
 
   // The desks templates widget associated with the primary display should be
@@ -3921,7 +3922,7 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
   }
 
   // Create a window then save the current desk for later.
-  CreateAppWindow().release();
+  CreateWindowWithAppType(AppType::SYSTEM_APP).release();
   ToggleOverview();
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   LeftClickOn(GetActiveDeskActionContextMenuItem(
@@ -3959,7 +3960,7 @@ TEST_F(SavedDeskTest,
   ASSERT_TRUE(active_desk->is_active());
   ASSERT_FALSE(active_desk->ContainsAppWindows());
   ASSERT_FALSE(inactive_desk->ContainsAppWindows());
-  const auto& window = CreateAppWindow();
+  const auto& window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   controller->SendToDeskAtIndex(window.get(), 0);
   ASSERT_EQ(1u, active_desk->GetAllAppWindows().size());
 
@@ -4023,7 +4024,7 @@ TEST_F(SavedDeskTest, NoOverviewItemWindowOnThemeChange) {
            DeskTemplateType::kTemplate);
 
   // Create a test window.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Enter overview and ensure overview item window is visible.
   ToggleOverview();
@@ -4061,8 +4062,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
   EXPECT_EQ(2ul, desks_controller->desks().size());
 
   // Create a couple of test windows.
-  auto test_window1 = CreateAppWindow();
-  auto test_window2 = CreateAppWindow();
+  auto test_window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto test_window2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   // When saving the desk, the windows will be closed automatically. To verify
   // that this happens we create a WindowTracker. The unique_ptrs have to be
   // released since they would otherwise end up with dangling pointers.
@@ -4104,7 +4105,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
 
   // Create a test window that we release immediately as it will be closed
   // automatically by the code under test.
-  CreateAppWindow().release();
+  CreateWindowWithAppType(AppType::SYSTEM_APP).release();
 
   // Open overview and save the desk.
   OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
@@ -4127,7 +4128,8 @@ TEST_F(DeskSaveAndRecallTest, DISABLED_SaveDeskForLaterWithAllDeskWindow) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
 
   // Create an all desk window.
-  auto all_desk_window = CreateAppWindow(gfx::Rect(300, 300));
+  auto all_desk_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   auto* all_desk_widget =
       views::Widget::GetWidgetForNativeWindow(all_desk_window.get());
   all_desk_widget->SetVisibleOnAllWorkspaces(true);
@@ -4135,8 +4137,8 @@ TEST_F(DeskSaveAndRecallTest, DISABLED_SaveDeskForLaterWithAllDeskWindow) {
       desks_util::IsWindowVisibleOnAllWorkspaces(all_desk_window.get()));
 
   // Create two test windows.
-  auto test_window1 = CreateAppWindow(gfx::Rect(400, 400));
-  auto test_window2 = CreateAppWindow(gfx::Rect(500, 500));
+  auto test_window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
+  auto test_window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {500, 500});
 
   // When saving the desk, the windows will be closed automatically. To verify
   // that this happens we create a WindowTracker. The unique_ptrs have to be
@@ -4177,7 +4179,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterForAllDeskWindowOnDesk) {
   EXPECT_EQ(2ul, desks_controller->desks().size());
 
   // Create an all desk window.
-  auto all_desk_window = CreateAppWindow(gfx::Rect(300, 300));
+  auto all_desk_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   auto* all_desk_widget =
       views::Widget::GetWidgetForNativeWindow(all_desk_window.get());
   all_desk_widget->SetVisibleOnAllWorkspaces(true);
@@ -4204,7 +4207,7 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
 
   // Create a test window that we release immediately as it will be closed
   // automatically by the code under test.
-  CreateAppWindow().release();
+  CreateWindowWithAppType(AppType::SYSTEM_APP).release();
 
   // Open overview and save the desk.
   OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
@@ -4268,7 +4271,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
   auto save_and_check = [this](const char16_t* name) {
     // Create a test window that we release immediately as it will be closed
     // automatically by the code under test.
-    CreateAppWindow().release();
+    CreateWindowWithAppType(AppType::SYSTEM_APP).release();
 
     // Open overview and save the desk.
     ToggleOverview();
@@ -4372,7 +4375,8 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
 
   // Activate the last desk and add a window in it that will be destroyed later.
   ActivateDesk(controller->desks().back().get());
-  aura::WindowTracker tracker({CreateAppWindow().release()});
+  aura::WindowTracker tracker(
+      {CreateWindowWithAppType(AppType::SYSTEM_APP).release()});
   ToggleOverview();
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
@@ -4424,8 +4428,8 @@ TEST_F(SavedDeskTest, SaveDeskFilterByAccountID) {
   DesksController* desks_controller = DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  auto test_window_1 = CreateAppWindow();
-  auto test_window_2 = CreateAppWindow();
+  auto test_window_1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto test_window_2 = CreateWindowWithAppType(AppType::SYSTEM_APP);
   const int win_2_id = test_window_2->GetId();
   // Change the owner of `test_window_2` to be another user and set the
   // visibility so that the current user can see the window.
@@ -4481,7 +4485,7 @@ TEST_F(SavedDeskTest, NoCrashDuringGuest) {
 // items are enabled and visible.
 TEST_F(SavedDeskTest, ContextMenuLayout) {
   // Add a window and an empty desk.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   NewDesk();
 
   // Enter overview. There should be two mini views, one to represent the desk
@@ -4519,7 +4523,7 @@ TEST_F(SavedDeskTest, ContextMenuLayout) {
 // the right conditions.
 TEST_F(SavedDeskTest, ContextMenuButtonVisibility) {
   // Add a window and an empty desk.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   NewDesk();
 
   // Enter overview. There should be two mini views, one to represent the desk
@@ -4552,7 +4556,7 @@ TEST_F(SavedDeskTest, ContextMenuButtonVisibility) {
 // works as intended.
 TEST_F(SavedDeskTest, ContextMenuSaveAsTemplate) {
   // Add a window and an empty desk.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   NewDesk();
 
   // Enter overview.
@@ -4595,7 +4599,7 @@ TEST_F(SavedDeskTest, ContextMenuSaveAsTemplate) {
 TEST_F(SavedDeskTest, ContextMenuSaveForLater) {
   // Create a test window that we release immediately as it will be closed
   // automatically by the code under test. Also create an empty desk.
-  CreateAppWindow().release();
+  CreateWindowWithAppType(AppType::SYSTEM_APP).release();
   NewDesk();
 
   // Enter overview.
@@ -4635,7 +4639,7 @@ TEST_F(SavedDeskTest, ContextMenuSaveForLater) {
 // enabled.
 TEST_F(SavedDeskTest, SaveDeskButtonsHidden) {
   // Add a window and an empty desk.
-  auto test_window = CreateAppWindow();
+  auto test_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   NewDesk();
 
   // Enter overview.

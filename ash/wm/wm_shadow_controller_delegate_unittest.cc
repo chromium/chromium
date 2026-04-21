@@ -18,6 +18,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 using WmShadowControllerDelegateTest = AshTestBase;
 
 TEST_F(WmShadowControllerDelegateTest,
@@ -50,7 +52,7 @@ TEST_F(WmShadowControllerDelegateTest,
 
 TEST_F(WmShadowControllerDelegateTest,
        AlwaysOnTopWindowsDontHaveShadowsInOverview) {
-  auto window = CreateAppWindow(gfx::Rect(200, 300));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
   auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
   widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 
@@ -77,11 +79,11 @@ TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
   constexpr gfx::Rect kBoundsA(200, 300);
   constexpr gfx::Rect kBoundsB(100, 100, 400, 300);
 
-  auto window1 = CreateAppWindow(kBoundsA);
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, kBoundsA);
   window1->SetName("w1");
-  auto window2 = CreateAppWindow(kBoundsA);
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, kBoundsA);
   window2->SetName("w2");
-  auto window3 = CreateAppWindow(kBoundsB);
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, kBoundsB);
   window3->SetName("w3");
 
   auto* shadow1 = shadow_controller->GetShadowForWindow(window1.get());
@@ -126,7 +128,7 @@ TEST_F(WmShadowControllerDelegateTest, ContainerShouldHaveNoShadow) {
 
 TEST_F(WmShadowControllerDelegateTest, ControlShouldHaveNoShadow) {
   auto* shadow_controller = Shell::Get()->shadow_controller();
-  auto window = CreateAppWindow({300, 200});
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 200});
 
   auto child = views::test::TestWidgetBuilder()
                    .SetParent(window.get())

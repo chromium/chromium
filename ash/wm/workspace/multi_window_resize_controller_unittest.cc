@@ -40,6 +40,8 @@ using chromeos::WindowStateType;
 
 namespace ash {
 
+using chromeos::AppType;
+
 class MultiWindowResizeControllerTest : public AshTestBase {
  public:
   MultiWindowResizeControllerTest() = default;
@@ -628,8 +630,9 @@ TEST_F(MultiWindowResizeControllerTest, HiddenInOverview) {
   // Create two windows side by side, but not overlapping horizontally. Note
   // that when creating a window, the window is slightly larger than the given
   // bounds so position |window2| accordingly.
-  auto window1 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
-  auto window2 = CreateAppWindow(gfx::Rect(104, 0, 100, 100));
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
+  auto window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {104, 0, 100, 100});
 
   // Move the mouse to the middle of the two windows. The multi window resizer
   // should appear.

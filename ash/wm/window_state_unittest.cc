@@ -54,6 +54,8 @@
 using chromeos::WindowStateType;
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 class AlwaysMaximizeTestState : public WindowState::State {
@@ -339,7 +341,7 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetrics) {
   base::HistogramTester histograms;
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShell({.bounds = gfx::Rect(100, 100, 100, 100)}));
-  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+  window->SetProperty(chromeos::kAppTypeKey, AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
@@ -389,7 +391,7 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetricsCountsExitOnDestroy) {
   base::HistogramTester histograms;
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShell({.bounds = gfx::Rect(100, 100, 100, 100)}));
-  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+  window->SetProperty(chromeos::kAppTypeKey, AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
@@ -1218,7 +1220,8 @@ TEST_F(WindowStateTest, ShortcutMovingWindowInMultiDisplays) {
   // Starts with kDefault window state in the 1st display.
   display::Screen* screen = display::Screen::Get();
   const gfx::Rect initial_bounds(10, 20, 200, 100);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(initial_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, initial_bounds);
   WindowState* window_state = WindowState::Get(window.get());
 
   // Snap and then maximize the window in the 1st display to get the restore
@@ -1279,7 +1282,8 @@ TEST_F(WindowStateTest, WindowNoOffscreenInMultiDisplays) {
   // Starts with kDefault window state in the 2nd display.
   display::Screen* screen = display::Screen::Get();
   const gfx::Rect initial_bounds(900, 10, 200, 100);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(initial_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, initial_bounds);
   WindowState* window_state = WindowState::Get(window.get());
 
   // Maximize and then fullscreen the window inside the 2nd display to get the
@@ -1488,7 +1492,8 @@ TEST_F(WindowStateTest, SetBoundsSnapsPipBoundsToScreenEdge) {
 
 // Make sure the window is transparent only when it is in normal state.
 TEST_F(WindowStateTest, OpacityChange) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_TRUE(window->GetTransparent());
@@ -1542,7 +1547,8 @@ TEST_F(WindowStateTest, WindowStateRestoreHistoryBasicFunctionalites) {
 
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_EQ(window->GetBoundsInScreen(), default_bounds);
@@ -1662,7 +1668,8 @@ TEST_F(WindowStateTest, TransitionFromHighToLowerLayerEraseRestoreHistory) {
 
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -1710,7 +1717,8 @@ TEST_F(WindowStateTest, TransitionInTheSameLayerKeepSameRestoreHistory) {
   // First we test kNormal & kDefault.
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -1786,7 +1794,8 @@ TEST_F(WindowStateTest, PinnedRestoreTest) {
 
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -1863,7 +1872,8 @@ TEST_F(WindowStateTest, MinimizedAndPipRestoreTest) {
 
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -1944,7 +1954,8 @@ TEST_F(WindowStateTest, HorizontalMaximizeThenMinimizeAndRestore) {
 
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -1988,7 +1999,8 @@ TEST_F(WindowStateTest, HorizontalMaximizeThenMaximizeAndRestore) {
 
   // Start with kDefault window state.
   const gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -2031,7 +2043,8 @@ TEST_F(WindowStateTest, SnapThenResize) {
 
   // Start with kDefault window state.
   constexpr gfx::Rect default_bounds(20, 10, 200, 150);
-  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, default_bounds);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->IsNormalStateType());
 
@@ -2080,7 +2093,8 @@ TEST_F(WindowStateTest, SnapThenResize) {
 // Tests the restore behavior for default or normal window.
 TEST_F(WindowStateTest, NormalOrDefaultRestore) {
   // Start with kDefault window state.
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_EQ(window_state->GetStateType(), WindowStateType::kDefault);
 
@@ -2096,7 +2110,8 @@ TEST_F(WindowStateTest, NormalOrDefaultRestore) {
 TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   UpdateDisplay("800x600");
   base::HistogramTester histograms;
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState* window_state = WindowState::Get(window.get());
 
   // Use WMEvent to directly snap the window.
@@ -2169,7 +2184,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
                                WindowSnapActionSource::kNotSpecified, 1);
 
   // Auto-snap in splitview.
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kAutoSnapInSplitView, 1);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
@@ -2317,7 +2333,8 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   base::HistogramTester histogram_tester;
   const std::string kHistogramName =
       chromeos::kPartialSplitDurationHistogramName;
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState* window_state = WindowState::Get(window.get());
 
   auto* desks_controller = DesksController::Get();
@@ -2383,7 +2400,8 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   // bucket.
   ActivateDesk(desks_controller->desks()[1].get());
   AdvanceClock(base::Minutes(1));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowSnapWMEvent partial_secondary(WM_EVENT_SNAP_SECONDARY,
                                       chromeos::kOneThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&partial_secondary);

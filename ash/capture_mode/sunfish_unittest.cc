@@ -105,6 +105,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 using ::base::test::InvokeFuture;
@@ -616,9 +618,10 @@ TEST_F(SunfishTest, PressEscapeKey) {
 
 TEST_F(SunfishTest, NoCrashOnEscapeBeforePanelShown) {
   UpdateDisplay("800x600,800x600");
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(
-      CreateAppWindow(gfx::Rect(810, 10, 400, 400)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {810, 10, 400, 400});
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(root_windows[0], w1->GetRootWindow());
   ASSERT_EQ(root_windows[1], w2->GetRootWindow());
@@ -2577,7 +2580,8 @@ TEST_F(SunfishTest, PressingSearchButtonExitsIfLensError) {
 TEST_F(SunfishTest, PinnedWindowExitSession) {
   auto* controller = CaptureModeController::Get();
 
-  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> pinned_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
   EXPECT_FALSE(ash::CanShowSunfishUi());

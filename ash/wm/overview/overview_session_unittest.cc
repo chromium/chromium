@@ -158,6 +158,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using ::chromeos::WindowStateType;
@@ -556,7 +558,8 @@ TEST_P(OverviewSessionTest, BasicGesture) {
 // currently being dragged does not cause a crash. Regression test for
 // b/268413746.
 TEST_P(OverviewSessionTest, CloseNowDraggedMinimizedWindow) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   WindowState::Get(window.get())->Minimize();
 
   // Start dragging the window.
@@ -909,8 +912,8 @@ TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
   UpdateDisplay("600x400,600x400");
 
   // Create one normal window and one minimzied window.
-  auto normal_window = CreateAppWindow();
-  auto minimized_window = CreateAppWindow();
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto minimized_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   WMEvent minimize_event(WM_EVENT_MINIMIZE);
   WindowState::Get(minimized_window.get())->OnWMEvent(&minimize_event);
 
@@ -950,7 +953,7 @@ TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
 TEST_P(OverviewSessionTest, ExitOverviewWhileDraggingOnMultipleDisplay) {
   UpdateDisplay("600x400,600x400");
 
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ToggleOverview();
   auto* generator = GetEventGenerator();
@@ -1471,8 +1474,8 @@ TEST_P(OverviewSessionTest, ClickModalWindowParent) {
 // Verifies bubble transient windows stay visible in Overview, regardless
 // of anchored or not.
 TEST_P(OverviewSessionTest, DoNotHideBubbleTransient) {
-  std::unique_ptr<aura::Window> window(
-      CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   enum BubbleType {
     kAnchored,
     kNotAnchored,
@@ -3291,7 +3294,8 @@ TEST_P(OverviewSessionTest, FadeIn) {
 // Tests exiting the overview session using kFadeOutExit type.
 TEST_P(OverviewSessionTest, FadeOutExit) {
   EnterTabletMode();
-  std::unique_ptr<aura::Window> test_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> test_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
@@ -3343,9 +3347,9 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   base::AutoReset<bool> disable =
       OverviewController::Get()->SetDisableAppIdCheckForTests();
 
-  auto window3 = CreateAppWindow(gfx::Rect(100, 100));
-  auto window2 = CreateAppWindow(gfx::Rect(100, 100));
-  auto window1 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -3393,9 +3397,9 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotatorNoSavedDesks) {
   base::AutoReset<bool> disable =
       OverviewController::Get()->SetDisableAppIdCheckForTests();
 
-  auto window3 = CreateAppWindow(gfx::Rect(100, 100));
-  auto window2 = CreateAppWindow(gfx::Rect(100, 100));
-  auto window1 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -3449,9 +3453,9 @@ TEST_P(OverviewSessionTest, RemoveTransientNoCrash) {
 TEST_P(OverviewSessionTest, ClosingTransientTree) {
   // Release ownership as it will get deleted by the transient window manager,
   // when the associated overview item is closed later.
-  auto* window = CreateAppWindow().release();
+  auto* window = CreateWindowWithAppType(AppType::SYSTEM_APP).release();
 
-  auto* child_window1 = CreateAppWindow().release();
+  auto* child_window1 = CreateWindowWithAppType(AppType::SYSTEM_APP).release();
   wm::AddTransientChild(window, child_window1);
 
   // Add a second child that is not backed by a widget.
@@ -3507,7 +3511,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
   windows.reserve(window_count + 1);
   for (int i = 0; i < window_count; ++i) {
     windows.emplace_back(CreateTestWindowInShell({}));
-    windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
+    windows[i]->SetProperty(chromeos::kAppTypeKey, AppType::BROWSER);
     windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
 
@@ -3519,7 +3523,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
   std::unique_ptr<aura::Window> new_window(CreateTestWindowInShell({}));
   constexpr viz::FrameSinkId new_window_id{6u, 6u};
   new_window->SetEmbedFrameSinkId(new_window_id);
-  new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
+  new_window->SetProperty(chromeos::kAppTypeKey, AppType::BROWSER);
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   grid->AppendItem(new_window.get(), /*reposition=*/false, /*animate=*/false,
                    /*use_spawn_animation=*/false);
@@ -3550,7 +3554,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   windows.reserve(window_count + 1);
   for (int i = 0; i < window_count; ++i) {
     windows.emplace_back(CreateTestWindowInShell({}));
-    windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+    windows[i]->SetProperty(chromeos::kAppTypeKey, AppType::ARC_APP);
   }
 
   auto windows_to_throttle =
@@ -3563,7 +3567,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
 
   // Add a new window to overview.
   std::unique_ptr<aura::Window> new_window(CreateTestWindowInShell({}));
-  new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+  new_window->SetProperty(chromeos::kAppTypeKey, AppType::ARC_APP);
   windows_to_throttle.push_back(new_window.get());
   EXPECT_CALL(observer, OnThrottlingEnded());
   EXPECT_CALL(observer,
@@ -3599,7 +3603,7 @@ TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
   // Overview clip is used to apply an animation to remove the normal header and
   // keep it hidden during overview. So we need a non-zero top inset to
   // reproduce the bug.
-  auto normal_window = CreateAppWindow();
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   normal_window->SetProperty(aura::client::kTopViewInset, 32);
   ASSERT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
 
@@ -3673,7 +3677,7 @@ TEST_P(OverviewSessionTest, NewDeskButtonStateUpdateOnMultiDisplay) {
   ASSERT_FALSE(displays[1].bounds().Contains(point_in_display1));
 
   std::unique_ptr<aura::Window> window =
-      CreateAppWindow(gfx::Rect(10, 10, 200, 100));
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 10, 200, 100});
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
   ASSERT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
@@ -3731,7 +3735,7 @@ TEST_P(OverviewSessionTest,
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   std::unique_ptr<aura::Window> window =
-      CreateAppWindow(gfx::Rect(10, 10, 200, 100));
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 10, 200, 100});
   // Explicitly call `set_allow_set_bounds_direct()` to true to trigger the same
   // stack trace.
   WindowState::Get(window.get())->set_allow_set_bounds_direct(true);
@@ -3808,8 +3812,8 @@ TEST_P(OverviewSessionTest,
   ASSERT_FALSE(displays[0].bounds().Contains(point_in_display2));
   ASSERT_TRUE(displays[1].bounds().Contains(point_in_display2));
 
-  std::unique_ptr<aura::Window> window(
-      CreateAppWindow(gfx::Rect(10, 10, 500, 300)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 10, 500, 300});
 
   WMEvent minimize_event(WM_EVENT_MINIMIZE);
   WindowState::Get(window.get())->OnWMEvent(&minimize_event);
@@ -3919,7 +3923,7 @@ TEST_F(FloatOverviewSessionTest, FloatContainerStacking) {
   UpdateDisplay("800x600,800x600");
 
   // We need at least one window for an overview enter animation.
-  auto window = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   gfx::ScopedAnimationDurationScaleMode duration_scale(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3958,8 +3962,8 @@ TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
   UpdateDisplay("800x600,800x600");
 
   // Create one normal and one floated window.
-  auto normal_window = CreateAppWindow();
-  auto floated_window = CreateAppWindow();
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto floated_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
@@ -4008,8 +4012,8 @@ TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
 // crash. Regression test for b/258818000.
 TEST_F(FloatOverviewSessionTest, ClickingWithFloatedWindow) {
   // Create one normal and one floated window.
-  auto normal_window = CreateAppWindow();
-  auto floated_window = CreateAppWindow();
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto floated_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
@@ -4024,8 +4028,8 @@ TEST_F(FloatOverviewSessionTest, ClickingWithFloatedWindow) {
 // desk does not result in a crash. Regression test for http://b/261757970.
 TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
   // Create one normal and one floated window.
-  auto normal_window = CreateAppWindow();
-  auto floated_window = CreateAppWindow();
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto floated_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
@@ -4069,8 +4073,8 @@ TEST_F(FloatOverviewSessionTest, LongPressingWithFloatedWindow) {
   gesture_config->set_show_press_delay_in_ms(1);
 
   // Create one normal and one floated window.
-  auto normal_window = CreateAppWindow();
-  auto floated_window = CreateAppWindow();
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto floated_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
@@ -4429,7 +4433,7 @@ TEST_F(TabletModeOverviewSessionTest, HorizontalScrollingOnOverviewItem) {
 TEST_F(TabletModeOverviewSessionTest, SnappingFullscreenWindow) {
   UpdateDisplay("800x600");
 
-  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
 
   const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
   WindowState::Get(window.get())->OnWMEvent(&fullscreen_event);
@@ -5304,7 +5308,8 @@ TEST_F(TabletModeOverviewSessionTest, MinimizedRoundedCorners) {
 // `OverviewGrid::RemoveItem()` and is accessed again when getting the
 // window for `ScopedFloatContainerStacker::OnDragFinished()`.
 TEST_F(TabletModeOverviewSessionTest, AvoidUaFOnCompleteDrag) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(100, 100));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
   WindowState* window_state = WindowState::Get(window.get());
   const WindowSnapWMEvent snap_type(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_type);
@@ -5572,8 +5577,10 @@ TEST_F(SplitViewOverviewSessionTest, DragOverviewWindowToSnap) {
 // Regression test for http://b/323136574, where a floated window should not
 // have an unclipped size when it's in a partial overview session.
 TEST_F(SplitViewOverviewSessionTest, FloatedWindowsHaveNoUnclippedSize) {
-  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
-  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   // Float `window1` and then snap `window2`. A partial overview session should
   // start.
@@ -7261,8 +7268,10 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowAnimationObserverTest) {
 // overview window grid's postion.
 TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(bounds));
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
 
   ToggleOverview();
   auto* overview_item1 = GetOverviewItemForWindow(window1.get());
@@ -7493,7 +7502,8 @@ TEST_F(SplitViewOverviewSessionTest, NoCrashWhenDraggingDividerInPortrait) {
 // Tests that in tablet mode, after minimizing and unminimizng a snapped window,
 // it is visible to the user. Regression test for b/267391123.
 TEST_F(SplitViewOverviewSessionTest, WindowVisibleAfterMinimizeUnminimize) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   auto* window_state = WindowState::Get(window.get());
 
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
@@ -7514,7 +7524,8 @@ TEST_F(SplitViewOverviewSessionTest, WindowVisibleAfterMinimizeUnminimize) {
 
 // Tests the divider gains and loses activation in tablet mode.
 TEST_F(SplitViewOverviewSessionTest, KeyboardFocus) {
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(InOverviewSession());
 
@@ -7587,7 +7598,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
 
   // 1. Test the 1 window scenario.
   const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> window1(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
   WindowState* window_state1 = WindowState::Get(window1.get());
   EXPECT_FALSE(window_state1->IsSnapped());
   ToggleOverview();
@@ -7605,7 +7617,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   // 2. Test if one window is snapped, the other windows are showing in
   // overview, close all windows in overview will end overview and also
   // splitview.
-  std::unique_ptr<aura::Window> window2(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
   ToggleOverview();
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -7624,7 +7637,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
   // 3. Test that snap 2 windows will end overview and splitview.
-  std::unique_ptr<aura::Window> window3(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
   ToggleOverview();
   overview_item1 = GetOverviewItemForWindow(window1.get());
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
@@ -7642,7 +7656,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   // 4. Test if one window is snapped, the other windows are showing in
   // overview, we can drag another window in overview to snap in splitview, and
   // the previous snapped window will be put back into overview.
-  std::unique_ptr<aura::Window> window4(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
   ToggleOverview();
   overview_item1 = GetOverviewItemForWindow(window1.get());
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
@@ -7775,8 +7790,10 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   gfx::ScopedAnimationDurationScaleMode animation_scale(
       gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
   const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> left_window(CreateAppWindow(bounds));
-  std::unique_ptr<aura::Window> right_window(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> left_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
+  std::unique_ptr<aura::Window> right_window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, bounds);
   CheckOverviewEnterExitHistogram("Init", {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0});
 
   ToggleOverview();
@@ -7994,10 +8011,10 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   ToggleOverview();
   WaitForOverviewEnterAnimation();
   EXPECT_TRUE(IsInOverviewSession());
-  std::unique_ptr<aura::Window> window1(
-      CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
-  std::unique_ptr<aura::Window> window2(
-      CreateAppWindow(gfx::Rect(100, 100, 200, 100)));
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 100});
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100, 200, 100});
   const WindowSnapWMEvent event(
       WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
       WindowSnapActionSource::kSnapByWindowLayoutMenu);
@@ -9371,7 +9388,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
   // Test faster splitscreen setup with 1 window: Snapping the only window won't
   // start partial overview so no widget.
-  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
   VerifyNotSplitViewOrOverviewSession(w1.get());
@@ -9387,7 +9405,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   VerifyNotSplitViewOrOverviewSession(w1.get());
 
   // Create 2 windows on the first display, then snap to start partial overview.
-  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
 
   // Test faster splitscreen setup with 2 windows.
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
@@ -9616,10 +9635,10 @@ TEST_F(OverviewWallpaperTest, PartialOverviewVisualsAndResize) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
   auto* wallpaper_view_layer = GetWallpaperViewLayer();
-  std::unique_ptr<aura::Window> win1(
-      CreateAppWindow(gfx::Rect(10, 10, 100, 100)));
-  std::unique_ptr<aura::Window> win2(
-      CreateAppWindow(gfx::Rect(500, 10, 200, 200)));
+  std::unique_ptr<aura::Window> win1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 10, 100, 100});
+  std::unique_ptr<aura::Window> win2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {500, 10, 200, 200});
   // Check the wallpaper's original state before initiating partial overview.
   EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
   EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
@@ -9658,10 +9677,10 @@ TEST_F(OverviewWallpaperTest, PartialOverviewVisualsAndResize) {
 // Tests that snapping a window in full Overview hides desks widgets; closing
 // the window restores full Overview and shows the desks widgets again.
 TEST_F(OverviewWallpaperTest, HideDesksWidgetInPartialOverview) {
-  std::unique_ptr<aura::Window> win1(
-      CreateAppWindow(gfx::Rect(10, 10, 200, 100)));
-  std::unique_ptr<aura::Window> win2(
-      CreateAppWindow(gfx::Rect(20, 20, 500, 200)));
+  std::unique_ptr<aura::Window> win1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 10, 200, 100});
+  std::unique_ptr<aura::Window> win2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {20, 20, 500, 200});
 
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
@@ -9706,8 +9725,10 @@ TEST_F(OverviewWallpaperTest, NoWindowsWidget) {
   ToggleOverview();
 
   // Enter full overview with windows only on display 1.
-  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 200});
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
   auto* grid0 = GetOverviewGridForRoot(root_windows[0]);
@@ -9787,7 +9808,8 @@ TEST_F(OverviewWallpaperTest, WallpaperClipAnimation) {
 
 // Tests that we skip the wallpaper clipping when there is a maximized window.
 TEST_F(OverviewWallpaperTest, NoAnimationWithMaximizedWindow) {
-  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   WindowState::Get(window1.get())->OnWMEvent(&maximize_event);
   ASSERT_TRUE(WindowState::Get(window1.get())->IsMaximized());
@@ -9889,7 +9911,7 @@ TEST_F(OverviewWallpaperTest, VerticalDeskBar) {
   UpdateDisplay("800x1200");
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
-  auto window = CreateAppWindow(gfx::Rect(400, 400));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {400, 400});
 
   ToggleOverview();
 
@@ -9915,17 +9937,27 @@ TEST_F(OverviewWallpaperTest, VerticalDeskBar) {
 }
 
 TEST_F(OverviewWallpaperTest, CenterOverviewItems) {
-  auto window1 = CreateAppWindow(gfx::Rect(0, 0, 100, 50));
-  auto window2 = CreateAppWindow(gfx::Rect(20, 10, 200, 100));
-  auto window3 = CreateAppWindow(gfx::Rect(30, 20, 300, 200));
-  auto window4 = CreateAppWindow(gfx::Rect(40, 30, 400, 300));
-  auto window5 = CreateAppWindow(gfx::Rect(50, 40, 500, 400));
-  auto window6 = CreateAppWindow(gfx::Rect(60, 50, 600, 500));
-  auto window7 = CreateAppWindow(gfx::Rect(70, 60, 700, 600));
-  auto window8 = CreateAppWindow(gfx::Rect(80, 70, 100, 100));
-  auto window9 = CreateAppWindow(gfx::Rect(90, 80, 200, 200));
-  auto window10 = CreateAppWindow(gfx::Rect(100, 90, 300, 300));
-  auto window11 = CreateAppWindow(gfx::Rect(110, 100, 500, 500));
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 50});
+  auto window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {20, 10, 200, 100});
+  auto window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {30, 20, 300, 200});
+  auto window4 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {40, 30, 400, 300});
+  auto window5 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {50, 40, 500, 400});
+  auto window6 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {60, 50, 600, 500});
+  auto window7 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {70, 60, 700, 600});
+  auto window8 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {80, 70, 100, 100});
+  auto window9 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {90, 80, 200, 200});
+  auto window10 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 90, 300, 300});
+  auto window11 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {110, 100, 500, 500});
 
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
@@ -9958,12 +9990,18 @@ TEST_F(OverviewWallpaperTest, DropTargetBounds) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
 
-  auto window0 = CreateAppWindow(gfx::Rect(10, 10, 200, 100));
-  auto window1 = CreateAppWindow(gfx::Rect(20, 20, 300, 200));
-  auto window2 = CreateAppWindow(gfx::Rect(30, 30, 220, 110));
-  auto window3 = CreateAppWindow(gfx::Rect(30, 20, 300, 200));
-  auto window4 = CreateAppWindow(gfx::Rect(40, 30, 400, 300));
-  auto window5 = CreateAppWindow(gfx::Rect(50, 40, 500, 400));
+  auto window0 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 10, 200, 100});
+  auto window1 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {20, 20, 300, 200});
+  auto window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {30, 30, 220, 110});
+  auto window3 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {30, 20, 300, 200});
+  auto window4 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {40, 30, 400, 300});
+  auto window5 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {50, 40, 500, 400});
 
   OverviewController* overview_controller = OverviewController::Get();
   overview_controller->StartOverview(OverviewStartAction::kTests,

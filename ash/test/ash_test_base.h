@@ -160,9 +160,9 @@ class AshTestBase : public testing::Test {
   // display matching |bounds_in_screen|. |shell_window_id| is the shell window
   // id to give to the new window. If |delegate| is empty, a new
   // |TestWidgetDelegate| instance will be set as this widget's delegate.
-  [[nodiscard]] std::unique_ptr<aura::Window> CreateAppWindow(
-      const gfx::Rect& bounds_in_screen = gfx::Rect(),
-      chromeos::AppType app_type = chromeos::AppType::SYSTEM_APP,
+  [[nodiscard]] std::unique_ptr<aura::Window> CreateWindowWithAppType(
+      chromeos::AppType app_type = chromeos::AppType::NON_APP,
+      const gfx::Rect& bounds_in_screen = {},
       int shell_window_id = kShellWindowId_Invalid,
       views::WidgetDelegate* delegate = nullptr,
       bool show = true);

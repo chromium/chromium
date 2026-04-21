@@ -26,6 +26,8 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using ::testing::Eq;
@@ -86,7 +88,7 @@ class FrameThrottlingControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateTestBrowserWindow(
       const viz::FrameSinkId frame_sink_id) {
     std::unique_ptr<aura::Window> browser_window =
-        CreateAppWindow(gfx::Rect(100, 100), chromeos::AppType::BROWSER);
+        CreateWindowWithAppType(AppType::BROWSER, {100, 100});
     browser_window->SetEmbedFrameSinkId(frame_sink_id);
     return browser_window;
   }

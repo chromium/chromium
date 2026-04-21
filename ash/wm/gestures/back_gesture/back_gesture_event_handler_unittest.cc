@@ -42,6 +42,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 void StartKioskSession() {
@@ -75,7 +77,7 @@ class BackGestureEventHandlerTest : public AshTestBase {
     set_shell_delegate(std::move(delegate));
     AshTestBase::SetUp();
 
-    RecreateTopWindow(chromeos::AppType::BROWSER);
+    RecreateTopWindow(AppType::BROWSER);
     TabletModeControllerTestApi().EnterTabletMode();
   }
 
@@ -112,8 +114,8 @@ class BackGestureEventHandlerTest : public AshTestBase {
     Shell::Get()->back_gesture_event_handler()->OnTouchEvent(&event);
   }
 
-  void RecreateTopWindow(chromeos::AppType app_type) {
-    top_window_ = CreateAppWindow(gfx::Rect(), app_type);
+  void RecreateTopWindow(AppType app_type) {
+    top_window_ = CreateWindowWithAppType(app_type);
   }
 
   void ResetTopWindow() { top_window_.reset(); }
@@ -599,7 +601,7 @@ TEST_F(BackGestureEventHandlerTest, ARCFullscreenedWindow) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
-  RecreateTopWindow(chromeos::AppType::ARC_APP);
+  RecreateTopWindow(AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(top_window());
   SendFullscreenEvent(window_state);
@@ -955,11 +957,11 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, NonResizableApp) {
 }
 
 TEST_F(BackGestureEventHandlerTestCantGoBack, NonAppAndSystemApps) {
-  RecreateTopWindow(chromeos::AppType::NON_APP);
+  RecreateTopWindow(AppType::NON_APP);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 
-  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  RecreateTopWindow(AppType::SYSTEM_APP);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 }
@@ -974,7 +976,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, NonMinimizeableApp) {
 }
 
 TEST_F(BackGestureEventHandlerTestCantGoBack, LockedFullscreen) {
-  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  RecreateTopWindow(AppType::SYSTEM_APP);
   PinWindow(top_window(), /*trusted=*/true);
   GenerateBackSequence();
   ASSERT_FALSE(WindowState::Get(top_window())->IsMinimized());
@@ -986,7 +988,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, LockedFullscreen) {
 }
 
 TEST_F(BackGestureEventHandlerTestCantGoBack, PinnedWindow) {
-  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  RecreateTopWindow(AppType::SYSTEM_APP);
   PinWindow(top_window(), /*trusted=*/false);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());

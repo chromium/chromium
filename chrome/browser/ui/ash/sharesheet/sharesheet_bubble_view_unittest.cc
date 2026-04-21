@@ -48,6 +48,8 @@
 
 namespace {
 
+using chromeos::AppType;
+
 void Click(const views::View* view) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
@@ -595,7 +597,7 @@ TEST_F(SharesheetBubbleViewTest, DriveActionShouldNotCrash) {
 
 TEST_F(SharesheetBubbleViewTest, ReshowHiddenBubble) {
   auto* sharesheet_service = GetSharesheetService();
-  auto app_window = CreateAppWindow();
+  auto app_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   auto* transient_window_manager =
       ::wm::TransientWindowManager::GetIfExists(app_window.get());

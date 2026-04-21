@@ -92,6 +92,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+using chromeos::AppType;
 namespace {
 
 using ::chromeos::WindowStateType;
@@ -1128,7 +1130,8 @@ TEST_F(WorkspaceLayoutManagerTest, DragToSnapThenMaximize) {
   };
 
   // Create a normal window, then drag to snap to the right.
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(AppType::SYSTEM_APP);
   const gfx::Rect normal_bounds(window->GetBoundsInScreen());
   ASSERT_EQ(gfx::Rect(0, 0, 300, 300), normal_bounds);
   const gfx::Rect work_area =

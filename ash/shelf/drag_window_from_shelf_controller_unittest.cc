@@ -56,6 +56,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 gfx::Rect GetShelfBounds() {
@@ -1455,8 +1457,8 @@ TEST_F(DragWindowFromShelfControllerTest, DestroyTransientWhileAnimating) {
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // The transient child needs to also be an app window.
-  auto window = CreateAppWindow();
-  auto child = CreateAppWindow();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP);
+  auto child = CreateWindowWithAppType(AppType::SYSTEM_APP);
   wm::AddTransientChild(window.get(), child.get());
 
   // Drag the child barely above the shelf so that it returns to its original
@@ -1503,7 +1505,7 @@ TEST_F(DragWindowFromShelfControllerTest, NoCrashDuringDraggingIfExitOverview) {
   desk_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
   const Desk* new_desk = desk_controller->GetDeskAtIndex(1);
 
-  auto window1 = CreateAppWindow();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
 
   StartDrag(window1.get(), GetShelfBounds().CenterPoint());
   // Drag it far enough so overview should be open behind the dragged window.
@@ -1564,7 +1566,8 @@ class FloatDragWindowFromShelfControllerTest
 
   // Creates a floated application window.
   std::unique_ptr<aura::Window> CreateFloatedWindow() {
-    std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
+    std::unique_ptr<aura::Window> floated_window =
+        CreateWindowWithAppType(AppType::SYSTEM_APP);
     PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
     DCHECK(WindowState::Get(floated_window.get())->IsFloated());
     return floated_window;

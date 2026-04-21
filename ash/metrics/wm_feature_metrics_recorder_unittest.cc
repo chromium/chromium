@@ -15,6 +15,8 @@
 
 namespace ash {
 
+using chromeos::AppType;
+
 namespace {
 
 using WindowSizeRange = WMFeatureMetricsRecorder::WindowSizeRange;
@@ -47,10 +49,10 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
           WMFeatureMetricsRecorder::WMFeatureType::kWindowLayoutState);
 
   // Create two tests windows.
-  auto window1 = CreateAppWindow(gfx::Rect(0, 0, 200, 100));
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 100});
   EXPECT_EQ(WindowState::Get(window1.get())->GetStateType(),
             chromeos::WindowStateType::kDefault);
-  auto window2 = CreateAppWindow(gfx::Rect(0, 0, 1500, 1000));
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {1500, 1000});
   EXPECT_EQ(WindowState::Get(window2.get())->GetStateType(),
             chromeos::WindowStateType::kDefault);
 
@@ -75,7 +77,7 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
       BucketsAre(base::Bucket(chromeos::WindowStateType::kDefault, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowAppType"),
-      BucketsAre(base::Bucket(chromeos::AppType::SYSTEM_APP, 1)));
+      BucketsAre(base::Bucket(AppType::SYSTEM_APP, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
       BucketsAre(base::Bucket(WindowSizeRange::kXSWidthXSHeight, 1)));
@@ -101,7 +103,7 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
                  base::Bucket(chromeos::WindowStateType::kDefault, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowAppType"),
-      BucketsAre(base::Bucket(chromeos::AppType::SYSTEM_APP, 2)));
+      BucketsAre(base::Bucket(AppType::SYSTEM_APP, 2)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
       BucketsAre(base::Bucket(WindowSizeRange::kLWidthLHeight, 1),
@@ -116,7 +118,7 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowSizeRangeTest) {
   const std::string metrics_prefix =
       WMFeatureMetricsRecorder::GetFeatureMetricsPrefix(
           WMFeatureMetricsRecorder::WMFeatureType::kWindowLayoutState);
-  auto window = CreateAppWindow(gfx::Rect(0, 0, 200, 100));
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 100});
   wm::ActivateWindow(window.get());
 
   struct TestCase {

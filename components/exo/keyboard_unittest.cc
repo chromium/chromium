@@ -51,6 +51,8 @@
 #include "ui/views/test/test_widget_builder.h"
 
 namespace exo {
+
+using chromeos::AppType;
 namespace {
 
 // XKB mod masks for the default keymap.
@@ -143,7 +145,7 @@ TEST_F(KeyboardTest, CorrectSeatPressedKeysOnSwitchingDesks) {
   ash::Desk* desk_1 = desks_controller->desks()[0].get();
   const ash::Desk* desk_2 = desks_controller->desks()[1].get();
   // Desk 1 has a normal window.
-  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win0 = CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 100});
 
   // Desk 2 has an exo surface window.
   ash::ActivateDesk(desk_2);
@@ -885,7 +887,7 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
         const Params& params,
         ui::PropertyHandler& out_properties_container) override {
       out_properties_container.SetProperty(chromeos::kAppTypeKey,
-                                           chromeos::AppType::ARC_APP);
+                                           AppType::ARC_APP);
     }
   };
   WMHelper::GetInstance()->RegisterAppPropertyResolver(
@@ -1599,7 +1601,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
 TEST_F(KeyboardTest, OnKeyboardKey_ChangeFocusInPreTargetHandler) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
-  auto normal_window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto normal_window = CreateWindowWithAppType(AppType::SYSTEM_APP, {100, 100});
   TestEventHandler handler{shell_surface->GetWidget()->GetNativeView()};
 
   aura::client::FocusClient* focus_client =
