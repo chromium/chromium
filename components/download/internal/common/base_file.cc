@@ -463,6 +463,12 @@ DownloadInterruptReason BaseFile::Open(const std::string& hash_so_far,
       ClearFile();
       return LogSystemError("Truncating to last known offset", error);
     }
+
+    // If the file was truncated to the beginning, the hash state is no longer
+    // valid.
+    if (bytes_so_far_ == 0) {
+      secure_hash_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+    }
   } else if (file_size < bytes_so_far_) {
     // The file is shorter than we expected.  Our hashes won't be valid.
     *bytes_wasted = bytes_so_far_;

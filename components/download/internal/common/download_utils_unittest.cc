@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/download_features.h"
+#include "crypto/secure_hash.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -140,6 +141,23 @@ TEST(DownloadUtilsTest,
   params->set_permissions_policy(permissions_policy.get());
   auto resource_request = CreateResourceRequest(params.get());
   EXPECT_EQ(resource_request->permissions_policy, std::nullopt);
+}
+
+// Regression test for crbug.com/500510384.
+// Scenario: Resumption was attempted, but offset was clamped to 0.
+TEST(DownloadUtilsTest, HandleServerResponse200_ClampedOffsetClearsHash) {
+  scoped_refptr<net::HttpResponseHeaders> headers(
+      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+  DownloadSaveInfo save_info;
+  save_info.offset = 0;
+  save_info.hash_state = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
+            HandleSuccessfulServerResponse(*headers, &save_info,
+                                           /*fetch_error_body=*/false));
+
+  // Verification that the hash state was cleared.
+  EXPECT_EQ(nullptr, save_info.hash_state);
 }
 
 }  // namespace

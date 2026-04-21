@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -46,6 +47,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
@@ -2502,6 +2504,61 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
 
   item_->Cancel(true);
   task_environment_.RunUntilIdle();
+}
+
+// Regression test for crbug.com/500510384. ResumeInterruptedDownload should
+// reset the hash state when clamping the offset to 0.
+TEST_F(DownloadItemTest, ResumptionClampingClearsHashState) {
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> params;
+  params["download_validation_length"] = "1024";
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAllowDownloadResumptionWithoutStrongValidators, params);
+
+  // 1. Create an interrupted download with some hash state.
+  create_info()->etag.clear();
+  create_info()->last_modified.clear();
+  DownloadItemImpl* item = CreateDownloadItem();
+
+  // We need to start the download to get it into a state where it can be
+  // interrupted.
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+
+  std::unique_ptr<crypto::SecureHash> hash_state =
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  hash_state->Update(kHashOfTestData1);
+
+  // 2. Resume the download.
+  // We expect ResumeInterruptedDownload to be called on the delegate.
+  // We want to inspect the DownloadUrlParameters it receives.
+  // Note: For FILE_TOO_SHORT, auto-resumption might happen immediately.
+  int64_t captured_offset = -1;
+  bool captured_has_hash_state = false;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_delegate(), MockResumeInterruptedDownload(_))
+      .WillOnce([&](DownloadUrlParameters* params) {
+        captured_offset = params->offset();
+        captured_has_hash_state =
+            (params->TakeSaveInfo().hash_state != nullptr);
+        run_loop.Quit();
+      });
+
+  // Interrupt the download at offset 500 (which is < 1024).
+  // Use FILE_TOO_SHORT which forces a RESTART.
+  EXPECT_CALL(*download_file, Cancel()).Times(AnyNumber());
+  EXPECT_CALL(*download_file, Detach()).Times(AnyNumber());
+  item->DestinationObserverAsWeakPtr()->DestinationError(
+      DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT, 500, std::move(hash_state));
+  run_loop.Run();
+
+  // The offset should be clamped to 0 because 500 < 1024 and no strong
+  // validators.
+  EXPECT_EQ(0, captured_offset);
+
+  // Verification that the hash state was cleared.
+  EXPECT_FALSE(captured_has_hash_state);
 }
 
 }  // namespace

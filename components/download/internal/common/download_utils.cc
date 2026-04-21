@@ -293,7 +293,7 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
   }
 
   // The caller is expecting a partial response.
-  if (save_info && save_info->offset > 0) {
+  if (save_info) {
     if (http_headers.response_code() != net::HTTP_PARTIAL_CONTENT) {
       // Requested a partial range, but received the entire response, when
       // the range request header is "Range:bytes={offset}-".

@@ -802,4 +802,45 @@ TEST_F(BaseFileTest, ValidateDataInFile) {
   base_file_->Finish();
 }
 
+// Regression test for crbug.com/500510384. Truncating a file to 0 should reset
+// the hash state.
+TEST_F(BaseFileTest, TruncateToZeroResetsHash) {
+  ASSERT_TRUE(InitializeFile());
+  ASSERT_TRUE(AppendDataToFile(kTestData1));
+  base::FilePath path = base_file_->full_path();
+
+  // "Finish" to get the hash state.
+  std::unique_ptr<crypto::SecureHash> hash_state = base_file_->Finish();
+  base_file_->Detach();
+
+  // Now "resume" the download from 0, but provide the stale hash state.
+  // This simulates what happens in DownloadFileImpl::Initialize when
+  // DownloadItemImpl::ResumeInterruptedDownload clamps the offset to 0
+  // but passes along the moved hash_state_.
+  base_file_ = std::make_unique<BaseFile>(DownloadItem::kInvalidId);
+  set_expected_data("");
+  DownloadInterruptReason result = base_file_->Initialize(
+      path, base::FilePath(), base::File(), 0, std::string(),
+      std::move(hash_state), false, &kTestDataBytesWasted);
+  ASSERT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, result);
+
+  // Write some new data.
+  ASSERT_TRUE(AppendDataToFile(kTestData2));
+
+  // The final hash should be just SHA256(kTestData2).
+  std::unique_ptr<crypto::SecureHash> final_hash_state = base_file_->Finish();
+
+  std::array<uint8_t, crypto::hash::kSha256Size> actual_hash;
+  final_hash_state->Finish(actual_hash);
+
+  std::unique_ptr<crypto::SecureHash> expected_hash_provider =
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  expected_hash_provider->Update(base::as_byte_span(kTestData2));
+  std::array<uint8_t, crypto::hash::kSha256Size> expected_hash;
+  expected_hash_provider->Finish(expected_hash);
+
+  // Verification that the hash state was correctly reset.
+  EXPECT_EQ(expected_hash, actual_hash);
+}
+
 }  // namespace download

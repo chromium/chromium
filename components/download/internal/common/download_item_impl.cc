@@ -2619,6 +2619,7 @@ void DownloadItemImpl::ResumeInterruptedDownload(
       // There is not enough data for validation, simply overwrites the
       // existing data from the beginning.
       download_params->set_offset(0);
+      download_params->set_hash_state(nullptr);
     }
   }
 
