@@ -4,69 +4,49 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
-#include "crypto/hash.h"
-#include "crypto/signature_verifier.h"
-#include "crypto/unexportable_key.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/ecdsa.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
-
-#if BUILDFLAG(IS_APPLE)
 #include "base/notreached.h"
-#endif  // BUILDFLAG(IS_APPLE)
+#include "build/build_config.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
+#include "crypto/unexportable_key.h"
 
 namespace crypto {
 
 namespace {
 
-std::vector<uint8_t> CBBToVector(const CBB* cbb) {
-  return std::vector<uint8_t>(CBB_data(cbb),
-                              UNSAFE_TODO(CBB_data(cbb) + CBB_len(cbb)));
-}
-
-class SoftwareECDSA : public UnexportableSigningKey {
+class SoftwareKey : public UnexportableSigningKey {
  public:
-  explicit SoftwareECDSA(bssl::UniquePtr<EC_KEY> key) : key_(std::move(key)) {}
-  ~SoftwareECDSA() override = default;
+  explicit SoftwareKey(crypto::keypair::PrivateKey key)
+      : key_(std::move(key)) {}
+  ~SoftwareKey() override = default;
 
   SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+    if (key_.IsRsa()) {
+      return SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+    }
+    if (key_.IsEcP256()) {
+      return SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+    }
+    NOTREACHED();
   }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
-    bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-    CHECK(EVP_PKEY_set1_EC_KEY(pkey.get(), key_.get()));
-
-    bssl::ScopedCBB cbb;
-    CHECK(CBB_init(cbb.get(), /*initial_capacity=*/128) &&
-          EVP_marshal_public_key(cbb.get(), pkey.get()));
-    return CBBToVector(cbb.get());
+    return key_.ToSubjectPublicKeyInfo();
   }
 
   std::vector<uint8_t> GetWrappedKey() const override {
-    bssl::ScopedCBB cbb;
-    CHECK(
-        CBB_init(cbb.get(), /*initial_capacity=*/128) &&
-        EC_KEY_marshal_private_key(cbb.get(), key_.get(),
-                                   EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY));
-    return CBBToVector(cbb.get());
+    if (key_.IsRsa()) {
+      return key_.ToRSAPrivateKey();
+    }
+    if (key_.IsEcP256()) {
+      return key_.ToEcP256PrivateKey();
+    }
+    NOTREACHED();
   }
 
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
-    std::vector<uint8_t> ret(ECDSA_size(key_.get()));
-    std::array<uint8_t, hash::kSha256Size> digest = hash::Sha256(data);
-    unsigned int ret_size;
-    CHECK(ECDSA_sign(0, digest.data(), digest.size(), ret.data(), &ret_size,
-                     key_.get()));
-    ret.resize(ret_size);
-    return ret;
+    return sign::Sign(GetSignatureKind(), key_, data);
   }
 
   StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
@@ -80,58 +60,17 @@ class SoftwareECDSA : public UnexportableSigningKey {
 #endif  // BUILDFLAG(IS_APPLE)
 
  private:
-  bssl::UniquePtr<EC_KEY> key_;
-};
-
-class SoftwareRSA : public UnexportableSigningKey {
- public:
-  explicit SoftwareRSA(bssl::UniquePtr<RSA> key) : key_(std::move(key)) {}
-  ~SoftwareRSA() override = default;
-
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+  sign::SignatureKind GetSignatureKind() const {
+    if (key_.IsRsa()) {
+      return sign::RSA_PKCS1_SHA256;
+    }
+    if (key_.IsEcP256()) {
+      return sign::ECDSA_SHA256;
+    }
+    NOTREACHED();
   }
 
-  std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
-    bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-    CHECK(EVP_PKEY_set1_RSA(pkey.get(), key_.get()));
-
-    bssl::ScopedCBB cbb;
-    CHECK(CBB_init(cbb.get(), /*initial_capacity=*/384) &&
-          EVP_marshal_public_key(cbb.get(), pkey.get()));
-    return CBBToVector(cbb.get());
-  }
-
-  std::vector<uint8_t> GetWrappedKey() const override {
-    bssl::ScopedCBB cbb;
-    CHECK(CBB_init(cbb.get(), 384) &&
-          RSA_marshal_private_key(cbb.get(), key_.get()));
-    return CBBToVector(cbb.get());
-  }
-
-  std::optional<std::vector<uint8_t>> SignSlowly(
-      base::span<const uint8_t> data) override {
-    std::vector<uint8_t> ret(RSA_size(key_.get()));
-    std::array<uint8_t, hash::kSha256Size> digest = hash::Sha256(data);
-    unsigned int ret_size;
-    CHECK(RSA_sign(NID_sha256, digest.data(), digest.size(), ret.data(),
-                   &ret_size, key_.get()));
-    ret.resize(ret_size);
-    return ret;
-  }
-
-#if BUILDFLAG(IS_APPLE)
-  SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
-#elif BUILDFLAG(IS_WIN)
-  bool SupportsTls13() override { return true; }
-#endif  // BUILDFLAG(IS_APPLE)
-
-  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
-    return nullptr;
-  }
-
- private:
-  bssl::UniquePtr<RSA> key_;
+  crypto::keypair::PrivateKey key_;
 };
 
 class SoftwareProvider : public UnexportableKeyProvider {
@@ -165,18 +104,13 @@ class SoftwareProvider : public UnexportableKeyProvider {
     for (auto algo : acceptable_algorithms) {
       switch (algo) {
         case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256: {
-          bssl::UniquePtr<EC_KEY> key(
-              EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-          CHECK(EC_KEY_generate_key(key.get()));
-          return std::make_unique<SoftwareECDSA>(std::move(key));
+          return std::make_unique<SoftwareKey>(
+              crypto::keypair::PrivateKey::GenerateEcP256());
         }
 
         case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256: {
-          bssl::UniquePtr<RSA> key(RSA_new());
-          bssl::UniquePtr<BIGNUM> e(BN_new());
-          BN_set_word(e.get(), RSA_F4);
-          RSA_generate_key_ex(key.get(), 2048, e.get(), nullptr);
-          return std::make_unique<SoftwareRSA>(std::move(key));
+          return std::make_unique<SoftwareKey>(
+              crypto::keypair::PrivateKey::GenerateRsa2048());
         }
         case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
         case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
@@ -189,24 +123,14 @@ class SoftwareProvider : public UnexportableKeyProvider {
 
   std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override {
-    {  // Try to parse ECDSA
-      CBS cbs;
-      CBS_init(&cbs, wrapped_key.data(), wrapped_key.size());
-      bssl::UniquePtr<EC_GROUP> p256(
-          EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-      bssl::UniquePtr<EC_KEY> key(EC_KEY_parse_private_key(&cbs, p256.get()));
-      if (key && CBS_len(&cbs) == 0) {
-        return std::make_unique<SoftwareECDSA>(std::move(key));
-      }
+    if (auto key =
+            crypto::keypair::PrivateKey::FromEcP256PrivateKey(wrapped_key)) {
+      return std::make_unique<SoftwareKey>(std::move(*key));
     }
 
-    {  // Try RSA
-      CBS cbs;
-      CBS_init(&cbs, wrapped_key.data(), wrapped_key.size());
-      bssl::UniquePtr<RSA> key(RSA_parse_private_key(&cbs));
-      if (key && CBS_len(&cbs) == 0) {
-        return std::make_unique<SoftwareRSA>(std::move(key));
-      }
+    if (auto key =
+            crypto::keypair::PrivateKey::FromRSAPrivateKey(wrapped_key)) {
+      return std::make_unique<SoftwareKey>(std::move(*key));
     }
 
     return nullptr;
