@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/i18n/break_iterator.h"
@@ -82,13 +83,13 @@ void TokenizedString::TokenizeWords() {
     // 1. Whitespace chars only: generate a token from |text_| in the range of
     //    [start, end). Also reset |start| and |end| for next token.
     // 2. A punctuation: do nothing and Advance.
-    const std::u16string word(break_iter.GetString());
+    const std::u16string_view word = break_iter.GetString();
     const bool only_whitechars =
         base::ContainsOnlyChars(word, base::kWhitespaceUTF16);
     if (only_whitechars) {
       if (end - start > 1) {
-        tokens_.emplace_back(
-            base::i18n::ToLower(text_.substr(start, end - start)));
+        tokens_.emplace_back(base::i18n::ToLower(
+            std::u16string_view(text_).substr(start, end - start)));
         mappings_.emplace_back(start, end);
       }
       start = break_iter.pos();
@@ -98,7 +99,8 @@ void TokenizedString::TokenizeWords() {
 
   // Generate the last token.
   if (end - start >= 1) {
-    tokens_.emplace_back(base::i18n::ToLower(text_.substr(start, end - start)));
+    tokens_.emplace_back(base::i18n::ToLower(
+        std::u16string_view(text_).substr(start, end - start)));
     mappings_.emplace_back(start, end);
   }
 }
