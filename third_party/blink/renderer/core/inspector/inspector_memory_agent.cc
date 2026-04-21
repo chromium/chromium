@@ -221,12 +221,8 @@ Vector<String> InspectorMemoryAgent::Symbolize(
     char buffer[20];
     std::snprintf(buffer, sizeof(buffer), "0x%" PRIxPTR,
                   reinterpret_cast<uintptr_t>(address));
-    if (symbols_cache_.Contains(address)) {
-      StringBuilder builder;
-      builder.Append(buffer);
-      builder.Append(" ");
-      builder.Append(symbols_cache_.at(address));
-      result.push_back(builder.ToString());
+    if (auto it = symbols_cache_.find(address); it != symbols_cache_.end()) {
+      result.push_back(StrCat({buffer, " ", it->value}));
     } else {
       result.push_back(buffer);
     }
