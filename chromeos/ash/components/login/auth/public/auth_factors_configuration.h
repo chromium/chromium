@@ -40,6 +40,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
 
   AuthFactorsConfiguration& operator=(const AuthFactorsConfiguration&);
 
+  const std::vector<cryptohome::AuthFactor>& GetConfiguredFactors() const {
+    return configured_factors_;
+  }
+
   const cryptohome::AuthFactorsSet get_supported_factors() const {
     return supported_factors_;
   }
