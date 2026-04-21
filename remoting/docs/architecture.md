@@ -109,27 +109,43 @@ These are processes such as remote-open-url and remote-webauthn. To add a new
 process with a standalone binary:
 
 1.  Ask if the developer wants to add everything to a new subdirectory or to an
-    existing directory.
+    existing directory (e.g., `remoting/host/linux/`).
+1.  Ask which platform(s) the binary should be added to (e.g., Linux only, or
+    both Linux and Windows). This ensures you don't add unnecessary
+    platform-specific code or configuration for a binary that only runs on a
+    subset of platforms.
 1.  Create a main function header for the new binary. Make sure the function has
-    `REMOTING_EXPORT`. See remoting/host/remote_open_url/remote_open_url_main.h as
-    an example.
+    `REMOTING_EXPORT`. See remoting/host/linux/migrate_host_main.h or
+    remoting/host/remote_open_url/remote_open_url_main.h as examples.
 1.  Implement the main function. See
-    remoting/host/remote_open_url/remote_open_url_main.cc as an example.
+    remoting/host/linux/migrate_host_main.cc or
+    remoting/host/remote_open_url/remote_open_url_main.cc as examples.
 1.  Create an entry point file with the actual `main` function, which calls the
     function in the main function header. See
-    remoting/host/remote_open_url/remote_open_url_entry_point.cc as an example.
+    remoting/host/linux/migrate_host_entry_point.cc or
+    remoting/host/remote_open_url/remote_open_url_entry_point.cc as examples.
 1.  Create a `source_set` in a BUILD.gn file for the main header, which depends
     on //remoting/host:host_main_headers, and update the `host_main_headers`
     target in remoting/host/BUILD.gn so that it is visible to the new target.
-    See remoting/host/remote_open_url/BUILD.gn as an example.
+    See remoting/host/linux/BUILD.gn or
+    remoting/host/remote_open_url/BUILD.gn as examples.
 1.  The main function implementation may be added to either a new target
-    (usually when it is in a new directory), or an existing target. If it is a
-    new target, make sure it has `configs += [
+    (usually when it is in a new directory), or an existing target (e.g.,
+    `platform_impls` in `remoting/host/linux/BUILD.gn`). If it is a new target,
+    make sure it has `configs += [
     "//remoting/build/config:host_implementation" ]`. The target should depend
     on the main header target created in the step above. Otherwise the symbol
     won't be exposed. See remoting/host/remote_open_url/BUILD.gn as an example.
 1.  Add the executable target, which depends on the main header target and
-    remoting_core. See remoting/host/remote_open_url/BUILD.gn as an example.
+    remoting_core. See remoting/host/linux/BUILD.gn or
+    remoting/host/remote_open_url/BUILD.gn as examples.
+1.  If the binary is for Linux, also add it to:
+    *   The `deps` list of `group("remoting_dev_me2me_host")` in
+        `remoting/host/linux/BUILD.gn`.
+    *   The `inputs` and `deps` lists of `action("remoting_me2me_host_deb_installer")`
+        in `remoting/host/installer/linux/BUILD.gn`.
+    *   The `PROGNAME` variable definition and `install` sections in
+        `remoting/host/installer/linux/Makefile`.
 1.  If the process needs to be run on Windows, then pay attention to the `if
     (is_win) {...}` section of the example in the step above, and also update
     remoting/host/win/core.rc.jinja2. If it is never run on Windows, then you

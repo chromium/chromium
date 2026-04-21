@@ -33,6 +33,8 @@ START_PROGNAME = $(BUILD_DIR)/remoting_start_host
 START_DEBUGFILE = $(START_PROGNAME).debug
 ME2ME_NM_PROGNAME = $(BUILD_DIR)/remoting_native_messaging_host
 ME2ME_NM_DEBUGFILE = $(ME2ME_NM_PROGNAME).debug
+MIGRATE_HOST_PROGNAME = $(BUILD_DIR)/migrate_host
+MIGRATE_HOST_DEBUGFILE = $(MIGRATE_HOST_PROGNAME).debug
 REMOTE_ASSISTANCE_PROGNAME = $(BUILD_DIR)/remote_assistance_host
 REMOTE_ASSISTANCE_DEBUGFILE = $(REMOTE_ASSISTANCE_PROGNAME).debug
 REMOTE_OPEN_URL_PROGNAME = $(BUILD_DIR)/remote_open_url
@@ -130,6 +132,9 @@ endif
 	install "$(ME2ME_NM_PROGNAME)" "$(INSTALL_DIR)/native-messaging-host"
 	eu-strip -f "$(ME2ME_NM_DEBUGFILE)" \
 	  "$(INSTALL_DIR)/native-messaging-host"
+
+	install "$(MIGRATE_HOST_PROGNAME)" "$(INSTALL_DIR)/migrate-host"
+	eu-strip -f "$(MIGRATE_HOST_DEBUGFILE)" "$(INSTALL_DIR)/migrate-host"
 
 	install "$(REMOTE_ASSISTANCE_PROGNAME)" \
 	  "$(INSTALL_DIR)/remote-assistance-host"

@@ -46,6 +46,10 @@ group("all") {
     if (enable_me2me_host && (is_linux || is_win)) {
       deps += [ "//remoting/host/remote_open_url" ]
     }
+
+    if (enable_me2me_host && is_linux) {
+      deps += [ "//remoting/host/linux:migrate_host" ]
+    }
   }
 }
 
@@ -84,6 +88,7 @@ source_set("host_main_headers") {
     "//remoting/host/crash:crash_uploader_main_headers",
     "//remoting/host/it2me:main_headers",
     "//remoting/host/linux:login_session_reporter_main_headers",
+    "//remoting/host/linux:migrate_host_main_headers",
     "//remoting/host/linux:remote_session_info_main_headers",
     "//remoting/host/mac:agent_process_broker_main_headers",
     "//remoting/host/mac:host_service_main_headers",
