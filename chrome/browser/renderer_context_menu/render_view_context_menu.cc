@@ -403,6 +403,9 @@ std::string GetGlicWebContentsContextToken(
   if (!params.selection_text.empty() && !params.link_url.is_empty()) {
     return "TextSelectionWithLink";
   }
+  if (!params.link_url.is_empty()) {
+    return "Link";
+  }
   return "TextSelection";
 }
 
@@ -1245,7 +1248,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendSearchProvider();
   }
 
-  if (!params_.selection_text.empty()) {
+  if (!params_.selection_text.empty() || !params_.link_url.is_empty()) {
     MaybeAppendOpenGlicItem();
   }
 
