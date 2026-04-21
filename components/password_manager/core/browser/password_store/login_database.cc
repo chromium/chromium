@@ -207,23 +207,6 @@ enum class LoginDatabaseEncryptionStatus {
   kMaxValue = kEncryptionUnavailable,
 };
 
-// Represents whether undecryptable passwords should be deleted from the login
-// database or the reason if they shouldn't be deleted.
-// Entries should not be renumbered and numeric values should never be
-// reused. Always keep this enum in sync with the corresponding
-// LoginDatabaseShouldDeleteUndecryptablePasswords in enums.xml.
-enum class ShouldDeleteUndecryptablePasswordsResult {
-  kShouldDelete = 0,
-  kUserDataDirEnvVarIsPresent = 1,
-  kUserDataDirSwitchIsPresent = 2,
-  kUserPasswordStoreSwitchIsPresent = 3,
-  kUserEncryptionSelectionSwitchrIsPresent = 4,
-  kEncryptionNotAvailiable = 5,
-  kUserDataDirPolicySet = 6,
-  kDisabledByPolicy = 7,
-  kMaxValue = kDisabledByPolicy,
-};
-
 // Struct to hold table builder for different tables in the LoginDatabase.
 struct SQLTableBuilders {
   raw_ptr<SQLTableBuilder> logins;
@@ -1023,13 +1006,6 @@ EncryptionResult DecryptPasswordFromStatement(
   return encryption_result;
 }
 
-void RecordShouldDeleteUndecryptablePasswordsMetric(
-    ShouldDeleteUndecryptablePasswordsResult should_delete_status) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords",
-      should_delete_status);
-}
-
 bool ShouldDeleteUndecryptablePasswords(
     LoginDatabase::OnUndecryptablePasswordsRemoved
         clearing_undecryptable_passwords,
@@ -1042,56 +1018,37 @@ bool ShouldDeleteUndecryptablePasswords(
   // On Linux user data directory ca be specified using an env variable. If it
   // exists, passwords shouldn't be deleted.
   if (environment->HasVar("CHROME_USER_DATA_DIR")) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::kUserDataDirEnvVarIsPresent);
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(password_manager::kUserDataDir)) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::kUserDataDirSwitchIsPresent);
     return false;
   }
 
 #if BUILDFLAG(IS_LINUX)
   if (command_line->HasSwitch(password_manager::kPasswordStore)) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::
-            kUserPasswordStoreSwitchIsPresent);
     return false;
   }
   if (command_line->HasSwitch(password_manager::kEnableEncryptionSelection)) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::
-            kUserEncryptionSelectionSwitchrIsPresent);
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (is_user_data_dir_policy_set) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::kUserDataDirPolicySet);
     return false;
   }
 #endif
 
   if (!encryptor || !encryptor->IsEncryptionAvailable()) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::kEncryptionNotAvailiable);
     return false;
   }
 
   if (!is_enabled_by_policy) {
-    RecordShouldDeleteUndecryptablePasswordsMetric(
-        ShouldDeleteUndecryptablePasswordsResult::kDisabledByPolicy);
     return false;
   }
-
-  RecordShouldDeleteUndecryptablePasswordsMetric(
-      ShouldDeleteUndecryptablePasswordsResult::kShouldDelete);
 
   // Needed in order to maintain kClearUndecryptablePasswords experiment groups
   // population.

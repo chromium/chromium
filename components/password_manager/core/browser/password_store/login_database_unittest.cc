@@ -2473,8 +2473,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 3, 1);
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
@@ -2513,8 +2511,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 4, 1);
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
@@ -2552,8 +2548,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 1, 1);
 }
 
 #endif  // BUILDFLAG(IS_LINUX)
@@ -2593,8 +2587,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 2, 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -2632,8 +2624,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 5, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -2666,8 +2656,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 7, 1);
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
@@ -2763,9 +2751,6 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
         1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 0,
-        1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
       EXPECT_CALL(on_undecryptable_passwords_removed,
@@ -2818,9 +2803,6 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
         1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 0,
-        1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
       EXPECT_CALL(on_undecryptable_passwords_removed, Run);
@@ -2872,9 +2854,6 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
     histogram_tester.ExpectUniqueSample(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
-        1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 0,
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {

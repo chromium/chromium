@@ -617,26 +617,6 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Password notes table failed initialization"/>
 </enum>
 
-<enum name="LoginDatabaseShouldDeleteUndecryptablePasswords">
-  <int value="0" label="Logins should be deleted"/>
-  <int value="1"
-      label="Should not delete, user data directory is specified using the
-             enviroment variable"/>
-  <int value="2"
-      label="Should not delete, user data directory is specified via switch"/>
-  <int value="3"
-      label="Should not delete, password store is specified via switch"/>
-  <int value="4"
-      label="Should not delete, encryption selection is specified via switch"/>
-  <int value="5" label="Should not delete, encryption is not availiable"/>
-  <int value="6"
-      label="Should not delete, user data directory is specified using the
-             enterprise policy"/>
-  <int value="7"
-      label="Should not delete, deleting undecryptable logins was disabled by
-             policy"/>
-</enum>
-
 <enum name="LoginsChangedTrigger">
   <summary>
     Triggers that may indirectly cause PasswordStore observers notifications
