@@ -7,9 +7,12 @@
 
 #include <optional>
 
+#include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
+#include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_string.h"
@@ -17,10 +20,13 @@
 #include "base/check_is_test.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/prefetch_deduplication_utils.h"
 #include "content/public/browser/preload_pipeline_info.h"
+#include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 
 // Has to come after all the FromJniType() / ToJniType() headers.
@@ -105,12 +111,41 @@ class AwPrefetchRequestStatusListener
   base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_executor_;
 };
 
+namespace {
+
+static PrefService* g_pref_service_for_testing = nullptr;
+
+std::unique_ptr<content::PrePrefetchService> CreatePrePrefetchService(
+    content::BrowserContext* browser_context,
+    std::optional<AwPrefetchLatestInfoPref> initial_prefetch_hints,
+    AwPrefetchManagerData& prefetch_manager_data) {
+  if (initial_prefetch_hints.has_value()) {
+    prefetch_manager_data.UpdateLatestPrefetchInfo(
+        initial_prefetch_hints.value());
+    // Read the latest prefetch info from persisted prefs, and pass
+    // these values to `PrePrefetchService::Create()` as a hint for
+    // the likely initial PrePrefetch request for pre-calculating UI
+    // thread dependent parts of the PrePrefetch `ResourceRequest`.
+    return content::PrePrefetchService::Create(
+        browser_context, initial_prefetch_hints.value().origin,
+        initial_prefetch_hints.value().javascript_enabled,
+        // All prefetches from `AwPrefetchManager` will have false
+        // `initial_should_append_variations_header_hint`.
+        /*initial_should_append_variations_header_hint=*/false);
+  }
+  return content::PrePrefetchService::Create(browser_context);
+}
+
+}  // namespace
+
 AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
     : browser_context_(*browser_context),
       aw_pre_prefetch_service_(
           base::FeatureList::IsEnabled(
               features::kWebViewPrefetchOffTheMainThread)
-              ? content::PrePrefetchService::Create(&browser_context_.get())
+              ? CreatePrePrefetchService(browser_context,
+                                         ReadLatestPrefetchInfoFromPref(),
+                                         aw_prefetch_manager_data_)
               : nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT_INSTANT("android_webview",
@@ -154,6 +189,11 @@ void AwPrefetchManager::SetOrClearExternalPrefetchExperiment(
   // clear state from previous requests if the current one lacks a
   // Variations ID.
   AwMetricsServiceAccessor::RegisterExternalExperiment(experiment_ids);
+}
+
+// static
+void AwPrefetchManager::SetPrefServiceForTesting(PrefService* pref_service) {
+  g_pref_service_for_testing = pref_service;
 }
 
 AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
@@ -328,14 +368,16 @@ int AwPrefetchManager::StartRequest(
   std::unique_ptr<content::PrefetchHandle> prefetch_handle;
   std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle;
 
+  bool javascript_enabled =
+      GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params);
+
   if (is_pre_prefetch) {
     DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
     CHECK(base::FeatureList::IsEnabled(
         features::kWebViewPrefetchOffTheMainThread));
     CHECK(aw_pre_prefetch_service_);
     pre_prefetch_handle = aw_pre_prefetch_service_->StartPrePrefetchRequest(
-        pf_url, AW_PREFETCH_METRICS_SUFFIX,
-        GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+        pf_url, AW_PREFETCH_METRICS_SUFFIX, javascript_enabled,
         expected_no_vary_search,
         base::FeatureList::IsEnabled(
             ::features::kWebViewPrefetchHighestPrefetchPriority)
@@ -350,8 +392,7 @@ int AwPrefetchManager::StartRequest(
   } else {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     prefetch_handle = browser_context_->StartBrowserPrefetchRequest(
-        pf_url, AW_PREFETCH_METRICS_SUFFIX,
-        GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+        pf_url, AW_PREFETCH_METRICS_SUFFIX, javascript_enabled,
         expected_no_vary_search,
         base::FeatureList::IsEnabled(
             ::features::kWebViewPrefetchHighestPrefetchPriority)
@@ -364,6 +405,37 @@ int AwPrefetchManager::StartRequest(
         base::FeatureList::IsEnabled(
             kWebViewPrefetchDisableBlockUntilHeadTimeout),
         should_bypass_http_cache);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchOffTheMainThread)) {
+    url::Origin pf_origin = url::Origin::Create(pf_url);
+    if (pf_origin.opaque()) {
+      // This is theoretically possible where
+      // `AwPrefetchManager#getStartPrefetchErrorOrNull()`'s
+      // `Uri.parse(url).getScheme()` returns HTTPS but still `pf_url` has
+      // an invalid GURL and thus `pf_origin` is opaque.
+      // TODO(crbug.com/452406598): This should be prevented orthogonal to
+      // pref's origin. We can parse GURL in Java and catch any errors there.
+      NOTREACHED();
+    }
+
+    // Updates the latest prefetch info and persist it to prefs if the
+    // settings are actually changed.
+    AwPrefetchLatestInfoPref hints = {pf_origin, javascript_enabled};
+    if (aw_prefetch_manager_data_.UpdateLatestPrefetchInfo(hints)) {
+      if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+        // Unretained is safe here because currently `AwPrefetchManager` will
+        // never be destructed. Please see the comment on
+        // `aw_prefetch_manager.h`'s Thread model.
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(&AwPrefetchManager::WriteLatestPrefetchInfoToPref,
+                           base::Unretained(this), std::move(hints)));
+      } else {
+        WriteLatestPrefetchInfoToPref(std::move(hints));
+      }
+    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -403,6 +475,67 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env,
     return;
   }
   aw_prefetch_manager_data_.CancelPrefetch(prefetch_key);
+}
+
+PrefService* AwPrefetchManager::GetPrefService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(
+      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+
+  if (g_pref_service_for_testing) {
+    CHECK_IS_TEST();
+    return g_pref_service_for_testing;
+  }
+  auto* aw_browser_context =
+      static_cast<AwBrowserContext*>(&browser_context_.get());
+  return aw_browser_context->GetPrefService();
+}
+
+std::optional<AwPrefetchLatestInfoPref>
+AwPrefetchManager::ReadLatestPrefetchInfoFromPref() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT("android_webview",
+              "AwPrefetchManager::ReadLatestPrefetchInfoFromPref");
+
+  CHECK(
+      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+
+  PrefService* pref_service = GetPrefService();
+  if (!pref_service) {
+    return std::nullopt;
+  }
+  std::string origin_str =
+      pref_service->GetString(prefs::kAwPrefetchLatestOrigin);
+  if (origin_str.empty()) {
+    return std::nullopt;
+  }
+  url::Origin origin = url::Origin::Create(GURL(origin_str));
+  if (origin.opaque()) {
+    return std::nullopt;
+  }
+  bool javascript_enabled =
+      pref_service->GetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled);
+  return AwPrefetchLatestInfoPref{origin, javascript_enabled};
+}
+
+void AwPrefetchManager::WriteLatestPrefetchInfoToPref(
+    AwPrefetchLatestInfoPref pref) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT("android_webview",
+              "AwPrefetchManager::WriteLatestPrefetchInfoToPref");
+
+  CHECK(
+      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+
+  // This should always be true. the origin started for prefetch
+  // is already checked to be non-opaque.
+  CHECK(!pref.origin.opaque());
+  if (PrefService* pref_service = GetPrefService()) {
+    pref_service->SetString(prefs::kAwPrefetchLatestOrigin,
+                            pref.origin.Serialize());
+    pref_service->SetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled,
+                             pref.javascript_enabled);
+  }
 }
 
 void AwPrefetchManager::SetTtlInSec(JNIEnv* env, int ttl_in_sec) {

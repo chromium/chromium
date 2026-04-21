@@ -5,11 +5,17 @@
 #include "android_webview/browser/prefetch/aw_prefetch_manager.h"
 
 #include "android_webview/browser/metrics/aw_metrics_test_utils.h"
+#include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_browser_context.h"
@@ -30,9 +36,14 @@ class AwPrefetchManagerTest : public AwMetricsTestBase {
     AwMetricsTestBase::SetUp();
     env_ = base::android::AttachCurrentThread();
     browser_context_ = std::make_unique<content::TestBrowserContext>();
+    prefs_->registry()->RegisterStringPref(prefs::kAwPrefetchLatestOrigin, "");
+    prefs_->registry()->RegisterBooleanPref(
+        prefs::kAwPrefetchLatestJavascriptEnabled, false);
+    AwPrefetchManager::SetPrefServiceForTesting(prefs_.get());
   }
 
   void TearDown() override {
+    AwPrefetchManager::SetPrefServiceForTesting(nullptr);
     browser_context_.reset();
     AwMetricsTestBase::TearDown();
   }
@@ -278,6 +289,62 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
       env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_EQ(key3, NO_PREFETCH_KEY);
+}
+
+// Tests that the latest prefetch origin and JavaScript enabled status are
+// updated on a (pre)prefetch request.
+TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
+       UpdatePrefsOnPrefetchRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kWebViewPrefetchOffTheMainThread,
+                                 ::features::kPrefetchOffTheMainThread},
+                                {});
+
+  prefs_->SetString(prefs::kAwPrefetchLatestOrigin, "");
+  prefs_->SetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled, true);
+
+  AwPrefetchManager prefetch_manager(browser_context_.get());
+
+  ASSERT_EQ(prefs_->GetString(prefs::kAwPrefetchLatestOrigin), "");
+  ASSERT_TRUE(prefs_->GetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled));
+
+  // Start a prefetch request.
+  const std::string prefetch_url = "https://example.com/foo";
+  prefetch_manager.StartPrefetchRequest(env_, prefetch_url,
+                                        /*prefetch_params=*/nullptr,
+                                        /*callback=*/nullptr,
+                                        /*callback_executor=*/nullptr);
+
+  // A prefetch request should update the latest prefetch origin.
+  // Also, the latest JavaScript enabled status should be updated to false,
+  // since `prefetch_params` is nullptr in this test environment.
+  EXPECT_EQ(prefs_->GetString(prefs::kAwPrefetchLatestOrigin),
+            url::Origin::Create(GURL(prefetch_url)).Serialize());
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled));
+
+  // Start a pre-prefetch request with a different origin.
+  const std::string pre_prefetch_url = "https://another.example.com/foo";
+  base::test::TestFuture<AwPrefetchKey> prefetch_key_future;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](AwPrefetchManager* manager_ptr, JNIEnv* env,
+             const std::string& url) {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            return manager_ptr->StartPrePrefetchRequest(
+                env, url, /*prefetch_params=*/nullptr,
+                /*callback=*/nullptr, /*callback_executor=*/nullptr);
+          },
+          &prefetch_manager, env_.get(), pre_prefetch_url),
+      prefetch_key_future.GetCallback());
+
+  std::ignore = prefetch_key_future.Take();
+
+  // The latest prefetch origin should be updated to the origin of the
+  // PrePrefetch request.
+  EXPECT_EQ(prefs_->GetString(prefs::kAwPrefetchLatestOrigin),
+            url::Origin::Create(GURL(pre_prefetch_url)).Serialize());
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled));
 }
 
 }  // namespace android_webview

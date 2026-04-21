@@ -193,6 +193,18 @@ void AwPrefetchManagerData::CancelPrefetch(AwPrefetchKey prefetch_key) {
   // `lock_` to prevent accidental reentrancy.
 }
 
+bool AwPrefetchManagerData::UpdateLatestPrefetchInfo(
+    const AwPrefetchLatestInfoPref& info) {
+  base::AutoLockMaybe auto_lock(lock_.get());
+  CHECK(
+      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  if (prefetch_latest_info_ == info) {
+    return false;
+  }
+  prefetch_latest_info_ = info;
+  return true;
+}
+
 void AwPrefetchManagerData::SetTtlInSec(int ttl_in_sec) {
   base::AutoLockMaybe auto_lock(lock_.get());
 

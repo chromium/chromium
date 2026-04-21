@@ -14,6 +14,7 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/prefetch/aw_prefetch_handle_wrapper.h"
 #include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
+#include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
@@ -84,6 +85,8 @@ class AwPrefetchManager {
   // with a prefetch request.
   static bool IsSecPurposeForPrefetch(
       std::optional<std::string> sec_purpose_header_value);
+
+  static void SetPrefServiceForTesting(PrefService* prefs);
 
   // Functions to start Prefetch/PrePrefetch.
   // Returns the key associated with the outgoing prefetch request
@@ -162,6 +165,14 @@ class AwPrefetchManager {
   static void SetOrClearExternalPrefetchExperiment(
       std::optional<int> variations_id);
 
+  // Actually read/write the latest prefetch info to/from `PrefService`.
+  // Must be called on the UI thread, since `PrefService` is bound to the UI
+  // thread.
+  // Only used when `kWebViewPrefetchOffTheMainThread` is enabled.
+  PrefService* GetPrefService();
+  std::optional<AwPrefetchLatestInfoPref> ReadLatestPrefetchInfoFromPref();
+  void WriteLatestPrefetchInfoToPref(AwPrefetchLatestInfoPref pref);
+
   // Called from either:
   // - `StartPrefetchRequest` with `is_pre_prefetch` set to false (on UI thread)
   // - `StartPrefetchRequestAheadOfPrerender` with `is_pre_prefetch` set to
@@ -179,14 +190,17 @@ class AwPrefetchManager {
 
   const raw_ref<content::BrowserContext> browser_context_;
 
+  // Manages all the mutable states of `this`. Acquires a lock internally so
+  // it should be thread safe from any accesses from any threads.
+  // Should be initialized prior to `aw_pre_prefetch_service_`, because
+  // `aw_prefetch_manager_data_` is needed for `PrePrefetchService`'s
+  // construction.
+  AwPrefetchManagerData aw_prefetch_manager_data_;
+
   // Since `AwPrefetchManager` is owned by `AwBrowserContext(Store)` as a static
   // `base::NoDestructor`, `content::PrePrefetchService`'s dtor will never be
   // called.
   const std::unique_ptr<content::PrePrefetchService> aw_pre_prefetch_service_;
-
-  // Manages all the mutable states of `this`. Acquires a lock internally so
-  // it should be thread safe from any accesses from any threads.
-  AwPrefetchManagerData aw_prefetch_manager_data_;
 
   // Java object reference.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;

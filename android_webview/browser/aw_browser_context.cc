@@ -30,6 +30,7 @@
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
+#include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/common/aw_features.h"
@@ -283,6 +284,16 @@ base::FilePath AwBrowserContext::GetCookieStorePath() {
 void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
   safe_browsing::RegisterProfilePrefs(registry);
 
+  // Register to persist the latest prefetch info, ensuring `AwPrefetchManager`
+  // can initialize `PrePrefetchService` with these as optimization hints for
+  // the likely initial PrePrefetch request. Initialized with empty values.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchOffTheMainThread)) {
+    registry->RegisterStringPref(prefs::kAwPrefetchLatestOrigin, "");
+    registry->RegisterBooleanPref(prefs::kAwPrefetchLatestJavascriptEnabled,
+                                  false);
+  }
+
   // Register the Autocomplete Data Retention Policy pref.
   // The default value '0' represents the latest Chrome major version on which
   // the retention policy ran. By setting it to a low default value, we're
@@ -321,6 +332,15 @@ void AwBrowserContext::CreateUserPrefService() {
   persistent_prefs.insert(cdm::prefs::kMediaDrmStorage);
   // Persisted to ensure client hints can be sent on next page load.
   persistent_prefs.insert(prefs::kClientHintsCachedPerOriginMap);
+
+  // Register to persist the latest prefetch info, ensuring `AwPrefetchManager`
+  // can initialize `PrePrefetchService` with these as optimization hints for
+  // the likely initial PrePrefetch request.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchOffTheMainThread)) {
+    persistent_prefs.insert(prefs::kAwPrefetchLatestOrigin);
+    persistent_prefs.insert(prefs::kAwPrefetchLatestJavascriptEnabled);
+  }
 
   pref_service_factory.set_user_prefs(base::MakeRefCounted<SegregatedPrefStore>(
       base::MakeRefCounted<InMemoryPrefStore>(),

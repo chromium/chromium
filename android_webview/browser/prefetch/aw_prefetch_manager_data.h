@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_PREFETCH_AW_PREFETCH_MANAGER_DATA_H_
 
 #include "android_webview/browser/prefetch/aw_prefetch_handle_wrapper.h"
+#include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "url/gurl.h"
 
@@ -127,6 +128,14 @@ class AwPrefetchManagerData {
   int GetTtlInSec() const LOCKS_EXCLUDED(lock_);
   void SetMaxPrefetches(size_t max_prefetches) LOCKS_EXCLUDED(lock_);
 
+  // Updates the `latest_info_cache_`.
+  // Returns `true` if the settings were actually changed, which signals to the
+  // caller (`AwPrefetchManager`) that the new values should be written to the
+  // persistent `PrefService`.
+  // Only used when `kWebViewPrefetchOffTheMainThread` is enabled.
+  bool UpdateLatestPrefetchInfo(const AwPrefetchLatestInfoPref& info)
+      LOCKS_EXCLUDED(lock_);
+
   // Testing utilities.
   std::vector<AwPrefetchKey> GetAllPrefetchKeysForTesting() const
       LOCKS_EXCLUDED(lock_);
@@ -159,6 +168,12 @@ class AwPrefetchManagerData {
   // `base::AutoLockMaybe` to avoid lock overhead when the feature is
   // disabled.
   const std::unique_ptr<base::Lock> lock_;
+
+  // Memorizes and caches the latest prefetch request info. Used to prevent
+  // asking `PrefService` with redundant updates.
+  // Only used when `kWebViewPrefetchOffTheMainThread` is enabled.
+  AwPrefetchLatestInfoPref prefetch_latest_info_ GUARDED_BY(lock_) = {
+      url::Origin(), false};
 
   int ttl_in_sec_ GUARDED_BY(lock_) = kDefaultTtlInSec;
 
