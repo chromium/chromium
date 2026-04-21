@@ -159,7 +159,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                             mToggleGlicCallback,
                             trackerSupplier,
                             mChromeAndroidTaskSupplier,
-                            mBrowserControlsVisibilityManager));
+                            mBrowserControlsVisibilityManager,
+                            mTabModelSelectorSupplier));
         }
 
         mRegisterVoiceSearchRunnable.run();

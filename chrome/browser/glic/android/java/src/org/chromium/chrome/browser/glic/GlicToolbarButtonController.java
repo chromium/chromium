@@ -8,8 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
@@ -32,6 +34,9 @@ import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
@@ -39,14 +44,25 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** Defines a toolbar button to open the Glic bottom sheet. */
@@ -80,6 +96,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
     private @Nullable GlicKeyedService mCurrentGlicService;
@@ -92,6 +109,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private boolean mPersistDoneState;
     private boolean mIsPanelOpen;
     private int mBrowserControlsShowingToken = TokenHolder.INVALID_TOKEN;
+    private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
      * @param context The Android context.
@@ -100,6 +118,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
      * @param trackerSupplier Supplier for the current profile tracker.
      * @param taskSupplier Supplier for the ChromeAndroidTask.
      * @param browserControlsVisibilityManager Manager for browser controls.
+     * @param tabModelSelectorSupplier Supplier for the TabModelSelector.
      */
     public GlicToolbarButtonController(
             Context context,
@@ -107,7 +126,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             GlicButtonDelegate toggleGlicCallback,
             Supplier<@Nullable Tracker> trackerSupplier,
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
-            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier) {
         // TODO(crbug.com/482372270): Add correct styling to button including Nudge state text,
         // active state shape change, and appropriate colors.
         super(
@@ -124,6 +144,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mTrackerSupplier = trackerSupplier;
         mTaskSupplier = taskSupplier;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
         Drawable collapsedDrawable =
                 AppCompatResources.getDrawable(context, R.drawable.glic_dirty_dot_spark);
@@ -385,6 +406,118 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         super.destroy();
     }
 
+    private void showTaskMenu(View anchorView, List<ActorTask> tasks) {
+        ModelList modelList = new ModelList();
+
+        // TODO(crbug.com/498721993): Listen to the task and update menu item when needed.
+        for (ActorTask task : tasks) {
+            modelList.add(
+                    new ListItemBuilder()
+                            .withTitle(task.getTitle())
+                            .withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp)
+                            .withIsIncognito(false)
+                            .withIsTextEllipsizedAtEnd(true)
+                            .withClickListener(
+                                    v -> {
+                                        switchToActuatingTab(task.getLastActedTabs());
+                                        mToggleGlicCallback.onClick(true);
+                                        dismissMenu();
+                                    })
+                            .build());
+        }
+
+        // Divider
+        modelList.add(BasicListMenu.buildMenuDivider(false));
+
+        // Item 2: Ask Gemini
+        modelList.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.glic_button_entrypoint_ask_gemini_label)
+                        .withStartIconRes(R.drawable.ic_spark_24dp)
+                        .withIsIncognito(false)
+                        .withClickListener(
+                                v -> {
+                                    mToggleGlicCallback.onClick(false);
+                                    dismissMenu();
+                                })
+                        .build());
+
+        ListMenu.Delegate delegate =
+                new ListMenu.Delegate() {
+                    @Override
+                    public void onItemSelected(PropertyModel model, View view) {
+                        View.OnClickListener listener =
+                                model.get(ListMenuItemProperties.CLICK_LISTENER);
+
+                        if (listener != null) {
+                            listener.onClick(view);
+                        }
+                    }
+                };
+
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        anchorView.getContext(), modelList, delegate);
+        View contentView = listMenu.getContentView();
+
+        // Add gap to the right of the menu so it is not at the right edge of the screen.
+        ViewRectProvider anchorRectProvider = new ViewRectProvider(anchorView);
+        int endOffsetPx =
+                anchorView
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.glic_task_menu_end_offset);
+
+        int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+        int widthPx = listMenu.getMaxItemWidth() + lateralPadding;
+
+        int maxWidthPx =
+                anchorView
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.glic_task_menu_max_width);
+        widthPx = Math.min(widthPx, maxWidthPx);
+
+        AnchoredPopupWindow.Builder builder =
+                new AnchoredPopupWindow.Builder(
+                                anchorView.getContext(),
+                                anchorView.getRootView(),
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                anchorRectProvider)
+                        .setFocusable(true)
+                        .setTouchModal(true)
+                        .setDismissOnTouchInteraction(true)
+                        .setHorizontalOverlapAnchor(true)
+                        .setVerticalOverlapAnchor(false)
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION)
+                        .setDesiredContentWidth(widthPx)
+                        .setMaxWidth(maxWidthPx)
+                        .setMargin(endOffsetPx)
+                        .setAnimateFromAnchor(true)
+                        .setAllowNonTouchableSize(true);
+        mMenuWindow = builder.build();
+        mMenuWindow.show();
+    }
+
+    private void dismissMenu() {
+        if (mMenuWindow != null) {
+            mMenuWindow.dismiss();
+            mMenuWindow = null;
+        }
+    }
+
+    private void switchToActuatingTab(Set<Integer> tabs) {
+        if (!tabs.isEmpty()) {
+            int tabId = tabs.iterator().next();
+            TabModelSelector selector = mTabModelSelectorSupplier.get();
+            if (selector != null) {
+                TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+            }
+        }
+    }
+
     @Override
     protected @Nullable IphCommandBuilder getIphCommandBuilder(Tab tab) {
         return new IphCommandBuilder(
@@ -397,6 +530,20 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     @Override
     public void onClick(View view) {
         mPersistDoneState = false;
+
+        if (mMenuWindow != null && mMenuWindow.isShowing()) {
+            dismissMenu();
+            return;
+        }
+
+        if (mCurrentActorService != null) {
+            List<ActorTask> tasks = mCurrentActorService.getActiveTasks();
+            if (!tasks.isEmpty()) {
+                showTaskMenu(view, tasks);
+                return;
+            }
+        }
+
         mToggleGlicCallback.onClick(false);
         Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {

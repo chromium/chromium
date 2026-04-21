@@ -39,10 +39,12 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link GlicToolbarButtonController}. */
@@ -62,12 +64,14 @@ public class GlicToolbarButtonControllerTest {
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     @Mock private GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
     @Mock private Tracker mTracker;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private ButtonDataProvider.ButtonDataObserver mObserver;
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
     private Context mContext;
+    private GlicToolbarButtonController mController;
 
     @Before
     public void setUp() {
@@ -82,19 +86,20 @@ public class GlicToolbarButtonControllerTest {
         when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
                 .thenReturn(mBrowserControlsVisibilityDelegate);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfile)).thenReturn(mGlicKeyedService);
-    }
-
-    @Test
-    public void testButtonData() {
-        GlicToolbarButtonController controller =
+        mController =
                 new GlicToolbarButtonController(
                         mContext,
                         () -> mTab,
                         mToggleGlicCallback,
                         () -> mTracker,
                         () -> null,
-                        mBrowserControlsVisibilityManager);
-        ButtonData buttonData = controller.get(mTab);
+                        mBrowserControlsVisibilityManager,
+                        () -> mTabModelSelector);
+    }
+
+    @Test
+    public void testButtonData() {
+        ButtonData buttonData = mController.get(mTab);
 
         Assert.assertTrue(buttonData.canShow());
         Assert.assertTrue(buttonData.isEnabled());
@@ -107,15 +112,7 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testButtonData_Ntp() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
 
         Assert.assertFalse(buttonData.canShow());
     }
@@ -124,49 +121,24 @@ public class GlicToolbarButtonControllerTest {
     public void testButtonData_OffTheRecord() {
         when(mTab.isOffTheRecord()).thenReturn(true);
         when(mTab.isIncognito()).thenReturn(true);
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
 
         Assert.assertFalse(buttonData.canShow());
     }
 
     @Test
     public void testOnClick() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.onClick(null);
+        mController.onClick(null);
 
         verify(mToggleGlicCallback).onClick(false);
     }
 
     @Test
     public void testTaskState_Review() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-        controller.addObserver(mObserver);
+        mController.addObserver(mObserver);
 
         // Initial call to set up observation.
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -178,7 +150,7 @@ public class GlicToolbarButtonControllerTest {
         // Trigger state change.
         actorObserver.onTaskStateChanged(1, ActorTaskState.WAITING_ON_USER);
 
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertEquals(
                 mContext.getString(R.string.glic_button_status_review),
                 mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
@@ -187,16 +159,7 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testTaskState_Working() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -208,23 +171,14 @@ public class GlicToolbarButtonControllerTest {
         // Trigger state change.
         actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
 
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertTrue(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
         Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
     public void testTaskState_PausedByUser() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -234,24 +188,16 @@ public class GlicToolbarButtonControllerTest {
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.PAUSED_BY_USER);
 
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertFalse(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
         Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
     public void testTaskState_Done_Persists() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-        controller.addObserver(mObserver);
+        mController.addObserver(mObserver);
 
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -261,14 +207,14 @@ public class GlicToolbarButtonControllerTest {
 
         actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
 
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertEquals(
                 mContext.getString(R.string.glic_button_status_done),
                 mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
 
         when(mActorService.getCurrentActiveTask()).thenReturn(null);
 
-        buttonData = controller.get(mTab);
+        buttonData = mController.get(mTab);
         Assert.assertEquals(
                 mContext.getString(R.string.glic_button_status_done),
                 mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
@@ -276,17 +222,8 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testTaskState_Done_FromNotificationOnly() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-        controller.addObserver(mObserver);
-
-        controller.get(mTab);
+        mController.addObserver(mObserver);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -297,7 +234,7 @@ public class GlicToolbarButtonControllerTest {
         actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
 
         // Verify that the state becomes DONE.
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertEquals(
                 mContext.getString(R.string.glic_button_status_done),
                 mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
@@ -306,16 +243,7 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testTaskState_Done_ClearedOnClick() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -327,29 +255,20 @@ public class GlicToolbarButtonControllerTest {
 
         when(mActorService.getCurrentActiveTask()).thenReturn(null);
 
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertEquals(
                 mContext.getString(R.string.glic_button_status_done),
                 mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
 
-        controller.onClick(null);
+        mController.onClick(null);
 
-        buttonData = controller.get(mTab);
+        buttonData = mController.get(mTab);
         Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
     public void testTaskState_Done_ClearedOnNewTask() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -365,24 +284,15 @@ public class GlicToolbarButtonControllerTest {
 
         actorObserver.onTaskStateChanged(2, ActorTaskState.ACTING);
 
-        ButtonData buttonData = controller.get(mTab);
+        ButtonData buttonData = mController.get(mTab);
         Assert.assertTrue(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
         Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test
     public void testProfileSwitching() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
         // Initial profile.
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(any());
 
         // Switch profile.
@@ -392,7 +302,7 @@ public class GlicToolbarButtonControllerTest {
         when(newTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
         // Let's just verify it removes the old observer.
-        controller.get(newTab);
+        mController.get(newTab);
         verify(mActorService).removeObserver(any());
         // Since sServiceForTesting is still the same, it will add it back (or to the same service).
         verify(mActorService, atLeastOnce()).addObserver(any());
@@ -400,17 +310,8 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testDestroy() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
-        controller.destroy();
+        mController.get(mTab);
+        mController.destroy();
 
         verify(mActorService).removeObserver(any());
     }
@@ -428,7 +329,8 @@ public class GlicToolbarButtonControllerTest {
                         mToggleGlicCallback,
                         () -> mTracker,
                         () -> task,
-                        mBrowserControlsVisibilityManager);
+                        mBrowserControlsVisibilityManager,
+                        () -> mTabModelSelector);
 
         ButtonData buttonData = controller.get(mTab);
 
@@ -448,7 +350,8 @@ public class GlicToolbarButtonControllerTest {
                         mToggleGlicCallback,
                         () -> mTracker,
                         () -> task,
-                        mBrowserControlsVisibilityManager);
+                        mBrowserControlsVisibilityManager,
+                        () -> mTabModelSelector);
 
         controller.get(mTab); // Initialize observations
 
@@ -464,16 +367,7 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testTaskState_Working_LocksToolbar() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -489,16 +383,7 @@ public class GlicToolbarButtonControllerTest {
 
     @Test
     public void testTaskState_Done_UnlocksToolbar() {
-        GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(
-                        mContext,
-                        () -> mTab,
-                        mToggleGlicCallback,
-                        () -> mTracker,
-                        () -> null,
-                        mBrowserControlsVisibilityManager);
-
-        controller.get(mTab);
+        mController.get(mTab);
         verify(mActorService).addObserver(mActorObserverCaptor.capture());
         ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
 
@@ -516,5 +401,26 @@ public class GlicToolbarButtonControllerTest {
 
         Assert.assertEquals(
                 BrowserControlsState.BOTH, mBrowserControlsVisibilityDelegate.get().intValue());
+    }
+
+    @Test
+    public void testOnClick_WithActiveTask_ShowsMenu() {
+        mController.get(mTab);
+
+        // Mock an active task.
+        ActorTask task = mock(ActorTask.class);
+        when(task.getTitle()).thenReturn("Test Task");
+        when(mActorService.getActiveTasks()).thenReturn(java.util.Collections.singletonList(task));
+
+        // Set up show hook.
+        Runnable showHook = mock(Runnable.class);
+        AnchoredPopupWindow.setShowHookForTesting(showHook);
+
+        // Click should show menu.
+        android.view.View view = new android.view.View(mContext);
+        mController.onClick(view);
+
+        // Verify popup was shown.
+        verify(showHook).run();
     }
 }
