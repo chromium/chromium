@@ -1825,11 +1825,23 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // being triggered on release after tabs have been closed and the button
   // disabled. Ensure that action is only taken on a valid state.
   if (![self tabsPresentForPage:targetPage]) {
-    return;
+    if (!IsChromeNextIaEnabled()) {
+      return;
+    }
+
+    // TODO(crbug.com/503398101): Fix the page transition being visible when
+    // the grid exits from the tab groups page with ChromeNextIa enabled.
+    if (self.regularBrowser->GetWebStateList()->empty()) {
+      [self openLinkWithURL:GURL(kChromeUINewTabURL)];
+      return;
+    }
+
+    // If there are no tabs on the current page (e.g., empty Tab Groups page),
+    // switch the target to the regular tabs page.
+    targetPage = TabGridPageRegularTabs;
   }
 
   [self activateTabGroupWebStateIfNecessaryInPage:targetPage];
-
   [self showActiveTabInPage:targetPage focusOmnibox:NO];
 }
 
