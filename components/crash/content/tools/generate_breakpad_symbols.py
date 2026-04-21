@@ -171,13 +171,13 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
   dylib_id = None
   for idx, line in enumerate(otool):
     if line.find('cmd LC_RPATH') != -1:
-      m = re.match(' *path (.*) \(offset .*\)$', otool[idx + 2])
+      m = re.match(r' *path (.*) \(offset .*\)$', otool[idx + 2])
       rpath = m.group(1)
       rpath = rpath.replace('@loader_path', loader_path)
       rpath = rpath.replace('@executable_path', exe_path)
       rpaths.append(rpath)
     elif line.find('cmd LC_ID_DYLIB') != -1:
-      m = re.match(' *name (.*) \(offset .*\)$', otool[idx + 2])
+      m = re.match(r' *name (.*) \(offset .*\)$', otool[idx + 2])
       dylib_id = m.group(1)
   # `man dyld` says that @rpath is resolved against a stack of LC_RPATHs from
   # all executable images leading to the load of the current module. This is
