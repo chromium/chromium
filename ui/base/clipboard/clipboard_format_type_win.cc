@@ -225,22 +225,6 @@ const ClipboardFormatType& ClipboardFormatType::FileDescriptorType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::FileContentZeroType() {
-  // This uses a storage media type of TYMED_HGLOBAL, which is not commonly
-  // used with CFSTR_FILECONTENTS (but used in Chromium--see
-  // OSExchangeDataProviderWin::SetFileContents). Use FileContentAtIndexType
-  // if TYMED_ISTREAM and TYMED_ISTORAGE are needed.
-  // TODO(crbug.com/41451800): Should TYMED_ISTREAM / TYMED_ISTORAGE be
-  // used instead of TYMED_HGLOBAL in
-  // OSExchangeDataProviderWin::SetFileContents.
-  // The 0 constructor argument is used with CFSTR_FILECONTENTS to specify file
-  // content.
-  static base::NoDestructor<ClipboardFormatType> format(
-      RegisterClipboardFormatChecked(CFSTR_FILECONTENTS), 0);
-  return *format;
-}
-
-// static
 std::map<LONG, ClipboardFormatType>& ClipboardFormatType::FileContentTypeMap() {
   static base::NoDestructor<std::map<LONG, ClipboardFormatType>>
       index_to_type_map;

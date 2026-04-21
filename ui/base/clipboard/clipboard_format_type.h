@@ -80,7 +80,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& CFHDropType();
   static const ClipboardFormatType& FileDescriptorAType();
   static const ClipboardFormatType& FileDescriptorType();
-  static const ClipboardFormatType& FileContentZeroType();
   static const ClipboardFormatType& FileContentAtIndexType(LONG index);
   static const ClipboardFormatType& FilenameType();
   static const ClipboardFormatType& IDListType();

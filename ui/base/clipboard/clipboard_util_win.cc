@@ -628,7 +628,10 @@ bool HasVirtualFilenames(IDataObject* data_object) {
 
 bool HasFileContents(IDataObject* data_object) {
   DCHECK(data_object);
-  return HasData(data_object, ClipboardFormatType::FileContentZeroType()) &&
+  FORMATETC format_etc =
+      ClipboardFormatType::FileContentAtIndexType(0).ToFormatEtc();
+  format_etc.tymed = TYMED_HGLOBAL | TYMED_ISTREAM;
+  return SUCCEEDED(data_object->QueryGetData(&format_etc)) &&
          (HasData(data_object, ClipboardFormatType::FileDescriptorType()) ||
           HasData(data_object, ClipboardFormatType::FileDescriptorAType()));
 }
@@ -1021,6 +1024,35 @@ bool GetHtml(IDataObject* data_object,
   return true;
 }
 
+bool ReadStreamToString(IStream* stream, std::string* out) {
+  DCHECK(stream);
+  DCHECK(out);
+  STATSTG statstg;
+  if (FAILED(stream->Stat(&statstg, STATFLAG_NONAME)) ||
+      statstg.cbSize.QuadPart == 0) {
+    return false;
+  }
+  const size_t total_size = static_cast<size_t>(statstg.cbSize.QuadPart);
+  out->resize(total_size);
+  const LARGE_INTEGER zero = {};
+  stream->Seek(zero, STREAM_SEEK_SET, nullptr);
+  // Loop to handle partial reads.
+  size_t bytes_remaining = total_size;
+  char* ptr = out->data();
+  while (bytes_remaining > 0) {
+    ULONG bytes_read = 0;
+    HRESULT hr = stream->Read(ptr, base::checked_cast<ULONG>(bytes_remaining),
+                              &bytes_read);
+    if (FAILED(hr) || bytes_read == 0) {
+      out->clear();
+      return false;
+    }
+    ptr += bytes_read;
+    bytes_remaining -= bytes_read;
+  }
+  return true;
+}
+
 bool GetFileContents(IDataObject* data_object,
                      std::wstring* filename,
                      std::string* file_contents) {
@@ -1029,13 +1061,27 @@ bool GetFileContents(IDataObject* data_object,
     return false;
 
   STGMEDIUM content;
-  // The call to GetData can be very slow depending on what is in
-  // |data_object|.
-  if (GetData(data_object, ClipboardFormatType::FileContentZeroType(),
-              &content)) {
+
+  FORMATETC format_etc =
+      ClipboardFormatType::FileContentAtIndexType(0).ToFormatEtc();
+  // Request only TYMED_HGLOBAL and TYMED_ISTREAM.
+  // TYMED_ISTORAGE (e.g. .msg files dragged from Outlook) is excluded here;
+  // it is currently handled via CopyFileContentsToHGlobal() in the
+  // GetVirtualFilesAsTempFiles() path, which converts IStorage to HGLOBAL
+  // and writes the result to a temp file.
+  // TODO(crbug.com/41452260): Add native TYMED_ISTORAGE support on the drop
+  // target side to read IStorage data directly into memory and avoid temp
+  // file creation.
+  format_etc.tymed = TYMED_HGLOBAL | TYMED_ISTREAM;
+  // The call to GetData can be very slow depending on what is in |data_object|.
+  if (SUCCEEDED(data_object->GetData(&format_etc, &content))) {
     if (TYMED_HGLOBAL == content.tymed) {
       base::win::ScopedHGlobal<char*> data(content.hGlobal);
       file_contents->assign(data.data(), data.size());
+    } else if (TYMED_ISTREAM == content.tymed) {
+      if (!ReadStreamToString(content.pstm, file_contents)) {
+        file_contents->clear();
+      }
     }
     ReleaseStgMedium(&content);
   }

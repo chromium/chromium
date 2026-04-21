@@ -113,6 +113,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.DragDrop.FileContents.HGlobalConversionUsed"
+    enum="Boolean" expires_after="2027-04-17">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>joonehur@microsoft.com</owner>
+  <summary>
+    Recorded on Windows when a drag-and-drop operation requests
+    CFSTR_FILECONTENTS with TYMED_HGLOBAL only, triggering an on-the-fly
+    conversion from TYMED_ISTREAM to TYMED_HGLOBAL in Chromium's data object.
+    True when the conversion is performed. Used to detect legacy applications
+    that do not support TYMED_ISTREAM for CFSTR_FILECONTENTS.
+  </summary>
+</histogram>
+
 <histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
     expires_after="2026-08-30">
   <owner>ajgo@chromium.org</owner>

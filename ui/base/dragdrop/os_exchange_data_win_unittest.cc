@@ -105,7 +105,14 @@ class RefCountMockStream : public IStream {
                              UnlockRegion,
                              HRESULT(ULARGE_INTEGER, ULARGE_INTEGER, DWORD));
 
-  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, Clone, HRESULT(IStream**));
+  // Clone is not supported; returning E_NOTIMPL forces the production code to
+  // use the AddRef() fallback, keeping ref-count assertions meaningful.
+  IFACEMETHODIMP Clone(IStream** ppstm) override {
+    if (ppstm) {
+      *ppstm = nullptr;
+    }
+    return E_NOTIMPL;
+  }
 
   MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
                              Seek,
@@ -414,7 +421,8 @@ TEST_F(OSExchangeDataWinTest, TestURLExchangeFormatsViaCOM) {
   std::u16string url_title = u"www.google.com";
   data.SetURL(url, url_title);
 
-  // File contents access via COM
+  // File contents access via COM. SetFileContents stores data as TYMED_ISTREAM
+  // (backed by SHCreateMemStream), so request TYMED_ISTREAM accordingly.
   Microsoft::WRL::ComPtr<IDataObject> com_data(
       OSExchangeDataProviderWin::GetIDataObject(data));
   {
@@ -422,13 +430,20 @@ TEST_F(OSExchangeDataWinTest, TestURLExchangeFormatsViaCOM) {
         RegisterClipboardFormat(CFSTR_FILECONTENTS);
     // format_etc.lindex value 0 used for file drop.
     FORMATETC format_etc = {cfstr_file_contents, nullptr, DVASPECT_CONTENT, 0,
-                            TYMED_HGLOBAL};
+                            TYMED_ISTREAM};
     EXPECT_EQ(S_OK, com_data->QueryGetData(&format_etc));
 
-    STGMEDIUM medium;
-    EXPECT_EQ(S_OK, com_data->GetData(&format_etc, &medium));
-    base::win::ScopedHGlobal<char*> glob(medium.hGlobal);
-    std::string output(glob.data(), glob.size());
+    STGMEDIUM medium = {};
+    ASSERT_EQ(S_OK, com_data->GetData(&format_etc, &medium));
+    ASSERT_EQ(TYMED_ISTREAM, medium.tymed);
+
+    std::string output;
+    char buf[4096];
+    ULONG nread = 0;
+    while (medium.pstm->Read(buf, sizeof(buf), &nread) == S_OK && nread > 0) {
+      output.append(buf, nread);
+    }
+
     std::string file_contents = "[InternetShortcut]\r\nURL=";
     file_contents += url_spec;
     file_contents += "\r\n";
