@@ -5496,6 +5496,67 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_AriaRole_ActionableMode) {
             optimization_guide::proto::AX_ROLE_UNKNOWN);
 }
 
+// Tests that the extraction pipeline prunes the entire subtree of rejected
+// nodes, leaving no descendants.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_PruningNodes) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Pruning Check", Paragraph("Accept 1"),
+      // Rejected branch 1: <script> tag containing string elements.
+      // According to TAGS_TO_REJECT, <script> should be skipped completely.
+      RawHtml("<script>var x = 'skip_me';</script>"),
+      // Rejected branch 2: display: none div wrapped neatly.
+      RawHtml("<div><div style='display: none;'><p>Nested in Display "
+              "None</p></div></div>"),
+      Paragraph("Accept 2"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRefactoredExtractor(IsRefactored())
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  // Ensure only the strictly accepted top-level paragraphs survived pruning.
+  ASSERT_EQ(root.children_nodes_size(), 2);
+
+  // Validate that structural payload maps accurately.
+  EXPECT_EQ(root.children_nodes(0)
+                .children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Accept 1");
+  EXPECT_EQ(root.children_nodes(1)
+                .children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Accept 2");
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

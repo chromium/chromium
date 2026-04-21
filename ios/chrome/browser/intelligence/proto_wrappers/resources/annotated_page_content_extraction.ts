@@ -2504,13 +2504,56 @@ export function extractAnnotatedPageContent(
   // Collect interactive nodes (focused element, selection start/end).
   const interactiveNodeIds = getInteractiveNodeIds(document);
 
-  const walker = document.createTreeWalker(
-      root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
-        acceptNode: (node) => shouldAcceptNode(node),
-      });
+  // Create a tree walker to traverse the DOM tree.
+  // Uses `undefined` as the filter lambda to avoid performance penalty since
+  // the walker would have to cross WebCore C++/JS bridge for every node.
+  // Instead, `shouldAcceptNode` will be called at the beginning of the loop
+  // and will skip traversal of subtrees that should not be processed like
+  // the tree walker does natively.
+  const walker = isPageContextIPCOptimizationEnabled() ?
+      document.createTreeWalker(
+          root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, undefined) :
+      document.createTreeWalker(
+          root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, (node) => {
+            return shouldAcceptNode(node);
+          });
+
+  // Helper to find the next sibling after the current node's subtree.
+  const jumpSubtree = (w: TreeWalker): Node|null => {
+    let sibling = w.nextSibling();
+    if (sibling) {
+      return sibling;
+    }
+    let parent = w.parentNode();
+    while (parent) {
+      // Stop traversing up when we reach the extraction root to prevent the
+      // TreeWalker from escaping the intended DOM scope.
+      if (parent === root) {
+        break;
+      }
+      sibling = w.nextSibling();
+      if (sibling) {
+        return sibling;
+      }
+      parent = w.parentNode();
+    }
+    return null;
+  };
 
   let currentNode = walker.nextNode();
   while (currentNode) {
+    if (isPageContextIPCOptimizationEnabled()) {
+      const filterResult = shouldAcceptNode(currentNode);
+      if (filterResult === NodeFilter.FILTER_REJECT) {
+        currentNode = jumpSubtree(walker);
+        continue;
+      }
+      if (filterResult === NodeFilter.FILTER_SKIP) {
+        currentNode = walker.nextNode();
+        continue;
+      }
+    }
+
     // 1. Maintain Stack Invariant & Post-Pruning.
     // Prune (pop) the stack until the top of the stack is an ancestor of the
     // current node so the stack only contains the ancestors of the current
