@@ -319,9 +319,28 @@ svg {
 }
 
 cr-composebox {
-  --cr-composebox-width: var(--ntp-search-box-width);
+  --color-composebox-submit-button-background: var(
+    --color-new-tab-page-composebox-submit-button-background);
+
   --cr-composebox-background-color: var(--color-composebox-background);
+  --cr-composebox-submit-border-radius: 100px;
+  --cr-composebox-submit-height: 36px;
+  --cr-composebox-submit-icon-size: 24px;
+  --cr-composebox-submit-icon-offset: 0;
+  --cr-composebox-submit-width: 48px;
+  --cr-composebox-width: var(--ntp-search-box-width);
+
   --text-input-inline-end-spacing: 90px;
+}
+
+cr-composebox::part(cancel-icon) {
+  inset-inline-end: 16px;
+}
+
+/* Adjust voice-icon to maintain 12px gap from cancel-icon (which is 24px wide
+   with inset-inline-end of 16px). 16px + 24px + 12px = 52px). */
+cr-composebox::part(voice-icon) {
+  inset-inline-end: 52px;
 }
 
 cr-composebox,
