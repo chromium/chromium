@@ -154,9 +154,7 @@ remoting/host/worker_process_ipc_delegate.h
 remoting/protocol/audio_source.h
 remoting/protocol/audio_stream.h
 remoting/protocol/cursor_shape_stub.h
-remoting/protocol/message_channel_factory.h
 remoting/protocol/test_event_matchers.h
-remoting/protocol/video_feedback_stub.h
 remoting/protocol/video_stream.h
 sandbox/linux/system_headers/capability.h
 skia/ext/convolver_mips_dspr2.h

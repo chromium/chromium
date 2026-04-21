@@ -105,7 +105,6 @@ class ChromotingHost : public ClientSession::EventHandler,
       std::unique_ptr<protocol::SessionManager> secondary_session_manager,
       scoped_refptr<protocol::TransportContext> transport_context,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       const DesktopEnvironmentOptions& options,
       const SessionPoliciesValidator& per_session_policies_validator,
       const LocalSessionPoliciesProvider* local_session_policies_provider);
@@ -216,7 +215,6 @@ class ChromotingHost : public ClientSession::EventHandler,
   std::unique_ptr<protocol::SessionManager> secondary_session_manager_;
   scoped_refptr<protocol::TransportContext> transport_context_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
 
   scoped_refptr<HostStatusMonitor> status_monitor_;
 

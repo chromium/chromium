@@ -74,7 +74,6 @@ group("test_support") {
     "//base",
     "//net",
     "//remoting/base:test_support",
-    "//remoting/codec:decoder",
     "//remoting/codec:encoder",
     "//remoting/protocol:test_support",
     "//remoting/resources",

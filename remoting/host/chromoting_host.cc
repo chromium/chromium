@@ -87,7 +87,6 @@ ChromotingHost::ChromotingHost(
     std::unique_ptr<protocol::SessionManager> secondary_session_manager,
     scoped_refptr<protocol::TransportContext> transport_context,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
     const DesktopEnvironmentOptions& options,
     const SessionPoliciesValidator& per_session_policies_validator,
     const LocalSessionPoliciesProvider* local_session_policies_provider)
@@ -96,7 +95,6 @@ ChromotingHost::ChromotingHost(
       secondary_session_manager_(std::move(secondary_session_manager)),
       transport_context_(transport_context),
       audio_task_runner_(audio_task_runner),
-      video_encode_task_runner_(video_encode_task_runner),
       status_monitor_(new HostStatusMonitor()),
       login_backoff_(&kDefaultBackoffPolicy),
       desktop_environment_options_(options),

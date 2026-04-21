@@ -182,7 +182,7 @@ void FakeConnectionEventLogger::CounterAudioStub::ProcessAudioPacket(
 class FakeConnectionEventLogger::CounterVideoStub : public protocol::VideoStub,
                                                     public MessageCounter {
  public:
-  CounterVideoStub(protocol::FakeConnectionToClient* connection);
+  CounterVideoStub();
 
   void DisplayStatistics(std::ostream& os) override;
 
@@ -190,16 +190,13 @@ class FakeConnectionEventLogger::CounterVideoStub : public protocol::VideoStub,
   void ProcessVideoPacket(std::unique_ptr<VideoPacket> video_packet,
                           base::OnceClosure done) override;
 
-  raw_ptr<protocol::FakeConnectionToClient> connection_ = nullptr;
   MessageCounter video_data_;
   MessageCounter capture_time_;
   MessageCounter encode_time_;
 };
 
-FakeConnectionEventLogger::CounterVideoStub::CounterVideoStub(
-    protocol::FakeConnectionToClient* connection)
+FakeConnectionEventLogger::CounterVideoStub::CounterVideoStub()
     : MessageCounter("video"),
-      connection_(connection),
       video_data_("video-data"),
       capture_time_("capture-time", "ms"),
       encode_time_("encode-time", "ms") {}
@@ -217,11 +214,6 @@ void FakeConnectionEventLogger::CounterVideoStub::ProcessVideoPacket(
     base::OnceClosure done) {
   if (video_packet && video_packet->has_capture_overhead_time_ms()) {
     // Not a keepalive packet.
-    if (connection_ && connection_->video_feedback_stub()) {
-      std::unique_ptr<VideoAck> ack(new VideoAck());
-      ack->set_frame_id(video_packet->frame_id());
-      connection_->video_feedback_stub()->ProcessVideoAck(std::move(ack));
-    }
     LogMessage(*video_packet);
     video_data_.LogMessage(video_packet->data().size());
     capture_time_.LogMessage(video_packet->capture_time_ms());
@@ -230,12 +222,11 @@ void FakeConnectionEventLogger::CounterVideoStub::ProcessVideoPacket(
   std::move(done).Run();
 }
 
-FakeConnectionEventLogger::FakeConnectionEventLogger(
-    protocol::FakeConnectionToClient* connection)
+FakeConnectionEventLogger::FakeConnectionEventLogger()
     : client_stub_(new CounterClientStub()),
       host_stub_(new CounterHostStub()),
       audio_stub_(new CounterAudioStub()),
-      video_stub_(new CounterVideoStub(connection)) {}
+      video_stub_(new CounterVideoStub()) {}
 
 FakeConnectionEventLogger::~FakeConnectionEventLogger() {}
 

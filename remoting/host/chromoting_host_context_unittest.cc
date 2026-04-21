@@ -36,7 +36,6 @@ TEST(ChromotingHostContextTest, StartAndStop) {
   }
   EXPECT_TRUE(context->audio_task_runner().get());
   EXPECT_TRUE(context->video_capture_task_runner().get());
-  EXPECT_TRUE(context->video_encode_task_runner().get());
   EXPECT_TRUE(context->file_task_runner().get());
   EXPECT_TRUE(context->input_task_runner().get());
   EXPECT_TRUE(context->network_task_runner().get());

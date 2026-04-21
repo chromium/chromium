@@ -102,7 +102,6 @@ class ChromotingHostTest : public testing::Test {
         /* secondary_session_manager */ nullptr,
         protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
         task_runner_,  // Audio
-        task_runner_,  // Video encode
         DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
         &local_session_policies_provider_);
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
@@ -484,7 +483,6 @@ TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
       std::move(secondary_session_manager),
       protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
       task_runner_,  // Audio
-      task_runner_,  // Video encode
       DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
       &local_session_policies_provider_);
   host_->status_monitor()->AddStatusObserver(&host_status_observer_);

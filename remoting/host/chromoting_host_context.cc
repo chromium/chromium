@@ -38,7 +38,6 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
       scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       CreateClientCertStoreCallback create_client_cert_store);
 
@@ -83,7 +82,6 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     CreateClientCertStoreCallback create_client_cert_store)
     : ChromotingHostContext(ui_task_runner,
@@ -91,8 +89,7 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
                             file_task_runner,
                             input_task_runner,
                             network_task_runner,
-                            video_capture_task_runner,
-                            video_encode_task_runner),
+                            video_capture_task_runner),
       ui_shared_url_loader_factory_(shared_url_loader_factory),
       pending_factory_(ui_shared_url_loader_factory_->Clone()),
       create_client_cert_store_(create_client_cert_store) {}
@@ -113,8 +110,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
   return std::make_unique<ChromotingHostContextChromeOs>(
       ui_task_runner(), audio_task_runner(), file_task_runner(),
       input_task_runner(), network_task_runner(), video_capture_task_runner(),
-      video_encode_task_runner(), ui_shared_url_loader_factory_,
-      create_client_cert_store_);
+      ui_shared_url_loader_factory_, create_client_cert_store_);
 }
 
 std::unique_ptr<net::ClientCertStore>
@@ -159,7 +155,6 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
       scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
       scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
 
   ChromotingHostContextDesktop(const ChromotingHostContextDesktop&) = delete;
@@ -193,15 +188,13 @@ ChromotingHostContextDesktop::ChromotingHostContextDesktop(
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner,
     scoped_refptr<net::URLRequestContextGetter> url_request_context_getter)
     : ChromotingHostContext(ui_task_runner,
                             audio_task_runner,
                             file_task_runner,
                             input_task_runner,
                             network_task_runner,
-                            video_capture_task_runner,
-                            video_encode_task_runner),
+                            video_capture_task_runner),
       url_request_context_getter_(url_request_context_getter) {}
 
 ChromotingHostContextDesktop::~ChromotingHostContextDesktop() {
@@ -215,7 +208,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextDesktop::Copy() {
   return std::make_unique<ChromotingHostContextDesktop>(
       ui_task_runner(), audio_task_runner(), file_task_runner(),
       input_task_runner(), network_task_runner(), video_capture_task_runner(),
-      video_encode_task_runner(), url_request_context_getter_);
+      url_request_context_getter_);
 }
 
 std::unique_ptr<net::ClientCertStore>
@@ -255,15 +248,13 @@ ChromotingHostContext::ChromotingHostContext(
     scoped_refptr<AutoThreadTaskRunner> file_task_runner,
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> video_encode_task_runner)
+    scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner)
     : ui_task_runner_(ui_task_runner),
       audio_task_runner_(audio_task_runner),
       file_task_runner_(file_task_runner),
       input_task_runner_(input_task_runner),
       network_task_runner_(network_task_runner),
-      video_capture_task_runner_(video_capture_task_runner),
-      video_encode_task_runner_(video_encode_task_runner) {}
+      video_capture_task_runner_(video_capture_task_runner) {}
 
 ChromotingHostContext::~ChromotingHostContext() = default;
 
@@ -295,11 +286,6 @@ scoped_refptr<AutoThreadTaskRunner> ChromotingHostContext::ui_task_runner()
 scoped_refptr<AutoThreadTaskRunner>
 ChromotingHostContext::video_capture_task_runner() const {
   return video_capture_task_runner_;
-}
-
-scoped_refptr<AutoThreadTaskRunner>
-ChromotingHostContext::video_encode_task_runner() const {
-  return video_encode_task_runner_;
 }
 
 policy::ManagementService* ChromotingHostContext::management_service() {
@@ -351,7 +337,6 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
 #else   // !BUILDFLAG(IS_APPLE)
       AutoThread::Create("ChromotingCaptureThread", ui_task_runner),
 #endif  // !BUILDFLAG(IS_APPLE)
-      AutoThread::Create("ChromotingEncodeThread", ui_task_runner),
       base::MakeRefCounted<URLRequestContextGetter>(network_task_runner));
 }
 #else   // BUILDFLAG(IS_CHROMEOS)
@@ -389,7 +374,6 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
       ui_auto_task_runner,  // input_task_runner
       io_auto_task_runner,  // network_task_runner
       ui_auto_task_runner,  // video_capture_task_runner
-      AutoThread::Create("ChromotingEncodeThread", file_auto_task_runner),
       shared_url_loader_factory, create_client_cert_store);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

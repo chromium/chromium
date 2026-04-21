@@ -222,7 +222,6 @@ static_library("protocol") {
     "//remoting/base:logging",
     "//remoting/base:name_value_map",
     "//remoting/base:session_policies",
-    "//remoting/codec:decoder",
     "//remoting/proto:internal_structs",
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
@@ -248,10 +247,6 @@ static_library("protocol") {
 
   if (enable_remoting_host) {
     sources += [
-      "capture_scheduler.cc",
-      "capture_scheduler.h",
-      "video_frame_pump.cc",
-      "video_frame_pump.h",
       "video_stream_event_router.cc",
       "video_stream_event_router.h",
       "webrtc_audio_source_adapter.cc",
@@ -374,9 +369,7 @@ source_set("unit_tests") {
 
   if (enable_remoting_host) {
     sources += [
-      "capture_scheduler_unittest.cc",
       "connection_unittest.cc",
-      "video_frame_pump_unittest.cc",
       "webrtc_audio_source_adapter_unittest.cc",
       "webrtc_frame_scheduler_unittest.cc",
       "webrtc_transport_unittest.cc",

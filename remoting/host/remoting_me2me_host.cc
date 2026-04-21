@@ -2020,8 +2020,7 @@ void HostProcess::StartHost() {
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       std::move(corp_session_manager), transport_context,
-      context_->audio_task_runner(), context_->video_encode_task_runner(),
-      desktop_environment_options_,
+      context_->audio_task_runner(), desktop_environment_options_,
       base::BindRepeating(&HostProcess::OnSessionPoliciesReceived,
                           base::Unretained(this)),
       &local_session_policies_provider_);

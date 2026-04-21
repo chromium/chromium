@@ -14,7 +14,6 @@
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/logging.h"
-#include "remoting/codec/video_encoder.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"

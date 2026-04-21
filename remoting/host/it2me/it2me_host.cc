@@ -434,8 +434,7 @@ void It2MeHost::ConnectOnNetworkThread(
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       /* secondary_session_manager */ nullptr, transport_context,
-      host_context_->audio_task_runner(),
-      host_context_->video_encode_task_runner(), options,
+      host_context_->audio_task_runner(), options,
       base::BindRepeating(&It2MeHost::OnEffectiveSessionPoliciesReceived,
                           base::Unretained(this)),
       local_session_policies_provider_.get());

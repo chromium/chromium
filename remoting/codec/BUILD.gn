@@ -10,16 +10,8 @@ source_set("encoder") {
     "encoder_bitrate_filter.h",
     "utils.cc",
     "utils.h",
-    "video_encoder.cc",
-    "video_encoder.h",
     "video_encoder_active_map.cc",
     "video_encoder_active_map.h",
-    "video_encoder_helper.cc",
-    "video_encoder_helper.h",
-    "video_encoder_verbatim.cc",
-    "video_encoder_verbatim.h",
-    "video_encoder_vpx.cc",
-    "video_encoder_vpx.h",
     "webrtc_video_encoder.cc",
     "webrtc_video_encoder_av1.cc",
     "webrtc_video_encoder_av1.h",
@@ -56,29 +48,6 @@ source_set("encoder") {
       "//media/gpu",
     ]
   }
-}
-
-source_set("decoder") {
-  sources = [
-    "video_decoder.h",
-    "video_decoder_verbatim.cc",
-    "video_decoder_verbatim.h",
-    "video_decoder_vpx.cc",
-    "video_decoder_vpx.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    ":vpx_codec",
-    "//base",
-    "//remoting/base",
-    "//remoting/proto",
-    "//remoting/signaling",
-    "//third_party/libvpx",
-    "//third_party/libyuv",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
 }
 
 source_set("vpx_codec") {
@@ -118,18 +87,9 @@ if (!is_component_build && (is_win || is_linux)) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "codec_test.cc",
-    "codec_test.h",
-    "encoder_bitrate_filter_unittest.cc",
-    "video_decoder_vpx_unittest.cc",
-    "video_encoder_helper_unittest.cc",
-    "video_encoder_verbatim_unittest.cc",
-    "video_encoder_vpx_unittest.cc",
-  ]
+  sources = [ "encoder_bitrate_filter_unittest.cc" ]
 
   deps = [
-    ":decoder",
     ":encoder",
     "//base",
     "//remoting/base",

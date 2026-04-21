@@ -41,7 +41,6 @@ static_library("test_support") {
     "//net",
     "//remoting/base",
     "//remoting/base:logging",
-    "//remoting/codec:decoder",
     "//remoting/codec:encoder",
     "//remoting/protocol",
     "//remoting/signaling",

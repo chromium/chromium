@@ -87,7 +87,6 @@
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
-#include "remoting/protocol/video_frame_pump.h"
 #include "remoting/protocol/webrtc_video_stream.h"
 #include "remoting/signaling/session_config.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"

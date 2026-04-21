@@ -19,8 +19,7 @@ namespace test {
 
 class FakeConnectionEventLogger {
  public:
-  explicit FakeConnectionEventLogger(
-      protocol::FakeConnectionToClient* connection = nullptr);
+  FakeConnectionEventLogger();
 
   FakeConnectionEventLogger(const FakeConnectionEventLogger&) = delete;
   FakeConnectionEventLogger& operator=(const FakeConnectionEventLogger&) =

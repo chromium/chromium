@@ -22,20 +22,11 @@ desktop streaming.
     *   `WebrtcVideoEncoderGpu`: Hardware-accelerated encoding. It is compiled
         on Windows and Linux, but is not currently supported for general usage.
 
-#### Obsolete / Legacy Codecs
-The following classes are part of the legacy non-WebRTC pipeline. They are
-not actively used and will be deleted soon:
-*   `VideoEncoderVpx` / `VideoDecoderVpx`
-*   `VideoEncoderVerbatim` / `VideoDecoderVerbatim` (Lossless fallback)
-*   `VideoEncoder` / `VideoDecoder` (Base interfaces for legacy pipeline)
-
 ### Audio Codecs
 *   **Opus:** CRD exclusively uses Opus for audio streaming.
 *   **Implementation:** WebRTC is currently used for Opus encoding and decoding.
 
 ### Utilities
-*   `VideoEncoderHelper`: Provides common functionality for managing active
-    maps and frame regions across different encoder implementations.
 *   `ScopedVpxCodec`: A helper for managing the lifetime of `vpx_codec_ctx`.
 
 ## Key Files to Read

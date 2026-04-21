@@ -66,9 +66,9 @@ It2MeStandaloneHost::It2MeStandaloneHost()
       // needed to initialize PulseAudioCapturer.
       config_(SessionConfig::ForTest()),
 #else
-      config_(SessionConfig::ForTestWithAudio()),
+      config_(SessionConfig::ForTestWithAudio())
 #endif
-      event_logger_(&connection_) {
+{
   EXPECT_CALL(*static_cast<MockSession*>(connection_.session()), jid())
       .WillRepeatedly(testing::ReturnRef(session_jid_));
   EXPECT_CALL(*static_cast<MockSession*>(connection_.session()), config())
@@ -76,8 +76,6 @@ It2MeStandaloneHost::It2MeStandaloneHost()
   connection_.set_video_stub(event_logger_.video_stub());
   connection_.set_client_stub(event_logger_.client_stub());
   connection_.set_host_stub(event_logger_.host_stub());
-  connection_.set_video_encode_task_runner(
-      context_->video_encode_task_runner());
 }
 
 It2MeStandaloneHost::~It2MeStandaloneHost() {}
