@@ -183,7 +183,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     std::optional<SharedImagePoolId> pool_id) {
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
+  DCHECK(gpu::IsValidClientUsage(si_info.usage));
 
   if (always_create_native_gmb_handles_) {
 #if BUILDFLAG(IS_ANDROID)
@@ -203,7 +203,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       return nullptr;
     }
     auto gmb_handle = shared_image_factory_->CreateNativeGpuMemoryBufferHandle(
-        si_info.meta.size, si_info.meta.format, buffer_usage);
+        si_info.size, si_info.format, buffer_usage);
     if (gmb_handle.is_null()) {
       return nullptr;
     }

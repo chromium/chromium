@@ -100,8 +100,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     std::optional<SharedImagePoolId> pool_id) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
-      << uint32_t(si_info.meta.usage);
+  DCHECK(gpu::IsValidClientUsage(si_info.usage))
+      << static_cast<uint32_t>(si_info.usage);
   auto mailbox = proxy_->CreateSharedImage(si_info, std::move(pool_id));
   return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox), si_info,
                                                  GenUnverifiedSyncToken(),
@@ -112,15 +112,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
   // Pixel upload path only supports single-planar formats.
-  DCHECK(si_info.meta.format.is_single_plane())
-      << si_info.meta.format.ToString();
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
-      << uint32_t(si_info.meta.usage);
+  DCHECK(si_info.format.is_single_plane()) << si_info.format.ToString();
+  DCHECK(gpu::IsValidClientUsage(si_info.usage))
+      << static_cast<uint32_t>(si_info.usage);
 
   // EstimatedSizeInBytes() returns the minimum size in bytes needed to store
   // `format` at `size` so if span is smaller there is a problem.
   CHECK_GE(pixel_data.size(),
-           si_info.meta.format.EstimatedSizeInBytes(si_info.meta.size));
+           si_info.format.EstimatedSizeInBytes(si_info.size));
 
   auto mailbox = proxy_->CreateSharedImage(si_info, pixel_data);
   if (mailbox.IsZero()) {
@@ -138,14 +137,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gfx::BufferUsage buffer_usage,
     std::optional<SharedImagePoolId> pool_id) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
-      << uint32_t(si_info.meta.usage);
+  DCHECK(gpu::IsValidClientUsage(si_info.usage))
+      << static_cast<uint32_t>(si_info.usage);
   gfx::GpuMemoryBufferHandle buffer_handle;
 
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
-  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+  si_info_copy.usage |= GetCpuSIUsage(buffer_usage);
   auto mailbox = proxy_->CreateSharedImage(si_info_copy, buffer_usage,
                                            std::move(pool_id), &buffer_handle);
   if (mailbox.IsZero()) {
@@ -164,16 +163,15 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
-      << uint32_t(si_info.meta.usage);
+  DCHECK(gpu::IsValidClientUsage(si_info.usage))
+      << static_cast<uint32_t>(si_info.usage);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  CHECK(!si_info.meta.format.PrefersExternalSampler())
-      << si_info.meta.format.ToString();
+  CHECK(!si_info.format.PrefersExternalSampler()) << si_info.format.ToString();
 #endif
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
-  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+  si_info_copy.usage |= GetCpuSIUsage(buffer_usage);
   auto client_buffer_handle = buffer_handle.Clone();
   auto mailbox =
       proxy_->CreateSharedImage(si_info_copy, std::move(buffer_handle));
@@ -186,11 +184,10 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage))
-      << uint32_t(si_info.meta.usage);
+  DCHECK(gpu::IsValidClientUsage(si_info.usage))
+      << static_cast<uint32_t>(si_info.usage);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  CHECK(!si_info.meta.format.PrefersExternalSampler())
-      << si_info.meta.format.ToString();
+  CHECK(!si_info.format.PrefersExternalSampler()) << si_info.format.ToString();
 #endif
   auto buffer_handle_type = buffer_handle.type;
   auto mailbox = proxy_->CreateSharedImage(si_info, std::move(buffer_handle));
@@ -205,7 +202,7 @@ ClientSharedImageInterface::CreateSharedImageForMLTensor(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     gpu::SharedImageUsageSet usage) {
-  CHECK(gpu::IsValidClientUsage(usage)) << uint32_t(usage);
+  CHECK(gpu::IsValidClientUsage(usage)) << static_cast<uint32_t>(usage);
   CHECK(usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
 
   const SharedImageInfo si_info = {format, std::move(size), gfx::ColorSpace(),

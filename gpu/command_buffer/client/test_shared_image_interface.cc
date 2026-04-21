@@ -159,7 +159,7 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
+  most_recent_size_ = si_info.size;
   auto gmb_handle_type = emulate_client_provided_native_buffer_
                              ? GetNativeBufferType()
                              : gfx::EMPTY_BUFFER;
@@ -184,7 +184,7 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
     SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     std::optional<SharedImagePoolId> pool_id) {
-  DoCreateSharedImage(si_info.meta.size, si_info.meta.format, surface_handle,
+  DoCreateSharedImage(si_info.size, si_info.format, surface_handle,
                       buffer_usage);
   if (fail_shared_image_creation_with_buffer_usage_) {
     return nullptr;
@@ -195,22 +195,21 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
+  most_recent_size_ = si_info.size;
 
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
-  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+  si_info_copy.usage |= GetCpuSIUsage(buffer_usage);
 
   // Since the GMB handle that we create here is always shared memory, clear
   // the external sampler prefs to avoid a CHECK within ClientSI that external
   // sampling is set only with a native GMB handle.
-  if (si_info_copy.meta.format.PrefersExternalSampler()) {
-    si_info_copy.meta.format.ClearPrefersExternalSampler();
+  if (si_info_copy.format.PrefersExternalSampler()) {
+    si_info_copy.format.ClearPrefersExternalSampler();
   }
 
-  auto gmb_handle =
-      CreateGMBHandle(si_info.meta.format, si_info_copy.meta.size);
+  auto gmb_handle = CreateGMBHandle(si_info.format, si_info_copy.size);
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
@@ -229,20 +228,20 @@ TestSharedImageInterface::CreateSharedImage(
   base::AutoLock locked(lock_);
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
+  most_recent_size_ = si_info.size;
 
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
-  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+  si_info_copy.usage |= GetCpuSIUsage(buffer_usage);
 
   // If the GMB handle passed here is shared memory (e.g. because it was created
   // by a unittest that is simulating a production flow with native handles),
   // clear the external sampler prefs to avoid a CHECK within ClientSI that
   // external sampling is set only with a native GMB handle.
   if (buffer_handle.type == gfx::SHARED_MEMORY_BUFFER &&
-      si_info_copy.meta.format.PrefersExternalSampler()) {
-    si_info_copy.meta.format.ClearPrefersExternalSampler();
+      si_info_copy.format.PrefersExternalSampler()) {
+    si_info_copy.format.ClearPrefersExternalSampler();
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -275,7 +274,7 @@ TestSharedImageInterface::CreateSharedImage(
 #endif
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
+  most_recent_size_ = si_info.size;
   return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info, sync_token,
                                                  holder_, buffer_handle.type);
 }
@@ -289,7 +288,7 @@ TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
 
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
+  most_recent_size_ = si_info.size;
 
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info, GenUnverifiedSyncToken(), holder_, std::move(mapping));
@@ -420,7 +419,7 @@ TestSharedImageInterface::CreateSharedImageWithAsyncMapControl(
   }
 
   auto image = ClientSharedImage::CreateForTesting(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), premapped, callback,
+      mailbox, si_info, GenUnverifiedSyncToken(), premapped, callback,
       buffer_usage, holder_);
   return image;
 }
@@ -431,8 +430,8 @@ TestSharedImageInterface::CreateNativePixmapBackedSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
-  const auto& format = si_info.meta.format;
-  const auto& size = si_info.meta.size;
+  const auto& format = si_info.format;
+  const auto& size = si_info.size;
 
   gfx::NativePixmapHandle native_pixmap_handle;
   for (int i = 0; i < format.NumberOfPlanes(); i++) {

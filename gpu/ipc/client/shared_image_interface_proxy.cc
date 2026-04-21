@@ -77,7 +77,7 @@ std::vector<SyncToken> GenerateDependenciesFromSyncToken(
 mojom::SharedImageInfoPtr CreateSharedImageInfo(
     const SharedImageInfo& si_info) {
   auto info = mojom::SharedImageInfo::New();
-  info->meta = si_info.meta;
+  info->meta = si_info;
   info->debug_label = si_info.debug_label;
   return info;
 }
@@ -124,8 +124,8 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   // from it.
   {
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-    host_->CreateGpuMemoryBuffer(si_info.meta.size, si_info.meta.format,
-                                 buffer_usage, handle_to_populate);
+    host_->CreateGpuMemoryBuffer(si_info.size, si_info.format, buffer_usage,
+                                 handle_to_populate);
   }
 
   if (handle_to_populate->is_null()) {
@@ -136,13 +136,13 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   }
 
   // Clear the external sampler prefs for shared memory case if it is set. Note
-  // that the |si_info.meta.format| is a reference, so any modifications to it
+  // that the |si_info.format| is a reference, so any modifications to it
   // will also be reflected at the place from which this method is called from.
   // https://issues.chromium.org/339546249.
-  if (si_info.meta.format.PrefersExternalSampler() &&
+  if (si_info.format.PrefersExternalSampler() &&
       (handle_to_populate->type ==
        gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
-    si_info.meta.format.ClearPrefersExternalSampler();
+    si_info.format.ClearPrefersExternalSampler();
   }
 
   // Call existing SI method to create a SI from handle. Note that we are doing

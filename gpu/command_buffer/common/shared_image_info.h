@@ -26,32 +26,29 @@ struct SharedImageMetadata {
   SharedImageUsageSet usage;
 };
 
-struct SharedImageInfo {
-  SharedImageInfo(const viz::SharedImageFormat& format,
-                  gfx::Size size,
-                  const gfx::ColorSpace& color_space,
-                  GrSurfaceOrigin surface_origin,
-                  SkAlphaType alpha_type,
-                  SharedImageUsageSet usage,
+struct SharedImageInfo : public SharedImageMetadata {
+  SharedImageInfo(const viz::SharedImageFormat& format_in,
+                  gfx::Size size_in,
+                  const gfx::ColorSpace& color_space_in,
+                  GrSurfaceOrigin surface_origin_in,
+                  SkAlphaType alpha_type_in,
+                  SharedImageUsageSet usage_in,
                   std::string_view debug_label)
-      : meta(format, size, color_space, surface_origin, alpha_type, usage),
+      : SharedImageMetadata{format_in,         size_in,       color_space_in,
+                            surface_origin_in, alpha_type_in, usage_in},
         debug_label(debug_label) {}
-  SharedImageInfo(const viz::SharedImageFormat& format,
-                  gfx::Size size,
-                  const gfx::ColorSpace& color_space,
-                  SharedImageUsageSet usage,
+  SharedImageInfo(const viz::SharedImageFormat& format_in,
+                  gfx::Size size_in,
+                  const gfx::ColorSpace& color_space_in,
+                  SharedImageUsageSet usage_in,
                   std::string_view debug_label)
-      : meta(format,
-             size,
-             color_space,
-             kTopLeft_GrSurfaceOrigin,
-             kPremul_SkAlphaType,
-             usage),
+      : SharedImageMetadata{format_in,           size_in,
+                            color_space_in,      kTopLeft_GrSurfaceOrigin,
+                            kPremul_SkAlphaType, usage_in},
         debug_label(debug_label) {}
   SharedImageInfo(const SharedImageMetadata& meta, std::string_view debug_label)
-      : meta(meta), debug_label(debug_label) {}
+      : SharedImageMetadata(meta), debug_label(debug_label) {}
 
-  SharedImageMetadata meta;
   std::string debug_label;
 };
 

@@ -95,7 +95,7 @@ scoped_refptr<ClientSharedImage> ArcSharedImageInterface::CreateSharedImage(
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
-  si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
+  si_info_copy.usage |= GetCpuSIUsage(buffer_usage);
 
   gpu_task_runner_->PostTask(
       FROM_HERE,
@@ -120,9 +120,8 @@ void ArcSharedImageInterface::CreateSharedImageOnGpuThread(
   }
 
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, si_info.meta.format, si_info.meta.size,
-          si_info.meta.color_space, si_info.meta.surface_origin,
-          si_info.meta.alpha_type, si_info.meta.usage,
+          mailbox, si_info.format, si_info.size, si_info.color_space,
+          si_info.surface_origin, si_info.alpha_type, si_info.usage,
           std::move(si_info.debug_label), std::move(buffer_handle))) {
     shared_image_factory_->shared_context_state()->MarkContextLost();
     encountered_error_.store(true, std::memory_order_relaxed);

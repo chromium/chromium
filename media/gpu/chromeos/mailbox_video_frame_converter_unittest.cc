@@ -90,8 +90,8 @@ void AssertSharedImageInfoIsValid(const gpu::SharedImageInfo& actual,
                                   const gfx::Size& expected_size,
                                   bool* result) {
   *result = false;
-  ASSERT_EQ(actual.meta.format, expected_format);
-  ASSERT_EQ(actual.meta.size, expected_size);
+  ASSERT_EQ(actual.format, expected_format);
+  ASSERT_EQ(actual.size, expected_size);
   ASSERT_EQ(actual.debug_label, "MailboxVideoFrameConverter");
   *result = true;
 }

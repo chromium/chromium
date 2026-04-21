@@ -330,7 +330,7 @@ ClientSharedImage::ClientSharedImage(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
     gfx::GpuMemoryBufferType gmb_type)
     : mailbox_(mailbox),
-      metadata_(info.meta),
+      metadata_(info),
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
@@ -367,7 +367,7 @@ ClientSharedImage::ClientSharedImage(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
     uint32_t texture_target)
     : mailbox_(mailbox),
-      metadata_(info.meta),
+      metadata_(info),
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
@@ -438,7 +438,7 @@ ClientSharedImage::ClientSharedImage(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
     scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool)
     : mailbox_(mailbox),
-      metadata_(info.meta),
+      metadata_(info),
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
       mappable_buffer_(
@@ -446,7 +446,7 @@ ClientSharedImage::ClientSharedImage(
                                          metadata_.size,
                                          metadata_.format,
                                          handle_info.buffer_usage,
-                                         info.meta.usage,
+                                         info.usage,
                                          std::move(shared_memory_pool))),
       buffer_usage_(handle_info.buffer_usage),
       sii_holder_(std::move(sii_holder)),
@@ -463,7 +463,7 @@ ClientSharedImage::ClientSharedImage(
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
                                      const SharedImageInfo& info)
-    : mailbox_(mailbox), metadata_(info.meta), debug_label_(info.debug_label) {
+    : mailbox_(mailbox), metadata_(info), debug_label_(info.debug_label) {
   CHECK(!mailbox.IsZero());
   texture_target_ = GL_TEXTURE_2D;
 }
@@ -794,16 +794,16 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   SharedImageInfo info(metadata, "CSICreateForTesting");
 
   gfx::GpuMemoryBufferHandle handle;
-  MappableBufferSharedMemory::AllocateForTesting(
-      info.meta.size, info.meta.format, buffer_usage, &handle);
+  MappableBufferSharedMemory::AllocateForTesting(info.size, info.format,
+                                                 buffer_usage, &handle);
   auto mappable_buffer = MappableBufferSharedMemory::CreateFromHandle(
-      std::move(handle), info.meta.size, info.meta.format);
+      std::move(handle), info.size, info.format);
 
   // Since the |mappable_buffer| here is always a shared memory, clear the
   // external sampler prefs if it is already set by client.
   // https://issues.chromium.org/339546249.
-  if (info.meta.format.PrefersExternalSampler()) {
-    info.meta.format.ClearPrefersExternalSampler();
+  if (info.format.PrefersExternalSampler()) {
+    info.format.ClearPrefersExternalSampler();
   }
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
