@@ -31,7 +31,6 @@
 #include "remoting/protocol/socket_util.h"
 #include "remoting/protocol/stream_packet_socket.h"
 #include "third_party/webrtc/api/units/timestamp.h"
-#include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/async_dns_resolver.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 #include "third_party/webrtc/rtc_base/net_helpers.h"
@@ -336,9 +335,6 @@ void UdpPacketSocket::DoSend() {
   // start working through the pending packet queue again.
   while (!send_pending_ && !send_queue_.empty() && error_ == 0) {
     PendingPacket& packet = send_queue_.front();
-    webrtc::ApplyPacketOptions(
-        packet.data->span(), packet.options.packet_time_params,
-        (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
     int result = socket_->SendTo(
         packet.data.get(), packet.data->size(), packet.address,
         base::BindOnce(&UdpPacketSocket::OnSendCompleted, weak_ptr_));

@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "net/base/io_buffer.h"
-#include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace remoting::protocol {
@@ -109,12 +108,6 @@ scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Unpack(
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(packet_size);
   buffer->span().copy_from(data.first(packet_size));
   return buffer;
-}
-
-void StunTcpPacketProcessor::ApplyPacketOptions(
-    base::span<uint8_t> data,
-    const webrtc::PacketTimeUpdateParams& packet_time_params) const {
-  webrtc::ApplyPacketOptions(data, packet_time_params, webrtc::TimeMicros());
 }
 
 }  // namespace remoting::protocol

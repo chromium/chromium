@@ -302,12 +302,6 @@ void StreamPacketSocket::DoWrite() {
 
   while (!send_queue_.empty()) {
     PendingPacket& packet = send_queue_.front();
-    if (packet.data->BytesConsumed() == 0) {
-      // Only apply packet options when we are about to send the head of the
-      // packet.
-      packet_processor_->ApplyPacketOptions(packet.data->span(),
-                                            packet.options.packet_time_params);
-    }
     int result = socket_->Write(
         packet.data.get(), packet.data->BytesRemaining(),
         base::BindOnce(&StreamPacketSocket::OnAsyncWriteCompleted,

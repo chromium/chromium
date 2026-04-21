@@ -34,11 +34,6 @@ class StreamPacketProcessor {
   virtual scoped_refptr<net::IOBufferWithSize> Unpack(
       base::span<const uint8_t> data,
       size_t* bytes_consumed) const = 0;
-
-  // Applies WebRTC packet options on a packet that has already been packed.
-  virtual void ApplyPacketOptions(
-      base::span<uint8_t> data,
-      const webrtc::PacketTimeUpdateParams& packet_time_params) const = 0;
 };
 
 }  // namespace remoting::protocol

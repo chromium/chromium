@@ -32,9 +32,6 @@ class StunTcpPacketProcessor final : public StreamPacketProcessor {
   scoped_refptr<net::IOBufferWithSize> Unpack(
       base::span<const uint8_t> data,
       size_t* bytes_consumed) const override;
-  void ApplyPacketOptions(
-      base::span<uint8_t> data,
-      const webrtc::PacketTimeUpdateParams& packet_time_params) const override;
 };
 
 }  // namespace remoting::protocol

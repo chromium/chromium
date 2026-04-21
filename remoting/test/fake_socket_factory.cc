@@ -22,7 +22,6 @@
 #include "net/base/io_buffer.h"
 #include "remoting/base/leaky_bucket.h"
 #include "third_party/webrtc/api/units/timestamp.h"
-#include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 #include "third_party/webrtc/rtc_base/network/received_packet.h"
 #include "third_party/webrtc/rtc_base/socket.h"
@@ -127,9 +126,6 @@ int FakeUdpSocket::SendTo(const void* data,
                           const webrtc::AsyncSocketPacketOptions& options) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data_size);
   UNSAFE_TODO(memcpy(buffer->data(), data, data_size));
-  base::TimeTicks now = base::TimeTicks::Now();
-  webrtc::ApplyPacketOptions(buffer->span(), options.packet_time_params,
-                             (now - base::TimeTicks()).InMicroseconds());
   NotifySentPacket(
       this, webrtc::SentPacketInfo(options.packet_id, webrtc::TimeMillis()));
   dispatcher_->DeliverPacket(local_address_, address, buffer, data_size);
