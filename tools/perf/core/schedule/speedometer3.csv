@@ -22,6 +22,7 @@ mac-m1_mini_2020-perf,6,1
 mac-m1_mini_2020-perf-pgo,22,1
 mac-m2-pro-perf,1,1
 mac-m4-mini-perf,1,1
+mac-m5-pro-perf,1,1
 win-10-perf,1,1
 win-10-perf-pgo,1,1
 win-10_amd_laptop-perf,1,1

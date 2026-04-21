@@ -774,7 +774,7 @@ PLATFORM_INFO = {
     },
     'mac-m5-pro-perf': {
         'description': 'Mac M5 PRO ARM',
-        'num_shards': 1,
+        'num_shards': 2,
         'platform_os': 'mac',
         'is_fyi': False
     },
