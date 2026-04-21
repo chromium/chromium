@@ -1141,6 +1141,16 @@
   "components/components_strings.grd": {
     "messages": [7080],
   },
+  # components_variant_internal_strings.grd and
+  # components_variant_public_strings.grd must share the same id because they
+  # define the same strings, but only one of them is built depending on whether
+  # src_internal is available.
+  "components/internal/components_variant_internal_strings.grd": {
+    "messages": [7090],
+  },
+  "components/components_variant_public_strings.grd": {
+    "messages": [7090],
+  },
   "components/embedder_support/android/java/strings/web_contents_delegate_android_strings.grd": {
     "messages": [7100],
   },

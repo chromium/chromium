@@ -20,6 +20,7 @@ group("strings") {
     ":components_branded_strings",
     ":components_locale_settings",
     ":components_strings",
+    ":components_variant_strings",
     ":privacy_sandbox_strings",
   ]
 }
@@ -69,6 +70,25 @@ grit_strings("components_locale_settings") {
 if (is_android) {
   java_strings_grd_prebuilt("components_locale_settings_grd") {
     generating_target = ":components_locale_settings"
+  }
+}
+
+grit_strings("components_variant_strings") {
+  if (is_internal_chrome_branded) {
+    source = "../internal/components_variant_internal_strings.grd"
+  } else {
+    source = "../components_variant_public_strings.grd"
+  }
+  outputs = [ "grit/components_variant_strings.h" ]
+
+  if (is_android) {
+    create_android_resources = true
+  }
+}
+
+if (is_android) {
+  java_strings_grd_prebuilt("components_variant_strings_grd") {
+    generating_target = ":components_variant_strings"
   }
 }
 

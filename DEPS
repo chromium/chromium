@@ -3715,6 +3715,12 @@ deps = {
     'condition': 'checkout_src_internal',
   },
 
+  'src/components/internal': {
+      'url': Var('chrome_git') + '/chrome/components.git' + '@' +
+        '8884cab901d186f69a2663ece9d0d112a18875d5',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/metrics/internal': {
       'url': Var('chrome_git') + '/chrome/components/metrics/internal.git' + '@' +
         '6c5b0a009ec24624e40e58045cc107d1c47672c6',
