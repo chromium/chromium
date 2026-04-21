@@ -6740,6 +6740,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-header-use-transforms-for-animations",
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "ntp-microsoft-authentication-module",
     "owners": [ "pauladedeji@google.com", "rtatum@google.com", "tiborg@chromium.org" ],
     "expiry_milestone": 150

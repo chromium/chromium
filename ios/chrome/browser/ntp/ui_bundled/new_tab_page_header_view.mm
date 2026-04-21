@@ -396,6 +396,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
       constraintEqualToAnchor:self.fakeLocationBar.leadingAnchor
                      constant:self.hintLabelFakeboxLeadingSpace];
+  if (IsNTPHeaderTransformsForAnimationsEnabled()) {
+    // Keep constraints fixed at progress = 0 values.
+    self.hintLabelLeadingConstraint.constant =
+        self.hintLabelFakeboxLeadingSpace;
+  }
   [NSLayoutConstraint activateConstraints:@[
     self.hintLabelLeadingConstraint,
     [self.searchHintLabel.heightAnchor
@@ -589,8 +594,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // position linearly. When percent is 0, the fakebox is displayed in the
 // middle of the screen; when it's 1, the fakebox is fully scrolled up.
 - (void)updateLogoAnimationWithProgress:(CGFloat)progress {
-  self.leadingViewConstraint.constant = Interpolate(
-      [self fakeboxLeadingSpace], [self omniboxLeadingSpace], progress);
+  if (IsNTPHeaderTransformsForAnimationsEnabled()) {
+    self.leadingViewConstraint.constant = kFakeboxImageLeadingSpace;
+    CGFloat translationX =
+        (kOmniboxImageLeadingSpace - kFakeboxImageLeadingSpace) * progress;
+    _logoView.transform = CGAffineTransformMakeTranslation(translationX, 0);
+  } else {
+    self.leadingViewConstraint.constant = Interpolate(
+        [self fakeboxLeadingSpace], [self omniboxLeadingSpace], progress);
+  }
 }
 
 // Updates the background color and opacity of the fakebox based on progress.
@@ -612,19 +624,36 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       (_currentHintLabelScale - 1) *
       self.searchHintLabel.intrinsicContentSize.width * 0.5;
 
-  // If MIA animation view is shown then add an aditional spacing to avoid any
-  // overlap with the label.
-  self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset -
-                                              kHintLabelFakeboxTrailingSpace;
+  if (IsNTPHeaderTransformsForAnimationsEnabled()) {
+    self.hintLabelTrailingConstraint.constant = -kHintLabelFakeboxTrailingSpace;
+    CGFloat tx = 0;
+    if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
+      tx = hintLabelScalingExtraOffset;
+    } else {
+      tx = hintLabelScalingExtraOffset + (self.hintLabelOmniboxLeadingSpace -
+                                          self.hintLabelFakeboxLeadingSpace) *
+                                             progress;
+    }
 
-  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
-    self.hintLabelLeadingConstraint.constant =
-        self.hintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
+    // Combine scale (already set in scaleHintLabelForPercent:) and translation.
+    self.searchHintLabel.transform =
+        CGAffineTransformScale(CGAffineTransformMakeTranslation(tx, 0),
+                               _currentHintLabelScale, _currentHintLabelScale);
   } else {
-    self.hintLabelLeadingConstraint.constant =
-        hintLabelScalingExtraOffset +
-        Interpolate(self.hintLabelFakeboxLeadingSpace,
-                    self.hintLabelOmniboxLeadingSpace, progress);
+    // If MIA animation view is shown then add an aditional spacing to avoid any
+    // overlap with the label.
+    self.hintLabelTrailingConstraint.constant =
+        -hintLabelScalingExtraOffset - kHintLabelFakeboxTrailingSpace;
+
+    if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
+      self.hintLabelLeadingConstraint.constant =
+          self.hintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
+    } else {
+      self.hintLabelLeadingConstraint.constant =
+          hintLabelScalingExtraOffset +
+          Interpolate(self.hintLabelFakeboxLeadingSpace,
+                      self.hintLabelOmniboxLeadingSpace, progress);
+    }
   }
 }
 

@@ -27,6 +27,12 @@ BASE_DECLARE_FEATURE(kFeedHeaderSettings);
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 
+// Feature flag to enable transform-based animations for the NTP header.
+BASE_DECLARE_FEATURE(kNTPHeaderUseTransformsForAnimations);
+
+// Checks if transform-based animations are enabled for the NTP header.
+bool IsNTPHeaderTransformsForAnimationsEnabled();
+
 // Feature flag to enable in-product help for swipe action on the Feed.
 BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 
