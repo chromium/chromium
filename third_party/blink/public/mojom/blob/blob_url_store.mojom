@@ -39,6 +39,13 @@ interface BlobURLStore {
   // used by the browser process to securely look up the blob a URL used to
   // refer to, even after the URL is revoked.
   // As long as the token is alive, the resolved blob will also be kept alive.
+  //
+  // Note: it is not considered a vulnerability that a compromised renderer can
+  // use this method to resolve cross-origin blobs when
+  // `is_top_level_navigation` is `true`. Blob URLs are considered unguessable
+  // and so an attacker would need to compromise the target site's code or
+  // renderer to get the URL in the first place. Bugs about this will be closed
+  // as a duplicate of https://crbug.com/475586390.
   ResolveAsBlobURLToken(url.mojom.Url url,
                        pending_receiver<BlobURLToken> token,
                        bool is_top_level_navigation);
