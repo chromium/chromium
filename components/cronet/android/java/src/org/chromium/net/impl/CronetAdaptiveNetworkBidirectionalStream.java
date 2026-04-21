@@ -460,10 +460,8 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                             .CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK);
             // The primary stream was not ready in time, let's cancel it.
             mPrimaryStream.cancel();
-            long networkHandle = mFallbackStream.getTargetNetworkHandle();
-            if (networkHandle != CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
-                mAdaptiveRequestContext.reportFallbackUsed(mUrl, networkHandle);
-            }
+            mAdaptiveRequestContext.reportFallbackUsed(
+                    mUrl, mFallbackStream.getTargetNetworkHandle());
         } else {
             mLoggingState.setWinner(
                     CronetLogger.CronetAdaptiveTrafficWinner.CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN);

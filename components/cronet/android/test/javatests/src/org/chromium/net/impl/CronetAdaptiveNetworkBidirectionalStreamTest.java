@@ -10,6 +10,8 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -196,6 +198,36 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
 
         verify(mMockAdaptiveRequestContext).reportFallbackUsed(eq(TEST_URL), eq(networkHandle));
+    }
+
+    @Test
+    @SmallTest
+    public void onStreamReady_onFallback_defaultNetwork_reportsFallbackUsed() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+
+        long networkHandle = CronetEngineBase.DEFAULT_NETWORK_HANDLE;
+        when(mFallbackStream.getTargetNetworkHandle()).thenReturn(networkHandle);
+
+        mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
+
+        verify(mMockAdaptiveRequestContext).reportFallbackUsed(eq(TEST_URL), eq(networkHandle));
+    }
+
+    @Test
+    @SmallTest
+    public void onStreamReady_onPrimary_doesNotReportFallbackUsed() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        long networkHandle = 987654321L;
+        when(mPrimaryStream.getTargetNetworkHandle()).thenReturn(networkHandle);
+
+        mAdaptiveStream.start();
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+
+        verify(mMockAdaptiveRequestContext, never()).reportFallbackUsed(anyString(), anyLong());
     }
 
     @Test

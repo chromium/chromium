@@ -237,14 +237,14 @@ class CronetAdaptiveRequestContext {
     }
 
     /** Reports that the fallback network was used for the given URL. */
-    // TODO(b/474048542): When the default network is reported here, clear the memory
-    // as we're back to normal.
     void reportFallbackUsed(String url, Long networkHandle) {
-        if (networkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
-            throw new IllegalArgumentException("Network handle must be non-default.");
-        }
         URI parsedUri = URI.create(url);
         String host = parsedUri.getHost();
+        // If we started succeeding on the default network, we can reset the state for this host.
+        if (networkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE) {
+            mFallbackNetworks.remove(host);
+            return;
+        }
         mFallbackNetworks.put(
                 host,
                 new FallbackInfo(
