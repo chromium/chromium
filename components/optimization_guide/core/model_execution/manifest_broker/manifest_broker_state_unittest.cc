@@ -112,6 +112,13 @@ class ScenarioBuilder final {
     return *this;
   }
 
+  ScenarioBuilder& SetFeatureConfig(DeviceCategory category,
+                                    const std::string& use_case,
+                                    const proto::Any& config) {
+    builder.SetFeatureConfig(category, use_case, config);
+    return *this;
+  }
+
   void Finish() {
     manifest_directory_->Add(builder.Build());
     state_->UpdateManifest(std::move(manifest_directory_));
@@ -134,8 +141,6 @@ class ManifestBrokerStateTest : public testing::Test {
         fake_launcher_.LaunchFn());
     model_broker_client_ = std::make_unique<ModelBrokerClient>(
         manifest_broker_state_->BindAndPassRemoteBroker(), nullptr);
-    // Bind a subscriber to trigger initialization.
-    model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kTest);
   }
 
   void SimulateShutdown() {
@@ -157,6 +162,7 @@ class ManifestBrokerStateTest : public testing::Test {
   std::unique_ptr<ModelBrokerClient> model_broker_client_;
 };
 
+// Test that a simple feature can be executed successfully.
 TEST_F(ManifestBrokerStateTest, ExecuteTestFeature) {
   ScenarioBuilder(component_state_)
       .AddBaseModel("model_A")
@@ -186,36 +192,17 @@ TEST_F(ManifestBrokerStateTest, ExecuteTestFeature) {
   EXPECT_EQ(*response.value(), expected_response);
 }
 
+// Tests that the feature config is propagated correctly from the manifest to
+// the client.
 TEST_F(ManifestBrokerStateTest, PropagatesFeatureConfig) {
   proto::Any config;
   config.set_type_url("type.googleapis.com/test.Config");
   config.set_value("test_value");
 
-  ScenarioBuilder scenario(component_state_);
-  scenario.builder.SetFeatureConfig(DeviceCategory::kGpuHighTier,
-                                    "summarizer_api", config);
-  scenario.builder.Add(
-      {DeviceCategory::kGpuHighTier, "test"},
-      SolutionRecipe("model", "", FileReference("manifest", "config.pb")));
-  scenario.builder.Add(
-      "model",
-      BaseModelRecipe(
-          FileReference("asset", "weights"),
-          BaseModelRecipeArgs(
-              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
-              proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {}, 100)));
-  scenario.builder.Add("asset", OnDemandComponent("key", "1.0"));
-
-  scenario.Finish();
-
-  manifest_broker_state_ = std::make_unique<ManifestBrokerState>(
-      local_state_.local_state(), component_state_.CreateDelegate(),
-      fake_launcher_.LaunchFn());
-  model_broker_client_ = std::make_unique<ModelBrokerClient>(
-      manifest_broker_state_->BindAndPassRemoteBroker(), nullptr);
-
-  task_environment_.RunUntilIdle();
-
+  ScenarioBuilder(component_state_)
+      .SetFeatureConfig(DeviceCategory::kGpuHighTier, "summarizer_api", config)
+      .Finish();
+  Startup();
   base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> future;
   model_broker_client_->GetConfig(mojom::OnDeviceFeature::kSummarize,
                                   future.GetCallback());
@@ -225,33 +212,21 @@ TEST_F(ManifestBrokerStateTest, PropagatesFeatureConfig) {
   EXPECT_EQ(result->As<proto::Any>()->value(), "test_value");
 }
 
+// Tests that the ManifestBrokerState can handle arbitrary use cases that are
+// not part of the pre-defined `mojom::OnDeviceFeature` enum.
 TEST_F(ManifestBrokerStateTest, SupportsArbitraryUseCases) {
-  ScenarioBuilder scenario(component_state_);
-  scenario.builder.Add(
-      {DeviceCategory::kGpuHighTier, "custom_use_case"},
-      SolutionRecipe("model", "", FileReference("manifest", "config.pb")));
-  scenario.builder.Add(
-      "model",
-      BaseModelRecipe(
-          FileReference("asset", "weights"),
-          BaseModelRecipeArgs(
-              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
-              proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {}, 100)));
-  scenario.builder.Add("asset", OnDemandComponent("key", "1.0"));
+  ScenarioBuilder(component_state_)
+      .AddBaseModel("model_A")
+      .AddUnsafeSolution("custom_use_case", "model_A")
+      .Finish();
+  Startup();
 
-  scenario.Finish();
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  model_broker_client_->CreateSession("custom_use_case", SessionConfigParams{},
+                                      session_future.GetCallback());
 
-  manifest_broker_state_ = std::make_unique<ManifestBrokerState>(
-      local_state_.local_state(), component_state_.CreateDelegate(),
-      fake_launcher_.LaunchFn());
-  model_broker_client_ = std::make_unique<ModelBrokerClient>(
-      manifest_broker_state_->BindAndPassRemoteBroker(), nullptr);
-
-  task_environment_.RunUntilIdle();
-
-  auto& subscriber = model_broker_client_->GetSubscriber("custom_use_case");
-  EXPECT_TRUE(model_broker_client_->HasSubscriber("custom_use_case"));
-  EXPECT_EQ(subscriber.unavailable_reason(), std::nullopt);
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
 }
 
 }  // namespace optimization_guide
