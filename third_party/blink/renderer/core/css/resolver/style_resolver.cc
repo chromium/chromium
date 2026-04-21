@@ -3325,7 +3325,6 @@ void StyleResolver::PropagateStyleToViewport() {
                    TextDirection::kLtr);
   }
 
-  // TODO(crbug.com/429459566): Add propagation of image-animation property.
   // Background
   {
     const ComputedStyle* background_style = document_element_style;
@@ -3340,8 +3339,15 @@ void StyleResolver::PropagateStyleToViewport() {
     Color background_color = Color::kTransparent;
     FillLayer background_layers(EFillLayerType::kBackground, true);
     EImageRendering image_rendering = EImageRendering::kAuto;
-
     if (background_style) {
+      // CSS Image Animation intentionally not support propagation from body
+      // https://drafts.csswg.org/css-image-animation-1/#image-animation
+      if (document_element_style && document_element_style->ImageAnimation() !=
+                                        ImageAnimationEnum::kNormal) {
+        new_viewport_style_builder.SetImageAnimation(
+            document_element_style->ImageAnimation());
+        changed = true;
+      }
       background_color = background_style->VisitedDependentColor(
           GetCSSPropertyBackgroundColor());
       background_layers = background_style->BackgroundLayers();

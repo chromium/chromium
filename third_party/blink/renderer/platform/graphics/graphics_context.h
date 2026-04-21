@@ -351,7 +351,8 @@ class PLATFORM_EXPORT GraphicsContext {
                       const ImageAutoDarkMode& auto_dark_mode,
                       const ImagePaintTimingInfo& paint_timing_info,
                       SkBlendMode = SkBlendMode::kSrcOver,
-                      RespectImageOrientationEnum = kRespectImageOrientation);
+                      RespectImageOrientationEnum = kRespectImageOrientation,
+                      ImageNodeAnimationInfo = ImageNodeAnimationInfo());
   void SetImagePainted(bool report_paint_timing);
   // These methods write to the canvas.
   // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and

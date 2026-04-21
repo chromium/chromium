@@ -252,7 +252,16 @@ void Image::DrawPattern(GraphicsContext& context,
   if (dest_rect.IsEmpty())
     return;  // nothing to draw
 
-  PaintImage image = PaintImageForCurrentFrame();
+  PaintImage image;
+  if (auto* bitmap = DynamicTo<BitmapImage>(this);
+      bitmap &&
+      draw_options.image_node_animation_info.node_id != kInvalidDOMNodeId) {
+    auto image_animation = draw_options.image_node_animation_info;
+    image = bitmap->PaintImageForCurrentFrameWithInfo(&image_animation);
+  } else {
+    image = PaintImageForCurrentFrame();
+  }
+
   if (!image)
     return;  // nothing to draw
 

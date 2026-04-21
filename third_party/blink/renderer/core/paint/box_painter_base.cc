@@ -818,7 +818,8 @@ void DrawTiledBackground(LocalFrame* frame,
                          const BackgroundImageGeometry& geometry,
                          SkBlendMode op,
                          RespectImageOrientationEnum respect_orientation,
-                         ImagePaintTimingInfo paint_timing_info) {
+                         ImagePaintTimingInfo paint_timing_info,
+                         ImageNodeAnimationInfo image_node_animation_info) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
   const PhysicalRect& snapped_dest = geometry.SnappedDestRect();
@@ -836,7 +837,8 @@ void DrawTiledBackground(LocalFrame* frame,
         *frame, style, dest_rect, *single_tile_src);
     context.DrawImage(image, Image::kSyncDecode, image_auto_dark_mode,
                       paint_timing_info, dest_rect, &*single_tile_src, op,
-                      respect_orientation);
+                      respect_orientation, Image::kClampImageToSourceRect,
+                      image_node_animation_info);
     return;
   }
 
@@ -882,7 +884,8 @@ void DrawTiledBackground(LocalFrame* frame,
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
   context.DrawImageTiled(image, dest_rect, tiling_info, image_auto_dark_mode,
-                         paint_timing_info, op, respect_orientation);
+                         paint_timing_info, op, respect_orientation,
+                         image_node_animation_info);
 }
 
 scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document& document,
@@ -1282,7 +1285,9 @@ void PaintFillLayerBackground(const Document& document,
         document.GetFrame(), context, style, *image, geometry, composite_op,
         info.respect_image_orientation,
         ComputeImagePaintTimingInfo(node, *image, *info.image, context,
-                                    gfx::RectF(geometry.SnappedDestRect())));
+                                    gfx::RectF(geometry.SnappedDestRect())),
+        ImageNodeAnimationInfo(node ? node->GetDomNodeId() : kInvalidDOMNodeId,
+                               style.ImageAnimation()));
   }
 }
 
