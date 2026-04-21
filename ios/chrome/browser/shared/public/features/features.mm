@@ -390,6 +390,10 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
 BASE_FEATURE(kEnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
+  if (!base::FeatureList::IsEnabled(
+          crypto::features::kMigrateIOSKeychainAccessibility)) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
 }
 
