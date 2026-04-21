@@ -803,6 +803,7 @@ class CORE_EXPORT HTMLMediaElement
   double playback_rate_ = 1.0;
   double default_playback_rate_ = 1.0;
   NetworkState network_state_ = kNetworkEmpty;
+  NetworkState network_state_maximum_ = kNetworkEmpty;
   ReadyState ready_state_ = kHaveNothing;
   ReadyState ready_state_maximum_ = kHaveNothing;
 
