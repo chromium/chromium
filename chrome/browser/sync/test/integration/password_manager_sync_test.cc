@@ -64,6 +64,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
@@ -711,16 +712,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_FALSE(bubble_observer.IsSavePromptAvailable());
 }
 
-// TODO(crbug.com/500570908): Enable the test.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
-#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
-  DISABLED_OfferToSaveNonPrimaryAccountCredential
-#else
-#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
-  OfferToSaveNonPrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_OfferToSaveNonPrimaryAccountCredential) {
+                       OfferToSaveNonPrimaryAccountCredential) {
   // Disable signin interception, because it suppresses the password bubble.
   // See PasswordManagerBrowserTestWithSigninInterception for tests with
   // interception enabled.
@@ -742,6 +735,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // shown.
   GetAllLoginsFromProfilePasswordStore();
   GetAllLoginsFromAccountPasswordStore();
+  // PasswordFormsParsed (sent at DOMContentLoaded) and DidFinishLoad travel
+  // over different Mojo interfaces, so the parsed IPC may still be queued on
+  // the browser side when NavigateToFileHttps() returns. Drain browser-side
+  // queues so PasswordManager has a PasswordFormManager for the form before
+  // submission; otherwise no save prompt is shown.
+  // TODO(crbug.com/500570908): Wait for a specific signal (ideally inside
+  // PasswordsNavigationObserver) instead of RunAllTasksUntilIdle().
+  content::RunAllTasksUntilIdle();
   FillAndSubmitPasswordForm(web_contents, "different-user@gmail.com", "pass");
 
   // Since the submitted credential is *not* for the primary account, Chrome
@@ -750,16 +751,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   bubble_observer.WaitForAutomaticSavePrompt();
 }
 
-// TODO(crbug.com/500570908): Enable the test.
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
-#define MAYBE_OfferToUpdatePrimaryAccountCredential \
-  DISABLED_OfferToUpdatePrimaryAccountCredential
-#else
-#define MAYBE_OfferToUpdatePrimaryAccountCredential \
-  OfferToUpdatePrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_OfferToUpdatePrimaryAccountCredential) {
+                       OfferToUpdatePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients());
 
   // The password for the primary account is already saved.
@@ -780,6 +773,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // shown.
   GetAllLoginsFromProfilePasswordStore();
   GetAllLoginsFromAccountPasswordStore();
+  // See the comment above the equivalent call in
+  // OfferToSaveNonPrimaryAccountCredential for why this is needed.
+  // TODO(crbug.com/500570908): Wait for a specific signal (ideally inside
+  // PasswordsNavigationObserver) instead of RunAllTasksUntilIdle().
+  content::RunAllTasksUntilIdle();
   FillAndSubmitPasswordForm(
       web_contents,
       GetClient(0)->GetEmailForAccount(SyncTestAccount::kDefaultAccount),
