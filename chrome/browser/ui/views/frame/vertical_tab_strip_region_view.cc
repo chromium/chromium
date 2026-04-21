@@ -1067,10 +1067,9 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> ho
     is_expanded_on_hover_ = false;
     return;
   }
-  // If expand on hover is locked (e.g. omnibox popup is open) or the window
-  // becomes inactive, then we should not enter the expand on hover state or
-  // exit it if already expanded.
-  if (force_collapse_lock_count_ > 0 || !IsFrameActive()) {
+  // If expand on hover is locked (e.g. omnibox popup is open), then we
+  // should not enter the expand on hover state or exit it if already expanded.
+  if (force_collapse_lock_count_ > 0) {
     if (is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/false);
       is_expanded_on_hover_ = false;
@@ -1082,6 +1081,18 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(std::optional<bool> ho
   // expanded, stay expanded. If collapsed, stay collapsed.
   if (keep_expanded_lock_count_ > 0) {
     ResetExpandOnHoverTimers();
+    return;
+  }
+
+  // If the window becomes inactive, then we should not enter the expand on
+  // hover state or exit it if already expanded. We evaluate this after the
+  // locks because IsFrameActive can also return false when a WebUI bubble is
+  // open.
+  if (!IsFrameActive()) {
+    if (is_expanded_on_hover_) {
+      AnimateExpandOnHover(/*expand=*/false);
+      is_expanded_on_hover_ = false;
+    }
     return;
   }
 

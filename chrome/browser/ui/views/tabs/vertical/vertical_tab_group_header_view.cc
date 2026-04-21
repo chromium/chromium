@@ -419,6 +419,10 @@ void VerticalTabGroupHeaderView::ShowContextMenuForViewImpl(
       true;
 #endif
 
+  if (!expand_on_hover_lock_) {
+    expand_on_hover_lock_ = delegate_->AcquireExpandOnHoverLock();
+  }
+
   editor_bubble_tracker_.Opened(
       delegate_->ShowGroupEditorBubble(kStopContextMenuPropagation));
 }
@@ -596,7 +600,10 @@ void VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
 }
 
 void VerticalTabGroupHeaderView::OnBubbleOpened() {
-  expand_on_hover_lock_ = delegate_->AcquireExpandOnHoverLock();
+  if (!expand_on_hover_lock_) {
+    expand_on_hover_lock_ = delegate_->AcquireExpandOnHoverLock();
+  }
+
   UpdateEditorBubbleButtonVisibility();
 }
 
@@ -617,6 +624,10 @@ void VerticalTabGroupHeaderView::ShowEditorBubble() {
   if (editor_bubble_tracker_.is_open()) {
     return;
   }
+  if (!expand_on_hover_lock_) {
+    expand_on_hover_lock_ = delegate_->AcquireExpandOnHoverLock();
+  }
+
   editor_bubble_tracker_.Opened(delegate_->ShowGroupEditorBubble(
       /*stop_context_menu_propagation=*/false));
 }
