@@ -33,13 +33,11 @@ class AccountManagerFacade;
 class GoogleServiceAuthError;
 
 // Test-related utilities that don't fit in either IdentityTestEnvironment or
-// IdentityManager itself. NOTE: Using these utilities directly is discouraged,
-// but sometimes necessary during conversion. Use IdentityTestEnvironment if
-// possible. These utilities should be used directly only if the production code
-// is using IdentityManager, but it is not yet feasible to convert the test code
-// to use IdentityTestEnvironment. Any such usage should only be temporary,
-// i.e., should be followed as quickly as possible by conversion of the test
-// code to use IdentityTestEnvironment.
+// IdentityManager itself. These utilities can be used directly when the
+// production code is using IdentityManager. Alternatively,
+// IdentityTestEnvironment can be used for tests that need more control over the
+// identity infrastructure (e.g. for intercepting and responding to access token
+// requests).
 namespace signin {
 
 struct CookieParamsForTest {
@@ -71,7 +69,6 @@ std::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
 // token). If a more specific configuration is needed, see
 // `MakeAccountAvailable(IdentityManager*, AccountAvailabilityOptions)`.
 //
-// NOTE: See disclaimer at top of file re: direct usage.
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email,
                                   ConsentLevel consent_level);
@@ -84,14 +81,12 @@ void SetAutomaticIssueOfAccessTokens(IdentityManager* identity_manager,
 // Sets a refresh token for the primary account (which must already be set).
 // Blocks until the refresh token is set. If |token_value| is empty a default
 // value will be used instead.
-// NOTE: See disclaimer at top of file re: direct usage.
 void SetRefreshTokenForPrimaryAccount(
     IdentityManager* identity_manager,
     const std::string& token_value = std::string());
 
 // Sets a special invalid refresh token for the primary account (which must
 // already be set). Blocks until the refresh token is set.
-// NOTE: See disclaimer at top of file re: direct usage.
 void SetInvalidRefreshTokenForPrimaryAccount(
     IdentityManager* identity_manager,
     signin_metrics::SourceForRefreshTokenOperation source =
@@ -99,7 +94,6 @@ void SetInvalidRefreshTokenForPrimaryAccount(
 
 // Removes any refresh token for the primary account, if present. Blocks until
 // the refresh token is removed.
-// NOTE: See disclaimer at top of file re: direct usage.
 void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
 
 // Makes the primary account (which must not already be set) available for the
@@ -112,7 +106,6 @@ void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
 // If a more specific configuration is needed, see
 // `MakeAccountAvailable(IdentityManager*, AccountAvailabilityOptions)`.
 //
-// NOTE: See disclaimer at top of file re: direct usage.
 AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         const std::string& email,
                                         ConsentLevel consent_level);
@@ -120,7 +113,6 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 #if !BUILDFLAG(IS_CHROMEOS)
 // Revokes sync consent from the primary account: the primary account is left
 // at ConsentLevel::kSignin.
-// NOTE: See disclaimer at top of file re: direct usage.
 // NOTE:`ConsentLevel::kSync` is deprecated, see the `ConsentLevel`
 // documentation.
 // TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
@@ -130,7 +122,6 @@ void RevokeSyncConsent(IdentityManager* identity_manager);
 
 // Clears the primary account, removes all accounts and revokes the sync
 // consent (if applicable). Blocks until the primary account is cleared.
-// NOTE: See disclaimer at top of file re: direct usage.
 void ClearPrimaryAccount(IdentityManager* identity_manager);
 
 // Waits until the primary account id at consent_level to be equal to
@@ -261,7 +252,6 @@ class AccountAvailabilityOptionsBuilder {
 // Blocks until the account is available. Returns the AccountInfo of the
 // newly-available account.
 //
-// NOTE: See disclaimer at top of file re: direct usage.
 AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
                                  const AccountAvailabilityOptions& options);
 
@@ -273,14 +263,12 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
 // If a more specific configuration is needed, see
 // `MakeAccountAvailable(IdentityManager*, AccountAvailabilityOptions)`.
 //
-// NOTE: See disclaimer at top of file re: direct usage.
 AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
                                  const std::string& email);
 
 // Sets a refresh token for the given account (which must already be available).
 // Blocks until the refresh token is set. If |token_value| is empty a default
 // value will be used instead.
-// NOTE: See disclaimer at top of file re: direct usage.
 void SetRefreshTokenForAccount(
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
@@ -289,7 +277,6 @@ void SetRefreshTokenForAccount(
 
 // Sets a special invalid refresh token for the given account (which must
 // already be available). Blocks until the refresh token is set.
-// NOTE: See disclaimer at top of file re: direct usage.
 void SetInvalidRefreshTokenForAccount(
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
@@ -299,7 +286,6 @@ void SetInvalidRefreshTokenForAccount(
 // Removes any refresh token that is present for the given account. Blocks until
 // the refresh token is removed. Is a no-op if no refresh token is present for
 // the given account.
-// NOTE: See disclaimer at top of file re: direct usage.
 void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
                                   const CoreAccountId& account_id);
 
@@ -308,7 +294,6 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
 // `test_url_loader_factory` is used to set a fake ListAccounts response
 // containing the provided `cookie_accounts`, which are then put into
 // the Gaia cookie.
-// NOTE: See disclaimer at top of file re: direct usage.
 void AddCookieAccount(IdentityManager* identity_manager,
                       network::TestURLLoaderFactory* test_url_loader_factory,
                       const CookieParamsForTest& cookie_account_to_add);
@@ -318,7 +303,6 @@ void AddCookieAccount(IdentityManager* identity_manager,
 // |test_url_loader_factory| is used to set a fake ListAccounts response
 // containing the provided |cookie_accounts|, which are then put into
 // the Gaia cookie.
-// NOTE: See disclaimer at top of file re: direct usage.
 void SetCookieAccounts(IdentityManager* identity_manager,
                        network::TestURLLoaderFactory* test_url_loader_factory,
                        const std::vector<CookieParamsForTest>& cookie_accounts);
