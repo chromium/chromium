@@ -8,7 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/core/browser/plus_address_service.h"
 #import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "components/plus_addresses/core/browser/plus_address_ui_utils.h"
@@ -23,8 +22,6 @@
 
 namespace {
 
-using PlusAddressModalCompletionStatus =
-    plus_addresses::metrics::PlusAddressModalCompletionStatus;
 using PlusAddressCreationBottomSheetErrorType =
     plus_addresses::PlusAddressCreationBottomSheetErrorType;
 
@@ -226,10 +223,8 @@ enum class PlusAddressAction {
                                         *maybePlusProfile->plus_address)];
       } else {
         // If the action failed, notify the error.
-        [self.consumer notifyError:PlusAddressModalCompletionStatus::
-                                       kReservePlusAddressError
-               withCreateErrorType:PlusAddressCreationBottomSheetErrorType::
-                                       kNoError];
+        [self.consumer
+            notifyError:PlusAddressCreationBottomSheetErrorType::kNoError];
         if (maybePlusProfile.error().IsQuotaError()) {
           [_delegate displayPlusAddressQuotaErrorAlert:YES];
         } else if (maybePlusProfile.error().IsTimeoutError()) {
@@ -248,9 +243,7 @@ enum class PlusAddressAction {
           // confirmed Plus Address.
           [self runAutofillCallback:confirmedPlusAddress];
         } else {
-          [self.consumer notifyError:PlusAddressModalCompletionStatus::
-                                         kConfirmPlusAddressError
-                 withCreateErrorType:PlusAddressCreationBottomSheetErrorType::
+          [self.consumer notifyError:PlusAddressCreationBottomSheetErrorType::
                                          kCreateAffiliation];
           _reservedPlusAddress = confirmedPlusAddress;
           // Show affiliation error.
@@ -260,10 +253,7 @@ enum class PlusAddressAction {
         plus_addresses::PlusAddressRequestError error =
             maybePlusProfile.error();
         // If the action failed, notify the error.
-        [self.consumer notifyError:plus_addresses::metrics::
-                                       PlusAddressModalCompletionStatus::
-                                           kConfirmPlusAddressError
-               withCreateErrorType:GetCreationErrorType(error)];
+        [self.consumer notifyError:GetCreationErrorType(error)];
         if (error.IsQuotaError()) {
           [_delegate displayPlusAddressQuotaErrorAlert:NO];
         } else if (error.IsTimeoutError()) {

@@ -20,7 +20,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/core/browser/plus_address_parsing_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -300,8 +299,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
           // Safe since this class owns the list of loaders.
           base::Unretained(this),
           loaders_.insert(loaders_.begin(), std::move(loader)),
-          PlusAddressNetworkRequestType::kReserve, base::TimeTicks::Now(),
-          std::move(on_completed)),
+          base::TimeTicks::Now(), std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
@@ -341,8 +339,7 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
           // Safe since this class owns the list of loaders.
           base::Unretained(this),
           loaders_.insert(loaders_.begin(), std::move(loader)),
-          PlusAddressNetworkRequestType::kCreate, base::TimeTicks::Now(),
-          std::move(on_completed)),
+          base::TimeTicks::Now(), std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
@@ -376,7 +373,6 @@ void PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal(
 base::expected<void, PlusAddressRequestError>
 PlusAddressHttpClientImpl::ProcessNetworkResponse(
     UrlLoaderList::iterator it,
-    PlusAddressNetworkRequestType type,
     base::TimeTicks request_start,
     base::optional_ref<std::string> response) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
@@ -385,15 +381,6 @@ PlusAddressHttpClientImpl::ProcessNetworkResponse(
   const std::optional<int> net_error =
       loader ? loader->NetError() : std::optional<int>();
   const std::optional<int> response_code = GetResponseCode(loader.get());
-
-  metrics::RecordNetworkRequestLatency(type,
-                                       base::TimeTicks::Now() - request_start);
-  if (net_error) {
-    metrics::RecordNetErrorCode(type, *net_error);
-  }
-  if (response_code) {
-    metrics::RecordNetworkRequestResponseCode(type, *response_code);
-  }
 
   if (net_error == net::ERR_TIMED_OUT) {
     return base::unexpected(
@@ -405,18 +392,16 @@ PlusAddressHttpClientImpl::ProcessNetworkResponse(
         PlusAddressRequestError::AsNetworkError(response_code));
   }
 
-  metrics::RecordNetworkRequestResponseSize(type, response->size());
   return base::ok();
 }
 
 void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     UrlLoaderList::iterator it,
-    PlusAddressNetworkRequestType type,
     base::TimeTicks request_start,
     PlusAddressRequestCallback on_completed,
     std::optional<std::string> response) {
   if (base::expected<void, PlusAddressRequestError> result =
-          ProcessNetworkResponse(it, type, request_start, response);
+          ProcessNetworkResponse(it, request_start, response);
       !result.has_value()) {
     std::move(on_completed).Run(base::unexpected(result.error()));
     return;
@@ -446,9 +431,7 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     PreallocatePlusAddressesCallback on_completed,
     std::optional<std::string> response) {
   if (base::expected<void, PlusAddressRequestError> result =
-          ProcessNetworkResponse(it,
-                                 PlusAddressNetworkRequestType::kPreallocate,
-                                 request_start, response);
+          ProcessNetworkResponse(it, request_start, response);
       !result.has_value()) {
     std::move(on_completed).Run(base::unexpected(result.error()));
     return;
@@ -500,7 +483,7 @@ void PlusAddressHttpClientImpl::OnTokenFetched(
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
-  metrics::RecordNetworkRequestOauthError(error);
+
   std::optional<std::string> access_token;
   if (error.state() == GoogleServiceAuthError::NONE) {
     access_token = access_token_info.token;

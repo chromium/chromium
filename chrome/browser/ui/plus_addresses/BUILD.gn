@@ -29,7 +29,6 @@ source_set("plus_addresses") {
       "//base",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
-      "//components/plus_addresses/core/browser/metrics",
       "//components/plus_addresses/core/browser/settings",
       "//components/plus_addresses/core/common:prefs",
       "//ui/menus",
@@ -48,7 +47,6 @@ source_set("plus_addresses") {
       "//components/autofill/core/common",
       "//components/plus_addresses/core/browser:hats_utils",
       "//components/plus_addresses/core/browser:plus_address_java_enums",
-      "//components/plus_addresses/core/browser/metrics",
       "//ui/gfx",
     ]
   }
@@ -148,7 +146,6 @@ source_set("unit_tests") {
     "//components/autofill/content/browser:test_support",
     "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser:test_support",
-    "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//components/plus_addresses/core/common:features",
     "//components/plus_addresses/core/common:prefs",

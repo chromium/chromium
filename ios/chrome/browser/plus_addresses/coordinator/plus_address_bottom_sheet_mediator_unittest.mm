@@ -10,7 +10,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/types/expected.h"
 #import "components/plus_addresses/core/browser/fake_plus_address_service.h"
-#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/core/browser/plus_address_service.h"
 #import "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #import "components/plus_addresses/core/browser/plus_address_types.h"
@@ -98,11 +97,8 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
   service().set_should_fail_to_reserve(true);
   OCMExpect([consumer_
-              notifyError:plus_addresses::metrics::
-                              PlusAddressModalCompletionStatus::
-                                  kReservePlusAddressError
-      withCreateErrorType:
-          plus_addresses::PlusAddressCreationBottomSheetErrorType::kNoError]);
+      notifyError:plus_addresses::PlusAddressCreationBottomSheetErrorType::
+                      kNoError]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -148,12 +144,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
                                 plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  OCMExpect([consumer_ notifyError:plus_addresses::metrics::
-                                       PlusAddressModalCompletionStatus::
-                                           kConfirmPlusAddressError
-               withCreateErrorType:plus_addresses::
-                                       PlusAddressCreationBottomSheetErrorType::
-                                           kCreateGeneric]);
+  OCMExpect([consumer_
+      notifyError:plus_addresses::PlusAddressCreationBottomSheetErrorType::
+                      kCreateGeneric]);
   service().set_should_fail_to_confirm(true);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);

@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/core/browser/plus_address_types.h"
 
 // Consumer for the plus_address bottom sheet. It is notified as required data
@@ -20,13 +19,10 @@
 // Used to indicate the successful confirmation of a plus address.
 - (void)didConfirmPlusAddress;
 
-// Used to indicate an error,`completionStatus` specifies whether error occur
-// during reservation or confirmation. `errorType` represents what kind of error
+// Used to indicate an error. `errorType` represents what kind of error
 // may have occurred during creation.
-- (void)notifyError:(plus_addresses::metrics::PlusAddressModalCompletionStatus)
-                        completionStatus
-    withCreateErrorType:
-        (plus_addresses::PlusAddressCreationBottomSheetErrorType)errorType;
+- (void)notifyError:
+    (plus_addresses::PlusAddressCreationBottomSheetErrorType)errorType;
 
 // Used to dismiss the bottom sheet.
 - (void)dismissBottomSheet;

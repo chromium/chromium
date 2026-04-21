@@ -100,7 +100,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // returns with error.
   base::expected<void, PlusAddressRequestError> ProcessNetworkResponse(
       UrlLoaderList::iterator it,
-      PlusAddressNetworkRequestType type,
       base::TimeTicks request_start,
       base::optional_ref<std::string> response);
 
@@ -108,7 +107,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // since they both use `loaders_for_creation_` and have the same return type.
   void OnReserveOrConfirmPlusAddressComplete(
       UrlLoaderList::iterator it,
-      PlusAddressNetworkRequestType type,
       base::TimeTicks request_start,
       PlusAddressRequestCallback on_completed,
       std::optional<std::string> response);

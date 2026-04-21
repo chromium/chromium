@@ -13,7 +13,6 @@
 #import "build/branding_buildflags.h"
 #import "components/grit/components_resources.h"
 #import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -34,8 +33,6 @@
 
 namespace {
 
-using PlusAddressModalCompletionStatus =
-    plus_addresses::metrics::PlusAddressModalCompletionStatus;
 using PlusAddressCreationBottomSheetErrorType =
     plus_addresses::PlusAddressCreationBottomSheetErrorType;
 
@@ -143,9 +140,6 @@ UIImageView* BrandingImageView() {
   UITextView* _description;
   // Record of the time the bottom sheet is shown.
   base::Time _bottomSheetShownTime;
-  // Error that occurred while bottom sheet is showing.
-  std::optional<PlusAddressModalCompletionStatus>
-      _bottomSheetModalCompletionErrorStatus;
   // Stores the error state info for failed creation requests.
   std::optional<PlusAddressCreationBottomSheetErrorType>
       _bottomSheetCreationErrorType;
@@ -230,31 +224,18 @@ UIImageView* BrandingImageView() {
 - (void)didReservePlusAddress:(NSString*)plusAddress {
   [self enablePrimaryActionButton:YES];
   _isGenerating = NO;
-  if (!_refreshCount) {
-    plus_addresses::metrics::RecordModalEvent(
-        plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
-        [_delegate shouldShowNotice]);
-  }
   _reservedPlusAddress = plusAddress;
-  _bottomSheetModalCompletionErrorStatus.reset();
   _bottomSheetCreationErrorType.reset();
   [_reservedPlusAddressTableView reloadData];
 }
 
 - (void)didConfirmPlusAddress {
-  plus_addresses::metrics::RecordModalShownOutcome(
-      PlusAddressModalCompletionStatus::kModalConfirmed,
-      base::Time::Now() - _bottomSheetShownTime,
-      /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-  _bottomSheetModalCompletionErrorStatus.reset();
   _bottomSheetCreationErrorType.reset();
   [self setLoading:NO];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
-- (void)notifyError:(PlusAddressModalCompletionStatus)completionStatus
-    withCreateErrorType:(PlusAddressCreationBottomSheetErrorType)errorType {
-  _bottomSheetModalCompletionErrorStatus = completionStatus;
+- (void)notifyError:(PlusAddressCreationBottomSheetErrorType)errorType {
   _bottomSheetCreationErrorType = errorType;
   [self setLoading:NO];
 }
@@ -445,34 +426,15 @@ UIImageView* BrandingImageView() {
 }
 
 - (void)dismiss {
-  const bool was_notice_shown = [_delegate shouldShowNotice];
-  plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
-      was_notice_shown);
-  plus_addresses::metrics::RecordModalShownOutcome(
-      _bottomSheetModalCompletionErrorStatus.value_or(
-          PlusAddressModalCompletionStatus::kModalCanceled),
-      base::Time::Now() - _bottomSheetShownTime,
-      /*refresh_count=*/(int)_refreshCount, was_notice_shown);
-  if (_bottomSheetModalCompletionErrorStatus) {
-    if (_bottomSheetCreationErrorType &&
-        _bottomSheetCreationErrorType.value() ==
-            PlusAddressCreationBottomSheetErrorType::kCreateAffiliation) {
+  if (_bottomSheetCreationErrorType) {
+    if (_bottomSheetCreationErrorType.value() ==
+        PlusAddressCreationBottomSheetErrorType::kCreateAffiliation) {
       base::RecordAction(
           base::UserMetricsAction("PlusAddresses.AffiliationErrorCanceled"));
-    } else if (_bottomSheetCreationErrorType &&
-               _bottomSheetCreationErrorType.value() ==
-                   PlusAddressCreationBottomSheetErrorType::kCreateQuota) {
+    } else if (_bottomSheetCreationErrorType.value() ==
+               PlusAddressCreationBottomSheetErrorType::kCreateQuota) {
       base::RecordAction(
           base::UserMetricsAction("PlusAddresses.QuotaErrorAccepted"));
-    } else if (*_bottomSheetModalCompletionErrorStatus ==
-               PlusAddressModalCompletionStatus::kReservePlusAddressError) {
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
-    } else if (*_bottomSheetModalCompletionErrorStatus ==
-               PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
     }
   }
 
@@ -527,9 +489,6 @@ UIImageView* BrandingImageView() {
   [self setLoading:YES];
 
   [_delegate confirmPlusAddress];
-  plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
-      [_delegate shouldShowNotice]);
 }
 
 // Enables/Disables the primary action button.

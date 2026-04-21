@@ -31,7 +31,6 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/core/browser/plus_address_allocator.h"
 #include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
@@ -550,8 +549,6 @@ bool PlusAddressServiceImpl::IsSupportedOrigin(
 
 void PlusAddressServiceImpl::RecordAutofillSuggestionEvent(
     SuggestionEvent suggestion_event) {
-  metrics::RecordAutofillSuggestionEvent(suggestion_event);
-
   using enum autofill::AutofillPlusAddressDelegate::SuggestionEvent;
   switch (suggestion_event) {
     case kRefreshPlusAddressInlineClicked:

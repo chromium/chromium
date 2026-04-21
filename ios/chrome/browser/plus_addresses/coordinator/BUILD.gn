@@ -13,7 +13,6 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/plus_addresses/core/browser",
-    "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/browser/settings",
     "//components/strings:components_strings_grit",
@@ -40,7 +39,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/plus_addresses/core/browser",
     "//components/plus_addresses/core/browser:test_support",
-    "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//ios/chrome/browser/plus_addresses/model",
