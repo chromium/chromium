@@ -13,15 +13,14 @@
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "net/ssl/openssl_private_key.h"
+#include "net/ssl/crypto_private_key.h"
 #include "net/ssl/ssl_private_key.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace client_certificates {
 
 ECPrivateKey::ECPrivateKey(crypto::keypair::PrivateKey key)
     : PrivateKey(PrivateKeySource::kSoftwareKey,
-                 net::WrapOpenSSLPrivateKey(bssl::UpRef(key.key()))),
+                 net::WrapCryptoPrivateKey(key)),
       key_(std::move(key)) {}
 
 ECPrivateKey::~ECPrivateKey() = default;
