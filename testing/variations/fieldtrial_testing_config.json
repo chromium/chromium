@@ -16515,6 +16515,21 @@
             ]
         }
     ],
+    "OmniboxItemDecoration": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxItemDecoration"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxLogURLScoringSignals": [
         {
             "platforms": [
