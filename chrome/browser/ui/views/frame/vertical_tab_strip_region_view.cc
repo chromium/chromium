@@ -1216,9 +1216,16 @@ void VerticalTabStripRegionView::AnimateExpandOnHover(bool expand) {
   ResetExpandOnHoverTimers();
 
   if (expand) {
+    expand_on_hover_start_time_ = base::TimeTicks::Now();
     base::RecordAction(
         base::UserMetricsAction("VerticalTabs_ExpandOnHover_Show"));
   } else {
+    if (expand_on_hover_start_time_.has_value()) {
+      base::UmaHistogramLongTimes(
+          "Tabs.VerticalTabs.ExpandOnHover.ShowDuration",
+          base::TimeTicks::Now() - expand_on_hover_start_time_.value());
+      expand_on_hover_start_time_.reset();
+    }
     base::RecordAction(
         base::UserMetricsAction("VerticalTabs_ExpandOnHover_Hide"));
   }

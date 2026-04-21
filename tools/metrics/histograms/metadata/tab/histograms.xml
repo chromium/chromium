@@ -3899,6 +3899,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.VerticalTabs.ExpandOnHover.ShowDuration" units="ms"
+    expires_after="2026-09-27">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how long the Vertical Tabstrip was expanded for (capped at 1 hour)
+    starting when the expand on hover is triggered. Note this might be different
+    than when the Tabstrip is fully expanded due to animation delays. Recorded
+    when the request is made to collapse the panel.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.VerticalTabs.State" enum="VerticalTabsState"
     expires_after="2026-08-30">
   <owner>dpenning@chromium.org</owner>

@@ -352,6 +352,7 @@ class VerticalTabStripRegionView final
 
   base::OneShotTimer expand_on_hover_timer_;
   bool is_expanded_on_hover_ = false;
+  std::optional<base::TimeTicks> expand_on_hover_start_time_;
   base::RetainingOneShotTimer expand_on_hover_heuristic_timer_;
   std::optional<gfx::Point> point_at_expand_on_hover_timer_start_;
   std::optional<base::TimeTicks> time_at_expand_on_hover_timer_start_;
