@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "NTP content script injection",
   "version": "1",
-  "description": "Test for crbug.com/844428",
+  "description": "Test for crbug.com/40091421",
   "content_scripts": [
     {
       "matches": [

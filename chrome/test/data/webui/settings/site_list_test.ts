@@ -611,7 +611,7 @@ suite('SiteListCookiesExceptionTypes', function() {
   });
 });
 
-// TODO(crbug.com/929455, crbug.com/1064002): Flaky test. When it is fixed,
+// TODO(crbug.com/41439813, crbug.com/40123519): Flaky test. When it is fixed,
 // merge SiteListDisabled back into SiteList.
 suite('DISABLED_SiteList', function() {
   /**

@@ -637,7 +637,7 @@ suite('<os-settings-languages-page-v2>', () => {
     });
 
     test('languages are sorted on native display name', () => {
-      // See https://crbug.com/1184064 for more details.
+      // See https://crbug.com/40171487 for more details.
       // We can't test whether the order is *deterministic* w.r.t. device
       // language, as changing device language is not possible in a test, so we
       // do the next best thing and check if it's sorted on native display name.

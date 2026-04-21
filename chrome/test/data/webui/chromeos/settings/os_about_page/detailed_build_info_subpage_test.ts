@@ -154,7 +154,7 @@ suite('<detailed-build-info-subpage>', () => {
           /**
            * Checks whether the "change channel" button state (enabled/disabled)
            * is correct before getChannelInfo() returns
-           * (see https://crbug.com/848750). Here, getChannelInfo() is blocked
+           * (see https://crbug.com/41392307). Here, getChannelInfo() is blocked
            * manually until after the button check.
            */
           test(

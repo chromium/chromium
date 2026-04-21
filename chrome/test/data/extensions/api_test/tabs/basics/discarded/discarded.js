@@ -49,7 +49,7 @@ chrome.test.runTests([
         }
       });
 
-      // TODO(georgesak): Remove tab update when http://crbug.com/632839 is
+      // TODO(georgesak): Remove tab update when http://crbug.com/41266867 is
       // resolved.
       // Discard and update testTab (the id changes after a tab is discarded).
       chrome.tabs.discard(testTab.id, pass(function(tab) {

@@ -54,7 +54,7 @@ chrome.test.runTests([
 
     // Setting a value in sync and local storage should notify the content
     // script, since access level doesn't affect session storage (see
-    // crbug.com/1508463) and has "trusted and untrusted" access by default. We
+    // crbug.com/40949182) and has "trusted and untrusted" access by default. We
     // do this to check session.onChanged didn't fire by checking if
     // local.onChanged fired, since events should be received in FIFO order.
     await chrome.storage.sync.set({notify: 'yes'});

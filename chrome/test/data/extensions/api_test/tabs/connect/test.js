@@ -179,7 +179,7 @@ chrome.test.runTests([
   },
 
   function sendRequestMultipleTabs() {
-    // Regression test for crbug.com/520303. Instruct the test tab to create
+    // Regression test for crbug.com/40431153. Instruct the test tab to create
     // another tab, then send a message to each. The bug was that the message
     // is sent to both, if they're in the same process.
     //

@@ -254,7 +254,7 @@ chrome.test.runTests([
     await doNavigationUrlTests(
         url, '\\bar.pdf', 'http://www.example.com/subdir//bar.pdf');
 
-    // Regression test for https://crbug.com/569040
+    // Regression test for https://crbug.com/41228426
     await doNavigationUrlTests(
         url, 'http://something.else/foo#page=5',
         'http://something.else/foo#page=5');

@@ -6,7 +6,7 @@
 // chrome/test/data/extensions/api_test/file_system
 
 // TODO(sammc): Merge the changes back to the original test_util.js. See
-// http://crbug.com/280942.
+// http://crbug.com/41042737.
 function checkEntry(entry, expectedName, isNew, shouldBeWritable) {
   chrome.test.assertEq(expectedName, entry.name);
 

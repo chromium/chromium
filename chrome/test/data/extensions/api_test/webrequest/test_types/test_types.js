@@ -60,7 +60,7 @@ function getScriptFilter() {
   // We have plenty of tests that confirm that requests are visible when no
   // filter is applied. We also need to check whether the requests are still
   // visible even after applying a "script" filter.
-  // This is part of the regression test for crbug.com/591988.
+  // This is part of the regression test for crbug.com/41242326.
   return {urls: ['<all_urls>'], types: ['script']};
 }
 

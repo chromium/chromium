@@ -11,7 +11,7 @@ class HistoryFocusTest : public WebUIMochaFocusTest {
   HistoryFocusTest() { set_test_loader_host(chrome::kChromeUIHistoryHost); }
 };
 
-// Flaky, https://crbug.com/1200678
+// Flaky, https://crbug.com/40761961
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Toolbar DISABLED_Toolbar
 #else
@@ -22,7 +22,7 @@ IN_PROC_BROWSER_TEST_F(HistoryFocusTest, MAYBE_Toolbar) {
 }
 #undef MAYBE_All
 
-// Flaky. See crbug.com/1040940.
+// Flaky. See crbug.com/40667659.
 IN_PROC_BROWSER_TEST_F(HistoryFocusTest, DISABLED_List) {
   RunTest("history/history_list_focus_test.js", "mocha.run()");
 }

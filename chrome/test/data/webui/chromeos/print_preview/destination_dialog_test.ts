@@ -100,7 +100,7 @@ suite('DestinationDialogTest', function() {
 
   // Test that destinations are correctly displayed in the lists when all
   // printers have been preloaded before the dialog is opened. Regression test
-  // for https://crbug.com/1330678.
+  // for https://crbug.com/40227253.
   test(
       'PrinterListPreloaded', async () => {
         // All printers are fetched at startup since both native and extension

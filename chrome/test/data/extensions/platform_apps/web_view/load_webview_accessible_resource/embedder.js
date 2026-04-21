@@ -225,7 +225,7 @@ function testLoadWebviewInaccessibleResource() {
 
 // Initially navigate a webview to a webview accessible resource, then navigate
 // to a regular web page. The web page should have access to cookies. See
-// https://crbug.com/1417528 .
+// https://crbug.com/40894120 .
 function testCookiesEnabledAfterWebviewAccessibleResource() {
   let webview = document.querySelector('webview');
   let firstLoad = true;

@@ -21,7 +21,7 @@ chrome.test.runTests([
 
   // Setting incomplete default options should merge with already-set fields
   // from the manifset panel.
-  // Regression for crbug.com/1403071.
+  // Regression for crbug.com/40251404.
   async function defaultSetAndGetPanelUpsertManifest() {
     // Disable the default panel.
     await chrome.sidePanel.setOptions({enabled: false});

@@ -8,7 +8,7 @@
 # Note that to run Android tests you must have the following line in
 # .gclient (in the parent directory of src):  target_os = [ 'android' ]
 # to get the appropriate adb version for ChromeDriver.
-# TODO (crbug.com/857239): Remove above comment when adb version
+# TODO (crbug.com/41397243): Remove above comment when adb version
 # is updated in Devil.
 
 import argparse
@@ -92,7 +92,7 @@ _NEGATIVE_FILTER = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=833
     # The test fails reliably.
     'ChromeDriverTest.testAlertOnNewWindow',
-    # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
+    # Flaky https://crbug.com/40728552
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
     # crbug.com/40096991. Reliable page crash.
     'BidiTest.testOpenMultipleTabsInJavaScript',
@@ -118,14 +118,14 @@ _OS_SPECIFIC_FILTER['mac'] = [
     # Flaky: https://crbug.com/446461733 (consistently times out on first attempt
     # then succeeds on retry)
     'ChromeDriverTest.testDoesntCrashOnClosingBrowserFromAsyncScript',
-    # Flaky: https://crbug.com/1156576.
+    # Flaky: https://crbug.com/40736000.
     'ChromeDriverTestLegacy.testContextMenuEventFired',
-    # Flaky: https://crbug.com/1336871.
+    # Flaky: https://crbug.com/40848017.
     'ChromeDriverTest.testTakeLargeElementScreenshot',
     # Flaky: https://crbug.com/333826980 (fails in 80% of cases on mac-arm64)
     # Error message: Timed out receiving message from renderer: 10.000
     'ChromeDriverTest.testTakeLargeElementViewportScreenshot',
-    # Flaky: https://crbug.com/1496826.
+    # Flaky: https://crbug.com/40938621.
     'PureBidiTest.testParallelConnectionIsClosedOnSessionEnd',
     'PureBidiTest.testSessionCommandInEndedSession',
     # https://issues.chromium.org/issues/42323658
@@ -160,7 +160,7 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     # fully loaded.
     # See: https://crbug.com/chromedriver/4624
     'ChromeDriverTest.testSlowIFrame',
-    # https://crbug.com/706008
+    # https://crbug.com/41309918
     # chrome-headless-shell does not support extensions
     'ChromeExtensionsCapabilityTest.*',
     # chrome-headless-shell does not support chrome:about page
@@ -183,7 +183,7 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
 }
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     # Unable to run chrome-headless-shell with logging enabled on Mac. See
-    # crbug.com/1011000.
+    # crbug.com/40101714.
     'ChromeLogPathCapabilityTest.testChromeLogPath',
     # https://crbug.com/chromedriver/4632
     # chrome-headless-shell ignores the selected range while inserting the text
@@ -194,7 +194,7 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     'ComputePressureSpecificTest.testRemoveVirtualPressureSourceWhileInUse',
 ]
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['win'] = [
-    # https://bugs.chromium.org/p/chromium/issues/detail?id=1196363
+    # https://crbug.com/40176424
     'ChromeDriverTest.testWindowFullScreenHeadless',
 ]
 
@@ -224,7 +224,7 @@ _INTEGRATION_NEGATIVE_FILTER = [
     # PerfTest takes a long time, requires extra setup, and adds little value
     # to integration testing.
     'PerfTest.*',
-    # Flaky: https://crbug.com/899919
+    # Flaky: https://crbug.com/41423249
     'SessionHandlingTest.testGetSessions',
     # Flaky due to occasional timeout in starting Chrome
     'ZChromeStartRetryCountTest.testChromeStartRetryCount',
@@ -251,7 +251,7 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         'ChromeExtensionsCapabilityTest.*',
         'MobileEmulationCapabilityTest.*',
         'ChromeDownloadDirTest.*',
-        # https://crbug.com/274650
+        # https://crbug.com/41037474
         'ChromeDriverTest.testCloseWindow',
         # Most window operations don't make sense on Android.
         'ChromeDriverTest.testWindowFullScreen',
@@ -2972,7 +2972,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertGreaterEqual(actual_throughput_kbps, throughput_kbps / 1.5)
 
   def testEmulateNetworkConditionsOffline(self):
-    # A workaround for crbug.com/177511; when setting offline, the throughputs
+    # A workaround for crbug.com/40302625; when setting offline, the throughputs
     # must be 0.
     self._driver.SetNetworkConditions(0, 0, 0, offline=True)
     self.assertRaises(chromedriver.ChromeDriverException,
@@ -3066,7 +3066,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     """Checks that chromedriver can call Click on an element in a shadow DOM."""
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/shadow_dom_test.html'))
-    # Wait for page to stabilize. See https://crbug.com/954553#c7
+    # Wait for page to stabilize. See https://crbug.com/41453869#c7
     time.sleep(1)
     elem = self._FindElementInShadowDom(
         ["#innerDiv", "#parentDiv", "#button"])
@@ -3081,7 +3081,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     shadow DOM.'''
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/shadow_dom_test.html'))
-    # Wait for page to stabilize. See https://crbug.com/954553#c7
+    # Wait for page to stabilize. See https://crbug.com/41453869#c7
     time.sleep(1)
     elem = self._FindElementInShadowDom(
         ['#innerDiv', '#parentDiv', '#button'])
@@ -3555,7 +3555,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
               // pixel. Since no later Mac version, nor any other platform,
               // exhibits this problem, we assume this is due to a bug in this
               // specific version of Mac OS. So, just log the error and pass
-              // the test. http://crbug.com/913603
+              // the test. http://crbug.com/40605853
               if (navigator.userAgent.indexOf('Mac OS X 10_10') != -1) {
                 console.error(message);
                 console.error('Passing test due to Mac 10.10-specific bug.');
@@ -7900,7 +7900,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
 
   def testHelpfulErrorMessage_NormalExitIfTimedOut(self):
     """If Chrome times out to start, we should provide a useful error message.
-    This is a regression test for https://crbug.com/1467496
+    This is a regression test for https://crbug.com/40924409
     """
     if util.IsWindows():
       # Not implemented on Windows due to the same reasons as explained in
@@ -8073,7 +8073,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
     # client/chromedriver.py
     chrome_switches = []
     if sys.platform.startswith('linux') and android_package is None:
-      # Workaround for crbug.com/611886.
+      # Workaround for crbug.com/40469290.
       chrome_switches.append('no-sandbox')
       # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1695
       chrome_switches.append('disable-gpu')

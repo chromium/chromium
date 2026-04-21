@@ -7,7 +7,7 @@ window.runTests = function(log) {
   /*
     //
     ---------------------------------------------------------------------------
-    // Test fixes for <http://crbug.com/156448>:
+    // Test fixes for <http://crbug.com/40291669>:
 
     run.test('Twenty eight can be divided by three', '28 / 3 = [9.3333333]');
     run.test('Twenty nine can be divided by three', '29 / 3 = [9.6666667]');
@@ -18,7 +18,7 @@ window.runTests = function(log) {
 
     //
     ---------------------------------------------------------------------------
-    // Test fixes for <http://crbug.com/156449>:
+    // Test fixes for <http://crbug.com/40291670>:
 
     // run.test('Equals without operator results in operand value',
     //          '123 = [123]');
@@ -32,7 +32,7 @@ window.runTests = function(log) {
 
     //
     ---------------------------------------------------------------------------
-    // Test fixes for <http://crbug.com/156450>:
+    // Test fixes for <http://crbug.com/40291671>:
 
     // run.test('Operand can be erased and replaced',
     //          '123 + 456 < < < < 789 = [789]');
@@ -51,7 +51,7 @@ window.runTests = function(log) {
 
     //
     ---------------------------------------------------------------------------
-    // Test fixes for <http://crbug.com/156451>:
+    // Test fixes for <http://crbug.com/40291672>:
 
     // run.test('Negation applies to zero', '~ [[-0]]');
     // run.test('Negation applies before input', '~ 123 = [[-123]]');
@@ -70,7 +70,7 @@ window.runTests = function(log) {
 
     //
     ---------------------------------------------------------------------------
-    // Test fixes for <http://crbug.com/156452>:
+    // Test fixes for <http://crbug.com/40291673>:
 
     // TODO(dharcourt): Test the display for the expected output.
     // TODO(dharcourt): Make the test utilities support 'error'.
@@ -88,7 +88,7 @@ window.runTests = function(log) {
 
     //
     ---------------------------------------------------------------------------
-    // Test fixes for <http://crbug.com/156453>:
+    // Test fixes for <http://crbug.com/40291674>:
 
     // run.test('Common operations are reversible',
     //          '1 / 3 * 3 = [[1]]');

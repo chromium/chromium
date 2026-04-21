@@ -31,7 +31,7 @@ suite('cr-policy-network-indicator-mojo', function() {
   });
 
   teardown(function() {
-    PolymerTest.clearBody();  // crbug.com/680169
+    PolymerTest.clearBody();  // crbug.com/40501029
   });
 
   test('hidden by default', function() {

@@ -21,7 +21,7 @@ suite('TabSearchAppTest', () => {
   let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
 
-  // http://crbug.com/1481787: Replace this function with
+  // http://crbug.com/40072096: Replace this function with
   // tabSearchPage.setValue() to be able to reproduce the bug.
   function setSearchText(text: string) {
     tabSearchPage.getSearchInput().value = text;

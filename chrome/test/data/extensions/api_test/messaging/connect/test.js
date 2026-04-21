@@ -289,7 +289,7 @@ chrome.test.getConfig(function(config) {
     },
 
     // Tests that a message which fails to serialize prints an error and
-    // doesn't send (http://crbug.com/263077).
+    // doesn't send (http://crbug.com/40326014).
     function unserializableMessage() {
       try {
         chrome.tabs.connect(testTab.id).postMessage(function() {
@@ -376,7 +376,7 @@ chrome.test.getConfig(function(config) {
     // Tests that chrome.runtime.sendMessage is *not* delivered to the current
     // context, consistent behavior with chrome.runtime.connect() and web APIs
     // like localStorage changed listeners.
-    // Regression test for http://crbug.com/479951.
+    // Regression test for http://crbug.com/41169849.
     function sendMessageToCurrentContextFails() {
       const stopFailing = failWhileListening(chrome.runtime.onMessage);
       chrome.runtime.sendMessage('ping', chrome.test.callbackFail(
@@ -390,7 +390,7 @@ chrome.test.getConfig(function(config) {
     // Like sendMessageToCurrentContextFails, but with the sendMessage call not
     // given a callback. This requires a more creative test setup because there
     // is no callback to signal when it's supposed to have been done.
-    // Regression test for http://crbug.com/479951.
+    // Regression test for http://crbug.com/41169849.
     //
     // NOTE(kalman): This test is correct. However, the patch which fixes it
     // (see bug) was reverted, and I don't plan on resubmitting, so instead

@@ -156,11 +156,11 @@ function testCreate() {
             id: 'createTwiceUnfocusFocus', focused: true,
             innerBounds: { width: 200, height: 200 }
           }, callbackPass(function() {
-            // This test fails on Linux GTK, see http://crbug.com/325219
+            // This test fails on Linux GTK, see http://crbug.com/40343516
             // And none of those tests run on Linux Aura, see
-            // http://crbug.com/325142
+            // http://crbug.com/40343495
             // We remove this and disable the entire test for Linux GTK when the
-            // test will run on other platforms, see http://crbug.com/328829
+            // test will run on other platforms, see http://crbug.com/41080386
             if (navigator.platform.indexOf('Linux') != 0)
               testWindowGetsFocus(win);
           }));
@@ -179,11 +179,11 @@ function testShow() {
       }, callbackPass(function(win) {
         win.contentWindow.onload = callbackPass(function() {
           win.show();
-          // This test fails on Linux GTK, see http://crbug.com/325219
+          // This test fails on Linux GTK, see http://crbug.com/40343516
           // And none of those tests run on Linux Aura, see
-          // http://crbug.com/325142
+          // http://crbug.com/40343495
           // We remove this and disable the entire test for Linux GTK when the
-          // test will run on other platforms, see http://crbug.com/328829
+          // test will run on other platforms, see http://crbug.com/41080386
           if (navigator.platform.indexOf('Linux') != 0)
             testWindowGetsFocus(win);
         });
@@ -208,11 +208,11 @@ function testShow() {
         win.contentWindow.onload = callbackPass(function() {
           win.show(true);
           win.show(false);
-          // This test fails on Linux GTK, see http://crbug.com/325219
+          // This test fails on Linux GTK, see http://crbug.com/40343516
           // And none of those tests run on Linux Aura, see
-          // http://crbug.com/325142
+          // http://crbug.com/40343495
           // We remove this and disable the entire test for Linux GTK when the
-          // test will run on other platforms, see http://crbug.com/328829
+          // test will run on other platforms, see http://crbug.com/41080386
           if (navigator.platform.indexOf('Linux') != 0)
             testWindowGetsFocus(win);
         });

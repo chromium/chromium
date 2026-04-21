@@ -285,7 +285,7 @@ class CommandExecutor(object):
     self._server_url = server_url
     parsed_url = urlparse(server_url)
     self._http_timeout = 10
-    # see https://crbug.com/1045241: short timeout seems to introduce flakiness
+    # see https://crbug.com/40115943: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
       self._http_timeout = 60
     if http_timeout is not None:

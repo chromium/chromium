@@ -77,7 +77,7 @@ suite('ExtensionManagerUnitTest', function() {
 
     // Test that updates to different extensions does not change which
     // extension the activity log points to. Regression test for
-    // https://crbug.com/924373.
+    // https://crbug.com/40610649.
     service.itemStateChangedTarget.callListeners({
       event_type: chrome.developerPrivate.EventType.PREFS_CHANGED,
       extensionInfo: secondExtension,

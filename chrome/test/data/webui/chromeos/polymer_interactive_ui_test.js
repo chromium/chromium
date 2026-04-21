@@ -16,7 +16,7 @@ PolymerInteractiveUITest.prototype = {
   /** @override */
   testGenPreamble: function() {
     // Must explicitly focus the web contents before running the test on Mac.
-    // See: https://crbug.com/642467.
+    // See: https://crbug.com/41272840.
     GEN('  browser()->tab_strip_model()->GetActiveWebContents()->Focus();');
   },
 };

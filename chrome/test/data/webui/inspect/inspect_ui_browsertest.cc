@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, ReloadCrash) {
                                            GURL(chrome::kChromeUIInspectURL)));
 }
 
-// Disabled due to excessive flakiness. http://crbug.com/1304812
+// Disabled due to excessive flakiness. http://crbug.com/40826687
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LaunchUIDevtools DISABLED_LaunchUIDevtools
 #else

@@ -454,7 +454,7 @@ suite('CustomMarginsTest', function() {
   // Test that setting the margin controls with their textbox inputs updates
   // the custom margins setting, using a metric measurement system with a ','
   // as the decimal delimiter and '.' as the thousands delimiter. Regression
-  // test for https://crbug.com/1005816.
+  // test for https://crbug.com/40648464.
   test(
       'SetControlsWithTextboxMetric', function() {
         measurementSystem =

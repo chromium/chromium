@@ -2,7 +2,7 @@
   "name": "webRequest",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "Regression test for crbug.com/934398.",
+  "description": "Regression test for crbug.com/40614965.",
   "permissions": ["webRequest", "<all_urls>"],
   "incognito": "split",
   "background": {

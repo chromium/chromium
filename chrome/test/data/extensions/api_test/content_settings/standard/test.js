@@ -36,7 +36,7 @@ const settings = {
   unsandboxedPlugins: 'block',  // Should be ignored.
   microphone: 'block',
   camera: 'block',
-  // Conditionally enabled. See crbug.com/1501857
+  // Conditionally enabled. See crbug.com/40942174
   clipboard: 'block',
   automaticDownloads: 'block',
   sound: 'block',

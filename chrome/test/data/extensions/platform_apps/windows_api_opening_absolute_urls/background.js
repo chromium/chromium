@@ -17,7 +17,7 @@ chrome.test.runTests([
     });
   },
   function openFileUrlFails() {
-    // Attempting to opening a file URL should fail. https://crbug.com/1276046.
+    // Attempting to opening a file URL should fail. https://crbug.com/40058104.
     chrome.test.getConfig((config) => {
       // The customArg provided by the C++ points to a file URL in the test
       // data directory.

@@ -23,7 +23,7 @@ function assertIsSameSetOfTabs(list_a, list_b, id_field_name) {
 // tests, we have to be extra-careful to not pollute state between tests. Tests
 // should be completely sure that capture state is as expected before exiting,
 // otherwise the next test in the suite will fail. For context, see
-// https://crbug.com/764464 for some of the motivation here.
+// https://crbug.com/41344172 for some of the motivation here.
 const CaptureState = {
   kPending: 'pending',
   kActive: 'active',

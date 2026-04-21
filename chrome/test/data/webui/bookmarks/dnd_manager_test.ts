@@ -408,7 +408,7 @@ suite('drag and drop', function() {
     assertDragStyle(dragTarget, DragStyle.BELOW);
   });
 
-  // This is a regression test for https://crbug.com/974525.
+  // This is a regression test for https://crbug.com/41465126.
   test(
       'drag bookmark that is not in selected folder but in search result',
       async function() {

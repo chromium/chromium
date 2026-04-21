@@ -21,5 +21,5 @@ an integer starting at 1 to differentiate different versions on the same day.
 After uploading a new version to CIPD, the data need to be rolled into Chromium
 by updating the version referenced in the root `DEPS` file.
 
-Generating the data at build time is slow and has [caused](https://crbug.com/696529)
-[issues](https://crbug.com/817663) on the bots in the past.
+Generating the data at build time is slow and has [caused](https://crbug.com/40508310)
+[issues](https://crbug.com/40565229) on the bots in the past.

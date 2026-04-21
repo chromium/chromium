@@ -224,7 +224,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  // Regression test for https://crbug.com/1202725.
+  // Regression test for https://crbug.com/40763077.
   function testGetMostVisiblePageZeroSize() {
     // This happens when the PDF is in a hidden iframe.
     const mockWindow = new MockElement(0, 0, null);
@@ -1208,7 +1208,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  // Regression test for https://crbug.com/1123976
+  // Regression test for https://crbug.com/40147191
   async function testPinchZoomingUnsetsPageFitting() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);

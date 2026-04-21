@@ -206,7 +206,7 @@ chrome.test.runTests([
   // Test that if two updateContentScripts calls are made in quick succession,
   // then both calls should succeed in updating their scripts and the old
   // version of these scripts are overwritten.
-  // Regression for crbug.com/1454710.
+  // Regression for crbug.com/40917063.
   async function parallelUpdateContentScriptsCalls() {
     await chrome.scripting.unregisterContentScripts();
     const scripts = [

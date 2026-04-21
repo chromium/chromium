@@ -8,7 +8,7 @@
  * The resolver has a |promise| that can be resolved or rejected using |resolve|
  * or |reject|.
  */
-// TODO(hbos): Remove when no longer needed. https://crbug.com/793808
+// TODO(hbos): Remove when no longer needed. https://crbug.com/40554156
 class Resolver {
   constructor() {
     let promiseResolve;
@@ -23,7 +23,7 @@ class Resolver {
 }
 
 // TODO(hbos): Make this an external/wpt/webrtc/ test when video elements are
-// updated by received webrtc streams in content_shell. https://crbug.com/793808
+// updated by received webrtc streams in content_shell. https://crbug.com/40554156
 async function testRTCRtpSenderReplaceTrackSendsNewVideoTrack() {
   const redCanvas = document.getElementById('redCanvas');
   const redCanvasStream = redCanvas.captureStream(10);

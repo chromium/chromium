@@ -320,7 +320,7 @@ suite('RuntimeHostPermissions', function() {
         1);
 
     // Verify that the dialog does not want to update the old host access.
-    // Regression test for https://crbug.com/903082.
+    // Regression test for https://crbug.com/41425094.
     const newDialog =
         element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!newDialog);

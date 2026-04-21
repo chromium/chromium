@@ -388,7 +388,7 @@ const testPendingCallback = function() {
   }
 }
 
-// See http://crbug.com/418229.
+// See http://crbug.com/41134291.
 const testUsingTCPSocketOnUDPMethods = function() {
   if (protocol == 'udp') {
     socket.create('tcp', function(createInfo) {

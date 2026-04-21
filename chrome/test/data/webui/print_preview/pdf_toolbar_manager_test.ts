@@ -180,7 +180,7 @@ suite('PdfToolbarManagerTest', function() {
     assertTrue(zoomToolbar.isVisible());
 
     // Simulate re-focusing the zoom toolbar with the tab key. See
-    // https://crbug.com/982694.
+    // https://crbug.com/41470055.
     zoomToolbar.$.fitButton.dispatchEvent(
         new CustomEvent('keyup', {bubbles: true, composed: true}));
     mockWindow.runTimeout();

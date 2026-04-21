@@ -2631,7 +2631,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
       WaitForHide(kWebContentsElementId),
       // This has to be done on a fresh message loop.
       // For some reason, this does not reliably trigger page
-      // reload on Mac (see crbug.com/1447298).
+      // reload on Mac (see crbug.com/40268930).
       SelectTab(kTabStripElementId, 0), WaitForShow(kWebContentsElementId));
 }
 

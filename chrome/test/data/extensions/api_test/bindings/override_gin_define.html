@@ -16,7 +16,7 @@ var succeed = function() {
   document.getElementById('status').textContent = 'success';
 }
 
-// Repro from crbug.com/549986.
+// Repro from crbug.com/40083109.
 Object.prototype.__defineSetter__('define', function(v) {
   if (typeof v == 'function') {
     addError('Leaked gin define');

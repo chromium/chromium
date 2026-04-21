@@ -314,7 +314,7 @@ suite('<settings-internet-subpage>', () => {
       internetSubpage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
     });
 
-    // Regression test for https://crbug.com/1197342.
+    // Regression test for https://crbug.com/40760096.
     test('pSIM section shows when cellularNetworks present', async () => {
       createSubpage();
       await initSubpage();

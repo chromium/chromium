@@ -216,7 +216,7 @@ suite('HistoryListTest', function() {
         getHistoryData().map(i => i.title));
   });
 
-  // See http://crbug.com/845802.
+  // See http://crbug.com/41390626.
   test('DisablingCtrlAOnSyncedTabsPage', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     app.shadowRoot.querySelector('history-router')!.selectedPage = 'syncedTabs';

@@ -92,7 +92,7 @@ suite('<settings-scheduler-slider>', () => {
 
   test('prefStartTime and prefEndTime should have default values', () => {
     // Test that prefStartTime.value and prefEndTime.value are set
-    // (crbug.com/1232075).
+    // (crbug.com/40190973).
     slider = document.createElement('settings-scheduler-slider');
     flush();
     const kDefaultStartTimeOffsetMinutes = 18 * 60;

@@ -22,7 +22,7 @@ CertificateManagerDialogWebUITest.prototype = {
   isAsync: true,
 };
 
-// crbug.com/682497
+// crbug.com/41295745
 GEN('#if defined(ADDRESS_SANITIZER)');
 GEN('#define MAYBE_Basic DISABLED_Basic');
 GEN('#else');

@@ -43,7 +43,7 @@ chrome.test.runTests([
         chrome.test.callbackFail(kPortErrorMessage));
   },
 
-  // Regression test for crbug.com/597698
+  // Regression test for crbug.com/41245808
   function sendMessageNoCallback() {
     const f = document.createElement('iframe');
     const onMessageInFrame = chrome.test.callbackPass(function(msg) {
@@ -61,7 +61,7 @@ chrome.test.runTests([
     document.body.appendChild(f);
   },
 
-  // Regression test for crbug.com/597698
+  // Regression test for crbug.com/41245808
   function connectAndDisconnectInIframe() {
     const gotMessage = chrome.test.callbackAdded();
     const gotDisconnect = chrome.test.callbackAdded();

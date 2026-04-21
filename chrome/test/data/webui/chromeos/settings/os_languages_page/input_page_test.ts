@@ -1030,7 +1030,7 @@ suite('<os-settings-input-page>', () => {
     });
 
     test('removing all languages, then adding enabled language works', () => {
-      // See https://crbug.com/1197386 for more information.
+      // See https://crbug.com/40176908 for more information.
       // Remove en-US so there are no spell check languages.
       const spellCheckLanguageToggle =
           spellCheckList[0]!.querySelector('cr-icon-button');

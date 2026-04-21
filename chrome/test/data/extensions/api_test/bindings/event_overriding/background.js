@@ -10,7 +10,7 @@ function test() {
     chrome.windows.remove(w.id);
   });
 
-  // Regression test for http://crbug.com/436593 (dotted api names).
+  // Regression test for http://crbug.com/40395582 (dotted api names).
   chrome.system.storage.onAttached.addListener(function () {
   });
 
@@ -25,7 +25,7 @@ function test() {
     chrome.windows.onRemoved.removeListener(listener);
     chrome.windows.onRemoved.addListener(listener);
 
-    // Regression test for http://crbug.com/436593 (dotted api names).
+    // Regression test for http://crbug.com/40395582 (dotted api names).
     chrome.system.storage.onAttached.addListener(function () {
     })
     chrome.test.succeed();

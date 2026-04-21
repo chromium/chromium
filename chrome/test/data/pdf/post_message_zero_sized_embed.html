@@ -6,7 +6,7 @@
   verify that the BrowserPlugin and MimeHandlerViewFrameContainer are created and
   the extension properly loaded. This is for a regression in slides/ pages where
   post messaging to <embed> should pop up print preview (only on Chrome). For
-  for context see https://crbug.com/763812.
+  for context see https://crbug.com/41343805.
 */
   window.addEventListener('load', attachPdfAndPostMessage);
   window.addEventListener('message', onMessageReceived);

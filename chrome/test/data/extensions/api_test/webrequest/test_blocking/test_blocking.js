@@ -33,7 +33,7 @@ function getURLHttpScriptJS() {
 function getDummyScriptDataURL() {
   let scriptText = `fetch('./fetch');\n`;
   // Make the script larger than 1K to check the behavior of code cache
-  // generation. See: crbug.com/782793.
+  // generation. See: crbug.com/40548802.
   for (let i = 0; i < 100; ++i) {
     scriptText += '/**********/\n';
   }
@@ -226,7 +226,7 @@ function simpleLoadIgnoreOnBeforeSendHeadersInvalidHeaders() {
 // should continue as if the headers were not changed.
 function simpleLoadIgnoreOnBeforeSendHeadersInvalidResponse() {
   // Exception handling seems to break this test, so disable it.
-  // See http://crbug.com/370897. TODO(robwu): Fix me.
+  // See http://crbug.com/40364436. TODO(robwu): Fix me.
   chrome.test.setExceptionHandler(function(){});
   expect(
     [  // events
@@ -1214,7 +1214,7 @@ async function asyncXhrsFromOurselfAreVisible() {
 };
 
 // Checks that the script resource request redirection to data url. And also
-// checks that code cache generation doesn't cause crash (crbug.com/782793).
+// checks that code cache generation doesn't cause crash (crbug.com/40548802).
 function dataUrlJavaScriptExecution() {
   expect(
     [  // events
@@ -1372,15 +1372,15 @@ const nonServiceWorkerTests = [
   asyncXhrsFromOurselfAreVisible,
   // This test fails because the header is not removed from the response as
   // expected. The same code works fine with a legacy background page.
-  // See crbug.com/1361610.
+  // See crbug.com/40863796.
   handleNonUTF8InModifyResponseHeaders,
   // This test is flaky and can cause a DCHECK to fail in
   // ExtensionWebRequestEventRouter::DecrementBlockCount.
-  // See crbug.com/1361616.
+  // See crbug.com/40863801.
   dataUrlJavaScriptExecution,
   // This test is flaky and can cause a DCHECK to fail in
   // ExtensionWebRequestEventRouter::DecrementBlockCount.
-  // See crbug.com/1361616.
+  // See crbug.com/40863801.
   simpleLoadRedirectOnReceiveHeaders,
 ];
 

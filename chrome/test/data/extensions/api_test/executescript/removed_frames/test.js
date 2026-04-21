@@ -44,7 +44,7 @@ const waitForCommittedAndRun = function(functionToRun, numCommits, url) {
 chrome.test.getConfig(function(config) {
   const url = `http://a.com:${config.testServer.port}` +
       '/extensions/api_test/executescript/removed_frames/outer.html';
-  // Regression tests for crbug.com/500574.
+  // Regression tests for crbug.com/40422771.
   chrome.test.runTests([
    function testInjectAndDeleteIframeFromMainFrame() {
       waitForCommittedAndRun(injectAndDeleteIframeFromMainFrame, 2, url);

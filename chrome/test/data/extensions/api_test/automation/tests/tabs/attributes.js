@@ -20,7 +20,7 @@ const TableCellAttributes = [
 ];
 
 const disabledTests = [
-  // http://crbug.com/725420
+  // http://crbug.com/41320992
   function testDocumentAndScrollAttributes_flaky() {
     for (let i = 0; i < DocumentAttributes.length; i++) {
       let attribute = DocumentAttributes[i];

@@ -16,7 +16,7 @@ const loadScript = chrome.test.loadScript(SCRIPT_URL);
 loadScript.then(async function() {
   runTests([
   // Test that two parallel onAuthRequired signals do not interfere with each
-  // other. This is a regression test for https://crbug.com/931479.
+  // other. This is a regression test for https://crbug.com/41441014.
   function authRequiredParallel() {
     const realm = 'parallelasync';
 
@@ -253,7 +253,7 @@ loadScript.then(async function() {
       // signaled after a resolved |onAuthRequired|. This happens without a
       // network delay, so it would make a fairly reliable test. However,
       // webRequest does not match the documentation and does not signal it. See
-      // https://crbug.com/809761.
+      // https://crbug.com/41369229.
       //
       // Instead, resolve the second request, this time canceling the
       // authentication request. This should result in |imgUrl2| completing with

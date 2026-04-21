@@ -129,7 +129,7 @@ async function main() {
 
     // Abort opening a file while trying to read it without an abort handler
     // wired up, then quickly try to open it again while having a limit of 1
-    // opened files at once. This is a regression test for: crbug.com/519063.
+    // opened files at once. This is a regression test for: crbug.com/41193694.
     async function abortOpenedAndReopenSuccess() {
       await remoteProvider.resetState();
       await fileSystem.remount(/*openedFilesLimit=*/ 1);

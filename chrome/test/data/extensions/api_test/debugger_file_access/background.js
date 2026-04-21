@@ -142,14 +142,14 @@ async function runNotAllowedTest(method, params, expectAllowed) {
       });
     },
 
-    // https://crbug.com/866426
+    // https://crbug.com/40091993
     function setDownloadBehavior() {
       // We never allow to write local files.
       runNotAllowedTest('Browser.setDownloadBehavior', {behavior: 'allow'},
           false);
     },
 
-    // https://crbug.com/805557
+    // https://crbug.com/40090289
     function setFileInputFiles() {
       // We only allow extensions with explicit file access to read local files.
       runNotAllowedTest('DOM.setFileInputFiles', {nodeId: 1, files: []},

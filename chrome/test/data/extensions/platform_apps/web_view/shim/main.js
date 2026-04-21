@@ -2366,7 +2366,7 @@ function testReloadAfterTerminate() {
 
   webview.addEventListener('exit', function(e) {
     // Trigger a focus state change of the guest to test for
-    // http://crbug.com/413874.
+    // http://crbug.com/40384313.
     webview.blur();
     webview.focus();
     setTimeout(function() { webview.reload(); }, 0);
@@ -2814,7 +2814,7 @@ function testFindAPI() {
 };
 
 // TODO(paulmeyer): Make sure this test is not still flaky. If it is, it is
-// likely because the search for "dog" compelted too quickly. crbug.com/710486.
+// likely because the search for "dog" compelted too quickly. crbug.com/40515060.
 function testFindAPI_findupdate() {
   var webview = new WebView();
   webview.src = testFindPage;
@@ -3068,7 +3068,7 @@ function testPerViewZoomMode() {
     // zoom did not affect |webview1|.
     // We need to verify that the page actually is zooming by comparing
     // |window.innerWidth| before and after the zoom to prevent regressions like
-    // https://crbug.com/860511.
+    // https://crbug.com/40583759.
     let webview1_original_width = await getWebviewInnerWidth(webview1);
     let webview2_original_width = await getWebviewInnerWidth(webview2);
 

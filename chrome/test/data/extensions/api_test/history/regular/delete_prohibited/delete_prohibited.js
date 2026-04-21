@@ -55,7 +55,7 @@ function verifyNoDeletion(testFunction) {
         } else {
           chrome.test.fail(
               'Added URLs never showed up in the history. ' +
-              'See http://crbug.com/176828.');
+              'See http://crbug.com/40302275.');
         }
       }));
     }));

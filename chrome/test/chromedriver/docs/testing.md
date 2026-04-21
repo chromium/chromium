@@ -118,7 +118,7 @@ option, where `package_name` can be one of the following values:
 * `chromium`: [Open source Chromium build](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md).
 
 There is future plan to [run these tests in the Chromium Commit
-Queue](https://crbug.com/813466).
+Queue](https://crbug.com/40563515).
 
 ## Web Platform Tests (WPT)
 

@@ -65,7 +65,7 @@ chrome.test.runTests([
 
   // Test long press selects word. This test flakes out on some bots.
   // The test passes locally on MacOS, ChromeOS and Linux. Disable until it's
-  // possible to repro the bot issue. https://crbug.com/723632
+  // possible to repro the bot issue. https://crbug.com/41320059
   // function testLongPressSelectsText() {
   //   var client = new PdfScriptingApi(window, window);
   //   sendTouchStart([{x: 336, y: 163}]);

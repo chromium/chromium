@@ -46,7 +46,7 @@ chrome.test.runTests([
   },
 
   function chromeUrls() {
-    // Test for crbug.com/27208.
+    // Test for crbug.com/40328751.
     expect([
       { status: 'loading', url: 'chrome://chrome-urls/' },
       { title : 'Chrome URLs' },
@@ -59,7 +59,7 @@ chrome.test.runTests([
   /*
   // TODO(rafaelw) -- This is disabled because this test is flaky.
   function updateDuringCreateCallback() {
-    // Test for crbug.com/27204.
+    // Test for crbug.com/40328737.
     // We have to ignore anything that comes before the about:blank loading
     // status.
     let ignore = true;

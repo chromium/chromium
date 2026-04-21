@@ -104,6 +104,6 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         throw new AssertionError(
                 "Unexpected call of recreate() in "
                         + TAG
-                        + ". See crbug.com/1359066 to fix the issue.");
+                        + ". See crbug.com/40237216 to fix the issue.");
     }
 }

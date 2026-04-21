@@ -26,7 +26,7 @@ chrome.test.runTests([
   },
 
   // Tests that we can remove a listener and it goes away.
-  // http://crbug.com/96755
+  // http://crbug.com/40629352
   function removeListeners() {
     function newCallback(value) {
       return function(details) { console.log(value); };
@@ -127,7 +127,7 @@ chrome.test.runTests([
   },
 
   // Checks that a header with NUL bytes does not cause a crash.
-  // Regression test for http://crbug.com/348417
+  // Regression test for http://crbug.com/40353882
   function badResponseHeaderDoesNotCauseCrash() {
     const headerName = 'X-Header-With-Invalid-Value';
     const callbackWithBadHeadersResponse = function (details) {

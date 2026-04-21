@@ -55,7 +55,7 @@ function addTests(webviews) {
   // The first test makes sure that the webviews in the same storage partition
   // (webviews[0] and webviews[1]) can find each other via
   // window.open('', <frame name>).  This is a regression test for
-  // https://crbug.com/794079.
+  // https://crbug.com/40554274.
   test1 = new Testing.Test('window.open_findability_between_webview[0]and[1]',
       function(callBack) {
         askWebviewToSetWindowName(webviews[1], "test1-webviews1", function() {

@@ -864,7 +864,7 @@ suite('TabList', () => {
         testTabsApiProxy.getCallCount('setThumbnailTracked'), tabs.length);
   });
 
-  // Flaky on all platforms. https://crbug.com/1247687.
+  // Flaky on all platforms. https://crbug.com/40790092.
   test.skip('ShouldDebounceThumbnailTrackerWhenScrollingFast', async () => {
     // Set tab widths such that 3 tabs fit in the viewport. This should reach a
     // state where the first 6 thumbnails are being tracked: 3 in the viewport

@@ -144,7 +144,7 @@ class ChromeDriver(object):
       chrome_switches = []
 
     if sys.platform.startswith('linux') and android_package is None:
-      # Workaround for crbug.com/611886.
+      # Workaround for crbug.com/40469290.
       chrome_switches.append('no-sandbox')
       # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1695
       chrome_switches.append('disable-gpu')
@@ -634,7 +634,7 @@ class ChromeDriver(object):
 
   def SetNetworkConditions(self, latency, download_throughput,
                            upload_throughput, offline=False):
-    # Until http://crbug.com/456324 is resolved, we'll always set 'offline' to
+    # Until http://crbug.com/41156249 is resolved, we'll always set 'offline' to
     # False, as going "offline" will sever Chromedriver's connection to Chrome.
     params = {
         'network_conditions': {

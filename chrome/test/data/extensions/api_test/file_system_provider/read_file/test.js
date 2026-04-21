@@ -184,7 +184,7 @@ function setUpFileSystem(openedFilesLimit, callback) {
   if (openedFilesLimit)
     options.openedFilesLimit = openedFilesLimit;
   // TODO(mtomasz): Rather than clearing out opened files tests should wait for
-  // all files to be closed before unmounting the file system. crbug.com/789083
+  // all files to be closed before unmounting the file system. crbug.com/40551846
   for (const k of Object.keys(testUtil.openedFiles)) {
     delete testUtil.openedFiles[k];
   }
@@ -405,7 +405,7 @@ function runTests() {
 
     // Abort opening a file while trying to read it without an abort handler
     // wired up, then quickly try to open it again while having a limit of 1
-    // opened files at once. This is a regression test for: crbug.com/519063.
+    // opened files at once. This is a regression test for: crbug.com/41193694.
     function abortOpenedAndReopenSuccess() {
       setUpFileSystem(1 /* no limit */, chrome.test.callbackPass(function() {
         testUtil.fileSystem.root.getFile(

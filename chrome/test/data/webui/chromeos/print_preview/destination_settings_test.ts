@@ -343,7 +343,7 @@ suite('DestinationSettingsTest', function() {
 
   // Tests that the dropdown contains the appropriate destinations and loads
   // correctly when Google Drive is the most recent destination. Regression test
-  // for https://crbug.com/1038645.
+  // for https://crbug.com/40113259.
   test(
       'GoogleDriveAutoselect', function() {
         recentDestinations = destinations.slice(0, 5).map(

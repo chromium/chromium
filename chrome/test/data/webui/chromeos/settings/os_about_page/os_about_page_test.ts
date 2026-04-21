@@ -270,7 +270,7 @@ suite('<os-about-page> AllBuilds', () => {
 
   suite('Update/Relaunch button', () => {
     /**
-     * Regression test for crbug.com/1220294
+     * Regression test for crbug.com/40186409
      */
     test('Update button is shown initially', async () => {
       aboutBrowserProxy.blockRefreshUpdateStatus();

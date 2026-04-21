@@ -207,10 +207,10 @@ chrome.test.runTests([
 
   /*
   This test doesn't work on mac because the Chromium app never gets
-  brought to the front. See: crbug.com/60963.
+  brought to the front. See: crbug.com/41252661.
   It also doesn't work on Chrome OS for unknown reasons.
   It also times out on the full XP builder for unknown reasons.
-  See: crbug.com/61035.
+  See: crbug.com/41253084.
 
   function windowsOnFocusChanged() {
     chrome.windows.getCurrent(pass(function(windowA) {

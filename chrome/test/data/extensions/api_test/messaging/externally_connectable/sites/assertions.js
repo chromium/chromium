@@ -35,7 +35,7 @@ function clobber(obj, name, qualifiedName) {
   // Clobbering toString is annoying.
   // Clobbering __proto__ breaks in ways that grep can't find.
   // Clobbering function name will break because
-  // SafeBuiltins does not support getters yet. See crbug.com/463526.
+  // SafeBuiltins does not support getters yet. See crbug.com/41160531.
   // Clobbering Function.call would make it impossible to implement these tests.
   // Clobbering Object.valueOf breaks v8.
   // Clobbering %FunctionPrototype%.caller and .arguments will break because
@@ -291,7 +291,7 @@ window.assertions = {
 
   tryIllegalArguments: function() {
     // Tests that illegal arguments to messaging functions throw exceptions.
-    // Regression test for crbug.com/472700, where they crashed the renderer.
+    // Regression test for crbug.com/40412063, where they crashed the renderer.
     function runIllegalFunction(fun) {
       try {
         fun();

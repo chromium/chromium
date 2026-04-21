@@ -110,7 +110,7 @@ function startTest(tabId) {
               // true in manifest.json, and its URL pattern matches the parent
               // frame's URL and, the document_start script should be run.
               // TODO(robwu): This should be 1 for the reason above, but it is
-              // null because the script is not injected (crbug.com/511057).
+              // null because the script is not injected (crbug.com/41188987).
               null,
               // Does not run at document_end and document_idle because the
               // DOMContentLoaded event is not triggered either.

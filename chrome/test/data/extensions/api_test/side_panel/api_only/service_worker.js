@@ -4,7 +4,7 @@
 
 chrome.test.runTests([
   // Setting a panel option without explicitly setting the optional enabled bool
-  // value defaults to enabled being true. Bug fix for crbug.com/1432012.
+  // value defaults to enabled being true. Bug fix for crbug.com/40263748.
   async function setAndGetPanelOptionAndEnsureEnabled() {
     await chrome.sidePanel.setOptions({path: 'path.html'});
     let result = await chrome.sidePanel.getOptions({});

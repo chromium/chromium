@@ -456,7 +456,7 @@ def GetAbsoluteConfigPath(path):
 
 def setUpModule():
     # Make sure that TMP and Chrome's installation directory are on the same
-    # drive to work around https://crbug.com/700809. (CSIDL_PROGRAM_FILESX86 is
+    # drive to work around https://crbug.com/41306957. (CSIDL_PROGRAM_FILESX86 is
     # valid for both 32 and 64-bit apps running on 32 or 64-bit Windows.)
     drive = os.path.splitdrive(
         shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAM_FILESX86, None, 0))[0]

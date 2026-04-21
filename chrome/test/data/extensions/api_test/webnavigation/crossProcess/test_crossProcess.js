@@ -291,7 +291,7 @@ loadScript.then(async function() {
     // before the slow cross-site navigation commits.
     /*
      * This test case is disabled, because it is flaky and fails fairly
-     * consistently on MSan bots. See https://crbug.com/467800
+     * consistently on MSan bots. See https://crbug.com/41163074
      *
     function crossProcessWithSameSiteCommit() {
       expect([

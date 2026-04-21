@@ -21,7 +21,7 @@ suite('<history-searched-label> unit test', function() {
     assertEquals(0, document.querySelectorAll('b').length);
     // Note: When the page is reloaded with a search query, |searchTerm| will be
     // initialized before |title|. Keep this ordering as a regression test for
-    // https://crbug.com/921455.
+    // https://crbug.com/41435337.
     label.searchTerm = 'f';
     label.title = 'foo';
     await microtasksFinished();

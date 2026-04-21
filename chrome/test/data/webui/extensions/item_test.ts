@@ -525,7 +525,7 @@ suite('ExtensionItemTest', function() {
 
     // This section tests that the enable toggle is visible but disabled
     // when disableReasons.blockedByPolicy is true. This test prevents a
-    // regression to crbug/1003014.
+    // regression to crbug.com/40646977.
     data = createExtensionInfo(item.data);
     data.disableReasons.blockedByPolicy = true;
     item.data = data;

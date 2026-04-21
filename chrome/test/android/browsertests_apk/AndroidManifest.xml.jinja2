@@ -187,7 +187,7 @@
                  android:exported="false" />
         {% endfor %}
 
-        <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+        <!-- Disables at startup init of Emoji2. See http://crbug.com/40764422 -->
         <provider
             android:authorities="{{ manifest_package|default(default_manifest_package) }}.androidx-startup"
             android:name="androidx.startup.InitializationProvider"

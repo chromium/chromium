@@ -60,7 +60,7 @@ const tests = [
     chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(
         onRuleMatchedDebugCallback);
 
-    // This test was known to flake as reported in crbug.com/1029233 due to a
+    // This test was known to flake as reported in crbug.com/40109499 due to a
     // race condition where a request was sent and a declarative rule was
     // matched before the onRuleMatchedDebug listener was properly added.
     // Sending the request after waiting for a round trip should fix the

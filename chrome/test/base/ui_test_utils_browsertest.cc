@@ -22,7 +22,7 @@ class UITestUtilsBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// This is a regression test for crbug.com/1187241, where
+// This is a regression test for crbug.com/40172821, where
 // NavigateToURLWithDisposition incorrectly inferred the index in the tab strip
 // of the second background tab and waited for the wrong tab to finish loading
 // (which never happened).

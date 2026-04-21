@@ -616,7 +616,7 @@ suite('SyncSettings', function() {
   });
 
   // Tests that entering existing passhrase doesn't abort the sync setup.
-  // Regression test for https://crbug.com/1279483.
+  // Regression test for https://crbug.com/40810886.
   test('SyncSetupEnterExistingCorrectPassphrase', async function() {
     // Simulate sync setup in progress.
     webUIListenerCallback('sync-status-changed', {
@@ -664,7 +664,7 @@ suite('SyncSettings', function() {
   });
 
   // Tests that creating a new passhrase doesn't abort the sync setup.
-  // Regression test for https://crbug.com/1279483.
+  // Regression test for https://crbug.com/40810886.
   test('SyncSetupCreatingValidPassphrase', async function() {
     // Simulate sync setup in progress.
     webUIListenerCallback('sync-status-changed', {

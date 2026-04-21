@@ -539,7 +539,7 @@ void InProcessBrowserTest::SetUp() {
 #if defined(TOOLKIT_VIEWS)
   // Prevent hover cards from appearing when the mouse is over the tab. Tests
   // don't typically account for this possibly, so it can cause unrelated tests
-  // to fail. See crbug.com/1050012.
+  // to fail. See crbug.com/40672885.
   Tab::SetShowHoverCardOnMouseHoverForTesting(false);
 #endif  // defined(TOOLKIT_VIEWS)
 

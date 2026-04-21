@@ -4,7 +4,7 @@ This file lists all critical user journeys that are required to have full test c
 
 Existing documentation lives [here](/docs/webapps/integration-testing-framework.md).
 
-TODO(dmurph): Move more documentation here. https://crbug.com/1314822
+TODO(dmurph): Move more documentation here. https://crbug.com/40221544
 
 [[TOC]]
 

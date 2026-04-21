@@ -1,5 +1,5 @@
 {
-  "name": "Calls chrome.tabs.sendMessage without callback, https://crbug.com/1218569",
+  "name": "Calls chrome.tabs.sendMessage without callback, https://crbug.com/40771696",
   "version": "0.1",
   "manifest_version": 3,
   "description": "service worker",

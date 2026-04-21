@@ -159,7 +159,7 @@ suite('DestinationStoreTest', function() {
   /**
    * Tests that if the user has multiple valid recent destinations, the
    * correct destination is selected for the preview request.
-   * For crbug.com/666595.
+   * For crbug.com/40494294.
    */
   test(
       'MultipleRecentDestinationsOneRequest', function() {
@@ -267,7 +267,7 @@ suite('DestinationStoreTest', function() {
   /**
    * Tests that if the user has a recent destination that is already in the
    * store (PDF printer), the DestinationStore does not try to select a
-   * printer again later. Regression test for https://crbug.com/927162.
+   * printer again later. Regression test for https://crbug.com/40611877.
    */
   test('RecentSaveAsPdf', function() {
     const pdfPrinter = getSaveAsPdfDestination();

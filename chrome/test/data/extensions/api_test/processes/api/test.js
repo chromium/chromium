@@ -270,7 +270,7 @@ chrome.test.runTests([
     createTab(5, 'chrome://newtab/');
   },
 
-  // DISABLED: crbug.com/345411
+  // DISABLED: crbug.com/40352452
   // Hangs consistently (On Windows).
   /*
   function testOnExited() {

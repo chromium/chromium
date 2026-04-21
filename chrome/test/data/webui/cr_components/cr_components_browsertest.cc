@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, LoggingAndUpdates) {
           "runMochaSuite('LoggingAndUpdates');");
 }
 
-// crbug.com/1226996
+// crbug.com/40776780
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_Modification DISABLED_Modification
 #else

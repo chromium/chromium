@@ -2,7 +2,7 @@
   "name": "Extension 2",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "Extension for testing crash http://crbug.com/57333",
+  "description": "Extension for testing crash http://crbug.com/41231177",
   "background" : {
     "scripts" : ["background.js"],
     "persistent": true

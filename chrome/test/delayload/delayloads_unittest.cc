@@ -271,7 +271,7 @@ TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
   }
 }
 
-// Flaking on ASAN: https://crbug.com/1047723
+// Flaking on ASAN: https://crbug.com/40671543
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ChromeDllLoadSanityTest DISABLED_ChromeDllLoadSanityTest
 #else
@@ -432,7 +432,7 @@ TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
       "VERSION.dll",
 #if defined(ADDRESS_SANITIZER)
       "clang_rt.asan_dynamic-x86_64.dll",
-      // The ASan runtime uses the synchapi (see crbug.com/1236586).
+      // The ASan runtime uses the synchapi (see crbug.com/40192760).
       "api-ms-win-core-synch-l1-2-0.dll",
 #endif
   };
@@ -530,7 +530,7 @@ TEST_F(MinimumWindowsSupportTest, ValidateImportChecker) {
   // These may need to be updated if the checked-in apiset file is updated.
   DetailedImports expected_ok = {{"ntdll.dll", {"DbgPrint"}}};
   AreImportsOk(expected_ok, {});
-  // Tests exist to catch a repeat of crbug.com/1482250.
+  // Tests exist to catch a repeat of crbug.com/40072176.
   DetailedImports expected_missing = {
       {"kernel32.dll", {"IsEnclaveTypeSupported"}}};
   EXPECT_NONFATAL_FAILURE(AreImportsOk(expected_missing, {}), "");

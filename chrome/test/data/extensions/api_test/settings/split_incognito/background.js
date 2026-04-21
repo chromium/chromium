@@ -81,7 +81,7 @@ const testActions = {
   },
   assertAddFooNotification: async function(callback) {
     // Wait for event to be dispatched before checking it was disptached.
-    // Workaround while we wait for https://crbug.com/1216449 fix.
+    // Workaround while we wait for https://crbug.com/40770491 fix.
     await waitForEvent(this);
     seenLatestEvent = false;
     chrome.test.assertEq({ foo: { newValue: 'bar' } }, this.notifications);
@@ -89,7 +89,7 @@ const testActions = {
   },
   assertDeleteFooNotification: async function(callback) {
     // Wait for event to be dispatched before checking it was disptached.
-    // Workaround while we wait for https://crbug.com/1216449 fix.
+    // Workaround while we wait for https://crbug.com/40770491 fix.
     await waitForEvent(this);
     seenLatestEvent = false;
     chrome.test.assertEq({ foo: { oldValue: 'bar' } }, this.notifications);

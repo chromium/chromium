@@ -215,7 +215,7 @@ const tests = [
   // We should collect it with other such tests and put them together
   // in a new test suite. Also, chrome.tabs.detectLanguage has been
   // broken for a while, so this test really isn't accomplishing
-  // anything right now. See crbug.com/1410643.
+  // anything right now. See crbug.com/40254464.
   function detectLanguage() {
     chrome.tabs.getAllInWindow(null, pass(function(tabs) {
       chrome.tabs.detectLanguage(tabs[0].id, pass(function(lang) {

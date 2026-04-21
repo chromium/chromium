@@ -15,7 +15,7 @@ class PasswordManagerUIFocusTest : public WebUIMochaBrowserTest {
   }
 };
 
-// https://crbug.com/1444623: Flaky on Mac.
+// https://crbug.com/40267789: Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_All DISABLED_All
 #else

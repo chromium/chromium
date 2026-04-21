@@ -117,7 +117,7 @@
     function redirectForServiceWorkerImportScripts() {
       // Redirects are currently disallowed for importScripts() in service
       // workers on Chrome, but at least non-extension HTTP redirects
-      // should be allowed (https://crbug.com/889798).
+      // should be allowed (https://crbug.com/40595655).
       runSubTest('ServiceWorker', importRedirectWorkerUrl, null,
                  registerErrorMessage(
                      importRedirectWorkerUrl,

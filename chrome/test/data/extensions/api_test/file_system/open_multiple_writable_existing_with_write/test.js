@@ -8,7 +8,7 @@ chrome.test.runTests([
         {acceptsMultiple: true, type: 'openWritableFile'},
         chrome.test.callbackPass(function(entries) {
           chrome.test.assertEq(2, entries.length);
-          // Ensure entry names are in sort order: crbug.com/1103147
+          // Ensure entry names are in sort order: crbug.com/40704469
           if (entries[0].name === 'open_existing2.txt') {
             entries = [entries[1], entries[0]];
           }

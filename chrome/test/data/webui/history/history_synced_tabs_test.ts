@@ -54,7 +54,7 @@ suite('<history-synced-device-manager>', function() {
     element = document.createElement('history-synced-device-manager');
     // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
     // the same order in tests, in order to catch regressions like
-    // https://crbug.com/915641.
+    // https://crbug.com/40606784.
     element.searchTerm = '';
     element.configureSignInForTest({
       signInAllowed: true,
@@ -388,7 +388,7 @@ suite('<history-synced-device-manager>', function() {
     setForeignSessions([]);
     element.clearSyncedDevicesForTest();
     // Should show no synced tabs message on initial load. Regression test for
-    // https://crbug.com/915641.
+    // https://crbug.com/40606784.
     await microtasksFinished();
     assertNoSyncedTabsMessageShown(element, 'noSyncedResults');
     const cards = getCards(element);
@@ -422,7 +422,7 @@ suite('<history-sync-optin>', function() {
     element = document.createElement('history-synced-device-manager');
     // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
     // the same order in tests, in order to catch regressions like
-    // https://crbug.com/915641.
+    // https://crbug.com/40606784.
     element.searchTerm = '';
     // Setting the sign in state to WEB_ONLY_SIGNED_IN, because user's name,
     // email and profile icon are only shown on the page when the sign in

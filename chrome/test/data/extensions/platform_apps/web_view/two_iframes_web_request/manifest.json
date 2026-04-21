@@ -1,5 +1,5 @@
 {
-  "name": "Platform App Test: webview webRequest regression crbug.com/1309302",
+  "name": "Platform App Test: webview webRequest regression crbug.com/40219415",
   "manifest_version": 2,
   "version": "2",
   "permissions": [

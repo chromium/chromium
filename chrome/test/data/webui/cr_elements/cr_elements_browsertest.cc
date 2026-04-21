@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrScrollable) {
   RunTest("cr_elements/cr_scrollable_test.js", "mocha.run()");
 }
 
-// https://crbug.com/1008122 - Flaky on Mac.
+// https://crbug.com/40649836 - Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CrDrawer DISABLED_CrDrawer
 #else

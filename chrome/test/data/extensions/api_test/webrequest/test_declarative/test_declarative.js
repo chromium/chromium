@@ -778,7 +778,7 @@ const workingTests2 = [
   'testRequestHeaders',
 ];
 
-// All tests that are broken or flaky. See https://crbug.com/846555.
+// All tests that are broken or flaky. See https://crbug.com/41391042.
 const brokenTests = [
   'testThirdParty',  // Generates unexpected events.
   'testFirstParty',  // Generates unexpected events,

@@ -186,8 +186,8 @@ loadScript.then(async function() {
 
     // A server redirect immediately followed by an extension redirect.
     // Regression test for:
-    // - https://crbug.com/882661
-    // - https://crbug.com/880741
+    // - https://crbug.com/41412957
+    // - https://crbug.com/41411836
     function serverRedirectThenExtensionRedirectOnBeforeRequest() {
       const url1 = getServerURL('echo');
       const url2 = getURLWebAccessible();
@@ -253,7 +253,7 @@ loadScript.then(async function() {
             'intermediateURL should be redirected before the request starts.');
       };
       // Make sure all URLs use the extraHeaders path to expose
-      // http://crbug.com/918761.
+      // http://crbug.com/41433833.
       chrome.webRequest.onBeforeSendHeaders.addListener(
           onBeforeSendHeadersListener,
           {urls: ['<all_urls>']}, ['blocking', 'extraHeaders']);

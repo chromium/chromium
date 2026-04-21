@@ -40,7 +40,7 @@ chrome.test.runTests([
   function idNonCollision() {
     // This test is not valid for SW-based extensions and will be removed
     // soon when integer IDs are no longer supported for context menus.
-    // See crbug.com/1044784.
+    // See crbug.com/40115749.
     if (inServiceWorker) {
       chrome.test.succeed();
       return;

@@ -12,7 +12,7 @@ const getUrl = function(url) {
 
 // Test a series of crazy events where we can set a tab's opener, then close it,
 // and hope the browser does the right thing.
-// Regression test for crbug.com/698681.
+// Regression test for crbug.com/41305730.
 function testSetOpenerOutsideOfWindow() {
   let url1 = getUrl('title1.html');
   let url2 = getUrl('title2.html');
@@ -87,7 +87,7 @@ function testSetOpenerOutsideOfWindowWithWindowIdSet() {
 }
 
 // Tests that the tab in a window cannot be set to have an opener of itself.
-// Regression test for crbug.com/709961
+// Regression test for crbug.com/41312164
 function testSetOpenerToSelf() {
   let url1 = getUrl('title1.html');
 

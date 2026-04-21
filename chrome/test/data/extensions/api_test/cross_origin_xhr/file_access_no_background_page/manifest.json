@@ -2,6 +2,6 @@
   "name": "Cross origin XHR to file:/// URLs with no background page",
   "version": "1.0",
   "manifest_version": 3,
-  "description": "Regression test for crbug.com/1179732",
+  "description": "Regression test for crbug.com/40749878",
   "host_permissions": [ "file:///*" ]
 }

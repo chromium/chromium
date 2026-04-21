@@ -205,7 +205,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // This function is used to record a set of properties for a test case in
   // gtest result and that will be used by resultDB. The map's key value pair
   // are defined by each test case. For use case check this bug:
-  // https://crbug.com/1365899
+  // https://crbug.com/40239544
   // The final value of the result is the format of key1=value1;key2=value2.
   void RecordPropertyFromMap(const std::map<std::string, std::string>& tags);
 
@@ -240,7 +240,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
   // Convenience methods for adding tabs to a Browser. Returns true if the
   // navigation succeeded. |check_navigation_success| is ignored and will be
-  // removed as part of check_navigation_success http://crbug.com/1014186.
+  // removed as part of check_navigation_success http://crbug.com/40103169.
   // Do not add new usages of the version with |check_navigation_success|.
   [[nodiscard]] bool AddTabAtIndexToBrowser(BrowserWindowInterface* bwi,
                                             int index,
@@ -418,13 +418,13 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   //
   // This was previously done by disabling all IPH features, but that destroyed
   // all field trials that included an IPH because overriding any feature
-  // touched by a field trial disables the field trial (see crbug.com/1381669).
+  // touched by a field trial disables the field trial (see crbug.com/40245312).
   //
   // Individual tests can re-enable IPH using another ScopedIphFeatureList.
   feature_engagement::test::ScopedIphFeatureList block_all_iph_feature_list_;
 
 #if BUILDFLAG(IS_MAC)
-  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  STACK_ALLOCATED_IGNORE("https://crbug.com/40260311")
   std::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
   std::unique_ptr<ScopedBundleSwizzlerMac> bundle_swizzler_;
 

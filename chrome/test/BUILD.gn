@@ -6528,7 +6528,7 @@ config("disable_thinlto_cache_flags") {
     # This build target has so many inputs the LLD will run into the default
     # vm.max_map_count limit of 65530 memory mappings when using the ThinLTO
     # cache.
-    # TODO (crbug.com/1183211): Re-enable once the linker has been fixed.
+    # TODO (crbug.com/40751909): Re-enable once the linker has been fixed.
     ldflags = [ "-Wl,--thinlto-cache-dir=" ]
   }
 }
@@ -10778,7 +10778,7 @@ test("unit_tests") {
         "../browser/ui/views/apps/shaped_app_window_targeter_unittest.cc",
         "../browser/ui/views/bubble/webui_bubble_event_handler_aura_unittest.cc",
 
-        # Get this compiling on Mac - see http://crbug.com/657883.
+        # Get this compiling on Mac - see http://crbug.com/41282103.
       ]
 
       deps += [

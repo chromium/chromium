@@ -80,7 +80,7 @@ chrome.test.runTests([
             '/root/test_dir', {create: false},
             // Also read a non-root directory. This will initiate loading of
             // the full resource metadata. As of now, 'search' only works
-            // with the resource metadata fully loaded. crbug.com/181075
+            // with the resource metadata fully loaded. crbug.com/40965971
             function(entry) {
               const reader = entry.createReader();
               reader.readEntries(

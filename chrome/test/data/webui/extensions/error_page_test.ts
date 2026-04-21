@@ -225,7 +225,7 @@ suite('ExtensionErrorPageTest', function() {
   });
 
   // Tests that the element can still be shown with an invalid URL. Regression
-  // test for crbug.com/1257170, as without the fix, this test would simply
+  // test for crbug.com/40200545, as without the fix, this test would simply
   // crash when the page tries and fails to create a URL object.
   test('InvalidUrl', async () => {
     const newRuntimeError = Object.assign(

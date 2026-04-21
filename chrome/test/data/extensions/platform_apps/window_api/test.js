@@ -265,7 +265,7 @@ function testCreate() {
       }));
     },
     function sameWindowIdInitializesProperly() {
-      // Regression test for http://crbug.com/943710
+      // Regression test for http://crbug.com/40619139
       // Both windows with the same id should be initialized
       let callback_fires = 0;
       chrome.app.window.create('test.html', { id: '1' },
@@ -418,7 +418,7 @@ function testInitialBounds() {
       }));
     },
 
-    // Regression for crbug.com/694248.
+    // Regression for crbug.com/40507366.
     function testInnerBoundsNegativeZero() {
       var innerBounds = {
         left: -0,
@@ -1094,7 +1094,7 @@ function testMaximize() {
           // TODO(mlamouri): we should be able to use onMaximized here but to
           // make that happen we need to make sure the event is not fired when
           // .maximize() is called but when the maximizing is finished.
-          // See crbug.com/316091
+          // See crbug.com/40340283
           function isWindowMaximized() {
             return win.contentWindow.outerHeight == screen.availHeight &&
                    win.contentWindow.outerWidth == screen.availWidth;
@@ -1117,7 +1117,7 @@ function testMaximize() {
           // TODO(mlamouri): we should be able to use onMaximized here but to
           // make that happen we need to make sure the event is not fired when
           // .maximize() is called but when the maximizing is finished.
-          // See crbug.com/316091
+          // See crbug.com/40340283
           function isWindowMaximized() {
             return win.contentWindow.outerHeight == screen.availHeight &&
                    win.contentWindow.outerWidth == screen.availWidth;
@@ -1192,7 +1192,7 @@ function testRestore() {
           // TODO(mlamouri): we should be able to use onMaximized here but to
           // make that happen we need to make sure the event is not fired when
           // .maximize() is called but when the maximizing is finished.
-          // See crbug.com/316091
+          // See crbug.com/40340283
           function isWindowMaximized() {
             return win.contentWindow.outerHeight == screen.availHeight &&
                    win.contentWindow.outerWidth == screen.availWidth;

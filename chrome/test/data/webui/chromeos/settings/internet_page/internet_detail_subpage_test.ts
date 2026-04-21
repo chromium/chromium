@@ -512,7 +512,7 @@ suite('<settings-internet-detail-subpage>', () => {
     // When proxy settings are managed by a user policy but the configuration
     // is from the shared (device) profile, they still respect the
     // allowed_shared_proxies pref so #allowShared should be visible.
-    // TODO(stevenjb): Improve this: crbug.com/662529.
+    // TODO(stevenjb): Improve this: crbug.com/40492211.
     test('Proxy Shared User Managed', async () => {
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
@@ -1094,7 +1094,7 @@ suite('<settings-internet-detail-subpage>', () => {
           internetDetailPage.shadowRoot!.querySelector('#advancedFields'));
     });
 
-    // Regression test for issue fixed as part of https://crbug.com/1191626
+    // Regression test for issue fixed as part of https://crbug.com/40756723
     // where page would throw an exception if prefs were undefined. Prefs are
     // expected to be undefined if InternetDetailPage is loaded directly (e.g.,
     // when the user clicks on the network in Quick Settings).
@@ -1303,7 +1303,7 @@ suite('<settings-internet-detail-subpage>', () => {
       assertFalse(spinner.hidden);
     });
 
-    // Regression test for https://crbug.com/1201449.
+    // Regression test for https://crbug.com/40762368.
     test('Page closed while device is updating', async () => {
       init();
 

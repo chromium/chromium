@@ -81,7 +81,7 @@ loadScript.then(async function() {
     // click is followed by a load of the original URL. The load of the
     // original URL has the potential to be confused for a fragment
     // navigation, since they differ only in the fragment.
-    // See https://crbug.com/732083.
+    // See https://crbug.com/41324643.
     function locationAssignAfterFragment() {
       expect([
         { label: 'b-onBeforeNavigate',

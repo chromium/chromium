@@ -322,7 +322,7 @@ function isUnexpectedDetachedRequest(name, details) {
     // requests have a tabId/frameId of -1.
     // The test will fail anyway, but then with a helpful error (expectation
     // differs from actual events) instead of an obscure test timeout.
-    // TODO(robwu): Remove this once https://crbug.com/522129 gets fixed.
+    // TODO(robwu): Remove this once https://crbug.com/40431900 gets fixed.
     didMatchTabAndFrameId = didMatchTabAndFrameId || details.type === 'ping';
 
     return name === exp.event &&

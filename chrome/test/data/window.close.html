@@ -5,7 +5,7 @@
     var popup, popup2, popup3, popup4;
 
     function WindowOpen(file, name, attr) {
-      // Force windows to open in a new process. See https://crbug.com/153363.
+      // Force windows to open in a new process. See https://crbug.com/40290010.
       var url = 'http://example.com:' + location.port + '/' + file;
       var w = window.open('', name, attr);
       w.opener = null;

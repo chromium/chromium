@@ -313,7 +313,7 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
-  // TODO (crbug/1399340): De-flake this test.
+  // TODO (crbug.com/40883080): De-flake this test.
   // test('dragenter event should transition to dragging state', async () => {
   //   // Arrange.
   //   uploadDialog.openDialog();

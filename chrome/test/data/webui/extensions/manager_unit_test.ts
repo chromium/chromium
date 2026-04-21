@@ -327,8 +327,8 @@ suite('ExtensionManagerUnitTest', function() {
     assertEquals(0, getExtensions().length);
 
     // The search bar should be focused after all extensions have been removed.
-    // Tests that the fix for crbug.com/1416324 works by not having the focus be
-    // on a deleted element.
+    // Tests that the fix for crbug.com/40063067 works by not having the focus
+    // be on a deleted element.
     assertTrue(manager.$.toolbar.isSearchFocused());
   });
 

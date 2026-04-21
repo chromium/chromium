@@ -49,7 +49,7 @@ suite('ExtensionsReviewPanel', function() {
     const headingContainer = element.$.headingText;
     assertTrue(!!headingContainer);
 
-    // TODO(http://crbug.com/1432194): Update the unsafe extensions number
+    // TODO(http://crbug.com/40902796): Update the unsafe extensions number
     const headingArgs = pluralString.getArgs('getPluralString')[0];
     assertEquals('safetyCheckTitle', headingArgs.messageName);
     assertEquals(1, headingArgs.itemCount);

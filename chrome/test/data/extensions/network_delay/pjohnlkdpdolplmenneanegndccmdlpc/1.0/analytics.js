@@ -25,7 +25,7 @@
 // Testing note: Accessing external resources is normally a bad idea in a unit
 // test. However, the whole point of this test extension is to ensure that
 // the resource referenced here does not need to load before the test finishes.
-// Otherwise, it will cause a deadlock: see http://crbug.com/107148.
+// Otherwise, it will cause a deadlock: see http://crbug.com/40126792.
 // It should therefore not slow down testing.
 
 const _gaq = _gaq || [];

@@ -56,7 +56,8 @@ suite('<apn-subpage>', () => {
         mojoApi_);
 
     // Start at BASIC route so that if the APN subpage navigates backwards, it
-    // goes back to BASIC and not the previous tests' last page (crbug/1497312).
+    // goes back to BASIC and not the previous tests' last page
+    // (crbug.com/40287038).
     Router.getInstance().navigateTo(routes.BASIC);
     await flushTasks();
 

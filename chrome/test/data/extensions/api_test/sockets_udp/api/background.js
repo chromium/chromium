@@ -285,7 +285,7 @@ var testPauseAndThenResume = function () {
 }
 
 // Not run as a UDP test due to timeout on multiple platforms.
-// https://crbug.com/844402, https://crbug.com/875920.
+// https://crbug.com/40577009, https://crbug.com/41409020.
 var testBroadcast = function() {
   var listeningSocketId;
   var sendingSocketId;

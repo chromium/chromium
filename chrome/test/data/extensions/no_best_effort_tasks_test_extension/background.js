@@ -15,7 +15,7 @@ kilobytes. This is to test the case where the NetworkService has to schedule
 multiple tasks to feed this file through a mojo data pipe (when the extension
 loads this background.js file resource).
 
-See http://crbug.com/924416 for further details.
+See http://crbug.com/41436919 for further details.
 
 
 |                                                                            |

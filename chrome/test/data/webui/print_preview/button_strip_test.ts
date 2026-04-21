@@ -46,7 +46,7 @@ suite('ButtonStripTest', function() {
   });
 
   // Tests that the buttons are in the correct order for different platforms.
-  // See https://crbug.com/880562.
+  // See https://crbug.com/41411738.
   test('ButtonOrder', function() {
     // Verify that there are only 2 buttons.
     assertEquals(

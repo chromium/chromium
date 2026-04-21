@@ -327,7 +327,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     chrome.debugger.attach(debuggee, protocolVersion, onAttach);
   },
 
-  // http://crbug.com/824174
+  // http://crbug.com/41377899
   async function getResponseBodyInvalidChar() {
     let requestId;
 

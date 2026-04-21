@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, LiveTranslate) {
 // Copied from Polymer 2 version of tests:
 // Times out on Windows Tests (dbg). See https://crbug.com/41278078.
 // Times out / crashes on chromium.linux/Linux Tests (dbg) crbug.com/41287641
-// Flaky everywhere crbug.com/1197768
+// Flaky everywhere crbug.com/40760356
 IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_MainPage) {
   RunTest("settings/settings_main_test.js", "mocha.run()");
 }
@@ -959,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(
       "runMochaSuite('GlicSubpage DataProtection_UserStatusCheckDisabled')");
 }
 
-// Timeout on Linux dbg bots: https://crbug.com/1394737
+// Timeout on Linux dbg bots: https://crbug.com/40881745
 #if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 IN_PROC_BROWSER_TEST_F(SettingsTest, SyncSettings) {
   RunTest("settings/people_page_sync_page_test.js",
@@ -1330,7 +1330,7 @@ class SettingsWithPixelOutputTest : public SettingsBrowserTest {
   }
 };
 
-// https://crbug.com/1044390 - maybe flaky on Mac?
+// https://crbug.com/40115579 - maybe flaky on Mac?
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FingerprintProgressArc DISABLED_FingerprintProgressArc
 #else
@@ -1938,7 +1938,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
 class SettingsSiteDetailsTest : public SettingsBrowserTest {};
 
 // Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
-// https://crbug.com/41378604 - later for other platforms in crbug.com/1021219.
+// https://crbug.com/41378604 - later for other platforms in crbug.com/40106090.
 #if !defined(NDEBUG)
 #define MAYBE_SiteDetails DISABLED_SiteDetails
 #else
@@ -1960,7 +1960,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, MAYBE_SiteList) {
   RunTest("settings/site_list_test.js", "runMochaSuite('SiteList')");
 }
 
-// TODO(crbug.com/41439813, crbug.com/1064002): Flaky test. When it is fixed,
+// TODO(crbug.com/41439813, crbug.com/40123519): Flaky test. When it is fixed,
 // merge SiteListDisabled back into SiteList.
 IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, DISABLED_SiteListDisabled) {
   RunTest("settings/site_list_test.js", "runMochaSuite('DISABLED_SiteList')");
