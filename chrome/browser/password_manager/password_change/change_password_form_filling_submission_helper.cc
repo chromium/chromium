@@ -385,6 +385,11 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     return;
   }
 
+  // Once button is clicked timeout can cause password on a website and inside
+  // Password Manager to diverge. Better to wait for click result to avoid false
+  // negatives.
+  timeout_timer_.Stop();
+
   click_helper_ = std::make_unique<ButtonClickHelper>(
       web_contents_.get(), client_, dom_node_id,
       base::BindOnce(

@@ -596,6 +596,28 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 }
 
+TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+       NoTimeoutAfterClickHelperCreated) {
+  auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<SubmissionResult> completion_future;
+  auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
+  WaitForFillingAndSuccessfulSubmission(form_manager, verifier.get());
+
+  ASSERT_TRUE(verifier->click_helper());
+
+  // Advance clock by timeout duration.
+  task_environment()->AdvanceClock(
+      ChangePasswordFormFillingSubmissionHelper::kSubmissionWaitingTimeout);
+
+  // Verify that it did not time out.
+  EXPECT_FALSE(completion_future.IsReady());
+
+  // Complete the click to avoid leaks or dangling callbacks if any.
+  verifier->click_helper()->SimulateClickResult(true);
+  EXPECT_TRUE(completion_future.Get().has_value());
+}
+
 TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonNotFound) {
   base::test::ScopedFeatureList feature_list;
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
