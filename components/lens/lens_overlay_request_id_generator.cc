@@ -88,8 +88,10 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
 }
 
 std::unique_ptr<lens::LensOverlayRequestId>
-LensOverlayRequestIdGenerator::GetNextRequestId(RequestIdUpdateMode update_mode,
-                                                std::string mime_type) {
+LensOverlayRequestIdGenerator::GetNextRequestId(
+    RequestIdUpdateMode update_mode,
+    std::string mime_type,
+    lens::LensOverlayRequestId::MediaType media_type) {
   // Verify that the initial request id is only generated once.
   CHECK(update_mode != RequestIdUpdateMode::kInitialRequest ||
         sequence_id_ == 0);
@@ -99,8 +101,7 @@ LensOverlayRequestIdGenerator::GetNextRequestId(RequestIdUpdateMode update_mode,
 
   std::unique_ptr<lens::LensOverlayRequestId> current_request_id =
       GetCurrentRequestId();
-  current_request_id->set_media_type(
-      lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
+  current_request_id->set_media_type(media_type);
   std::unique_ptr<lens::LensOverlayRequestId> next_request_id =
       CreateNextRequestIdForUpdate(std::move(current_request_id), update_mode);
 

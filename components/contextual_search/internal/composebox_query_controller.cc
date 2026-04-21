@@ -187,7 +187,9 @@ constexpr net::BackoffEntry::Policy kClusterInfoBackoffPolicy = {
 lens::Payload CreateContentextualDataUploadPayload(
     std::vector<lens::ContextualInput> context_inputs,
     std::optional<GURL> page_url,
-    std::optional<std::string> page_title) {
+    std::optional<std::string> page_title,
+    std::optional<std::string> drive_id,
+    std::optional<std::string> resource_key) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
@@ -196,6 +198,15 @@ lens::Payload CreateContentextualDataUploadPayload(
   }
   if (page_title.has_value() && !page_title.value().empty()) {
     content->set_webpage_title(page_title.value());
+  }
+
+  auto* content_metadata = payload.mutable_content_metadata();
+  if (drive_id.has_value() && !drive_id.value().empty()) {
+    content_metadata->mutable_drive_metadata()->set_drive_id(drive_id.value());
+  }
+  if (resource_key.has_value() && !resource_key.value().empty()) {
+    content_metadata->mutable_drive_metadata()->set_resource_key(
+        resource_key.value());
   }
 
   for (const lens::ContextualInput& context_input : context_inputs) {
@@ -699,7 +710,8 @@ void ComposeboxQueryController::CreateSearchUrl(
                 is_raw_file
                     ? request_id_generator_.GetNextRequestId(
                           lens::RequestIdUpdateMode::kSearchUrl,
-                          last_active_lens_file->request_id->mime_type())
+                          last_active_lens_file->request_id->mime_type(),
+                          lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE)
                     : request_id_generator_.GetNextRequestId(
                           lens::RequestIdUpdateMode::kSearchUrl,
                           context_media_type);
@@ -1008,6 +1020,10 @@ void ComposeboxQueryController::StartFileUploadFlow(
     // request was not.
     current_file_info.request_id->set_is_implicit_upload(
         current_file_info.is_implicit_upload);
+  } else if (current_file_info.input_data->drive_id.has_value()) {
+    current_file_info.request_id = *request_id_generator_.GetNextRequestId(
+        base_update_mode, current_file_info.mime_type_string.value(),
+        lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED);
   } else if (IsUnresolvedUrlUpload(current_file_info)) {
     request_id_generator_.SetContextId(RandInt64());
     request_id_generator_.SetHasChromeTabData(false);
@@ -1032,7 +1048,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
         lens::features::IsLensSendRawFileMediaTypesEnabled()) {
       current_file_info.request_id = *request_id_generator_.GetNextRequestId(
           lens::RequestIdUpdateMode::kMultiContextUploadRequest,
-          current_file_info.mime_type_string.value());
+          current_file_info.mime_type_string.value(),
+          lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
     } else {
       lens::LensOverlayRequestId::MediaType media_type =
           has_context_input
@@ -1790,7 +1807,9 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                   ? std::move(contextual_input_data->context_input.value())
                   : std::vector<lens::ContextualInput>(),
               contextual_input_data->page_url,
-              contextual_input_data->page_title),
+              contextual_input_data->page_title,
+              contextual_input_data->drive_id,
+              contextual_input_data->resource_key),
           base::BindOnce(
               &CreateFileUploadRequestProtoWithPayloadAndContinue,
               file_info->request_id.value(), CreateClientContext(),

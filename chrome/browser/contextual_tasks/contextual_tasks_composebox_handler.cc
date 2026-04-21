@@ -713,6 +713,30 @@ void ContextualTasksComposeboxHandler::AddTabContext(
                                                     std::move(callback));
 }
 
+void ContextualTasksComposeboxHandler::AddDriveContext(
+    const std::string& drive_id,
+    const std::string& resource_key,
+    const std::string& mime_type_string,
+    AddDriveContextCallback callback) {
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
+    return;
+  }
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (!contextual_session_handle) {
+    std::move(callback).Run(base::unexpected(
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
+    return;
+  }
+  auto token = contextual_session_handle->CreateContextToken();
+  pending_context_uploads_.insert(token);
+  std::move(callback).Run(base::ok(token));
+  contextual_session_handle->StartDriveContextUploadFlow(
+      token, drive_id, resource_key, mime_type_string);
+}
+
 bool ContextualTasksComposeboxHandler::has_suggested_tab_context() const {
   return current_suggestion_.has_value();
 }

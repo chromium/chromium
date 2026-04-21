@@ -82,10 +82,11 @@ class LensOverlayRequestIdGenerator {
       lens::LensOverlayRequestId::MediaType media_type);
 
   // Updates the request id based on the given update mode and returns the
-  // request id proto. Uses the mime type to determine the media type.
+  // request id proto. Uses both the mime type and the media type.
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
       RequestIdUpdateMode update_mode,
-      std::string mime_type);
+      std::string mime_type,
+      lens::LensOverlayRequestId::MediaType media_type);
 
   // Creates a new request id based on the previous request id and update mode.
   // This does not modify the generator's internal state.
