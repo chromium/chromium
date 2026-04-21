@@ -139,12 +139,16 @@ void SkillsDownloader::OnUrlDownloadComplete(
     last_modified_header_ = last_modified_value;
   }
 
-  auto skills_map = std::make_unique<SkillIdToProtoMap>();
+  auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
   for (auto& skill : *skills_list->mutable_skills()) {
-    skills_map->insert_or_assign(skill.id(), std::move(skill));
+    first_party_skill_data->skills_map.insert_or_assign(skill.id(),
+                                                        std::move(skill));
+  }
+  for (auto& topic : *skills_list->mutable_topics_list()) {
+    first_party_skill_data->topics_list.push_back(std::move(topic));
   }
 
-  std::move(callback).Run(std::move(skills_map));
+  std::move(callback).Run(std::move(first_party_skill_data));
 }
 
 }  // namespace skills

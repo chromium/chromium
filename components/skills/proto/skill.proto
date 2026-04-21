@@ -39,5 +39,9 @@ message Skill {
 // This is used as the metadata associated with the SKILLS Optimization type.
 // This is also used to download the full list of first-party Skills.
 message SkillsList {
+  // List of first party skills.
   repeated Skill skills = 1;
+  // List of special topics on the chrome://skills page (ie TopPicks,
+  // PartnerPicks).
+  repeated string topics_list = 2;
 }

@@ -2064,10 +2064,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnDiscoverySkillsUpdated(
-      const skills::SkillIdToProtoMap* skills_map) override {
-    // If skills_map is null, this means we don't have an updated value so we
-    // shouldn't modify the stored 1p map.
-    if (skills_map == nullptr) {
+      const skills::FirstPartySkillData* first_party_skill_data) override {
+    // If first_party_skill_data is null, this means we don't have an updated
+    // value so we shouldn't modify the stored 1p data.
+    if (first_party_skill_data == nullptr) {
       return;
     }
     if (!web_client_) {

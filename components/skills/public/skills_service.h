@@ -91,9 +91,9 @@ class SkillsService : public KeyedService {
     virtual void OnStatusChanged() {}
 
     // Called when the service has completed a download of 1P skills. Receives
-    // new map or nullptr if map has not changed.
-    virtual void OnDiscoverySkillsUpdated(const SkillIdToProtoMap* skills_map) {
-    }
+    // new data or nullptr if data has not changed.
+    virtual void OnDiscoverySkillsUpdated(
+        const FirstPartySkillData* first_party_skill_data) {}
 
     // Called when the service is shutting down. Observers should remove
     // themselves.
@@ -164,6 +164,9 @@ class SkillsService : public KeyedService {
   // in a kReady state since these skills are loaded from a SCS file.
   virtual const SkillIdToProtoMap& Get1PSkills() const = 0;
 
+  // Returns a const reference to the currently loaded 1p topics.
+  virtual const std::vector<std::string>& Get1PTopics() const = 0;
+
   // Registers an observer for the service notifications.
   virtual void AddObserver(Observer* observer) = 0;
 
@@ -182,9 +185,9 @@ class SkillsService : public KeyedService {
   virtual void FetchDiscoverySkills() = 0;
 
   // Called on download complete of 1p skills. If the download fails or the file
-  // has not been modified skills_map is null. Notifies observers.
+  // has not been modified first_party_skill_data is null. Notifies observers.
   virtual void Handle1pSkillsMap(
-      std::unique_ptr<SkillIdToProtoMap> skills_map) = 0;
+      std::unique_ptr<FirstPartySkillData> first_party_skill_data) = 0;
 
   // Returns controller delegate for the sync service.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

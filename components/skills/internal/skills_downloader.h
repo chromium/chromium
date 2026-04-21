@@ -31,7 +31,7 @@ class SkillsDownloader {
   ~SkillsDownloader();
 
   using OnFetchCompleteCallback =
-      base::OnceCallback<void(std::unique_ptr<SkillIdToProtoMap>)>;
+      base::OnceCallback<void(std::unique_ptr<FirstPartySkillData>)>;
 
   // Initiates async download process that calls callback on fetch complete.
   // Called on chrome://skills/discover-skills page load or attempt to save a

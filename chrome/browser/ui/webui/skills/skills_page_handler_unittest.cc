@@ -92,7 +92,7 @@ class SkillsPageHandlerTest : public testing::Test {
 };
 
 TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
-  auto skills_map = std::make_unique<SkillIdToProtoMap>();
+  auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
 
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
@@ -103,7 +103,7 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
   skill_proto.set_description("Skill description");
   skill_proto.set_image_url("https://example.com/image.png");
 
-  skills_map->insert({"skill_id", skill_proto});
+  first_party_skill_data->skills_map.insert({"skill_id", skill_proto});
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, Update1PMap(_))
@@ -125,7 +125,7 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
         run_loop.Quit();
       });
 
-  handler_->OnDiscoverySkillsUpdated(skills_map.get());
+  handler_->OnDiscoverySkillsUpdated(first_party_skill_data.get());
 
   run_loop.Run();
 }
@@ -138,8 +138,9 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Success) {
   // Manually trigger map update with valid map
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
-  SkillIdToProtoMap skills_map = {{"skill_id", skill_proto}};
-  handler_->OnDiscoverySkillsUpdated(&skills_map);
+  FirstPartySkillData first_party_skill_data;
+  first_party_skill_data.skills_map = {{"skill_id", skill_proto}};
+  handler_->OnDiscoverySkillsUpdated(&first_party_skill_data);
   EXPECT_TRUE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
   histogram_tester_.ExpectBucketCount(
@@ -158,8 +159,9 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_NotFound) {
   // Manually trigger map update with valid map
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
-  SkillIdToProtoMap skills_map = {{"skill_id", skill_proto}};
-  handler_->OnDiscoverySkillsUpdated(&skills_map);
+  FirstPartySkillData first_party_skill_data;
+  first_party_skill_data.skills_map = {{"skill_id", skill_proto}};
+  handler_->OnDiscoverySkillsUpdated(&first_party_skill_data);
   EXPECT_FALSE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
   histogram_tester_.ExpectUniqueSample("Skills.Management.Error",

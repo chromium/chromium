@@ -19,11 +19,26 @@ namespace skills {
 using SkillIdToProtoMap =
     absl::flat_hash_map<std::string, skills::proto::Skill>;
 
+// Holds data fetched for first party skills.
+struct FirstPartySkillData {
+  FirstPartySkillData();
+  ~FirstPartySkillData();
+
+  // Map of first party skill id to skill proto representation.
+  SkillIdToProtoMap skills_map;
+  // List of special topics on the chrome://skills page. (ie TopPicks,
+  // PartnerPicks).
+  std::vector<std::string> topics_list;
+};
+
 // Map of Skill categories to a vector of Skill structs.
 using SkillCategoryToSkillMap = base::flat_map<std::string, std::vector<Skill>>;
 
 // Map of Skill IDs to Skill structs.
 using SkillIdToSkillMap = absl::flat_hash_map<std::string, Skill>;
+
+inline FirstPartySkillData::FirstPartySkillData() = default;
+inline FirstPartySkillData::~FirstPartySkillData() = default;
 
 }  // namespace skills
 
