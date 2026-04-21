@@ -639,6 +639,15 @@ void PersistTabContextBrowserAgent::OnPageContextExtracted(
                                   std::move(serialized_page_context),
                                   webstate_unique_id, storage_directory_path_));
   }
+
+  // Offload the destruction of the PageContext proto to a background task.
+  if (IsPageContextIPCOptimizationEnabled()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<optimization_guide::proto::PageContext>) {},
+            std::move(response.value())));
+  }
 }
 
 void PersistTabContextBrowserAgent::WriteContextToContentCache(
