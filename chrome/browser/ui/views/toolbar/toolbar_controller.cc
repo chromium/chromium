@@ -608,6 +608,9 @@ ToolbarController::GetResponsiveElementsWithOrderedActions() const {
     actions::ActionId a_action_id = std::get<actions::ActionId>(a.overflow_id);
     actions::ActionId b_action_id = std::get<actions::ActionId>(b.overflow_id);
 
+    if (a_action_id == b_action_id) {
+      return false;
+    }
     for (int ordered_pinned_action_id : ordered_pinned_action_ids) {
       if (a_action_id == ordered_pinned_action_id) {
         return true;
