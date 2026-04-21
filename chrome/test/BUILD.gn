@@ -10543,6 +10543,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/ui/views/tabs/vertical",
+      "//chrome/browser/ui/views/web_dialogs:unit_tests",
       "//components/app_constants",
       "//components/commerce/core:pref_names",
       "//components/commerce/core:shopping_service_test_support",

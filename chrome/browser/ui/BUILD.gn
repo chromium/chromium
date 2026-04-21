@@ -4880,6 +4880,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/views/tabs/vertical:impl",
       "//chrome/browser/ui/views/user_education",
+      "//chrome/browser/ui/views/web_dialogs",
 
       # TODO(crbug.com/432061436) Remove this dependency when the following headers get
       # componentized:
