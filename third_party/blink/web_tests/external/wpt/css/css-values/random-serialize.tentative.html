@@ -14,16 +14,29 @@ test_valid_value('height', 'random(auto, 0px, 100px)',
                            'random(element-scoped ua-height-1, 0px, 100px)');
 test_valid_value('width', 'random(--foo, 0px, 100px)');
 test_valid_value('width', 'random(--foo element-scoped, 0px, 100px)');
+test_valid_value('width', 'random(element-scoped, 0px, 100px)');
+test_valid_value('font-size', 'random(property-scoped, 0px, 100px)',
+                              'random(ua-font-size, 0px, 100px)');
 test_valid_value('font-size', 'random(--foo property-scoped, 0px, 100px)',
                               'random(--foo ua-font-size, 0px, 100px)');
+test_valid_value('width', 'random(property-index-scoped, 0px, 100px)',
+                          'random(ua-width-1, 0px, 100px)');
 test_valid_value('width', 'random(--foo property-index-scoped, 0px, 100px)',
                           'random(--foo ua-width-1, 0px, 100px)');
+test_valid_value('width', 'random(element-scoped property-scoped, 0px, 100px)',
+                          'random(element-scoped ua-width, 0px, 100px)');
 test_valid_value('width', 'random(--foo element-scoped property-scoped, 0px, 100px)',
                           'random(--foo element-scoped ua-width, 0px, 100px)');
+test_valid_value('height', 'random(property-scoped element-scoped, 0px, 100px)',
+                           'random(element-scoped ua-height, 0px, 100px)');
 test_valid_value('height', 'random(--foo property-scoped element-scoped, 0px, 100px)',
                            'random(--foo element-scoped ua-height, 0px, 100px)');
+test_valid_value('width', 'random(element-scoped property-index-scoped, 0px, 100px)',
+                          'random(element-scoped ua-width-1, 0px, 100px)');
 test_valid_value('width', 'random(--foo element-scoped property-index-scoped, 0px, 100px)',
                           'random(--foo element-scoped ua-width-1, 0px, 100px)');
+test_valid_value('width', 'random(property-index-scoped element-scoped , 0px, 100px)',
+                          'random(element-scoped ua-width-1, 0px, 100px)');
 test_valid_value('width', 'random(--foo property-index-scoped element-scoped , 0px, 100px)',
                           'random(--foo element-scoped ua-width-1, 0px, 100px)');
 
@@ -31,17 +44,30 @@ test_valid_value('height', 'random(0px, 100px, 3px)', 'random(element-scoped ua-
 test_valid_value('width', 'random(fixed 0.5, 0px, 100px, 3px)');
 test_valid_value('width', 'random(auto, 0px, 100px, 3px)', 'random(element-scoped ua-width-1, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo, 0px, 100px, 3px)');
+test_valid_value('width', 'random(element-scoped, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo element-scoped, 0px, 100px, 3px)');
+test_valid_value('width', 'random(property-scoped, 0px, 100px, 3px)',
+                          'random(ua-width, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo property-scoped, 0px, 100px, 3px)',
                           'random(--foo ua-width, 0px, 100px, 3px)');
+test_valid_value('width', 'random(property-index-scoped, 0px, 100px, 3px)',
+                          'random(ua-width-1, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo property-index-scoped, 0px, 100px, 3px)',
                           'random(--foo ua-width-1, 0px, 100px, 3px)');
+test_valid_value('width', 'random(element-scoped property-scoped, 0px, 100px, 3px)',
+                          'random(element-scoped ua-width, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo element-scoped property-scoped, 0px, 100px, 3px)',
                           'random(--foo element-scoped ua-width, 0px, 100px, 3px)');
+test_valid_value('width', 'random(property-scoped element-scoped , 0px, 100px, 3px)',
+                          'random(element-scoped ua-width, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo property-scoped element-scoped , 0px, 100px, 3px)',
                           'random(--foo element-scoped ua-width, 0px, 100px, 3px)');
+test_valid_value('width', 'random(element-scoped property-index-scoped, 0px, 100px, 3px)',
+                          'random(element-scoped ua-width-1, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo element-scoped property-index-scoped, 0px, 100px, 3px)',
                           'random(--foo element-scoped ua-width-1, 0px, 100px, 3px)');
+test_valid_value('width', 'random(property-index-scoped element-scoped , 0px, 100px, 3px)',
+                          'random(element-scoped ua-width-1, 0px, 100px, 3px)');
 test_valid_value('width', 'random(--foo property-index-scoped element-scoped , 0px, 100px, 3px)',
                           'random(--foo element-scoped ua-width-1, 0px, 100px, 3px)');
 
@@ -85,12 +111,20 @@ test_valid_value('transition-delay', 'random(--foo, 25ms, 50s, 5s)',
                                      'random(--foo, 0.025s, 50s, 5s)');
 
 // Test user specified <random-ua-ident>
+test_valid_value('width', 'random(ua-width, 10px, 20%)');
 test_valid_value('width', 'random(--foo ua-width, 10px, 20%)');
+test_valid_value('width', 'random(ua-width-1, 10px, 20%)');
 test_valid_value('width', 'random(--foo ua-width-1, 10px, 20%)');
+test_valid_value('width', 'random(element-scoped ua-height-1, 10px, 20%)');
 test_valid_value('width', 'random(--foo element-scoped ua-height-1, 10px, 20%)');
+test_valid_value('width', 'random(ua-height-1 element-scoped, 10px, 20%)',
+                          'random(element-scoped ua-height-1, 10px, 20%)');
 test_valid_value('width', 'random(--foo ua-height-1 element-scoped, 10px, 20%)',
                           'random(--foo element-scoped ua-height-1, 10px, 20%)');
+test_valid_value('width', 'random(ua-x, 10px, 20%)');
 test_valid_value('width', 'random(--foo ua-x, 10px, 20%)');
+test_valid_value('width', 'random(ua-x element-scoped, 10px, 20%)',
+                          'random(element-scoped ua-x, 10px, 20%)');
 test_valid_value('width', 'random(--foo ua-x element-scoped, 10px, 20%)',
                           'random(--foo element-scoped ua-x, 10px, 20%)');
 

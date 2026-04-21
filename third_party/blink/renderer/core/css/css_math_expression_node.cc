@@ -5569,56 +5569,37 @@ const RandomCacheKey* RandomCacheKey::Parse(
     return Auto(local_context);
   }
 
-  if (!token.Value().starts_with("--")) {
-    return nullptr;
-  }
-
-  AtomicString ident =
-      stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+  AtomicString ident;
   ElementScoped element_scoped(false);
   AtomicString random_ua_ident;
-
-  if (stream.Peek().GetType() != kIdentToken) {
-    return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
-                                                random_ua_ident);
-  }
-  token = stream.Peek();
-  if (token.Value() == "element-scoped") {
-    element_scoped = ElementScoped(true);
-    stream.ConsumeIncludingWhitespace();
-  }
-
-  if (stream.Peek().GetType() != kIdentToken) {
-    return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
-                                                random_ua_ident);
-  }
-  token = stream.Peek();
-  if (token.Value() == "property-scoped" ||
-      token.Value() == "property-index-scoped") {
-    StringBuilder ua_ident_builder;
-    ua_ident_builder.Append("ua-");
-    ua_ident_builder.Append(local_context.PropertyName());
-    if (token.Value() == "property-index-scoped") {
-      ua_ident_builder.Append("-");
-      ua_ident_builder.AppendNumber(local_context.CurrentRandomValueIndex());
+  while (!stream.AtEnd() && stream.Peek().GetType() == kIdentToken) {
+    token = stream.Peek();
+    if (!ident && token.Value().starts_with("--")) {
+      ident = stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+    } else if (!element_scoped && token.Value() == "element-scoped") {
+      element_scoped = ElementScoped(true);
+      stream.ConsumeIncludingWhitespace();
+    } else if (!random_ua_ident && (token.Value() == "property-scoped" ||
+                                    token.Value() == "property-index-scoped")) {
+      StringBuilder ua_ident_builder;
+      ua_ident_builder.Append("ua-");
+      ua_ident_builder.Append(local_context.PropertyName());
+      if (token.Value() == "property-index-scoped") {
+        ua_ident_builder.Append("-");
+        ua_ident_builder.AppendNumber(local_context.CurrentRandomValueIndex());
+      }
+      random_ua_ident = ua_ident_builder.ToAtomicString();
+      stream.ConsumeIncludingWhitespace();
+    } else if (!random_ua_ident && token.Value().starts_with("ua-")) {
+      random_ua_ident =
+          stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+    } else if (!ident && !element_scoped && !random_ua_ident) {
+      return nullptr;
+    } else {
+      return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
+                                                  random_ua_ident);
     }
-    random_ua_ident = ua_ident_builder.ToAtomicString();
-    stream.ConsumeIncludingWhitespace();
-  } else if (token.Value().starts_with("ua-")) {
-    random_ua_ident = token.Value().ToAtomicString();
-    stream.ConsumeIncludingWhitespace();
   }
-
-  if (stream.Peek().GetType() != kIdentToken) {
-    return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
-                                                random_ua_ident);
-  }
-  token = stream.Peek();
-  if (!element_scoped && token.Value() == "element-scoped") {
-    element_scoped = ElementScoped(true);
-    stream.ConsumeIncludingWhitespace();
-  }
-
   return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
                                               random_ua_ident);
 }

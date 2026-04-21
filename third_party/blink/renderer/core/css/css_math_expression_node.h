@@ -1126,8 +1126,6 @@ struct DowncastTraits<CSSMathExpressionSiblingFunction> {
 };
 
 // <random-cache-key> = auto | <random-name> | fixed <number [0,1]>
-// <random-name> = <dashed-ident> [ element-scoped || [ property-scoped |
-// property-index-scoped ]]?
 // https://drafts.csswg.org/css-values-5/#typedef-random-cache-key
 class CORE_EXPORT RandomCacheKey : public GarbageCollected<RandomCacheKey> {
  public:
@@ -1161,8 +1159,11 @@ class CORE_EXPORT RandomCacheKey : public GarbageCollected<RandomCacheKey> {
 
  private:
   // Used for non fixed <random-cache-key> values, i.e.:
-  // <random-name> = <dashed-ident> [ element-scoped || [ property-scoped |
-  // property-index-scoped | <random-ua-ident> ]]?
+  // <random-name> =  <dashed-ident> || element-scoped
+  //                        || [ property-scoped | property-index-scoped |
+  //                        <random-ua-ident> ]
+  // <random-ua-ident> = <custom-ident>
+  // https://drafts.csswg.org/css-values-5/#typedef-random-name
   struct RandomName {
     RandomName() = delete;
     explicit RandomName(const AtomicString& random_ident,
@@ -1205,7 +1206,8 @@ class CORE_EXPORT RandomCacheKey : public GarbageCollected<RandomCacheKey> {
 };
 
 // <random()> = random( <random-value-sharing>? , <calc-sum>, <calc-sum>,
-// <calc-sum>? ) https://drafts.csswg.org/css-values-5/#random
+// <calc-sum>? )
+// https://drafts.csswg.org/css-values-5/#random
 class CORE_EXPORT CSSMathExpressionRandomFunction final
     : public CSSMathExpressionNode {
  public:
