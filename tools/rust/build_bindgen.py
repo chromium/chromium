@@ -7,6 +7,7 @@
 import argparse
 import collections
 import os
+from pathlib import Path
 import platform
 import shutil
 import subprocess
@@ -195,6 +196,12 @@ def main():
     # We've run into incremental compilation bugs while building bindgen in
     # https://crbug.com/488049150, so clean the build directory first. This
     # doesn't take long compared to the rest of the build anyway.
+    # `cargo clean` requires a CACHEDIR.TAG file in the directory.
+    cachedir_tag = Path(build_dir) / 'CACHEDIR.TAG'
+    cachedir_tag.parent.mkdir(exist_ok=True, parents=True)
+    cachedir_tag.write_bytes(
+        b"Signature: 8a477f597d28d172789f06886806bc55\n"
+        b"# Written by build_bindgen.py to make `cargo clean` happy.\n")
     RunCargo([
         'clean',
     ] + cargo_shared_args)
