@@ -270,7 +270,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
 #endif
       case ACTION_NEW_TAB: {
         ASSERT_TRUE(content::NavigateToURL(web_contents,
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
         content::WaitForLoadStop(web_contents);
         break;
       }

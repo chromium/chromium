@@ -366,13 +366,14 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
             .Build();
 
     registrar()->AddExtension(extension.get());
-    EXPECT_EQ(extension, ExtensionUrlOverrides::GetExtensionControllingURL(
-                             GURL(chrome::kChromeUINewTabURL), profile_.get()));
+    EXPECT_EQ(extension,
+              ExtensionUrlOverrides::GetExtensionControllingURL(
+                  chrome::ChromeUINewTabURLAsGURL(), profile_.get()));
 
     return extension.get();
   };
 
-  const GURL ntp_url(chrome::kChromeUINewTabURL);
+  const GURL& ntp_url = chrome::ChromeUINewTabURLAsGURL();
 
   // Load a series of extensions that override the new tab page.
   const Extension* extension1 = load_extension_overriding_newtab("one");

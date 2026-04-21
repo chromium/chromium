@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(
   // will call chrome.test.sendMessage('controlled by first').
   ExtensionTestMessageListener listener("controlled by first");
   auto* contents = GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(contents, GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_TRUE(NavigateToURL(contents, chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_TRUE(ExtensionControlsPage(contents, extension->id()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 

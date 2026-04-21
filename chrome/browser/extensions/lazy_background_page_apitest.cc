@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForNTP) {
   content::WebContents* active_tab = GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(active_tab));
   // The extension should've opened a new tab to an extension page.
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             active_tab->GetLastCommittedURL());
 
   // Lazy Background Page still exists, because the extension created a new tab

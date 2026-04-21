@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
 
   // There are different possible NTP URLs.
   std::vector<GURL> possible_ntp_urls = {
-      GURL(chrome::kChromeUINewTabURL),
+      chrome::ChromeUINewTabURLAsGURL(),
 #if BUILDFLAG(IS_ANDROID)
       GURL(chrome::kChromeUINativeNewTabURL),
 #endif
@@ -2319,7 +2319,7 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionTest, ContentScript) {
   // Ensure that the extension isn't able to inject the script into the New Tab
   // Page.
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(web_contents, GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_TRUE(NavigateToURL(web_contents, chrome::ChromeUINewTabURLAsGURL()));
   ASSERT_TRUE(search::IsInstantNTP(web_contents));
 
   EXPECT_EQ(false, EvalJs(web_contents, "document.title !== 'Fake NTP';"));

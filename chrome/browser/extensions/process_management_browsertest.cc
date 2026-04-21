@@ -204,13 +204,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   // Create multiple tabs for each type of renderer that might exist.
   // Tab 0: NTP 1.
   ASSERT_TRUE(
-      NavigateToURL(GetActiveWebContents(), GURL(chrome::kChromeUINewTabURL)));
+      NavigateToURL(GetActiveWebContents(), chrome::ChromeUINewTabURLAsGURL()));
   // Tab 1: Hosted app 1.
   NavigateToURLInNewTab(base_url.Resolve("hosted_app/main.html"));
   // Tab 2: Web page 1.
   NavigateToURLInNewTab(base_url.Resolve("test_file.html"));
   // Tab 3: NTP 2.
-  NavigateToURLInNewTab(GURL(chrome::kChromeUINewTabURL));
+  NavigateToURLInNewTab(chrome::ChromeUINewTabURLAsGURL());
   // Tab 4: Hosted app 2.
   NavigateToURLInNewTab(
       base_url.Resolve("api_test/app_process/path1/empty.html"));
