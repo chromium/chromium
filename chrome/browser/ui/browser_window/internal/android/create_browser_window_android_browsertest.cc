@@ -20,6 +20,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -280,4 +281,59 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3. Verify the newly created window is the last active window.
   EXPECT_EQ(new_browser_window, last_active_browser_window);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsync_WithWebContents_TabHasWebContents) {
+  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
+  Profile* profile = GetProfile();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+  content::WebContents* expected_web_contents = web_contents.get();
+
+  BrowserWindowCreateParams create_params(type, *profile, false);
+  create_params.web_contents = std::move(web_contents);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_browser_window = future.Get();
+
+  AssertBrowserWindow(new_browser_window, type, profile,
+                      /*expect_fully_initialized=*/true);
+
+  auto* tab_list_interface = TabListInterface::From(new_browser_window);
+  ASSERT_NE(tab_list_interface, nullptr);
+  auto* tab = tab_list_interface->GetActiveTab();
+  EXPECT_EQ(tab_list_interface->GetTabCount(), 1);
+  ASSERT_NE(tab, nullptr);
+  EXPECT_EQ(tab->GetContents(), expected_web_contents);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsync_PopupWithWebContents_TabHasWebContents) {
+  auto type = BrowserWindowInterface::Type::TYPE_POPUP;
+  Profile* profile = GetProfile();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+  content::WebContents* expected_web_contents = web_contents.get();
+
+  BrowserWindowCreateParams create_params(type, *profile, false);
+  create_params.web_contents = std::move(web_contents);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_browser_window = future.Get();
+
+  AssertBrowserWindow(new_browser_window, type, profile,
+                      /*expect_fully_initialized=*/true);
+
+  auto* tab_list_interface = TabListInterface::From(new_browser_window);
+  ASSERT_NE(tab_list_interface, nullptr);
+  auto* tab = tab_list_interface->GetActiveTab();
+  ASSERT_NE(tab, nullptr);
+  EXPECT_EQ(tab->GetContents(), expected_web_contents);
 }

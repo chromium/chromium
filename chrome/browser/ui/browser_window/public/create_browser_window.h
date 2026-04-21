@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_CREATE_BROWSER_WINDOW_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_CREATE_BROWSER_WINDOW_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -13,6 +14,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace content {
+
+class WebContents;
+
+}  // namespace content
 
 // Parameters used when creating a new browser window.
 struct BrowserWindowCreateParams {
@@ -51,6 +58,13 @@ struct BrowserWindowCreateParams {
   // The initial state of the browser window.
   ui::mojom::WindowShowState initial_show_state =
       ui::mojom::WindowShowState::kDefault;
+
+#if BUILDFLAG(IS_ANDROID)
+  // An optional WebContents to be used when creating the browser window.
+  // Note: On Android, calls to CreateBrowserWindow will release this
+  // WebContent's ownership to an AndroidBrowserWindowCreateParams object.
+  std::unique_ptr<content::WebContents> web_contents;
+#endif
 };
 
 // Creates a new browser window according to the given `create_params`.

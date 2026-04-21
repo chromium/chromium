@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 
+#include "content/public/browser/web_contents.h"
+
 BrowserWindowCreateParams::BrowserWindowCreateParams(
     BrowserWindowInterface::Type type,
     Profile& profile,

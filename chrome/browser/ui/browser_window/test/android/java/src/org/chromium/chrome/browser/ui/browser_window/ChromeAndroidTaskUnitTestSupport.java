@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,8 @@ import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -180,6 +183,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
     public static final long FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR = 123456789L;
 
     public static final long FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR = 987654321L;
+
+    private static @Nullable PopupCreator sPopupCreator;
+    private static @Nullable MultiInstanceOrchestrator sMultiInstanceOrchestrator;
 
     private ChromeAndroidTaskUnitTestSupport() {}
 
@@ -454,9 +460,31 @@ public final class ChromeAndroidTaskUnitTestSupport {
     }
 
     /** Mocks {@link PopupCreator}. */
-    private static void mockPopupCreator() {
-        PopupCreator mockCreator = mock(PopupCreator.class);
-        PopupCreatorFactory.setInstanceForTesting(mockCreator);
+    public static PopupCreator mockPopupCreator() {
+        if (sPopupCreator != null) return sPopupCreator;
+        sPopupCreator = mock(PopupCreator.class);
+        when(sPopupCreator.createNewPopup(any(), anyBoolean(), any(), any(), any()))
+                .thenReturn(true);
+        when(sPopupCreator.createNewPopupFromWebContents(any(), any(), any(), any(), any(), any()))
+                .thenReturn(true);
+        PopupCreatorFactory.setInstanceForTesting(sPopupCreator);
+        ResettersForTesting.register(() -> sPopupCreator = null);
+        return sPopupCreator;
+    }
+
+    /** Mocks {@link MultiInstanceOrchestrator}. */
+    public static MultiInstanceOrchestrator mockMultiInstanceOrchestrator() {
+        if (sMultiInstanceOrchestrator != null) return sMultiInstanceOrchestrator;
+        sMultiInstanceOrchestrator = mock(MultiInstanceOrchestrator.class);
+        when(sMultiInstanceOrchestrator.createNewWindow(
+                        any(), anyBoolean(), any(), any(), anyInt()))
+                .thenReturn(true);
+        when(sMultiInstanceOrchestrator.createNewWindowFromWebContents(
+                        any(), any(), any(), any(), any(), anyInt()))
+                .thenReturn(true);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(sMultiInstanceOrchestrator);
+        ResettersForTesting.register(() -> sMultiInstanceOrchestrator = null);
+        return sMultiInstanceOrchestrator;
     }
 
     static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo() {
@@ -518,7 +546,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockParams.getProfile()).thenReturn(profile);
         when(mockParams.getInitialBoundsInDp()).thenReturn(launchBounds);
         when(mockParams.getInitialShowState()).thenReturn(showState);
+        when(mockParams.getWebContents()).thenReturn(null);
         mockPopupCreator();
+        mockMultiInstanceOrchestrator();
 
         return mockParams;
     }

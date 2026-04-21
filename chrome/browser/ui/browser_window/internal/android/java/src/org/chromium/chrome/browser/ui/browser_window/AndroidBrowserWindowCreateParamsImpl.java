@@ -9,9 +9,12 @@ import android.graphics.Rect;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.mojom.WindowShowState;
 
 /** Initializes parameters for creating a browser window on Android. */
@@ -21,22 +24,26 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
     private final Profile mProfile;
     private final Rect mInitialBounds;
     private final @WindowShowState.EnumType int mInitialShowState;
+    private final @Nullable WebContents mWebContents;
 
     /**
      * @param windowType The browser window type.
      * @param profile The profile associated with this window.
      * @param initialBounds The initial bounds of the window.
      * @param initialShowState The initial show state of the window.
+     * @param webContents The WebContents to use, if any.
      */
     private AndroidBrowserWindowCreateParamsImpl(
             @BrowserWindowType int windowType,
             Profile profile,
             Rect initialBounds,
-            @WindowShowState.EnumType int initialShowState) {
+            @WindowShowState.EnumType int initialShowState,
+            @Nullable WebContents webContents) {
         mWindowType = windowType;
         mProfile = profile;
         mInitialBounds = initialBounds;
         mInitialShowState = initialShowState;
+        mWebContents = webContents;
     }
 
     @Override
@@ -59,6 +66,11 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
         return mInitialShowState;
     }
 
+    @Override
+    public @Nullable WebContents getWebContents() {
+        return mWebContents;
+    }
+
     @CalledByNative
     @VisibleForTesting
     static AndroidBrowserWindowCreateParamsImpl create(
@@ -68,9 +80,10 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
             int topBound,
             int width,
             int height,
-            @WindowShowState.EnumType int initialShowState) {
+            @WindowShowState.EnumType int initialShowState,
+            @JniType("content::WebContents*") @Nullable WebContents webContents) {
         Rect initialBounds = new Rect(leftBound, topBound, width, height);
         return new AndroidBrowserWindowCreateParamsImpl(
-                windowType, profile, initialBounds, initialShowState);
+                windowType, profile, initialBounds, initialShowState, webContents);
     }
 }

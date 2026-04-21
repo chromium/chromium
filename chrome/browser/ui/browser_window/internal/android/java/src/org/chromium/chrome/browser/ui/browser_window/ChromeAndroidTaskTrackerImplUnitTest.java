@@ -39,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -54,7 +53,6 @@ import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayAndroid;
@@ -68,7 +66,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
-    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private Context mContext;
 
@@ -86,7 +84,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
 
-        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
+        mMultiInstanceOrchestrator =
+                ChromeAndroidTaskUnitTestSupport.mockMultiInstanceOrchestrator();
     }
 
     @After
@@ -166,6 +165,44 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertEquals(
                 pendingTaskInfo.mPendingTaskId,
                 extras.getInt(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+    }
+
+    @Test
+    public void createPendingTask_creationFails_returnsNullAndInvokesCallback() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL);
+        JniOnceCallback<Long> mockCallback = mock();
+        when(mMultiInstanceOrchestrator.createNewWindow(
+                        any(), anyBoolean(), any(), any(), anyInt()))
+                .thenReturn(false);
+
+        // Act.
+        var pendingTask = createPendingTaskWithExistingTask(mockParams, mockCallback);
+
+        // Assert.
+        assertNull(pendingTask);
+        verify(mockCallback).onResult(0L);
+    }
+
+    @Test
+    public void createPendingTask_popupType_creationFails_returnsNullAndInvokesCallback() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.POPUP);
+        JniOnceCallback<Long> mockCallback = mock();
+        when(PopupCreatorFactory.getInstance()
+                        .createNewPopup(any(), anyBoolean(), any(), any(), any()))
+                .thenReturn(false);
+
+        // Act.
+        var pendingTask = createPendingTaskWithExistingTask(mockParams, mockCallback);
+
+        // Assert.
+        assertNull(pendingTask);
+        verify(mockCallback).onResult(0L);
     }
 
     @Test

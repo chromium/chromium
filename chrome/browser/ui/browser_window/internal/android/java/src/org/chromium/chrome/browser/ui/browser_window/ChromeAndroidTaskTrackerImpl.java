@@ -135,7 +135,13 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
         // Launch the required Activity based on |createParams|.
         if (!sPausePendingTaskActivityCreationForTesting) {
-            createBrowserWindow(pendingId, createParams, sourceActivity);
+            if (!createBrowserWindow(pendingId, createParams, sourceActivity)) {
+                mPendingTasks.remove(pendingId);
+                if (callback != null) {
+                    callback.onResult(0L);
+                }
+                return null;
+            }
         } else {
             sPendingTasksAwaitingActivityCreationForTesting.put(pendingId, pendingTaskInfo);
         }
@@ -335,7 +341,15 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return null;
     }
 
-    private static void createBrowserWindow(
+    /**
+     * Creates a new browser window.
+     *
+     * @param pendingId The ID of the pending task.
+     * @param createParams The parameters for creating the window.
+     * @param sourceActivity The activity initiating the creation, if any.
+     * @return False if the window creation failed immediately, true otherwise.
+     */
+    private static boolean createBrowserWindow(
             int pendingId,
             AndroidBrowserWindowCreateParams createParams,
             @Nullable Activity sourceActivity) {
@@ -343,24 +357,41 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         switch (browserWindowType) {
             case BrowserWindowType.NORMAL:
                 assumeNonNull(sourceActivity);
-                createNormalBrowserWindow(pendingId, createParams, sourceActivity);
-                break;
+                return createNormalBrowserWindow(pendingId, createParams, sourceActivity);
             case BrowserWindowType.POPUP:
-                createPopupBrowserWindow(pendingId, createParams);
-                break;
+                return createPopupBrowserWindow(pendingId, createParams);
             default:
                 throw new UnsupportedOperationException(
                         String.format(Locale.US, "Unsupported window type: %d", browserWindowType));
         }
     }
 
-    private static void createNormalBrowserWindow(
+    /**
+     * Creates a normal browser window.
+     *
+     * @param pendingId The ID of the pending task.
+     * @param createParams The parameters for creating the window.
+     * @param sourceActivity The activity initiating the creation.
+     * @return False if the window creation failed immediately, true otherwise.
+     */
+    private static boolean createNormalBrowserWindow(
             int pendingId, AndroidBrowserWindowCreateParams createParams, Activity sourceActivity) {
         Bundle extrasBundle = new Bundle();
         extrasBundle.putInt(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
         ActivityOptions options =
                 getStartActivityOptions(sourceActivity, createParams.getInitialBoundsInDp());
-        MultiInstanceOrchestratorFactory.getInstance()
+
+        if (createParams.getWebContents() != null) {
+            return MultiInstanceOrchestratorFactory.getInstance()
+                    .createNewWindowFromWebContents(
+                            sourceActivity,
+                            createParams.getProfile(),
+                            createParams.getWebContents(),
+                            extrasBundle,
+                            options != null ? options.toBundle() : null,
+                            NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+        }
+        return MultiInstanceOrchestratorFactory.getInstance()
                 .createNewWindow(
                         sourceActivity,
                         createParams.getProfile().isIncognitoBranded(),
@@ -369,7 +400,14 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                         NewWindowAppSource.BROWSER_WINDOW_CREATOR);
     }
 
-    private static void createPopupBrowserWindow(
+    /**
+     * Creates a popup browser window.
+     *
+     * @param pendingId The ID of the pending task.
+     * @param createParams The parameters for creating the window.
+     * @return False if the window creation failed immediately, true otherwise.
+     */
+    private static boolean createPopupBrowserWindow(
             int pendingId, AndroidBrowserWindowCreateParams createParams) {
         var context = ContextUtils.getApplicationContext();
         Rect bounds = createParams.getInitialBoundsInDp();
@@ -381,7 +419,17 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
         ActivityOptions options = getStartActivityOptions(context, bounds);
 
-        PopupCreatorFactory.getInstance()
+        if (createParams.getWebContents() != null) {
+            return PopupCreatorFactory.getInstance()
+                    .createNewPopupFromWebContents(
+                            context,
+                            createParams.getProfile(),
+                            createParams.getWebContents(),
+                            features,
+                            extrasBundle,
+                            options != null ? options.toBundle() : null);
+        }
+        return PopupCreatorFactory.getInstance()
                 .createNewPopup(
                         context,
                         createParams.getProfile().isIncognitoBranded(),

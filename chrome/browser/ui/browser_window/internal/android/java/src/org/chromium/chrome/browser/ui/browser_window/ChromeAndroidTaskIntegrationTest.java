@@ -420,7 +420,8 @@ public class ChromeAndroidTaskIntegrationTest {
                         initialBoundsInDp.top,
                         initialBoundsInDp.right,
                         initialBoundsInDp.bottom,
-                        WindowShowState.DEFAULT);
+                        WindowShowState.DEFAULT,
+                        null);
         var chromeAndroidTaskTracker =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance()));
@@ -1031,7 +1032,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.DEFAULT,
+                        null);
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
 
         // Act.
@@ -1053,7 +1061,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.MAXIMIZED);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.MAXIMIZED,
+                        null);
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
 
         // Act.
@@ -1084,7 +1099,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.MINIMIZED);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.MINIMIZED,
+                        null);
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
 
         // Act.
@@ -1108,7 +1130,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.DEFAULT,
+                        null);
         var chromeAndroidTaskTracker =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1176,7 +1205,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.DEFAULT,
+                        null);
         var chromeAndroidTaskTracker =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1238,7 +1274,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.DEFAULT,
+                        null);
         var chromeAndroidTaskTracker =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1290,7 +1333,14 @@ public class ChromeAndroidTaskIntegrationTest {
         Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
         AndroidBrowserWindowCreateParams createParams =
                 AndroidBrowserWindowCreateParamsImpl.create(
-                        BrowserWindowType.NORMAL, profile, 0, 0, 0, 0, WindowShowState.DEFAULT);
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        0,
+                        0,
+                        0,
+                        0,
+                        WindowShowState.DEFAULT,
+                        null);
         var chromeAndroidTaskTracker =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
