@@ -383,7 +383,7 @@ void GnomeRemoteDesktopSession::OnDisplayConfigReceived(
         FROM_HERE,
         base::BindOnce(&GnomeDesktopResizer::UnblockAndFlushDisplayChanges,
                        desktop_resizer_.GetWeakPtr()),
-        base::Seconds(3));
+        base::Seconds(6));
     persistent_display_layout_manager_.Start();
   }
   initialization_state_ = InitializationState::kInitialized;
