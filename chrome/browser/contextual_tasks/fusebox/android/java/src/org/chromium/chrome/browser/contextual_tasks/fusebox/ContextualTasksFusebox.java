@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.WindowAndroid;
@@ -79,6 +81,12 @@ public class ContextualTasksFusebox {
         uiOverrides.setLensEntrypointAllowed(true);
         uiOverrides.setVoiceEntrypointAllowed(true);
 
+        MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier =
+                TabModelSelectorSupplier.from(windowAndroid);
+        if (tabModelSelectorSupplier == null) {
+            tabModelSelectorSupplier = ObservableSuppliers.alwaysNull();
+        }
+
         mLocationBarCoordinator =
                 new LocationBarCoordinator(
                         locationBarLayout,
@@ -106,7 +114,7 @@ public class ContextualTasksFusebox {
                         /* browserControlsVisibilityDelegate= */ null,
                         /* backPressManager= */ null,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
-                        /* tabModelSelectorSupplier= */ ObservableSuppliers.alwaysNull(),
+                        /* tabModelSelectorSupplier= */ tabModelSelectorSupplier,
                         /* topInsetProvider= */ new NoOpTopInsetProvider(),
                         new LocationBarEmbedder() {},
                         uiOverrides,
