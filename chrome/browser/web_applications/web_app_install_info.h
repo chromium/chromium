@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/model/dialog_image_info.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/localized_text.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
@@ -219,21 +220,6 @@ struct IconsWithSizeAny {
   SizeSet file_handling_icon_provided_sizes;
   base::flat_map<IconPurpose, GURL> home_tab_icons;
   SizeSet home_tab_icon_provided_sizes;
-};
-
-// Data structure to store information about whether the icons obtained from the
-// manifest need to be masked to be shown in dialogs or other UX surfaces while
-// the app has not been installed yet.
-struct DialogImageInfo {
-  DialogImageInfo();
-  ~DialogImageInfo();
-  DialogImageInfo(const DialogImageInfo& dialog_image_info);
-  DialogImageInfo& operator=(const DialogImageInfo& dialog_image_info);
-  DialogImageInfo(DialogImageInfo&& dialog_image_info);
-  DialogImageInfo& operator=(DialogImageInfo&& dialog_image_info);
-
-  std::map<SquareSizePx, SkBitmap> bitmaps;
-  bool is_maskable = false;
 };
 
 // Structure used when installing a web page as an app.
@@ -532,8 +518,6 @@ bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
 
 bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
                 const WebAppShortcutsMenuItemInfo& shortcut_info2);
-
-bool operator==(const DialogImageInfo& info1, const DialogImageInfo& info2);
 
 }  // namespace web_app
 

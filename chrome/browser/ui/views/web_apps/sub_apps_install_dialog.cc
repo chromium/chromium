@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "chrome/browser/web_applications/model/dialog_image_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"

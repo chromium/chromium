@@ -249,6 +249,8 @@ source_set("web_applications") {
     "manifest_update_manager.h",
     "model/app_installed_by.cc",
     "model/app_installed_by.h",
+    "model/dialog_image_info.cc",
+    "model/dialog_image_info.h",
     "model/display_override.cc",
     "model/display_override.h",
     "model/localized_text.cc",

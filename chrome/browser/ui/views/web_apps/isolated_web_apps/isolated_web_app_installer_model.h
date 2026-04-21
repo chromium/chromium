@@ -10,7 +10,7 @@
 #include <variant>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
