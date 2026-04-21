@@ -2408,6 +2408,24 @@ CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipInk(
   }
 }
 
+CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipSpaces(
+    TextDecorationSkipSpaces flags) {
+  if (flags == TextDecorationSkipSpaces::kNone) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  if (flags == TextDecorationSkipSpaces::kAll) {
+    return CSSIdentifierValue::Create(CSSValueID::kAll);
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (EnumHasFlags(flags, TextDecorationSkipSpaces::kStart)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kStart));
+  }
+  if (EnumHasFlags(flags, TextDecorationSkipSpaces::kEnd)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kEnd));
+  }
+  return list;
+}
+
 CSSValue* ComputedStyleUtils::ValueForTextOverflow(
     const TextOverflowData& text_overflow,
     const ComputedStyle& style) {

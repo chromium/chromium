@@ -9222,6 +9222,47 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream& stream) {
   return list;
 }
 
+// none | all | [ start || end ]
+CSSValue* ConsumeTextDecorationSkipSpaces(CSSParserTokenStream& stream) {
+  CSSValueID id = stream.Peek().Id();
+  if (id == CSSValueID::kNone) {
+    return ConsumeIdent(stream);
+  }
+
+  if (id == CSSValueID::kAll) {
+    // Note that StyleBuilderConverter::ConvertFlags() requires that values
+    // other than 'none' appear in a CSSValueList.
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*ConsumeIdent(stream));
+    return list;
+  }
+
+  CSSIdentifierValue* start = nullptr;
+  CSSIdentifierValue* end = nullptr;
+  while (true) {
+    id = stream.Peek().Id();
+    if (id == CSSValueID::kStart && !start) {
+      start = ConsumeIdent(stream);
+    } else if (id == CSSValueID::kEnd && !end) {
+      end = ConsumeIdent(stream);
+    } else {
+      break;
+    }
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (start) {
+    list->Append(*start);
+  }
+  if (end) {
+    list->Append(*end);
+  }
+  if (!list->length()) {
+    return nullptr;
+  }
+  return list;
+}
+
 // https://www.w3.org/TR/css-text-4/#text-transform-property
 // none | [capitalize | uppercase | lowercase] || full-width || full-size-kana
 //   | math-auto

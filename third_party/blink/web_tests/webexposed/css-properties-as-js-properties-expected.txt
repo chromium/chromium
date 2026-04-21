@@ -544,6 +544,7 @@ textDecoration
 textDecorationColor
 textDecorationLine
 textDecorationSkipInk
+textDecorationSkipSpaces
 textDecorationStyle
 textDecorationThickness
 textEmphasis

@@ -9700,6 +9700,22 @@ const CSSValue* TextDecorationSkipInk::CSSValueFromComputedStyleInternal(
       style.TextDecorationSkipInk());
 }
 
+const CSSValue* TextDecorationSkipSpaces::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext&,
+    CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeTextDecorationSkipSpaces(stream);
+}
+
+const CSSValue* TextDecorationSkipSpaces::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForTextDecorationSkipSpaces(
+      style.GetTextDecorationSkipSpaces());
+}
+
 const CSSValue* TextDecorationStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,

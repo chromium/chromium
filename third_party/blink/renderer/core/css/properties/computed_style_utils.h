@@ -175,6 +175,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);
   static CSSValue* ValueForTextDecorationSkipInk(ETextDecorationSkipInk);
+  static CSSValue* ValueForTextDecorationSkipSpaces(TextDecorationSkipSpaces);
   static CSSValue* ValueForTextOverflow(const TextOverflowData&,
                                         const ComputedStyle&);
   static CSSValue* TouchActionFlagsToCSSValue(TouchAction);

@@ -812,6 +812,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetTextDecorationLine() == b.GetTextDecorationLine();
     case CSSPropertyID::kTextDecorationSkipInk:
       return a.TextDecorationSkipInk() == b.TextDecorationSkipInk();
+    case CSSPropertyID::kTextDecorationSkipSpaces:
+      return a.GetTextDecorationSkipSpaces() == b.GetTextDecorationSkipSpaces();
     case CSSPropertyID::kTextDecorationStyle:
       return a.TextDecorationStyle() == b.TextDecorationStyle();
     case CSSPropertyID::kTextDecorationThickness:

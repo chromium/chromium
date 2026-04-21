@@ -842,6 +842,14 @@
     // all
 
     //
+    // text-decoration-skip-spaces
+    //
+    // none
+    // start
+    // end
+    // all
+
+    //
     // text-decoration-thickness
     //
     // auto

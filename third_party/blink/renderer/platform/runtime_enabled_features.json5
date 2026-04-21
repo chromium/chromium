@@ -1963,6 +1963,10 @@
       status: "stable",
     },
     {
+      name: "CSSTextDecorationSkipSpaces",
+      status: "test",
+    },
+    {
       // crbug.com/434361099
       name: "CssTextIndent",
       status: "stable",
