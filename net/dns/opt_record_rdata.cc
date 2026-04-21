@@ -226,8 +226,8 @@ OptRecordRdata::EdeOpt::EdeInfoCode OptRecordRdata::EdeOpt::GetEnumFromInfoCode(
   }
 }
 
-OptRecordRdata::PaddingOpt::PaddingOpt(std::string padding)
-    : Opt(base::as_byte_span(padding)) {}
+OptRecordRdata::PaddingOpt::PaddingOpt(base::span<const uint8_t> padding)
+    : Opt(padding) {}
 
 OptRecordRdata::PaddingOpt::PaddingOpt(uint16_t padding_len)
     : Opt(base::span<const uint8_t>(
@@ -292,8 +292,7 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
 
     switch (opt_code) {
       case dns_protocol::kEdnsPadding:
-        opt = std::make_unique<OptRecordRdata::PaddingOpt>(
-            std::string(base::as_string_view(opt_data)));
+        opt = std::make_unique<OptRecordRdata::PaddingOpt>(opt_data);
         break;
       case dns_protocol::kEdnsExtendedDnsError:
         opt = OptRecordRdata::EdeOpt::Create(opt_data);
@@ -310,7 +309,7 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
       return nullptr;
     }
 
-    rdata->opts_.emplace(opt_code, std::move(opt));
+    rdata->opts_.emplace(opt->GetCode(), std::move(opt));
   }
 
   return rdata;

@@ -144,8 +144,8 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     static const uint16_t kOptCode = dns_protocol::kEdnsPadding;
 
     PaddingOpt() = delete;
-    // Construct a PaddingOpt with the specified padding string.
-    explicit PaddingOpt(std::string padding);
+    // Construct a PaddingOpt with the specified padding.
+    explicit PaddingOpt(base::span<const uint8_t> padding);
     // Constructs PaddingOpt with '\0' character padding of specified length.
     // Note: This padding_len only specifies the length of the data section.
     // Users must take into account the header length `Opt::kHeaderSize`

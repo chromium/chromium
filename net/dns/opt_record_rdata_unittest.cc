@@ -599,8 +599,7 @@ TEST(OptRecordRdataTest, EdeRecordUnknownInfoCode) {
 }
 
 TEST(OptRecordRdataTest, CreatePaddingOpt) {
-  std::unique_ptr<OptRecordRdata::PaddingOpt> opt0 =
-      std::make_unique<OptRecordRdata::PaddingOpt>(12);
+  OptRecordRdata::PaddingOpt opt0(12);
 
   constexpr const uint8_t expected_data[] = {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -611,24 +610,23 @@ TEST(OptRecordRdataTest, CreatePaddingOpt) {
   constexpr const uint8_t expected_data1[] = {'M', 'A', 'S', 'S', 'A', 'C', 'H',
                                               'U', 'S', 'E', 'T', 'T', 'S'};
 
-  ASSERT_EQ(opt0->data(), expected_data);
-  ASSERT_THAT(opt0->data(), SizeIs(12u));
+  ASSERT_EQ(opt0.data(), expected_data);
+  ASSERT_THAT(opt0.data(), SizeIs(12u));
 
-  std::unique_ptr<OptRecordRdata::PaddingOpt> opt1 =
-      std::make_unique<OptRecordRdata::PaddingOpt>("MASSACHUSETTS");
+  OptRecordRdata::PaddingOpt opt1(
+      base::byte_span_from_cstring("MASSACHUSETTS"));
 
-  ASSERT_EQ(opt1->data(), expected_data1);
-  ASSERT_THAT(opt1->data(), SizeIs(13u));
+  ASSERT_EQ(opt1.data(), expected_data1);
+  ASSERT_THAT(opt1.data(), SizeIs(13u));
 }
 
 TEST(OptRecordRdataTest, ParsePaddingOpt) {
-  const uint8_t rdata[] = {
-      // First OPT
-      0x00, 0x0C,  // OPT code
-      0x00, 0x07,  // OPT data size
-      0xB0, 0x03,  // OPT data padding (Book of Boba Fett)
-      0x0F, 0xB0, 0xBA, 0xFE, 0x77,
+  constexpr uint8_t kPadding[] = {0xb0, 0x03, 0x0f, 0xb0, 0xba, 0xfe, 0x77};
+  std::vector<uint8_t> rdata = {
+      0x00, 0x0C,                                       // OPT code
+      0x00, static_cast<uint8_t>(std::size(kPadding)),  // OPT data size
   };
+  rdata.insert_range(rdata.end(), kPadding);
 
   std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
 
@@ -638,8 +636,7 @@ TEST(OptRecordRdataTest, ParsePaddingOpt) {
   ASSERT_THAT(rdata_obj->GetPaddingOpts(), SizeIs(1));
 
   // Check elements
-  OptRecordRdata::PaddingOpt opt0(
-      std::string("\xb0\x03\x0f\xb0\xba\xfe\x77", 7));
+  OptRecordRdata::PaddingOpt opt0(kPadding);
 
   ASSERT_EQ(*(rdata_obj->GetOpts()[0]), opt0);
   ASSERT_EQ(*(rdata_obj->GetPaddingOpts()[0]), opt0);
