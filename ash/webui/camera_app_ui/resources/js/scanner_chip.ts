@@ -450,7 +450,7 @@ function showWifi(wifiConfig: WifiConfig): ChipMethods {
  */
 export function showBarcodeContent(content: string): void {
   function setupChip() {
-    let chipMethods: ChipMethods|null = null;
+    let chipMethods: ChipMethods|undefined;
     const wifiConfig = parseWifi(content);
     if (wifiConfig !== null) {
       chipMethods = showWifi(wifiConfig);

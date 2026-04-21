@@ -26,7 +26,7 @@ import tseslint from
 import tseslintParser from
   '../../../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
 import jsdoc from
-  '../../../../third_party/node/node_modules/eslint-plugin-jsdoc/dist/index.cjs';
+  '../../../../third_party/node/node_modules/eslint-plugin-jsdoc/src/index.js';
 
 /* eslint-enable @stylistic/max-len */
 

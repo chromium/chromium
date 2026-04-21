@@ -575,6 +575,9 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING, true);
       this.recordTime.start(MAX_GIF_DURATION_MS);
 
+      // Turn off due to false positive
+      // https://github.com/eslint/eslint/issues/17579.
+      // eslint-disable-next-line no-useless-assignment
       let gifSaver = null;
       try {
         gifSaver = await this.captureGif();
@@ -604,6 +607,9 @@ export class Video extends ModeBase {
       window.addEventListener('beforeunload', beforeUnloadListener);
 
       this.recordTime.start();
+      // Turn off due to false positive
+      // https://github.com/eslint/eslint/issues/17579.
+      // eslint-disable-next-line no-useless-assignment
       let timeLapseSaver: TimeLapseSaver|null = null;
       try {
         assert(param !== null);
