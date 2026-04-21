@@ -27,12 +27,17 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     private final ViewGroup mStartAnchorContainer;
     private final ViewGroup mEndAnchorContainer;
 
-    // TODO(crbug.com/478338737): Update to account for multiple side containers.
-    @Nullable private SideUiContainer mSideUiContainer;
     private final ObserverList<SideUiObserver> mSideUiObservers = new ObserverList<>();
 
     private final NonNullObservableSupplier<Integer> mTopMarginSupplier;
     private final Callback<Integer> mTopMarginObserver;
+
+    // TODO(crbug.com/478338737): Update to account for multiple side containers.
+    @Nullable private SideUiContainer mSideUiContainer;
+
+    // TODO(crbug.com/478338737): Update to account for multiple side UIs with different top
+    // margins.
+    private @Px int mSideUiTopMargin;
 
     /**
      * Constructor for a {@link SideUiCoordinatorImpl}.
@@ -120,8 +125,21 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     @Override
     public SideUiSpecs getCurrentSideUiSpecs() {
         // Infers by measuring the two parent containers.
-        mStartAnchorContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        mEndAnchorContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        View sideUiParent = (View) mStartAnchorContainer.getParent();
+        assert sideUiParent == mEndAnchorContainer.getParent()
+                : "Anchor containers should have the same parent.";
+
+        int sideUiParentHeight = sideUiParent != null ? sideUiParent.getHeight() : 0;
+        int sideUiHeight = sideUiParentHeight - mSideUiTopMargin;
+        int sideUiHeightSpec =
+                sideUiHeight > 0
+                        ? MeasureSpec.makeMeasureSpec(sideUiHeight, MeasureSpec.EXACTLY)
+                        : MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        int sideUiWidthSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+
+        mStartAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
+        mEndAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
+
         return new SideUiSpecs(
                 mStartAnchorContainer.getMeasuredWidth(), mEndAnchorContainer.getMeasuredWidth());
     }
@@ -240,6 +258,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
      * @param tabStripBottomPx The tab strip's bottom in relation to the top of the window in px.
      */
     private void onTopMarginChanged(@Px int tabStripBottomPx) {
+        mSideUiTopMargin = tabStripBottomPx;
+
         MarginLayoutParams startLayoutParams =
                 ((MarginLayoutParams) mStartAnchorContainer.getLayoutParams());
         startLayoutParams.topMargin = tabStripBottomPx;

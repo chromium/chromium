@@ -13,11 +13,13 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 
@@ -43,6 +45,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 @Config(manifest = Config.NONE)
 public class SideUiCoordinatorImplTest {
 
+    private static final Size SIDE_UI_PARENT_SIZE = new Size(1000, 1000);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ViewStub mStartAnchorContainerStub;
@@ -56,13 +60,14 @@ public class SideUiCoordinatorImplTest {
     private ViewGroup mEndAnchorContainer;
     private View mSideUiContainerView;
     private TestSideUiContainer mSideUiContainer;
-
     private SideUiCoordinatorImpl mCoordinator;
 
     @Before
     public void setUp() {
         Context context = Robolectric.buildActivity(Activity.class).setup().get();
 
+        FrameLayout sideUiParent = new FrameLayout(context);
+        sideUiParent.layout(0, 0, SIDE_UI_PARENT_SIZE.getWidth(), SIDE_UI_PARENT_SIZE.getHeight());
         mStartAnchorContainer =
                 (ViewGroup)
                         LayoutInflater.from(context)
@@ -71,6 +76,9 @@ public class SideUiCoordinatorImplTest {
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
+        sideUiParent.addView(mStartAnchorContainer);
+        sideUiParent.addView(mEndAnchorContainer);
+
         mSideUiContainerView = new View(context);
         mSideUiContainer = new TestSideUiContainer(mSideUiContainerView);
 
@@ -235,6 +243,23 @@ public class SideUiCoordinatorImplTest {
         MarginLayoutParams endLayoutParams =
                 ((MarginLayoutParams) mEndAnchorContainer.getLayoutParams());
         assertEquals("Unexpected top margin.", topMarginPx, endLayoutParams.topMargin);
+    }
+
+    @Test
+    public void testGetCurrentSideUiSpecs_WithParentHeightAndTopMargin() {
+        int sideUiTopMargin = 100;
+        mTopMarginSupplier.set(sideUiTopMargin);
+
+        mCoordinator.getCurrentSideUiSpecs();
+
+        assertEquals(
+                "Unexpected measured height.",
+                SIDE_UI_PARENT_SIZE.getHeight() - sideUiTopMargin,
+                mStartAnchorContainer.getMeasuredHeight());
+        assertEquals(
+                "Unexpected measured height.",
+                SIDE_UI_PARENT_SIZE.getHeight() - sideUiTopMargin,
+                mEndAnchorContainer.getMeasuredHeight());
     }
 
     private int getSideUiContainerViewWidth() {
