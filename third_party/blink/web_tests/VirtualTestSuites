@@ -2664,7 +2664,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=PrerenderActivationByFormSubmission"
+      "--enable-blink-features=PrerenderActivationByFormSubmission,PrerenderUntilScript"
     ],
     "owners": [
       "robertlin@chromium.org"
