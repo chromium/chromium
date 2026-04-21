@@ -13,6 +13,8 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+BASE_DECLARE_FEATURE(kAsyncPredictorDbUpdate);
+
 BASE_DECLARE_FEATURE(kLoadingPredictorUseLocalPredictions);
 
 BASE_DECLARE_FEATURE(kLoadingOnlyLearnHighPriorityResources);

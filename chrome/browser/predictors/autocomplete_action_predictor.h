@@ -109,9 +109,9 @@ class AutocompleteActionPredictor : public KeyedService,
   // clears the transitional matches.
   void UpdateDatabaseFromTransitionalMatches(const GURL& opened_url);
 
-  // Clears any transitional matches that have been registered. Called when, for
-  // example, the OmniboxEditModel is reverted.
-  void ClearTransitionalMatches();
+  // Clears and returns any transitional matches that have been registered.
+  // Called when, for example, the OmniboxEditModel is reverted.
+  std::vector<TransitionalMatch> TakeTransitionalMatches();
 
   // Returns the recommended action given |user_text|, the text the user has
   // entered in the Omnibox associated with |web_contents|, and |match|, the
@@ -173,6 +173,11 @@ class AutocompleteActionPredictor : public KeyedService,
   static const int kMaximumDaysToKeepEntry;
   static const size_t kMinimumUserTextLength;
   static const size_t kMaximumStringLength;
+
+  // Updates the database using the passed transitional matches.
+  void UpdateDatabaseFromTransitionalMatchesInternal(
+      const GURL& opened_url,
+      std::vector<TransitionalMatch> transitional_matches);
 
   // Removes all rows from the database and caches.
   void DeleteAllRows();

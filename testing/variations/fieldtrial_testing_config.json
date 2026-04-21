@@ -2179,6 +2179,25 @@
             ]
         }
     ],
+    "AsyncPredictorDbUpdate": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AsyncPredictorDbUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AsyncQuicSession": [
         {
             "platforms": [
