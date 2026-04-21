@@ -4,10 +4,15 @@
 
 #include "base/message_loop/message_pump_default.h"
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
@@ -127,6 +132,14 @@ bool MessagePumpDefault::BusyWaitOnEvent(base::TimeTicks before,
                                          base::TimeDelta next_work_delay) {
   base::TimeDelta max_busy_loop_time =
       std::min(max_busy_loop_time_, next_work_delay);
+
+  const bool should_sample = base::ShouldRecordSubsampledMetric(0.001);
+
+  std::optional<base::ElapsedTimer> timer;
+  if (should_sample) {
+    timer.emplace();
+  }
+
   bool signaled = false;
   {
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"), "BusyWait",
@@ -138,6 +151,31 @@ bool MessagePumpDefault::BusyWaitOnEvent(base::TimeTicks before,
     } while (!signaled &&
              (base::TimeTicks::Now() - before) < max_busy_loop_time);
   }
+
+  if (should_sample) {
+    base::TimeDelta busy_loop_duration = timer->Elapsed();
+    // The maximum busy loop time is much lower than 100ms but set the
+    // histogram's upper bound to 100ms to capture cases where the thread is
+    // descheduled while busy looping.
+    if (signaled) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Scheduling.MessagePumpDefault.BusyLoop.Duration.TaskArrived",
+          busy_loop_duration, base::Microseconds(1), base::Milliseconds(100),
+          50);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Scheduling.MessagePumpDefault.BusyLoop.Duration.TimedOut",
+          busy_loop_duration, base::Microseconds(1), base::Milliseconds(100),
+          50);
+    }
+
+    UMA_HISTOGRAM_BOOLEAN("Scheduling.MessagePumpDefault.BusyLoop.TaskArrived",
+                          signaled);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Scheduling.MessagePumpDefault.BusyLoop.TargetDuration",
+        max_busy_loop_time, base::Microseconds(1), base::Milliseconds(10), 50);
+  }
+
   return signaled;
 }
 

@@ -12,9 +12,11 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
@@ -478,78 +480,107 @@ INSTANTIATE_TEST_SUITE_P(All,
 // On iOS, MessagePumpDefault is not used.
 #if !BUILDFLAG(IS_IOS)
 
-TEST(MessagePumpDefaultTest, BusyWaitOnEvent) {
-  MessagePumpDefault message_pump;
+class MessagePumpDefaultTest : public ::testing::Test {
+ protected:
+  void VerifyHistogramExpectations(bool task_arrived) {
+    histogram_tester_.ExpectTotalCount(
+        "Scheduling.MessagePumpDefault.BusyLoop.Duration.TimedOut",
+        task_arrived ? 0 : 1);
+    histogram_tester_.ExpectTotalCount(
+        "Scheduling.MessagePumpDefault.BusyLoop.Duration.TaskArrived",
+        task_arrived ? 1 : 0);
+    histogram_tester_.ExpectBucketCount(
+        "Scheduling.MessagePumpDefault.BusyLoop.TaskArrived", task_arrived, 1);
+    histogram_tester_.ExpectTotalCount(
+        "Scheduling.MessagePumpDefault.BusyLoop.TargetDuration", 1);
+  }
 
-  // Test that it respects next_work_delay even if it's smaller than
-  // max_busy_loop_time_.
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
+  base::HistogramTester histogram_tester_;
+  MessagePumpDefault message_pump_;
+};
+
+TEST_F(MessagePumpDefaultTest, BusyWaitOnEventRespectsNextWorkDelay) {
   // Very large, to make the test less flaky.
   TimeDelta max_busy_loop_time = Milliseconds(100);
-  message_pump.SetBusyLoop(max_busy_loop_time);
+  message_pump_.SetBusyLoop(max_busy_loop_time);
 
   TimeTicks before = TimeTicks::Now();
+  // `next_work_delay` is smaller than `max_busy_loop_time`, so we expect to
+  // busy loop for next_work_delay and not `max_busy_loop_time`.
   TimeDelta next_work_delay = Milliseconds(2);
 
-  bool signaled = message_pump.BusyWaitOnEvent(before, next_work_delay);
+  bool signaled = message_pump_.BusyWaitOnEvent(before, next_work_delay);
   ASSERT_FALSE(signaled);
   TimeDelta busy_loop_duration = TimeTicks::Now() - before;
   EXPECT_LT(busy_loop_duration, max_busy_loop_time);
   EXPECT_GE(busy_loop_duration, next_work_delay);
 
-  // Does not busy loop for more than required.
-  max_busy_loop_time = Milliseconds(2);
-  next_work_delay = Milliseconds(100);
-  message_pump.SetBusyLoop(max_busy_loop_time);
-  signaled = message_pump.BusyWaitOnEvent(before, next_work_delay);
+  VerifyHistogramExpectations(/*task_arrived=*/false);
+}
+
+TEST_F(MessagePumpDefaultTest, BusyWaitOnEventDoesNotLoopForMoreThanRequired) {
+  TimeDelta max_busy_loop_time = Milliseconds(2);
+  message_pump_.SetBusyLoop(max_busy_loop_time);
+
+  TimeTicks before = TimeTicks::Now();
+  TimeDelta next_work_delay = Milliseconds(100);
+
+  bool signaled = message_pump_.BusyWaitOnEvent(before, next_work_delay);
   ASSERT_FALSE(signaled);
-  busy_loop_duration = TimeTicks::Now() - before;
+  TimeDelta busy_loop_duration = TimeTicks::Now() - before;
   EXPECT_GE(busy_loop_duration, max_busy_loop_time);
   EXPECT_LT(busy_loop_duration, next_work_delay);
 
-  // Test that it stops if signaled.
-  max_busy_loop_time = Milliseconds(50);
-  next_work_delay = Milliseconds(100);
-  message_pump.SetBusyLoop(max_busy_loop_time);
-  before = TimeTicks::Now();
-  message_pump.ScheduleWork();
-  signaled = message_pump.BusyWaitOnEvent(before, next_work_delay);
+  VerifyHistogramExpectations(/*task_arrived=*/false);
+}
+
+TEST_F(MessagePumpDefaultTest, BusyWaitOnEventStopsIfSignaled) {
+  TimeDelta max_busy_loop_time = Milliseconds(50);
+  message_pump_.SetBusyLoop(max_busy_loop_time);
+
+  TimeTicks before = TimeTicks::Now();
+  TimeDelta next_work_delay = Milliseconds(100);
+
+  message_pump_.ScheduleWork();
+  bool signaled = message_pump_.BusyWaitOnEvent(before, next_work_delay);
   EXPECT_TRUE(signaled);
   // Could expect it to be smaller, since it should return immediately, but this
   // is to avoid flakiness.
   EXPECT_LT(TimeTicks::Now() - before, max_busy_loop_time);
+
+  VerifyHistogramExpectations(/*task_arrived=*/true);
 }
 
-TEST(MessagePumpDefaultTest, BusyLoop) {
-  MessagePumpDefault message_pump;
-
-  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+TEST_F(MessagePumpDefaultTest, ShouldBusyLoopHeuristic) {
+  EXPECT_FALSE(message_pump_.ShouldBusyLoop());
 
   base::TimeDelta busy_loop_for = base::Milliseconds(1);
-  message_pump.SetBusyLoop(busy_loop_for);
-  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  message_pump_.SetBusyLoop(busy_loop_for);
+  EXPECT_TRUE(message_pump_.ShouldBusyLoop());
 
   // Many long waits, no more busy looping.
   for (int i = 0; i < 10; i++) {
-    message_pump.RecordWaitTime(busy_loop_for * 10);
+    message_pump_.RecordWaitTime(busy_loop_for * 10);
   }
-  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+  EXPECT_FALSE(message_pump_.ShouldBusyLoop());
 
   // One short wait, busy loop.
-  message_pump.RecordWaitTime(busy_loop_for / 1.5);
-  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  message_pump_.RecordWaitTime(busy_loop_for / 1.5);
+  EXPECT_TRUE(message_pump_.ShouldBusyLoop());
   // But as long as the moving average is high enough, don't loop.
-  message_pump.RecordWaitTime(busy_loop_for * 1.5);
-  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+  message_pump_.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_FALSE(message_pump_.ShouldBusyLoop());
 
   // Eventually, the moving average gets low enough
   for (int i = 0; i < 100; i++) {
-    message_pump.RecordWaitTime(busy_loop_for / 10);
+    message_pump_.RecordWaitTime(busy_loop_for / 10);
   }
-  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  EXPECT_TRUE(message_pump_.ShouldBusyLoop());
 
   // Even if the last wait time was higher than the limit.
-  message_pump.RecordWaitTime(busy_loop_for * 1.5);
-  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  message_pump_.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_TRUE(message_pump_.ShouldBusyLoop());
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
