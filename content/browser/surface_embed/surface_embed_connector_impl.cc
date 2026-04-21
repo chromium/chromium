@@ -184,10 +184,20 @@ SurfaceEmbedConnectorImpl::GetParentRenderWidgetHostView() {
 
 RenderWidgetHostViewBase*
 SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
-  // Assuming one level of embedding.
-  // TODO(crbug.com/496266440): support multiple levels of embedding, e.g., a
-  // WebUI embeds another WebUI, which in turn embeds an external web page.
-  return GetParentRenderWidgetHostView();
+  if (!parent_web_contents_) {
+    return nullptr;
+  }
+  auto* root_web_contents = parent_web_contents();
+  auto* root_connector = static_cast<SurfaceEmbedConnectorImpl*>(
+      parent_web_contents()->GetSurfaceEmbedConnector());
+  while (root_connector && root_connector->parent_web_contents()) {
+    root_web_contents = root_connector->parent_web_contents();
+    root_connector = static_cast<SurfaceEmbedConnectorImpl*>(
+        root_connector->parent_web_contents()->GetSurfaceEmbedConnector());
+  }
+  CHECK(root_web_contents);
+  return static_cast<RenderWidgetHostViewBase*>(
+      root_web_contents->GetRenderWidgetHostView());
 }
 
 void SurfaceEmbedConnectorImpl::RenderProcessGone() {}

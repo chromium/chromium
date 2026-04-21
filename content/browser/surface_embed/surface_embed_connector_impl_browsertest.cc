@@ -397,4 +397,44 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   context.connector->DidUpdateVisualProperties(metadata);
 }
 
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       MultiLevelEmbeddingGetRootRenderWidgetHostView) {
+  MockSurfaceEmbedConnectorDelegate child_delegate;
+  MockSurfaceEmbedConnectorDelegate parent_delegate;
+
+  // Setup Grandparent (Root)
+  WebContents::CreateParams create_params(
+      GetParentWebContents()->GetBrowserContext());
+  std::unique_ptr<WebContents> grandparent_web_contents =
+      WebContents::Create(create_params);
+  WebContentsImpl* grandparent_impl =
+      static_cast<WebContentsImpl*>(grandparent_web_contents.get());
+  EXPECT_TRUE(NavigateToURL(grandparent_impl, GURL("about:blank")));
+
+  // Setup Parent
+  std::unique_ptr<WebContents> parent_web_contents =
+      WebContents::Create(create_params);
+  WebContentsImpl* parent_impl =
+      static_cast<WebContentsImpl*>(parent_web_contents.get());
+  SurfaceEmbedConnector::Attach(parent_impl, grandparent_impl,
+                                &parent_delegate);
+
+  // Setup Child
+  std::unique_ptr<WebContents> child_web_contents =
+      WebContents::Create(create_params);
+  WebContentsImpl* child_impl =
+      static_cast<WebContentsImpl*>(child_web_contents.get());
+  SurfaceEmbedConnector::Attach(child_impl, parent_impl, &child_delegate);
+
+  auto* child_connector = static_cast<SurfaceEmbedConnectorImpl*>(
+      child_impl->GetSurfaceEmbedConnector());
+
+  // Verify that the child's root render widget host view is the grandparent's
+  EXPECT_NE(grandparent_impl->GetRenderWidgetHostView(), nullptr);
+  EXPECT_EQ(child_connector->GetRootRenderWidgetHostView(),
+            grandparent_impl->GetRenderWidgetHostView());
+  EXPECT_EQ(child_connector->GetParentRenderWidgetHostView(),
+            parent_impl->GetRenderWidgetHostView());
+}
+
 }  // namespace content
