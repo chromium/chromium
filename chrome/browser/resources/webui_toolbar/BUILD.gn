@@ -51,6 +51,7 @@ build_webui("build") {
     "split_tabs_button.html.ts",
     "split_tabs_button.ts",
     "split_tabs_button_icons.html.ts",
+    "timer_helper.ts",
     "toolbar_button.ts",
     "toolbar_divider.html.ts",
     "toolbar_divider.ts",

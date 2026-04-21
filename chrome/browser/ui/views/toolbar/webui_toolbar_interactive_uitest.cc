@@ -282,10 +282,10 @@ class WebUIToolbarViewsInteractiveUiTest
   // only happen while showing the stop icon.
   MultiStep WaitForReloadButtonReady() {
     if (IsWebUIReloadButtonEnabled()) {
-      return WaitForJsResultAt(
-          kWebUIToolbarId, kReloadButtonDeepQuery,
-          R"(el => (!el.showStopIcon && !el.doubleClickReloadIconTimer_))",
-          true);
+      return WaitForJsResultAt(kWebUIToolbarId, kReloadButtonDeepQuery,
+                               "el => (!el.showStopIcon &&"
+                               "  !el.doubleClickReloadIconTimer_.isRunning())",
+                               true);
     }
     return PollUntil(
         base::BindRepeating(

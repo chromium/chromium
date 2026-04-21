@@ -18,6 +18,7 @@ import type {BrowserProxy, ReloadControlState} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
+import {TimerHelper} from './timer_helper.js';
 import {BUTTON_LEFT, BUTTON_RIGHT, getClickDispositionFlags, getContextMenuPosition, PressHandler} from './toolbar_button.js';
 
 // go/keep-sorted start
@@ -71,13 +72,12 @@ export class ReloadButtonElement extends CrLitElement {
   // while one of the "debounce" timers is running.
   protected accessor showStopIcon: boolean = false;
 
-  // ID of timer set when the reload button is pressed while showing the reload
+  // Timer started when the reload button is pressed while showing the reload
   // icon. While running, the reload icon will continue to be displayed instead
   // of the stop icon, and left clicks on the icon will be ignored. Once the
   // timer expires or the load completes, the timer will stop and the updated
-  // icon will be displayed, and clicks will be respected again. Null whenever
-  // the timer isn't running.
-  protected doubleClickReloadIconTimer_: number|null = null;
+  // icon will be displayed, and clicks will be respected again.
+  protected doubleClickReloadIconTimer_: TimerHelper = new TimerHelper();
 
   private browserProxy_: BrowserProxy;
   private metricsRecorder_: MetricsRecorder;
@@ -104,7 +104,7 @@ export class ReloadButtonElement extends CrLitElement {
     // Handle the visible state changes only for left-click.
     if (isLeftClick && !e.metaKey) {
       // Do nothing if timer is still running.
-      if (this.doubleClickReloadIconTimer_ !== null) {
+      if (this.doubleClickReloadIconTimer_.isRunning()) {
         return;
       }
 
@@ -135,8 +135,7 @@ export class ReloadButtonElement extends CrLitElement {
       } else {
         // If the reload button was showing, start the click timer, which will
         // cause future presses to be ignored until it expires.
-        this.doubleClickReloadIconTimer_ = setTimeout(() => {
-          // This will also clear `doubleClickReloadIconTimer_`.
+        this.doubleClickReloadIconTimer_.setTimeout(() => {
           this.updateState_(/*force=*/ true);
         }, Number(this.state.doubleClickInterval.microseconds) / 1000);
       }
@@ -163,7 +162,7 @@ export class ReloadButtonElement extends CrLitElement {
         // the the reload button, which also means the reload button is still
         // displayed, ignore the message entirely. We'll start showing the stop
         // button once the timer expires.
-        if (this.doubleClickReloadIconTimer_ !== null) {
+        if (this.doubleClickReloadIconTimer_.isRunning()) {
           return;
         }
 
@@ -172,10 +171,7 @@ export class ReloadButtonElement extends CrLitElement {
     }
 
     // Cancel the timer, if running, and update the displayed icon.
-    if (this.doubleClickReloadIconTimer_ !== null) {
-      clearTimeout(this.doubleClickReloadIconTimer_);
-      this.doubleClickReloadIconTimer_ = null;
-    }
+    this.doubleClickReloadIconTimer_.clearTimeout();
     this.showStopIcon = this.state.isNavigationLoading;
   }
 

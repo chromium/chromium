@@ -6,6 +6,7 @@ import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mo
 import {isMac} from 'chrome://resources/js/platform.js';
 
 import {ClickDispositionFlag} from './browser_proxy.js';
+import {TimerHelper} from './timer_helper.js';
 
 export const BUTTON_LEFT = 0;
 export const BUTTON_MIDDLE = 1;
@@ -66,7 +67,7 @@ export class PressHandler {
   private static readonly NO_ACTIVE_POINTER_ID = -1;
 
   private isLongPressed_: boolean = false;
-  private longPressTimer_: number = 0;
+  private longPressTimer_: TimerHelper = new TimerHelper();
   private onLongPress_: (source: MenuSourceType) => void;
   private onShortPress_: (e: MouseEvent) => void;
   // Whether to treat Mac Ctrl+LeftClick as a context menu trigger (long press)
@@ -100,7 +101,7 @@ export class PressHandler {
     // Detect downward drag.
     if (e.clientY - this.dragState_.initialY > PressHandler.DRAG_THRESHOLD_PX) {
       this.isLongPressed_ = true;
-      clearTimeout(this.longPressTimer_);
+      this.longPressTimer_.clearTimeout();
       this.onLongPress_(getContextMenuSourceType(e));
       this.resetDragState_();
     }
@@ -155,7 +156,7 @@ export class PressHandler {
     }
 
     this.isLongPressed_ = false;
-    clearTimeout(this.longPressTimer_);
+    this.longPressTimer_.clearTimeout();
 
     if (skipLongPress) {
       return;
@@ -174,7 +175,7 @@ export class PressHandler {
       target.addEventListener('pointermove', this.onPointermove_);
     }
 
-    this.longPressTimer_ = setTimeout(() => {
+    this.longPressTimer_.setTimeout(() => {
       // When the long press is triggered and handled, mark `isLongPressed_`
       // as true, so that it won't be treated as a normal click.
       this.isLongPressed_ = true;
@@ -203,12 +204,12 @@ export class PressHandler {
     // skip the rest.
     if (this.isLongPressed_ || isMacCtrlClick) {
       this.isLongPressed_ = false;
-      clearTimeout(this.longPressTimer_);
+      this.longPressTimer_.clearTimeout();
       this.resetDragState_();
       return;
     }
 
-    clearTimeout(this.longPressTimer_);
+    this.longPressTimer_.clearTimeout();
     const shouldCancel = this.shouldCancelClick_(e);
     this.resetDragState_();
 
@@ -227,7 +228,7 @@ export class PressHandler {
       return;
     }
     this.resetDragState_();
-    clearTimeout(this.longPressTimer_);
+    this.longPressTimer_.clearTimeout();
   };
 
   onContextmenu = (e: PointerEvent) => {
