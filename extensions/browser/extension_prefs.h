@@ -754,6 +754,9 @@ class ExtensionPrefs : public KeyedService {
   // TODO(archanasimha): Remove this around M89.
   void MigrateDeprecatedDisableReasons();
 
+  // Cleans up the preferences for extensions installed via CDP.
+  void CleanUpCdpInstalledExtensions();
+
   // Iterates over the extension pref entries and removes any obsolete keys. We
   // need to do this here specially (rather than in
   // MigrateObsoleteProfilePrefs()) because these entries are subkeys of the

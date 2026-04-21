@@ -2187,6 +2187,8 @@ ExtensionPrefs::ExtensionPrefs(
 
   MigrateDeprecatedDisableReasons();
 
+  CleanUpCdpInstalledExtensions();
+
 #if BUILDFLAG(IS_CHROMEOS)
   ApplyPendingUpdates();
 #endif
@@ -2604,6 +2606,16 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
     }
     ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
                              extension_id, disable_reasons);
+  }
+}
+
+void ExtensionPrefs::CleanUpCdpInstalledExtensions() {
+  const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
+
+  for (const auto& info : extensions_info) {
+    if (GetCreationFlags(info.extension_id) & Extension::INSTALLED_VIA_CDP) {
+      DeleteExtensionPrefs(info.extension_id);
+    }
   }
 }
 

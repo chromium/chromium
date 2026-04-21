@@ -1257,6 +1257,54 @@ TEST_F(ExtensionPrefsSimpleTest, DisableReasonsRawManipulation) {
               testing::UnorderedElementsAre(kKnownReason_1, kKnownReason_2));
 }
 
+TEST_F(ExtensionPrefsSimpleTest, DoesNotLoadCdpInstalledExtensions) {
+  content::BrowserTaskEnvironment task_environment;
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
+
+  base::DictValue dictionary;
+  dictionary.Set(manifest_keys::kName, "cdp_extension");
+  dictionary.Set(manifest_keys::kVersion, "0.1");
+  dictionary.Set(manifest_keys::kManifestVersion, 3);
+  scoped_refptr<const Extension> cdp_extension =
+      prefs.AddExtensionWithManifestAndFlags(dictionary,
+                                             ManifestLocation::kUnpacked,
+                                             Extension::INSTALLED_VIA_CDP);
+
+  EXPECT_TRUE(prefs.prefs()->HasPrefForExtension(cdp_extension->id()));
+
+  prefs.RecreateExtensionPrefs();
+
+  EXPECT_FALSE(prefs.prefs()->HasPrefForExtension(cdp_extension->id()));
+}
+
+TEST_F(ExtensionPrefsSimpleTest, CleanUpCdpInstalledExtensions) {
+  content::BrowserTaskEnvironment task_environment;
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
+
+  scoped_refptr<const Extension> extension =
+      prefs.AddExtension("normal_extension");
+
+  base::DictValue dictionary;
+  dictionary.Set(manifest_keys::kName, "cdp_extension");
+  dictionary.Set(manifest_keys::kVersion, "0.1");
+  dictionary.Set(manifest_keys::kManifestVersion, 2);
+  scoped_refptr<const Extension> cdp_extension =
+      prefs.AddExtensionWithManifestAndFlags(dictionary,
+                                             ManifestLocation::kUnpacked,
+                                             Extension::INSTALLED_VIA_CDP);
+
+  ExtensionPrefs* extension_prefs = prefs.prefs();
+  EXPECT_TRUE(extension_prefs->HasPrefForExtension(extension->id()));
+  EXPECT_TRUE(extension_prefs->HasPrefForExtension(cdp_extension->id()));
+
+  extension_prefs->CleanUpCdpInstalledExtensions();
+
+  EXPECT_TRUE(extension_prefs->HasPrefForExtension(extension->id()));
+  EXPECT_FALSE(extension_prefs->HasPrefForExtension(cdp_extension->id()));
+}
+
 // Tests the generic Get/Set functions for profile wide extension prefs.
 TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
   constexpr PrefMap kTestBooleanPref = {"test.boolean", PrefType::kBool,
