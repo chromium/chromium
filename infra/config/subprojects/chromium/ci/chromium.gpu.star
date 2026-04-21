@@ -533,6 +533,12 @@ ci.thin_tester(
             "tab_capture_end2end_tests": targets.remove(
                 reason = "Run these only on Release bots.",
             ),
+            "trace_test": targets.mixin(
+                # Debug builds are slow enough to warrant an extra shard.
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
