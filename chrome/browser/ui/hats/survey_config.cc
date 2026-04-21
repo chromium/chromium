@@ -826,10 +826,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
   std::vector<std::string> signin_string_psd_fields{"Number of Google Accounts",
                                                     "Sign-in Status"};
-  survey_configs.emplace_back(&switches::kChromeAndroidIdentitySurveyFirstRun,
-                              kHatsSurveyTriggerSigninFirstRun, std::nullopt,
-                              std::vector<std::string>{},
-                              signin_string_psd_fields);
+  // This survey is for the First Run Experience, so it must run on new
+  // profiles.
+  survey_configs.emplace_back(
+      &switches::kChromeAndroidIdentitySurveyFirstRun,
+      kHatsSurveyTriggerSigninFirstRun, std::nullopt,
+      std::vector<std::string>{}, signin_string_psd_fields,
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false,
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
   survey_configs.emplace_back(
       &switches::kChromeAndroidIdentitySurveyWeb, kHatsSurveyTriggerSigninWeb,
       std::nullopt, std::vector<std::string>{}, signin_string_psd_fields);
