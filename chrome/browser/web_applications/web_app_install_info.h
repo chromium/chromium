@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_INFO_H_
 
-#include <array>
-#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
@@ -24,6 +22,7 @@
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/localized_text.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -39,105 +38,12 @@
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
               BUILDFLAG(IS_CHROMEOS));
 
 namespace web_app {
-
-// A map of icon urls to the bitmaps provided by that url.
-using IconsMap = std::map<GURL, std::vector<SkBitmap>>;
-
-using SquareSizePx = int;
-// Iterates in ascending order (checked in SortedSizesPxIsAscending test).
-using SortedSizesPx = base::flat_set<SquareSizePx, std::less<>>;
-using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
-constexpr std::array<IconPurpose,
-                     static_cast<int>(IconPurpose::kMaxValue) -
-                         static_cast<int>(IconPurpose::kMinValue) + 1>
-    kIconPurposes{IconPurpose::ANY, IconPurpose::MONOCHROME,
-                  IconPurpose::MASKABLE};
-struct SizeComparator {
-  constexpr bool operator()(const gfx::Size& left,
-                            const gfx::Size& right) const {
-    if (left.height() != right.height()) {
-      return left.height() < right.height();
-    }
-
-    return left.width() < right.width();
-  }
-};
-
-using SizeSet = base::flat_set<gfx::Size, SizeComparator>;
-
-apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
-    IconPurpose manifest_purpose);
-
-// Icon bitmaps for each IconPurpose.
-struct IconBitmaps {
-  IconBitmaps();
-  ~IconBitmaps();
-  IconBitmaps(const IconBitmaps&);
-  IconBitmaps(IconBitmaps&&) noexcept;
-  IconBitmaps& operator=(const IconBitmaps&);
-  IconBitmaps& operator=(IconBitmaps&&) noexcept;
-
-  bool operator==(const IconBitmaps&) const;
-
-  const std::map<SquareSizePx, SkBitmap>& GetBitmapsForPurpose(
-      IconPurpose purpose) const;
-  void SetBitmapsForPurpose(IconPurpose purpose,
-                            std::map<SquareSizePx, SkBitmap> bitmaps);
-
-  bool empty() const;
-
-  // TODO(crbug.com/40158740): Consider using base::flat_map.
-
-  // Icon bitmaps suitable for any context, keyed by their square size.
-  // See https://www.w3.org/TR/appmanifest/#dfn-any-purpose
-  std::map<SquareSizePx, SkBitmap> any;
-
-  // Icon bitmaps designed for masking, keyed by their square size.
-  // See https://www.w3.org/TR/appmanifest/#dfn-maskable-purpose
-  std::map<SquareSizePx, SkBitmap> maskable;
-
-  // Monochrome bitmaps designed for any context, keyed by their square size.
-  // See https://www.w3.org/TR/appmanifest/#purpose-member
-  std::map<SquareSizePx, SkBitmap> monochrome;
-};
-
-// Icon sizes for each IconPurpose.
-struct IconSizes {
-  IconSizes();
-  ~IconSizes();
-  IconSizes(const IconSizes&);
-  IconSizes(IconSizes&&) noexcept;
-  IconSizes& operator=(const IconSizes&);
-  IconSizes& operator=(IconSizes&&) noexcept;
-  base::Value AsDebugValue() const;
-
-  const std::vector<SquareSizePx>& GetSizesForPurpose(
-      IconPurpose purpose) const;
-  void SetSizesForPurpose(IconPurpose purpose, std::vector<SquareSizePx> sizes);
-
-  bool empty() const;
-
-  // Sizes of icon bitmaps suitable for any context.
-  // See https://www.w3.org/TR/appmanifest/#dfn-any-purpose
-  std::vector<SquareSizePx> any;
-
-  // Sizes of icon bitmaps designed for masking.
-  // See https://www.w3.org/TR/appmanifest/#dfn-maskable-purpose
-  std::vector<SquareSizePx> maskable;
-
-  // Sizes of monochrome bitmaps, keyed by their square size.
-  // See https://www.w3.org/TR/appmanifest/#purpose-member
-  std::vector<SquareSizePx> monochrome;
-};
-
-using ShortcutsMenuIconBitmaps = std::vector<IconBitmaps>;
 
 // Structure used when creating app icon shortcuts menu and for downloading
 // associated shortcut icons when supported by OS platform (eg. Windows).
@@ -510,8 +416,6 @@ struct WebAppInstallInfo {
   // See `start_url()`.
   GURL start_url_;
 };
-
-bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);
 
 bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
                 const WebAppShortcutsMenuItemInfo::Icon& icon2);

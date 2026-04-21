@@ -4,158 +4,23 @@
 
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
-#include <string_view>
+#include <string>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/containers/flat_tree.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/buildflag.h"
 #include "chrome/browser/web_applications/model/dialog_image_info.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "ui/gfx/skia_util.h"
 #include "url/origin.h"
 
-// This definition needs to be in the top-level namespace to be picked up by
-// IconBitmaps::operator==().
-static bool operator==(const SkBitmap& a, const SkBitmap& b) {
-  return gfx::BitmapsAreEqual(a, b);
-}
-
 namespace web_app {
-
-apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
-    IconPurpose manifest_purpose) {
-  switch (manifest_purpose) {
-    case IconPurpose::ANY:
-      return apps::IconInfo::Purpose::kAny;
-    case IconPurpose::MONOCHROME:
-      return apps::IconInfo::Purpose::kMonochrome;
-    case IconPurpose::MASKABLE:
-      return apps::IconInfo::Purpose::kMaskable;
-  }
-}
-
-// IconBitmaps
-IconBitmaps::IconBitmaps() = default;
-
-IconBitmaps::~IconBitmaps() = default;
-
-IconBitmaps::IconBitmaps(const IconBitmaps&) = default;
-
-IconBitmaps::IconBitmaps(IconBitmaps&&) noexcept = default;
-
-IconBitmaps& IconBitmaps::operator=(const IconBitmaps&) = default;
-
-IconBitmaps& IconBitmaps::operator=(IconBitmaps&&) noexcept = default;
-
-bool IconBitmaps::operator==(const IconBitmaps& other) const {
-  auto AsTuple = [](const IconBitmaps& icon_bitmaps) {
-    return std::make_tuple(icon_bitmaps.any, icon_bitmaps.maskable,
-                           icon_bitmaps.monochrome);
-  };
-  return AsTuple(*this) == AsTuple(other);
-}
-
-const std::map<SquareSizePx, SkBitmap>& IconBitmaps::GetBitmapsForPurpose(
-    IconPurpose purpose) const {
-  switch (purpose) {
-    case IconPurpose::MONOCHROME:
-      return monochrome;
-    case IconPurpose::ANY:
-      return any;
-    case IconPurpose::MASKABLE:
-      return maskable;
-  }
-}
-
-void IconBitmaps::SetBitmapsForPurpose(
-    IconPurpose purpose,
-    std::map<SquareSizePx, SkBitmap> bitmaps) {
-  switch (purpose) {
-    case IconPurpose::ANY:
-      any = std::move(bitmaps);
-      return;
-    case IconPurpose::MONOCHROME:
-      monochrome = std::move(bitmaps);
-      return;
-    case IconPurpose::MASKABLE:
-      maskable = std::move(bitmaps);
-      return;
-  }
-}
-
-bool IconBitmaps::empty() const {
-  return any.empty() && maskable.empty() && monochrome.empty();
-}
-
-// IconSizes
-IconSizes::IconSizes() = default;
-
-IconSizes::~IconSizes() = default;
-
-IconSizes::IconSizes(const IconSizes&) = default;
-
-IconSizes::IconSizes(IconSizes&&) noexcept = default;
-
-IconSizes& IconSizes::operator=(const IconSizes&) = default;
-
-IconSizes& IconSizes::operator=(IconSizes&&) noexcept = default;
-
-base::Value IconSizes::AsDebugValue() const {
-  auto ConvertList = [](const auto& list) {
-    base::ListValue list_json;
-    for (const auto& item : list) {
-      list_json.Append(item);
-    }
-    return list_json;
-  };
-
-  base::DictValue root;
-  for (IconPurpose purpose : kIconPurposes) {
-    root.Set(base::ToString(purpose), ConvertList(GetSizesForPurpose(purpose)));
-  }
-
-  return base::Value(std::move(root));
-}
-
-const std::vector<SquareSizePx>& IconSizes::GetSizesForPurpose(
-    IconPurpose purpose) const {
-  switch (purpose) {
-    case IconPurpose::MONOCHROME:
-      return monochrome;
-    case IconPurpose::ANY:
-      return any;
-    case IconPurpose::MASKABLE:
-      return maskable;
-  }
-}
-
-void IconSizes::SetSizesForPurpose(IconPurpose purpose,
-                                   std::vector<SquareSizePx> sizes) {
-  switch (purpose) {
-    case IconPurpose::ANY:
-      any = std::move(sizes);
-      return;
-    case IconPurpose::MONOCHROME:
-      monochrome = std::move(sizes);
-      return;
-    case IconPurpose::MASKABLE:
-      maskable = std::move(sizes);
-      return;
-  }
-}
-
-bool IconSizes::empty() const {
-  return any.empty() && maskable.empty() && monochrome.empty();
-}
 
 // WebAppShortcutsMenuItemInfo::Icon
 WebAppShortcutsMenuItemInfo::Icon::Icon() = default;
@@ -433,13 +298,6 @@ DialogImageInfo WebAppInstallInfo::GetIconBitmapsForSecureSurfaces() const {
 
   image_info.bitmaps = trusted_icon_bitmaps.any;
   return image_info;
-}
-
-bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
-  return std::tie(icon_sizes1.any, icon_sizes1.maskable,
-                  icon_sizes1.monochrome) == std::tie(icon_sizes2.any,
-                                                      icon_sizes2.maskable,
-                                                      icon_sizes2.monochrome);
 }
 
 bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,

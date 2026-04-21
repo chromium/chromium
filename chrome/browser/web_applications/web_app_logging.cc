@@ -32,7 +32,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"

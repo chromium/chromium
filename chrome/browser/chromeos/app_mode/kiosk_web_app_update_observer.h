@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"

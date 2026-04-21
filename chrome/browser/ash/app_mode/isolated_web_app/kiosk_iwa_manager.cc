@@ -26,7 +26,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"

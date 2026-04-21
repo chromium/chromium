@@ -263,6 +263,8 @@ source_set("web_applications") {
     "model/pending_migration_info.h",
     "model/web_app_comparison.cc",
     "model/web_app_comparison.h",
+    "model/web_app_icon_types.cc",
+    "model/web_app_icon_types.h",
     "navigation_capturing_log.cc",
     "navigation_capturing_log.h",
     "navigation_capturing_metrics.cc",

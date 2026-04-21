@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"

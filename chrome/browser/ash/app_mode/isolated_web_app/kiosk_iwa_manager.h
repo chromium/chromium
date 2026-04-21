@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/menu_icon_loader.h"
 #include "chrome/browser/extensions/menu_manager.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 
 class SkBitmap;
 

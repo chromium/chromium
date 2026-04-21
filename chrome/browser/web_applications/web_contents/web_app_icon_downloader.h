@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"

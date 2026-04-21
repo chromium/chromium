@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/apps/webapk/webapk_metrics.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
 
