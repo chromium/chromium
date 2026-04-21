@@ -175,6 +175,13 @@ constexpr base::FeatureParam<int> kClientSideDetectionServerModelMaxScansPerDay{
     &kClientSideDetectionServerModelForScamDetectionAndroid,
     "MaxIntelligentScansPerDay",
     /*default_value=*/5};
+
+BASE_FEATURE(kClientSideDetectionServerModelRolloutAndroid,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int>
+    kClientSideDetectionServerModelRolloutVersionAndroid{
+        &kClientSideDetectionServerModelRolloutAndroid, "ModelVersion",
+        /*default_value=*/1000};
 #endif
 
 BASE_FEATURE(kClientSideDetectionSkipErrorPage,

@@ -206,8 +206,13 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   base::UmaHistogramMediumTimes(
       "SBClientPhishing.ServerSideModelExecutionDuration",
       base::TimeTicks::Now() - remote_execution_start_time);
-  // Server model does not return model version.
-  int model_version = IntelligentScanResult::kModelVersionUnavailable;
+  // Server model does not return model version. Check the rollout feature flag
+  // to set the model version.
+  int model_version =
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionServerModelRolloutAndroid)
+          ? kClientSideDetectionServerModelRolloutVersionAndroid.Get()
+          : IntelligentScanResult::kDefaultServerModelVersion;
   if (!execution_success) {
     base::UmaHistogramEnumeration(
         "SBClientPhishing.ServerSideModelExecutionError",

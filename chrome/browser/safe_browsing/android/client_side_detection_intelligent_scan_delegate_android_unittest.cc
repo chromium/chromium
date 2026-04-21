@@ -301,6 +301,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   delegate_->StartIntelligentScan("test rendered text", future.GetCallback());
 
   EXPECT_TRUE(future.Get().execution_success);
+  EXPECT_EQ(future.Get().model_version, 1000);
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
@@ -563,6 +564,51 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   // No on-device model download because the server model is enabled.
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", 0);
+}
+
+class ClientSideDetectionIntelligentScanDelegateAndroidServerModelRolloutTest
+    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
+ protected:
+  ClientSideDetectionIntelligentScanDelegateAndroidServerModelRolloutTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kClientSideDetectionImageEmbeddingMatch,
+          {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
+         {kClientSideDetectionServerModelForScamDetectionAndroid,
+          {{"MaxIntelligentScansPerDay", "3"}}},
+         {kClientSideDetectionServerModelRolloutAndroid,
+          {{"ModelVersion", "2000"}}}},
+        /*disabled_features=*/{kClientSideDetectionKillswitch});
+  }
+};
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidServerModelRolloutTest,
+       UsesRolloutVersionWhenFlagIsEnabled) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  optimization_guide::proto::ScamDetectionRequest expected_request;
+  *expected_request.mutable_rendered_text() = "test rendered text";
+  optimization_guide::ModelExecutionOptions expected_options{};
+
+  optimization_guide::proto::ScamDetectionResponse returned_response;
+  returned_response.set_brand("test_brand");
+  returned_response.set_intent("test_intent");
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   EqualsProto(expected_request),
+                   ::testing::Eq(expected_options),
+                   ::testing::A<RemoteModelExecutionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(returned_response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  base::test::TestFuture<IntelligentScanResult> future;
+  delegate_->StartIntelligentScan("test rendered text", future.GetCallback());
+
+  EXPECT_TRUE(future.Get().execution_success);
+  EXPECT_EQ(future.Get().model_version, 2000);
 }
 
 class

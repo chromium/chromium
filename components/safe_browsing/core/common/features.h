@@ -160,6 +160,16 @@ BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
 BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionAndroid);
 extern const base::FeatureParam<int>
     kClientSideDetectionServerModelMaxScansPerDay;
+
+// Dedicated long-lived feature flag to control future server model rollout and
+// set the model version. This flag should not be cleaned up after the server
+// model is launched. See go/mes-config-rollouts#roll-out-via-finch on the
+// recommended way to control rollouts.
+BASE_DECLARE_FEATURE(kClientSideDetectionServerModelRolloutAndroid);
+// Note for future finch config: Set an arbitrary integer value associated with
+// the model version (e.g. 1001). Update go/slams-mapping accordingly.
+extern const base::FeatureParam<int>
+    kClientSideDetectionServerModelRolloutVersionAndroid;
 #endif
 
 BASE_DECLARE_FEATURE(kClientSideDetectionSkipErrorPage);
