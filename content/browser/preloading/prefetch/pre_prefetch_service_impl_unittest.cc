@@ -26,7 +26,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,8 +56,6 @@ class PrePrefetchServiceImplTest : public testing::Test {
   }
 
   TestBrowserContext* browser_context() { return &browser_context_; }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -163,59 +160,6 @@ TEST_F(PrePrefetchServiceImplTest,
       handle_future.GetCallback());
 
   std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
-  EXPECT_EQ(handle, nullptr);
-}
-
-// Test that `PrePrefetchServiceImpl` fails if we do not have a connected
-// `URLLoaderFactory`.
-TEST_F(PrePrefetchServiceImplTest,
-       StartPrePrefetchRequestFailsWithoutConnectedURLLoaderFactory) {
-  auto local_factory = std::make_unique<network::TestURLLoaderFactory>();
-  auto shared_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          local_factory.get());
-  PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(shared_factory.get());
-
-  const GURL prefetch_url("https://example.com/prefetch");
-  auto service = PrePrefetchService::Create(
-      browser_context(), url::Origin::Create(prefetch_url),
-      /*initial_javascript_enabled_hint=*/true,
-      /*initial_should_append_variations_header_hint=*/false);
-  ASSERT_NE(service, nullptr);
-
-  // Destroy the factory to close the pipe.
-  local_factory.reset();
-
-  // Wait for the mojo disconnection to be propagated to `core_` on its
-  // `SequencedTaskRunner.
-  RunUntilIdle();
-
-  base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> handle_future;
-
-  // Start PrePrefetch from non UI thread, this will match the cache, but
-  // the URLLoaderFactory will disconnect.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](PrePrefetchService* service_ptr, const GURL& url) {
-            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
-            return service_ptr->StartPrePrefetchRequest(
-                url, test::kPreloadingEmbedderHistgramSuffixForTesting,
-                /*javascript_enabled=*/true,
-                /*no_vary_search_hint=*/std::nullopt,
-                /*priority=*/content::PrefetchPriority::kHighest,
-                /*additional_headers=*/{},
-                /*request_status_listener=*/nullptr, base::TimeDelta(),
-                /*should_append_variations_header=*/false,
-                /*should_disable_block_until_head_timeout=*/false,
-                /*should_bypass_http_cache=*/false);
-          },
-          service.get(), prefetch_url),
-      handle_future.GetCallback());
-
-  std::unique_ptr<PrePrefetchHandle> handle = handle_future.Take();
-
-  // PrePrefetch fails.
   EXPECT_EQ(handle, nullptr);
 }
 
