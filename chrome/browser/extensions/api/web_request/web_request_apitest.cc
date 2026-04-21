@@ -8776,8 +8776,15 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          testing::Combine(testing::Bool(), testing::Bool()),
                          ExtensionWebRequestApiCoverageTest::DescribeParams);
 
+// TODO(crbug.com/502806827): Multiple worker threads creation fails silently on
+// Windows ASAN builds, causing this test to hang.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RequestInterceptionCoverage DISABLED_RequestInterceptionCoverage
+#else
+#define MAYBE_RequestInterceptionCoverage RequestInterceptionCoverage
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiCoverageTest,
-                       RequestInterceptionCoverage) {
+                       MAYBE_RequestInterceptionCoverage) {
   ASSERT_TRUE(StartWebSocketServer());
   ASSERT_TRUE(RunTest("test_interception_coverage.html")) << message_;
 }
