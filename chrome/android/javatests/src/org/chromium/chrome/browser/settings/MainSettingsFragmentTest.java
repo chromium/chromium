@@ -10,7 +10,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
-import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -25,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
@@ -51,7 +49,6 @@ import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -735,53 +732,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
-    public void testPlusAddressesHiddenWhenNotEnabled() {
-        Assert.assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED));
-        startSettings();
-        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES));
-    }
-
-    @Test
-    @SmallTest
-    public void testPlusAddressesHiddenWhenLabelIsEmpty() {
-        Assert.assertTrue(
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                                ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label")
-                        .isEmpty());
-        startSettings();
-        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES));
-    }
-
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=PlusAddressesEnabled:"
-                + "settings-label/PlusAddressesTestTitle/"
-                + "manage-url/https%3A%2F%2Ftest.plusaddresses.google.com"
-    })
-    public void testPlusAddressesEnabled() {
-        // Use anyInt() because clicking the preference launches a Custom Tab. The Custom Tab's
-        // RootUiCoordinator initializes its own sign-in flow using SigninAccessPoint.WEB_SIGNIN,
-        // while the settings UI may use SigninAccessPoint.SETTINGS.
-        when(mSigninAndHistorySyncActivityLauncher
-                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                                anyInt()))
-                .thenReturn(mSigninCoordinator);
-        startSettings();
-        Preference preference = mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES);
-        Assert.assertNotNull(preference);
-        Assert.assertTrue(preference.isVisible());
-        Assert.assertEquals("PlusAddressesTestTitle", preference.getTitle());
-        onView(withId(R.id.recycler_view))
-                .perform(scrollTo(hasDescendant(withText("PlusAddressesTestTitle"))));
-        onView(withText("PlusAddressesTestTitle")).perform(click());
-        intended(IntentMatchers.hasData("https://test.plusaddresses.google.com"));
-    }
-
-    @Test
-    @SmallTest
     public void testTabsSettingsOn() {
         startSettings();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
@@ -1026,9 +976,6 @@ public class MainSettingsFragmentTest {
         Assert.assertNull(
                 "Autofill options preference should be hidden",
                 mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_OPTIONS));
-        Assert.assertNull(
-                "Plus addresses preference should be hidden",
-                mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES));
     }
 
     @Test
@@ -1064,10 +1011,6 @@ public class MainSettingsFragmentTest {
                 .removeEntry(
                         MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 MainSettings.PREF_AUTOFILL_OPTIONS));
-        verify(mSearchIndexDataMock, atLeastOnce())
-                .removeEntry(
-                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                MainSettings.PREF_PLUS_ADDRESSES));
     }
 
     @Test

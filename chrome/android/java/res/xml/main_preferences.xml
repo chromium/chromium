@@ -79,12 +79,6 @@ found in the LICENSE file.
         android:key="autofill_addresses"
         android:order="15"
         android:title="@string/autofill_addresses_settings_title"/>
-    <!-- TODO(crbug.com/40276862): UX design and review of the plus_addresses preference.
-    Do we want to change the order of preferences, combine this with other
-    autofill addresses, or move this preference to the Advanced section? -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="plus_addresses"
-        android:order="16"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_options"
         android:order="17" />

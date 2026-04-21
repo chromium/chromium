@@ -71,7 +71,6 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.plus_addresses.PlusAddressesUserActions;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -188,7 +187,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     private static @Nullable EditorObserverForTest sObserverForTest;
     static final int DEFAULT_SNACKBAR_DURATION = 10000;
     static final String PREF_NEW_PROFILE = "new_profile";
-    static final String MANAGE_PLUS_ADDRESSES = "manage_plus_addresses";
     static final String SAVE_AND_FILL_ADDRESSES = "save_and_fill_addresses";
     static final String DISABLED_SETTINGS_INFO = "disabled_settings_info";
     static final String DISABLED_WALLET_DATA_SHARING = "disabled_wallet_data_sharing";
@@ -272,9 +270,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         addProfilePreferences(screen);
         if (!disabledSettingsInThirdPartyMode(getProfile())) {
             addAddAddressButton(screen);
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
-            addPlusAddressesPreference(screen);
         }
         // LINT.ThenChange(:DynamicPreferences)
         addAutofillAiEntities(screen);
@@ -472,19 +467,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         screen.addPreference(pref);
     }
 
-    /** Adds the "Manage plus addresses" link if the feature is enabled. */
-    private void addPlusAddressesPreference(PreferenceScreen screen) {
-        // LINT.IfChange(AddPlusAddressesPreference)
-        AutofillProfileEditorPreference pref =
-                new AutofillProfileEditorPreference(getStyledContext());
-        pref.setTitle(R.string.plus_address_settings_entry_title);
-        pref.setSummary(R.string.plus_address_settings_entry_summary);
-        pref.setKey(MANAGE_PLUS_ADDRESSES);
-        // LINT.ThenChange(:DynamicAddPlusAddressesPreference)
-
-        screen.addPreference(pref);
-    }
-
     private void addAutofillAiEntities(PreferenceScreen screen) {
         EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
         if (entityDataManager == null) {
@@ -640,12 +622,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         AutofillProfileEditorPreference editorPreference =
                 (AutofillProfileEditorPreference) preference;
 
-        if (editorPreference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
-            AutofillFallbackSurfaceLauncher.openManagePlusAddresses(getActivity(), getProfile());
-            PlusAddressesUserActions.MANAGE_OPTION_ON_SETTINGS_SELECTED.log();
-            return;
-        }
-
         AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
         if (autofillAddress == null) {
             mAddressEditor =
@@ -780,10 +756,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         addDisabledWalletDataSharingDataCard(indexData, getPrefFragmentName());
                     }
                     addAutofillSwitch(indexData);
-
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
-                        addPlusAddressesPreference(indexData);
-                    }
                     // LINT.ThenChange(:RebuildProfileList)
                 }
 
@@ -795,16 +767,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             R.string.autofill_enable_profiles_toggle_label,
                             R.string.autofill_enable_profiles_toggle_sublabel);
                     // LINT.ThenChange(:AddAutofillSwitch)
-                }
-
-                private void addPlusAddressesPreference(SettingsIndexData indexData) {
-                    // LINT.IfChange(DynamicAddPlusAddressesPreference)
-                    indexData.addEntryForKey(
-                            getPrefFragmentName(),
-                            MANAGE_PLUS_ADDRESSES,
-                            R.string.plus_address_settings_entry_title,
-                            R.string.plus_address_settings_entry_summary);
-                    // LINT.ThenChange(:AddPlusAddressesPreference)
                 }
             };
 

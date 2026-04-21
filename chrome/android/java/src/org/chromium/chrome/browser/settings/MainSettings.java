@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsMediator;
 import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -138,7 +137,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_AUTOFILL_OPTIONS = "autofill_options";
     public static final String PREF_AUTOFILL_ADDRESSES = "autofill_addresses";
     public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
-    public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
     public static final String PREF_SAFETY_HUB = "safety_hub";
     public static final String PREF_ADDRESS_BAR = "address_bar";
     public static final String PREF_APPEARANCE = "appearance";
@@ -377,7 +375,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         cachePreferences();
         updateAutofillPreferences();
-        updatePlusAddressesPreference();
         updateGlicPreference();
 
         // TODO(crbug.com/40242060): Remove the passwords managed subtitle for local and UPM
@@ -554,7 +551,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         updateSearchEnginePreference();
         updateAutofillPreferences();
-        updatePlusAddressesPreference();
         updateAddressBarPreference();
         updateAppearancePreference();
         addPreferenceIfAbsent(PREF_TABS);
@@ -767,28 +763,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 /* managePasskeys= */ false);
     }
 
-    private void updatePlusAddressesPreference() {
-        if (shouldAddPlusAddressesPref()) {
-            addPreferenceIfAbsent(PREF_PLUS_ADDRESSES);
-            Preference addressesPreference = findPreference(PREF_PLUS_ADDRESSES);
-            String title =
-                    ChromeFeatureList.getFieldTrialParamByFeature(
-                            ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label");
-            addressesPreference.setTitle(title);
-            addressesPreference.setOnPreferenceClickListener(
-                    preference -> {
-                        onPreferenceSelected(preference);
-                        String url =
-                                ChromeFeatureList.getFieldTrialParamByFeature(
-                                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "manage-url");
-                        CustomTabActivity.showInfoPage(getContext(), url);
-                        return true;
-                    });
-        } else {
-            removePreferenceIfPresent(PREF_PLUS_ADDRESSES);
-        }
-    }
-
     private static boolean shouldShowGlicPreference() {
         return ChromeFeatureList.sGlic.isEnabled();
     }
@@ -800,20 +774,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         } else {
             removePreferenceIfPresent(PREF_GLIC);
         }
-    }
-
-    private static boolean shouldAddPlusAddressesPref() {
-        // Plus Addresses feature is being removed before the launch. See crbug.com/491379411.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
-            return false;
-        }
-
-        // TODO(crbug.com/40276862): Replace with a static string once name is finalized.
-        String title =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "settings-label");
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
-                && !title.isEmpty();
     }
 
     private void updateAddressBarPreference() {
@@ -1023,9 +983,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
                     indexData.removeEntry(getUniqueId(PREF_SETTINGS_PROMO_CARD));
-                    if (!shouldAddPlusAddressesPref()) {
-                        indexData.removeEntry(getUniqueId(PREF_PLUS_ADDRESSES));
-                    }
                     if (!shouldShowAddressBarPref(context)) {
                         indexData.removeEntry(getUniqueId(PREF_ADDRESS_BAR));
                     }
