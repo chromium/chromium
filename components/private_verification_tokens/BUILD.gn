@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [ "//components/private_verification_tokens/common:private_verification_tokens_public_key_unittest" ]
+}
+
+# A unit test binary that only runs tests for this component. This is useful
+# during development, but these tests are typically run as part of
+# `//components:components_unittests`.
+test("components_private_verification_tokens_unittests") {
+  sources = [ "test/run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/private_verification_tokens:unit_tests",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,7 @@
+monorail: {
+  component: "Internals>Network>PrivateTokens"
+}
+team_email: "private-verification-tokens-chrome-team@google.com"
+buganizer_public: {
+  component_id: 1455744
+}
