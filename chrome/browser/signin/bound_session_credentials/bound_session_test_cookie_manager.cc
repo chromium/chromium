@@ -14,9 +14,10 @@ BoundSessionTestCookieManager::~BoundSessionTestCookieManager() = default;
 net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
     const GURL& url,
     const std::string& cookie_name,
-    std::optional<base::Time> expiry_date) {
+    std::optional<base::Time> expiry_date,
+    base::TimeDelta expiry_offset) {
   base::Time expiration_time =
-      expiry_date.value_or(base::Time::Now() + base::Minutes(10));
+      expiry_date.value_or(base::Time::Now() + expiry_offset);
   return *net::CanonicalCookie::CreateSanitizedCookie(
       /*url=*/url, cookie_name, "value", /*domain=*/url.GetHost(),
       /*path=*/url.GetPath(),

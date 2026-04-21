@@ -19,7 +19,8 @@ class BoundSessionTestCookieManager : public network::TestCookieManager {
   static net::CanonicalCookie CreateCookie(
       const GURL& url,
       const std::string& cookie_name,
-      std::optional<base::Time> expiry_date = std::nullopt);
+      std::optional<base::Time> expiry_date = std::nullopt,
+      base::TimeDelta expiry_offset = base::Minutes(10));
 
   size_t GetNumberOfDeleteCookiesCallbacks();
 
