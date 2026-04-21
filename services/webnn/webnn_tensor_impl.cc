@@ -180,7 +180,7 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
 }
 
 void WebNNTensorImpl::ExportTensor(uint64_t flow_id,
-                                   const gpu::SyncToken& sync_token) {
+                                   const gpu::SyncToken& release) {
   ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensor");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
@@ -188,7 +188,7 @@ void WebNNTensorImpl::ExportTensor(uint64_t flow_id,
     return;
   }
 
-  context_->gpu_sequence()->ScheduleGpuTaskWithReleaseToken(
+  context_->gpu_sequence()->ScheduleGpuTask(
       base::BindOnce(
           [](WebNNTensorImpl* self, ScopedTrace scoped_trace, uint64_t flow_id,
              mojo::ReportBadMessageCallback bad_message_cb) {
@@ -207,11 +207,11 @@ void WebNNTensorImpl::ExportTensor(uint64_t flow_id,
           },
           base::RetainedRef(this), std::move(scoped_trace), flow_id,
           GetMojoReceiver().GetBadMessageCallback()),
-      sync_token);
+      {}, release);
 }
 
 void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
-                                       const gpu::SyncToken& sync_token,
+                                       const gpu::SyncToken& release,
                                        ExportTensorSyncCallback callback) {
   ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensorSync");
 
@@ -220,7 +220,7 @@ void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
     return;
   }
 
-  context_->gpu_sequence()->ScheduleGpuTaskWithReleaseToken(
+  context_->gpu_sequence()->ScheduleGpuTask(
       base::BindOnce(
           [](WebNNTensorImpl* self, ScopedTrace scoped_trace, uint64_t flow_id,
              mojo::ReportBadMessageCallback bad_message_cb) {
@@ -239,7 +239,7 @@ void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
           },
           base::RetainedRef(this), std::move(scoped_trace), flow_id,
           GetMojoReceiver().GetBadMessageCallback()),
-      sync_token);
+      {}, release);
 
   std::move(callback).Run();
 }

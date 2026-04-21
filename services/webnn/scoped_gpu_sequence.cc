@@ -44,25 +44,15 @@ ScopedGpuSequence::~ScopedGpuSequence() {
   scheduler_->DestroySequence(sequence_id_);
 }
 
-void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure) {
-  return ScheduleGpuTaskImpl(std::move(task_closure), {});
-}
-
 void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure,
-                                        const gpu::SyncToken& fence) {
-  ScheduleGpuTaskImpl(std::move(task_closure), {fence});
+                                        gpu::SyncToken fence,
+                                        gpu::SyncToken release) {
+  ScheduleGpuTaskImpl(std::move(task_closure), {fence}, release);
 }
 
-void ScopedGpuSequence::ScheduleGpuTaskWithReleaseToken(
-    base::OnceClosure task_closure,
-    const gpu::SyncToken& sync_token) {
-  ScheduleGpuTaskImpl(std::move(task_closure), {}, sync_token);
-}
-
-void ScopedGpuSequence::ScheduleGpuTaskImpl(
-    base::OnceClosure task_closure,
-    std::vector<gpu::SyncToken> sync_token_fences,
-    gpu::SyncToken release_token) {
+void ScopedGpuSequence::ScheduleGpuTaskImpl(base::OnceClosure task_closure,
+                                            std::vector<gpu::SyncToken> fences,
+                                            const gpu::SyncToken& release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::OnceClosure runnable_task = base::BindOnce(
@@ -76,9 +66,8 @@ void ScopedGpuSequence::ScheduleGpuTaskImpl(
       },
       weak_factory_.GetWeakPtr(), std::move(task_closure));
 
-  scheduler_->ScheduleTask(
-      gpu::Scheduler::Task(sequence_id_, std::move(runnable_task),
-                           std::move(sync_token_fences), release_token));
+  scheduler_->ScheduleTask(gpu::Scheduler::Task(
+      sequence_id_, std::move(runnable_task), std::move(fences), release));
 }
 
 }  // namespace webnn

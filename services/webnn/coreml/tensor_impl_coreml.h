@@ -57,10 +57,9 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
       const;
 
   // mojom::WebNNTensor
-  void ExportTensor(uint64_t flow_id,
-                    const gpu::SyncToken& sync_token_fence) override;
+  void ExportTensor(uint64_t flow_id, const gpu::SyncToken& release) override;
   void ExportTensorSync(uint64_t flow_id,
-                        const gpu::SyncToken& sync_token_fence,
+                        const gpu::SyncToken& release,
                         ExportTensorSyncCallback callback) override;
 
  private:

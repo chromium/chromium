@@ -381,14 +381,14 @@ void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access) {
 }
 
 void TensorImplCoreml::ExportTensor(uint64_t flow_id,
-                                    const gpu::SyncToken& sync_token_fence) {
+                                    const gpu::SyncToken& release) {
   // Since we currently depend on `ResourceTask`, we can't support the
   // asynchronous `ExportTensor`.
   NOTIMPLEMENTED();
 }
 
 void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
-                                        const gpu::SyncToken& sync_token_fence,
+                                        const gpu::SyncToken& release,
                                         ExportTensorSyncCallback callback) {
   ScopedTrace scoped_trace("TensorImplCoreml::ExportTensorSync");
 
@@ -414,7 +414,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
   context_->gpu_sequence()->ScheduleGpuTask(base::BindOnce(
       [](TensorImplCoreml* self, base::OnceCallback<void()> callback,
          mojo::ReportBadMessageCallback bad_message_cb,
-         gpu::SyncToken sync_token_fence) {
+         gpu::SyncToken release) {
         if (self->is_exported()) {
           LOG(ERROR)
               << "[WebNN] ExportTensorSync called on already exported tensor.";
@@ -436,8 +436,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
             std::move(exclusive_resources),
             base::BindOnce(
                 [](base::WeakPtr<WebNNContextImpl> context,
-                   base::OnceCallback<void()> callback,
-                   gpu::SyncToken sync_token_fence,
+                   base::OnceCallback<void()> callback, gpu::SyncToken release,
                    base::OnceClosure completion_closure) {
                   std::move(completion_closure).Run();
                   if (!context) {
@@ -446,16 +445,15 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
 
                   // Schedule a task first to ensure export waits until
                   // ResourceTask completes.
-                  context->gpu_sequence()->ScheduleGpuTaskWithReleaseToken(
-                      base::DoNothing(), sync_token_fence);
+                  context->gpu_sequence()->ScheduleGpuTask(base::DoNothing(),
+                                                           {}, release);
                   std::move(callback).Run();
                 },
-                self->context_->AsWeakPtr(), std::move(callback),
-                sync_token_fence));
+                self->context_->AsWeakPtr(), std::move(callback), release));
         task->Enqueue();
       },
       base::RetainedRef(this), std::move(mojo_callback_wrapper),
-      GetMojoReceiver().GetBadMessageCallback(), sync_token_fence));
+      GetMojoReceiver().GetBadMessageCallback(), release));
 }
 
 }  // namespace webnn::coreml

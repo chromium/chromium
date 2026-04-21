@@ -68,14 +68,14 @@ interface WebNNTensor {
   // if SyncPointGraphValidation is disabled.
   //
   // See docs/gpu/sync_token_internals.md for SyncToken explainer.
-  ExportTensor(uint64 flow_id, gpu.mojom.SyncToken sync_token);
+  ExportTensor(uint64 flow_id, gpu.mojom.SyncToken release);
 
   // TODO(crbug.com/345352987): Remove this function once the
   // SyncPointGraphValidation feature has been enabled. Without that feature, we
   // need a sync method to ensure that the SyncToken registration completes
   // before the token can be passed to WebGPU.
   [Sync]
-  ExportTensorSync(uint64 flow_id, gpu.mojom.SyncToken sync_token) => ();
+  ExportTensorSync(uint64 flow_id, gpu.mojom.SyncToken release) => ();
 
   // Returns access of an exportable `WebNNTensor` back to WebNN after the
   // renderer is finished with it.

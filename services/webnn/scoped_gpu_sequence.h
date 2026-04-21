@@ -50,17 +50,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
     return scheduler_task_runner_;
   }
 
-  // Schedules a task to be executed in this gpu sequence.
-  void ScheduleGpuTask(base::OnceClosure task_closure);
-
-  // Schedules a task to be executed in this gpu sequence after the given fence.
+  // Schedules a task to be executed in this gpu sequence after the given fence
+  // and releases the given sync token when the task is completed.
   void ScheduleGpuTask(base::OnceClosure task_closure,
-                       const gpu::SyncToken& fence);
-
-  // Schedules a task to be executed in this gpu sequence and release the given
-  // sync token when the task is completed.
-  void ScheduleGpuTaskWithReleaseToken(base::OnceClosure task_closure,
-                                       const gpu::SyncToken& sync_token);
+                       gpu::SyncToken fence = gpu::SyncToken(),
+                       gpu::SyncToken release = gpu::SyncToken());
 
   gpu::CommandBufferId command_buffer_id() const { return command_buffer_id_; }
 
@@ -71,8 +65,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
   SEQUENCE_CHECKER(sequence_checker_);
 
   void ScheduleGpuTaskImpl(base::OnceClosure task_closure,
-                           std::vector<gpu::SyncToken> sync_token_fences,
-                           gpu::SyncToken release_token = gpu::SyncToken());
+                           std::vector<gpu::SyncToken> fences,
+                           const gpu::SyncToken& release);
 
   const raw_ref<gpu::Scheduler> scheduler_;
   const gpu::CommandBufferId command_buffer_id_;
