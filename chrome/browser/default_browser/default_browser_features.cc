@@ -51,6 +51,9 @@ BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
 BASE_FEATURE(kDefaultBrowserChangedOsNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDefaultBrowserVisualGuidedSetter,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE_ENUM_PARAM(DefaultBrowserPromptSurface,
                         kDefaultBrowserPromptSurfaceParam,
                         &kDefaultBrowserPromptSurfaces,

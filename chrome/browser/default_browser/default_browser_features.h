@@ -45,6 +45,9 @@ BASE_DECLARE_FEATURE(kPerformDefaultBrowserCheckValidations);
 // NOTE: This flag expect that `kDefaultBrowserFramework` is enabled first.
 BASE_DECLARE_FEATURE(kDefaultBrowserChangedOsNotification);
 
+// Enables the visual guided setter for default browser.
+BASE_DECLARE_FEATURE(kDefaultBrowserVisualGuidedSetter);
+
 BASE_DECLARE_FEATURE_PARAM(DefaultBrowserPromptSurface,
                            kDefaultBrowserPromptSurfaceParam);
 

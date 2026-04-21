@@ -8045,6 +8045,21 @@
             ]
         }
     ],
+    "DefaultBrowserRound3Phase2_0": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserVisualGuidedSetter"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
