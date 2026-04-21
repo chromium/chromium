@@ -25165,7 +25165,9 @@
     ],
     "WebUIReloadButtonStudy": [
         {
-            "platforms": [],
+            "platforms": [
+                "mac"
+            ],
             "experiments": [
                 {
                     "name": "Control_20260420",
