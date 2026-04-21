@@ -107,6 +107,17 @@ if (is_chromeos_device) {
 }
 
 declare_args() {
+  # How many symbols to include in the build. This affects the performance of
+  # the build since the symbols are large and dealing with them is slow.
+  #   2 means regular build with symbols.
+  #   1 means minimal symbols, usually enough for backtraces only. Symbols with
+  # internal linkage (static functions or those in anonymous namespaces) may not
+  # appear when using this level.
+  #   0 means no symbols.
+  symbol_level = default_symbol_level
+}
+
+declare_args() {
   # Default to warnings as errors for default workflow, where we catch
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
   # builds on Linux that could use a different version of the compiler.
@@ -119,15 +130,6 @@ declare_args() {
   # on Windows, the warning format is not affected.
   diagnostics_print_source_range_info = false
 
-  # How many symbols to include in the build. This affects the performance of
-  # the build since the symbols are large and dealing with them is slow.
-  #   2 means regular build with symbols.
-  #   1 means minimal symbols, usually enough for backtraces only. Symbols with
-  # internal linkage (static functions or those in anonymous namespaces) may not
-  # appear when using this level.
-  #   0 means no symbols.
-  symbol_level = default_symbol_level
-
   # Android-only: Strip the debug info of libraries within lib.unstripped to
   # reduce size. As long as symbol_level > 0, this will still allow stacks to be
   # symbolized.
@@ -139,8 +141,8 @@ declare_args() {
 
   # use_debug_fission: whether to use split DWARF debug info files. This can
   # reduce link time significantly.
-  use_debug_fission =
-      !is_android && !is_fuchsia && !is_apple && !is_win && use_lld
+  use_debug_fission = symbol_level >= 1 && !is_android && !is_fuchsia &&
+                      !is_apple && !is_win && use_lld
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
@@ -216,6 +218,10 @@ declare_args() {
   # because of binary size increase.
   # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
   use_sized_deallocation = is_clang && (is_asan || !optimize_for_size)
+}
+
+if (use_debug_fission) {
+  assert(symbol_level >= 1, "Debug fission requires symbol_level >= 1")
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
