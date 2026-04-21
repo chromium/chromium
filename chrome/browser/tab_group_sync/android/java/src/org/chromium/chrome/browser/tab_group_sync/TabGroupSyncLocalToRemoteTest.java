@@ -70,6 +70,7 @@ public class TabGroupSyncLocalToRemoteTest {
     @MediumTest
     @Feature({"Sync"})
     @DisabledTest(message = "crbug.com/353952795")
+    @SuppressWarnings("unchecked") // clickSelectTabs() returns raw TabSwitcherListEditorFacility.
     public void testCreateTabGroup() {
         WebPageStation firstPage = mCtaTestRule.alreadyStartedOnBlankPage();
         Tab firstTab = firstPage.loadedTabElement.value();

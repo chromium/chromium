@@ -1205,6 +1205,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testPlaybackModeSelectionEnabledUpdated() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -1255,6 +1256,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testPlaybackModeSelectionEnabledUpdated_disabledThroughFlag() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -1308,6 +1310,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testPlaybackModeSelectionEnabledUpdated_disabledThroughLanguage() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("fr");
@@ -1362,6 +1365,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testPlaybackModeSelectionEnabledUpdated_disabledThroughFallbackToClassic() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -1419,6 +1423,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testPlaybackModeSelectionEnabledUpdated_disabledThroughFallbackToOverview() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -1476,6 +1481,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS})
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testPlaybackModeSelectionEnabledUpdated_disabledThroughClassicUnsupported() {
         mFakeTranslateBridge.setIsPageTranslated(false);
         mFakeTranslateBridge.setCurrentLanguage("en");

@@ -239,7 +239,8 @@ public class PriceTrackingBottomSheetContentMediatorTest {
                                 boolean newState = invocation.getArgument(1);
                                 mPriceTrackingStateSupplier.set(newState);
                             }
-                            ((Callback<Boolean>) invocation.getArgument(2)).onResult(success);
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(success);
                             return null;
                         })
                 .when(mMockPriceInsightsDelegate)

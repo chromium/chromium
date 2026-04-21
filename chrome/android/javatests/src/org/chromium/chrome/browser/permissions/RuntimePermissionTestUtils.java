@@ -58,8 +58,8 @@ public class RuntimePermissionTestUtils {
 
         public TestAndroidPermissionDelegate(
                 final String[] requestablePermissions, final RuntimePromptResponse response) {
-            mRequestablePermissions = new TreeSet(Arrays.asList(requestablePermissions));
-            mGrantedPermissions = new TreeSet();
+            mRequestablePermissions = new TreeSet<>(Arrays.asList(requestablePermissions));
+            mGrantedPermissions = new TreeSet<>();
             mResponse = response;
             if (mResponse == RuntimePromptResponse.ALREADY_GRANTED) {
                 mGrantedPermissions.addAll(mRequestablePermissions);

@@ -116,6 +116,7 @@ public class ContactEditorTest {
         assertTrue(requiredNotice.get(NOTICE_VISIBLE));
     }
 
+    @SuppressWarnings("unchecked") // hamcrest anyOf varargs
     private void validateErrorMessages(PropertyModel editorModel, boolean errorsPresent) {
         assertNotNull(editorModel);
         ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);

@@ -535,7 +535,7 @@ public class AutofillProfilesFragmentTest {
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDeleteLocalProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
-        setUpMockSyncService(new HashSet());
+        setUpMockSyncService(new HashSet<>());
         testDeleteProfile(
                 "Seb Doe",
                 6 /* toggle + add button + 4 profiles */,

@@ -139,7 +139,7 @@ public class AutofillOptionsTest {
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
     private AutofillOptionsFragment mFragment;
-    private FragmentScenario mScenario;
+    private FragmentScenario<AutofillOptionsFragment> mScenario;
 
     @Before
     public void setUp() {
@@ -780,7 +780,7 @@ public class AutofillOptionsTest {
 
         // Verify reauth is triggered.
         ArgumentCaptor<org.chromium.base.Callback<Boolean>> callbackCaptor =
-                ArgumentCaptor.forClass(org.chromium.base.Callback.class);
+                MockitoHelper.callbackCaptor();
         verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
 
         // Simulate failed reauth.

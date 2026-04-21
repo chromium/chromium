@@ -127,7 +127,8 @@ public class BookmarkSaveFlowTest {
         loadBookmarkModel();
         doAnswer(
                         (invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(3)).onResult(true);
+                            Callback<Boolean> callback = invocation.getArgument(3);
+                            callback.onResult(true);
                             return null;
                         })
                 .when(mMockPriceTrackingUtilsJni)
@@ -135,14 +136,16 @@ public class BookmarkSaveFlowTest {
                         any(Profile.class), anyLong(), anyBoolean(), any(), anyBoolean());
         doAnswer(
                         (invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+                            Callback<Boolean> callback = invocation.getArgument(1);
+                            callback.onResult(true);
                             return null;
                         })
                 .when(mShoppingService)
                 .subscribe(any(CommerceSubscription.class), any());
         doAnswer(
                         (invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+                            Callback<Boolean> callback = invocation.getArgument(1);
+                            callback.onResult(true);
                             return null;
                         })
                 .when(mShoppingService)
@@ -259,7 +262,8 @@ public class BookmarkSaveFlowTest {
 
                     doAnswer(
                                     args -> {
-                                        ((Callback<Boolean>) args.getArgument(2)).onResult(true);
+                                        Callback<Boolean> callback = args.getArgument(2);
+                                        callback.onResult(true);
                                         return null;
                                     })
                             .when(mMockPriceTrackingUtilsJni)
@@ -306,7 +310,8 @@ public class BookmarkSaveFlowTest {
 
                     doAnswer(
                                     args -> {
-                                        ((Callback<Boolean>) args.getArgument(2)).onResult(false);
+                                        Callback<Boolean> callback = args.getArgument(2);
+                                        callback.onResult(false);
                                         return null;
                                     })
                             .when(mMockPriceTrackingUtilsJni)
@@ -323,7 +328,8 @@ public class BookmarkSaveFlowTest {
 
         doAnswer(
                         (invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(3)).onResult(false);
+                            Callback<Boolean> callback = invocation.getArgument(3);
+                            callback.onResult(false);
                             return null;
                         })
                 .when(mMockPriceTrackingUtilsJni)
@@ -331,7 +337,8 @@ public class BookmarkSaveFlowTest {
                         any(Profile.class), anyLong(), anyBoolean(), any(), anyBoolean());
         doAnswer(
                         (invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(false);
+                            Callback<Boolean> callback = invocation.getArgument(1);
+                            callback.onResult(false);
                             return null;
                         })
                 .when(mShoppingService)

@@ -3721,6 +3721,7 @@ public class SiteSettingsTest {
         testCookiesSettingsManagedForUrl(SingleCategorySettings.BLOCKED_GROUP);
     }
 
+    @SuppressWarnings("unchecked") // hamcrest allOf varargs
     public void testCookiesSettingsManagedForUrl(String setting) throws Exception {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -3978,7 +3979,7 @@ public class SiteSettingsTest {
     }
 
     private static String getChannelId(String url) {
-        PayloadCallbackHelper<String> helper = new PayloadCallbackHelper();
+        PayloadCallbackHelper<String> helper = new PayloadCallbackHelper<>();
         SiteChannelsManager.getInstance()
                 .getChannelIdForOriginAsync(
                         Origin.createOrThrow(url).toString(), helper::notifyCalled);

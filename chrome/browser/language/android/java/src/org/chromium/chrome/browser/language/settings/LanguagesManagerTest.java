@@ -53,7 +53,7 @@ public class LanguagesManagerTest {
         List<LanguageItem> chromeLanguages = FakeTranslateBridgeJni.getSimpleLanguageItemList();
         List<String> acceptLanguages = Arrays.asList("sw", "en", "en-US");
         List<String> neverLanguages = Arrays.asList("en");
-        List<String> alwaysLanguages = new ArrayList();
+        List<String> alwaysLanguages = new ArrayList<>();
         String targetLanguage = "en";
         mFakeTranslateBridge =
                 new FakeTranslateBridgeJni(

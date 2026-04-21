@@ -65,7 +65,7 @@ public class WebFeedFaviconFetcherTest {
     @Test
     public void beginFetch_withFaviconUrl_allFetchesFail_returnsMonogram() {
         AtomicBoolean callbackCalled = new AtomicBoolean(false);
-        AtomicReference<Bitmap> returnedImage = new AtomicReference(null);
+        AtomicReference<Bitmap> returnedImage = new AtomicReference<>(null);
         mFaviconFetcher.beginFetch(
                 3,
                 1,
@@ -87,7 +87,7 @@ public class WebFeedFaviconFetcherTest {
     @Test
     public void beginFetch_withFaviconUrl_successfulImageFetch() {
         AtomicBoolean callbackCalled = new AtomicBoolean(false);
-        AtomicReference<Bitmap> returnedImage = new AtomicReference(null);
+        AtomicReference<Bitmap> returnedImage = new AtomicReference<>(null);
         mFaviconFetcher.beginFetch(
                 1,
                 1,
@@ -106,7 +106,7 @@ public class WebFeedFaviconFetcherTest {
     @Test
     public void beginFetch_withFaviconUrl_failedImageFetch_successfulIconFetch() {
         AtomicBoolean callbackCalled = new AtomicBoolean(false);
-        AtomicReference<Bitmap> returnedImage = new AtomicReference(null);
+        AtomicReference<Bitmap> returnedImage = new AtomicReference<>(null);
         mFaviconFetcher.beginFetch(
                 1,
                 1,
@@ -126,7 +126,7 @@ public class WebFeedFaviconFetcherTest {
     @Test
     public void beginFetch_withoutFaviconUrl_allFetchesFail_returnsMonogram() {
         AtomicBoolean callbackCalled = new AtomicBoolean(false);
-        AtomicReference<Bitmap> returnedImage = new AtomicReference(null);
+        AtomicReference<Bitmap> returnedImage = new AtomicReference<>(null);
         mFaviconFetcher.beginFetch(
                 1,
                 1,
@@ -145,7 +145,7 @@ public class WebFeedFaviconFetcherTest {
     @Test
     public void beginFetch_withInvalidFaviconUrl_successfulIconFetch() {
         AtomicBoolean callbackCalled = new AtomicBoolean(false);
-        AtomicReference<Bitmap> returnedImage = new AtomicReference(null);
+        AtomicReference<Bitmap> returnedImage = new AtomicReference<>(null);
         mFaviconFetcher.beginFetch(
                 1,
                 1,

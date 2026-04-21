@@ -49,7 +49,7 @@ public class SafeBrowsingFragmentTest {
     @Mock private SafeBrowsingBridge.Natives mNativeMock;
     @Mock private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
 
-    private FragmentScenario mScenario;
+    private FragmentScenario<SafeBrowsingFragment> mScenario;
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtectionButton;
     private RadioButtonWithDescription mStandardProtectionButton;
     private final UserActionTester mActionTester = new UserActionTester();

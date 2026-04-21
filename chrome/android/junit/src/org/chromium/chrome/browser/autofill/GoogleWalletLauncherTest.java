@@ -114,7 +114,7 @@ public class GoogleWalletLauncherTest {
         activityInfo.name = componentName.getClassName();
         ResolveInfo resolveInfo = new ResolveInfo();
         resolveInfo.activityInfo = activityInfo;
-        List<ResolveInfo> resolveInfos = new ArrayList();
+        List<ResolveInfo> resolveInfos = new ArrayList<>();
         resolveInfos.add(resolveInfo);
 
         return resolveInfos;

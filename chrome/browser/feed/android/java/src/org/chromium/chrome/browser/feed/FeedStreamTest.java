@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -125,7 +126,7 @@ public class FeedStreamTest {
     @Mock private Profile mProfileMock;
     @Mock private HybridListRenderer mRenderer;
     @Mock private FeedSurfaceScope mSurfaceScope;
-    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private RecyclerView.Adapter<?> mAdapter;
     @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Mock private FeedActionDelegate mActionDelegate;
     @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
@@ -200,7 +201,7 @@ public class FeedStreamTest {
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
-        when(mRenderer.getAdapter()).thenReturn(mAdapter);
+        doReturn(mAdapter).when(mRenderer).getAdapter();
 
         // Print logs to stdout.
     }

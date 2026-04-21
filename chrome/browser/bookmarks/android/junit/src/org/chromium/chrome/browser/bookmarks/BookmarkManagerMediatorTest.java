@@ -218,7 +218,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
-    @Captor private ArgumentCaptor<SelectionObserver> mSelectionObserver;
+    @Captor private ArgumentCaptor<SelectionObserver<BookmarkId>> mSelectionObserver;
     @Captor private ArgumentCaptor<DragListener> mDragListenerArgumentCaptor;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
     @Captor private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
@@ -1885,7 +1885,9 @@ public class BookmarkManagerMediatorTest {
                             localDataDescription.put(
                                     DataType.READING_LIST,
                                     new LocalDataDescription(0, new String[] {}, 0));
-                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            Callback<HashMap<Integer, LocalDataDescription>> callback =
+                                    args.getArgument(1);
+                            callback.onResult(localDataDescription);
                             return null;
                         })
                 .when(mSyncService)
@@ -1957,7 +1959,9 @@ public class BookmarkManagerMediatorTest {
                             localDataDescription.put(
                                     DataType.READING_LIST,
                                     new LocalDataDescription(1, new String[] {"example.com"}, 1));
-                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            Callback<HashMap<Integer, LocalDataDescription>> callback =
+                                    args.getArgument(1);
+                            callback.onResult(localDataDescription);
                             return null;
                         })
                 .when(mSyncService)
@@ -2031,7 +2035,9 @@ public class BookmarkManagerMediatorTest {
                             localDataDescription.put(
                                     DataType.READING_LIST,
                                     new LocalDataDescription(0, new String[] {}, 0));
-                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            Callback<HashMap<Integer, LocalDataDescription>> callback =
+                                    args.getArgument(1);
+                            callback.onResult(localDataDescription);
                             return null;
                         })
                 .when(mSyncService)

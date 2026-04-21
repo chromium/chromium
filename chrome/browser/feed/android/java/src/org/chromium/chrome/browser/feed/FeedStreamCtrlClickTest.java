@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +80,7 @@ public class FeedStreamCtrlClickTest {
     @Mock private HybridListRenderer mRenderer;
     @Mock private ListLayoutHelper mListLayoutHelper;
     @Mock private FeedSurfaceScope mSurfaceScope;
-    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private RecyclerView.Adapter<?> mAdapter;
     @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Mock private FeedActionDelegate mActionDelegate;
     @Mock private FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
@@ -110,7 +111,7 @@ public class FeedStreamCtrlClickTest {
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
 
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
-        when(mRenderer.getAdapter()).thenReturn(mAdapter);
+        doReturn(mAdapter).when(mRenderer).getAdapter();
         when(mRenderer.getListLayoutHelper()).thenReturn(mListLayoutHelper);
 
         mFeedStream =

@@ -141,6 +141,7 @@ public class MenuUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // Mockito.reset varargs of generic Callback type.
     public void testAddPlayButton_OnPlayButtonClicked() {
         mMenu.setPlayButtonClickHandler(mHandler);
         MenuItem item = mMenu.addItem(1, 0, "test item", /* header= */ null, Action.NONE);

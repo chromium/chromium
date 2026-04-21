@@ -139,7 +139,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Rule(order = 2)
     public final BaseActivityTestRule<SigninAndHistorySyncActivity> mActivityTestRule =
-            new BaseActivityTestRule(SigninAndHistorySyncActivity.class);
+            new BaseActivityTestRule<>(SigninAndHistorySyncActivity.class);
 
     private SigninAndHistorySyncActivity mActivity;
     private BottomSheetSigninAndHistorySyncCoordinator mCoordinator;

@@ -73,7 +73,7 @@ public class PrivacyGuidePagerAdapterTest {
     public boolean mShouldDisplayAdTopics;
 
     private StepDisplayHandler mStepDisplayHandler;
-    private FragmentScenario mScenario;
+    private FragmentScenario<Fragment> mScenario;
     private Fragment mFragment;
     private PrivacyGuidePagerAdapter mPagerAdapter;
 

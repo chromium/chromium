@@ -51,7 +51,7 @@ public class DoneFragmentTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
 
-    private FragmentScenario mScenario;
+    private FragmentScenario<DoneFragment> mScenario;
     private DoneFragment mFragment;
     private View mPsButton;
     private View mWaaButton;

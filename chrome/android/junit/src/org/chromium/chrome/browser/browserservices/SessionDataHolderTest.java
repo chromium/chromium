@@ -65,8 +65,8 @@ public class SessionDataHolderTest {
         mSession2 = SessionHolder.getSessionHolderFromIntent(mIntent2);
         doReturn(mSession1).when(mHandler1).getSession();
         doReturn(mSession2).when(mHandler2).getSession();
-        when(mHandler1.getActivityClass()).thenReturn((Class) CustomTabActivity.class);
-        when(mHandler2.getActivityClass()).thenReturn((Class) TranslucentCustomTabActivity.class);
+        doReturn(CustomTabActivity.class).when(mHandler1).getActivityClass();
+        doReturn(TranslucentCustomTabActivity.class).when(mHandler2).getActivityClass();
         when(mActivityInTask1.getTaskId()).thenReturn(TASK_ID_1);
         when(mActivityInTask2.getTaskId()).thenReturn(TASK_ID_2);
         doNothing().when(mConnection).setDisconnectCallback(mDisconnectCallbackCaptor.capture());

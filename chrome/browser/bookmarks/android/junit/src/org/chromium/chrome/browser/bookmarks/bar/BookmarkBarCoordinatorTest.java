@@ -268,6 +268,8 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
+    // Mockito's clearInvocations(T...) triggers unchecked generic array creation for varargs.
+    @SuppressWarnings("unchecked")
     public void testOnBookmarkBarHeightChanged() {
         // Verify initial state. Height is read from minHeight and hairline's height.
         assertEquals("Verify initial state.", 41, mCoordinator.getTopControlHeight());

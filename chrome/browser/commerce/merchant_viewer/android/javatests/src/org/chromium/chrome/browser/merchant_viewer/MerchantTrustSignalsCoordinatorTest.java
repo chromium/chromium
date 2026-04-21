@@ -605,7 +605,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                         new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
-                                Callback callback = (Callback) invocation.getArguments()[2];
+                                Callback<MerchantInfo> callback = invocation.getArgument(2);
                                 callback.onResult(merchantInfo);
                                 return null;
                             }
@@ -619,7 +619,8 @@ public class MerchantTrustSignalsCoordinatorTest {
                         new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
-                                Callback callback = (Callback) invocation.getArguments()[1];
+                                Callback<MerchantTrustSignalsEvent> callback =
+                                        invocation.getArgument(1);
                                 callback.onResult(event);
                                 return null;
                             }

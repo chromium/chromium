@@ -102,9 +102,10 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the details button on the main page shows the detail page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
-        TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton();
 
         // Check that clicking the back button on the detail page brings back the main page.
@@ -127,7 +128,8 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the main page opens the safe browsing page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
         assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
                 .isEqualTo(mContext.getString(R.string.tips_promo_bottom_sheet_title_esb));
@@ -163,14 +165,15 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the detail page opens the safe browsing page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
 
         mRenderTestRule.render(
                 ((View) mainPageBottomSheet.bottomSheetElement.value()),
                 "esb_feature_promo_main_page");
 
-        TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
                 .isEqualTo(mContext.getString(R.string.tips_promo_bottom_sheet_title_esb));
@@ -199,7 +202,8 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the main page opens the quick delete page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
         // TODO(crbug.com/467389502): Remove swipe up when layout bug is fixed to show fully.
         onView(ViewMatchers.withId(android.R.id.content)).perform(swipeUp());
@@ -235,7 +239,8 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the detail page opens the quick delete page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
 
         mRenderTestRule.render(
@@ -244,7 +249,7 @@ public class TipsNotificationsFeaturePromoTest {
 
         // TODO(crbug.com/467389502): Remove swipe up when layout bug is fixed to show fully.
         onView(ViewMatchers.withId(android.R.id.content)).perform(swipeUp());
-        TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
                 .isEqualTo(
@@ -273,7 +278,8 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the main page opens the quick delete page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
         assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
                 .isEqualTo(mContext.getString(R.string.tips_promo_bottom_sheet_title_lens));
@@ -306,14 +312,15 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the detail page opens the quick delete page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
 
         mRenderTestRule.render(
                 ((View) mainPageBottomSheet.bottomSheetElement.value()),
                 "google_lens_feature_promo_main_page");
 
-        TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
                 .isEqualTo(mContext.getString(R.string.tips_promo_bottom_sheet_title_lens));
@@ -340,7 +347,8 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the main page opens the bottom omnibox page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
         assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
                 .isEqualTo(
@@ -378,14 +386,15 @@ public class TipsNotificationsFeaturePromoTest {
 
         // Check that clicking the settings button on the detail page opens the bottom omnibox page.
         var tripResult = showFeatureTipBottomSheet(featureType);
-        TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
 
         mRenderTestRule.render(
                 ((View) mainPageBottomSheet.bottomSheetElement.value()),
                 "bottom_omnibox_feature_promo_main_page");
 
-        TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
                 .isEqualTo(
@@ -409,7 +418,9 @@ public class TipsNotificationsFeaturePromoTest {
                 .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(openedNtp).build());
     }
 
-    private Pair<TipsPromoMainPageBottomSheetFacility, RegularNewTabPageStation>
+    private Pair<
+                    TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation>,
+                    RegularNewTabPageStation>
             showFeatureTipBottomSheet(@TipsNotificationsFeatureType int featureType) {
         // Setup the NTP that will be opened with the custom tips intent.
         RegularNewTabPageStation openedNtp =

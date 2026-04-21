@@ -71,6 +71,7 @@ public class ExpandedPlayerMediatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // any(WritableObjectPropertyKey.class) returns raw type.
     public void testDismissAlreadyHiding() {
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.HIDING);
         reset(mModel);

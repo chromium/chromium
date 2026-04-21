@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -207,7 +208,7 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mUrlService;
-    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private RecyclerView.Adapter<?> mAdapter;
     @Mock private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private Tracker mTracker;
@@ -645,7 +646,7 @@ public class FeedSurfaceCoordinatorTest {
     private FeedSurfaceCoordinator createCoordinator(RecyclerView recyclerview) {
         when(mRenderer.bind(mContentManagerCaptor.capture(), isNull(), anyInt()))
                 .thenReturn(recyclerview);
-        when(mRenderer.getAdapter()).thenReturn(mAdapter);
+        doReturn(mAdapter).when(mRenderer).getAdapter();
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
         return new FeedSurfaceCoordinator(
                 mActivity,

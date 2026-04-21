@@ -117,11 +117,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Rule(order = 1)
     public final BaseActivityTestRule<BlankUiTestActivity> mBlankUiActivityTestRule =
-            new BaseActivityTestRule(BlankUiTestActivity.class);
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule(order = 2)
     public final BaseActivityTestRule<SigninAndHistorySyncActivity> mActivityTestRule =
-            new BaseActivityTestRule(SigninAndHistorySyncActivity.class);
+            new BaseActivityTestRule<>(SigninAndHistorySyncActivity.class);
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
 
@@ -737,6 +737,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("unchecked") // hamcrest allOf varargs
     public void testSigninDisabledByConfig() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         FullscreenSigninAndHistorySyncConfig config =

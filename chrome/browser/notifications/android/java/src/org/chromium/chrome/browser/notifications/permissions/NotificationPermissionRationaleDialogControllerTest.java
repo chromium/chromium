@@ -36,6 +36,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests for {@link NotificationPermissionRationaleDialogController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -92,7 +93,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
         NotificationPermissionRationaleDialogController dialog =
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
-        Callback<Integer> mockCallback = Mockito.mock(Callback.class);
+        Callback<Integer> mockCallback = MockitoHelper.mockCallback();
         dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
@@ -112,7 +113,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
         NotificationPermissionRationaleDialogController dialog =
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
-        Callback<Integer> mockCallback = Mockito.mock(Callback.class);
+        Callback<Integer> mockCallback = MockitoHelper.mockCallback();
         dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
@@ -132,7 +133,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
         NotificationPermissionRationaleDialogController dialog =
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
-        Callback<Integer> mockCallback = Mockito.mock(Callback.class);
+        Callback<Integer> mockCallback = MockitoHelper.mockCallback();
         dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
@@ -152,7 +153,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
         NotificationPermissionRationaleDialogController dialog =
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
-        Callback<Integer> mockCallback = Mockito.mock(Callback.class);
+        Callback<Integer> mockCallback = MockitoHelper.mockCallback();
         dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
@@ -171,7 +172,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
         NotificationPermissionRationaleDialogController dialog =
                 new NotificationPermissionRationaleDialogController(mContext, mModalDialogManager);
 
-        Callback<Integer> mockCallback = Mockito.mock(Callback.class);
+        Callback<Integer> mockCallback = MockitoHelper.mockCallback();
         dialog.showRationaleUi(mockCallback);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();

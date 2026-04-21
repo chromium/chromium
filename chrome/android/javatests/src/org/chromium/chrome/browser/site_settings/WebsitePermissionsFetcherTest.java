@@ -989,7 +989,7 @@ public class WebsitePermissionsFetcherTest {
     }
 
     private Object mockBdmCallback(InvocationOnMock invocation) {
-        var callback = (Callback<BrowsingDataModel>) invocation.getArguments()[0];
+        Callback<BrowsingDataModel> callback = invocation.getArgument(0);
         callback.onResult(mBrowsingDataModel);
         return null;
     }

@@ -60,7 +60,7 @@ public class TipsPromoDetailsPageBottomSheetFacility<
     }
 
     /** Press the back button to navigate back to the main page. */
-    public TipsPromoMainPageBottomSheetFacility clickBackButton() {
+    public TipsPromoMainPageBottomSheetFacility<HostStationT> clickBackButton() {
         return backButtonElement
                 .clickTo()
                 .exitFacilityAnd()
@@ -68,7 +68,7 @@ public class TipsPromoDetailsPageBottomSheetFacility<
     }
 
     /** Use the system backpress to navigate back to the main page. */
-    public TipsPromoMainPageBottomSheetFacility pressBack() {
+    public TipsPromoMainPageBottomSheetFacility<HostStationT> pressBack() {
         recheckActiveConditions();
         return pressBackTo()
                 .exitFacilityAnd()

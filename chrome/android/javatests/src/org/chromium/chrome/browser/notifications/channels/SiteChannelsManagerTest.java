@@ -308,7 +308,7 @@ public class SiteChannelsManagerTest {
     }
 
     private static @NotificationChannelStatus int getChannelStatus(String channelId) {
-        PayloadCallbackHelper<Integer> helper = new PayloadCallbackHelper();
+        PayloadCallbackHelper<Integer> helper = new PayloadCallbackHelper<>();
         SiteChannelsManager.getInstance().getChannelStatusAsync(channelId, helper::notifyCalled);
         return helper.getOnlyPayloadBlocking();
     }

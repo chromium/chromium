@@ -122,4 +122,13 @@ public class MockitoHelper {
     public static <T> ArgumentCaptor<Callback<T>> callbackCaptor() {
         return ArgumentCaptor.forClass(Callback.class);
     }
+
+    /**
+     * Type-safe wrapper around {@code Mockito.mock(Callback.class)} that avoids unchecked warnings.
+     * Returns a properly typed {@code Callback<T>} mock via type inference.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Callback<T> mockCallback() {
+        return Mockito.mock(Callback.class);
+    }
 }

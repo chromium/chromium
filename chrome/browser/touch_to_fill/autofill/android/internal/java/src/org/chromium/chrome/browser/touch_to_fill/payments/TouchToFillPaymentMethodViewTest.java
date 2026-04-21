@@ -439,7 +439,10 @@ public class TouchToFillPaymentMethodViewTest {
     private static final String BNPL_ISSUER_TOS_ITEM_TEXT = "Affirm ToS text";
     private static final String TITLE_TEXT = "test title string";
     private static final String LEGAL_MESSAGE_LINE = "legal message";
+
+    @SuppressWarnings("unchecked") // mock(Consumer.class) returns raw Consumer.
     private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
+
     private static final String ISSUER_TITLE_TEXT = "Link account and pay with Affirm?";
     private static final String BNPL_TERMS =
             "Payment plans are subject to eligibility.\n"

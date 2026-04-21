@@ -39,7 +39,7 @@ public class MSBBFragmentTest {
     @Mock private Profile mProfile;
     @Mock private UnifiedConsentServiceBridge.Natives mNativeMock;
 
-    private FragmentScenario mScenario;
+    private FragmentScenario<MSBBFragment> mScenario;
     private MaterialSwitchWithText mMSBBButton;
     private final UserActionTester mActionTester = new UserActionTester();
 

@@ -328,6 +328,7 @@ public class AddressEditorTest {
                 /* isFullLine= */ true);
     }
 
+    @SuppressWarnings("unchecked") // hamcrest anyOf varargs
     private void validateErrorMessages(PropertyModel editorModel, boolean errorsPresent) {
         assertNotNull(editorModel);
         ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -353,7 +354,7 @@ public class AddressEditorTest {
     @Test
     @SmallTest
     public void validateDefaultFields() {
-        setUpAddressUiComponents(new ArrayList(), /* countryCode= */ "US");
+        setUpAddressUiComponents(new ArrayList<>(), /* countryCode= */ "US");
         doAnswer(
                         unused -> {
                             mAddressEditor.onSubKeysReceived(null, null);

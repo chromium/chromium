@@ -156,7 +156,7 @@ public class SigninFirstRunFragmentTest {
 
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule(BlankUiTestActivity.class);
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
@@ -916,6 +916,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    @SuppressWarnings("unchecked") // hamcrest allOf varargs
     public void testSignInDisabledOnAutomotive() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();

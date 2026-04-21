@@ -343,6 +343,7 @@ public class SensitiveContentTest {
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     @Restriction(DeviceFormFactor.PHONE)
+    @SuppressWarnings("unchecked") // hamcrest allOf varargs
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() {
         final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
         HistogramWatcher histogramWatcher =

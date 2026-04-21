@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.Dropdo
 
 public class TestUtils {
 
+    // getAdapter() returns a raw android.widget.Adapter; narrow cast to the known concrete type.
+    @SuppressWarnings("unchecked")
     public static void setDropdownValue(DropdownFieldView dropdown, String value) {
         ArrayAdapter<String> adapter = (ArrayAdapter<String>) dropdown.getDropdown().getAdapter();
         int index = adapter.getPosition(value);

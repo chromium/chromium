@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -98,7 +99,7 @@ public class SingleWebFeedStreamTest {
     @Mock private FeedStream.ShareHelperWrapper mShareHelper;
     @Mock private Profile mProfileMock;
     @Mock private HybridListRenderer mRenderer;
-    @Mock private RecyclerView.Adapter mAdapter;
+    @Mock private RecyclerView.Adapter<?> mAdapter;
     @Mock private FeedActionDelegate mActionDelegate;
     @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
@@ -159,7 +160,7 @@ public class SingleWebFeedStreamTest {
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
-        when(mRenderer.getAdapter()).thenReturn(mAdapter);
+        doReturn(mAdapter).when(mRenderer).getAdapter();
 
         // Print logs to stdout.
     }

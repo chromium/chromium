@@ -55,7 +55,7 @@ public class HistorySyncFragmentTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
 
-    private FragmentScenario mScenario;
+    private FragmentScenario<HistorySyncFragment> mScenario;
     private MaterialSwitchWithText mHistorySyncButton;
     private final UserActionTester mActionTester = new UserActionTester();
 

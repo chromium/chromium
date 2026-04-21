@@ -86,7 +86,7 @@ public class AutofillImageFetcherTest {
         doAnswer(
                         invocation -> {
                             Params params = invocation.getArgument(0);
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             if (!params.url.contains(TEST_IMAGE_URL.getSpec())) {
                                 callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                                 return null;
@@ -192,7 +192,7 @@ public class AutofillImageFetcherTest {
     public void testPrefetchCardArtImages_validUrl_unsuccessfulImageFetch() {
         doAnswer(
                         invocation -> {
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                             return null;
                         })
@@ -238,7 +238,7 @@ public class AutofillImageFetcherTest {
         // Make the first fetch fail, and the second succeed.
         doAnswer(
                         invocation -> {
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             if (callCount.getAndIncrement() == 0) {
                                 callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                                 return null;
@@ -300,7 +300,7 @@ public class AutofillImageFetcherTest {
     public void testPrefetchCardArtImages_validUrl_unsuccessfulImageFetch_retryDisabled() {
         doAnswer(
                         invocation -> {
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                             return null;
                         })
@@ -446,7 +446,7 @@ public class AutofillImageFetcherTest {
     public void testPrefetchPixAccountImages_validUrl_unsuccessfulImageFetch() {
         doAnswer(
                         invocation -> {
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                             return null;
                         })
@@ -491,7 +491,7 @@ public class AutofillImageFetcherTest {
         // Make the first fetch fail, and the second succeed.
         doAnswer(
                         invocation -> {
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             if (callCount.getAndIncrement() == 0) {
                                 callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                                 return null;
@@ -649,7 +649,7 @@ public class AutofillImageFetcherTest {
 
         doAnswer(
                         invocation -> {
-                            Callback callback = invocation.getArgument(1);
+                            Callback<ImageFetchResult> callback = invocation.getArgument(1);
                             callback.onResult(TEST_IMAGE_FETCH_NULL_BITMAP_RESULT);
                             return null;
                         })

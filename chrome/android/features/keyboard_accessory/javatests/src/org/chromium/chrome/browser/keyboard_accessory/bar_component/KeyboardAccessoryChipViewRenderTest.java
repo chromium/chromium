@@ -274,6 +274,8 @@ public class KeyboardAccessoryChipViewRenderTest {
                 passwordHistorySuggestion);
     }
 
+    // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
+    @SuppressWarnings("unchecked")
     private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion) {
         Action action = new Action(AUTOFILL_SUGGESTION, unused -> {});
         BarItemViewHolder<AutofillBarItem, ChipView> viewHolder =
@@ -290,6 +292,8 @@ public class KeyboardAccessoryChipViewRenderTest {
         return chipView;
     }
 
+    // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
+    @SuppressWarnings("unchecked")
     private ChipView createCredmanEntry() {
         Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {});
         BarItemViewHolder<BarItem, ChipView> viewHolder =
@@ -311,6 +315,8 @@ public class KeyboardAccessoryChipViewRenderTest {
         return chipView;
     }
 
+    // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
+    @SuppressWarnings("unchecked")
     private View createGeneratePassword() {
         Action generatePasswordAction = new Action(GENERATE_PASSWORD_AUTOMATIC, unused -> {});
         // TODO: crbug.com/385172647 - Use generics parameters once 2 line chips are rolled out.
@@ -334,6 +340,8 @@ public class KeyboardAccessoryChipViewRenderTest {
         return view;
     }
 
+    // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
+    @SuppressWarnings("unchecked")
     private View createDismissButton() {
         // TODO: crbug.com/385172647 - Use generics parameters once 2 line chips are rolled out.
         BarItemViewHolder viewHolder =

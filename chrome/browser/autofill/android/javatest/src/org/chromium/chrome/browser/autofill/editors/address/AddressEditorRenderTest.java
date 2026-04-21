@@ -181,7 +181,7 @@ public class AddressEditorRenderTest {
                         });
         runOnUiThreadBlocking(
                 () -> {
-                    when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
+                    when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
                     SyncServiceFactory.setInstanceForTesting(mSyncService);
 
                     when(mPersonalDataManager.getDefaultCountryCodeForNewAddress())

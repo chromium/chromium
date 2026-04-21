@@ -56,7 +56,7 @@ public class TipsPromoMainPageBottomSheetFacility<
      *
      * @param detailPageStepsRes The list of resource ids for the detail steps.
      */
-    public TipsPromoDetailsPageBottomSheetFacility clickDetailsButton(
+    public TipsPromoDetailsPageBottomSheetFacility<HostStationT> clickDetailsButton(
             @Nullable List<Integer> detailPageStepsRes) {
         return detailsButtonElement
                 .clickTo()
@@ -68,7 +68,7 @@ public class TipsPromoMainPageBottomSheetFacility<
      * Press the details button to navigate to the details page without expectations for the detail
      * steps.
      */
-    public TipsPromoDetailsPageBottomSheetFacility clickDetailsButton() {
+    public TipsPromoDetailsPageBottomSheetFacility<HostStationT> clickDetailsButton() {
         return clickDetailsButton(null);
     }
 

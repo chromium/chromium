@@ -55,7 +55,7 @@ public class DialogControllerImplUnitTest {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference(mActivity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         when(mAlertDialogFactory.createAlertDialogBuilder(any(), anyInt()))
                 .thenReturn(mAlertDialog);
@@ -112,7 +112,7 @@ public class DialogControllerImplUnitTest {
     /** Cannot show the debug dialog if the web contents are not attached an Android activity. */
     @Test
     public void testCannotShowDebugDialogInWebContentsWithoutActivity() {
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference(null));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(null));
 
         mDialogController.showReadyToPayDebugInfo("Debug info");
 
@@ -172,7 +172,7 @@ public class DialogControllerImplUnitTest {
      */
     @Test
     public void testCannotShowIncognitoWarningInWebContentsWithoutActivity() {
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference(null));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(null));
 
         mDialogController.showLeavingIncognitoWarning(mDenyCallback, mApproveCallback);
 

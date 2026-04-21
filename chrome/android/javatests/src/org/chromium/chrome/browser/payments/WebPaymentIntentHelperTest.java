@@ -1185,8 +1185,9 @@ public class WebPaymentIntentHelperTest {
                 .isEqualTo(new byte[] {0});
 
         Assert.assertEquals(
-                new HashSet(Arrays.asList("bobPay", "maxPay")),
-                new HashSet(bundle.getStringArrayList(WebPaymentIntentHelper.EXTRA_METHOD_NAMES)));
+                new HashSet<>(Arrays.asList("bobPay", "maxPay")),
+                new HashSet<>(
+                        bundle.getStringArrayList(WebPaymentIntentHelper.EXTRA_METHOD_NAMES)));
 
         Bundle methodDataBundle = bundle.getParcelable(WebPaymentIntentHelper.EXTRA_METHOD_DATA);
         Assert.assertEquals(2, methodDataBundle.keySet().size());

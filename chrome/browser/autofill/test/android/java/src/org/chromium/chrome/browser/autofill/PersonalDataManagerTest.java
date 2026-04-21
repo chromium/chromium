@@ -1083,6 +1083,8 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
+    // Hamcrest's containsInAnyOrder(Matcher...) triggers unchecked generic array creation.
+    @SuppressWarnings("unchecked")
     public void testGetIbansForSettings() throws TimeoutException {
         Iban ibanOne =
                 new Iban.Builder()

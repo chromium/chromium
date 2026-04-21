@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +38,7 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.List;
 
@@ -161,7 +161,7 @@ public class SharedImageTilesCoordinatorUnitTest {
     @Test
     public void testFetchPeopleIcon() {
         simulateReadGroupWith2ValidMembers();
-        Callback<Boolean> mockFinishedCallback = mock(Callback.class);
+        Callback<Boolean> mockFinishedCallback = MockitoHelper.mockCallback();
         mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                 COLLABORATION_ID, mockFinishedCallback);
 
@@ -193,14 +193,14 @@ public class SharedImageTilesCoordinatorUnitTest {
     public void testFetchPeopleIconFailure() {
         simulateReadGroupWith2ValidMembers();
 
-        Callback<Boolean> mockFinishedCallback = mock(Callback.class);
+        Callback<Boolean> mockFinishedCallback = MockitoHelper.mockCallback();
         mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                 COLLABORATION_ID, mockFinishedCallback);
 
         verify(mockFinishedCallback, never()).onResult(anyBoolean());
 
         // A new update would fail the previous ongoing update.
-        Callback<Boolean> mockFinishedCallback2 = mock(Callback.class);
+        Callback<Boolean> mockFinishedCallback2 = MockitoHelper.mockCallback();
         mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                 COLLABORATION_ID, mockFinishedCallback2);
 

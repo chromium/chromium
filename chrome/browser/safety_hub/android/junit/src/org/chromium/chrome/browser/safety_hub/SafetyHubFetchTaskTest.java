@@ -52,7 +52,8 @@ public class SafetyHubFetchTaskTest {
         doAnswer(
                         (Answer<Void>)
                                 invocation -> {
-                                    ((Callback<Boolean>) invocation.getArgument(0)).onResult(true);
+                                    Callback<Boolean> callback = invocation.getArgument(0);
+                                    callback.onResult(true);
                                     return null;
                                 })
                 .when(mSafetyHubFetchService)

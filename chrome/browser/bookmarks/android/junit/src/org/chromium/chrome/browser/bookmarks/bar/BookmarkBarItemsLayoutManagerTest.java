@@ -180,6 +180,8 @@ public class BookmarkBarItemsLayoutManagerTest {
     @Test
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
+    // Mockito's clearInvocations(T...) triggers unchecked generic array creation for varargs.
+    @SuppressWarnings("unchecked")
     public void testLayout_overflows() {
         mLayoutManager
                 .getItemsOverflowSupplier()
@@ -237,6 +239,8 @@ public class BookmarkBarItemsLayoutManagerTest {
 
     @Test
     @SmallTest
+    // Mockito's clearInvocations(T...) triggers unchecked generic array creation for varargs.
+    @SuppressWarnings("unchecked")
     public void testItemsOverflowChangeCallback() {
         // Bind observer and verify initial event propagation.
         verify(mItemsOverflowSupplierObserver, never()).onResult(any());

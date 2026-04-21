@@ -49,7 +49,7 @@ public class CookiesFragmentTest {
     @Mock private UserPrefs.Natives mUserPrefsNativesMock;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
 
-    private FragmentScenario mScenario;
+    private FragmentScenario<CookiesFragment> mScenario;
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
     private RadioButtonWithDescription mBlockThirdParty;
     private final UserActionTester mActionTester = new UserActionTester();
