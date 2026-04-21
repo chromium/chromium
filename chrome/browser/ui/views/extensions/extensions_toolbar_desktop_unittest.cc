@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/vector_icons/vector_icons.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
@@ -600,6 +601,57 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, InvalidateDropCallbackOnPrefChange) {
   WaitForAnimation();
 
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre());
+}
+
+TEST_F(ExtensionsToolbarDesktopUnitTest, ExtensionsToolbarButtonIconAndText) {
+  // Test default state.
+  EXPECT_EQ(
+      ExtensionsToolbarViewModel::GetToolbarButtonIcon(
+          ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault)
+          .name,
+      vector_icons::kExtensionChromeRefreshIcon.name);
+  EXPECT_EQ(
+      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
+          ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault),
+      l10n_util::GetStringUTF16(IDS_ACC_NAME_EXTENSIONS_BUTTON));
+  EXPECT_EQ(
+      ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
+          ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault),
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
+
+  // Test all extensions are blocked state.
+  EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonIcon(
+                ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                    kAllExtensionsBlocked)
+                .name,
+            vector_icons::kExtensionOffIcon.name);
+  EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
+                ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                    kAllExtensionsBlocked),
+            l10n_util::GetStringUTF16(
+                IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
+  EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
+                ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                    kAllExtensionsBlocked),
+            l10n_util::GetStringUTF16(
+                IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
+
+  // Test any extension has access state.
+  EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonIcon(
+                ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                    kAnyExtensionHasAccess)
+                .name,
+            vector_icons::kExtensionOnIcon.name);
+  EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
+                ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                    kAnyExtensionHasAccess),
+            l10n_util::GetStringUTF16(
+                IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS));
+  EXPECT_EQ(ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
+                ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                    kAnyExtensionHasAccess),
+            l10n_util::GetStringUTF16(
+                IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS));
 }
 
 // TODO(crbug.com/475863910): Move the tests testing

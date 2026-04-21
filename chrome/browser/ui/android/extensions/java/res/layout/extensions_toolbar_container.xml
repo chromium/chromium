@@ -39,7 +39,7 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_width="@dimen/toolbar_button_width"
         android:src="@drawable/chrome_extension"
-        android:tooltipText="@string/accessibility_btn_extensions"
+        android:tooltipText="@string/acc_name_extensions_button"
         app:menuVerticalOverlapAnchor="false"
         app:tint="@color/default_icon_color_tint_list"
         style="@style/ToolbarHoverableButton"

@@ -14,18 +14,24 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/android/key_event_android.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionAction_jni.h"
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsMenuButtonState_jni.h"
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsToolbarBridge_jni.h"
 #include "chrome/browser/ui/android/extensions/jni_headers/RequestAccessButtonParams_jni.h"
 
@@ -237,10 +243,69 @@ ExtensionsToolbarAndroid::GetPinnedActionIds(JNIEnv* env) {
   return std::vector(ids.begin(), ids.end());
 }
 
-int ExtensionsToolbarAndroid::GetExtensionsMenuButtonState(
-    JNIEnv* env,
-    content::WebContents* web_contents) {
-  return static_cast<int>(toolbar_view_model_->GetButtonState(*web_contents));
+namespace {
+
+class MenuButtonIconSource : public gfx::CanvasImageSource {
+ public:
+  MenuButtonIconSource(const gfx::VectorIcon& icon,
+                       int width,
+                       int height,
+                       SkColor color)
+      : gfx::CanvasImageSource(gfx::Size(width, height)),
+        icon_(icon),
+        color_(color) {}
+  MenuButtonIconSource(const MenuButtonIconSource&) = delete;
+  MenuButtonIconSource& operator=(const MenuButtonIconSource&) = delete;
+  ~MenuButtonIconSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    int icon_size = std::min(size().width(), size().height());
+    int x = (size().width() - icon_size) / 2;
+    int y = (size().height() - icon_size) / 2;
+    canvas->Translate(gfx::Vector2d(x, y));
+    gfx::PaintVectorIcon(canvas, *icon_, icon_size, color_);
+  }
+
+ private:
+  const raw_ref<const gfx::VectorIcon> icon_;
+  SkColor color_;
+};
+
+}  // namespace
+
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsToolbarAndroid::GetMenuButtonState(JNIEnv* env,
+                                             content::WebContents* web_contents,
+                                             int canvas_width_dp,
+                                             int canvas_height_dp,
+                                             float scale_factor,
+                                             int color) {
+  auto state = toolbar_view_model_->GetButtonState(*web_contents);
+
+  std::u16string tooltip =
+      ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(state);
+  std::u16string accessible_text =
+      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(state);
+
+  const gfx::VectorIcon& icon =
+      ExtensionsToolbarViewModel::GetToolbarButtonIcon(state);
+
+  gfx::ImageSkia image_skia = gfx::ImageSkia(
+      std::make_unique<MenuButtonIconSource>(
+          icon, canvas_width_dp, canvas_height_dp, static_cast<SkColor>(color)),
+      gfx::Size(canvas_width_dp, canvas_height_dp));
+  const SkBitmap& bitmap =
+      image_skia.GetRepresentation(scale_factor).GetBitmap();
+
+  base::android::ScopedJavaLocalRef<jobject> java_bitmap;
+  if (!bitmap.isNull()) {
+    java_bitmap = gfx::ConvertToJavaBitmap(bitmap);
+  }
+
+  return Java_ExtensionsMenuButtonState_Constructor(
+      env, base::UTF16ToUTF8(tooltip), base::UTF16ToUTF8(accessible_text),
+      java_bitmap);
 }
 
 bool ExtensionsToolbarAndroid::HandleKeyDownEvent(

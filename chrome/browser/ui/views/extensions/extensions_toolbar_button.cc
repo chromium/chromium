@@ -27,44 +27,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 
-namespace {
-
-const gfx::VectorIcon& GetIcon(
-    ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
-  switch (state) {
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault:
-      return vector_icons::kExtensionChromeRefreshIcon;
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-        kAllExtensionsBlocked:
-      return vector_icons::kExtensionOffIcon;
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-        kAnyExtensionHasAccess:
-      return vector_icons::kExtensionOnIcon;
-  }
-}
-
-// Returns the accessible text for the button.
-std::u16string GetAccessibleText(
-    ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
-  int message_id;
-  switch (state) {
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault:
-      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON;
-      break;
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-        kAllExtensionsBlocked:
-      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
-      break;
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-        kAnyExtensionHasAccess:
-      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
-      break;
-  }
-  return l10n_util::GetStringUTF16(message_id);
-}
-
-}  // namespace
-
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     BrowserWindowInterface* browser,
     ExtensionsToolbarDesktop* extensions_container,
@@ -85,7 +47,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
-  SetVectorIcon(GetIcon(
+  SetVectorIcon(ExtensionsToolbarViewModel::GetToolbarButtonIcon(
       ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault));
 
   GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
@@ -99,8 +61,10 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    GetViewAccessibility().SetName(GetAccessibleText(
-        ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault));
+    GetViewAccessibility().SetName(
+        ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
+            ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+                kDefault));
     // By default, the button's accessible description is set to the button's
     // tooltip text. This is the accepted workaround to ensure only accessible
     // name is announced by a screenreader rather than tooltip text and
@@ -170,8 +134,9 @@ void ExtensionsToolbarButton::UpdateState(
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
-  SetVectorIcon(GetIcon(state));
-  GetViewAccessibility().SetName(GetAccessibleText(state));
+  SetVectorIcon(ExtensionsToolbarViewModel::GetToolbarButtonIcon(state));
+  GetViewAccessibility().SetName(
+      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(state));
   UpdateCachedTooltipText(state);
 }
 
@@ -235,21 +200,8 @@ int ExtensionsToolbarButton::GetIconSize() const {
 
 void ExtensionsToolbarButton::UpdateCachedTooltipText(
     ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state) {
-  int message_id;
-  switch (state) {
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault:
-      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON;
-      break;
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-        kAllExtensionsBlocked:
-      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
-      break;
-    case ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
-        kAnyExtensionHasAccess:
-      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
-      break;
-  }
-  SetTooltipText(l10n_util::GetStringUTF16(message_id));
+  SetTooltipText(
+      ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(state));
 }
 
 BEGIN_METADATA(ExtensionsToolbarButton)

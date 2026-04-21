@@ -147,6 +147,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.extensions_menu_.*` appears to be unused"/>
     <ignore regexp="The resource `R.string.extensions_request_access_button` appears to be unused"/>
 
+    <!-- Strings used by Desktop Android extensions, which are only used in tests. -->
+    <ignore regexp="The resource `R.string.acc_name_extensions_button_.*` appears to be unused"/>
+
     <!-- 1: resource used by android webview glue layer, could be refactored -->
     <ignore regexp="R.string.private_browsing_warning"/>
     <!-- 4: The WAM server currently has 2 codes paths for minting a WebAPK, and

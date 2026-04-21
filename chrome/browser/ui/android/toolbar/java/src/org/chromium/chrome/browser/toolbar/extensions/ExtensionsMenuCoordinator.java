@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.WebContents;
@@ -406,36 +407,28 @@ public class ExtensionsMenuCoordinator
         Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null || currentTab.getWebContents() == null) return;
 
-        @ExtensionsToolbarBridge.ExtensionsMenuButtonState
-        int state =
-                mExtensionsToolbarBridge.getExtensionsMenuButtonState(currentTab.getWebContents());
+        int color = SemanticColorUtils.getDefaultIconColor(mContext);
 
-        int iconResId;
-        int tooltipResId;
-        int accNameResId;
+        float density = mContext.getResources().getDisplayMetrics().density;
+        int iconSizeDp =
+                Math.round(
+                        mContext.getResources().getDimension(R.dimen.extensions_toolbar_icon_size)
+                                / density);
 
-        switch (state) {
-            case ExtensionsToolbarBridge.ExtensionsMenuButtonState.ALL_EXTENSIONS_BLOCKED:
-                iconResId = R.drawable.chrome_extension_off;
-                tooltipResId = R.string.tooltip_extensions_button_all_extensions_blocked;
-                accNameResId = R.string.acc_name_extensions_button_all_extensions_blocked;
-                break;
-            case ExtensionsToolbarBridge.ExtensionsMenuButtonState.ANY_EXTENSION_HAS_ACCESS:
-                iconResId = R.drawable.chrome_extension_on;
-                tooltipResId = R.string.tooltip_extensions_button_any_extension_has_access;
-                accNameResId = R.string.acc_name_extensions_button_any_extension_has_access;
-                break;
-            case ExtensionsToolbarBridge.ExtensionsMenuButtonState.DEFAULT:
-            default:
-                iconResId = R.drawable.chrome_extension;
-                tooltipResId = R.string.accessibility_btn_extensions;
-                accNameResId = R.string.accessibility_btn_extensions;
-                break;
+        org.chromium.chrome.browser.ui.extensions.ExtensionsMenuButtonState state =
+                mExtensionsToolbarBridge.getMenuButtonState(
+                        currentTab.getWebContents(), iconSizeDp, iconSizeDp, density, color);
+
+        if (state.getIcon() != null) {
+            mExtensionsMenuButton.setImageBitmap(state.getIcon());
+        } else {
+            // Fallback just in case.
+            int iconResId = R.drawable.chrome_extension;
+            mExtensionsMenuButton.setImageResource(iconResId);
         }
 
-        mExtensionsMenuButton.setImageResource(iconResId);
-        mExtensionsMenuButton.setTooltipText(mContext.getString(tooltipResId));
-        mExtensionsMenuButton.setContentDescription(mContext.getString(accNameResId));
+        mExtensionsMenuButton.setTooltipText(state.getTooltip());
+        mExtensionsMenuButton.setContentDescription(state.getAccessibleText());
     }
 
     @Override

@@ -226,7 +226,7 @@ public class ExtensionsToolbarTest {
         ViewUtils.onViewWaiting(
                         allOf(
                                 withId(R.id.extensions_menu_button),
-                                withContentDescription(R.string.accessibility_btn_extensions)))
+                                withContentDescription(R.string.acc_name_extensions_button)))
                 .check(matches(isDisplayed()));
 
         // Open the extensions menu.
@@ -538,7 +538,7 @@ public class ExtensionsToolbarTest {
         ViewUtils.onViewWaiting(
                         allOf(
                                 withId(R.id.extensions_menu_button),
-                                withContentDescription(R.string.accessibility_btn_extensions)))
+                                withContentDescription(R.string.acc_name_extensions_button)))
                 .check(matches(isDisplayed()));
 
         // Navigate back to site 1 (where extensions are blocked).

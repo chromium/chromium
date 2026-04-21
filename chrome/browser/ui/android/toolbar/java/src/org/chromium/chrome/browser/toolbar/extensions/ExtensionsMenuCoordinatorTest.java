@@ -7,6 +7,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -46,6 +48,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuButtonState;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -132,8 +135,9 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Set the current tab.
         mCurrentTabSupplier.set(mTab);
-        when(mExtensionsToolbarBridge.getExtensionsMenuButtonState(any()))
-                .thenReturn(ExtensionsToolbarBridge.ExtensionsMenuButtonState.DEFAULT);
+        when(mExtensionsToolbarBridge.getMenuButtonState(
+                        any(), anyInt(), anyInt(), anyFloat(), anyInt()))
+                .thenReturn(new ExtensionsMenuButtonState("tooltip", "accessible_text", null));
 
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(

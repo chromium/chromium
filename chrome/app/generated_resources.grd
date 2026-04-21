@@ -10053,19 +10053,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Hidden toolbar buttons
       </message>
       <if expr="enable_extensions_core">
-      <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED" desc="The tooltip for the extensions button when all the extensions are blocked on the current site." formatter_data="android_java">
+      <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED" desc="The tooltip for the extensions button when all the extensions are blocked on the current site.">
         Extensions not allowed on this site
       </message>
-      <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS" desc="The tooltip for the extensions button when any extension has access to the current site." formatter_data="android_java">
+      <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS" desc="The tooltip for the extensions button when any extension has access to the current site.">
         Extensions allowed on this site
       </message>
-      <message name="IDS_ACC_NAME_EXTENSIONS_BUTTON" desc="The accessible text for the extensions button.">
+      <message name="IDS_ACC_NAME_EXTENSIONS_BUTTON" desc="The accessible text for the extensions button." formatter_data="android_java">
         Extensions menu
       </message>
-          <message name="IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED" desc="The accessible text for the extensions button when all the extensions are blocked on the current site." formatter_data="android_java">
+      <message name="IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED" desc="The accessible text for the extensions button when all the extensions are blocked on the current site."  formatter_data="android_java">
         Extensions not allowed on this site. Select to open menu
       </message>
-      <message name="IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS" desc="The accessible text for the extensions button when all the extensions are blocked on the current site." formatter_data="android_java">
+      <message name="IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS" desc="The accessible text for the extensions button when any extension has access."  formatter_data="android_java">
         Extensions allowed on this site. Select to open menu
       </message>
       </if>

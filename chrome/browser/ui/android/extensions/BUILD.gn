@@ -54,6 +54,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackendImpl.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuButtonState.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuTypes.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsToolbarBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/RequestAccessButtonParams.java",
@@ -80,6 +81,7 @@ if (enable_extensions_core) {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuButtonState.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuTypes.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsToolbarBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/RequestAccessButtonParams.java",
@@ -201,8 +203,6 @@ if (enable_extensions_core) {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/chrome_extension.xml",
-    "java/res/drawable/chrome_extension_off.xml",
-    "java/res/drawable/chrome_extension_on.xml",
     "java/res/drawable/extension_request_access_button_bg.xml",
     "java/res/drawable/extensions_menu_button_bg.xml",
     "java/res/drawable/extensions_zero_state.xml",

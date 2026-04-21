@@ -11,12 +11,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -133,6 +135,55 @@ ExtensionsToolbarViewModel::GetPinnedActionIds() const {
 
 bool ExtensionsToolbarViewModel::AreActionsInitialized() {
   return actions_model_->actions_initialized();
+}
+
+// static
+const gfx::VectorIcon& ExtensionsToolbarViewModel::GetToolbarButtonIcon(
+    ExtensionsToolbarButtonState state) {
+  switch (state) {
+    case ExtensionsToolbarButtonState::kDefault:
+      return vector_icons::kExtensionChromeRefreshIcon;
+    case ExtensionsToolbarButtonState::kAllExtensionsBlocked:
+      return vector_icons::kExtensionOffIcon;
+    case ExtensionsToolbarButtonState::kAnyExtensionHasAccess:
+      return vector_icons::kExtensionOnIcon;
+  }
+}
+
+// static
+std::u16string ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
+    ExtensionsToolbarButtonState state) {
+  int message_id;
+  switch (state) {
+    case ExtensionsToolbarButtonState::kDefault:
+      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON;
+      break;
+    case ExtensionsToolbarButtonState::kAllExtensionsBlocked:
+      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
+      break;
+    case ExtensionsToolbarButtonState::kAnyExtensionHasAccess:
+      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
+      break;
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
+// static
+std::u16string ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
+    ExtensionsToolbarButtonState state) {
+  int message_id;
+  switch (state) {
+    case ExtensionsToolbarButtonState::kDefault:
+      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON;
+      break;
+    case ExtensionsToolbarButtonState::kAllExtensionsBlocked:
+      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
+      break;
+    case ExtensionsToolbarButtonState::kAnyExtensionHasAccess:
+      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
+      break;
+  }
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState

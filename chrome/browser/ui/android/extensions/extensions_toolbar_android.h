@@ -79,8 +79,13 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       float scale_factor);
   std::vector<ToolbarActionsModel::ActionId> GetAllActionIds(JNIEnv* env);
   std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
-  int GetExtensionsMenuButtonState(JNIEnv* env,
-                                   content::WebContents* web_contents);
+  base::android::ScopedJavaLocalRef<jobject> GetMenuButtonState(
+      JNIEnv* env,
+      content::WebContents* web_contents,
+      int canvas_width_dp,
+      int canvas_height_dp,
+      float scale_factor,
+      int color);
   bool HandleKeyDownEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
   bool IsActionDraggable(JNIEnv* env,
                          const ToolbarActionsModel::ActionId& action_id);

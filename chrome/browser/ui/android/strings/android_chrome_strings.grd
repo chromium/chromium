@@ -4927,12 +4927,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Previous
       </message>
 
-      <if expr="enable_extensions_core">
-        <message name="IDS_ACCESSIBILITY_BTN_EXTENSIONS" desc="Content description for the extension button.">
-          Extensions
-        </message>
-      </if>
-
       <!-- Accessibility strings for tablet tab strip -->
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_INCOGNITO_TOGGLE_STANDARD" desc="Content description for the Incognito tabs toggle button when viewing standard tabs.">
         Enter Incognito mode

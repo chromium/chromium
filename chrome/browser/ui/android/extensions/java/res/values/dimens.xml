@@ -19,6 +19,7 @@ found in the LICENSE file.
     <dimen name="extensions_menu_footer_icon_size">20dp</dimen>
 
     <!-- Extensions Toolbar dimensions -->
+    <dimen name="extensions_toolbar_icon_size">24dp</dimen>
     <dimen name="extensions_toolbar_button_radius_inner">4dp</dimen>
     <dimen name="extensions_toolbar_button_radius_outer">20dp</dimen>
     <dimen name="extensions_request_access_button_margin_end">2dp</dimen>
