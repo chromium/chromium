@@ -14,7 +14,6 @@
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 class Version;
 }  // namespace base
@@ -51,17 +50,6 @@ enum InstallShortcutLevel {
   // Update if a shortcut level is added.
   INSTALL_SHORTCUT_LEVEL_LAST = ALL_USERS,
 };
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Returns the command line to run os_update_handler, if the Windows version
-// changed, std::nullopt otherwise.
-// `installer_state` : used to determine file path and install level.
-// `command_line` : the command line of the current process.
-std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
-    const InstallerState& installer_state,
-    const std::wstring& installed_version,
-    const base::CommandLine& command_line);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Overwrites shortcuts (desktop, quick launch, and start menu) if they are
 // present on the system.
