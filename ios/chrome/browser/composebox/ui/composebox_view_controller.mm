@@ -273,7 +273,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
              ComposeboxInputPlatePosition::kiPad) {
     [_presenter
         setAdditionalVerticalContentInset:UIEdgeInsetsMake(
-                                              _inputViewController.inputHeight,
+                                              _inputViewController.inputHeight +
+                                                  kInputPlateIpadMargin,
                                               0, 0, 0)];
   }
 }
@@ -485,17 +486,17 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                           constant:kInputPlateMargin],
+                           constant:kInputPlateIpadMargin],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
-                           constant:kInputPlateMargin],
+                           constant:kInputPlateIpadMargin],
       ]];
       if (IsRegularXRegularSizeClass(self.traitCollection)) {
         // Constraints for when the close button is hidden.
         [closeButtonConstraints addObjectsFromArray:@[
           [_inputViewController.view.trailingAnchor
               constraintEqualToAnchor:safeAreaGuide.trailingAnchor
-                             constant:-kInputPlateMargin]
+                             constant:-kInputPlateIpadMargin]
         ]];
         _closeButton.hidden = YES;
       } else {
@@ -650,27 +651,30 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 }
 
 - (void)updatePreferredContentSize:(id<UIContentContainer>)container {
-  CGFloat containerHeight = container.preferredContentSize.height;
-  CGFloat contentHeight = 0;
-  if ([container isKindOfClass:[ComposeboxInputPlateViewController class]]) {
-    // If omnibox has no results suggestions, then the input plate should be the
-    // tallest content.
-    CGFloat tallestHeight =
-        _omniboxPopupContainer.hidden
-            ? containerHeight + kBlurBottomMargin
-            : containerHeight + _omniboxPreferredContentHeight;
-    contentHeight = tallestHeight;
-  } else {
-    // Calculate content height knowing the content size of the omnibox popup
-    // table view.
-    _omniboxPreferredContentHeight = containerHeight;
-    contentHeight = _inputViewController.inputHeight +
-                    std::max(_omniboxPreferredContentHeight, kBlurBottomMargin);
-  }
-  CGFloat totalHeight = contentHeight + kInputPlateMargin;
-  if (self.preferredContentSize.height != totalHeight) {
-    self.preferredContentSize =
-        CGSizeMake(self.view.bounds.size.width, totalHeight);
+  if (_theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad) {
+    CGFloat containerHeight = container.preferredContentSize.height;
+    CGFloat contentHeight = 0;
+    if ([container isKindOfClass:[ComposeboxInputPlateViewController class]]) {
+      // If omnibox has no results suggestions, then the input plate should be
+      // the tallest content.
+      CGFloat tallestHeight =
+          _omniboxPopupContainer.hidden
+              ? containerHeight + kBlurBottomMargin
+              : containerHeight + _omniboxPreferredContentHeight;
+      contentHeight = tallestHeight;
+    } else {
+      // Calculate content height knowing the content size of the omnibox popup
+      // table view.
+      _omniboxPreferredContentHeight = containerHeight;
+      contentHeight =
+          _inputViewController.inputHeight +
+          std::max(_omniboxPreferredContentHeight, kBlurBottomMargin);
+    }
+    CGFloat totalHeight = contentHeight + kInputPlateIpadMargin;
+    if (self.preferredContentSize.height != totalHeight) {
+      self.preferredContentSize =
+          CGSizeMake(self.view.bounds.size.width, totalHeight);
+    }
   }
 }
 

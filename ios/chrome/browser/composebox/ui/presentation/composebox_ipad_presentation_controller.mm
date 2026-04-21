@@ -95,9 +95,7 @@
   // minimumHeight for the omnibox text view and the top spacing between the
   // input plate and the composebox so that the initial placeholder text is
   // centered to the top toolbar fakebox text.
-  CGFloat top = CGRectGetMinY(omniboxFrame) - kInputPlateMargin -
-                (kOmniboxTextViewMinVerticalInsetIPadComposebox -
-                 kOmniboxTextViewMinVerticalInset);
+  CGFloat top = CGRectGetMinY(omniboxFrame) - kInputPlateIpadMargin;
   CGFloat width = omniboxFrame.size.width;
   CGFloat x = omniboxFrame.origin.x;
   if (IsRegularXRegularSizeClass(self.traitCollection)) {
@@ -119,7 +117,7 @@
   _dimmingView.frame = self.containerView.bounds;
   self.presentedView.frame = [self frameOfPresentedViewInContainerView];
   self.presentedView.layer.cornerRadius =
-      kInputPlateCornerRadius + kInputPlateMargin;
+      kInputPlateIpadCornerRadius + kInputPlateIpadMargin;
   self.presentedView.clipsToBounds = YES;
 }
 

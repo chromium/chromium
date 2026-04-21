@@ -12,8 +12,10 @@ extern const CGFloat kOmniboxMinHeight;
 extern const CGFloat kOmniboxIPadMinHeight;
 /// The  margin  for the input plate container with its parent view.
 extern const CGFloat kInputPlateMargin;
+extern const CGFloat kInputPlateIpadMargin;
 /// The corner radius for the input plate container.
 extern const CGFloat kInputPlateCornerRadius;
+extern const CGFloat kInputPlateIpadCornerRadius;
 /// The additional horizontal margin to ensure the composebox covers the top
 /// omnibox.
 extern const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin;

@@ -368,7 +368,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   _editView.minimumHeight =
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+      _theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad
           ? kOmniboxIPadMinHeight
           : kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
@@ -1590,11 +1590,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _inputPlateContainerView = [[UIView alloc] init];
   _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   _inputPlateContainerView.backgroundColor = _theme.inputPlateBackgroundColor;
-  _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
+  CGFloat cornerRadius =
+      _theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad
+          ? kInputPlateIpadCornerRadius
+          : kInputPlateCornerRadius;
+  _inputPlateContainerView.layer.cornerRadius = cornerRadius;
 
   _inputPlateInternalContainerView = [[UIView alloc] init];
   _inputPlateInternalContainerView.clipsToBounds = YES;
-  _inputPlateInternalContainerView.layer.cornerRadius = kInputPlateCornerRadius;
+  _inputPlateInternalContainerView.layer.cornerRadius = cornerRadius;
   _inputPlateInternalContainerView.translatesAutoresizingMaskIntoConstraints =
       NO;
   [_inputPlateContainerView addSubview:_inputPlateInternalContainerView];
@@ -1610,7 +1614,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self.view addSubview:_inputPlateContainerView];
 
   _glowEffectView = ios::provider::CreateGlowEffect(
-      CGRectZero, kInputPlateCornerRadius, /*glowWidth is deprecated*/ 0);
+      CGRectZero, cornerRadius, /*glowWidth is deprecated*/ 0);
   if (_glowEffectView) {
     _glowEffectView.translatesAutoresizingMaskIntoConstraints = NO;
     _glowEffectView.userInteractionEnabled = NO;
@@ -1651,9 +1655,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
     // `_bottomPaddingConstraint` is updated in `updateToolbarVisibility`.
     [self updateToolbarVisibility];
-    _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
-    _inputPlateInternalContainerView.layer.cornerRadius =
-        kInputPlateCornerRadius;
+    CGFloat cornerRadius =
+        _theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad
+            ? kInputPlateIpadCornerRadius
+            : kInputPlateCornerRadius;
+    _inputPlateContainerView.layer.cornerRadius = cornerRadius;
+    _inputPlateInternalContainerView.layer.cornerRadius = cornerRadius;
   }
 
   [self updateInputPlateStackViewPadding];
