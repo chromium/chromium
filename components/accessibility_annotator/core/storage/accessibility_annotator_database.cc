@@ -23,11 +23,16 @@ AccessibilityAnnotatorDatabase::AccessibilityAnnotatorDatabase() = default;
 
 AccessibilityAnnotatorDatabase::~AccessibilityAnnotatorDatabase() = default;
 
-bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path) {
+bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path,
+                                          os_crypt_async::Encryptor encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!base::FeatureList::IsEnabled(
           features::kAccessibilityAnnotatorDatabaseStorage)) {
     return false;
   }
+
+  encryptor_ = std::move(encryptor);
 
   // Use a write-ahead log rather than a rollback journal to reduce the average
   // cost of writes, especially beneficial if writes are frequent.
@@ -85,6 +90,10 @@ bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path) {
     return false;
   }
 
+  if (!content_annotations_table_.Init(db_.get(), &encryptor_.value())) {
+    return false;
+  }
+
   if (detected_user_version == kCurrentVersionNumber) {
     return true;
   }
@@ -117,17 +126,70 @@ bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path) {
   return true;
 }
 
+bool AccessibilityAnnotatorDatabase::AddContentAnnotation(
+    history::VisitID visit_id,
+    const ContentAnnotationsData& data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return false;
+  }
+
+  return content_annotations_table_.AddContentAnnotation(visit_id, data);
+}
+
+std::optional<ContentAnnotationsData>
+AccessibilityAnnotatorDatabase::GetContentAnnotation(
+    history::VisitID visit_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return std::nullopt;
+  }
+
+  return content_annotations_table_.GetContentAnnotation(visit_id);
+}
+
+std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
+AccessibilityAnnotatorDatabase::GetAllContentAnnotations() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return {};
+  }
+
+  return content_annotations_table_.GetAllContentAnnotations();
+}
+
+bool AccessibilityAnnotatorDatabase::DeleteContentAnnotation(
+    history::VisitID visit_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return false;
+  }
+
+  return content_annotations_table_.DeleteContentAnnotation(visit_id);
+}
+
+bool AccessibilityAnnotatorDatabase::ClearAllContentAnnotations() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return false;
+  }
+
+  return content_annotations_table_.ClearAllContentAnnotations();
+}
+
 bool AccessibilityAnnotatorDatabase::CreateTablesIfNecessary() {
-  // TODO(crbug.com/483214801): Replace this table once some actual tables are
-  // finalized.
-  static constexpr char kCreateServerEntitiesSql[] =
-      "CREATE TABLE IF NOT EXISTS entities ("
-      "id TEXT PRIMARY KEY NOT NULL)";
-  return db_->Execute(kCreateServerEntitiesSql);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return false;
+  }
+
+  return content_annotations_table_.CreateTablesIfNecessary();
 }
 
 bool AccessibilityAnnotatorDatabase::MigrateOldVersionsAsNeeded(
     int detected_user_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Perform any necessary migrations from `detected_user_version` to
   // `kCurrentVersionNumber` here.
 

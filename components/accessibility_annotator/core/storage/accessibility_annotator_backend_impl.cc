@@ -79,10 +79,8 @@ void AccessibilityAnnotatorBackendImpl::Shutdown() {
 
 void AccessibilityAnnotatorBackendImpl::OnInitWithEncryptor(
     os_crypt_async::Encryptor encryptor) {
-  // TODO(crbug.com/496386554): Pass the encryptor to the database
-  // initialization.
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::Init)
-      .WithArgs(db_path_)
+      .WithArgs(db_path_, std::move(encryptor))
       .Then(base::BindOnce([](bool status) {
         if (!status) {
           // TODO(crbug.com/489690454): Replace this with a non-local histogram
