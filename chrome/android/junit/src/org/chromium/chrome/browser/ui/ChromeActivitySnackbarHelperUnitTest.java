@@ -104,12 +104,12 @@ public class ChromeActivitySnackbarHelperUnitTest {
         when(mBottomSheetController.getCurrentOffset()).thenReturn(50);
         observerCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
 
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
         // Test that both EdgeToEdgeController and BottomSheetObserver updates stack correctly.
         when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(200);
         mSnackbarHelper.onToEdgeChange(200, false, false);
-        assertEquals(200, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(250, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
 
     @Test
@@ -131,12 +131,12 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
         mSnackbarHelper.onToEdgeChange(100, false, false);
 
-        assertEquals(50, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
         doReturn(50).when(mBottomSheetController).getCurrentOffset();
         observerCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
 
-        assertEquals(50, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
         // targetPosition = Math.max(100, 50) = 100
         // margin = Math.max(0, 100 - 0) = 100
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
 
         // targetPosition = Math.max(100, 150) = 150
         // margin = Math.max(0, 150 - 150) = 0
-        assertEquals(0, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class ChromeActivitySnackbarHelperUnitTest {
         // layer is null -> contributedHeight = 0 -> Standard overlay sheet
         // targetPosition = Math.max(100, 50) = 100
         // margin = Math.max(0, 100 - 0) = 100
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
 
     @Test

@@ -198,8 +198,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
         // pushes the content view (and thus the snackbar) up.
         // We only need to apply additional margin if the required position to clear the
         // navbar or the sheet exceeds what the browser controls are already providing.
-        int targetPosition = Math.max(bottomInset, sheetOffset);
-        int margin = Math.max(0, targetPosition - contributedHeight);
+        int margin = bottomInset + Math.max(sheetOffset - contributedHeight, 0);
         mSupplier.set(margin);
     }
 }
