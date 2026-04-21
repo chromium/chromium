@@ -401,12 +401,16 @@ void VideoCaptureHost::ReleaseBuffer(
 
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
-  if (it == controllers_.end())
+  if (it == controllers_.end()) {
     return;
+  }
 
   const base::WeakPtr<VideoCaptureController>& controller = it->second;
   if (controller) {
-    controller->ReturnBuffer(controller_id, this, buffer_id, feedback);
+    if (!controller->ReturnBuffer(controller_id, this, buffer_id, feedback)) {
+      mojo::ReportBadMessage(
+          "VideoCaptureHost::ReleaseBuffer: Invalid buffer_id.");
+    }
   }
 }
 

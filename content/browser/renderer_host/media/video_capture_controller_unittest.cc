@@ -127,7 +127,8 @@ class MockVideoCaptureControllerEventHandler
     DoBufferReady(ControllerIDAndSize(id, buffer.frame_info->coded_size));
     if (enable_auto_return_buffer_on_buffer_ready_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
+          FROM_HERE, base::BindOnce(base::IgnoreResult(
+                                        &VideoCaptureController::ReturnBuffer),
                                     base::Unretained(controller_), id, this,
                                     buffer.buffer_id, feedback_));
     }
@@ -1082,6 +1083,32 @@ TEST_F(VideoCaptureControllerTest, AddRemoveScreenCaptureClient) {
   coordinator->ResetForTesting();
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(VideoCaptureControllerTest, ReturnBufferTwiceFails) {
+  media::VideoCaptureParams session_params;
+  session_params.requested_format = arbitrary_format_;
+  const VideoCaptureControllerID route_id = base::UnguessableToken::Create();
+  controller_->AddClient(route_id, {}, client_a_.get(),
+                         base::UnguessableToken::Create(), session_params,
+                         std::nullopt);
+
+  // Send a frame to the client.
+  int buffer_id = -1;
+  EXPECT_CALL(*client_a_, DoBufferCreated(_, _))
+      .WillOnce(SaveArg<1>(&buffer_id));
+  EXPECT_CALL(*client_a_, DoBufferReady(_));
+  client_a_->set_enable_auto_return_buffer_on_buffer_ready(false);
+  SendStubFrameToDeviceClient(arbitrary_format_, arbitrary_color_space_);
+  task_environment_.RunUntilIdle();
+
+  // Return the buffer once.
+  EXPECT_TRUE(controller_->ReturnBuffer(route_id, client_a_.get(), buffer_id,
+                                        media::VideoCaptureFeedback()));
+
+  // Returning it again should fail but not crash.
+  EXPECT_FALSE(controller_->ReturnBuffer(route_id, client_a_.get(), buffer_id,
+                                         media::VideoCaptureFeedback()));
+}
 
 }  // namespace
 }  // namespace content

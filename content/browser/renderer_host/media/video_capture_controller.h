@@ -100,7 +100,8 @@ class CONTENT_EXPORT VideoCaptureController
   // VideoCaptureControllerEventHandler::OnBufferReady.
   // If the consumer provided resource utilization
   // feedback, this will be passed here (-1.0 indicates no feedback).
-  void ReturnBuffer(const VideoCaptureControllerID& id,
+  // Returns true if the buffer was found and successfully returned.
+  bool ReturnBuffer(const VideoCaptureControllerID& id,
                     VideoCaptureControllerEventHandler* event_handler,
                     int buffer_id,
                     const media::VideoCaptureFeedback& feedback);
