@@ -1000,11 +1000,12 @@ be describing additional metrics about the same event.
     all metrics in this event: 1) all detected ad types (e.g., iframes, imgs)
     are included, and 2) ads obscured by non-ad content are excluded.
   </summary>
-  <metric name="AverageViewportAdCount">
+  <metric name="AverageViewportAdCountX100">
     <summary>
       The estimated average viewport ad count accumulated over the page load
-      time, rounded to the nearest exponential bucket integer with bucket
-      spacing 1.15.
+      time, multiplied by 100 and rounded to the nearest exponential bucket
+      integer with bucket spacing 1.15. This allows for 2 decimal places of
+      precision.
     </summary>
     <aggregation>
       <history>

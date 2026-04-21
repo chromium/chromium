@@ -929,15 +929,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.AverageViewportAdCount" units="count"
+<histogram name="PageLoad.Clients.Ads.AverageViewportAdCountX100" units="count"
     expires_after="2026-10-01">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The estimated average viewport ad count. This metric takes the average of
-    the ad counts accumulated over the page load time rounded to the nearest
-    integer. Recorded when the page is destroyed.
+    the ad counts accumulated over the page load time, multiplied by 100 and
+    rounded to the nearest integer. This allows for 2 decimal places of
+    precision. Recorded when the page is destroyed.
   </summary>
 </histogram>
 
