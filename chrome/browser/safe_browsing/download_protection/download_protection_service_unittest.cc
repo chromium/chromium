@@ -126,7 +126,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
-#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -3295,33 +3295,11 @@ TEST_F(DownloadProtectionServiceTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDangerousDownloadEvent(
-        /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/final_path_.AsUTF8Unsafe());
+  auto expected_event = CreateDangerousDownloadEvent(
+      /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/final_path_.AsUTF8Unsafe());
 
-    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
-  } else {
-    validator.ExpectDangerousDeepScanningResult(
-        "",                          // URL, not set in this test
-        "",                          // Tab URL, not set in this test
-        "",                          // Source, not set in this test
-        "",                          // Destination, not set in this test
-        final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-        "68617368",                  // SHA256 of the fake download
-        "DANGEROUS_FILE_TYPE",       // expected_threat_type
-        enterprise_connectors::
-            kFileDownloadDataTransferEventTrigger,  // expected_trigger
-        &expected_mimetypes,
-        0,  // expected_content_size
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BYPASSED),  // expected_result
-        "",                                                 // expected_username
-        profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
-        std::nullopt                          // scan_id
-    );
-  }
+  validator.ExpectDangerousDownloadEvent(std::move(expected_event));
 
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
   DownloadProtectionService::SetDownloadProtectionData(
@@ -3380,34 +3358,13 @@ TEST_F(DownloadProtectionServiceTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/final_path_.AsUTF8Unsafe(),
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/final_path_.AsUTF8Unsafe(),
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        "",  // URL, not set in this test
-        "",  // Tab URL, not set in this test
-        "",  // source, not used for file downloads.
-        "",  // destination, not used for file downloads.
-        final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-        "68617368",                  // SHA256 of the fake download
-        enterprise_connectors::
-            kFileDownloadDataTransferEventTrigger,  // expected_trigger
-        response.results()[0], &expected_mimetypes,
-        1234,  // expected_content_size
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BYPASSED),  // expected_result
-        "",                                                 // expected_username
-        profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
-        {} /* expected_scan_id */, std::nullopt /* content_transfer_reason */,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(1, sb_service_->download_report_count());
@@ -3451,33 +3408,11 @@ TEST_F(DownloadProtectionServiceTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDangerousDownloadEvent(
-        /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/final_path_.AsUTF8Unsafe());
+  auto expected_event = CreateDangerousDownloadEvent(
+      /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/final_path_.AsUTF8Unsafe());
 
-    validator.ExpectDangerousDownloadEvent(std::move(expected_event));
-  } else {
-    validator.ExpectDangerousDeepScanningResult(
-        "",                          // URL, not set in this test
-        "",                          // Tab URL, not set in this test
-        "",                          // Source, not set in this test
-        "",                          // Destination, not set in this test
-        final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-        "68617368",                  // SHA256 of the fake download
-        "DANGEROUS_FILE_TYPE",       // expected_threat_type
-        enterprise_connectors::
-            kFileDownloadDataTransferEventTrigger,  // expected_trigger
-        &expected_mimetypes,
-        0,  // expected_content_size
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BYPASSED),  // expected_result
-        "",                                                 // expected_username
-        profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
-        std::nullopt                          // scan_id
-    );
-  }
+  validator.ExpectDangerousDownloadEvent(std::move(expected_event));
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
@@ -3530,34 +3465,13 @@ TEST_F(DownloadProtectionServiceTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/final_path_.AsUTF8Unsafe(),
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/final_path_.AsUTF8Unsafe(),
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        "",  // URL, not set in this test
-        "",  // Tab URL, not set in this test
-        "",  // source, not used for file downloads.
-        "",  // destination, not used for file downloads.
-        final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-        "68617368",                  // SHA256 of the fake download
-        enterprise_connectors::
-            kFileDownloadDataTransferEventTrigger,  // expected_trigger
-        response.results()[0], &expected_mimetypes,
-        1234,  // expected_content_size
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BYPASSED),  // expected_result
-        "",                                                 // expected_username
-        profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
-        {} /* expected_scan_id */, std::nullopt /* content_transfer_method */,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING);
@@ -3610,34 +3524,13 @@ TEST_F(DownloadProtectionServiceTest,
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
 
-  if (base::FeatureList::IsEnabled(
-          policy::kUploadRealtimeReportingEventsUsingProto)) {
-    auto expected_event = CreateDlpSensitiveDataEvent(
-        /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
-        /*file_name=*/final_path_.AsUTF8Unsafe(),
-        /*rule_action=*/
-        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+  auto expected_event = CreateDlpSensitiveDataEvent(
+      /*profile_identifier=*/profile()->GetPath().AsUTF8Unsafe(),
+      /*file_name=*/final_path_.AsUTF8Unsafe(),
+      /*rule_action=*/
+      chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
 
-    validator.ExpectSensitiveDataEvent(std::move(expected_event));
-  } else {
-    validator.ExpectSensitiveDataEvent(
-        "",  // URL, not set in this test
-        "",  // Tab URL, not set in this test
-        "",  // source, not used for file downloads.
-        "",  // destination, not used for file downloads.
-        final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-        "68617368",                  // SHA256 of the fake download
-        enterprise_connectors::
-            kFileDownloadDataTransferEventTrigger,  // expected_trigger
-        response.results()[0], &expected_mimetypes,
-        1234,  // expected_content_size
-        enterprise_connectors::EventResultToString(
-            enterprise_connectors::EventResult::BYPASSED),  // expected_result
-        "",                                                 // expected_username
-        profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
-        {} /* expected_scan_id */, std::nullopt /* content_transfer_method */,
-        /*user_justification*/ std::nullopt);
-  }
+  validator.ExpectSensitiveDataEvent(std::move(expected_event));
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK);
