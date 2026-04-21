@@ -102,10 +102,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   void SetPrefetchServiceDelegateForTesting(
       std::unique_ptr<PrefetchServiceDelegate> delegate);
 
-  PrefetchProxyConfigurator* GetPrefetchProxyConfigurator() const {
-    return prefetch_proxy_configurator_.get();
-  }
-
   virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
@@ -370,55 +366,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status) override;
-
-  enum class HandlePrefetchContainerResult {
-    // No prefetch was available to be used.
-    kNotAvailable,
-    // There was a prefetch available but it is not usable.
-    kNotUsable,
-    // The prefetch will be served.
-    kToBeServed,
-    // The prefetch cannot be served because Cookies have changed.
-    kNotToBeServedCookiesChanged,
-    // The prefetch's head has not yet been received.
-    kWaitForHead
-  };
-
-  using FallbackToRegularNavigationWhenPrefetchNotUsable = base::StrongAlias<
-      class FallbackToRegularNavigationWhenPrefetchNotUsableTag,
-      bool>;
-  // Helper function for |GetPrefetchToServe| to return |prefetch_container| via
-  // |on_prefetch_to_serve_ready| callback in |prefetch_match_resolver|. Starts
-  // the cookie copy process for the given prefetch if needed, and updates its
-  // state.
-  HandlePrefetchContainerResult ReturnPrefetchToServe(
-      const PrefetchKey& key,
-      const GURL& prefetch_url,
-      PrefetchServingHandle serving_handle,
-      PrefetchMatchResolver& prefetch_match_resolver,
-      FallbackToRegularNavigationWhenPrefetchNotUsable
-          when_prefetch_not_used_fallback_to_regular_navigation =
-              FallbackToRegularNavigationWhenPrefetchNotUsable(true));
-
-  // Callback for non-blocking call `PrefetchContainer::StartBlockUntilHead()`.
-  // Waits non-redirect response header for No-Vary-Search to determine a
-  // potentially matching prefetch is a matching prefetch. Corresponds 3.6 in
-  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
-  //
-  // Once we make the decision to use a prefetch, call |PrepareToServe| and
-  // |GetPrefetchToServe| again in order to enforce that prefetches that are
-  // served are served from |prefetches_ready_to_serve_|.
-  void OnMaybeDeterminedHead(
-      const PrefetchKey& key,
-      base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
-      PrefetchContainer& prefetch_container);
-
-  // Helper function for |GetPrefetchToServe| which handles a
-  // |prefetch_container| that could potentially be served to the navigation.
-  HandlePrefetchContainerResult HandlePrefetchContainerToServe(
-      const PrefetchKey& key,
-      PrefetchContainer& prefetch_container,
-      PrefetchMatchResolver& prefetch_match_resolver);
 
   // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
   // (implicitly).

@@ -445,11 +445,6 @@ class CONTENT_EXPORT PrefetchContainer
   // dtor, so always call this asynchronously outside the dtor.
   void CancelStreamingURLLoaderIfNotServing();
 
-  // Returns whether or not this prefetch has been considered to serve for a
-  // navigation in the past. If it has, then it shouldn't be used for any future
-  // navigations.
-  bool HasPrefetchBeenConsideredToServe() const;
-
   // See `OnPrefetchResponseCompletedCallback`.
   void OnPrefetchComplete(
       bool is_success,
@@ -461,27 +456,12 @@ class CONTENT_EXPORT PrefetchContainer
   // `PrefetchResponseReader::CreateRequestHandler()`.
   PrefetchMatchResolverAction GetMatchResolverAction() const;
 
-  // Starts blocking `PrefetchMatchResolver` until non-redirect response header
-  // is determined or timeouted. `on_maybe_determined_head_callback` will be
-  // called when
-  //
-  // - `PrefetchStreamingURLLoader` succeeded/failed to fetch non-redirect
-  //   response header.
-  // - The argument `timeout` is positive and timeouted.
-  // - `PrefetchContainer` dtor if `kPrefetchUnblockOnCancel` enabled.
-  void StartBlockUntilHead(base::OnceCallback<void(PrefetchContainer&)>
-                               on_maybe_determined_head_callback,
-                           base::TimeDelta timeout);
   // Called when non-redirect response header is determined, i.e.
   // `GetNonRedirectHead()` becomes immutable.
   //
   // This method must be called at most once in the lifecycle of
   // `PrefetchContainer`.
   void OnDeterminedHead(bool is_successful_determined_head);
-  // Unblocks waiting `PrefetchMatchResolver`.
-  //
-  // This method can be called multiple times.
-  void UnblockPrefetchMatchResolver();
 
   void StartTimeoutTimerIfNeeded(base::OnceClosure on_timeout_callback);
 
