@@ -4,6 +4,8 @@
 
 #include "chrome/browser/login_detection/oauth_login_detector.h"
 
+#include <string_view>
+
 #include "base/strings/string_split.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "net/base/url_util.h"
@@ -15,8 +17,8 @@ namespace {
 constexpr char kQuerySeparator[] = "&";
 constexpr char kKeyValueSeparator[] = "=";
 
-base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
-  std::vector<std::string> fragments = base::SplitString(
+base::flat_map<std::string, std::string> SplitUrl(std::string_view url) {
+  std::vector<std::string_view> fragments = base::SplitStringPiece(
       url, kQuerySeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   base::flat_map<std::string, std::string> url_map;
   for (auto& fragment : fragments) {
@@ -24,8 +26,8 @@ base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
     if (start == std::string::npos) {
       continue;
     }
-    std::string key = fragment.substr(0, start);
-    std::string val = fragment.substr(start + 1, fragment.size());
+    std::string_view key = fragment.substr(0, start);
+    std::string_view val = fragment.substr(start + 1, fragment.size());
     url_map.emplace(key, val);
   }
 
