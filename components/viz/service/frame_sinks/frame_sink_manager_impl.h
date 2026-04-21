@@ -104,6 +104,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     base::ProcessId host_process_id = base::kNullProcessId;
     raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
     size_t max_uncommitted_frames = 0;
+    bool use_direct_receiver = false;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
 

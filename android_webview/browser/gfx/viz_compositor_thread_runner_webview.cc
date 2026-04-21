@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/task_queue_webview.h"
+#include "android_webview/common/aw_features.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -47,6 +48,11 @@ VizCompositorThreadRunnerWebView::GetInstance() {
 VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
     : viz_thread_("VizWebView") {
   base::Thread::Options options(base::ThreadType::kPresentation);
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::
+              kWebViewVizDirectCompositorThreadIpcFrameSinkManager)) {
+    options.message_pump_type = base::MessagePumpType::IO;
+  }
   CHECK(viz_thread_.StartWithOptions(std::move(options)));
   viz_task_runner_ = viz_thread_.task_runner();
   TaskQueueWebView::GetInstance()->InitializeVizThread(viz_task_runner_);
@@ -62,14 +68,18 @@ VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
 
 void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("VizWebView");
 
   auto init_params = viz::FrameSinkManagerImpl::InitParams();
 
-  if (features::UseWebViewNewInvalidateHeuristic()) {
+  if (::features::UseWebViewNewInvalidateHeuristic()) {
     // HWUI has 2 frames pipelineing and we need another one because we force
     // client to be frame behind.
     init_params.max_uncommitted_frames = 3;
   }
+  init_params.use_direct_receiver = base::FeatureList::IsEnabled(
+      android_webview::features::
+          kWebViewVizDirectCompositorThreadIpcFrameSinkManager);
 
   frame_sink_manager_ =
       std::make_unique<viz::FrameSinkManagerImpl>(init_params);

@@ -331,4 +331,10 @@ BASE_FEATURE(kPostChromiumStartupInWebViewConstructor,
 // app restarts.
 BASE_FEATURE(kWebViewPersistHttpServerProperties,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, binds FrameSinkManager as a DirectReceiver, allowing IPCs
+// targeting that interface, and any other interfaces passed through it to
+// arrive without the intermediate I/O thread hop.
+BASE_FEATURE(kWebViewVizDirectCompositorThreadIpcFrameSinkManager,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

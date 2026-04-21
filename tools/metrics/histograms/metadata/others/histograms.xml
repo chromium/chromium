@@ -5212,6 +5212,7 @@ chromium-metrics-reviews@google.com.
     <variant name="NetworkServiceOutOfProcess"/>
     <variant name="RendererMain"/>
     <variant name="VizCompositor"/>
+    <variant name="VizWebView"/>
   </token>
 </histogram>
 

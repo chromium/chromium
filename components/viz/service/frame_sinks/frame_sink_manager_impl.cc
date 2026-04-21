@@ -103,7 +103,7 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
       hint_session_factory_(params.hint_session_factory),
       frame_sink_manager_receiver_(std::in_place_type<Receiver>, this) {
   if (mojo::IsDirectReceiverSupported() && mojo::IsAsyncIOSupported() &&
-      features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled()) {
+      params.use_direct_receiver) {
     frame_sink_manager_receiver_.emplace<DirectReceiver>(
         mojo::DirectReceiverKey{}, this);
   }
