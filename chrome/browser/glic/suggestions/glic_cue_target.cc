@@ -64,7 +64,8 @@ void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
   }
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
   GlicInvokeOptions options(
-      Target(browser_window_interface_->GetActiveTabInterface()),
+      Target(browser_window_interface_->GetActiveTabInterface(),
+             NewConversation()),
       glic::mojom::InvocationSource::kAutoOpenedByContextualCue);
   options.prompts.emplace_back(std::move(glic_data.prompt));
   // TODO(crbug.com/500407600): Add tabs to pin.

@@ -151,6 +151,8 @@ TEST_F(GlicCueTargetTest, OnClick) {
         EXPECT_EQ("test prompt", options.prompts[0]);
         EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
                   options.invocation_source);
+        EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+            options.target.conversation));
       });
 
   target.OnClick(data);
