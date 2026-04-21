@@ -1052,14 +1052,27 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // with toolbar height and hairline height.
         int diff = 0;
         // When switching omnibox from bottom to top, the toolbar capture size may not have been
-        // updated yet (e.g. captureHeight=1 while toolbarHeight=137). Using a stale capture
+        // updated yet (e.g. captureHeight=1 while toolbarLayoutHeight=137). Using a stale capture
         // height produces a large negative diff that pushes the cc layer below the toolbar,
         // creating a "ghost view". Only compute diff when capture height is at least as large
         // as the toolbar, indicating the capture is up-to-date.
-        int toolbarHeight = mControlContainer.getToolbarHeight();
+        int toolbarLayoutHeight = mControlContainer.getToolbarHeight();
         int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
-        if (captureHeight >= toolbarHeight) {
-            diff = captureHeight - toolbarHeight - hairlineHeight;
+        int controlContainerHeightExcludingTabStrip =
+                mControlContainer.getControlContainerHeightExcludingTabStrip();
+        // The control container can be larger than toolbarLayoutHeight + tabstrip height, e.g. when
+        // the fusebox is visible. The capture does not always include this expanded height but when
+        // it does, we need to account for it to avoid over-translating by the extra height.
+        int maxControlContainerHeightMeasurement =
+                Math.max(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
+        int minControlContainerHeightMeasurement =
+                Math.min(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
+        if (captureHeight >= maxControlContainerHeightMeasurement
+                && mTabStripTransitionCoordinator != null) {
+            // Capture includes extra height; use the full height.
+            diff = captureHeight - maxControlContainerHeightMeasurement - hairlineHeight;
+        } else if (captureHeight >= minControlContainerHeightMeasurement) {
+            diff = captureHeight - minControlContainerHeightMeasurement - hairlineHeight;
         }
 
         // As toolbar hairline is part of the capture, there are times we need to hide the hairline

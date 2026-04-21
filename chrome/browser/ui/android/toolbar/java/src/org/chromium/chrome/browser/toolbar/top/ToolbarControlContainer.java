@@ -1042,6 +1042,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         return mToolbarCaptureSize.height();
     }
 
+    /** Returns the measured height of the entire container, minus the tabstrip's height. */
+    public int getControlContainerHeightExcludingTabStrip() {
+        return getMeasuredHeight() - mToolbar.getTabStripHeight();
+    }
+
     private class SwipeGestureListenerImpl extends SwipeGestureListener {
         public SwipeGestureListenerImpl(Context context, SwipeHandler handler) {
             super(context, handler);
