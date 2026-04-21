@@ -292,9 +292,12 @@ void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
 }
 
 void ContextualTasksPageHandler::OpenMyActivityUi() {
+  BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
+  if (!browser) {
+    return;
+  }
   OpenUrlWithDisposition(web_ui_controller_->GetProfile(), GURL(kMyActivityUrl),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                         web_ui_controller_->GetBrowser());
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
 }
 
 void ContextualTasksPageHandler::OpenFeedbackUi() {
@@ -317,11 +320,14 @@ void ContextualTasksPageHandler::OpenFeedbackUi() {
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
+  BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
+  if (!browser) {
+    return;
+  }
   OpenUrlWithDisposition(
       web_ui_controller_->GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      web_ui_controller_->GetBrowser());
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
 }
 
 void ContextualTasksPageHandler::OpenUrl(const GURL& url,

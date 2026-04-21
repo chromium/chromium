@@ -438,6 +438,7 @@ source_set("unit_tests") {
     "contextual_tasks_context_service_factory_unittest.cc",
     "contextual_tasks_context_signal_utils_unittest.cc",
     "contextual_tasks_cookie_synchronizer_unittest.cc",
+    "contextual_tasks_page_handler_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
     "contextual_tasks_side_panel_coordinator_unittest.cc",
     "contextual_tasks_tab_visit_tracker_unittest.cc",
@@ -453,7 +454,6 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler_unittest.cc",
-      "contextual_tasks_page_handler_unittest.cc",
       "contextual_tasks_panel_host_desktop_unittest.cc",
     ]
   }
@@ -474,7 +474,10 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/tab_list",
     "//chrome/browser/tab_list:test_support",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
     "//components/application_locale_storage",
     "//components/contextual_search:public",
@@ -485,6 +488,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content:page_embeddings",
     "//components/tabs:test_support",
+    "//components/variations:test_support",
     "//content/test:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
@@ -495,17 +499,14 @@ source_set("unit_tests") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs:test_support",
-      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
-      "//components/variations:test_support",
       "//services/network/public/cpp",
     ]
   }
