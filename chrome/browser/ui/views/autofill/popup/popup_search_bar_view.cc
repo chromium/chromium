@@ -22,6 +22,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/view_factory.h"
@@ -29,7 +30,8 @@
 namespace autofill {
 
 PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
-                                       Delegate& delegate)
+                                       Delegate& delegate,
+                                       bool show_indicator)
     : delegate_(delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -84,6 +86,15 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   clear_->SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InstallCircleHighlightPathGenerator(clear_);
   clear_->SetVisible(false);
+
+  if (show_indicator) {
+    indicator_ = AddChildView(views::Builder<views::Label>()
+                                  .SetText(u"@@")
+                                  .SetAutoColorReadabilityEnabled(false)
+                                  .Build());
+    indicator_->SetEnabledColor(ui::kColorTextfieldForegroundPlaceholder);
+    indicator_->SetVisible(true);
+  }
 }
 
 void PopupSearchBarView::AddedToWidget() {
@@ -130,10 +141,18 @@ bool PopupSearchBarView::IsClearButtonVisibleForTesting() const {
   return clear_->GetVisible();
 }
 
+bool PopupSearchBarView::IsIndicatorVisibleForTesting() const {
+  return indicator_ ? indicator_->GetVisible() : false;
+}
+
 PopupSearchBarView::~PopupSearchBarView() = default;
 
 void PopupSearchBarView::OnInputChanged() {
-  clear_->SetVisible(!input_->GetText().empty());
+  bool empty = input_->GetText().empty();
+  clear_->SetVisible(!empty);
+  if (indicator_) {
+    indicator_->SetVisible(empty);
+  }
   input_change_notification_timer_.Start(
       FROM_HERE, kInputChangeCallbackDelay,
       // `delegate_` is expected to outlive `this`, the timer will either be

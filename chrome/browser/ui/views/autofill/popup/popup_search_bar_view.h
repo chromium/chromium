@@ -19,6 +19,7 @@
 
 namespace views {
 class Button;
+class Label;
 class Textfield;
 }  // namespace views
 
@@ -63,7 +64,10 @@ class PopupSearchBarView : public views::View,
   static constexpr base::TimeDelta kInputChangeCallbackDelay =
       base::Milliseconds(250);
 
-  PopupSearchBarView(const std::u16string& placeholder, Delegate& delegate);
+  // TODO(crbug.com/504977286) Rename show_indicator when launched.
+  PopupSearchBarView(const std::u16string& placeholder,
+                     Delegate& delegate,
+                     bool show_indicator = false);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
   PopupSearchBarView& operator=(const PopupSearchBarView&) = delete;
   ~PopupSearchBarView() override;
@@ -88,6 +92,7 @@ class PopupSearchBarView : public views::View,
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
   bool IsClearButtonVisibleForTesting() const;
+  bool IsIndicatorVisibleForTesting() const;
 
   // TODO(crbug.com/325246516): Add methods to support communication with its
   // hosting poopup view.
@@ -100,6 +105,7 @@ class PopupSearchBarView : public views::View,
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
+  raw_ptr<views::Label> indicator_ = nullptr;
 
   base::CallbackListSubscription input_changed_subscription_;
   base::OneShotTimer input_change_notification_timer_;

@@ -1052,7 +1052,9 @@ void PopupViewViews::InitViews() {
 
   if (search_bar_config_) {
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config_->placeholder, *this));
+        search_bar_config_->placeholder, *this,
+        controller_ &&
+            controller_->GetMainFillingProduct() == FillingProduct::kAtMemory));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));

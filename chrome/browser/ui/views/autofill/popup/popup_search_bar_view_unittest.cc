@@ -195,5 +195,35 @@ TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
   EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
 }
 
+TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Enabled) {
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", delegate(), /*show_indicator=*/true));
+  widget().Show();
+
+  EXPECT_TRUE(view->IsIndicatorVisibleForTesting());
+
+  view->SetInputTextForTesting(u"a");
+  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
+
+  view->SetInputTextForTesting(u"");
+  EXPECT_TRUE(view->IsIndicatorVisibleForTesting());
+}
+
+TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Disabled) {
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", delegate(), /*show_indicator=*/false));
+  widget().Show();
+
+  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
+
+  view->SetInputTextForTesting(u"a");
+  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
+
+  view->SetInputTextForTesting(u"");
+  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
+}
+
 }  // namespace
 }  // namespace autofill
