@@ -56,7 +56,9 @@ proto::BaseModelRecipe BaseModelRecipe(proto::FileReference weights_file,
 proto::AdaptationRecipe AdaptationRecipe(const std::string& base_model_id,
                                          proto::FileReference weights_file);
 
-proto::SafetyModelRecipe SafetyModelRecipe(proto::FileReference weights_file);
+proto::SafetyModelRecipe SafetyModelRecipe(
+    proto::FileReference weights_file,
+    proto::FileReference language_detection_model_file);
 
 proto::SolutionRecipe SolutionRecipe(const std::string& model_recipe_id,
                                      const std::string& safety_model_recipe_id,

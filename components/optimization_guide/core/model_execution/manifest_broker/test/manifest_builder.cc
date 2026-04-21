@@ -64,9 +64,13 @@ proto::AdaptationRecipe AdaptationRecipe(const std::string& base_model_id,
   return recipe;
 }
 
-proto::SafetyModelRecipe SafetyModelRecipe(proto::FileReference weights_file) {
+proto::SafetyModelRecipe SafetyModelRecipe(
+    proto::FileReference weights_file,
+    proto::FileReference language_detection_model_file) {
   proto::SafetyModelRecipe recipe;
   *recipe.mutable_weights_file() = std::move(weights_file);
+  *recipe.mutable_language_detection_model_file() =
+      std::move(language_detection_model_file);
   return recipe;
 }
 

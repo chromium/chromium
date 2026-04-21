@@ -42,7 +42,8 @@ ManifestBuilder ValidManifest() {
       .Add("valid_component", OnDemandComponent("valid_key", "1.0"))
       .Add("valid_safety_model",
            SafetyModelRecipe(
-               FileReference("valid_component", "valid_safety_model.bin")))
+               FileReference("valid_component", "valid_safety_model.bin"),
+               FileReference("valid_component", "valid_lang_model.bin")))
       .Add("valid_base",
            BaseModelRecipe(FileReference("valid_component", "valid_base.bin"),
                            GenericRecipeArgs()))
@@ -100,10 +101,20 @@ TEST_F(ManifestTest, InvalidWithMissingSolutionReference) {
                                   FileReference("valid_component",
                                                 "valid_adaptation.bin")))),
       base::unexpected(Manifest::ParseError::kMissingIdentifier));
-  EXPECT_EQ(CreateCpuManifest(ValidManifest().Add(
-                "foo", SafetyModelRecipe(FileReference(
-                           "missing_component", "valid_safety_model.bin")))),
-            base::unexpected(Manifest::ParseError::kMissingIdentifier));
+  EXPECT_EQ(
+      CreateCpuManifest(ValidManifest().Add(
+          "foo",
+          SafetyModelRecipe(
+              FileReference("missing_component", "valid_safety_model.bin"),
+              FileReference("valid_component", "valid_lang_model.bin")))),
+      base::unexpected(Manifest::ParseError::kMissingIdentifier));
+  EXPECT_EQ(
+      CreateCpuManifest(ValidManifest().Add(
+          "foo",
+          SafetyModelRecipe(
+              FileReference("valid_component", "valid_safety_model.bin"),
+              FileReference("missing_component", "valid_lang_model.bin")))),
+      base::unexpected(Manifest::ParseError::kMissingIdentifier));
   EXPECT_EQ(CreateCpuManifest(ValidManifest().Add(
                 "foo", SolutionRecipe(
                            "missing_base", kNoSafetyModel,

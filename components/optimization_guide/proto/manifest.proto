@@ -81,6 +81,7 @@ message AdaptationRecipe {
 // A recipe for a safety model.
 message SafetyModelRecipe {
   FileReference weights_file = 1;
+  FileReference language_detection_model_file = 2;
 }
 
 // A recipe for a ModelSolution provided by the ModelBroker.

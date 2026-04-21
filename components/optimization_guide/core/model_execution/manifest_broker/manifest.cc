@@ -124,6 +124,10 @@ std::optional<Manifest::ParseError> ValidateReferences(
     if (!is_valid_asset(safety_model.weights_file().asset_id())) {
       return Manifest::ParseError::kMissingIdentifier;
     }
+    if (!is_valid_asset(
+            safety_model.language_detection_model_file().asset_id())) {
+      return Manifest::ParseError::kMissingIdentifier;
+    }
   }
 
   for (const auto& [category, config] : manifest.category_configs()) {
@@ -192,6 +196,7 @@ struct References {
       const proto::SafetyModelRecipe& safety_model =
           recipes.safety_models().at(id);
       assets.insert(safety_model.weights_file().asset_id());
+      assets.insert(safety_model.language_detection_model_file().asset_id());
     }
   }
 

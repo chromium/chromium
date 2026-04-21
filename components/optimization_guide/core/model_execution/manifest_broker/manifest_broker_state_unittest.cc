@@ -67,7 +67,8 @@ class ScenarioBuilder final {
         }));
     builder.Add(name + "_asset", OnDemandComponent(name + "_key", "1"));
     builder.Add(name + "_recipe",
-                SafetyModelRecipe(FileReference(name + "_asset", "ts.bin")));
+                SafetyModelRecipe(FileReference(name + "_asset", "ts.bin"),
+                                  FileReference(name + "_asset", "lang.bin")));
     return *this;
   }
 

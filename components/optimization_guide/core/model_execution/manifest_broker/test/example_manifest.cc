@@ -14,8 +14,12 @@ proto::Manifest BuildExampleManifest() {
       // Safety model.
       .Add("safety_model_component",
            OnDemandComponent("abc12345...", "2026.1.21.1028"))
-      .Add("safety_model_recipe", SafetyModelRecipe(FileReference(
-                                      "safety_model_component", "weights.bin")))
+      .Add("language_detection_model_component",
+           OnDemandComponent("def67890...", "2026.1.21.1028"))
+      .Add("safety_model_recipe",
+           SafetyModelRecipe(
+               FileReference("safety_model_component", "weights.bin"),
+               FileReference("language_detection_model_component", "lang.bin")))
       // Tiny model for writer.
       .Add("writer_tiny_model_component",
            OnDemandComponent("12345...", "2026.1.21.1028"))
