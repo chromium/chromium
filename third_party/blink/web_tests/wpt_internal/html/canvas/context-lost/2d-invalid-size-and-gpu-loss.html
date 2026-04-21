@@ -1,14 +1,27 @@
 <!doctype html>
 <meta name="timeout" content="long">
-<meta name="variant" content="?testType=html">
-<meta name="variant" content="?testType=html&desynchronized">
-<meta name="variant" content="?testType=detached_html">
-<meta name="variant" content="?testType=offscreen">
-<meta name="variant" content="?testType=offscreen&desynchronized">
-<meta name="variant" content="?testType=placeholder">
+<meta name="variant" content="?testType=html&1-3">
+<meta name="variant" content="?testType=html&4-6">
+<meta name="variant" content="?testType=html&7-last">
+<meta name="variant" content="?testType=html&desynchronized&1-3">
+<meta name="variant" content="?testType=html&desynchronized&4-6">
+<meta name="variant" content="?testType=html&desynchronized&7-last">
+<meta name="variant" content="?testType=detached_html&1-3">
+<meta name="variant" content="?testType=detached_html&4-6">
+<meta name="variant" content="?testType=detached_html&7-last">
+<meta name="variant" content="?testType=offscreen&1-3">
+<meta name="variant" content="?testType=offscreen&4-6">
+<meta name="variant" content="?testType=offscreen&7-last">
+<meta name="variant" content="?testType=offscreen&desynchronized&1-3">
+<meta name="variant" content="?testType=offscreen&desynchronized&4-6">
+<meta name="variant" content="?testType=offscreen&desynchronized&7-last">
+<meta name="variant" content="?testType=placeholder&1-3">
+<meta name="variant" content="?testType=placeholder&4-6">
+<meta name="variant" content="?testType=placeholder&7-last">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="/common/subset-tests.js"></script>
 <script src="./2d-context-lost-utils.js"></script>
 <script>
 
@@ -21,7 +34,7 @@ var desynchronized = false;
 /**
  * Kill the GPU process and let it restore normally.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
@@ -53,7 +66,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
 /**
  * Create a resource provider while the GPU process is down.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   terminateGpuProcess(test);
@@ -90,7 +103,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
 /**
  * Resize and reuse a canvas while the GPU is down.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas is initialized with valid resources.
@@ -136,7 +149,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
  * the context loss. After the GPU process is restored, canvas can be created
  * as if nothing happened.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas is initialized with valid resources.
@@ -183,7 +196,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
  * notified of the GPU context loss. The context will only restore after giving
  * the canvas a valid size.
  **/
-canvasPromiseTest(async (canvas, {test} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
@@ -216,7 +229,7 @@ canvasPromiseTest(async (canvas, {test} = {}) => {
  * Kill the GPU process, cycle the canvas size as good -> bad -> good and
  * recreate a provider before the canvas is notified of the context loss.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
@@ -246,7 +259,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
  * Lose the GPU process and do good size -> bad size -> good size from inside
  * the contextlost event handler.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
@@ -283,7 +296,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
  * Lose the GPU process and do good size -> bad size -> good size after the
  * contextlost event handler but before contextrestored.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
@@ -324,7 +337,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
  * Lose the GPU process and given the canvas an invalid size from inside
  * contextlost event handler.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
@@ -366,7 +379,7 @@ canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
  * Lose the GPU process and given the canvas an invalid size after the
  * contextlost event handler ran.
  **/
-canvasPromiseTest(async (canvas, {test, canvasType} = {}) => {
+subsetTest(canvasPromiseTest, async (canvas, {test, canvasType} = {}) => {
   const ctx = get2dContext(canvas, {desynchronized});
 
   // Make sure the canvas has a provider and kill the GPU process.
