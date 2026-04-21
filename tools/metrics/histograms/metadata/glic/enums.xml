@@ -1031,6 +1031,12 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Clicked + on 1p Skill from Menu"/>
   <int value="9" label="Clicked Save as Skill Hover Chip"/>
   <int value="10" label="Clicked Edit Skill Hover Chip"/>
+  <int value="11" label="Clicked Browse Skill from Plus Menu"/>
+  <int value="12" label="Clicked Skill from Plus Menu"/>
+  <int value="13" label="Clicked Manage Skill from Plus Menu"/>
+  <int value="14" label="Clicked More from Menu"/>
+  <int value="15" label="Clicked Manage Skill from Menu"/>
+  <int value="16" label="Clicked Skill from Menu"/>
   <int value="20" label="Skill Builder: Clicked Promo Chip"/>
   <int value="21" label="Skill Builder: Prompt Generated"/>
   <int value="22" label="Skill Builder: Clicked Save as Skill"/>
