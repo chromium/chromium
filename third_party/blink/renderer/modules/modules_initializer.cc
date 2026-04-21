@@ -187,8 +187,6 @@ void ModulesInitializer::Initialize() {
       BackgroundColorPaintImageGeneratorImpl::Create);
   ClipPathPaintImageGenerator::Init(ClipPathPaintImageGeneratorImpl::Create);
   MediaSourceRegistryImpl::Init();
-  if (::features::IsTextBasedAudioDescriptionEnabled())
-    SpeechSynthesisBase::Init(SpeechSynthesis::Create);
 
   CoreInitializer::Initialize();
 

@@ -49,9 +49,6 @@ namespace blink {
 
 const char SpeechSynthesis::kSupplementName[] = "SpeechSynthesis";
 
-SpeechSynthesisBase* SpeechSynthesis::Create(LocalDOMWindow& window) {
-  return MakeGarbageCollected<SpeechSynthesis>(window);
-}
 
 SpeechSynthesis* SpeechSynthesis::speechSynthesis(LocalDOMWindow& window) {
   SpeechSynthesis* synthesis =
@@ -101,7 +98,7 @@ const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   return voice_list_;
 }
 
-bool SpeechSynthesis::Speaking() const {
+bool SpeechSynthesis::speaking() const {
   // If we have a current speech utterance, then that means we're assumed to be
   // in a speaking state. This state is independent of whether the utterance
   // happens to be paused.
@@ -118,14 +115,6 @@ bool SpeechSynthesis::paused() const {
   return is_paused_;
 }
 
-void SpeechSynthesis::Speak(const String& text, const String& lang) {
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
-  SpeechSynthesisUtterance* utterance =
-      SpeechSynthesisUtterance::Create(GetSupplementable(), text);
-  utterance->setLang(lang);
-  speak(script_state, utterance);
-}
 
 void SpeechSynthesis::speak(ScriptState* script_state,
                             SpeechSynthesisUtterance* utterance) {
@@ -154,7 +143,7 @@ void SpeechSynthesis::speak(ScriptState* script_state,
     StartSpeakingImmediately();
 }
 
-void SpeechSynthesis::Cancel() {
+void SpeechSynthesis::cancel() {
   // Remove all the items from the utterance queue. The platform
   // may still have references to some of these utterances and may
   // fire events on them asynchronously.
@@ -165,7 +154,7 @@ void SpeechSynthesis::Cancel() {
     mojom_synthesis->Cancel();
 }
 
-void SpeechSynthesis::Pause() {
+void SpeechSynthesis::pause() {
   if (is_paused_)
     return;
 
@@ -174,7 +163,7 @@ void SpeechSynthesis::Pause() {
     mojom_synthesis->Pause();
 }
 
-void SpeechSynthesis::Resume() {
+void SpeechSynthesis::resume() {
   if (!CurrentSpeechUtterance())
     return;
 
@@ -251,8 +240,6 @@ void SpeechSynthesis::HandleSpeakingCompleted(
     mojom::blink::SpeechSynthesisErrorCode error_code) {
   DCHECK(utterance);
 
-  // Special handling for audio descriptions.
-  SpeechSynthesisBase::HandleSpeakingCompleted();
 
   bool should_start_speaking = false;
   // If the utterance that completed was the one we're currently speaking,
@@ -345,7 +332,6 @@ void SpeechSynthesis::Trace(Visitor* visitor) const {
   visitor->Trace(utterance_queue_);
   Supplement<LocalDOMWindow>::Trace(visitor);
   EventTarget::Trace(visitor);
-  SpeechSynthesisBase::Trace(visitor);
 }
 
 bool SpeechSynthesis::GetElapsedTimeMillis(double* millis) {

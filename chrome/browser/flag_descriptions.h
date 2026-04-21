@@ -708,12 +708,6 @@ inline constexpr char kUseSurfaceViewForThinWebViewName[] =
 inline constexpr char kUseSurfaceViewForThinWebViewDescription[] =
     "Enables the use of SurfaceView for ThinWebView on Android.";
 
-inline constexpr char kTextBasedAudioDescriptionName[] =
-    "Enable audio descriptions.";
-inline constexpr char kTextBasedAudioDescriptionDescription[] =
-    "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
-    "will speak the audio descriptions aloud as the video plays.";
-
 inline constexpr char kUseAndroidStagingSmdsName[] =
     "Use Android staging SM-DS";
 inline constexpr char kUseAndroidStagingSmdsDescription[] =

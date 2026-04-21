@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
-#include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -134,7 +133,6 @@ class CORE_EXPORT HTMLMediaElement
     kPaused_PauseRequestedInternally,
     kPaused_FrameFrozen,
     kPaused_FrameHidden,
-    kPaused_LetAudioDescriptionFinish
   };
 
   bool IsMediaElement() const override { return true; }
@@ -262,9 +260,6 @@ class CORE_EXPORT HTMLMediaElement
   ScriptPromise<IDLUndefined> playForBindings(ScriptState*);
   std::optional<DOMExceptionCode> Play();
 
-  // Called when the video should pause to let audio descriptions finish.
-  void PauseToLetDescriptionFinish();
-
   void pause();
   double latencyHint() const;
   void setLatencyHint(double);
@@ -323,9 +318,6 @@ class CORE_EXPORT HTMLMediaElement
   void ConfigureTextTrackDisplay();
   void UpdateTextTrackDisplay();
 
-  // Get a SpeechSynthesis interface to use for generating speech for audio
-  // descriptions.
-  SpeechSynthesisBase* SpeechSynthesis();
   double LastSeekTime() const { return last_seek_time_; }
   void TextTrackReadyStateChanged(TextTrack*);
 
@@ -576,9 +568,6 @@ class CORE_EXPORT HTMLMediaElement
   // state is updated. This is typically handled during `UpdatePlayState`.
   virtual void UpdateVideoVisibilityTracker() {}
 
-  // Handles playing of media element when audio descriptions are finished
-  // speaking.
-  void OnSpeakingCompleted();
 
   void SetShowPosterFlag(bool value);
 
@@ -954,9 +943,6 @@ class CORE_EXPORT HTMLMediaElement
   // die together.
   Member<AudioSourceProviderClient> audio_source_node_;
 
-  // Controls browser vocalization within the media element (e.g. to speak cues,
-  // to pause utterance).
-  Member<SpeechSynthesisBase> speech_synthesis_;
 
   // AudioClientImpl wraps an AudioSourceProviderClient.
   // When the audio format is known, Chromium calls setFormat().

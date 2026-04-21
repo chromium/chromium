@@ -173,9 +173,6 @@ class WebMediaPlayer {
     // when a muted HTMLMediaElement has started autoplaying and is not rendered
     // in the viewport anymore.
     kAutoplayAutoPause,
-    // The audio description track is lagging behind and we need to pause for it
-    // to catch up.
-    kLetAudioDescriptionFinish,
   };
 
   // For video.requestVideoFrameCallback(). https://wicg.github.io/video-rvfc/

@@ -105,7 +105,6 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
@@ -352,9 +351,6 @@ HTMLMediaElement::PlayPromiseError PauseReasonToPlayPromiseError(
       return HTMLMediaElement::PlayPromiseError::kPaused_RemovedFromDocument;
     case WebMediaPlayer::PauseReason::kAutoplayAutoPause:
       return HTMLMediaElement::PlayPromiseError::kPaused_AutoplayAutoPause;
-    case WebMediaPlayer::PauseReason::kLetAudioDescriptionFinish:
-      return HTMLMediaElement::PlayPromiseError::
-          kPaused_LetAudioDescriptionFinish;
   }
   NOTREACHED();
 }
@@ -506,12 +502,6 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
     cue_timeline_->DidMoveToNewDocument(old_document);
   }
 
-  // Stop speaking and set speech_synthesis_ to nullptr so that it is
-  // re-created on-demand when SpeechSynthesis() is called.
-  if (speech_synthesis_) {
-    speech_synthesis_->Cancel();
-    speech_synthesis_.Clear();
-  }
 
   if (should_delay_load_event_) {
     GetDocument().IncrementLoadEventDelayCount();
@@ -3113,18 +3103,8 @@ void HTMLMediaElement::PlayInternal() {
 void HTMLMediaElement::pause() {
   DVLOG(2) << "pause(" << *this << ")";
 
-  // When updating pause, be sure to update PauseToLetDescriptionFinish().
   autoplay_policy_->StopAutoplayMutedWhenVisible();
   PauseInternal(WebMediaPlayer::PauseReason::kPauseCalled);
-}
-
-void HTMLMediaElement::PauseToLetDescriptionFinish() {
-  DVLOG(2) << "pauseExceptSpeech(" << *this << ")";
-
-  autoplay_policy_->StopAutoplayMutedWhenVisible();
-
-  // Pause everything except the speech.
-  PauseInternal(WebMediaPlayer::PauseReason::kLetAudioDescriptionFinish);
 }
 
 void HTMLMediaElement::PauseInternal(WebMediaPlayer::PauseReason pause_reason) {
@@ -4114,8 +4094,6 @@ void HTMLMediaElement::UpdatePlayState(
       web_media_player_->SetRate(playbackRate());
       web_media_player_->SetVolume(EffectiveMediaVolume());
       web_media_player_->Play();
-      if (::features::IsTextBasedAudioDescriptionEnabled())
-        SpeechSynthesis()->Resume();
 
       // These steps should not be necessary, but if `play()` is called before
       // a source change, we may get into a state where `paused_ == false` and
@@ -4140,11 +4118,6 @@ void HTMLMediaElement::UpdatePlayState(
         web_media_player_->Pause(pause_reason.value());
       }
 
-      if ((pause_reason ==
-           WebMediaPlayer::PauseReason::kLetAudioDescriptionFinish) &&
-          is_playing && ::features::IsTextBasedAudioDescriptionEnabled()) {
-        SpeechSynthesis()->Pause();
-      }
     }
 
     playback_progress_timer_.Stop();
@@ -4423,15 +4396,6 @@ void HTMLMediaElement::UpdateTextTrackDisplay() {
       *this, TextTrackContainer::kDidNotStartExposingControls);
 }
 
-SpeechSynthesisBase* HTMLMediaElement::SpeechSynthesis() {
-  if (!speech_synthesis_) {
-    speech_synthesis_ =
-        SpeechSynthesisBase::Create(*(GetDocument().domWindow()));
-    speech_synthesis_->SetOnSpeakingCompletedCallback(BindRepeating(
-        &HTMLMediaElement::OnSpeakingCompleted, WrapWeakPersistent(this)));
-  }
-  return speech_synthesis_.Get();
-}
 
 void HTMLMediaElement::MediaControlsDidBecomeVisible() {
   DVLOG(3) << "mediaControlsDidBecomeVisible(" << *this << ")";
@@ -4657,14 +4621,9 @@ void HTMLMediaElement::BindMediaPlayerReceiver(
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
 }
 
-void HTMLMediaElement::OnSpeakingCompleted() {
-  if (paused())
-    Play();
-}
 
 void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(audio_source_node_);
-  visitor->Trace(speech_synthesis_);
   visitor->Trace(load_timer_);
   visitor->Trace(audio_tracks_timer_);
   visitor->Trace(removed_from_document_timer_);
@@ -4839,9 +4798,6 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
       reason =
           " because the media playback is not allowed by the "
           "media-playback-while-not-visible permission policy";
-      break;
-    case PlayPromiseError::kPaused_LetAudioDescriptionFinish:
-      reason = " because the audio description has not finished yet";
       break;
     case PlayPromiseError::kNotSupported:
       NOTREACHED();

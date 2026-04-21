@@ -132,9 +132,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis);
 AX_BASE_EXPORT bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled();
 
 
-// Turn on browser vocalization of 'descriptions' tracks.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kTextBasedAudioDescription);
-AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 
 // Expose document markers on inline text boxes in addition to
 // static nodes. (Note: This will make it possible for AXPosition in the browser

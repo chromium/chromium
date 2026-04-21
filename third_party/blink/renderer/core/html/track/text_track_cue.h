@@ -39,7 +39,6 @@
 
 namespace blink {
 
-class HTMLMediaElement;
 class TextTrack;
 
 class CORE_EXPORT TextTrackCue : public EventTarget {
@@ -81,11 +80,6 @@ class CORE_EXPORT TextTrackCue : public EventTarget {
   // already been added.
   virtual void UpdateDisplay(HTMLDivElement& container) = 0;
 
-  // Called when entering or exiting the cue on the timeline in cue_timeline.cc
-  // (cf. the 'enter' and 'exit' events). Handles enter and exit event behavior
-  // for spoken cues.
-  virtual void OnEnter(HTMLMediaElement& video) = 0;
-  virtual void OnExit(HTMLMediaElement& video) = 0;
 
   // Marks the nodes of the display tree as past or future relative to
   // movieTime. If |updateDisplay| has not been called there is no display

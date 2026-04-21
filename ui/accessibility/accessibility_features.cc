@@ -158,10 +158,6 @@ bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled() {
 }
 
 
-BASE_FEATURE(kTextBasedAudioDescription, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsTextBasedAudioDescriptionEnabled() {
-  return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
-}
 
 BASE_FEATURE(kUseAXPositionForDocumentMarkers,
              base::FEATURE_DISABLED_BY_DEFAULT);
