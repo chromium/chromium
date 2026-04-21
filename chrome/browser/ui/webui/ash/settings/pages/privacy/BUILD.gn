@@ -53,6 +53,7 @@ static_library("privacy") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/metrics",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
     "//chrome/common",

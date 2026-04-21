@@ -190,6 +190,7 @@ source_set("impl") {
     "//chrome/browser/consent_auditor",
     "//chrome/browser/device_reauth",
     "//chrome/browser/history",
+    "//chrome/browser/metrics",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/factories",

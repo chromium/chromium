@@ -143,6 +143,7 @@ static_library("autofill") {
       "//chrome/app:generated_resources",
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android:public",
+      "//chrome/browser/metrics",
       "//chrome/browser/ui/autofill:autofill_ai_ui_utils",
       "//chrome/browser/ui/autofill:autofill_ai_ui_utils_impl",
       "//components/autofill/android:autofill_core_browser_java_enums",

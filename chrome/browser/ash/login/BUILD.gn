@@ -169,6 +169,7 @@ static_library("login") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/metrics",
     "//chrome/browser/net",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/password_manager/factories",

@@ -16,7 +16,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"  // nogncheck
 #endif
 
 FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() = default;

@@ -76,6 +76,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/download",
+    "//chrome/browser/metrics",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_manager",

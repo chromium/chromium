@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/common/buildflags.h"
@@ -52,6 +51,10 @@ class ChromeMetricsPrivateDelegate;
 namespace first_run {
 class FirstRunMasterPrefsVariationsSeedTest;
 }
+
+namespace glic {
+class GlicSyntheticTrialManager;
+}  // namespace glic
 
 namespace metrics {
 class ChromeOSPerUserMetricsBrowserTestBase;

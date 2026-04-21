@@ -5,11 +5,20 @@
 source_set("update_metrics") {
   assert(is_linux || is_win || is_mac)
 
-  sources = [ "update_metrics_provider.cc" ]
-
   public = [ "update_metrics_provider.h" ]
 
   public_deps = [ "//components/metrics" ]
+}
+
+source_set("impl") {
+  assert(is_linux || is_win || is_mac)
+
+  sources = [ "update_metrics_provider.cc" ]
+
+  public_deps = [
+    ":update_metrics",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//base",

@@ -52,6 +52,7 @@ static_library("demo_mode") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/component_updater",
+    "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chromeos/ash/components/dbus",

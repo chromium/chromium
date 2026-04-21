@@ -41,6 +41,7 @@ static_library("growth") {
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/metrics",
     "//chrome/browser/signin",
     "//chrome/browser/ui/web_applications",
     "//chromeos/ash/components/browser_context_helper",

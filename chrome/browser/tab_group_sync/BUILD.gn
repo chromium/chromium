@@ -35,6 +35,7 @@ source_set("impl") {
   ]
 
   deps = [
+    "//chrome/browser/metrics",
     "//chrome/common:mojo_bindings",
     "//components/saved_tab_groups/public:features",
     "//components/variations",

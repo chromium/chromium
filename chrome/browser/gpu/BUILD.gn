@@ -29,6 +29,7 @@ source_set("impl") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/metrics",
     "//gpu/config",
   ]
 }

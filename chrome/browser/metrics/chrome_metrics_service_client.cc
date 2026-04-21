@@ -230,9 +230,9 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/skills/skills_metrics_provider.h"
+#include "chrome/browser/skills/skills_metrics_provider.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_metrics_provider.h"
-#include "components/skills/features.h"
+#include "components/skills/features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

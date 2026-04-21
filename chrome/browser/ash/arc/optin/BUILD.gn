@@ -26,6 +26,7 @@ static_library("optin") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/experiences/arc",
     "//components/metrics",

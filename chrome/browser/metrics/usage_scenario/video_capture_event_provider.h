@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"  // nogncheck
 
 class UsageScenarioDataStoreImpl;
 

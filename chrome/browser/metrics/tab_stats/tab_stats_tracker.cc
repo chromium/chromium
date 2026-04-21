@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -48,11 +47,11 @@
 // We add nognchecks on some includes so that Android bots do not fail
 // dependency checks.
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "chrome/browser/android/tab_android.h"                  // nogncheck
+#include "chrome/browser/ui/android/tab_model/tab_model.h"       // nogncheck
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"  // nogncheck
+#include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"  // nogncheck
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"  // nogncheck
 #else
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
@@ -60,10 +59,10 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"

@@ -274,6 +274,7 @@ static_library("screens") {
     "//chrome/browser/ash/system",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/metrics",
     "//chrome/browser/net",
     "//chrome/browser/notifications",
     "//chrome/browser/prefs:util",

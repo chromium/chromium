@@ -340,6 +340,8 @@ static_library("ui") {
     "//chrome/browser/lookalikes",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/metrics",
+    "//chrome/browser/metrics:impl",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
     "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
     "//chrome/browser/ntp_tiles",
@@ -829,6 +831,10 @@ static_library("ui") {
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
     "//chrome/browser/memory",
+
+    # metrics:impl includes headers from //chrome/browser/ui that can't be
+    # split out yet.
+    "//chrome/browser/metrics:impl",
     "//chrome/browser/net",
     "//chrome/browser/net:impl",
     "//chrome/browser/performance_manager:impl",

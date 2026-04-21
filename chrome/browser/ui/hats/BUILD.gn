@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/metrics",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",

@@ -100,6 +100,7 @@ static_library("main_parts") {
     "//chrome/browser/first_run",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/memory",
+    "//chrome/browser/metrics",
     "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",

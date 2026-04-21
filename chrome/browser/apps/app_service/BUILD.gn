@@ -45,6 +45,7 @@ source_set("app_service") {
     "//base",
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/component_updater",
+    "//chrome/browser/metrics",
     "//chrome/browser/notifications",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications:features",

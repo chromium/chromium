@@ -2,40 +2,478 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/metrics/generate_expired_histograms_array.gni")
+import("//extensions/buildflags/buildflags.gni")
 
+# TODO(b/504980566): Further modularize //chrome/browser/metrics.
 source_set("metrics") {
-  sources = [
+  public = [
     "accessibility_state_provider.h",
     "cached_metrics_profile.h",
+    "chrome_browser_main_extra_parts_metrics.h",
+    "chrome_browser_sampling_trials.h",
+    "chrome_feature_list_creator.h",
+    "chrome_metrics_extensions_helper.h",
+    "chrome_metrics_service_accessor.h",
+    "chrome_metrics_service_client.h",
+    "chrome_metrics_services_manager_client.h",
+    "https_engagement_metrics_provider.h",
+    "incognito_observer.h",
+    "metrics_memory_details.h",
+    "metrics_reporting_state.h",
     "network_quality_estimator_provider_impl.h",
+    "process_memory_metrics_emitter.h",
+    "profile_metrics_service_factory.h",
+    "shutdown_watcher_helper.h",
+    "tab_footprint_aggregator.h",
+    "tab_stats/tab_stats_data_store.h",
+    "tab_stats/tab_stats_observer.h",
+    "tab_stats/tab_stats_tracker.h",
+    "thread_watcher_report_hang.h",
     "ukm_background_recorder_service.h",
+    "variations/chrome_variations_service_client.h",
+    "variations/google_groups_manager_factory.h",
   ]
   public_deps = [
     "//base",
+    "//chrome/browser:main_extra_parts",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/metrics",
+    "//components/metrics:content",
     "//components/metrics:net",
+    "//components/metrics:ui",
+    "//components/metrics_services_manager",
+    "//components/omnibox/browser",
+    "//components/password_manager/core/browser",
+    "//components/performance_manager",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync",
+    "//components/ukm:observers",
+    "//components/unified_consent",
+    "//components/variations/service",
+    "//components/webui/flags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/display",
   ]
 
-  if (is_chromeos) {
-    sources += [
-      "chromeos_metrics_provider.h",
-      "chromeos_system_profile_provider.h",
+  if (is_android) {
+    public += [
+      "android/background_upload_task.h",
+      "chrome_android_metrics_provider.h",
+      "page_load_metrics_provider.h",
+    ]
+    public_deps += [ "//components/background_task_scheduler:public" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "browser_activity_watcher.h",
+      "desktop_platform_features_metrics_provider.h",
+      "desktop_session_duration/desktop_profile_session_durations_service.h",
+      "desktop_session_duration/desktop_profile_session_durations_service_factory.h",
+      "desktop_session_duration/desktop_session_duration_observer.h",
+      "desktop_session_duration/desktop_session_metrics_provider.h",
+      "desktop_session_duration/touch_ui_controller_stats_tracker.h",
+      "first_web_contents_profiler.h",
+      "first_web_contents_profiler_base.h",
+      "power/battery_discharge_reporter.h",
+      "power/power_metrics.h",
+      "power/power_metrics_constants.h",
+      "power/power_metrics_reporter.h",
+      "power/process_metrics_recorder_util.h",
+      "power/process_monitor.h",
+      "usage_scenario/chrome_responsiveness_calculator_delegate.h",
+      "usage_scenario/system_event_provider.h",
+      "usage_scenario/tab_usage_scenario_tracker.h",
+      "usage_scenario/usage_scenario.h",
+      "usage_scenario/usage_scenario_data_store.h",
+      "usage_scenario/usage_scenario_tracker.h",
+      "usage_scenario/video_capture_event_provider.h",
     ]
     public_deps += [
-      "//chrome/browser/metrics/perf",
-      "//chromeos/ash/experiences/arc:arc_base",
-      "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+      "//chrome/browser/metrics/desktop_session_duration",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//components/power_metrics",
     ]
   }
 
+  if (is_chromeos) {
+    public += [
+      "ambient_mode_metrics_provider.h",
+      "chromeos_family_link_user_metrics_provider.h",
+      "chromeos_metrics_provider.h",
+      "chromeos_system_profile_provider.h",
+      "class_management_enabled_metrics_provider.h",
+      "cros_healthd_metrics_provider.h",
+      "cros_pre_consent_metrics_manager.h",
+      "enrollment_status.h",
+      "family_user_metrics_provider.h",
+      "k12_age_classification_metrics_provider.h",
+      "per_user_state_manager_chromeos.h",
+      "perf/collection_params.h",
+      "perf/cpu_identity.h",
+      "perf/metric_collector.h",
+      "perf/metric_provider.h",
+      "perf/perf_events_collector.h",
+      "perf/perf_output.h",
+      "perf/process_type_collector.h",
+      "perf/random_selector.h",
+      "perf/windowed_incognito_observer.h",
+      "profile_pref_names.h",
+      "structured/arena_event_buffer.h",
+      "structured/ash_structured_metrics_delegate.h",
+      "structured/ash_structured_metrics_recorder.h",
+      "structured/cros_events_processor.h",
+      "structured/key_data_provider_ash.h",
+      "structured/metadata_processor_ash.h",
+      "structured/oobe_structured_metrics_watcher.h",
+      "structured/profile_observer.h",
+      "structured/storage_manager_impl.h",
+      "structured/structured_metrics_key_events_observer.h",
+      "update_engine_metrics_provider.h",
+      "usertype_by_devicetype_metrics_provider.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/settings",
+      "//chrome/browser/metrics/perf",
+      "//chrome/browser/metrics/structured",
+      "//chromeos/ash/components/login/session",
+      "//chromeos/ash/experiences/arc:arc_base",
+      "//chromeos/ash/services/cros_healthd/public/mojom",
+      "//chromeos/dbus/common",
+      "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+      "//components/metrics/structured",
+      "//components/metrics/structured:common",
+      "//components/metrics/structured:events",
+      "//components/metrics/structured:external_metrics",
+      "//components/metrics/structured:structured_metrics_features",
+      "//components/metrics/structured/lib",
+      "//components/session_manager/core",
+      "//components/user_manager",
+    ]
+  }
+
+  if (!is_chromeos) {
+    public += [ "family_link_user_metrics_provider.h" ]
+  }
+
   if (is_win) {
-    sources += [ "antivirus_metrics_provider_win.h" ]
-    public_deps += [ "//chrome/services/util_win/public/mojom" ]
+    public += [
+      "antivirus_metrics_provider_win.h",
+      "google_update_metrics_provider_win.h",
+      "key_credential_manager_support_reporter_win.h",
+      "system_memory_list_metrics_provider_win.h",
+      "system_pdh_metrics_provider_win.h",
+      "tpm_metrics_provider_win.h",
+    ]
+    public_deps += [
+      "//chrome/browser:browser_features",
+      "//chrome/installer/util:with_no_strings",
+      "//chrome/services/util_win/public/mojom",
+    ]
+  }
+
+  if (is_mac) {
+    public += [
+      "google_update_metrics_provider_mac.h",
+      "power/power_metrics_provider_mac.h",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    public += [ "structured/chrome_structured_metrics_delegate.h" ]
+    public_deps += [
+      "//components/metrics/structured:events",
+      "//components/metrics/structured:structured_events",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    public += [ "bluetooth_metrics_provider.h" ]
+  }
+
+  if (is_linux) {
+    public += [
+      "pressure/pressure_metrics.h",
+      "pressure/pressure_metrics_reporter.h",
+    ]
+  }
+
+  if (is_win || is_android || is_linux) {
+    public += [ "chrome_metrics_service_crash_reporter.h" ]
+  }
+
+  if (enable_extensions_core) {
+    public += [ "extensions_metrics_provider.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "accessibility_state_provider.cc",
+    "cached_metrics_profile.cc",
+    "chrome_browser_main_extra_parts_metrics.cc",
+    "chrome_browser_sampling_trials.cc",
+    "chrome_feature_list_creator.cc",
+    "chrome_metrics_extensions_helper.cc",
+    "chrome_metrics_service_accessor.cc",
+    "chrome_metrics_service_client.cc",
+    "chrome_metrics_services_manager_client.cc",
+    "https_engagement_metrics_provider.cc",
+    "incognito_observer.cc",
+    "metrics_memory_details.cc",
+    "metrics_reporting_state.cc",
+    "network_quality_estimator_provider_impl.cc",
+    "process_memory_metrics_emitter.cc",
+    "profile_metrics_service_factory.cc",
+    "shutdown_watcher_helper.cc",
+    "tab_footprint_aggregator.cc",
+    "tab_stats/tab_stats_data_store.cc",
+    "tab_stats/tab_stats_tracker.cc",
+    "thread_watcher_report_hang.cc",
+    "ukm_background_recorder_service.cc",
+    "variations/chrome_variations_service_client.cc",
+    "variations/google_groups_manager_factory.cc",
+  ]
+
+  public_deps = [
+    ":metrics",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//build/config/compiler:compiler_buildflags",
+    "//chrome/browser:flags",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/devtools",
+    "//chrome/browser/first_run",
+    "//chrome/browser/glic",
+    "//chrome/browser/google",
+    "//chrome/browser/history",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/metrics/structured",
+    "//chrome/browser/net",
+    "//chrome/browser/page_load_metrics",
+    "//chrome/browser/performance_manager",
+    "//chrome/browser/prefs",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/resource_coordinator",
+    "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//chrome/browser/resource_coordinator:utils",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/site_isolation",
+    "//chrome/browser/skills",
+    "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/tracing",
+    "//chrome/browser/translate",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/upgrade_detector",
+    "//components/activity_reporter",
+    "//components/crash/core/app",
+    "//components/metrics:component_metrics",
+    "//components/metrics/demographics",
+    "//components/metrics/private_metrics",
+    "//components/metrics/private_metrics:dwa_recorder",
+    "//components/metrics/structured:common",
+    "//components/metrics/structured:events",
+    "//components/metrics/structured:structured_metrics_features",
+    "//components/privacy_sandbox:features",
+    "//components/reading_list/core",
+    "//components/safe_browsing/core/common:features",
+    "//components/services/paint_preview_compositor/public/mojom",
+    "//components/signin/core/browser",
+    "//components/startup_metric_utils",
+    "//components/supervised_user/core/browser",
+    "//components/ukm",
+    "//components/ukm:ukm_recorder",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/background_upload_task.cc",
+      "chrome_android_metrics_provider.cc",
+      "incognito_observer_android.cc",
+      "page_load_metrics_provider.cc",
+    ]
+    deps += [
+      "//chrome/browser/android/metrics:jni_headers",
+      "//chrome/browser/notifications:jni_headers",
+    ]
+    if (current_cpu == "arm") {
+      deps += [ "//third_party/cpu_features:ndk_compat" ]
+    }
+  }
+
+  if (!is_android) {
+    sources += [
+      "browser_activity_watcher.cc",
+      "desktop_platform_features_metrics_provider.cc",
+      "desktop_session_duration/audible_contents_tracker.cc",
+      "desktop_session_duration/chrome_visibility_observer.cc",
+      "desktop_session_duration/desktop_profile_session_durations_service.cc",
+      "desktop_session_duration/desktop_profile_session_durations_service_factory.cc",
+      "desktop_session_duration/desktop_session_duration_observer.cc",
+      "desktop_session_duration/desktop_session_duration_tracker.cc",
+      "desktop_session_duration/desktop_session_metrics_provider.cc",
+      "desktop_session_duration/touch_ui_controller_stats_tracker.cc",
+      "first_web_contents_profiler.cc",
+      "first_web_contents_profiler_base.cc",
+      "incognito_observer_desktop.cc",
+      "power/battery_discharge_reporter.cc",
+      "power/power_metrics.cc",
+      "power/power_metrics_constants.cc",
+      "power/power_metrics_reporter.cc",
+      "power/process_metrics_recorder_util.cc",
+      "power/process_monitor.cc",
+      "usage_scenario/chrome_responsiveness_calculator_delegate.cc",
+      "usage_scenario/system_event_provider.cc",
+      "usage_scenario/tab_usage_scenario_tracker.cc",
+      "usage_scenario/usage_scenario.cc",
+      "usage_scenario/usage_scenario_data_store.cc",
+      "usage_scenario/usage_scenario_tracker.cc",
+      "usage_scenario/video_capture_event_provider.cc",
+    ]
+    deps += [
+      "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:features",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/waap:manager",
+      "//chrome/browser/web_applications:web_applications_metrics",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "ambient_mode_metrics_provider.cc",
+      "chromeos_family_link_user_metrics_provider.cc",
+      "chromeos_metrics_provider.cc",
+      "chromeos_system_profile_provider.cc",
+      "class_management_enabled_metrics_provider.cc",
+      "cros_healthd_metrics_provider.cc",
+      "cros_pre_consent_metrics_manager.cc",
+      "family_user_metrics_provider.cc",
+      "k12_age_classification_metrics_provider.cc",
+      "per_user_state_manager_chromeos.cc",
+      "perf/collection_params.cc",
+      "perf/cpu_identity.cc",
+      "perf/metric_collector.cc",
+      "perf/metric_provider.cc",
+      "perf/perf_events_collector.cc",
+      "perf/perf_output.cc",
+      "perf/process_type_collector.cc",
+      "perf/profile_provider_chromeos.cc",
+      "perf/random_selector.cc",
+      "perf/windowed_incognito_observer.cc",
+      "profile_pref_names.cc",
+      "structured/arena_event_buffer.cc",
+      "structured/ash_structured_metrics_delegate.cc",
+      "structured/ash_structured_metrics_recorder.cc",
+      "structured/cros_events_processor.cc",
+      "structured/key_data_provider_ash.cc",
+      "structured/metadata_processor_ash.cc",
+      "structured/oobe_structured_metrics_watcher.cc",
+      "structured/profile_observer.cc",
+      "structured/storage_manager_impl.cc",
+      "structured/structured_metrics_key_events_observer.cc",
+      "update_engine_metrics_provider.cc",
+      "usertype_by_devicetype_metrics_provider.cc",
+    ]
+    deps += [
+      "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc/vmm",
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/login/users",
+      "//chrome/browser/ash/multidevice_setup",
+      "//chrome/browser/ash/printing",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+      "//chrome/browser/ui/webui/ash/settings/services/metrics",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/demo_mode",
+      "//chromeos/ash/components/system",
+      "//chromeos/ash/services/cros_healthd/public/cpp",
+      "//chromeos/ash/services/multidevice_setup/public/cpp",
+      "//chromeos/components/kiosk",
+      "//chromeos/components/mgs",
+      "//chromeos/dbus/tpm_manager",
+      "//components/metrics/structured:structured_metrics_validator",
+      "//components/metrics/structured/lib",
+    ]
+  }
+
+  if (!is_chromeos) {
+    sources += [ "family_link_user_metrics_provider.cc" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "antivirus_metrics_provider_win.cc",
+      "google_update_metrics_provider_win.cc",
+      "key_credential_manager_support_reporter_win.cc",
+      "system_memory_list_metrics_provider_win.cc",
+      "system_pdh_metrics_provider_win.cc",
+      "tpm_metrics_provider_win.cc",
+    ]
+    deps += [
+      "//chrome/browser/win",
+      "//chrome/browser/win:cloud_synced_folder_checker",
+      "//chrome/notification_helper:constants",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "chrome_browser_main_extra_parts_metrics_mac.mm",
+      "google_update_metrics_provider_mac.cc",
+      "power/power_metrics_provider_mac.mm",
+    ]
+    deps += [
+      "//chrome/browser/updater",
+      "//chrome/updater:public_sources",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [ "structured/chrome_structured_metrics_delegate.cc" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [ "bluetooth_metrics_provider.cc" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "pressure/pressure_metrics.cc",
+      "pressure/pressure_metrics_reporter.cc",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    deps += [ "//chrome/browser/updates:update_metrics" ]
+  }
+
+  if (is_win || is_android || is_linux) {
+    sources += [ "chrome_metrics_service_crash_reporter.cc" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [ "extensions_metrics_provider.cc" ]
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 
@@ -50,7 +488,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/sync",
     "//chrome/browser/sync/test/integration:sync_integration_test_support",
     "//components/metrics_services_manager",

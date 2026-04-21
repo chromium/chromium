@@ -7,18 +7,18 @@ import("//build/config/android/config.gni")
 if (is_android) {
   source_set("feed") {
     public = [
-      "feed_service_factory.h",
-      "rss_links_fetcher.h",
-      "web_feed_page_information_fetcher.h",
-      "web_feed_tab_helper.h",
-      "web_feed_ui_util.h",
-      "web_feed_util.h",
       "android/background_refresh_task.h",
       "android/feed_reliability_logging_bridge.h",
       "android/feed_service_bridge.h",
       "android/feed_surface_renderer_bridge.h",
       "android/jni_translation.h",
       "android/refresh_task_scheduler_impl.h",
+      "feed_service_factory.h",
+      "rss_links_fetcher.h",
+      "web_feed_page_information_fetcher.h",
+      "web_feed_tab_helper.h",
+      "web_feed_ui_util.h",
+      "web_feed_util.h",
     ]
 
     public_deps = [
@@ -36,12 +36,6 @@ if (is_android) {
 
   source_set("impl") {
     sources = [
-      "feed_service_factory.cc",
-      "rss_links_fetcher.cc",
-      "web_feed_page_information_fetcher.cc",
-      "web_feed_tab_helper.cc",
-      "web_feed_ui_util.cc",
-      "web_feed_util.cc",
       "android/background_refresh_task.cc",
       "android/feed_image_fetch_client.cc",
       "android/feed_persistent_key_value_cache.cc",
@@ -54,6 +48,12 @@ if (is_android) {
       "android/navigation_recorder.cc",
       "android/refresh_task_scheduler_impl.cc",
       "android/web_feed_bridge.cc",
+      "feed_service_factory.cc",
+      "rss_links_fetcher.cc",
+      "web_feed_page_information_fetcher.cc",
+      "web_feed_tab_helper.cc",
+      "web_feed_ui_util.cc",
+      "web_feed_util.cc",
     ]
 
     public_deps = [
@@ -68,6 +68,7 @@ if (is_android) {
       "//chrome/browser/feed/android:jni_headers",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/history",
+      "//chrome/browser/metrics",
       "//chrome/browser/regional_capabilities",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",

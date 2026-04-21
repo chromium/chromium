@@ -23,7 +23,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"  // nogncheck
 #endif
 
 class PrefRegistrySimple;

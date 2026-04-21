@@ -201,6 +201,7 @@ static_library("input_method") {
     "//chrome/browser/feedback",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
+    "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/ui/aura/accessibility",

@@ -35,6 +35,7 @@ source_set("impl") {
   ]
   deps = [
     ":plus_addresses",
+    "//chrome/browser/metrics",
     "//chrome/browser/signin",
     "//chrome/browser/webdata_services",
   ]

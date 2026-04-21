@@ -102,6 +102,7 @@ source_set("sync") {
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/history",
+    "//chrome/browser/metrics",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/signin",

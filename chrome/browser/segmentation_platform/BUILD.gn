@@ -110,6 +110,7 @@ source_set("impl") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/commerce",
     "//chrome/browser/history",
+    "//chrome/browser/metrics",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/sync",
