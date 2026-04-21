@@ -71,11 +71,19 @@ std::unique_ptr<protocol::Value> ParseJSON(const String& value) {
 }
 
 std::unique_ptr<protocol::WebMCP::Annotation> BuildAnnotations(
-    const mojom::blink::ScriptToolAnnotationsPtr& annotations) {
-  return protocol::WebMCP::Annotation::create()
-      .setReadOnly(annotations->read_only)
-      // TODO(crbug.com/498792473): Add missing setAutoSubmit
-      .build();
+    const mojom::blink::ScriptToolAnnotationsPtr& annotations,
+    Element* element) {
+  auto builder = protocol::WebMCP::Annotation::create();
+  bool has_annotations = false;
+  if (annotations) {
+    builder.setReadOnly(annotations->read_only);
+    has_annotations = true;
+  }
+  if (element && element->FastHasAttribute(html_names::kToolautosubmitAttr)) {
+    builder.setAutosubmit(true);
+    has_annotations = true;
+  }
+  return has_annotations ? builder.build() : nullptr;
 }
 }  // namespace
 
@@ -95,8 +103,10 @@ std::unique_ptr<protocol::WebMCP::Tool> InspectorWebMCPAgent::BuildProtocolTool(
       tool->setInputSchema(std::move(parsed));
     }
   }
-  if (tool_data.ScriptTool().annotations) {
-    tool->setAnnotations(BuildAnnotations(tool_data.ScriptTool().annotations));
+
+  if (auto annotations = BuildAnnotations(tool_data.ScriptTool().annotations,
+                                          tool_data.BackingFormElement())) {
+    tool->setAnnotations(std::move(annotations));
   }
   if (auto* node = tool_data.BackingFormElement()) {
     tool->setBackendNodeId(IdentifiersFactory::IntIdForNode(node));

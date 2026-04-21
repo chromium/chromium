@@ -3,6 +3,9 @@ Enabling WebMCP Domain
 Adding {
     tools : [
         [0] : {
+            annotations : {
+                autosubmit : true
+            }
             backendNodeId : <number>
             description : A declarative WebMCP tool
             frameId : <string>
@@ -77,6 +80,9 @@ Adding {
 Adding {
     tools : [
         [0] : {
+            annotations : {
+                autosubmit : true
+            }
             backendNodeId : <number>
             description : Another declarative tool
             frameId : <string>
@@ -97,6 +103,9 @@ Removing {
 Adding {
     tools : [
         [0] : {
+            annotations : {
+                autosubmit : true
+            }
             backendNodeId : <number>
             description : Another declarative tool
             frameId : <string>
