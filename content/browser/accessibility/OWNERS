@@ -7,10 +7,12 @@ mrobinson@igalia.com
 # For Windows / UIA
 per-file *_win*=kschmi@microsoft.com
 per-file *_win*=kbabbitt@microsoft.com
-per-file *_win*=iapres@microsoft.com
+per-file *_win*=benjamin.beaudry@microsoft.com
+per-file *_win*=janewman@microsoft.com
 per-file *test*=kschmi@microsoft.com
 per-file *test*=kbabbitt@microsoft.com
-per-file *test*=iapres@microsoft.com
+per-file *test*=benjamin.beaudry@microsoft.com
+per-file *test*=janewman@microsoft.com
 
 # For tests
 chrishtr@chromium.org
