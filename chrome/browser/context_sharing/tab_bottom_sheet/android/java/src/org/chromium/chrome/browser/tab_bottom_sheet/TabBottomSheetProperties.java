@@ -18,17 +18,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 public class TabBottomSheetProperties {
     public static class ResizingState {
+        public final boolean atFixedHeight;
         public final @Px int webUiContainerHeight;
-        public final float heightFraction;
 
         /**
+         * @param atFixedHeight Whether the bottom sheet is at a fixed height.
          * @param webUiContainerHeight The height of the webUi container.
-         * @param heightFraction The percentage of the bottom sheet visible in relation to the
-         *     maximum height.
          */
-        public ResizingState(@Px int webUiContainerHeight, float heightFraction) {
+        public ResizingState(boolean atFixedHeight, @Px int webUiContainerHeight) {
+            this.atFixedHeight = atFixedHeight;
             this.webUiContainerHeight = webUiContainerHeight;
-            this.heightFraction = heightFraction;
         }
     }
 

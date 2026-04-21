@@ -162,7 +162,12 @@ public class CoBrowseViews {
         @Px int height = resizingState.webUiContainerHeight;
         ViewGroup sheetContent = mView.findViewById(R.id.expanded_content_group);
         ViewGroup.LayoutParams sheetContentParams = sheetContent.getLayoutParams();
-        if (sheetContentParams.height != height) {
+
+        if (!resizingState.atFixedHeight
+                && sheetContentParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+            sheetContentParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            sheetContent.setLayoutParams(sheetContentParams);
+        } else if (sheetContentParams.height != height) {
             sheetContentParams.height = height;
             sheetContent.setLayoutParams(sheetContentParams);
         }

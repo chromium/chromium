@@ -423,85 +423,26 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
-    public void testOnContainerSizeChanged() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        int viewportHeight = 999;
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, CONTAINER_WIDTH, viewportHeight);
-                            return null;
-                        })
-                .when(mMockDecorView)
-                .getWindowVisibleDisplayFrame(any(Rect.class));
-
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, viewportHeight);
-
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        int expectedWebUiHeight = (int) (viewportHeight * FULL_HEIGHT_RATIO);
-        assertEquals(expectedWebUiHeight, state.webUiContainerHeight);
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/true")
     public void testOnContainerSizeChanged_resizingEnabled() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
-        ResizingState impossibleState = new ResizingState(-1, -1.0f);
-        mCoordinatorModel.set(TabBottomSheetProperties.RESIZING_STATE, impossibleState);
-        when(mMockBottomSheetController.getMaxOffset()).thenReturn(MAX_OFFSET);
-
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, MAX_OFFSET);
-
-        // Verify that the resizing state is not updated.
-        assertEquals(
-                impossibleState, mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/true")
-    public void testOnSheetOffsetChanged_resizingEnabled_withoutKeyboard() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(false);
-        when(mMockBottomSheetController.getMaxOffset()).thenReturn(MAX_OFFSET);
-
-        observer.onSheetOffsetChanged(HALF_HEIGHT_FRACTION, HALF_OFFSET_HEIGHT);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        // Resizing state is set to flexible height on the second call.
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
 
         ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        int expectedLockedHeight = Math.round(MAX_OFFSET * FULL_HEIGHT_RATIO);
-        assertEquals(expectedLockedHeight, state.webUiContainerHeight);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/true")
-    public void testOnSheetOffsetChanged_resizingEnabled_withKeyboard() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(true);
-        when(mMockBottomSheetController.getMaxOffset()).thenReturn(MAX_OFFSET);
-
-        observer.onSheetOffsetChanged(FULL_HEIGHT_FRACTION, MAX_OFFSET);
-
-        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertEquals(MAX_OFFSET, state.webUiContainerHeight);
+        assertFalse(state.atFixedHeight);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
-    public void testOnSheetOffsetChanged_resizingDisabled() {
+    public void testOnContainerSizeChanged_resizingDisabled() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
-        ResizingState impossibleState = new ResizingState(-1, -1.0f);
-        mCoordinatorModel.set(TabBottomSheetProperties.RESIZING_STATE, impossibleState);
-        when(mMockBottomSheetController.getMaxOffset()).thenReturn(MAX_OFFSET);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
 
-        observer.onSheetOffsetChanged(FULL_HEIGHT_FRACTION, MAX_OFFSET);
-
-        // Verify that the resizing state is not updated.
-        assertEquals(
-                impossibleState, mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE));
+        ResizingState state = mCoordinatorModel.get(TabBottomSheetProperties.RESIZING_STATE);
+        assertTrue(state.atFixedHeight);
     }
 }

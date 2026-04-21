@@ -65,15 +65,13 @@ public class WebViewResizingHelper {
     public void setThinWebView(ThinWebView thinWebView) {
         reset();
         mThinWebView = thinWebView;
-
         makeWebViewResizable();
 
-        View webView = mThinWebView.getView();
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.gravity = Gravity.BOTTOM;
-        mResizingContainer.addView(webView, layoutParams);
+        mResizingContainer.addView(mThinWebView.getView(), layoutParams);
     }
 
     /** Returns the resizing container. This holds the ThinWebView and the placeholder. */
@@ -117,7 +115,7 @@ public class WebViewResizingHelper {
 
         mAnimationHandler.startAnimation(valueAnimator);
 
-        makeWebViewResizable();
+        makeWebViewFixedSize();
 
         mResizingPlaceholder.setVisibility(View.VISIBLE);
         mResizingPlaceholder.setAlpha(0f);
@@ -142,14 +140,20 @@ public class WebViewResizingHelper {
 
         mAnimationHandler.startAnimation(valueAnimator);
 
-        ViewGroup.LayoutParams params = webView.getLayoutParams();
-        if (params != null) {
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            webView.setLayoutParams(params);
-        }
+        makeWebViewResizable();
 
         webView.setAlpha(0f);
         webView.setVisibility(View.VISIBLE);
+    }
+
+    private void makeWebViewFixedSize() {
+        assert mThinWebView != null;
+        View webView = mThinWebView.getView();
+        ViewGroup.LayoutParams params = webView.getLayoutParams();
+        if (params != null) {
+            params.height = webView.getHeight();
+            webView.setLayoutParams(params);
+        }
     }
 
     private void makeWebViewResizable() {
@@ -157,7 +161,7 @@ public class WebViewResizingHelper {
         View webView = mThinWebView.getView();
         ViewGroup.LayoutParams params = webView.getLayoutParams();
         if (params != null) {
-            params.height = webView.getHeight();
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             webView.setLayoutParams(params);
         }
     }

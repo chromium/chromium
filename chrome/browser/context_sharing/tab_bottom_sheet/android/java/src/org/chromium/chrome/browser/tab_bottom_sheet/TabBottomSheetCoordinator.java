@@ -152,6 +152,7 @@ public class TabBottomSheetCoordinator {
 
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
+    private boolean mInitialContainerSizeChanged;
 
     /**
      * @param context The context to use for creating views.
@@ -226,7 +227,7 @@ public class TabBottomSheetCoordinator {
                         if (mSheetEventsCallback == null) {
                             return;
                         }
-                        updateResizingStateWithFixedHeight();
+                        setToFixedHeight();
 
                         boolean isSheetHeightSufficient =
                                 mMediator.isSheetHeightSufficient(
@@ -364,21 +365,17 @@ public class TabBottomSheetCoordinator {
                     mBottomSheetController.collapseSheet(/* animate= */ true);
                     mExpectingLayoutChange = false;
                 }
-                if (!ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
-                    updateResizingStateWithFixedHeight();
+                if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
+                    if (mInitialContainerSizeChanged) setToFlexibleHeight();
+                    mInitialContainerSizeChanged = true;
+                } else {
+                    setToFixedHeight();
                 }
             }
 
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 mMediator.updateCrossFadeAlpha(offsetPx);
-                if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
-                    mMediator.updateResizingState(
-                            getDefaultHeightRatio(),
-                            heightFraction,
-                            (int) offsetPx,
-                            getVisibleViewportHeight());
-                }
             }
 
             // Called before onSheetStateChanged.
@@ -423,17 +420,13 @@ public class TabBottomSheetCoordinator {
         return keyboardDelegate.isKeyboardShowing(mCoBrowseViews.getView());
     }
 
-    private void updateResizingStateWithFixedHeight() {
+    private void setToFlexibleHeight() {
+        mMediator.setToFlexibleHeight();
+    }
+
+    private void setToFixedHeight() {
         if (mWindowAndroid.getWindow() == null) return;
-
-        float defaultHeightRatio = getDefaultHeightRatio();
-        @Px int visibleHeight = getVisibleViewportHeight();
-
-        mMediator.updateResizingState(
-                defaultHeightRatio,
-                defaultHeightRatio,
-                mBottomSheetController.getCurrentOffset(),
-                (int) (visibleHeight * getDefaultHeightRatio()));
+        mMediator.setToFixedHeight((int) (getVisibleViewportHeight() * getDefaultHeightRatio()));
     }
 
     private int getVisibleViewportHeight() {

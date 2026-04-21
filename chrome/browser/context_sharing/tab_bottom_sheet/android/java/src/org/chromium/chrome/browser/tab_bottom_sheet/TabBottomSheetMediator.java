@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer.TouchHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -153,39 +152,22 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mModel.set(TabBottomSheetProperties.IS_RESIZING, isResizing);
     }
 
+    /** Updates the state used for resizing the sheet. */
+    public void setToFlexibleHeight() {
+        mModel.set(
+                TabBottomSheetProperties.RESIZING_STATE,
+                new ResizingState(/* atFixedHeight= */ false, /* webUiContainerHeight= */ -1));
+    }
+
     /**
      * Updates the state used for resizing the sheet.
      *
-     * @param defaultHeightRatio The default height ratio for the sheet.
-     * @param heightFraction The current height fraction for the sheet.
-     * @param offsetHeight The current offset height for the sheet.
      * @param maxOffset The maximum offset height for the sheet.
      */
-    public void updateResizingState(
-            float defaultHeightRatio,
-            float heightFraction,
-            @Px int offsetHeight,
-            @Px int maxOffset) {
-        if (!ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
-            // Use the maxOffset since the sheet content should always assume full height when the
-            // feature is off.
-            mModel.set(TabBottomSheetProperties.RESIZING_STATE, new ResizingState(maxOffset, 1.0f));
-            return;
-        }
-
-        int webUiHeight;
-        if (heightFraction <= defaultHeightRatio) {
-            // If the sheet offset is less than the default height ratio, lock the WebUi height to
-            // the default height ratio.
-            float lockedWebUiHeight = defaultHeightRatio * maxOffset;
-            webUiHeight = (int) lockedWebUiHeight;
-        } else {
-            webUiHeight = (int) offsetHeight;
-        }
-
+    public void setToFixedHeight(@Px int maxOffset) {
         mModel.set(
                 TabBottomSheetProperties.RESIZING_STATE,
-                new ResizingState(webUiHeight, heightFraction));
+                new ResizingState(/* atFixedHeight= */ true, maxOffset));
     }
 
     @SheetState

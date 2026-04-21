@@ -28,8 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -60,7 +58,6 @@ public class TabBottomSheetMediatorTest {
         when(mCoBrowseViews.getView()).thenReturn(mView);
         when(mView.getContext()).thenReturn(mContext);
         when(mView.getParent()).thenReturn(mParent);
-        when(mCoBrowseViews.hasPeekView()).thenReturn(true);
 
         mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
         mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews, 0.7f, 0.9f);
@@ -177,46 +174,21 @@ public class TabBottomSheetMediatorTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/true")
-    public void testUpdateResizingState_BelowDefaultHeight() {
-        float heightFraction = DEFAULT_HEIGHT_RATIO - 0.1f;
-        int offsetHeight = (int) (MAX_OFFSET * heightFraction);
-
-        mMediator.updateResizingState(
-                DEFAULT_HEIGHT_RATIO, heightFraction, offsetHeight, MAX_OFFSET);
+    public void testSetToFlexibleHeight() {
+        mMediator.setToFlexibleHeight();
 
         ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertEquals((int) (MAX_OFFSET * DEFAULT_HEIGHT_RATIO), state.webUiContainerHeight);
-        assertEquals(heightFraction, state.heightFraction, EPSILON);
+        Assert.assertFalse(state.atFixedHeight);
+        assertEquals(-1, state.webUiContainerHeight);
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/true")
-    public void testUpdateResizingState_AboveDefaultHeight() {
-        float heightFraction = DEFAULT_HEIGHT_RATIO + 0.1f;
-        int offsetHeight = (int) (MAX_OFFSET * heightFraction);
-
-        mMediator.updateResizingState(
-                DEFAULT_HEIGHT_RATIO, heightFraction, offsetHeight, MAX_OFFSET);
+    public void testSetToFixedHeight() {
+        mMediator.setToFixedHeight(MAX_OFFSET);
 
         ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
-        assertEquals(offsetHeight, state.webUiContainerHeight);
-        assertEquals(heightFraction, state.heightFraction, EPSILON);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
-    public void testUpdateResizingState_FeatureDisabled() {
-        float heightFraction = DEFAULT_HEIGHT_RATIO + 0.1f;
-        int offsetHeight = (int) (MAX_OFFSET * heightFraction);
-
-        mMediator.updateResizingState(
-                DEFAULT_HEIGHT_RATIO, heightFraction, offsetHeight, MAX_OFFSET);
-
-        ResizingState state = mModel.get(TabBottomSheetProperties.RESIZING_STATE);
+        Assert.assertTrue(state.atFixedHeight);
         assertEquals(MAX_OFFSET, state.webUiContainerHeight);
-        assertEquals(1.0f, state.heightFraction, EPSILON);
     }
 }
