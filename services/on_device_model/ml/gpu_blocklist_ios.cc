@@ -7,7 +7,7 @@
 namespace ml {
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-DeviceInfo QueryDeviceInfo(const ChromeMLAPI& api, bool log_histogram) {
+DeviceInfo QueryDeviceInfo(const ChromeML& api, bool log_histogram) {
   DeviceInfo query_device_info;
   query_device_info.gpu_blocked_reason = GpuBlockedReason::kNotBlocked;
   return query_device_info;
