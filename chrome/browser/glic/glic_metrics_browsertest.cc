@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
 
-  histogram_tester.ExpectUniqueSample("Glic.Fre.Shown.Entrypoint",
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
                                       mojom::InvocationSource::kOsButton, 1);
 }
 

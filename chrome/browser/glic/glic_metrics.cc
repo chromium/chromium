@@ -304,9 +304,8 @@ void GlicMetrics::OnTrustFirstOnboardingAccept() {
   OnFreAccepted();
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept.Onboarding"));
-  base::UmaHistogramEnumeration(
-      "Glic.Fre.Accept.Entrypoint",
-      glic::GetEntrypointFromInvocationSource(invocation_source_));
+  base::UmaHistogramEnumeration("Glic.Fre.Accept.InvocationSource",
+                                invocation_source_);
 
   if (!onboarding_shown_time_.is_null()) {
     base::UmaHistogramLongTimes(
@@ -324,9 +323,8 @@ void GlicMetrics::OnInstanceOpened() {
   if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
     base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
-    base::UmaHistogramEnumeration(
-        "Glic.Fre.Shown.Entrypoint",
-        glic::GetEntrypointFromInvocationSource(invocation_source_));
+    base::UmaHistogramEnumeration("Glic.Fre.Shown.InvocationSource",
+                                  invocation_source_);
     onboarding_shown_time_ = base::TimeTicks::Now();
   }
 }
@@ -337,9 +335,8 @@ void GlicMetrics::OnInstanceClosed() {
   }
 
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Dismissed.Onboarding"));
-  base::UmaHistogramEnumeration(
-      "Glic.Fre.Dismissed.Entrypoint",
-      glic::GetEntrypointFromInvocationSource(invocation_source_));
+  base::UmaHistogramEnumeration("Glic.Fre.Dismissed.InvocationSource",
+                                invocation_source_);
   base::UmaHistogramLongTimes("Glic.Fre.TotalTime.Dismissed.Onboarding",
                               base::TimeTicks::Now() - onboarding_shown_time_);
   onboarding_shown_time_ = base::TimeTicks();
@@ -357,9 +354,8 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
     base::UmaHistogramLongTimes("Glic.FreToFirstQueryTime", delta);
     base::UmaHistogramCustomTimes("Glic.FreToFirstQueryTimeMax24H", delta,
                                   base::Milliseconds(1), base::Hours(24), 50);
-    base::UmaHistogramEnumeration(
-        "Glic.Fre.UserInput.Entrypoint",
-        glic::GetEntrypointFromInvocationSource(onboarding_invocation_source_));
+    base::UmaHistogramEnumeration("Glic.Fre.UserInput.InvocationSource",
+                                  onboarding_invocation_source_);
     fre_accepted_time_ = base::TimeTicks();
   }
 

@@ -47,22 +47,34 @@ chromium-metrics-reviews@google.com.
   <variant name="SidePanel" summary="a side panel embedder"/>
 </variants>
 
-<variants name="GlicEntrypoint">
+<variants name="GlicInvocationSource">
+  <variant name="ActorTaskIcon"/>
+  <variant name="AfterSignIn"/>
+  <variant name="AnchoredContextualCue"/>
   <variant name="AutoOpenedByContextualCue"/>
   <variant name="AutoOpenedForPdf"/>
+  <variant name="CaptureRegionHotkey"/>
+  <variant name="Fre"/>
+  <variant name="HandoffButton"/>
   <variant name="Iph"/>
   <variant name="NavigationCapture"/>
   <variant name="Nudge"/>
   <variant name="OsButton"/>
+  <variant name="OsButtonMenu"/>
   <variant name="OsHotkey"/>
-  <variant name="Other"/>
   <variant name="PdfSummarizeButton"/>
+  <variant name="ProfilePicker"/>
   <variant name="SharedImage"/>
   <variant name="SharedTab"/>
   <variant name="Skills"/>
+  <variant name="TextSelectionNudge"/>
+  <variant name="TextSelectionWidget"/>
   <variant name="ThreeDotsMenu"/>
   <variant name="TopChromeButton"/>
+  <variant name="Unsupported"/>
+  <variant name="WebContentsContextMenu"/>
   <variant name="WhatsNew"/>
+  <variant name="ZeroStateAutoSummarize"/>
 </variants>
 
 <variants name="PanelEvent">
@@ -465,25 +477,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.Accept.Entrypoint" enum="GlicEntrypoint"
-    expires_after="2026-08-03">
+<histogram name="Glic.Fre.Accept.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2026-10-04">
   <owner>erikchen@chromium.org</owner>
   <owner>wry@chromium.org</owner>
   <summary>
-    Records the entry point used to trigger the opening of the glic panel that
-    led to the user accepting the Trust-First Onboarding. Recorded when the user
-    accepts the Trust-First Onboarding.
+    Records the invocation source used to trigger the opening of the glic panel
+    that led to the user accepting the Trust-First Onboarding. Recorded when the
+    user accepts the Trust-First Onboarding.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.Dismissed.Entrypoint" enum="GlicEntrypoint"
-    expires_after="2026-08-03">
+<histogram name="Glic.Fre.Dismissed.InvocationSource"
+    enum="GlicInvocationSource" expires_after="2026-10-04">
   <owner>erikchen@chromium.org</owner>
   <owner>wry@chromium.org</owner>
   <summary>
-    Records the entry point used to trigger the opening of the glic panel that
-    led to the user dismissing the Trust-First Onboarding. Recorded when the
-    user dismisses the Trust-First Onboarding.
+    Records the invocation source used to trigger the opening of the glic panel
+    that led to the user dismissing the Trust-First Onboarding. Recorded when
+    the user dismisses the Trust-First Onboarding.
   </summary>
 </histogram>
 
@@ -530,13 +542,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.Shown.Entrypoint" enum="GlicEntrypoint"
-    expires_after="2026-08-03">
+<histogram name="Glic.Fre.Shown.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2026-10-04">
   <owner>erikchen@chromium.org</owner>
   <owner>wry@chromium.org</owner>
   <summary>
-    Records the entry point used to trigger the opening of the glic panel when
-    the Trust-First Onboarding is shown. Recorded when the Trust-First
+    Records the invocation source used to trigger the opening of the glic panel
+    when the Trust-First Onboarding is shown. Recorded when the Trust-First
     Onboarding is shown.
   </summary>
 </histogram>
@@ -592,13 +604,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.UserInput.Entrypoint" enum="GlicEntrypoint"
-    expires_after="2026-09-13">
+<histogram name="Glic.Fre.UserInput.InvocationSource"
+    enum="GlicInvocationSource" expires_after="2026-09-13">
   <owner>erikchen@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Recorded when user input is first submitted after completing the onboarding
-    steps. Records the last entrypoint used befor user input is submitted.
+    steps. Records the last invocation source used before user input is
+    submitted.
   </summary>
 </histogram>
 
@@ -1469,20 +1482,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.WebUiLoadTime.{Entrypoint}.{Visibility}"
-    units="ms" expires_after="2026-11-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
-    state to the `kReady` state. This is recorded for both user-visible loads
-    and non-visible pre-warming loads, distinguished by the {Entrypoint} this
-    instance was created with and {Visibility} variant.
-  </summary>
-  <token key="Entrypoint" variants="GlicEntrypoint"/>
-  <token key="Visibility" variants="Visibility"/>
-</histogram>
-
 <histogram name="Glic.Instance.WebUiLoadTime.{Visibility}" units="ms"
     expires_after="2026-11-01">
   <owner>birnie@google.com</owner>
@@ -1496,46 +1495,6 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="Visibility"/>
 </histogram>
 
-<histogram name="Glic.Instance.{Entrypoint}.EventCounts"
-    enum="GlicInstanceEvent" expires_after="2026-08-02">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records every event that happens during a Glic Instance's lifecycle broken
-    down by {Entrypoint} that instance was created with. This histogram answers
-    the question: What is the total number of times each event occurred across
-    all Glic instances created via {Entrypoint}? An event is recorded each time
-    it occurs.
-  </summary>
-  <token key="Entrypoint" variants="GlicEntrypoint"/>
-</histogram>
-
-<histogram name="Glic.Instance.{Entrypoint}.HadEvent" enum="GlicInstanceEvent"
-    expires_after="2026-08-02">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records events that happen during a Glic Instance's lifecycle broken down by
-    {Entrypoint} that instance was created with. This histogram answers the
-    question: How many instances created via {Entrypoint} had each event type
-    occur at least once? Even if an event occurs multiple times in an instance,
-    only one event is recorded per instance.
-  </summary>
-  <token key="Entrypoint" variants="GlicEntrypoint"/>
-</histogram>
-
-<histogram name="Glic.Instance.{Entrypoint}.SidePanelFirstOpenDuration"
-    units="ms" expires_after="2026-08-02">
-  <owner>basiaz@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
-    Records the duration that a Glic Side Panel was open. Recorded for the first
-    time side panel was open for an instance without an error. Switching away
-    from a tab with side panel counts as closure for the purpose of this metric.
-  </summary>
-  <token key="Entrypoint" variants="GlicEntrypoint"/>
-</histogram>
-
 <histogram name="Glic.Interaction.SwitchConversationTarget"
     enum="GlicSwitchConversationTarget" expires_after="2026-08-02">
   <owner>birnie@google.com</owner>
@@ -1544,6 +1503,62 @@ chromium-metrics-reviews@google.com.
     Records the target of a conversation switch. Recorded each time
     SwitchConversation is called.
   </summary>
+</histogram>
+
+<histogram name="Glic.InvocationSource.{InvocationSource}.EventCounts"
+    enum="GlicInstanceEvent" expires_after="2026-10-04">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records every event that happens during a Glic Instance's lifecycle broken
+    down by {InvocationSource} that instance was created with. This histogram
+    answers the question: What is the total number of times each event occurred
+    across all Glic instances created via {InvocationSource}? An event is
+    recorded each time it occurs.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
+<histogram name="Glic.InvocationSource.{InvocationSource}.HadEvent"
+    enum="GlicInstanceEvent" expires_after="2026-10-04">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Instance's lifecycle broken down by
+    {InvocationSource} that instance was created with. This histogram answers
+    the question: How many instances created via {InvocationSource} had each
+    event type occur at least once? Even if an event occurs multiple times in an
+    instance, only one event is recorded per instance.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
+<histogram
+    name="Glic.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration"
+    units="ms" expires_after="2026-10-04">
+  <owner>basiaz@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open. Recorded for the first
+    time side panel was open for an instance without an error. Switching away
+    from a tab with side panel counts as closure for the purpose of this metric.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
+<histogram
+    name="Glic.InvocationSource.{InvocationSource}.WebUiLoadTime.{Visibility}"
+    units="ms" expires_after="2026-11-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
+    state to the `kReady` state. This is recorded for both user-visible loads
+    and non-visible pre-warming loads, distinguished by the {InvocationSource}
+    this instance was created with and {Visibility} variant.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+  <token key="Visibility" variants="Visibility"/>
 </histogram>
 
 <histogram name="Glic.LocaleFilteringResult" enum="GlicFilteringResult"

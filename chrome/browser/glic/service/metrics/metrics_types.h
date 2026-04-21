@@ -153,40 +153,7 @@ ResponseSegmentation GetResponseSegmentation(bool attached,
                                              mojom::WebClientMode mode,
                                              mojom::InvocationSource source);
 
-// GlicEntrypoint defines entrypoints interesting from growth metrics
-// perspective. It's a subset of InvocationSource, and more. When adding a new
-// invocation source, consider if a new entry should be added to the existing
-// enum (and add new mapping in GetEntrypointFromInvocationSource if so), or if
-// it can be mapped to an existing entry. By default each new InvocationSource
-// is mapped to kOther.
-// LINT.IfChange(GlicEntrypoint)
-enum class GlicEntrypoint {
-  kOsButton = 0,
-  kOsHotkey = 1,
-  kTopChromeButton = 2,
-  kNudge = 3,
-  kThreeDotsMenu = 4,
-  kWhatsNew = 5,
-  kSharedTab = 6,
-  kSharedImage = 7,
-  kSkills = 8,
-  kAutoOpenedByContextualCue = 9,
-  kPdfSummarizeButton = 10,
-  kNavigationCapture = 11,
-  kAutoOpenedForPdf = 12,
-  kIph = 13,
-  kOther = 14,
-  kWebContentsContextMenu = 15,
-  kTextSelectionNudge = 16,
-  kTextSelectionWidget = 17,
-  kZeroStateAutoSummarize = 18,
-  kMaxValue = kZeroStateAutoSummarize,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntrypoint)
-
-GlicEntrypoint GetEntrypointFromInvocationSource(
-    mojom::InvocationSource source);
-std::string GetEntrypointString(GlicEntrypoint entrypoint);
+std::string GetInvocationSourceString(mojom::InvocationSource source);
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_SERVICE_METRICS_METRICS_TYPES_H_

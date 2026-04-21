@@ -176,32 +176,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:DetailedWebClientState) -->
 
-<!-- LINT.IfChange(GlicEntrypoint) -->
-
-<enum name="GlicEntrypoint">
-  <int value="0" label="Button in the OS"/>
-  <int value="1" label="OS-level hotkey"/>
-  <int value="2" label="Button in top-chrome"/>
-  <int value="3" label="From tab strip nudge"/>
-  <int value="4" label="From 3-dot menu"/>
-  <int value="5" label="From the What's New page"/>
-  <int value="6" label="User shared a tab"/>
-  <int value="7" label="User shared an image"/>
-  <int value="8" label="From invoking skills"/>
-  <int value="9" label="Automatically opened by contextual cueing"/>
-  <int value="10" label="User clicked the summarize button in the PDF viewer"/>
-  <int value="11" label="From navigation capture"/>
-  <int value="12" label="Automatically opened for a PDF"/>
-  <int value="13" label="IPH"/>
-  <int value="14" label="Other"/>
-  <int value="15" label="Context menu"/>
-  <int value="16" label="Text selection nudge"/>
-  <int value="17" label="Text selection widget"/>
-  <int value="18" label="Zero-state Auto-summarize"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
-
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
 <enum name="GlicEntryPointStatus">
