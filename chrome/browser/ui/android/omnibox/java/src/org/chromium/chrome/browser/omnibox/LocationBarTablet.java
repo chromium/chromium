@@ -47,6 +47,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private static final float NEUTRAL_Z_TRANSLATION = 0.0f;
     private final LayerDrawable mFocusedPopupDrawable;
     private LayerDrawable mUnfocusedDrawable;
+    private final LayerDrawable mHoverDrawable;
 
     private View mLocationBarIcon;
     private View mBookmarkButton;
@@ -79,6 +80,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private @Nullable ViewOutlineProvider mOutlineProvider;
     private final int mLocationBarTabletFuseboxPopupInset;
     private final float mOmniboxSuggestionDropdownRoundCornerRadius;
+    private final int mModernToolbarBackgroundVerticalOffset;
+    private final float mModernToolbarBackgroundCornerRadius;
+    private final float mModernToolbarBackgroundInnerCornerRadius;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -104,6 +108,19 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
         mOmniboxSuggestionDropdownRoundCornerRadius =
                 resources.getDimension(R.dimen.omnibox_suggestion_dropdown_round_corner_radius);
+        mModernToolbarBackgroundVerticalOffset =
+                resources.getDimensionPixelSize(R.dimen.modern_toolbar_background_vertical_offset);
+        mModernToolbarBackgroundCornerRadius =
+                resources.getDimension(R.dimen.modern_toolbar_background_corner_radius);
+        mModernToolbarBackgroundInnerCornerRadius =
+                resources.getDimension(R.dimen.modern_toolbar_background_inner_corner_radius);
+        mHoverDrawable =
+                (LayerDrawable)
+                        assumeNonNull(
+                                AppCompatResources.getDrawable(
+                                        getContext(),
+                                        R.drawable.modern_toolbar_text_box_background_highlight));
+        mHoverDrawable.mutate();
         mHandler = new Handler();
     }
 
@@ -125,11 +142,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                     public boolean onHover(View v, MotionEvent event) {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_HOVER_ENTER:
-                                setForeground(
-                                        AppCompatResources.getDrawable(
-                                                getContext(),
-                                                R.drawable
-                                                        .modern_toolbar_text_box_background_highlight));
+                                setForeground(mHoverDrawable);
                                 return true;
                             case MotionEvent.ACTION_HOVER_EXIT:
                                 setForeground(null);
@@ -641,10 +654,34 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mFocusedPopupDrawable.invalidateSelf();
         setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), bottomInset);
         setLayoutParams(layoutParams);
+
+        GradientDrawable hoverRect = (GradientDrawable) mHoverDrawable.getDrawable(0);
+        if (mFuseboxState == FuseboxState.DISABLED) {
+            mHoverDrawable.setLayerInsetRelative(
+                    0,
+                    0,
+                    mModernToolbarBackgroundVerticalOffset,
+                    0,
+                    mModernToolbarBackgroundVerticalOffset);
+            hoverRect.setCornerRadius(mModernToolbarBackgroundCornerRadius);
+        } else {
+            mHoverDrawable.setLayerInsetRelative(
+                    0,
+                    mLocationBarTabletFuseboxPopupInset,
+                    mLocationBarTabletFuseboxPopupInset,
+                    mLocationBarTabletFuseboxPopupInset,
+                    bottomInset);
+            hoverRect.setCornerRadius(mModernToolbarBackgroundInnerCornerRadius);
+        }
+        mHoverDrawable.invalidateSelf();
     }
 
     private void setTranslationYOfBottomStackedUrlActionButtons(float translationY) {
         mMicButton.setTranslationY(translationY);
         mLensButton.setTranslationY(translationY);
+    }
+
+    LayerDrawable getHoverDrawableForTesting() {
+        return mHoverDrawable;
     }
 }
