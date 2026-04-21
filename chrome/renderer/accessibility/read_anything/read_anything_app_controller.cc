@@ -17,6 +17,7 @@
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
@@ -1932,8 +1933,9 @@ void ReadAnythingAppController::OnGetVoicePackInfo(
                 voice_pack_info->pack_state->get_installation_state())
           : base::ToString(voice_pack_info->pack_state->get_error_code());
 
-  ExecuteJavaScript("chrome.readingMode.updateVoicePackStatus(\'" +
-                    voice_pack_info->language + "\', \'" + status + "\');");
+  ExecuteJavaScript("chrome.readingMode.updateVoicePackStatus(" +
+                    base::GetQuotedJSONString(voice_pack_info->language) +
+                    ", " + base::GetQuotedJSONString(status) + ");");
 }
 
 void ReadAnythingAppController::SendInstallVoicePackRequest(
