@@ -78,6 +78,13 @@ public class ComposeboxQueryControllerBridge {
         mContextUploadObserver = null;
     }
 
+    /** Called when the WebUI controller is destroyed. */
+    public void onWebUIDestroyed() {
+        if (mNativeInstance != 0) {
+            ComposeboxQueryControllerBridgeJni.get().onWebUIDestroyed(mNativeInstance);
+        }
+    }
+
     public long getNativeInstance() {
         return mNativeInstance;
     }
@@ -224,6 +231,8 @@ public class ComposeboxQueryControllerBridge {
                 @JniType("content::WebContents*") @Nullable WebContents contextualTasksWebContents);
 
         void destroy(long nativeComposeboxQueryControllerBridge);
+
+        void onWebUIDestroyed(long nativeComposeboxQueryControllerBridge);
 
         void notifySessionStarted(long nativeComposeboxQueryControllerBridge);
 

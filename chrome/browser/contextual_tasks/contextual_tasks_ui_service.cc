@@ -1201,12 +1201,16 @@ ContextualTasksUiService::GetInitialEntryPointForTask(
 }
 void ContextualTasksUiService::OpenFeedbackUi(BrowserWindowInterface* browser,
                                               const GURL& page_url) {
-  delegate_->OpenFeedbackUi(browser, page_url);
+  if (delegate_) {
+    delegate_->OpenFeedbackUi(browser, page_url);
+  }
 }
 
 void ContextualTasksUiService::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {
-  delegate_->ShowUndoSnackbar(browser_window_interface);
+  if (delegate_) {
+    delegate_->ShowUndoSnackbar(browser_window_interface);
+  }
 }
 
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
@@ -1293,10 +1297,16 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(
 void ContextualTasksUiService::OnTaskChanged(
     BrowserWindowInterface* browser_window_interface,
     content::WebContents* web_contents,
-    const base::Uuid& task_id,
+    const std::optional<base::Uuid>& old_task_id,
+    const std::optional<base::Uuid>& new_task_id,
     bool is_shown_in_tab) {
   if (!browser_window_interface) {
     return;
+  }
+
+  if (delegate_) {
+    delegate_->OnTaskChanged(browser_window_interface, old_task_id,
+                             new_task_id);
   }
 
   ContextualTasksPanelController* controller =
@@ -1307,7 +1317,8 @@ void ContextualTasksUiService::OnTaskChanged(
         ContextualSearchServiceFactory::GetForProfile(profile_.get());
     UpdateContextualSearchWebContentsHelperForTask(
         contextual_search_service, browser_window_interface,
-        contextual_tasks_service_, controller, web_contents, task_id);
+        contextual_tasks_service_, controller, web_contents,
+        new_task_id.value_or(base::Uuid()));
 
     auto* active_task_context_provider =
         ActiveTaskContextProvider::From(browser_window_interface);
@@ -1317,11 +1328,11 @@ void ContextualTasksUiService::OnTaskChanged(
   } else {  // !is_shown_in_tab
     // If a new thread is started in the panel, affiliated tabs should change
     // their thread to the new one.
-    base::Uuid new_task_id = task_id;
-    if (!task_id.is_valid()) {
+    base::Uuid final_task_id = new_task_id.value_or(base::Uuid());
+    if (!final_task_id.is_valid()) {
       // If the panel is in zero state, create an empty task.
       ContextualTask task = contextual_tasks_service_->CreateTask();
-      new_task_id = task.GetTaskId();
+      final_task_id = task.GetTaskId();
     }
 
     TabListInterface* tab_list =
@@ -1339,18 +1350,28 @@ void ContextualTasksUiService::OnTaskChanged(
           contextual_tasks_service_->GetTabsAssociatedWithTask(
               current_task->GetTaskId());
       for (const auto& id : tab_ids) {
-        contextual_tasks_service_->AssociateTabWithTask(new_task_id, id);
+        contextual_tasks_service_->AssociateTabWithTask(final_task_id, id);
       }
     }
 
-    controller->OnTaskChanged(web_contents, new_task_id);
+    controller->OnTaskChanged(web_contents, final_task_id);
   }
 }
 
 void ContextualTasksUiService::OnWebUIReady(
     const base::Uuid& task_id,
     content::WebContents* web_contents) {
-  delegate_->OnWebUIReady(task_id, web_contents);
+  if (delegate_) {
+    delegate_->OnWebUIReady(task_id, web_contents);
+  }
+}
+
+void ContextualTasksUiService::OnWebUIDestroyed(
+    BrowserWindowInterface* browser_window_interface,
+    const std::optional<base::Uuid>& task_id) {
+  if (delegate_) {
+    delegate_->OnWebUIDestroyed(browser_window_interface, task_id);
+  }
 }
 
 void ContextualTasksUiService::MoveTaskUiToNewTab(

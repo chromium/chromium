@@ -12,6 +12,10 @@
 class BrowserWindowInterface;
 class Profile;
 
+namespace ui {
+class WindowAndroid;
+}
+
 namespace contextual_tasks {
 class ContextualTasksUiServiceDelegateAndroid
     : public ContextualTasksUiServiceDelegate {
@@ -34,11 +38,19 @@ class ContextualTasksUiServiceDelegateAndroid
       BrowserWindowInterface* browser_window_interface) override;
   void OnWebUIReady(const base::Uuid& task_id,
                     content::WebContents* web_contents) override;
+  void OnWebUIDestroyed(BrowserWindowInterface* browser_window_interface,
+                        const std::optional<base::Uuid>& task_id) override;
+  void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
+                     const std::optional<base::Uuid>& old_task_id,
+                     const std::optional<base::Uuid>& new_task_id) override;
 
  protected:
   Profile* profile() const { return profile_; }
 
  private:
+  ui::WindowAndroid* GetWindowAndroid(
+      BrowserWindowInterface* browser_window_interface);
+
   raw_ptr<Profile> profile_;
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
 };

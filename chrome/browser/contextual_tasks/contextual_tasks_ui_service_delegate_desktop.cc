@@ -38,4 +38,13 @@ void ContextualTasksUiServiceDelegateDesktop::OnWebUIReady(
     const base::Uuid& task_id,
     content::WebContents* web_contents) {}
 
+void ContextualTasksUiServiceDelegateDesktop::OnWebUIDestroyed(
+    BrowserWindowInterface* browser_window_interface,
+    const std::optional<base::Uuid>& task_id) {}
+
+void ContextualTasksUiServiceDelegateDesktop::OnTaskChanged(
+    BrowserWindowInterface* browser_window_interface,
+    const std::optional<base::Uuid>& old_task_id,
+    const std::optional<base::Uuid>& new_task_id) {}
+
 }  // namespace contextual_tasks

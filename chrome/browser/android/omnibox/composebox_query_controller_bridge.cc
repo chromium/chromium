@@ -100,6 +100,7 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     Profile* profile,
     content::WebContents* contextual_tasks_web_contents)
     : profile_{profile}, java_obj_(java_obj) {
+  is_task_scoped_ = contextual_tasks_web_contents != nullptr;
   if (contextual_tasks_web_contents &&
       !contextual_tasks_web_contents->IsBeingDestroyed()) {
     contextual_tasks_web_ui_interface_ =
@@ -158,6 +159,10 @@ void ComposeboxQueryControllerBridge::Destroy(JNIEnv* env) {
   }
 
   delete this;
+}
+
+void ComposeboxQueryControllerBridge::OnWebUIDestroyed(JNIEnv* env) {
+  contextual_tasks_web_ui_interface_ = nullptr;
 }
 
 size_t ComposeboxQueryControllerBridge::GetAttachmentCount() const {

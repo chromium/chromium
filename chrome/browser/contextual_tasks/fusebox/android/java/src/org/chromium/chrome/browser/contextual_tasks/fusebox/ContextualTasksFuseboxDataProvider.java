@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -82,6 +83,11 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     }
 
     @Override
+    public @ColorInt int getPrimaryColor() {
+        return mPrimaryColor;
+    }
+
+    @Override
     public UrlBarData getUrlBarData() {
         return UrlBarData.EMPTY;
     }
@@ -106,9 +112,11 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
         return mFuseboxSessionState;
     }
 
-    @Override
-    public int getPrimaryColor() {
-        return mPrimaryColor;
+    /** Returns the current {@link ComposeboxQueryControllerBridge} for this session. */
+    public @Nullable ComposeboxQueryControllerBridge getComposeboxQueryControllerBridge() {
+        return mFuseboxSessionState != null
+                ? mFuseboxSessionState.getComposeboxQueryControllerBridge()
+                : null;
     }
 
     @Override

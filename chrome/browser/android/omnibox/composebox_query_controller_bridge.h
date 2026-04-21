@@ -47,6 +47,7 @@ class ComposeboxQueryControllerBridge
       content::WebContents* contextual_tasks_web_contents);
   ~ComposeboxQueryControllerBridge() override;
   void Destroy(JNIEnv* env);
+  void OnWebUIDestroyed(JNIEnv* env);
   void NotifySessionStarted(JNIEnv* env);
   void NotifySessionAbandoned(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> AddFile(
@@ -158,6 +159,7 @@ class ComposeboxQueryControllerBridge
   raw_ptr<Profile> profile_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface>
       contextual_tasks_web_ui_interface_ = nullptr;
+  bool is_task_scoped_ = false;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   std::unique_ptr<contextual_search::InputStateModel> input_state_model_;

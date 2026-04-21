@@ -55,18 +55,59 @@ void ContextualTasksUiServiceDelegateAndroid::OnWebUIReady(
       env, java_delegate_, task_id.AsLowercaseString(), web_contents);
 }
 
-void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(
-    BrowserWindowInterface* browser_window_interface) {
-  if (!browser_window_interface || !browser_window_interface->GetWindow() ||
-      !browser_window_interface->GetWindow()->GetNativeWindow()) {
+void ContextualTasksUiServiceDelegateAndroid::OnWebUIDestroyed(
+    BrowserWindowInterface* browser_window_interface,
+    const std::optional<base::Uuid>& task_id) {
+  ui::WindowAndroid* window_android =
+      GetWindowAndroid(browser_window_interface);
+  if (!window_android) {
     return;
   }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ContextualTasksUiServiceDelegate_onWebUIDestroyed(
+      env, java_delegate_, window_android,
+      task_id.has_value() ? task_id->AsLowercaseString() : std::string());
+}
+
+void ContextualTasksUiServiceDelegateAndroid::OnTaskChanged(
+    BrowserWindowInterface* browser_window_interface,
+    const std::optional<base::Uuid>& old_task_id,
+    const std::optional<base::Uuid>& new_task_id) {
   ui::WindowAndroid* window_android =
-      browser_window_interface->GetWindow()->GetNativeWindow();
+      GetWindowAndroid(browser_window_interface);
+  if (!window_android) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ContextualTasksUiServiceDelegate_onTaskChanged(
+      env, java_delegate_, window_android,
+      old_task_id.has_value() ? old_task_id->AsLowercaseString()
+                              : std::string(),
+      new_task_id.has_value() ? new_task_id->AsLowercaseString()
+                              : std::string());
+}
+
+void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(
+    BrowserWindowInterface* browser_window_interface) {
+  ui::WindowAndroid* window_android =
+      GetWindowAndroid(browser_window_interface);
+  if (!window_android) {
+    return;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ContextualTasksUiServiceDelegate_showUndoSnackbar(
       env, java_delegate_, window_android,
       reinterpret_cast<intptr_t>(browser_window_interface));
+}
+
+ui::WindowAndroid* ContextualTasksUiServiceDelegateAndroid::GetWindowAndroid(
+    BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface || !browser_window_interface->GetWindow() ||
+      !browser_window_interface->GetWindow()->GetNativeWindow()) {
+    return nullptr;
+  }
+  return browser_window_interface->GetWindow()->GetNativeWindow();
 }
 
 void ContextualTasksUiServiceDelegateAndroid::UndoClose(

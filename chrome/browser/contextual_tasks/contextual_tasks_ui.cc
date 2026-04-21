@@ -288,6 +288,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                                  &task_id_str)) {
     base::Uuid task_id = base::Uuid::ParseLowercase(task_id_str);
     if (task_id.is_valid()) {
+      task_id_ = task_id;
       ui_service_->OnWebUIReady(task_id, web_ui->GetWebContents());
     }
   }
@@ -531,7 +532,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }
 
-ContextualTasksUI::~ContextualTasksUI() = default;
+ContextualTasksUI::~ContextualTasksUI() {
+  if (ui_service_) {
+    ui_service_->OnWebUIDestroyed(GetBrowser(), task_id_);
+  }
+}
 
 void ContextualTasksUI::CreatePageHandler(
     mojo::PendingRemote<contextual_tasks::mojom::Page> page,
@@ -1255,6 +1260,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
+  // Capture the old task ID associated with this WebUI.
+  std::optional<base::Uuid> old_task_id = task_info_delegate_->GetTaskId();
   if (is_zero_state &&
       (!base::FeatureList::IsEnabled(
            contextual_tasks::kEnableNotifyZeroStateRenderedCapability) ||
@@ -1274,7 +1281,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->PrepareForTaskChange();
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
-                               new_task_id,
+                               old_task_id, new_task_id,
                                task_info_delegate_->IsShownInTab());
     task_info_delegate_->OnTaskChanged();
     return;
@@ -1371,7 +1378,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->PrepareForTaskChange();
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
-                               task_info_delegate_->GetTaskId().value(),
+                               old_task_id, task_info_delegate_->GetTaskId(),
                                task_info_delegate_->IsShownInTab());
     task_info_delegate_->OnTaskChanged();
   }

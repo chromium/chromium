@@ -180,12 +180,18 @@ class ContextualTasksUiService : public KeyedService {
   // UI is in a zero-state that is waiting for user to create a new task.
   virtual void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
                              content::WebContents* web_contents,
-                             const base::Uuid& task_id,
+                             const std::optional<base::Uuid>& old_task_id,
+                             const std::optional<base::Uuid>& new_task_id,
                              bool is_shown_in_tab);
 
   // Called when the WebUI is ready.
   virtual void OnWebUIReady(const base::Uuid& task_id,
                             content::WebContents* web_contents);
+
+  // Called when the WebUI controller is destroyed.
+  virtual void OnWebUIDestroyed(
+      BrowserWindowInterface* browser_window_interface,
+      const std::optional<base::Uuid>& task_id);
 
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL.

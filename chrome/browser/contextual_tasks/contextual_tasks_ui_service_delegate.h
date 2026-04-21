@@ -34,6 +34,16 @@ class ContextualTasksUiServiceDelegate {
   // Called when the WebUI is ready.
   virtual void OnWebUIReady(const base::Uuid& task_id,
                             content::WebContents* web_contents) = 0;
+
+  // Called when the WebUI controller is destroyed.
+  virtual void OnWebUIDestroyed(
+      BrowserWindowInterface* browser_window_interface,
+      const std::optional<base::Uuid>& task_id) = 0;
+
+  // Called when the task ID is updated.
+  virtual void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
+                             const std::optional<base::Uuid>& old_task_id,
+                             const std::optional<base::Uuid>& new_task_id) = 0;
 };
 
 }  // namespace contextual_tasks

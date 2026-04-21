@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -43,6 +44,7 @@
 
 using testing::_;
 using testing::Return;
+using testing::ReturnRef;
 
 class ContextualTasksUI;
 
@@ -1503,6 +1505,22 @@ TEST_F(ContextualTasksUiServiceTest, OnWebUIReady) {
       .Times(1);
 
   service.OnWebUIReady(task_id, web_contents.get());
+}
+
+TEST_F(ContextualTasksUiServiceTest, OnWebUIDestroyed) {
+  auto delegate = std::make_unique<MockContextualTasksUiServiceDelegate>();
+  auto* delegate_ptr = delegate.get();
+  ContextualTasksUiService service(
+      profile_.get(), std::move(delegate), contextual_tasks_service_.get(),
+      /*identity_manager=*/nullptr, /*aim_eligibility_service=*/nullptr,
+      /*cookie_synchronizer=*/nullptr);
+
+  std::optional<base::Uuid> task_id = base::Uuid::GenerateRandomV4();
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(*delegate_ptr, OnWebUIDestroyed(&browser_window, task_id))
+      .Times(1);
+
+  service.OnWebUIDestroyed(&browser_window, task_id);
 }
 
 }  // namespace contextual_tasks

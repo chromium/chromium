@@ -411,8 +411,8 @@ IN_PROC_BROWSER_TEST_F(
   // the second task.
   auto dummy_web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(browser()->profile()));
-  service->OnTaskChanged(browser(), dummy_web_contents.get(), task2.GetTaskId(),
-                         false);
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
+                         task2.GetTaskId(), /*is_shown_in_tab=*/false);
   EXPECT_EQ(
       task2.GetTaskId(),
       contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());
@@ -457,8 +457,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   // with an empty task.
   auto dummy_web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(browser()->profile()));
-  service->OnTaskChanged(browser(), dummy_web_contents.get(), base::Uuid(),
-                         false);
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
+                         base::Uuid(), /*is_shown_in_tab=*/false);
   std::optional<ContextualTask> empty_task =
       contextual_tasks_service->GetContextualTaskForTab(tab1_id);
 
@@ -505,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   // remain associated with the first task.
   auto dummy_web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(browser()->profile()));
-  service->OnTaskChanged(browser(), dummy_web_contents.get(), task2.GetTaskId(),
-                         true);
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
+                         task2.GetTaskId(), /*is_shown_in_tab=*/true);
   EXPECT_EQ(
       task1.GetTaskId(),
       contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());

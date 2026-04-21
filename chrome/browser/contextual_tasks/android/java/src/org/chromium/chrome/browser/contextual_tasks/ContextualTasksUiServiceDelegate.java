@@ -109,6 +109,31 @@ public class ContextualTasksUiServiceDelegate {
 
     @CalledByNative
     @VisibleForTesting
+    void onWebUIDestroyed(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            @JniType("std::string") String taskId) {
+        ContextualTasksFuseboxManager fuseboxManager =
+                ContextualTasksFuseboxManager.from(windowAndroid);
+        if (fuseboxManager != null) {
+            fuseboxManager.onWebUIDestroyed(taskId);
+        }
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    void onTaskChanged(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            @JniType("std::string") String oldTaskId,
+            @JniType("std::string") String newTaskId) {
+        ContextualTasksFuseboxManager fuseboxManager =
+                ContextualTasksFuseboxManager.from(windowAndroid);
+        if (fuseboxManager != null) {
+            fuseboxManager.onTaskChanged(oldTaskId, newTaskId);
+        }
+    }
+
+    @CalledByNative
+    @VisibleForTesting
     void showUndoSnackbar(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid, long browserWindowPtr) {
         mSnackbarManager = SnackbarManagerProvider.from(windowAndroid);

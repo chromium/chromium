@@ -118,6 +118,7 @@ class MockContextualTasksUI : public ContextualTasksUI {
  public:
   explicit MockContextualTasksUI(content::WebUI* web_ui)
       : ContextualTasksUI(web_ui) {}
+  ~MockContextualTasksUI() override = default;
   MOCK_METHOD(void,
               PostMessageToWebview,
               (const lens::ClientToAimMessage& message),

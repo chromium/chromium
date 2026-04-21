@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -114,6 +115,37 @@ public class ContextualTasksFuseboxManager {
      */
     public void onWebUIReady(String taskId, WebContents webContents) {
         ensureFuseboxSessionState(taskId, webContents);
+    }
+
+    /**
+     * Called when the WebUI controller is destroyed.
+     *
+     * @param taskId The ID of the task.
+     */
+    public void onWebUIDestroyed(String taskId) {
+        FuseboxSessionState sessionState = mTaskSessionMap.remove(taskId);
+        if (sessionState != null) {
+            ComposeboxQueryControllerBridge bridge =
+                    sessionState.getComposeboxQueryControllerBridge();
+            if (bridge != null) {
+                bridge.onWebUIDestroyed();
+            }
+            sessionState.destroy();
+        }
+    }
+
+    /**
+     * Called when the task ID is updated inside the WebUI. This normally happens on resumption of a
+     * historical thread from inside the WebUI page. Re-keys the session map.
+     *
+     * @param oldTaskId The old ID of the task.
+     * @param newTaskId The new ID of the task.
+     */
+    public void onTaskChanged(String oldTaskId, String newTaskId) {
+        FuseboxSessionState sessionState = mTaskSessionMap.remove(oldTaskId);
+        if (sessionState != null) {
+            mTaskSessionMap.put(newTaskId, sessionState);
+        }
     }
 
     /**

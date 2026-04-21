@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** The fusebox (omnibox) component for contextual tasks. */
 @NullMarked
@@ -101,8 +103,7 @@ public class ContextualTasksFusebox {
                         /* incognitoStateProvider= */ null,
                         lifecycleDispatcher,
                         (params, isIncognitoBranded) -> {
-                            loadUrlCallback.onResult(params.url);
-                            return true;
+                            return onUrlLoad(params.url, loadUrlCallback);
                         },
                         /* backKeyBehavior= */ mBackKeyBehaviorDelegate,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
@@ -136,6 +137,21 @@ public class ContextualTasksFusebox {
 
     public void destroy() {
         mLocationBarCoordinator.destroy();
+    }
+
+    private boolean onUrlLoad(String url, Callback<String> loadUrlCallback) {
+        ComposeboxQueryControllerBridge bridge = mDataProvider.getComposeboxQueryControllerBridge();
+        if (bridge != null) {
+            bridge.getAimUrl(
+                    new GURL(url),
+                    aimUrl -> {
+                        loadUrlCallback.onResult(aimUrl.getSpec());
+                    });
+            mLocationBarCoordinator.setOmniboxEditingText("");
+        } else {
+            loadUrlCallback.onResult(url);
+        }
+        return true;
     }
 
     /** Returns the fusebox view. */
