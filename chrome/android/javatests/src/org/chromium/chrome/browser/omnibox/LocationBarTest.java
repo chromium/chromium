@@ -291,25 +291,25 @@ public class LocationBarTest {
     @MediumTest
     public void testEditingText() {
         testEditingText(
-                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
+                /* expectDesktopMode= */ ThreadUtils.runOnUiThreadBlocking(
+                        OmniboxFeatures::isDesktopMode));
     }
 
     @Test
     @MediumTest
-    public void testEditingText_withRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        testEditingText(/* expectRetainOmniboxOnFocus= */ false);
+    public void testEditingText_withDesktopModeDisabled() {
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        testEditingText(/* expectDesktopMode= */ false);
     }
 
     @Test
     @MediumTest
-    public void testEditingText_withRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
-        testEditingText(/* expectRetainOmniboxOnFocus= */ true);
+    public void testEditingText_withDesktopModeEnabled() {
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        testEditingText(/* expectDesktopMode= */ true);
     }
 
-    private void testEditingText(boolean expectRetainOmniboxOnFocus) {
+    private void testEditingText(boolean expectDesktopMode) {
         startActivityNormally();
         String url =
                 mActivityTestRule
@@ -322,7 +322,7 @@ public class LocationBarTest {
                 () -> {
                     Assert.assertTrue(mUrlBar.getText().toString().startsWith(HOSTNAME));
                     mUrlBar.requestFocus();
-                    if (expectRetainOmniboxOnFocus) {
+                    if (expectDesktopMode) {
                         Assert.assertTrue(mUrlBar.getText().toString().startsWith(HOSTNAME));
                     } else {
                         Assert.assertEquals("", mUrlBar.getText().toString());
@@ -598,8 +598,8 @@ public class LocationBarTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet() {
         testFocusLogic_buttonVisibilityTablet(
-                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
+                /* expectDesktopMode= */ ThreadUtils.runOnUiThreadBlocking(
+                        OmniboxFeatures::isDesktopMode));
     }
 
     @Test
@@ -608,11 +608,11 @@ public class LocationBarTest {
         "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTabletWithRetainOmniboxOnFocusDisabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
+    public void testFocusLogic_buttonVisibilityTabletWithDesktopModeDisabled() {
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
-        testFocusLogic_buttonVisibilityTablet(/* expectRetainOmniboxOnFocus= */ false);
+        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ false);
     }
 
     @Test
@@ -621,14 +621,14 @@ public class LocationBarTest {
         "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTabletWithRetainOmniboxOnFocusEnabled() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
+    public void testFocusLogic_buttonVisibilityTabletWithDesktopModeEnabled() {
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
-        testFocusLogic_buttonVisibilityTablet(/* expectRetainOmniboxOnFocus= */ true);
+        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ true);
     }
 
-    private void testFocusLogic_buttonVisibilityTablet(boolean expectRetainOmniboxOnFocus) {
+    private void testFocusLogic_buttonVisibilityTablet(boolean expectDesktopMode) {
         startActivityNormally();
 
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -653,7 +653,7 @@ public class LocationBarTest {
                     mUrlBar.requestFocus();
                 });
 
-        if (expectRetainOmniboxOnFocus) {
+        if (expectDesktopMode) {
             onView(withId(R.id.mic_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
             onView(withId(R.id.lens_camera_button))

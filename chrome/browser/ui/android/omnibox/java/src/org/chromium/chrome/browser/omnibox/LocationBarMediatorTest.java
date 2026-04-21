@@ -1201,19 +1201,19 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnUrlFocusChange() {
-        testOnUrlFocusChange(/* expectRetainOmniboxOnFocus= */ false);
+        testOnUrlFocusChange(/* expectDesktopMode= */ false);
     }
 
     @Test
-    public void testOnUrlFocusChange_shouldNotRetainOmniboxOnFocus() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
-        testOnUrlFocusChange(/* expectRetainOmniboxOnFocus= */ false);
+    public void testOnUrlFocusChange_isNotDesktopMode() {
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        testOnUrlFocusChange(/* expectDesktopMode= */ false);
     }
 
     @Test
-    public void testOnUrlFocusChange_shouldRetainOmniboxOnFocus() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
-        testOnUrlFocusChange(/* expectRetainOmniboxOnFocus= */ true);
+    public void testOnUrlFocusChange_isDesktopMode() {
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        testOnUrlFocusChange(/* expectDesktopMode= */ true);
     }
 
     @Test
@@ -1224,7 +1224,7 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
     }
 
-    private void testOnUrlFocusChange(boolean expectRetainOmniboxOnFocus) {
+    private void testOnUrlFocusChange(boolean expectDesktopMode) {
         mProfileSupplier.set(mProfile);
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -1236,10 +1236,7 @@ public class LocationBarMediatorTest {
                 .setUrlBarData(
                         any(),
                         eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(
-                                expectRetainOmniboxOnFocus
-                                        ? UrlBarData.SELECT_ALL
-                                        : UrlBarData.SELECT_END));
+                        eq(expectDesktopMode ? UrlBarData.SELECT_ALL : UrlBarData.SELECT_END));
         verify(mStatusCoordinator).onUrlFocusChange(true);
         verify(mUrlCoordinator).onUrlFocusChange(true);
 
@@ -1843,7 +1840,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRestoringText() {
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mTabletMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -1886,7 +1883,7 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
         NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();

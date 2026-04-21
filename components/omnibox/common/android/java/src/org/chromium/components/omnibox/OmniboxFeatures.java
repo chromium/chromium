@@ -276,8 +276,8 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sDiagInputConnection =
             newBooleanParam(sDiagnostics, "omnibox_diag_input_connection", false);
 
-    /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
-    private static @Nullable Boolean sShouldRetainOmniboxOnFocusForTesting;
+    /** See {@link #setIsDesktopModeForTesting(boolean)}. */
+    private static @Nullable Boolean sIsDesktopModeForTesting;
 
     /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
     private static @Nullable Boolean sActivateJumpStartOmnibox;
@@ -403,10 +403,10 @@ public class OmniboxFeatures {
         return inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
     }
 
-    /** Modifies the output of {@link #shouldRetainOmniboxOnFocus()} for testing. */
-    public static void setShouldRetainOmniboxOnFocusForTesting(Boolean shouldRetainOmniboxOnFocus) {
-        sShouldRetainOmniboxOnFocusForTesting = shouldRetainOmniboxOnFocus;
-        ResettersForTesting.register(() -> sShouldRetainOmniboxOnFocusForTesting = null);
+    /** Modifies the output of {@link #isDesktopMode()} for testing. */
+    public static void setIsDesktopModeForTesting(Boolean isDesktopMode) {
+        sIsDesktopModeForTesting = isDesktopMode;
+        ResettersForTesting.register(() -> sIsDesktopModeForTesting = null);
     }
 
     /**
@@ -417,6 +417,10 @@ public class OmniboxFeatures {
      * eligible for Desktop treatment, too.
      */
     public static boolean isDesktopMode() {
+        if (sIsDesktopModeForTesting != null) {
+            return sIsDesktopModeForTesting;
+        }
+
         if (sDiagInputConnection.getValue()) {
             // TODO(crbug.com/492224343): Remove diagnostics once we understand the edge case.
             Log.i(
@@ -429,20 +433,6 @@ public class OmniboxFeatures {
         }
 
         return DeviceInput.supportsAlphabeticKeyboard() && DeviceInput.supportsPrecisionPointer();
-    }
-
-    /**
-     * @return Whether the contents of the omnibox should be retained on focus as opposed to being
-     *     cleared. When {@code true} and the omnibox contents are retained, focus events will also
-     *     result in the omnibox contents being fully selected so as to allow for easy replacement
-     *     by the user. Note that only large screen devices with an attached keyboard and precision
-     *     pointer will exhibit a change in behavior when the feature flag is enabled.
-     */
-    public static boolean shouldRetainOmniboxOnFocus() {
-        if (sShouldRetainOmniboxOnFocusForTesting != null) {
-            return sShouldRetainOmniboxOnFocusForTesting;
-        }
-        return isDesktopMode();
     }
 
     /**
