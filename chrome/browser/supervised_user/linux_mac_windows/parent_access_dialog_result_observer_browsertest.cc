@@ -26,11 +26,24 @@
 namespace {
 
 constexpr char kPacpHost[] = "families.google.com";
+constexpr char kMockPacpTargetUrl[] = "https://families.google/families/";
+
+enum class ResponseMode {
+  // Case 1: Result is in the final URL. No redirects.
+  kResultNoRedirect,
+  // Case 2: Result is in the initial URL, which then redirects to a landing
+  // page.
+  kRedirectAfterResult,
+  // Case 3: Result is in an intermediate URL (Redirected to result, then
+  // finish).
+  kRedirectToResult,
+  // Case 3 (variation): Redirected to result, then redirected again.
+  kRedirectToResultAndRedirectAfter,
+  // Result is extracted, but the navigation results in a network error.
+  kNetworkErrorAfterResult,
+};
 
 struct TestParam {
-  // Whether the end url `kFamilyManagementUrl` in the sequence of PACP server
-  // redirections is reached.
-  bool redirect_to_target_url;
   // Query paramerer containing the PACP parent approval result, if such a
   // result should be returned.
   std::optional<std::string> result_query_param;
@@ -39,6 +52,8 @@ struct TestParam {
   std::optional<supervised_user::LocalApprovalResult> expected_approval_result;
   // Expected error type in the case of an error result.
   std::optional<supervised_user::LocalWebApprovalErrorType> expected_error_type;
+  // Defines the redirection behavior of the test server.
+  ResponseMode response_mode = ResponseMode::kRedirectAfterResult;
   // An string to be appended in the test name.
   std::string test_name_suffix;
 };
@@ -107,31 +122,71 @@ class SupervisedUserParentAccessObserverTest
     return supervision_mixin_;
   }
 
+  bool IsResultObtainedAfterRedirection() {
+    return GetParam().response_mode == ResponseMode::kRedirectToResult ||
+           GetParam().response_mode ==
+               ResponseMode::kRedirectToResultAndRedirectAfter;
+  }
+
  private:
   void SetUp() override {
     // Mock the responses to navigations via the test server.
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &SupervisedUserParentAccessObserverTest::HandleRedirection,
+        &SupervisedUserParentAccessObserverTest::HandleResponses,
         base::Unretained(this)));
     MixinBasedInProcessBrowserTest::SetUp();
   }
 
-  std::unique_ptr<net::test_server::HttpResponse> HandleRedirection(
+  std::unique_ptr<net::test_server::HttpResponse> HandleResponses(
       const net::test_server::HttpRequest& request) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    if (GetParam().redirect_to_target_url) {
-      if (request.GetURL().has_query()) {
-        CHECK(request.GetURL().GetQuery().starts_with("result"));
+
+    if (request.relative_url.find("/intermediate") != std::string::npos) {
+      // The intermediate URL in a redirect chain. It contains the result.
+      switch (GetParam().response_mode) {
+        case ResponseMode::kRedirectToResultAndRedirectAfter:
+          response->set_code(net::HTTP_MOVED_PERMANENTLY);
+          response->AddCustomHeader("Location", kMockPacpTargetUrl);
+          break;
+        case ResponseMode::kRedirectToResult:
+          response->set_code(net::HTTP_OK);
+          break;
+        default:
+          NOTREACHED();
       }
-      // Mock a url-redirection to the PACP target url.
-      // Mimics the last url in a seriers of PACP re-directions.
-      response->set_code(net::HTTP_MOVED_PERMANENTLY);
-      response->AddCustomHeader("Location",
-                                supervised_user::kFamilyManagementUrl);
       return response;
     }
-    response->set_code(net::HTTP_OK);
-    return response;
+
+    switch (GetParam().response_mode) {
+      case ResponseMode::kResultNoRedirect:
+        response->set_code(net::HTTP_OK);
+        return response;
+      case ResponseMode::kNetworkErrorAfterResult:
+        response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+        return response;
+      case ResponseMode::kRedirectToResult:
+      case ResponseMode::kRedirectToResultAndRedirectAfter: {
+        // Start the chain: / -> /intermediate?result=...
+        GURL intermediate_url =
+            embedded_test_server()->GetURL(kPacpHost, "/intermediate");
+        GURL::Replacements replacements;
+        if (GetParam().result_query_param.has_value()) {
+          replacements.SetQueryStr(
+              GetParam().result_query_param.value().c_str());
+        }
+        intermediate_url = intermediate_url.ReplaceComponents(replacements);
+        response->set_code(net::HTTP_FOUND);
+        response->AddCustomHeader("Location", intermediate_url.spec());
+        return response;
+      }
+      case ResponseMode::kRedirectAfterResult:
+        // Navigation to /?result=... which redirects to kMockPacpTargetUrl.
+        response->set_code(net::HTTP_MOVED_PERMANENTLY);
+        response->AddCustomHeader("Location", kMockPacpTargetUrl);
+        return response;
+      default:
+        NOTREACHED();
+    }
   }
 
   supervised_user::SupervisionMixin supervision_mixin_{
@@ -153,7 +208,6 @@ class SupervisedUserParentAccessObserverTest
 IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
                        CompletionCallbackExecution) {
   CHECK(contents());
-  base::HistogramTester histogram_tester;
 
   base::OnceCallback<void(
       supervised_user::LocalApprovalResult result,
@@ -167,9 +221,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
   CHECK(dialog_web_contents_observer);
   dialog_web_contents_observer->StartObserving(contents());
 
-  GURL::Replacements result_query_param;
-  if (GetParam().result_query_param.has_value()) {
-    result_query_param.SetQueryStr(GetParam().result_query_param.value());
+  GURL::Replacements replacements;
+  if (GetParam().result_query_param.has_value() &&
+      !IsResultObtainedAfterRedirection()) {
+    replacements.SetQueryStr(GetParam().result_query_param.value().c_str());
   }
 
   // Mimic navigating to a url that may contain the query result.
@@ -180,17 +235,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
   GURL pacp_origin_url_with_optional_result =
       embedded_test_server()
           ->GetURL(kPacpHost, "/")
-          .ReplaceComponents(result_query_param);
+          .ReplaceComponents(replacements);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), pacp_origin_url_with_optional_result));
 
-  // The callback is executed at the end of the navigation if
-  // 1) the navigation reaches the target url and
-  // 2) a query result for the approval flow has been parsed or an error was
-  // detected.
+  // The callback is executed at the end of the navigation if a query
+  // result for the approval flow has been parsed or an error was detected.
   bool should_execute_completion_callback =
-      GetParam().expected_approval_result.has_value() &&
-      GetParam().redirect_to_target_url;
+      GetParam().expected_approval_result.has_value();
   EXPECT_EQ(should_execute_completion_callback, IsCompletionCallbackExecuted());
 
   if (should_execute_completion_callback) {
@@ -214,17 +266,52 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserParentAccessObserverTest,
     testing::Values(
-        TestParam({.redirect_to_target_url = true,
-                   // Approval result provided and navigation completes.
+        TestParam({// Case 1: Result is in the final URL. No redirects.
                    .result_query_param = base::StringPrintf(
                        "result=%s",
                        supervised_user::CreatePacpApprovalResult()),
                    .expected_approval_result =
                        supervised_user::LocalApprovalResult::kApproved,
-                   .test_name_suffix = "CompletesApprovalFlow"}),
+                   .response_mode = ResponseMode::kResultNoRedirect,
+                   .test_name_suffix = "CompletesApprovalFlowNoRedirect"}),
         TestParam(
-            {.redirect_to_target_url = true,
-             // Approval result that can be extracted only by base64 forgiving
+            {// Case 2: Result is in the initial URL, which then redirects.
+             .result_query_param = base::StringPrintf(
+                 "result=%s",
+                 supervised_user::CreatePacpApprovalResult()),
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kApproved,
+             .response_mode = ResponseMode::kRedirectAfterResult,
+             .test_name_suffix = "CompletesApprovalFlowWithRedirect"}),
+        TestParam({// Case 3: Result is in an intermediate URL.
+                   .result_query_param = base::StringPrintf(
+                       "result=%s",
+                       supervised_user::CreatePacpApprovalResult()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kApproved,
+                   .response_mode = ResponseMode::kRedirectToResult,
+                   .test_name_suffix = "CompletesApprovalFlowOnRedirect"}),
+        TestParam(
+            {// Case 3 (variation): Redirected to result, then redirected
+             // again.
+             .result_query_param = base::StringPrintf(
+                 "result=%s",
+                 supervised_user::CreatePacpApprovalResult()),
+             .expected_approval_result =
+                 supervised_user::LocalApprovalResult::kApproved,
+             .response_mode = ResponseMode::kRedirectToResultAndRedirectAfter,
+             .test_name_suffix =
+                 "CompletesApprovalFlowOnRedirectWithFurtherRedirect"}),
+        TestParam({// Case 4: Result is extracted, but the navigation later
+                   .result_query_param = base::StringPrintf(
+                       "result=%s",
+                       supervised_user::CreatePacpApprovalResult()),
+                   .expected_approval_result =
+                       supervised_user::LocalApprovalResult::kApproved,
+                   .response_mode = ResponseMode::kNetworkErrorAfterResult,
+                   .test_name_suffix = "CompletesOnNavigationError"}),
+        TestParam(
+            {// Approval result that can be extracted only by base64 forgiving
              // decoding.
              .result_query_param = base::StringPrintf(
                  "result=%s",
@@ -232,14 +319,7 @@ INSTANTIATE_TEST_SUITE_P(
              .expected_approval_result =
                  supervised_user::LocalApprovalResult::kApproved,
              .test_name_suffix = "CompletesApprovalFlowWithForgivingDecoding"}),
-        TestParam({.redirect_to_target_url = false,
-                   // Approval result provide by navigation does not complete.
-                   .result_query_param = base::StringPrintf(
-                       "result=%s",
-                       supervised_user::CreatePacpApprovalResult()),
-                   .test_name_suffix = "ApprovalFlowDoesNotReachEndUrl"}),
-        TestParam({.redirect_to_target_url = true,
-                   // A result is provided and navigation completes,
+        TestParam({// A result is provided and navigation completes,
                    // but the result does not apply to the approval flow.
                    .result_query_param = base::StringPrintf(
                        "result=%s",
@@ -249,8 +329,7 @@ INSTANTIATE_TEST_SUITE_P(
                    .expected_error_type = supervised_user::
                        LocalWebApprovalErrorType::kUnexpectedPacpResponse,
                    .test_name_suffix = "FailsWithUnexpectedResult"}),
-        TestParam({.redirect_to_target_url = true,
-                   // A result is provided and navigation completes,
+        TestParam({// A result is provided and navigation completes,
                    // but the result is in invalid encoding (Malformed result).
                    .result_query_param =
                        base::StringPrintf("result=%s",
@@ -261,16 +340,14 @@ INSTANTIATE_TEST_SUITE_P(
                        LocalWebApprovalErrorType::kFailureToDecodePacpResponse,
                    .test_name_suffix = "FailsWithInvalidEncoding"}),
         TestParam(
-            {.redirect_to_target_url = true,
-             // A result query param is provided but it's empty.
+            {// A result query param is provided but it's empty.
              .result_query_param = "result=",
              .expected_approval_result =
                  supervised_user::LocalApprovalResult::kError,
              .expected_error_type =
                  supervised_user::LocalWebApprovalErrorType::kPacpEmptyResponse,
              .test_name_suffix = "FailsWithEmptyResult"}),
-        TestParam({.redirect_to_target_url = true,
-                   // A result query param is provided it's not parsed to a PACP
+        TestParam({// A result query param is provided it's not parsed to a PACP
                    // response.
                    .result_query_param =
                        base::StringPrintf("result=%s",
@@ -280,8 +357,7 @@ INSTANTIATE_TEST_SUITE_P(
                    .expected_error_type = supervised_user::
                        LocalWebApprovalErrorType::kFailureToParsePacpResponse,
                    .test_name_suffix = "FailsWithNonParsableResponse"}),
-        TestParam({.redirect_to_target_url = true,
-                   // No query result provided.
+        TestParam({// No query result provided.
                    .result_query_param = std::nullopt,
                    .test_name_suffix = "HasNoResult"})),
     [](const auto& info) { return info.param.test_name_suffix; });

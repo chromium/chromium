@@ -223,10 +223,6 @@ extern const char kLocalWebApprovalResultHistogramName[];
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];
 
-// The url that displays a user's Family info.
-// The navigations in the via PACP widget redirect to this url.
-extern const char kFamilyManagementUrl[];
-
 // The string used to denote an account that does not have a family member role.
 extern const char kDefaultEmptyFamilyMemberRole[];
 

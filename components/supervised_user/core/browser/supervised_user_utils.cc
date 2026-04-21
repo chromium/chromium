@@ -155,8 +155,7 @@ std::optional<std::string> MaybeGetPacpResultFromUrl(const GURL& url) {
       /*search_key=*/kParentAccessResultQueryParameter,
       /*out_value=*/&result_value);
 
-  if (!url.GetHost().starts_with(kPacpOriginUrlHost) ||
-      !contains_result_query_param) {
+  if (!url.DomainIs(kPacpOriginUrlHost) || !contains_result_query_param) {
     return std::nullopt;
   }
   return result_value;

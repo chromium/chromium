@@ -42,8 +42,14 @@ class ParentAccessDialogResultObserver : public content::WebContentsObserver {
   // WebContentsObserver overrides:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // Helper method responsible for extracting and storing the `result_`
+  // as soon as it is encountered in a navigation.
+  void HandleNavigationUpdate(content::NavigationHandle* navigation_handle);
 
   std::optional<supervised_user::LocalApprovalResult> result_;
   std::optional<supervised_user::LocalWebApprovalErrorType> error_type_;

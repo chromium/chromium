@@ -12,15 +12,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
-namespace {
-bool HasNavigatedToTerminalVerificationUrl(
-    content::NavigationHandle* navigation_handle) {
-  const GURL& handle_url = navigation_handle->GetURL();
-  return navigation_handle->HasCommitted() && handle_url.is_valid() &&
-         handle_url.spec().starts_with(supervised_user::kFamilyManagementUrl);
-}
-}  // namespace
-
 ParentAccessDialogResultObserver::ParentAccessDialogResultObserver(
     LocalApprovalResultCallback url_approval_result_callback)
     : url_approval_result_callback_(std::move(url_approval_result_callback)) {}
@@ -56,6 +47,20 @@ void ParentAccessDialogResultObserver::SetResultToError(
 
 void ParentAccessDialogResultObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  HandleNavigationUpdate(navigation_handle);
+}
+
+void ParentAccessDialogResultObserver::DidRedirectNavigation(
+    content::NavigationHandle* navigation_handle) {
+  HandleNavigationUpdate(navigation_handle);
+}
+
+void ParentAccessDialogResultObserver::HandleNavigationUpdate(
+    content::NavigationHandle* navigation_handle) {
+  if (result_.has_value()) {
+    return;
+  }
+
   const GURL& handle_url = navigation_handle->GetURL();
   std::optional<std::string> encoded_callback =
       supervised_user::MaybeGetPacpResultFromUrl(handle_url);
@@ -115,8 +120,7 @@ void ParentAccessDialogResultObserver::DidStartNavigation(
 
 void ParentAccessDialogResultObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!HasNavigatedToTerminalVerificationUrl(navigation_handle) ||
-      !result_.has_value()) {
+  if (!result_.has_value()) {
     return;
   }
   CHECK(!url_approval_result_callback_.is_null());

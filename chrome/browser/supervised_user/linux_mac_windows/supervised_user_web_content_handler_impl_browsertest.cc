@@ -51,6 +51,7 @@
 
 namespace {
 constexpr char kPacpHost[] = "families.google.com";
+constexpr char kMockPacpTargetUrl[] = "https://families.google/families/";
 
 enum class ResponseBehaviour : int {
   kHttpOk = 0,
@@ -141,8 +142,7 @@ class SupervisedUserWebContentHandlerImplTest
       case ResponseBehaviour::kHttpRedirection:
         //  Mimics the last url in a seriers of PACP re-directions.
         response->set_code(net::HTTP_MOVED_PERMANENTLY);
-        response->AddCustomHeader("Location",
-                                  supervised_user::kFamilyManagementUrl);
+        response->AddCustomHeader("Location", kMockPacpTargetUrl);
         break;
       case ResponseBehaviour::kHttpOk:
         response->set_code(net::HTTP_OK);
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   // that contains the PACP response.
   // The request handler `HandleRedirection` mocks the re-direction to the
   // `pacp_end_url` reached by PACP, in order to complete the approval flow.
-  GURL pacp_end_url = GURL(supervised_user::kFamilyManagementUrl);
+  GURL pacp_end_url = GURL(kMockPacpTargetUrl);
   auto observer =
       std::make_unique<content::TestNavigationObserver>(pacp_end_url);
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
   // that contains the PACP response.
   // The request handler `HandleRedirection` mocks the re-direction to the
   // `pacp_end_url` reached by PACP, in order to complete the approval flow.
-  GURL pacp_end_url = GURL(supervised_user::kFamilyManagementUrl);
+  GURL pacp_end_url = GURL(kMockPacpTargetUrl);
   auto observer =
       std::make_unique<content::TestNavigationObserver>(pacp_end_url);
 
