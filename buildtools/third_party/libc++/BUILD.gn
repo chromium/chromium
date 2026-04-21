@@ -587,15 +587,18 @@ target(libcxx_target_type, "libc++") {
   # Enable exceptions and rtti for libc++, but disable them in modules targets
   # so that modules can be used for other chromium targets which don't enable
   # exception and rtti.
-  configs -= configs_to_remove + [
-               "//build/config/compiler:no_exceptions",
-               "//build/config/compiler:no_rtti",
-             ]
-  configs += configs_to_add + [
-               "//build/config/compiler:exceptions",
-               "//build/config/compiler:rtti",
-               "//buildtools/third_party/libc++:config",
-             ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:no_exceptions",
+    "//build/config/compiler:no_rtti",
+    "//build/config/coverage:default_coverage",
+  ]
+  configs += [
+    ":config",
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:exceptions",
+    "//build/config/compiler:rtti",
+  ]
 
   deps = [
     ":headers",
