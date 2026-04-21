@@ -25,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "net/dns/mock_host_resolver.h"
@@ -289,8 +290,16 @@ IN_PROC_BROWSER_TEST_F(NarratorContainmentEnabledBrowserTest,
   content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
   WinAccessibilityEventMonitor monitor(EVENT_OBJECT_SHOW, EVENT_OBJECT_SHOW);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,<!doctype html><html></html>")));
+  constexpr wchar_t kPageTitle[] = L"MainContentPage";
+
+  // With the WebUI toolbar feature enabled, the accessibility tree may contain
+  // multiple document elements (the main page and the toolbar). To ensure we
+  // test the correct one, we give the main content page a specific title.
+  std::string url = "data:text/html,<!doctype html><html><head><title>";
+  url += base::WideToUTF8(kPageTitle);
+  url += "</title></head></html>";
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   // Wait until we see the new document appear.
   DWORD ev;
@@ -300,7 +309,8 @@ IN_PROC_BROWSER_TEST_F(NarratorContainmentEnabledBrowserTest,
   std::string name;
   do {
     monitor.WaitForNextEvent(&ev, &ev_hwnd, &role, &state, &name);
-  } while (!(ev == EVENT_OBJECT_SHOW && role == ROLE_SYSTEM_DOCUMENT));
+  } while (!(ev == EVENT_OBJECT_SHOW && role == ROLE_SYSTEM_DOCUMENT &&
+             name == base::WideToUTF8(kPageTitle)));
 
   // Query UIA starting from the top-level Chrome HWND.
   Microsoft::WRL::ComPtr<IUIAutomation> uia;
@@ -325,21 +335,53 @@ IN_PROC_BROWSER_TEST_F(NarratorContainmentEnabledBrowserTest,
     ASSERT_HRESULT_SUCCEEDED(uia->CreatePropertyCondition(
         UIA_ControlTypePropertyId, v, &is_document));
   }
-  Microsoft::WRL::ComPtr<IUIAutomationElement> document;
+  Microsoft::WRL::ComPtr<IUIAutomationElementArray> documents;
   ASSERT_HRESULT_SUCCEEDED(
-      hwnd_elem->FindFirst(TreeScope_Subtree, is_document.Get(), &document));
-  ASSERT_TRUE(document);
+      hwnd_elem->FindAll(TreeScope_Subtree, is_document.Get(), &documents));
+  ASSERT_TRUE(documents);
+
+  int count = 0;
+  ASSERT_HRESULT_SUCCEEDED(documents->get_Length(&count));
+  ASSERT_GT(count, 0);
 
   Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> control_walker;
   ASSERT_HRESULT_SUCCEEDED(uia->get_ControlViewWalker(&control_walker));
-  Microsoft::WRL::ComPtr<IUIAutomationElement> parent_elem;
-  ASSERT_HRESULT_SUCCEEDED(
-      control_walker->GetParentElement(document.Get(), &parent_elem));
-  ASSERT_TRUE(parent_elem);
 
+  Microsoft::WRL::ComPtr<IUIAutomationElement> document;
   base::win::ScopedBstr class_name;
-  ASSERT_HRESULT_SUCCEEDED(
-      parent_elem->get_CurrentClassName(class_name.Receive()));
+
+  // Iterate through all documents to find the one belonging to the main
+  // content.
+  for (int i = 0; i < count; ++i) {
+    Microsoft::WRL::ComPtr<IUIAutomationElement> doc;
+    ASSERT_HRESULT_SUCCEEDED(documents->GetElement(i, &doc));
+    ASSERT_TRUE(doc);
+
+    base::win::ScopedBstr document_name;
+    ASSERT_HRESULT_SUCCEEDED(doc->get_CurrentName(document_name.Receive()));
+
+    // Skip documents that don't match our specific title (e.g., the toolbar).
+    if (!document_name.Get() ||
+        std::wstring_view(document_name.Get()) != kPageTitle) {
+      continue;
+    }
+
+    Microsoft::WRL::ComPtr<IUIAutomationElement> parent_elem;
+    ASSERT_HRESULT_SUCCEEDED(
+        control_walker->GetParentElement(doc.Get(), &parent_elem));
+    ASSERT_TRUE(parent_elem);
+
+    base::win::ScopedBstr current_class_name;
+    ASSERT_HRESULT_SUCCEEDED(
+        parent_elem->get_CurrentClassName(current_class_name.Receive()));
+    ASSERT_TRUE(current_class_name.Get());
+
+    document = doc;
+    class_name.Reset(SysAllocString(current_class_name.Get()));
+    break;
+  }
+
+  ASSERT_TRUE(document);
   ASSERT_TRUE(class_name.Get());
 
   // Windows Narrator’s Scan Mode only contains navigation within web content when the UIA
