@@ -6,7 +6,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "third_party/libphonenumber/dist/cpp/src/phonenumbers/utf/utf.h"
+#include "third_party/libphonenumber/src/cpp/src/phonenumbers/utf/utf.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   Rune rune;

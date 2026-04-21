@@ -2454,7 +2454,7 @@ deps = {
       'condition': 'checkout_linux',
   },
 
-  'src/third_party/libphonenumber/dist':
+  'src/third_party/libphonenumber/src':
     Var('chromium_git') + '/external/libphonenumber.git' + '@' + '9d46308f313f2bf8dbce1dfd4f364633ca869ca7',
 
   'src/third_party/libprotobuf-mutator/src':

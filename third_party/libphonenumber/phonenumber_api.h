@@ -7,7 +7,7 @@
 #pragma once
 
 #define USE_GOOGLE_BASE
-#include "third_party/libphonenumber/dist/cpp/src/phonenumbers/phonenumberutil.h"
+#include "third_party/libphonenumber/src/cpp/src/phonenumbers/phonenumberutil.h"
 #undef USE_GOOGLE_BASE
 
 #endif  // THIRD_PARTY_LIBPHONENUMBER_PHONENUMBER_API_H_

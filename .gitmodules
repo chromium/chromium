@@ -374,7 +374,7 @@
 	url = https://chromium.googlesource.com/external/liblouis-github
 	gclient-condition = checkout_linux
 [submodule "third_party/libphonenumber/dist"]
-	path = third_party/libphonenumber/dist
+	path = third_party/libphonenumber/src
 	url = https://chromium.googlesource.com/external/libphonenumber
 [submodule "third_party/libprotobuf-mutator/src"]
 	path = third_party/libprotobuf-mutator/src

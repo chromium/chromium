@@ -8,15 +8,15 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [
-    "dist/resources/phonemetadata.proto",
-    "dist/resources/phonenumber.proto",
+    "src/resources/phonemetadata.proto",
+    "src/resources/phonenumber.proto",
   ]
   proto_out_dir = "third_party/libphonenumber/phonenumbers"
 }
 
 config("libphonenumber_config") {
   include_dirs = [
-    "dist/cpp/src",
+    "src/cpp/src",
     "$root_gen_dir/third_party/libphonenumber",
   ]
   defines = [
@@ -39,24 +39,24 @@ config("libphonenumber_config_internal") {
 
 static_library("libphonenumber_without_metadata") {
   sources = [
-    "dist/cpp/src/phonenumbers/alternate_format.cc",
-    "dist/cpp/src/phonenumbers/asyoutypeformatter.cc",
-    "dist/cpp/src/phonenumbers/base/strings/string_piece.cc",
-    "dist/cpp/src/phonenumbers/default_logger.cc",
-    "dist/cpp/src/phonenumbers/logger.cc",
-    "dist/cpp/src/phonenumbers/phonenumber.cc",
-    "dist/cpp/src/phonenumbers/phonenumbermatch.cc",
-    "dist/cpp/src/phonenumbers/phonenumbermatcher.cc",
-    "dist/cpp/src/phonenumbers/phonenumberutil.cc",
-    "dist/cpp/src/phonenumbers/regex_based_matcher.cc",
-    "dist/cpp/src/phonenumbers/regexp_adapter_icu.cc",
-    "dist/cpp/src/phonenumbers/regexp_cache.cc",
-    "dist/cpp/src/phonenumbers/string_byte_sink.cc",
-    "dist/cpp/src/phonenumbers/stringutil.cc",
-    "dist/cpp/src/phonenumbers/unicodestring.cc",
-    "dist/cpp/src/phonenumbers/utf/rune.c",
-    "dist/cpp/src/phonenumbers/utf/unicodetext.cc",
-    "dist/cpp/src/phonenumbers/utf/unilib.cc",
+    "src/cpp/src/phonenumbers/alternate_format.cc",
+    "src/cpp/src/phonenumbers/asyoutypeformatter.cc",
+    "src/cpp/src/phonenumbers/base/strings/string_piece.cc",
+    "src/cpp/src/phonenumbers/default_logger.cc",
+    "src/cpp/src/phonenumbers/logger.cc",
+    "src/cpp/src/phonenumbers/phonenumber.cc",
+    "src/cpp/src/phonenumbers/phonenumbermatch.cc",
+    "src/cpp/src/phonenumbers/phonenumbermatcher.cc",
+    "src/cpp/src/phonenumbers/phonenumberutil.cc",
+    "src/cpp/src/phonenumbers/regex_based_matcher.cc",
+    "src/cpp/src/phonenumbers/regexp_adapter_icu.cc",
+    "src/cpp/src/phonenumbers/regexp_cache.cc",
+    "src/cpp/src/phonenumbers/string_byte_sink.cc",
+    "src/cpp/src/phonenumbers/stringutil.cc",
+    "src/cpp/src/phonenumbers/unicodestring.cc",
+    "src/cpp/src/phonenumbers/utf/rune.c",
+    "src/cpp/src/phonenumbers/utf/unicodetext.cc",
+    "src/cpp/src/phonenumbers/utf/unilib.cc",
   ]
 
   # libphonenumber's base/logging.h is a minimal implementation where DCHECKs
@@ -84,8 +84,8 @@ static_library("libphonenumber") {
   sources = [
     # Comment next line and uncomment the line after, if complete metadata
     # (with examples) is needed.
-    "dist/cpp/src/phonenumbers/lite_metadata.cc",
-    #"dist/cpp/src/phonenumbers/metadata.cc",
+    "src/cpp/src/phonenumbers/lite_metadata.cc",
+    #"src/cpp/src/phonenumbers/metadata.cc",
   ]
 
   public_deps = [ ":libphonenumber_without_metadata" ]
@@ -93,15 +93,15 @@ static_library("libphonenumber") {
 
 test("libphonenumber_unittests") {
   sources = [
-    "dist/cpp/src/phonenumbers/test_metadata.cc",
-    "dist/cpp/test/phonenumbers/asyoutypeformatter_test.cc",
-    "dist/cpp/test/phonenumbers/phonenumbermatch_test.cc",
-    "dist/cpp/test/phonenumbers/phonenumbermatcher_test.cc",
-    "dist/cpp/test/phonenumbers/phonenumberutil_test.cc",
-    "dist/cpp/test/phonenumbers/regexp_adapter_test.cc",
-    "dist/cpp/test/phonenumbers/stringutil_test.cc",
-    "dist/cpp/test/phonenumbers/test_util.cc",
-    "dist/cpp/test/phonenumbers/unicodestring_test.cc",
+    "src/cpp/src/phonenumbers/test_metadata.cc",
+    "src/cpp/test/phonenumbers/asyoutypeformatter_test.cc",
+    "src/cpp/test/phonenumbers/phonenumbermatch_test.cc",
+    "src/cpp/test/phonenumbers/phonenumbermatcher_test.cc",
+    "src/cpp/test/phonenumbers/phonenumberutil_test.cc",
+    "src/cpp/test/phonenumbers/regexp_adapter_test.cc",
+    "src/cpp/test/phonenumbers/stringutil_test.cc",
+    "src/cpp/test/phonenumbers/test_util.cc",
+    "src/cpp/test/phonenumbers/unicodestring_test.cc",
   ]
 
   configs += [
@@ -109,7 +109,7 @@ test("libphonenumber_unittests") {
     "//build/config/compiler:no_exit_time_destructors",
   ]
 
-  include_dirs = [ "dist/cpp/test" ]
+  include_dirs = [ "src/cpp/test" ]
 
   deps = [
     ":libphonenumber_without_metadata",
