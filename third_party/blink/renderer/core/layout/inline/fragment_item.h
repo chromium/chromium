@@ -328,6 +328,9 @@ class CORE_EXPORT FragmentItem final {
       return static_cast<LineBoxType>(sub_type_);
     NOTREACHED() << this;
   }
+  bool IsRubyAnnotationLine() const {
+    return Type() == kLine && GetLineBoxType() == LineBoxType::kRubyLineBox;
+  }
 
   static PhysicalRect LocalVisualRectFor(const LayoutObject& layout_object);
 

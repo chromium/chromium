@@ -949,4 +949,31 @@ TEST_F(FragmentItemTest, CaretInlinePositionForOffset_TextFit) {
                 "12345", 1));
 }
 
+TEST_F(FragmentItemTest, IsRubyAnnotationLine) {
+  SetBodyInnerHTML(R"HTML(
+    <ruby id="ruby">base<rt>annotation</rt></ruby>
+  )HTML");
+
+  auto* container =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("ruby")->Parent());
+  const PhysicalBoxFragment* box = container->GetPhysicalFragment(0);
+  ASSERT_NE(box, nullptr);
+  const FragmentItems* items = box->Items();
+  ASSERT_NE(items, nullptr);
+  ASSERT_FALSE(items->Items().empty());
+
+  const auto& first_item = items->Items()[0];
+  EXPECT_EQ(first_item.Type(), FragmentItem::kLine);
+  EXPECT_FALSE(first_item.IsRubyAnnotationLine());
+
+  bool found_ruby_annotation_line = false;
+  for (const auto& item : items->Items()) {
+    if (item.IsRubyAnnotationLine()) {
+      found_ruby_annotation_line = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_ruby_annotation_line);
+}
+
 }  // namespace blink

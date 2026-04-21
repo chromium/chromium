@@ -23,7 +23,11 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
     // that are ignored for margin collapsing and for other purposes.
     // https://drafts.csswg.org/css2/box.html#collapsing-margins
     // Also see |InlineItem::IsEmptyItem|.
-    kEmptyLineBox
+    kEmptyLineBox,
+    // Ruby line box. It is treated as a normal line box.
+    // This type is only for FragmenItem. PhysicalLineBoxFragment never uses
+    // this.
+    kRubyLineBox
   };
 
   static const PhysicalLineBoxFragment* Create(LineBoxFragmentBuilder* builder);
