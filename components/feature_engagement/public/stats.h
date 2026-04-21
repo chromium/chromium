@@ -12,7 +12,7 @@ namespace feature_engagement::stats {
 // Out-dated entries shouldn't be deleted but marked as obsolete.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep this synced with the enum in //tools/metrics/histograms/enums.xml.
+// LINT.IfChange(ConfigParsingEvent)
 enum class ConfigParsingEvent {
   // The configuration is parsed correctly.
   SUCCESS = 0,
@@ -81,6 +81,7 @@ enum class ConfigParsingEvent {
   // Last entry for the enum.
   COUNT = 21,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConfigParsingEvent)
 
 // Records configuration parsing event.
 void RecordConfigParsingEvent(ConfigParsingEvent event);

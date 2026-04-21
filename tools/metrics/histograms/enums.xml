@@ -2303,6 +2303,8 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Update"/>
 </enum>
 
+<!-- LINT.IfChange(ConfigParsingEvent) -->
+
 <enum name="ConfigParsingEvent">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="FAILURE"/>
@@ -2320,7 +2322,14 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="FAILURE_TRACKING_ONLY_PARSE"/>
   <int value="14" label="SUCCESS_FROM_SOURCE"/>
   <int value="15" label="FAILURE_SNOOZE_PARAMS_PARSE"/>
+  <int value="16" label="FAILURE_BLOCKED_BY_PARSE"/>
+  <int value="17" label="FAILURE_BLOCKED_BY_UNKNOWN_FEATURE"/>
+  <int value="18" label="FAILURE_BLOCKING_PARSE"/>
+  <int value="19" label="FAILURE_GROUPS_PARSE"/>
+  <int value="20" label="FAILURE_GROUPS_UNKNOWN_GROUP"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/feature_engagement/public/stats.h:ConfigParsingEvent) -->
 
 <enum name="ConfirmToQuit">
   <int value="0" label="NoConfirm"/>
