@@ -92,6 +92,12 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
                                    std::nullopt);
 }
 
+// Returns the alpha for the button based on its enabled and highlighted state.
+CGFloat ButtonHighlightAlpha(UIButton* button) {
+  BOOL useEnabledColor = button.enabled && !button.isHighlighted;
+  return useEnabledColor ? 1.0 : 0.5;
+}
+
 }  // namespace
 
 @interface AppBarViewController ()
@@ -521,6 +527,56 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   return button;
 }
 
+// Updates the configuration for standard buttons.
+- (void)updateStandardButtonConfiguration:(UIButton*)button {
+  UIButtonConfiguration* config = button.configuration;
+  CGFloat highlightAlpha = ButtonHighlightAlpha(button);
+
+  // Image only fades on highlight/disabled.
+  config.imageColorTransformer = ^UIColor*(UIColor* color) {
+    return [ButtonsForegroundColor() colorWithAlphaComponent:highlightAlpha];
+  };
+
+  // Text fades on highlight/disabled AND scroll.
+  CGFloat textAlpha = highlightAlpha * self.buttonsTitleAlpha;
+
+  config.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* textAttributes) {
+    NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
+    mutableAttributes[NSFontAttributeName] =
+        AssistantButtonFontSize(self.traitCollection);
+    mutableAttributes[NSForegroundColorAttributeName] =
+        [ButtonsForegroundColor() colorWithAlphaComponent:textAlpha];
+    return mutableAttributes;
+  };
+
+  button.configuration = config;
+}
+
+// Updates the configuration for the tab grid button.
+- (void)updateTabGridButtonConfiguration:(UIButton*)button
+                              symbolView:(UIImageView*)symbolView
+                              countLabel:(UILabel*)countLabel {
+  UIButtonConfiguration* config = button.configuration;
+  // Keep image clear as set in createTabGridButton.
+  config.imageColorTransformer = ^UIColor*(UIColor* color) {
+    return UIColor.clearColor;
+  };
+
+  CGFloat highlightAlpha = ButtonHighlightAlpha(button);
+
+  UIColor* symbolColor = ButtonsForegroundColor();
+  UIColor* baseLabelColor =
+      _isTabGridVisible ? UIColor.blackColor : ButtonsForegroundColor();
+
+  symbolView.tintColor = [symbolColor colorWithAlphaComponent:highlightAlpha];
+  countLabel.textColor =
+      [baseLabelColor colorWithAlphaComponent:highlightAlpha];
+
+  button.configuration = config;
+}
+
 // Returns a new "TabGrid" button.
 - (UIButton*)createTabGridButton {
   // Use a custom Symbol and Label instead of the ones from the button to be
@@ -541,7 +597,6 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   // Make the base image clear so we can overlay our own with the label while
   // keeping the right size.
   configuration.imageColorTransformer = ^UIColor*(UIColor* color) {
-    tabGridSymbolView.tintColor = color;
     return UIColor.clearColor;
   };
   button.configuration = configuration;
@@ -560,6 +615,19 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   _tabCountLabel.textColor = ButtonsForegroundColor();
   [self updateTabCount:_tabCount];
   [button addSubview:_tabCountLabel];
+
+  __weak __typeof(self) weakSelf = self;
+  __weak UIImageView* weakTabGridSymbolView = tabGridSymbolView;
+  __weak UILabel* weakTabCountLabel = _tabCountLabel;
+  void (^previousHandler)(UIButton*) = button.configurationUpdateHandler;
+  button.configurationUpdateHandler = ^(UIButton* incomingButton) {
+    if (previousHandler) {
+      previousHandler(incomingButton);
+    }
+    [weakSelf updateTabGridButtonConfiguration:incomingButton
+                                    symbolView:weakTabGridSymbolView
+                                    countLabel:weakTabCountLabel];
+  };
   _tabGridButtonNormalStateConstraints = @[
     [_tabCountLabel.centerXAnchor
         constraintEqualToAnchor:button.imageView.centerXAnchor],
@@ -617,22 +685,8 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
 
   __weak __typeof(self) weakSelf = self;
-  __weak UIButton* weakButton = button;
-  configuration.titleTextAttributesTransformer =
-      ^NSDictionary<NSAttributedStringKey, id>*(
-          NSDictionary<NSAttributedStringKey, id>* textAttributes) {
-    NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
-    mutableAttributes[NSFontAttributeName] =
-        AssistantButtonFontSize(weakSelf.traitCollection);
-
-    BOOL useEnabledColor = !weakButton || weakButton.enabled;
-    CGFloat baseAlpha = useEnabledColor ? 1.0 : 0.5;
-    CGFloat finalAlpha = baseAlpha * weakSelf.buttonsTitleAlpha;
-    UIColor* textColor =
-        [ButtonsForegroundColor() colorWithAlphaComponent:finalAlpha];
-
-    mutableAttributes[NSForegroundColorAttributeName] = textColor;
-    return mutableAttributes;
+  button.configurationUpdateHandler = ^(UIButton* incomingButton) {
+    [weakSelf updateStandardButtonConfiguration:incomingButton];
   };
 
   button.configuration = configuration;
