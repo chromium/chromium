@@ -1063,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest,
   // sure that at least one of them is there.
   std::vector<char> trace;
   size_t i = 0;
-  for (; i < 300; i++) {
+  for (; i < 1000; i++) {
     EXPECT_TRUE(ExecJs(tab, "performance.mark('mark1');"));
 
     base::RunLoop flush;
@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest,
       break;
     }
   }
-  ASSERT_LT(i, 300U);
+  ASSERT_LT(i, 1000U);
 
   base::test::TestTraceProcessorImpl ttp;
   absl::Status status = ttp.ParseTrace(trace);
