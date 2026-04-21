@@ -60,6 +60,7 @@ namespace {
 
 constexpr char kHostname[] = "direct-sockets.com";
 constexpr char kPrivateAddress[] = "10.8.0.1";
+constexpr char kLoopbackAddress[] = "127.0.0.1";
 // It is fine to reuse the same address, because
 // the port will be generated unique on this machine.
 // multicast addresses are in range 224.0.0.0 to 239.255.255.255.
@@ -663,16 +664,19 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
                                     test_server()->port())));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
-                       UdpServerNotAffectedByPNAContentSettingInChromeApps) {
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsUdpApiTest,
+    UdpServerNotAffectedByLocalNetworkAccessContentSettingInChromeApps) {
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
       GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
           "udp", base::DictValue().Set("bind", "*").Set("send", "*"))));
 
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(
-          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
-          ContentSetting::CONTENT_SETTING_BLOCK);
+      ->SetDefaultContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   constexpr std::string_view kUdpBoundPna = R"(
     (async () => {
@@ -1011,15 +1015,15 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
-                       TcpConnectionToPrivateFailsWithoutPNAContentSetting) {
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsTcpIsolatedWebAppTest,
+    TcpConnectionToPrivateFailsWithoutLocalNetworkContentSetting) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(
-          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
-          ContentSetting::CONTENT_SETTING_BLOCK);
+      ->SetDefaultContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   constexpr std::string_view kTcpPna = R"(
     (async () => {
@@ -1029,6 +1033,27 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
   )";
 
   ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kTcpPna, kPrivateAddress)),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsTcpIsolatedWebAppTest,
+    TcpConnectionToLoopbackFailsWithoutLoopbackNetworkContentSetting) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
+
+  constexpr std::string_view kTcpPna = R"(
+    (async () => {
+      const socket = new TCPSocket($1, 459);
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kTcpPna, kLoopbackAddress)),
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
@@ -1114,15 +1139,15 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
-                       UdpConnectionToPrivateFailsWithoutPNAContentSetting) {
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsUdpIsolatedWebAppTest,
+    UdpConnectionToPrivateFailsWithoutLocalNetworkContentSetting) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(
-          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
-          ContentSetting::CONTENT_SETTING_BLOCK);
+      ->SetDefaultContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   constexpr std::string_view kUdpPna = R"(
     (async () => {
@@ -1132,6 +1157,27 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
   )";
 
   ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kUdpPna, kPrivateAddress)),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsUdpIsolatedWebAppTest,
+    UdpConnectionToLoopbackFailsWithoutLoopbackNetworkContentSetting) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
+
+  constexpr std::string_view kUdpPna = R"(
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: 459 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kUdpPna, kLoopbackAddress)),
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
@@ -1383,9 +1429,11 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(
-          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
-          ContentSetting::CONTENT_SETTING_BLOCK);
+      ->SetDefaultContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   constexpr std::string_view kUdpBoundPna = R"(
     (async () => {
@@ -1492,10 +1540,6 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
 class IsolatedWebAppDirectSocketsPermissionPrompt
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppDirectSocketsPermissionPrompt() {
-    features_.InitWithFeatures(
-        {features::kLocalNetworkAccessPromptDirectSockets}, {});
-  }
 
   content::RenderFrameHost* InstallAndOpenIsolatedWebApp() {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;

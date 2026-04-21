@@ -20,14 +20,6 @@ class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
   bool ValidateRequestForServiceWorker(content::BrowserContext* browser_context,
                                        const url::Origin& origin,
                                        const RequestDetails&) override;
-  bool RenderFrameHasDirectSocketsPNAContentSetting(
-      content::RenderFrameHost& rfh) override;
-  bool SharedWorkerHasDirectSocketsPNAContentSetting(
-      content::BrowserContext* browser_context,
-      const GURL& shared_worker_url) override;
-  bool ServiceWorkerHasDirectSocketsPNAContentSetting(
-      content::BrowserContext* browser_context,
-      const url::Origin& origin) override;
 };
 
 #endif  // CHROME_BROWSER_DIRECT_SOCKETS_CHROME_DIRECT_SOCKETS_DELEGATE_H_

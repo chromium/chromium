@@ -255,14 +255,6 @@ void RequestPrivateNetworkAccess(
               return;
             }
 
-            if (base::FeatureList::IsEnabled(
-                    features::kLocalNetworkAccessPromptDirectSockets)) {
-              if (!delegate->RenderFrameHasDirectSocketsPNAContentSetting(
-                      *rfh)) {
-                std::move(callback).Run(/*access_allowed=*/false);
-                return;
-              }
-
               rfh->GetBrowserContext()
                   ->GetPermissionController()
                   ->RequestPermissionsFromCurrentDocument(
@@ -284,26 +276,9 @@ void RequestPrivateNetworkAccess(
                                      blink::mojom::PermissionStatus::GRANTED;
                             });
                       }).Then(std::move(callback)));
-            } else {
-              std::move(callback).Run(
-                  /*access_allowed=*/delegate
-                      ->RenderFrameHasDirectSocketsPNAContentSetting(*rfh));
-            }
           },
           [&](base::WeakPtr<SharedWorkerHost> shared_worker) {
-            // TODO(crbug.com/393539884): Figure out the appropriate checks wrt
-            // permissions.
 
-            if (base::FeatureList::IsEnabled(
-                    features::kLocalNetworkAccessPromptDirectSockets)) {
-              if (!shared_worker ||
-                  !delegate->SharedWorkerHasDirectSocketsPNAContentSetting(
-                      CHECK_DEREF(shared_worker->GetProcessHost())
-                          .GetBrowserContext(),
-                      shared_worker->instance().url())) {
-                std::move(callback).Run(/*access_allowed=*/false);
-                return;
-              }
               std::move(callback).Run(
                   /*access_allowed=*/shared_worker &&
                   ArePermissionTypesAllowedForWorker(
@@ -313,29 +288,8 @@ void RequestPrivateNetworkAccess(
                       // origins, are denied sensitive permissions.
                       shared_worker->instance().worker_storage_key().origin(),
                       std::move(required_permissions)));
-            } else {
-              std::move(callback)
-                  .Run(/*access_allowed=*/
-                       shared_worker &&
-                       delegate->SharedWorkerHasDirectSocketsPNAContentSetting(
-                           CHECK_DEREF(shared_worker->GetProcessHost())
-                               .GetBrowserContext(),
-                           shared_worker->instance().url()));
-            }
           },
           [&](base::WeakPtr<ServiceWorkerVersion> service_worker) {
-            // TODO(crbug.com/392843918): Figure out the appropriate checks
-            // wrt permissions.
-
-            if (base::FeatureList::IsEnabled(
-                    features::kLocalNetworkAccessPromptDirectSockets)) {
-              if (!service_worker || !service_worker->context() ||
-                  !delegate->ServiceWorkerHasDirectSocketsPNAContentSetting(
-                      service_worker->context()->wrapper()->browser_context(),
-                      service_worker->key().origin())) {
-                std::move(callback).Run(/*access_allowed=*/false);
-                return;
-              }
               std::move(callback).Run(
                   /*access_allowed=*/service_worker &&
                   ArePermissionTypesAllowedForWorker(
@@ -343,14 +297,6 @@ void RequestPrivateNetworkAccess(
                           service_worker->embedded_worker()->process_id()),
                       service_worker->key().origin(),
                       std::move(required_permissions)));
-            } else {
-              std::move(callback).Run(
-                  /*access_allowed=*/service_worker &&
-                  service_worker->context() &&
-                  delegate->ServiceWorkerHasDirectSocketsPNAContentSetting(
-                      service_worker->context()->wrapper()->browser_context(),
-                      service_worker->key().origin()));
-            }
           }},
       context);
 }

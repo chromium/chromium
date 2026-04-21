@@ -49,15 +49,6 @@ class CONTENT_EXPORT DirectSocketsDelegate {
   virtual bool ValidateRequestForServiceWorker(BrowserContext* browser_context,
                                                const url::Origin& origin,
                                                const RequestDetails&) = 0;
-
-  virtual bool RenderFrameHasDirectSocketsPNAContentSetting(
-      RenderFrameHost& rfh) = 0;
-  virtual bool SharedWorkerHasDirectSocketsPNAContentSetting(
-      BrowserContext* browser_context,
-      const GURL& shared_worker_url) = 0;
-  virtual bool ServiceWorkerHasDirectSocketsPNAContentSetting(
-      BrowserContext* browser_context,
-      const url::Origin& origin) = 0;
 };
 
 }  // namespace content
