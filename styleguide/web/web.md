@@ -376,6 +376,10 @@ let items = document.body.querySelectorAll('div');
   This ensures that if a new enum value is added in the future, the compiler or
   runtime will catch unhandled cases.
 
+* `protected` and `private` members may end with an underscore. In either case,
+  don't mix and match naming styles within single file, instead pick one style
+  and stick with it to keep the naming within the file consistent.
+
 ### ESLint checks
 
 A big part of the styleguide is automatically enforced via ESLint checks. There

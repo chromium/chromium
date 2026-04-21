@@ -157,12 +157,12 @@ export function getHtml(this: MyElement) {
 **Do:**
 ```ts
 // my_element.ts
-protected accessor isVisible_ = false;
+protected accessor isVisible = false;
 
 // my_element.html.ts
 export function getHtml(this: MyElement) {
   return html`
-    <div ?hidden="${!this.isVisible_}">...</div>
+    <div ?hidden="${!this.isVisible}">...</div>
   `;
 }
 ```
@@ -185,16 +185,16 @@ However, there are some cases where a different solution may be preferred.
 export function getHtml(this: MyElement) {
   // Small amount of repeated HTML for the cr-button is okay.
   return html`
-    ${this.submitButtonFirst_ ? html`
-      <cr-button id="submit" @click="${this.onSubmitClick_}">
+    ${this.submitButtonFirst ? html`
+      <cr-button id="submit" @click="${this.onSubmitClick}">
         $i18n{submit}
       </cr-button>
     ` : ''}
-    <cr-button id="cancel" @click="${this.onCancelClick_}">
+    <cr-button id="cancel" @click="${this.onCancelClick}">
       $i18n{cancel}
     </cr-button>
-    ${!this.submitButtonFirst_ ? html`
-      <cr-button id="submit" @click="${this.onSubmitClick_}">
+    ${!this.submitButtonFirst ? html`
+      <cr-button id="submit" @click="${this.onSubmitClick}">
         $i18n{submit}
       </cr-button>
     ` : ''}
@@ -220,7 +220,7 @@ export function getHtml(this: MyElement) {
 // my_element.html.ts
 export function getHtml(this: MyElement) {
   const button = html`
-      <cr-button id="submit" @click="${this.onSubmitClick_}">
+      <cr-button id="submit" @click="${this.onSubmitClick}">
         $i18n{submit}
       </cr-button>`;
   return html`
@@ -244,7 +244,7 @@ export function getHtml(this: MyElement) {
 export function getHtml(this: MyElement) {
   return html`
     <div class="wrapper">
-      <cr-button id="submit" @click="${this.onSubmitClick_}">
+      <cr-button id="submit" @click="${this.onSubmitClick}">
         $i18n{submit}
       </cr-button>
     </div>
@@ -272,10 +272,10 @@ export function getHtml(this: MyElement) {
     .prop7="${this.prop7}"
     .prop8="${this.prop8}"
     .prop9="${this.prop9}"
-    @one="${this.onButtonOne_}"
-    @two="${this.onButtonTwo_}"
-    @three="${this.onButtonThree_}"
-    @four="${this.onButtonFour_}">
+    @one="${this.onButtonOne}"
+    @two="${this.onButtonTwo}"
+    @three="${this.onButtonThree}"
+    @four="${this.onButtonFour}">
 </fancy-button>
 `;
 }
@@ -287,7 +287,7 @@ import {getHtml as getFancyButtonHtml} from './my_element_fancy_button.html.js';
 
 export function getHtml(this: MyElement) {
   return html`
-${this.compact_ ? html`
+${this.compact ? html`
   <div class="compact">
     ${getFancyButtonHtml.bind(this)()}
     <cr-input id="input></cr-input>
@@ -316,7 +316,7 @@ attribute on the element and retrieve it in the handler.
 **Do not:**
 ```html
 ${this.items.map(item => html`
-  <button @click="${() => this.onItemClick_(item)}">${item}</button>
+  <button @click="${() => this.onItemClick(item)}">${item}</button>
 `)}
 ```
 
@@ -324,12 +324,12 @@ ${this.items.map(item => html`
 ```html
 
 ${this.items.map((item, index) => html`
-  <button data-index="${index}" @click="${this.onItemClick_}">${item}</button>
+  <button data-index="${index}" @click="${this.onItemClick}">${item}</button>
 `)}
 ```
 
 ```ts
-protected onItemClick_(e: Event) {
+protected onItemClick(e: Event) {
   const currentTarget = e.currentTarget as HTMLElement;
   const item = items[Number(currentTarget.dataset['index'])];
 }
@@ -401,13 +401,13 @@ If the DOM node that the event handler is bound to has an ID, the
 
 **Do not:**
 ```html
-<button id="foo" @click="${this.onBarClick_}"></button>
+<button id="foo" @click="${this.onBarClick}"></button>
 ```
 
 **Do:**
 ```html
-<button id="foo" @click="${this.onClick_}"></button>
-<button id="foo" @click="${this.onFooClick_}"></button>
+<button id="foo" @click="${this.onClick}"></button>
+<button id="foo" @click="${this.onFooClick}"></button>
 ```
 
 ## DOM Access

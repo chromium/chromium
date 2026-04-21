@@ -98,7 +98,7 @@ static override get properties() {
 This property is also bound to a parent element that listens for the
 `-changed` event as follows:
 ```html
-<foo-child ?foo="${this.foo_}" on-foo-changed="${this.onFooChanged_}">
+<foo-child ?foo="${this.foo}" on-foo-changed="${this.onFooChanged}">
 </foo-child>
 <demo-child id="demo"></demo-child>
 ```
@@ -107,15 +107,15 @@ The parent TypeScript code could look like this:
 ```ts
 static override get properties() {
   return {
-    foo_: {type: Boolean},
+    foo: {type: Boolean},
  };
 }
 
-protected accessor foo_: boolean = true;
+protected accessor foo: boolean = true;
 
-onFooChanged_(e: CustomEvent<{value: boolean}>) {
+onFooChanged(e: CustomEvent<{value: boolean}>) {
   // Updates the parent's property that is bound to the child.
-  this.foo_ = e.detail.value;
+  this.foo = e.detail.value;
 }
 
 override updated(changedProperties: PropertyValues<this>) {
@@ -125,9 +125,9 @@ override updated(changedProperties: PropertyValues<this>) {
   const changedPrivateProperties =
       changedProperties as Map<PropertyKey, unknown>;
 
-  // Updates the DOM when |foo_| changes.
-  if (changedPrivateProperties.has('foo_')) {
-    if (this.foo_) {
+  // Updates the DOM when |foo| changes.
+  if (changedPrivateProperties.has('foo')) {
+    if (this.foo) {
       this.$.demo.show();
     } else {
       this.$.demo.hide();
@@ -149,7 +149,7 @@ have an empty `<select>` displayed at startup.
 
 `.html.ts` file with `<select>` bug:
 ```html
-<select .value="${this.mySelectValue}" @change="${this.onSelectChange_}">
+<select .value="${this.mySelectValue}" @change="${this.onSelectChange}">
   <option value="${MyEnum.FIRST}">Option 1</option>
   <option value="${MyEnum.SECOND}">Option 2</option>
 </select>
@@ -166,7 +166,7 @@ static get properties() {
 
 accessor mySelectValue: MyEnum = MyEnum.SECOND;
 
-onSelectChange_(e: Event) {
+onSelectChange(e: Event) {
   this.mySelectValue = (e.target as HTMLSelectElement).value;
 }
 ```
@@ -176,13 +176,13 @@ attribute on each `<option>`, i.e.:
 
 `.html.ts` file:
 ```html
-<select @change="${this.onSelectChange_}">
+<select @change="${this.onSelectChange}">
   <option value="${MyEnum.FIRST}"
-      ?selected="${this.isSelected_(MyEnum.FIRST)}">
+      ?selected="${this.isSelected(MyEnum.FIRST)}">
     Option 1
   </option>
   <option value="${MyEnum.SECOND}"
-      ?selected="${this.isSelected_(MyEnum.SECOND)}">
+      ?selected="${this.isSelected(MyEnum.SECOND)}">
     Option 2
   </option>
 </select>
@@ -198,11 +198,11 @@ static get properties() {
 
 accessor mySelectValue: MyEnum = MyEnum.SECOND;
 
-onSelectChange_(e: Event) {
+onSelectChange(e: Event) {
   this.mySelectValue = (e.target as HTMLSelectElement).value;
 }
 
-isSelected_(value: MyEnum): boolean {
+isSelected(value: MyEnum): boolean {
   return value === this.mySelectValue;
 }
 ```
@@ -356,7 +356,7 @@ export class MyExampleElement extends CrLitElement {
   accessor myValue: string = 'hello world';
 
   // Referenced from the template, so must be protected (not private).
-  protected onInputValueChanged_(e: CustomEvent<string>) {
+  protected onInputValueChanged(e: CustomEvent<string>) {
     this.myValue = e.detail.value;
   }
 }
@@ -419,7 +419,7 @@ export function getHtml(this: MyExampleElement) {
    <div>Input something</div>
    <cr-input id="input" .value="${this.myValue}"
        ?disabled="${this.disabled}"
-       @value-changed="${this.onInputValueChanged_}">
+       @value-changed="${this.onInputValueChanged}">
    </cr-input>`;
 }
 ```
@@ -493,7 +493,7 @@ without specifying parameters. An example of this follows.
 
 Polymer HTML template snippet:
 ```html
-<cr-button hidden="[[hideButton_]]">Click Me</cr-button>
+<cr-button hidden="[[hideButton]]">Click Me</cr-button>
 ```
 
 In the Polymer element definition:
@@ -502,24 +502,24 @@ static get properties() {
   return {
    loading: Boolean,
    showingDialog: Boolean,
-   hideButton_: {
+   hideButton: {
      type: Boolean,
-     computed: 'computeHideButton_(loading, showingDialog)',
+     computed: 'computeHideButton(loading, showingDialog)',
    },
  };
 }
 // Other code goes here
 
-private computeHideButton_(): boolean {
+private computeHideButton(): boolean {
   return !this.loading && !this.showingDialog;
 }
 ```
 
-This could be rewritten in Lit, omitting the `hideButton_` property entirely.
+This could be rewritten in Lit, omitting the `hideButton` property entirely.
 
 Equivalent Lit HTML template snippet:
 ```html
-<cr-button ?hidden="${this.computeHideButton_()}">Click Me</cr-button>
+<cr-button ?hidden="${this.computeHideButton()}">Click Me</cr-button>
 ```
 
 Equivalent Lit element definition:
@@ -533,7 +533,7 @@ static get properties() {
 // Other code goes here
 // Anything referenced in the HTML template needs to be protected, not
 // private.
-protected computeHideButton_(): boolean {
+protected computeHideButton(): boolean {
   return !this.loading && !this.showingDialog;
 }
 ```
@@ -548,7 +548,7 @@ override willUpdate(changedProperties: PropertyValues<this>) {
 
   if (changedProperties.has('value')) {
     const values = (this.value || '').split(',');
-    this.multipleValues_ = values.length > 1;
+    this.multipleValues = values.length > 1;
   }
 }
 ```
@@ -576,10 +576,10 @@ static get properties() {
 }
 
 static get observers() {
-  return [ 'onValueSet_(min, max, value)' ];
+  return [ 'onValueSet(min, max, value)' ];
 }
 
-private onValueSet_() {
+private onValueSet() {
   this.value = Math.min(Math.max(this.value, this.min), this.max);
   const demo = this.shadowRoot!.querySelector('#demo');
   if (demo) {
@@ -633,7 +633,7 @@ Polymer `cr_toolbar.html`:
 <div id="content">
   <template is="dom-if" if="[[showMenu]]" restamp>
     <cr-icon-button id="menuButton" class="no-overlap"
-        iron-icon="cr20:menu" on-click="onMenuClick_">
+        iron-icon="cr20:menu" on-click="onMenuClick">
     </cr-icon-button>
   </template>
   <h1>[[pageName]]</h1>
@@ -645,7 +645,7 @@ Lit `cr_toolbar.html.ts`:
 <div id="content">
   ${this.showMenu ? html`
     <cr-icon-button id="menuButton" class="no-overlap"
-        iron-icon="cr20:menu" @click="${this.onMenuClick_}">
+        iron-icon="cr20:menu" @click="${this.onMenuClick}">
     </cr-icon-button>` : ''}
   <h1>${this.pageName}</h1>
 </div>
@@ -678,8 +678,8 @@ fire events, as seen in the example that follows.
 From the Polymer element template:
 ```html
 <template is="dom-repeat" items="[[listItems]]">
-  <div class="item-container [[getSelectedClass_(item, selectedItem)]]">
-    <cr-button id="[[getItemId_(index)]]" on-click="onItemClick_">
+  <div class="item-container [[getSelectedClass(item, selectedItem)]]">
+    <cr-button id="[[getItemId(index)]]" on-click="onItemClick">
       [[item.name]]
     </cr-button>
   </div>
@@ -688,15 +688,15 @@ From the Polymer element template:
 
 From the Polymer element definition:
 ```ts
-private getItemId_(index: number): string {
+private getItemId(index: number): string {
   return 'listItemId' + index;
 }
 
-private getSelectedClass_(item: ListItemType): string {
+private getSelectedClass(item: ListItemType): string {
   return (item === this.selectedItem) ? 'selected' : '';
 }
 
-private onItemClick_(e: DomRepeatEvent<ListItemType>) {
+private onItemClick(e: DomRepeatEvent<ListItemType>) {
   this.selectedItem = e.model.item;
   // Autoscroll to selected item if it is not completely visible.
   const list =
@@ -710,9 +710,9 @@ private onItemClick_(e: DomRepeatEvent<ListItemType>) {
 Lit template:
 ```ts
 ${this.listItems.map((item, index) => html`
-  <div class="item-container ${this.getSelectedClass_(item)}">
-    <cr-button id="${this.getItemId_(index)}"
-        data-index="${index}" @click="${this.onItemClick_}">
+  <div class="item-container ${this.getSelectedClass(item)}">
+    <cr-button id="${this.getItemId(index)}"
+        data-index="${index}" @click="${this.onItemClick}">
       ${item.name}
     </cr-button>
   </div>
@@ -725,15 +725,15 @@ Note the `data-index` setting the `data` attribute on the
 
 From the Lit element definition file:
 ```ts
-protected getItemId_(index: number): string {
+protected getItemId(index: number): string {
   return 'listItemId' + index;
 }
 
-protected getSelectedClass_(item: ListItemType): string {
+protected getSelectedClass(item: ListItemType): string {
   return item === this.selectedItem ? 'selected' : '';
 }
 
-protected onItemClick_(e: Event) {
+protected onItemClick(e: Event) {
   const currentTarget = e.currentTarget as HTMLElement;
 
   // Use dataset to get the index set in the .html.ts template.
@@ -779,10 +779,10 @@ their height has changed. See example below:
 
 From the `list_parent.html` template (`iron-list` client so must be Polymer)
 ```html
-<iron-list id="list" items="[[listItems_]]" as="item">
+<iron-list id="list" items="[[listItems]]" as="item">
   <template>
     <custom-item description="[[item.description]]" name="[[item.name]]"
-        on-click="onListItemClick_">
+        on-click="onListItemClick">
     </custom-item>
   </template>
 </iron-list>
@@ -854,7 +854,7 @@ export function getHtml(this: MyExampleElement) {
    <div>$i18n{inputLabel}</div>
    <cr-input id="input" .value="${this.myValue}"
        ?disabled="${this.disabled}"
-       @value-changed="${this.onInputValueChanged_}">
+       @value-changed="${this.onInputValueChanged}">
    </cr-input>
 <!--_html_template_end_-->`;
 }
