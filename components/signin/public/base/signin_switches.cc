@@ -517,7 +517,13 @@ BASE_FEATURE(kProfileCreationFrictionReductionExperimentRemoveSigninStep,
 
 BASE_FEATURE(kProfileCreationFrictionReductionExperimentSkipCustomizeProfile,
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kProfileDiscOnAllPages, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kProfilePickerTextVariations, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<ProfilePickerVariation>::Option
     kProfilePickerVariations[] = {

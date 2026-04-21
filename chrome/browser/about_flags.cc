@@ -12973,6 +12973,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kExactMatchFavicons)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"profile-disc-on-all-pages", flag_descriptions::kProfileDiscOnAllPagesName,
+     flag_descriptions::kProfileDiscOnAllPagesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kProfileDiscOnAllPages)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

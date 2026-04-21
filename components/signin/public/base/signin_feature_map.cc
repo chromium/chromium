@@ -43,6 +43,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSigninLevelUpButton,
     &switches::kSigninManagerSeedingFix,
     &switches::kSupportForcedSigninPolicy,
+    &switches::kProfileDiscOnAllPages,
 };
 
 // static

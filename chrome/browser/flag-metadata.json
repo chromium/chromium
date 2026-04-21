@@ -7784,6 +7784,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "profile-disc-on-all-pages",
+    "owners": [
+      "crowleso@google.com",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "profile-picker-text-variations",
     "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 150
