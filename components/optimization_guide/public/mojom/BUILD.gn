@@ -9,6 +9,7 @@ mojom("mojom") {
     "model_broker.mojom",
     "model_broker_debug.mojom",
   ]
+  webui_module_path = "/"
 
   deps = [
     "//mojo/public/mojom/base",

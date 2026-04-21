@@ -4,6 +4,7 @@
 
 module on_device_internals.mojom;
 
+import "components/optimization_guide/public/mojom/model_broker_debug.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -80,8 +81,8 @@ struct FeatureAdaptationInfo {
 // a page handler.
 interface PageHandlerFactory {
   // Create a page handler and link it to the UI.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> handler);
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
 };
 
 // Primary interface for the chrome://on-device-internals WebUI. Lives in the
@@ -91,21 +92,22 @@ interface PageHandler {
   // from within `model_path`.
   LoadModel(mojo_base.mojom.FilePath model_path,
             on_device_model.mojom.ModelPerformanceHint performance_hint,
-            pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
-      (on_device_model.mojom.LoadModelResult result,
-       on_device_model.mojom.Capabilities capabilities);
+            pending_receiver<on_device_model.mojom.OnDeviceModel> model)
+      => (on_device_model.mojom.LoadModelResult result,
+          on_device_model.mojom.Capabilities capabilities);
 
   // Binds a new OnDeviceModel interface via the ChromeOS platform service
   // using model assets loaded from within `model_path`.
-  LoadPlatformModel(mojo_base.mojom.FilePath model_path,
-                    pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
-      (on_device_model.mojom.LoadModelResult result);
+  LoadPlatformModel(
+      mojo_base.mojom.FilePath model_path,
+      pending_receiver<on_device_model.mojom.OnDeviceModel> model)
+      => (on_device_model.mojom.LoadModelResult result);
 
   // Returns the performance class based on benchmarks run on the device as
   // well as its info (vendor id, device id, driver version, and fp16 support).
-  GetDeviceAndPerformanceInfo() =>
-      (on_device_model.mojom.DevicePerformanceInfo performance_info,
-       on_device_model.mojom.DeviceInfo device_info);
+  GetDeviceAndPerformanceInfo()
+      => (on_device_model.mojom.DevicePerformanceInfo performance_info,
+          on_device_model.mojom.DeviceInfo device_info);
 
   // Returns the path of the default model.
   GetDefaultModelPath() => (mojo_base.mojom.FilePath? model_path);
@@ -121,13 +123,16 @@ interface PageHandler {
   SetFeatureRecentlyUsedState(int32 feature_key, bool is_recently_used);
 
   // Decodes a bitmap from an image buffer.
-  DecodeBitmap(mojo_base.mojom.BigBuffer image_buffer) =>
-      (skia.mojom.BitmapMappedFromTrustedProcess? bitmap);
+  DecodeBitmap(mojo_base.mojom.BigBuffer image_buffer)
+      => (skia.mojom.BitmapMappedFromTrustedProcess? bitmap);
 
   // Reset the crash count for the on-device model service.
   ResetModelCrashCount();
-};
 
+  // Binds the ModelBrokerDebug interface.
+  BindModelBrokerDebug(
+      pending_receiver<optimization_guide.mojom.ModelBrokerDebug> receiver);
+};
 
 // Renderer-side handler for internals WebUI page to process the updates from
 // the service.

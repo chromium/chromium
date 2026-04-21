@@ -471,6 +471,16 @@ void PageHandler::ResetModelCrashCount() {
   prefs->SetInteger(kOnDeviceModelCrashCount, 0);
 }
 
+void PageHandler::BindModelBrokerDebug(
+    mojo::PendingReceiver<optimization_guide::mojom::ModelBrokerDebug>
+        receiver) {
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  optimization_guide_keyed_service_->GetGlobalState()
+      .on_device_capability()
+      .BindModelBrokerDebug(base::PassKey<PageHandler>(), std::move(receiver));
+#endif
+}
+
 void PageHandler::SendDownloadProgress(int64_t downloaded_bytes,
                                        int64_t total_bytes) {
   page_->OnDownloadProgressUpdate(downloaded_bytes, total_bytes);

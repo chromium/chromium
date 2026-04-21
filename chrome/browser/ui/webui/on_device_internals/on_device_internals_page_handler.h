@@ -78,8 +78,12 @@ class PageHandler : public mojom::PageHandler,
   void DecodeBitmap(mojo_base::BigBuffer image_buffer,
                     DecodeBitmapCallback callback) override;
   void ResetModelCrashCount() override;
+  void BindModelBrokerDebug(
+      mojo::PendingReceiver<optimization_guide::mojom::ModelBrokerDebug>
+          receiver) override;
 
   // optimization_guide::OptimizationGuideLogger::Observer:
+
   void OnLogMessageAdded(base::Time event_time,
                          optimization_guide_common::mojom::LogSource log_source,
                          const std::string& source_file,

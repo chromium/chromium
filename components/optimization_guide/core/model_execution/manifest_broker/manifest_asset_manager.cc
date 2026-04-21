@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -112,6 +113,42 @@ ManifestAssetManager::ComponentContext::AsAssetState(
       ManifestSolutionFactory::AssetUnavailableReason::kNotDownloaded);
 }
 
+mojom::BrokerAssetState
+ManifestAssetManager::ComponentContext::ToBrokerAssetState() const {
+  switch (state_) {
+    case ComponentState::kNotRegistered:
+      return mojom::BrokerAssetState::kNotInstalled;
+    case ComponentState::kRegistering:
+      return mojom::BrokerAssetState::kRegistering;
+    case ComponentState::kRegistered:
+      return mojom::BrokerAssetState::kNotInstalled;
+    case ComponentState::kOnDemandDownloading:
+      return mojom::BrokerAssetState::kForegroundInstalling;
+    case ComponentState::kReady:
+      return mojom::BrokerAssetState::kReady;
+    case ComponentState::kUninstalling:
+      return mojom::BrokerAssetState::kUninstalling;
+  }
+}
+
+mojom::BrokerAssetInfoPtr
+ManifestAssetManager::ComponentContext::ToBrokerAssetInfo(
+    const proto::OnDemandComponent* target) const {
+  auto asset_info = mojom::BrokerAssetInfo::New();
+  asset_info->name = asset_id_;
+  if (target) {
+    asset_info->version = target->target_version();
+  } else {
+    asset_info->version = requested_version_;
+  }
+  asset_info->state = ToBrokerAssetState();
+  if (version_.has_value() && requested_version_ != version_->GetString()) {
+    asset_info->error =
+        base::StrCat({"Mismatched version: ", version_->GetString()});
+  }
+  return asset_info;
+}
+
 void ManifestAssetManager::ComponentContext::SetAssetId(
     const std::string& asset_id) {
   asset_id_ = asset_id;
@@ -134,7 +171,8 @@ void ManifestAssetManager::ComponentContext::SetRegistering(
 }
 
 void ManifestAssetManager::ComponentContext::SetRegistered() {
-  CHECK_EQ(state_, ComponentState::kRegistering);
+  CHECK(state_ == ComponentState::kRegistering ||
+        state_ == ComponentState::kReady);
   state_ = ComponentState::kRegistered;
 }
 
@@ -597,6 +635,37 @@ void ManifestAssetManager::NotifyFactory(const std::string& public_key,
   }
   factory_->UpdateAssetState(context.asset_id(),
                              context.AsAssetState(component->target_version()));
+}
+
+std::vector<mojom::BrokerPropertyInfoPtr>
+ManifestAssetManager::GetBrokerProperties() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<mojom::BrokerPropertyInfoPtr> properties;
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Supports Installs",
+      disk_space_status_.CanSupportOnDemandInstall() ? "true" : "false"));
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Supports Proactive Downloads",
+      disk_space_status_.CanSupportProactiveDownload() ? "true" : "false"));
+  return properties;
+}
+
+std::vector<mojom::BrokerAssetInfoPtr> ManifestAssetManager::GetBrokerAssets()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<mojom::BrokerAssetInfoPtr> assets;
+  for (const auto& [public_key, context] : ledger_.contexts()) {
+    const proto::OnDemandComponent* component =
+        factory_->manifest().GetAssetByPublicKey(public_key);
+    assets.push_back(context.ToBrokerAssetInfo(component));
+  }
+  return assets;
+}
+
+std::vector<mojom::BrokerModelInfoPtr> ManifestAssetManager::GetBrokerModels()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return factory_->GetBrokerModels();
 }
 
 }  // namespace optimization_guide

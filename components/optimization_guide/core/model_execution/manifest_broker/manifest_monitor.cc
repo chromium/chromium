@@ -160,4 +160,19 @@ void ManifestMonitor::OnManifestLoaded(
   on_manifest_changed_.Run();
 }
 
+std::vector<mojom::BrokerPropertyInfoPtr> ManifestMonitor::GetBrokerProperties()
+    const {
+  std::vector<mojom::BrokerPropertyInfoPtr> properties;
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Manifest Path",
+      manifest_dir_.has_value() ? manifest_dir_->AsUTF8Unsafe() : "N/A"));
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Free Disk Space", free_space_.has_value()
+                             ? base::ToString(free_space_->InMiB()) + " MiB"
+                             : "N/A"));
+  properties.push_back(mojom::BrokerPropertyInfo::New(
+      "Manifest Loaded", manifest_.has_value() ? "true" : "false"));
+  return properties;
+}
+
 }  // namespace optimization_guide

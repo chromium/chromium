@@ -307,8 +307,23 @@ void ManifestSolutionFactory::UpdateSolutions() {
   }
 }
 
+std::vector<mojom::BrokerModelInfoPtr>
+ManifestSolutionFactory::GetBrokerModels() const {
+  std::vector<mojom::BrokerModelInfoPtr> result;
+  for (const auto& [model_id, state] : base_models_) {
+    const auto& recipe = manifest_.GetRecipes().base_models().at(model_id);
+    auto info = mojom::BrokerModelInfo::New();
+    info->name = model_id;
+    if (auto path = ResolveFile(recipe.weights_file())) {
+      info->weights_path = path->AsUTF8Unsafe();
+    }
+    result.push_back(std::move(info));
+  }
+  return result;
+}
+
 std::optional<base::FilePath> ManifestSolutionFactory::ResolveFile(
-    const proto::FileReference& file) {
+    const proto::FileReference& file) const {
   auto it = assets_.find(file.asset_id());
   if (it == assets_.end() || !it->second.has_value()) {
     return std::nullopt;

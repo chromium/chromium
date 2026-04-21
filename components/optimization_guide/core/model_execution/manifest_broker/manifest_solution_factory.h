@@ -106,6 +106,9 @@ class ManifestSolutionFactory {
   // Flush all use cases and emit new solutions for any that are now available.
   void UpdateSolutions();
 
+  // Get debug info about the current models.
+  std::vector<mojom::BrokerModelInfoPtr> GetBrokerModels() const;
+
   const Manifest& manifest() const { return manifest_; }
 
  private:
@@ -113,7 +116,8 @@ class ManifestSolutionFactory {
 
   // Resolves a file reference to a file path.
   // Returns nullopt if the asset is not available.
-  std::optional<base::FilePath> ResolveFile(const proto::FileReference& file);
+  std::optional<base::FilePath> ResolveFile(
+      const proto::FileReference& file) const;
 
   // Arrange for Solution configs stored in the given asset to be loaded.
   void LoadSolutionConfigsFrom(const std::string& asset_id,

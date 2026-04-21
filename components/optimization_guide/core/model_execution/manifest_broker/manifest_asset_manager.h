@@ -83,6 +83,15 @@ class ManifestAssetManager : public UsageTracker::Observer {
   //     via UpdateAssetState.
   void UpdateSolutionFactory(std::unique_ptr<ManifestSolutionFactory> factory);
 
+  // Returns a list of properties for the broker state info.
+  std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
+
+  // Returns a list of assets for the broker state info.
+  std::vector<mojom::BrokerAssetInfoPtr> GetBrokerAssets() const;
+
+  // Returns a list of models for the broker state info.
+  std::vector<mojom::BrokerModelInfoPtr> GetBrokerModels() const;
+
   // Returns whether the component installation is valid.
   static bool VerifyInstallation(const base::FilePath& install_dir,
                                  const base::DictValue& manifest);
@@ -137,6 +146,10 @@ class ManifestAssetManager : public UsageTracker::Observer {
     std::string requested_version() const { return requested_version_; }
     ComponentState state() const { return state_; }
     std::optional<base::FilePath> install_dir() const { return install_dir_; }
+
+    mojom::BrokerAssetState ToBrokerAssetState() const;
+    mojom::BrokerAssetInfoPtr ToBrokerAssetInfo(
+        const proto::OnDemandComponent* target) const;
 
     // Sets the ID used in the current manifest for this asset.
     void SetAssetId(const std::string& asset_id);

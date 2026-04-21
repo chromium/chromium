@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/containers/extend.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -230,13 +231,16 @@ void ManifestBrokerState::FinishGetOnDeviceModelEligibility(
 void ManifestBrokerState::GetStateInfo(
     mojom::ModelBrokerDebug::GetStateInfoCallback callback) {
   auto result = mojom::BrokerStateInfo::New();
-  // TODO: crbug.com/489511500 - Add missing info.
-  result->properties = performance_classifier_.GetBrokerProperties();
-  // base::Extend(result->properties,
-  //              component_state_manager_.GetBrokerProperties());
-  // result->assets = component_state_manager_.GetBrokerAssets();
+  result->properties.push_back(
+      mojom::BrokerPropertyInfo::New("Broker Type", "ManifestBrokerState"));
+  base::Extend(result->properties,
+               performance_classifier_.GetBrokerProperties());
+  base::Extend(result->properties, manifest_monitor_.GetBrokerProperties());
   result->use_cases = model_broker_impl_.GetBrokerUseCaseInfo();
-  // result->models = base_model_controller_.GetBrokerModels();
+  if (asset_manager_) {
+    result->assets = asset_manager_->GetBrokerAssets();
+    result->models = asset_manager_->GetBrokerModels();
+  }
   std::move(callback).Run(std::move(result));
 }
 
