@@ -95,6 +95,7 @@ source_set("input_plate") {
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/cobrowse/model:factory",
     "//ios/chrome/browser/composebox/debugger",
+    "//ios/chrome/browser/composebox/menu/coordinator",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
