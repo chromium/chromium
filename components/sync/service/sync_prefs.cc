@@ -757,7 +757,8 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return switches::IsExtensionsExplicitBrowserSigninEnabled();
     case UserSelectableType::kThemes:
 #if BUILDFLAG(IS_ANDROID)
-      return false;
+      return base::FeatureList::IsEnabled(
+          syncer::kNewTabPageCustomizationThemeSync);
 #elif BUILDFLAG(IS_IOS)
       // Allow 'Themes' toggle on iOS if the feature is enabled.
       return base::FeatureList::IsEnabled(syncer::kSyncThemesIos);

@@ -12742,8 +12742,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"new-tab-page-customization-theme-sync",
      flag_descriptions::kNewTabPageCustomizationThemeSyncName,
      flag_descriptions::kNewTabPageCustomizationThemeSyncDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomizationThemeSync)},
+     kOsAndroid, FEATURE_VALUE_TYPE(syncer::kNewTabPageCustomizationThemeSync)},
 #endif
 #if BUILDFLAG(IS_ANDROID)
     {"your-saved-info-settings-page-android",

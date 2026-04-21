@@ -397,7 +397,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kMvcUpdateViewWhenModelChanged,
     &kNavBarColorAnimation,
     &kNewTabPageCustomizationForMvt,
-    &kNewTabPageCustomizationThemeSync,
     &kNewTabPageCustomizationV2,
     &kNotificationPermissionVariant,
     &kNotificationTrampoline,
@@ -530,6 +529,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kRestrictLegacySearchEnginePromoOnFormFactors,
     &sync_preferences::features::kCrossDevicePrefTrackerExtraLogs,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
+    &syncer::kNewTabPageCustomizationThemeSync,
     &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
     &syncer::kSyncTrustedVaultErrorMessageDuration,
@@ -751,7 +751,6 @@ BASE_FEATURE(kMultiInstanceSharedPrefsMigration, base::FEATURE_ENABLED_BY_DEFAUL
 BASE_FEATURE(kMvcUpdateViewWhenModelChanged, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNavBarColorAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNewTabPageCustomizationForMvt, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kNewTabPageCustomizationThemeSync, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationPermissionVariant, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationTrampoline, base::FEATURE_DISABLED_BY_DEFAULT);

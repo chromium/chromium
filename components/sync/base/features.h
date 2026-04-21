@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kSyncGeminiThread);
 // Enables syncing of themes across iOS devices.
 BASE_DECLARE_FEATURE(kSyncThemesIos);
 
+// Enables syncing of New Tab Page customization themes on Android.
+BASE_DECLARE_FEATURE(kNewTabPageCustomizationThemeSync);
+
 // Enables syncing of usage metadata for loyalty cards.
 BASE_DECLARE_FEATURE(kSyncLoyaltyCardMetadata);
 
