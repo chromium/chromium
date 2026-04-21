@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.AcceptedOnce.PriorIgnoreCount2{PermissionTypes}"
-    units="units" expires_after="2026-04-20">
+    units="units" expires_after="2026-10-21">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1418,8 +1418,8 @@ chromium-metrics-reviews@google.com.
     site data and prior to the accept. The suffix of the histogram indicates
     which particular permission.
 
-    Warning: this histogram was expired from 2024-10-31 to 2024-11-22; data may
-    be missing. {PermissionTypes}
+    Warning: this histogram was expired from 2024-10-31 to 2024-11-22 and from
+    2026-04-20 to 2026-04-21; data may be missing. {PermissionTypes}
   </summary>
   <token key="PermissionTypes" variants="PermissionTypes">
     <variant name=""/>
