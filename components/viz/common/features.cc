@@ -239,7 +239,7 @@ BASE_FEATURE(kEnableADPFSeparateRendererMainSession,
 // workload during page load.
 // Supported only on Android >= 16.
 BASE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Chrome uses ADPF's setPreferPowerEfficiency API to try and save
 // energy at the cost of performance. Supported only on Android >= 16.
