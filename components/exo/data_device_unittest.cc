@@ -352,6 +352,16 @@ TEST_F(DataDeviceTest, ClipboardDeviceCreatedAfterFocus) {
   EXPECT_EQ(test::DataEvent::kSelection, events[1]);
 }
 
+TEST_F(DataDeviceTest, UnsetDragDropDelegateAfterRelease) {
+  auto surface = std::make_unique<Surface>();
+  seat_->NotifySurfaceCreated(surface.get());
+
+  ASSERT_EQ(aura::client::GetDragDropDelegate(surface->window()),
+            static_cast<aura::client::DragDropDelegate*>(device_.get()));
+  device_.reset();
+  ASSERT_EQ(aura::client::GetDragDropDelegate(surface->window()), nullptr);
+}
+
 TEST_F(DataDeviceTest, ClipboardFocusedSurfaceDestroyed) {
   device_->OnSurfaceFocused(surface_.get(), nullptr, true);
   surface_.reset();
