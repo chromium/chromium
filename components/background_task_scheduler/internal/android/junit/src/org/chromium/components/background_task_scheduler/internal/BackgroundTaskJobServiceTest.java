@@ -258,8 +258,6 @@ public class BackgroundTaskJobServiceTest {
 
         verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
         verify(mBackgroundTaskSchedulerUma, times(1))
-                .reportNotificationWasSet(eq(TaskIds.TEST), anyLong());
-        verify(mBackgroundTaskSchedulerUma, times(1))
                 .reportTaskFinished(eq(TaskIds.TEST), anyLong());
     }
 

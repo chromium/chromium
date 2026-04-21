@@ -877,18 +877,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackgroundTaskScheduler.SetNotification.{TaskType}"
-    units="ms" expires_after="2024-10-05">
-  <owner>nyquist@chromium.org</owner>
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Measures the time starting from the instant the task was started till a
-    notification was set on the background task job service for a task of type
-    {TaskType}. Recorded when the notification was set as long as the task isn't
-    finished.
-  </summary>
-</histogram>
-
 <histogram name="Android.BackgroundTaskScheduler.TaskCanceled"
     enum="BackgroundTaskId" expires_after="2025-06-08">
   <owner>nyquist@chromium.org</owner>
