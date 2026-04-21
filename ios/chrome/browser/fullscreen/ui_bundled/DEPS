@@ -6,11 +6,3 @@ include_rules = [
   "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
   # keep-sorted end
 ]
-
-specific_include_rules = {
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "fullscreen_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-}
