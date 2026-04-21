@@ -425,4 +425,17 @@ TEST_F(PressureServiceForFrameFencedFrameTest, AccessFromFencedFrame) {
                    ->bad_msg_count());
 }
 
+TEST_F(PressureServiceForFrameTest, HasImplicitFocus_PipNoOrigin) {
+  // Create a second WebContents and simulate PiP video without a session.
+  // This simulates a state where WebContents::HasPictureInPictureVideo() is
+  // true but the PiP controller's GetOrigin() returns nullopt.
+  std::unique_ptr<TestWebContents> pip_wc(
+      TestWebContents::Create(browser_context(), nullptr));
+  pip_wc->SetHasPictureInPictureVideo(true);
+
+  // This should not crash.
+  EXPECT_TRUE(
+      PressureServiceBase::HasImplicitFocus(contents()->GetPrimaryMainFrame()));
+}
+
 }  // namespace content
