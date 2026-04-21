@@ -23,6 +23,3 @@
 
 # crbug.com/422528199
 -All/SitePerProcessBrowserTestWithoutSadFrameTabReload.ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown/*
-
-# crbug.com/501324952
--MediaColorTest.Yuvj420pH264

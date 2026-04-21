@@ -18,6 +18,3 @@
 
 # crbug.com/1428300
 -OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
-
-# crbug.com/501324952
--MediaColorTest.Yuvj420pH264
