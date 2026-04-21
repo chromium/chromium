@@ -6,13 +6,19 @@
 
 import argparse
 import logging
+import subprocess
 from util import jj_log
 from util import run_command
 from util import run_jj
 
 
 def _fetch(shallow: bool) -> None:
-  args = ['git', 'fetch', 'origin', 'main']
+  # Specify git dir explicitly in case we're in a JJ workspace.
+  git_dir = run_jj(['git', 'root'],
+                   ignore_working_copy=True,
+                   stdout=subprocess.PIPE,
+                   text=True).stdout.strip()
+  args = ['git', f'--git-dir={git_dir}', 'fetch', 'origin', 'main']
   if shallow:
     # Do something similar to a shallow clone with depth 2
     # For rationale, see:
