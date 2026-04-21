@@ -78,6 +78,9 @@ class ReadAnythingImmersiveOverlayView
   // Forward the focus event to the focus_callback_list_ observers.
   void OnImmersiveWebViewFocused(views::WebView* web_view);
 
+  // Helper method to retrieve the TabInterface from the contents_web_view_.
+  tabs::TabInterface* GetTabInterface(views::WebView* web_view = nullptr);
+
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
   // Subscriptions to the ContentsWebView callbacks, which notify us if a new
   // WebContents was added or removed from the main WebContentsView.
@@ -97,6 +100,10 @@ class ReadAnythingImmersiveOverlayView
   // open.
   std::unique_ptr<views::WebView::ScopedAxDisconnectLock>
       scoped_accessibility_disconnecter_;
+
+  // Used to hide tab modal UIs (like the FedCM identity popup) while IRM is
+  // open.
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_IMMERSIVE_OVERLAY_VIEW_H_

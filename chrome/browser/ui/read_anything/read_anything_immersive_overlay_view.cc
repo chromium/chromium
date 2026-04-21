@@ -51,13 +51,7 @@ void ReadAnythingImmersiveOverlayView::OnWebContentsAttached(
 
 void ReadAnythingImmersiveOverlayView::SubscribeToController(
     views::WebView* web_view) {
-  content::WebContents* web_contents = web_view->GetWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  tabs::TabInterface* tab = GetTabInterface(web_view);
   if (!tab) {
     return;
   }
@@ -134,6 +128,11 @@ void ReadAnythingImmersiveOverlayView::OnShowUI() {
   scoped_accessibility_disconnecter_ =
       contents_web_view_->DisconnectWebContentsAccessibility();
 
+  tabs::TabInterface* tab = GetTabInterface();
+  if (tab && tab->CanShowModalUI()) {
+    scoped_tab_modal_ui_ = tab->ShowModalUI();
+  }
+
   GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
       IDS_IMMERSIVE_READING_MODE_OPENED_ANNOUNCEMENT));
 
@@ -152,6 +151,8 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
   // the main webpage is now visible.
   scoped_accessibility_disconnecter_.reset();
 
+  scoped_tab_modal_ui_.reset();
+
   CHECK(immersive_web_view_);
   std::unique_ptr<ReadAnythingImmersiveWebView> web_view =
       RemoveChildViewT(immersive_web_view_);
@@ -168,6 +169,16 @@ ReadAnythingImmersiveOverlayView::AddWebViewFocusedCallback(
 void ReadAnythingImmersiveOverlayView::OnImmersiveWebViewFocused(
     views::WebView* web_view) {
   focus_callback_list_.Notify(web_view);
+}
+
+tabs::TabInterface* ReadAnythingImmersiveOverlayView::GetTabInterface(
+    views::WebView* web_view) {
+  views::WebView* view_to_use = web_view ? web_view : contents_web_view_.get();
+  if (!view_to_use || !view_to_use->web_contents()) {
+    return nullptr;
+  }
+  return tabs::TabInterface::MaybeGetFromContents(
+      view_to_use->web_contents());
 }
 
 BEGIN_METADATA(ReadAnythingImmersiveOverlayView)
