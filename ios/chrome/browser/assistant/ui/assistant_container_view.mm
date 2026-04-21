@@ -90,6 +90,10 @@ const CGSize kAssistantShadowOffset = {0, 11};
 
 // Updates the shadow opacity based on the currently masked corners.
 - (void)updateShadowOpacity {
+  if (IsIPhoneLandscapeLayout(self.traitCollection)) {
+    self.layer.shadowOpacity = kAssistantShadowOpacity;
+    return;
+  }
   self.layer.shadowOpacity =
       (_bottomCornerRadius > 0.0) ? kAssistantShadowOpacity : 0.0;
 }
