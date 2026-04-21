@@ -2743,6 +2743,16 @@ crbug.com/503882535 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_
 crbug.com/503882535 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win ] external/wpt/fullscreen/api/document-fullscreen-keyboard-lock-change.tentative.window.html [ Pass Timeout ]
+external/wpt/mixed-content/gen/sharedworker-classic-data.meta/unset/websocket.https.html [ Skip Timeout ]
+external/wpt/mixed-content/gen/sharedworker-classic.http-rp/unset/websocket.https.html [ Skip Timeout ]
+[ Linux ] external/wpt/mixed-content/gen/sharedworker-module-data.meta/unset/websocket.https.html [ Skip Timeout ]
+[ Win ] external/wpt/mixed-content/gen/sharedworker-module-data.meta/unset/websocket.https.html [ Skip Timeout ]
+[ Mac ] external/wpt/mixed-content/gen/sharedworker-module-data.meta/unset/websocket.https.html [ Pass Timeout ]
+external/wpt/mixed-content/gen/sharedworker-module.http-rp/unset/websocket.https.html [ Skip Timeout ]
+[ Win ] external/wpt/mixed-content/gen/srcdoc-inherit.http-rp/opt-in/worklet-animation.https.html [ Pass Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/reload/frame.py [ Failure ]
+virtual/jxl-enabled/external/wpt/jpegxl/progressive-lf.html [ Failure ]
 crbug.com/503879985 [ Win ] external/wpt/css/css-flexbox/getcomputedstyle/first-line-computed-style.html [ Pass Timeout ]
 crbug.com/503526631 external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
 crbug.com/503526631 external/wpt/webdriver/tests/bidi/network/get_data/request.py [ Failure ]
@@ -9742,4 +9752,4 @@ crbug.com/501845333 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-eff
 
 # Gardener 2026-04-20
 crbug.com/40318224 http/tests/perf/large-inlined-script.html [ Timeout ]
-crbug.com/504423491 [ Linux Debug ] virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/subresource-blocking.sub.window.html [ Failure ]
+crbug.com/504423491 [ Debug Linux ] virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/subresource-blocking.sub.window.html [ Failure ]

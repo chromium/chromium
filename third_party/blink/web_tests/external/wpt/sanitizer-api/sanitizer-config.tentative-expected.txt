@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] config[replaceWithChildrenElements] should not allow non-replaceable elements
+  assert_throws_js: function "() => {\n      new Sanitizer({\n        replaceWithChildrenElements: [element],\n      });\n    }" did not throw
+Harness: the test ran to completion.
+

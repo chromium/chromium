@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Mixed-Content: Expects allowed for worklet-animation-import-data to same-https origin and keep-scheme redirection from https context.
+  assert_equals: The resource request should be 'allowed'. expected "allowed" but got "blocked"
+[FAIL] Mixed-Content: Expects allowed for worklet-animation-import-data to same-https origin and no-redirect redirection from https context.
+  assert_equals: The resource request should be 'allowed'. expected "allowed" but got "blocked"
+Harness: the test ran to completion.
+
