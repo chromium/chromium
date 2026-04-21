@@ -109,14 +109,24 @@ class GlicContextMenuInvocationHelperUnittest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Matcher to check if GlicInvokeOptions has a specific tab as target.
-MATCHER_P(TargetTab, expected_tab, "") {
+// Matcher to check if GlicInvokeOptions has a specific tab as target and
+// specific fre_override.
+MATCHER_P(TargetTabAndFreOverride, expected, "") {
+  auto [expected_tab, expected_fre_override] = expected;
   if (!std::holds_alternative<raw_ptr<tabs::TabInterface>>(
           arg.target.surface)) {
     return false;
   }
   return std::get<raw_ptr<tabs::TabInterface>>(arg.target.surface).get() ==
-         expected_tab;
+             expected_tab &&
+         arg.fre_override == expected_fre_override;
+}
+
+inline auto TargetTabAndFreOverride(
+    tabs::TabInterface* expected_tab,
+    glic::mojom::FreOverride expected_fre_override) {
+  return TargetTabAndFreOverride(
+      std::make_pair(expected_tab, expected_fre_override));
 }
 
 TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickStandard) {
@@ -130,7 +140,10 @@ TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickStandard) {
   ON_CALL(mock_tab, GetContents())
       .WillByDefault(testing::Return(web_contents.get()));
 
-  EXPECT_CALL(*mock_service_, InvokeProxy(TargetTab(&mock_tab))).Times(1);
+  EXPECT_CALL(*mock_service_,
+              InvokeProxy(TargetTabAndFreOverride(
+                  &mock_tab, glic::mojom::FreOverride::kTrustFirstInline)))
+      .Times(1);
   GlicContextMenuInvocationHelper::HandleContextualMenuClick(&mock_tab);
 }
 
@@ -149,7 +162,31 @@ TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickArm2) {
       .WillByDefault(testing::Return(web_contents.get()));
 
   EXPECT_CALL(*mock_service_,
-              InvokeWithAutoSubmitProxy(testing::_, TargetTab(&mock_tab)))
+              InvokeWithAutoSubmitProxy(
+                  testing::_,
+                  TargetTabAndFreOverride(
+                      &mock_tab, glic::mojom::FreOverride::kTrustFirstInline)))
+      .Times(1);
+  GlicContextMenuInvocationHelper::HandleContextualMenuClick(&mock_tab);
+}
+
+TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickArm3) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kGlic, {}},
+       {features::kGlicContextMenu,
+        {{features::kGlicContextMenuArm.name, "arm3"}}}},
+      {});
+
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  EXPECT_CALL(*mock_service_,
+              InvokeProxy(TargetTabAndFreOverride(
+                  &mock_tab, glic::mojom::FreOverride::kTrustFirstClick)))
       .Times(1);
   GlicContextMenuInvocationHelper::HandleContextualMenuClick(&mock_tab);
 }

@@ -36,8 +36,12 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
     glic::GlicInvokeOptions options(
         glic::Target(tab),
         glic::mojom::InvocationSource::kWebContentsContextMenu);
-    options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
     std::string arm = features::kGlicContextMenuArm.Get();
+    if (arm == "arm3") {
+      options.fre_override = glic::mojom::FreOverride::kTrustFirstClick;
+    } else {
+      options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
+    }
     if (arm == "arm2") {
       options.prompts.push_back(
           l10n_util::GetStringUTF8(IDS_GLIC_SUMMARIZE_PAGE_PROMPT));
