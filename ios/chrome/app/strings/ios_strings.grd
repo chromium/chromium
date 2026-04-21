@@ -356,6 +356,9 @@
       <message name="IDS_IOS_AI_HUB_HIDE_READER_MODE_LABEL" desc="The button label for hiding Reader mode when it's active from the AI hub.">
         Hide Reader
       </message>
+      <message name="IDS_IOS_AI_HUB_INELIGIBLE_ACCOUNT_SNACKBAR" translateable="false" desc="Snackbar message shown when a user taps Ask Gemini but their account is ineligible.">
+        This account won't work with Gemini. Sign in with a different Google Account.
+      </message>
       <message name="IDS_IOS_AI_HUB_LENS_LABEL" desc="The button label for the Lens entry point of the AI hub.">
         Search screen
       </message>

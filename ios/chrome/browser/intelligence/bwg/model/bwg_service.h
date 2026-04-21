@@ -26,6 +26,11 @@ class BwgService : public KeyedService {
   // are deemed eligible for Gemini will result in std::nullopt.
   virtual std::optional<gemini::IneligibilityReasons>
   GeminiIneligibilityForProfile() = 0;
+
+  // Returns whether the async workspace policy check is still in flight.
+  // When true, GeminiIneligibilityForProfile() may return stale or
+  // incomplete workspace data.
+  virtual bool IsWorkspacePolicyCheckPending() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_

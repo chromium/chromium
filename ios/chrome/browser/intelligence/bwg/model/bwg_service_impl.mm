@@ -48,7 +48,9 @@ BwgServiceImpl::BwgServiceImpl(ProfileIOS* profile,
         {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});
   }
 
-  CheckGeminiEnterpriseEligibility();
+  if (!IsPageActionMenuAuthFlowEnabled()) {
+    CheckGeminiEnterpriseEligibility();
+  }
 }
 
 BwgServiceImpl::~BwgServiceImpl() = default;
@@ -61,6 +63,10 @@ void BwgServiceImpl::Shutdown() {
 
 bool BwgServiceImpl::IsProfileEligibleForGemini() {
   return !GeminiIneligibilityForProfile().has_value();
+}
+
+bool BwgServiceImpl::IsWorkspacePolicyCheckPending() {
+  return !is_disabled_by_gemini_policy_.has_value();
 }
 
 std::optional<gemini::IneligibilityReasons>
@@ -148,6 +154,8 @@ void BwgServiceImpl::CheckGeminiEnterpriseEligibility() {
   }
 
   eligibility_weak_ptr_factory_.InvalidateWeakPtrs();
+
+  is_disabled_by_gemini_policy_ = std::nullopt;
 
   ios::provider::CheckGeminiEligibility(
       auth_service_, base::CallbackToBlock(base::BindOnce(

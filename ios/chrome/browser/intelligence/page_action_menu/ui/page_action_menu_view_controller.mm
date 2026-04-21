@@ -156,6 +156,24 @@ const CGFloat kDividerWidth = 1.0;
   }
 }
 
+- (void)updateGeminiLoadingState:(BOOL)loading {
+  if (!_BWGButton) {
+    return;
+  }
+  UIButtonConfiguration* config = [_BWGButton.configuration copy];
+  config.showsActivityIndicator = loading;
+  if (loading) {
+    config.attributedTitle = nil;
+    config.image = nil;
+  }
+  _BWGButton.configuration = config;
+  _BWGButton.userInteractionEnabled = !loading;
+
+  if (!loading) {
+    [self updateGeminiAvailability];
+  }
+}
+
 #pragma mark - Public
 
 - (CGFloat)resolveDetentValueForSheetPresentation:

@@ -43,6 +43,9 @@
 // The handler for sending reader mode commands.
 @property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
 
+// Updates the loading state on the Ask Gemini button.
+- (void)updateGeminiLoadingState:(BOOL)loading;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_VIEW_CONTROLLER_H_

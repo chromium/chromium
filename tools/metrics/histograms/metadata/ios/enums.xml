@@ -262,6 +262,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dismiss"/>
   <int value="4" label="ReaderModeOptions"/>
   <int value="5" label="GeminiSignedOut"/>
+  <int value="6" label="GeminiIneligible"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h:IOSAIHubAction) -->
