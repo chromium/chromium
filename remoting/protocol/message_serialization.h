@@ -27,13 +27,6 @@ std::unique_ptr<T> ParseMessage(CompoundBuffer* buffer) {
   return message;
 }
 
-// Serialize the Protocol Buffer message and provide sufficient framing for
-// sending it over the wire.
-// This will provide sufficient prefix and suffix for the receiver side to
-// decode the message.
-scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
-    const google::protobuf::MessageLite& msg);
-
 }  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MESSAGE_SERIALIZATION_H_

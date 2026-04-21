@@ -77,8 +77,6 @@ source_set("base") {
     "auto_thread_task_runner.h",
     "branding.cc",
     "branding.h",
-    "buffered_socket_writer.cc",
-    "buffered_socket_writer.h",
     "capabilities.cc",
     "capabilities.h",
     "certificate_helpers.cc",
@@ -450,7 +448,6 @@ source_set("unit_tests") {
   sources = [
     "auto_thread_task_runner_unittest.cc",
     "auto_thread_unittest.cc",
-    "buffered_socket_writer_unittest.cc",
     "capabilities_unittest.cc",
     "compound_buffer_unittest.cc",
     "ecdh_key_exchange_unittest.cc",

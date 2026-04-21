@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/proto/internal.pb.h"
-#include "remoting/protocol/message_decoder.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/desktop_configuration.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
