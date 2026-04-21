@@ -106,6 +106,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kDeepResearchIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kFirstTabMenuItemIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
+                                      kImageUploadMenuItemIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
+                                      kFileUploadMenuItemIdForTesting);
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     OmniboxPopupFileSelector* file_selector,
@@ -255,6 +259,13 @@ void OmniboxContextMenuController::AddContextualInputItems() {
       auto& menu_item_info = input_type_info_[input_type];
       AddItemWithIcon(next_command_id_, menu_item_info.menu_label,
                       menu_item_info.menu_icon);
+      if (input_type == omnibox::InputType::INPUT_TYPE_LENS_IMAGE) {
+        menu_model_->SetElementIdentifierAt(menu_model_->GetItemCount() - 1,
+                                            kImageUploadMenuItemIdForTesting);
+      } else if (input_type == omnibox::InputType::INPUT_TYPE_LENS_FILE) {
+        menu_model_->SetElementIdentifierAt(menu_model_->GetItemCount() - 1,
+                                            kFileUploadMenuItemIdForTesting);
+      }
       input_type_for_command_id_[next_command_id_] = input_type;
       next_command_id_++;
     }

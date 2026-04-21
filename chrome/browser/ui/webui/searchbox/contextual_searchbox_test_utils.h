@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_TEST_UTILS_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
@@ -130,6 +131,7 @@ class MockQueryController
       observers_;
   std::map<base::UnguessableToken, std::unique_ptr<contextual_search::FileInfo>>
       files_;
+  base::WeakPtrFactory<MockQueryController> weak_ptr_factory_{this};
 };
 
 class TestWebContentsDelegate : public content::WebContentsDelegate {

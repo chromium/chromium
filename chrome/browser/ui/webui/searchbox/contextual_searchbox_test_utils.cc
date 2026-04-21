@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -55,7 +57,14 @@ void MockQueryController::FakeStartFileUploadFlow(
     mime_type = contextual_input->primary_content_type.value();
   }
   AddFileInfoForTesting(file_token, mime_type);
-  NotifySuccess(file_token, mime_type);
+
+  // Post a task to notify success asynchronously. This ensures that the
+  // frontend receives the Mojo response containing the fileToken *before* the
+  // upload status event arrives, preventing the event from being dropped.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MockQueryController::NotifySuccess,
+                     weak_ptr_factory_.GetWeakPtr(), file_token, mime_type));
 }
 
 void MockQueryController::FakeCreateSearchUrl(
