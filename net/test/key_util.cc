@@ -9,7 +9,9 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "net/ssl/openssl_private_key.h"
+#include "crypto/keypair.h"
+#include "crypto/subtle_passkey.h"
+#include "net/ssl/crypto_private_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -63,7 +65,8 @@ scoped_refptr<SSLPrivateKey> LoadPrivateKeyOpenSSL(
   bssl::UniquePtr<EVP_PKEY> key = LoadEVP_PKEYFromPEM(filepath);
   if (!key)
     return nullptr;
-  return WrapOpenSSLPrivateKey(std::move(key));
+  return WrapCryptoPrivateKey(crypto::keypair::PrivateKey(
+      std::move(key), crypto::SubtlePassKey::ForTesting()));
 }
 
 }  // namespace net::key_util

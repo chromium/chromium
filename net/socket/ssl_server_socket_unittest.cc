@@ -43,6 +43,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "crypto/evp.h"
+#include "crypto/keypair.h"
+#include "crypto/subtle_passkey.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
@@ -61,7 +63,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
-#include "net/ssl/openssl_private_key.h"
+#include "net/ssl/crypto_private_key.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_client_session_cache.h"
@@ -428,7 +430,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     client_context_->SetClientCertificate(
         GetHostAndPort(), std::move(client_cert),
-        WrapOpenSSLPrivateKey(std::move(key)));
+        WrapCryptoPrivateKey(crypto::keypair::PrivateKey(
+            std::move(key), crypto::SubtlePassKey::ForTesting())));
   }
 
   void ConfigureClientCertsForServer() {

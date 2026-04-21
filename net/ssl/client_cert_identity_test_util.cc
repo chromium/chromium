@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "crypto/evp.h"
-#include "net/ssl/openssl_private_key.h"
+#include "crypto/keypair.h"
+#include "crypto/subtle_passkey.h"
+#include "net/ssl/crypto_private_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/test_ssl_private_key.h"
 #include "net/test/cert_test_util.h"
@@ -48,7 +50,8 @@ FakeClientCertIdentity::CreateFromCertAndKeyFiles(
   }
 
   scoped_refptr<SSLPrivateKey> ssl_private_key =
-      WrapOpenSSLPrivateKey(std::move(pkey));
+      WrapCryptoPrivateKey(crypto::keypair::PrivateKey(
+          std::move(pkey), crypto::SubtlePassKey::ForTesting()));
   if (!ssl_private_key)
     return nullptr;
 
