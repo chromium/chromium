@@ -286,6 +286,22 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
                             ttl);
 }
 
+DnsResourceRecord BuildTestOptRecord(uint16_t udp_payload_size,
+                                     uint32_t extended_rcode_and_flags,
+                                     base::span<const uint8_t> rdata) {
+  DnsResourceRecord record;
+  record.name = "";  // Root domain
+  record.type = dns_protocol::kTypeOPT;
+  record.klass = udp_payload_size;
+  record.ttl = extended_rcode_and_flags;
+
+  if (!rdata.empty()) {
+    record.SetOwnedRdata(rdata);
+  }
+
+  return record;
+}
+
 DnsResponse BuildTestDnsResponse(
     std::string name,
     uint16_t type,

@@ -256,6 +256,10 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
     const std::map<uint16_t, std::string>& params,
     base::TimeDelta ttl = base::Days(1));
 
+DnsResourceRecord BuildTestOptRecord(uint16_t udp_payload_size,
+                                     uint32_t extended_rcode_and_flags,
+                                     base::span<const uint8_t> rdata);
+
 DnsResponse BuildTestDnsResponse(
     std::string name,
     uint16_t type,

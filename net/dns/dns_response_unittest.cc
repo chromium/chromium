@@ -1769,6 +1769,40 @@ TEST(DnsResponseWriteTest, CreateEmptyNoDataResponse) {
   EXPECT_THAT(response.dotted_qnames(), testing::ElementsAre("name.test"));
 }
 
+TEST(DnsResponseWriteTest, OptRecordWithRootNameField) {
+  const uint8_t response_data[] = {
+      0x00, 0x01,  // ID
+      0x80, 0x00,  // flags, response
+      0x00, 0x00,  // number of questions
+      0x00, 0x00,  // number of answer rr
+      0x00, 0x00,  // number of name server rr
+      0x00, 0x01,  // number of additional rr
+
+      0x00,                    // NAME is root domain (single zero byte)
+      0x00, 0x29,              // TYPE is OPT
+      0x10, 0x00,              // CLASS (max UDP payload size 4096)
+      0x00, 0x00, 0x00, 0x00,  // TTL (actually extended RCODE and flags)
+      0x00, 0x04,              // RDLENGTH
+      0xDE, 0xAD, 0xBE, 0xEF,  // RDATA
+  };
+
+  DnsResourceRecord opt_record = BuildTestOptRecord(
+      /*udp_payload_size=*/0x1000, /*extended_rcode_and_flags=*/0,
+      /*rdata=*/std::to_array<uint8_t>({0xDE, 0xAD, 0xBE, 0xEF}));
+
+  DnsResponse response(/*id=*/0x0001, /*is_authoritative=*/false,
+                       /*answers=*/{}, /*authority_records=*/{},
+                       /*additional_records=*/{opt_record},
+                       /*query=*/std::nullopt);
+  ASSERT_NE(nullptr, response.io_buffer());
+  EXPECT_TRUE(response.IsValid());
+  std::string expected_response(reinterpret_cast<const char*>(response_data),
+                                sizeof(response_data));
+  std::string actual_response(response.io_buffer()->data(),
+                              response.io_buffer_size());
+  EXPECT_EQ(expected_response, actual_response);
+}
+
 template <size_t N>
 void LoadResponse(IOBuffer* buffer, const uint8_t (&packet)[N]) {
   ASSERT_LE(N, static_cast<size_t>(buffer->size()));

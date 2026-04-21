@@ -111,12 +111,22 @@ void DnsResourceRecord::SetOwnedRdata(base::span<const uint8_t> value) {
 }
 
 size_t DnsResourceRecord::CalculateRecordSize() const {
-  bool has_final_dot = name.back() == '.';
-  // Depending on if |name| in the dotted format has the final dot for the root
-  // domain or not, the corresponding wire data in the DNS domain name format is
-  // 1 byte (with dot) or 2 bytes larger in size. See RFC 1035, Section 3.1 and
-  // DNSDomainFromDot.
-  return name.size() + (has_final_dot ? 1 : 2) +
+  size_t name_size;
+  if (type == dns_protocol::kTypeOPT) {
+    // Per RFC 6891, OPT pseudo-RR name field must be the root domain (encoded
+    // as a single zero byte).
+    CHECK(name.empty());
+    name_size = 1;
+  } else {
+    CHECK(!name.empty());
+    bool has_final_dot = name.back() == '.';
+    // Depending on if |name| in the dotted format has the final dot for the
+    // root domain or not, the corresponding wire data in the DNS domain name
+    // format is 1 byte (with dot) or 2 bytes larger in size. See RFC 1035,
+    // Section 3.1 and `dns_names_util::DottedNameToNetwork()`.
+    name_size = name.size() + (has_final_dot ? 1 : 2);
+  }
+  return name_size +
          net::dns_protocol::kResourceRecordSizeInBytesWithoutNameAndRData +
          (owned_rdata.empty() ? rdata.size() : owned_rdata.size());
 }
@@ -614,9 +624,16 @@ bool DnsResponse::WriteRecord(base::SpanWriter<uint8_t>* writer,
     return false;
   }
 
-  std::optional<std::vector<uint8_t>> domain_name =
-      dns_names_util::DottedNameToNetwork(record.name,
-                                          validate_name_as_internet_hostname);
+  // Per RFC 6891, OPT pseudo-RR name field must be the root domain (empty
+  // name encoded as a single zero byte).
+  std::optional<std::vector<uint8_t>> domain_name;
+  if (record.type == dns_protocol::kTypeOPT) {
+    CHECK(record.name.empty());
+    domain_name = std::vector<uint8_t>{0};
+  } else {
+    domain_name = dns_names_util::DottedNameToNetwork(
+        record.name, validate_name_as_internet_hostname);
+  }
   if (!domain_name.has_value()) {
     VLOG(1) << "Invalid dotted name (as "
             << (validate_name_as_internet_hostname ? "Internet hostname)."
