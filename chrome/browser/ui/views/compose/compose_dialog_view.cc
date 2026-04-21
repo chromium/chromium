@@ -191,15 +191,8 @@ bool ComposeDialogView::HandleContextMenu(
       content::WebContents::FromRenderFrameHost(&render_frame_host));
   DCHECK(menu_delegate);
 
-  menu_delegate->BuildMenuAsync(
-      render_frame_host, params,
-      base::BindOnce(&ComposeDialogView::OnBuildMenuComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-  return true;
-}
-
-void ComposeDialogView::OnBuildMenuComplete(
-    std::unique_ptr<RenderViewContextMenuBase> menu) {
+  std::unique_ptr<RenderViewContextMenuBase> menu =
+      menu_delegate->BuildMenu(render_frame_host, params);
   // Remove everything that is not copy, paste, or cut or spellcheck
   // suggestions.
   std::vector<int> command_ids;
@@ -226,12 +219,9 @@ void ComposeDialogView::OnBuildMenuComplete(
 
   // Only show the menu if there are items in it.
   if (menu->menu_model().GetItemCount() > 0) {
-    context_menu_model_for_testing_ = &menu->menu_model();
-    ContextMenuDelegate* menu_delegate =
-        ContextMenuDelegate::FromWebContents(bubble_wrapper_->web_contents());
-    DCHECK(menu_delegate);
     menu_delegate->ShowMenu(std::move(menu));
   }
+  return true;
 }
 
 base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {

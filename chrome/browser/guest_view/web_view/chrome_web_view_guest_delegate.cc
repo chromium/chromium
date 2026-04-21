@@ -82,33 +82,23 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   }
 #endif
   CHECK(menu_delegate);
-
-  int request_id = ++pending_context_menu_request_id_;
-  menu_delegate->BuildMenuAsync(
-      render_frame_host, params,
-      base::BindOnce(&ChromeWebViewGuestDelegate::OnBuildMenuComplete,
-                     weak_ptr_factory_.GetWeakPtr(), request_id));
-  return true;
-}
-
-void ChromeWebViewGuestDelegate::OnBuildMenuComplete(
-    int request_id,
-    std::unique_ptr<RenderViewContextMenuBase> menu) {
-  pending_menu_ = std::move(menu);
+  pending_menu_ = menu_delegate->BuildMenu(render_frame_host, params);
   // It's possible for the returned menu to be null, so early out to avoid
   // a crash. TODO(wjmaclean): find out why it's possible for this to happen
   // in the first place, and if it's an error.
   if (!pending_menu_) {
-    return;
+    return false;
   }
 
   // Pass it to embedder.
+  int request_id = ++pending_context_menu_request_id_;
   base::DictValue args;
   args.Set(webview::kContextMenuItems,
            MenuModelToValue(pending_menu_->menu_model()));
   args.Set(webview::kRequestId, request_id);
   web_view_guest()->DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventContextMenuShow, std::move(args)));
+  return true;
 }
 
 void ChromeWebViewGuestDelegate::OnShowContextMenu(int request_id) {
