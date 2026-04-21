@@ -2165,6 +2165,9 @@ VISIT_PROTO_FIELDS(const sync_pb::VehicleRegistration& proto) {
   VISIT(license_plate_country);
   VISIT(owner_name);
   VISIT(issuer_name);
+  VISIT(issue_date_unix_epoch_micros);
+  VISIT(expiration_date_unix_epoch_micros);
+  VISIT(logo_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FlightReservation& proto) {
@@ -2180,6 +2183,7 @@ VISIT_PROTO_FIELDS(const sync_pb::FlightReservation& proto) {
   VISIT(carrier_code);
   VISIT(departure_airport_utc_offset_seconds);
   VISIT(arrival_airport_utc_offset_seconds);
+  VISIT(issuer_name);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Passport& proto) {
@@ -2226,6 +2230,8 @@ VISIT_PROTO_FIELDS(const sync_pb::EventTicket& proto) {
   VISIT(ticket_number);
   VISIT(issuer_name);
   VISIT(event_start_time_windows_epoch_micros);
+  VISIT(event_end_time_windows_epoch_micros);
+  VISIT(logo_url);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::TransitPass& proto) {

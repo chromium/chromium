@@ -80,8 +80,20 @@ message VehicleRegistration {
   optional string owner_name = 8;
 
   // The name of the issuer of the vehicle registration, e.g. "DMV".
-  // Note that this field is currently not used in Chrome.
+  // Note that this field is currently used on Android, not in Chrome.
   optional string issuer_name = 9;
+
+  // The issue date of the vehicle registration in microseconds.
+  // Note that this field is currently used on Android, not in Chrome.
+  optional int64 issue_date_unix_epoch_micros = 10;
+
+  // The expiration date of the vehicle registration in microseconds.
+  // Note that this field is currently used on Android, not in Chrome.
+  optional int64 expiration_date_unix_epoch_micros = 11;
+
+  // The logo URL of the vehicle registration.
+  // Note that this field is currently used on Android, not in Chrome.
+  optional string logo_url = 12;
 }
 
 // Represents a flight reservation from Google Wallet.
@@ -123,6 +135,10 @@ message FlightReservation {
 
   // The UTC offset of the arrival airport's time zone in seconds.
   optional int64 arrival_airport_utc_offset_seconds = 12;
+
+  // The name of the issuer of the flight reservation, e.g. "United Airlines".
+  // Note that this field is currently used on Android, not in Chrome.
+  optional string issuer_name = 13;
 }
 
 // Represents a passport information from Google Wallet.
@@ -250,6 +266,13 @@ message EventTicket {
 
   // The start time of the event in windows epoch microseconds.
   optional int64 event_start_time_windows_epoch_micros = 7;
+
+  // The end time of the event in windows epoch microseconds.
+  optional int64 event_end_time_windows_epoch_micros = 8;
+
+  // The logo URL of the event ticket.
+  // Note that this field is currently used on Android, not in Chrome.
+  optional string logo_url = 9;
 }
 
 // Represents a transit pass from Google Wallet. Note that this field is
