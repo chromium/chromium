@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace webui_dialog {
@@ -225,6 +226,65 @@ TEST_F(ChromeWebUIDialogTest, ModalityModeless) {
 
   EXPECT_EQ(widget->widget_delegate()->GetModalType(),
             ui::mojom::ModalType::kNone);
+}
+
+TEST_F(ChromeWebUIDialogTest, DialogButtons) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  // Specify OK and Cancel buttons.
+  spec.buttons = static_cast<int>(ui::mojom::DialogButton::kOk) |
+                 static_cast<int>(ui::mojom::DialogButton::kCancel);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  EXPECT_EQ(widget->widget_delegate()->AsDialogDelegate()->buttons(),
+            spec.buttons);
+}
+
+TEST_F(ChromeWebUIDialogTest, ShowCloseButton) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.show_close_button = true;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  EXPECT_TRUE(widget->widget_delegate()->ShouldShowCloseButton());
+}
+
+TEST_F(ChromeWebUIDialogTest, ElementIdentifierSet) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.element_identifier = kTestElementId;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+  views::WebView* web_view = delegate->web_view();
+
+  EXPECT_EQ(web_view->GetProperty(views::kElementIdentifierKey),
+            spec.element_identifier);
+}
+
+TEST_F(ChromeWebUIDialogTest, InitiallyFocusedViewIsWebView) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  EXPECT_EQ(widget->widget_delegate()->GetInitiallyFocusedView(),
+            delegate->web_view());
 }
 
 }  // namespace

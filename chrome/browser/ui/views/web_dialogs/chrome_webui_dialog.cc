@@ -72,7 +72,7 @@ ChromeWebUIDialog::ChromeWebUIDialog(
     : spec_(spec), contents_wrapper_(std::move(contents_wrapper)) {
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetButtons(spec_.buttons);
   SetModalType(spec_.modal_type);
   SetShowCloseButton(spec_.show_close_button);
   SetHasWindowSizeControls(true);
@@ -106,6 +106,10 @@ ChromeWebUIDialog::ChromeWebUIDialog(
 }
 
 ChromeWebUIDialog::~ChromeWebUIDialog() = default;
+
+views::View* ChromeWebUIDialog::GetInitiallyFocusedView() {
+  return web_view_;
+}
 
 void ChromeWebUIDialog::ShowUI() {
   if (!GetWidget()) {

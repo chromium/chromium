@@ -60,6 +60,11 @@ struct WebDialogSpec {
   // Optional parent tab for displaying as a tab-modal (kChild) dialog.
   base::WeakPtr<tabs::TabInterface> parent_tab;
 
+  // A bitmask of buttons (from ui::mojom::DialogButton) that are present in
+  // this dialog. Defaults to kNone since WebUI dialogs usually render their
+  // own.
+  int buttons = static_cast<int>(ui::mojom::DialogButton::kNone);
+
   // Optional element ID used for the dialog.
   ui::ElementIdentifier element_identifier;
 };
@@ -94,6 +99,9 @@ class ChromeWebUIDialog : public views::DialogDelegate,
       gfx::NativeWindow parent,
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
       const WebDialogSpec& spec);
+
+  // views::DialogDelegate:
+  views::View* GetInitiallyFocusedView() override;
 
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
