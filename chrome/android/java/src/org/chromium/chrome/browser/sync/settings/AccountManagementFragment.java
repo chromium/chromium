@@ -109,7 +109,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private @Nullable CoreAccountInfo mSignedInCoreAccountInfo;
     private ProfileDataCache mProfileDataCache;
     private SyncService mSyncService;
-    private SyncService.@Nullable SyncSetupInProgressHandle mSyncSetupInProgressHandle;
     private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -117,8 +116,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     @Override
     public void onCreatePreferences(@Nullable Bundle savedState, @Nullable String rootKey) {
         mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(getProfile()));
-        // Prevent sync settings changes from taking effect until the user leaves this screen.
-        mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
 
         if (getArguments() != null) {
             mGaiaServiceType =
@@ -146,14 +143,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     @Override
     public boolean hasDivider() {
         return false;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mSyncSetupInProgressHandle != null) {
-            mSyncSetupInProgressHandle.close();
-        }
     }
 
     @Override

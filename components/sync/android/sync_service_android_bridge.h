@@ -18,11 +18,10 @@
 namespace syncer {
 
 class SyncService;
-class SyncSetupInProgressHandle;
 
 // Forwards calls from SyncServiceImpl.java to the native SyncService and
 // back. Instead of directly implementing JNI free functions, this class is used
-// so it can manage the lifetime of objects like SyncSetupInProgressHandle.
+// so it can manage the lifetime of objects like SyncServiceObserver.
 // Note that on Android, there's only a single profile, a single native
 // SyncService, and therefore a single instance of this class.
 // Must only be accessed from the UI thread.
@@ -52,7 +51,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   bool IsSyncFeatureActive();
   bool IsSyncDisabledByEnterprisePolicy();
   bool IsEngineInitialized();
-  void SetSetupInProgress(bool in_progress);
   std::vector<int32_t> GetActiveDataTypes();
   std::vector<int32_t> GetSelectedTypes();
   void GetTypesWithUnsyncedData(
@@ -101,9 +99,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
 
   // Java-side SyncServiceImpl object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-
-  // Prevents Sync from running until configuration is complete.
-  std::unique_ptr<SyncSetupInProgressHandle> sync_blocker_;
 };
 
 }  // namespace syncer

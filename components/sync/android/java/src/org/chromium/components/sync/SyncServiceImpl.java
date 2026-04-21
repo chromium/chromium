@@ -44,8 +44,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     // a dangling pointer.
     private long mSyncServiceAndroidBridge;
 
-    private int mSetupInProgressCounter;
-
     // Sync state changes more often than listeners are added/removed, so using CopyOnWrite.
     private final List<SyncStateChangedListener> mListeners =
             new CopyOnWriteArrayList<SyncStateChangedListener>();
@@ -187,37 +185,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
         SyncServiceImplJni.get().setSelectedType(mSyncServiceAndroidBridge, type, isTypeOn);
-    }
-
-    @Override
-    public SyncSetupInProgressHandle getSetupInProgressHandle() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        if (++mSetupInProgressCounter == 1) {
-            setSetupInProgress(true);
-        }
-
-        return new SyncSetupInProgressHandle() {
-            private boolean mClosed;
-
-            @Override
-            public void close() {
-                mThreadChecker.assertOnValidThread();
-                if (mClosed) return;
-                mClosed = true;
-
-                assert mSetupInProgressCounter > 0;
-                if (--mSetupInProgressCounter == 0) {
-                    setSetupInProgress(false);
-                }
-            }
-        };
-    }
-
-    private void setSetupInProgress(boolean inProgress) {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        SyncServiceImplJni.get().setSetupInProgress(mSyncServiceAndroidBridge, inProgress);
     }
 
     @Override
@@ -506,8 +473,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
 
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
-
-        void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
 
         @JniType("std::vector<int32_t>")
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);

@@ -131,26 +131,6 @@ public interface SyncService {
      */
     void setSelectedType(@UserSelectableType int type, boolean isTypeOn);
 
-    /**
-     * Instances of this class keep sync paused until {@link #close} is called. Use {@link
-     * SyncService#getSetupInProgressHandle} to create. Please note that {@link #close} should be
-     * called on every instance of this class.
-     */
-    interface SyncSetupInProgressHandle {
-        void close();
-    }
-
-    /**
-     * Called by the UI to prevent changes in sync settings from taking effect while these settings
-     * are being modified by the user. When sync settings UI is no longer visible, {@link
-     * SyncSetupInProgressHandle#close} has to be invoked for sync settings to be applied. Sync
-     * settings will remain paused as long as there are unclosed objects returned by this method.
-     * Please note that the behavior of SyncSetupInProgressHandle is slightly different from the
-     * equivalent C++ object, as Java instances don't commit sync settings as soon as any instance
-     * of SyncSetupInProgressHandle is closed.
-     */
-    SyncSetupInProgressHandle getSetupInProgressHandle();
-
     void addSyncStateChangedListener(SyncStateChangedListener listener);
 
     void removeSyncStateChangedListener(SyncStateChangedListener listener);

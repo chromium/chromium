@@ -201,17 +201,6 @@ bool SyncServiceAndroidBridge::IsEngineInitialized() {
   return native_sync_service_->IsEngineInitialized();
 }
 
-void SyncServiceAndroidBridge::SetSetupInProgress(bool in_progress) {
-  if (!in_progress) {
-    sync_blocker_.reset();
-    return;
-  }
-
-  if (!sync_blocker_) {
-    sync_blocker_ = native_sync_service_->GetSetupInProgressHandle();
-  }
-}
-
 std::vector<int32_t> SyncServiceAndroidBridge::GetActiveDataTypes() {
   return DataTypeSetToVector(native_sync_service_->GetActiveDataTypes());
 }

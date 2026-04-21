@@ -271,11 +271,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public SyncSetupInProgressHandle getSetupInProgressHandle() {
-        return mDelegate.getSetupInProgressHandle();
-    }
-
-    @Override
     public void addSyncStateChangedListener(SyncStateChangedListener listener) {
         mDelegate.addSyncStateChangedListener(listener);
     }
