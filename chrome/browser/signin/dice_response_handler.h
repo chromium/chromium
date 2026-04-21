@@ -216,7 +216,7 @@ class DiceResponseHandler : public KeyedService {
     ~DiceSigninSession();
 
     // Starts fetching tokens for accounts.
-    void StartTokenFetch();
+    void StartTokenFetches();
 
     // Called by DiceTokenFetcher on success.
     void OnTokenExchangeSuccess(
@@ -232,7 +232,7 @@ class DiceResponseHandler : public KeyedService {
 
     // Exposed for testing.
     size_t GetPendingDiceTokenFetchersCountForTesting() const {
-      return token_fetcher_ ? 1 : 0;
+      return token_fetchers_.size();
     }
 
     bool IsFetchingForAccount(const CoreAccountId& account_id) const;
@@ -245,10 +245,14 @@ class DiceResponseHandler : public KeyedService {
                                   const std::string& email);
 
    private:
+    void FetchTokenForAccount(
+        const signin::DiceResponseParams::SigninInfo::SigninAccount& account);
+    void DeleteFetcher(DiceTokenFetcher* fetcher);
+
     const raw_ptr<DiceResponseHandler> handler_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
     signin::DiceResponseParams::SigninInfo signin_info_;
-    std::unique_ptr<DiceTokenFetcher> token_fetcher_;
+    std::vector<std::unique_ptr<DiceTokenFetcher>> token_fetchers_;
   };
 
   // Deletes the session.
@@ -270,6 +274,8 @@ class DiceResponseHandler : public KeyedService {
       const std::vector<signin::DiceResponseParams::AccountInfo>&
           account_infos);
 
+  // Called when an account has no authorization code due to an outage.
+  void OnNoAuthorizationCode();
   // Called to unlock the reconcilor after a SLO outage.
   void OnTimeoutUnlockReconcilor();
 

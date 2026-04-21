@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/dice_response_handler.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -247,9 +248,8 @@ DiceResponseHandler::DiceSigninSession::DiceSigninSession(
 
 DiceResponseHandler::DiceSigninSession::~DiceSigninSession() = default;
 
-void DiceResponseHandler::DiceSigninSession::StartTokenFetch() {
-  const auto* initiator = signin_info_.GetInitiator();
-  CHECK(initiator);
+void DiceResponseHandler::DiceSigninSession::StartTokenFetches() {
+  CHECK(signin_info_.GetInitiator());
 
   // The user is signing in, which means that account fetching will shortly be
   // triggered.
@@ -259,17 +259,51 @@ void DiceResponseHandler::DiceSigninSession::StartTokenFetch() {
   // access token requests (instead of waiting for these to complete).
   handler_->identity_manager_->PrepareForAddingNewAccount();
 
+  // TODO(crbug.com/475435113): Add complex handling/priority for initiator vs
+  // secondary accounts.
+  for (const auto& account : signin_info_.accounts()) {
+    FetchTokenForAccount(account);
+  }
+
+  if (token_fetchers_.empty()) {
+    handler_->DeleteSession(this);
+  }
+}
+
+void DiceResponseHandler::DiceSigninSession::FetchTokenForAccount(
+    const signin::DiceResponseParams::SigninInfo::SigninAccount& account) {
+  if (!account.IsValid()) {
+    return;
+  }
+
+  if (account.no_authorization_code) {
+    handler_->OnNoAuthorizationCode();
+    return;
+  }
+
   base::expected<raw_ref<BindingKeyRegistrationTokenHelper>,
                  TokenBindingOutcome>
       registration_token_helper_or_error =
           handler_->MaybeGetBindingRegistrationTokenHelper(
-              initiator->supported_algorithms_for_token_binding);
+              account.supported_algorithms_for_token_binding);
 
-  token_fetcher_ = std::make_unique<DiceTokenFetcher>(
-      initiator->account_info.gaia_id, initiator->account_info.email,
-      initiator->authorization_code, initiator->mtls_token_binding,
+  token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
+      account.account_info.gaia_id, account.account_info.email,
+      account.authorization_code, account.mtls_token_binding,
       handler_->signin_client_, handler_->account_reconcilor_,
-      registration_token_helper_or_error, this);
+      registration_token_helper_or_error, this));
+}
+
+void DiceResponseHandler::DiceSigninSession::DeleteFetcher(
+    DiceTokenFetcher* fetcher) {
+  size_t delete_count = std::erase_if(
+      token_fetchers_,
+      [fetcher](const auto& current) { return current.get() == fetcher; });
+  CHECK_EQ(delete_count, 1U);
+
+  if (token_fetchers_.empty()) {
+    handler_->DeleteSession(this);
+  }
 }
 
 void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
@@ -295,20 +329,23 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
       signin::TokenBindingInfo(wrapped_binding_key,
                                fetcher->mtls_token_binding()));
 
+  bool is_initiator =
+      (fetcher->gaia_id() == signin_info_.GetInitiator()->account_info.gaia_id);
+
   handler_->about_signin_internals_->OnRefreshTokenReceived(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
 
-  delegate_->HandleTokenExchangeSuccess(account_id, is_new_account);
+  if (is_initiator) {
+    delegate_->HandleTokenExchangeSuccess(account_id, is_new_account);
 
-  if (fetcher->should_enable_sync()) {
-    delegate_->CompleteChromeSignInAfterGaiaSignin(
-        handler_->identity_manager_->FindExtendedAccountInfoByAccountId(
-            account_id));
+    if (fetcher->should_enable_sync()) {
+      delegate_->CompleteChromeSignInAfterGaiaSignin(
+          handler_->identity_manager_->FindExtendedAccountInfoByAccountId(
+              account_id));
+    }
   }
 
-  CHECK_EQ(token_fetcher_.get(), fetcher);
-  token_fetcher_.reset();
-  handler_->DeleteSession(this);
+  DeleteFetcher(fetcher);
 }
 
 void DiceResponseHandler::DiceSigninSession::OnTokenExchangeFailure(
@@ -321,34 +358,41 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeFailure(
   handler_->about_signin_internals_->OnRefreshTokenReceived(
       base::StringPrintf("Failure (%s)", account_id.ToString().c_str()));
 
-  delegate_->HandleTokenExchangeFailure(email, error);
-  VLOG(1) << "Initiator fetch failed. Aborting session.";
+  bool is_initiator =
+      (fetcher->gaia_id() == signin_info_.GetInitiator()->account_info.gaia_id);
 
-  CHECK_EQ(token_fetcher_.get(), fetcher);
-  token_fetcher_.reset();
-  handler_->DeleteSession(this);
+  if (is_initiator) {
+    delegate_->HandleTokenExchangeFailure(email, error);
+  }
+
+  VLOG(1) << "Token fetch failed for account " << account_id << " (" << email
+          << "). Ignoring.";
+  DeleteFetcher(fetcher);
 }
 
 bool DiceResponseHandler::DiceSigninSession::IsFetchingForAccount(
     const CoreAccountId& account_id) const {
-  if (!token_fetcher_) {
-    return false;
-  }
-  return handler_->identity_manager_->PickAccountIdForAccount(
-             token_fetcher_->gaia_id(), token_fetcher_->email()) == account_id;
+  return std::any_of(
+      token_fetchers_.begin(), token_fetchers_.end(), [&](const auto& fetcher) {
+        return handler_->identity_manager_->PickAccountIdForAccount(
+                   fetcher->gaia_id(), fetcher->email()) == account_id;
+      });
 }
 
 bool DiceResponseHandler::DiceSigninSession::CancelFetchForAccount(
     const CoreAccountId& account_id) {
-  if (!token_fetcher_) {
-    return false;
-  }
-  CoreAccountId fetcher_account_id =
-      handler_->identity_manager_->PickAccountIdForAccount(
-          token_fetcher_->gaia_id(), token_fetcher_->email());
-  if (fetcher_account_id == account_id) {
-    token_fetcher_.reset();
-    handler_->DeleteSession(this);
+  size_t delete_count =
+      std::erase_if(token_fetchers_, [&](const auto& fetcher) {
+        CoreAccountId fetcher_account_id =
+            handler_->identity_manager_->PickAccountIdForAccount(
+                fetcher->gaia_id(), fetcher->email());
+        return fetcher_account_id == account_id;
+      });
+
+  if (delete_count > 0) {
+    if (token_fetchers_.empty()) {
+      handler_->DeleteSession(this);
+    }
     return true;
   }
   return false;
@@ -357,10 +401,12 @@ bool DiceResponseHandler::DiceSigninSession::CancelFetchForAccount(
 bool DiceResponseHandler::DiceSigninSession::MarkEnableSyncIfFetching(
     const GaiaId& gaia_id,
     const std::string& email) {
-  if (token_fetcher_ && token_fetcher_->gaia_id() == gaia_id) {
-    DCHECK(gaia::AreEmailsSame(token_fetcher_->email(), email));
-    token_fetcher_->set_should_enable_sync(true);
-    return true;
+  for (const auto& fetcher : token_fetchers_) {
+    if (fetcher->gaia_id() == gaia_id) {
+      DCHECK(gaia::AreEmailsSame(fetcher->email(), email));
+      fetcher->set_should_enable_sync(true);
+      return true;
+    }
   }
   return false;
 }
@@ -436,33 +482,10 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
 
   delegate->OnDiceSigninHeaderReceived();
 
-  const signin::DiceResponseParams::SigninInfo::SigninAccount* initiator =
-      signin_info.GetInitiator();
-  CHECK(initiator);
-
-  if (initiator->no_authorization_code) {
-    lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
-    about_signin_internals_->OnRefreshTokenReceived(
-        "Missing authorization code due to OAuth outage in Dice.");
-    if (!timer_) {
-      timer_ = std::make_unique<base::OneShotTimer>();
-      if (task_runner_) {
-        timer_->SetTaskRunner(task_runner_);
-      }
-    }
-    // If there is already another lock, the timer will be reset and
-    // we'll wait another full timeout.
-    timer_->Start(
-        FROM_HERE, base::Hours(kLockAccountReconcilorTimeoutHours),
-        base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
-                       base::Unretained(this)));
-    return;
-  }
-
   auto session = std::make_unique<DiceSigninSession>(this, std::move(delegate),
                                                      std::move(signin_info));
   sessions_.push_back(std::move(session));
-  sessions_.back()->StartTokenFetch();
+  sessions_.back()->StartTokenFetches();
 }
 
 size_t DiceResponseHandler::GetPendingDiceTokenFetchersCountForTesting() const {
@@ -471,6 +494,23 @@ size_t DiceResponseHandler::GetPendingDiceTokenFetchersCountForTesting() const {
     count += session->GetPendingDiceTokenFetchersCountForTesting();  // IN-TEST
   }
   return count;
+}
+
+void DiceResponseHandler::OnNoAuthorizationCode() {
+  if (!lock_) {
+    lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
+    about_signin_internals_->OnRefreshTokenReceived(
+        "Missing authorization code due to OAuth outage in Dice.");
+  }
+  if (!timer_) {
+    timer_ = std::make_unique<base::OneShotTimer>();
+    if (task_runner_) {
+      timer_->SetTaskRunner(task_runner_);
+    }
+  }
+  timer_->Start(FROM_HERE, base::Hours(kLockAccountReconcilorTimeoutHours),
+                base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
+                               base::Unretained(this)));
 }
 
 void DiceResponseHandler::OnTimeoutUnlockReconcilor() {
