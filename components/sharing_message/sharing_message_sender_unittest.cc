@@ -38,6 +38,8 @@ constexpr base::TimeDelta kTimeToLive = base::Seconds(10);
 
 namespace {
 
+using testing::IsNull;
+
 class MockSharingFCMSender : public SharingFCMSender {
  public:
   MockSharingFCMSender(
@@ -232,8 +234,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckTimedout) {
 
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kAckTimeout),
-                  testing::Eq(nullptr)));
+              Run(SharingSendMessageResult::kAckTimeout, IsNull()));
 
   auto simulate_timeout =
       [&](const components_sharing_message::FCMChannelConfiguration&
@@ -252,9 +253,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckTimedout) {
                                               /*response=*/nullptr);
       };
 
-  EXPECT_CALL(
-      *mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_sharing_fcm_sender_, SendMessageToFcmTarget)
       .WillOnce(simulate_timeout);
 
   sharing_message_sender_.SendMessageToDevice(
@@ -267,8 +266,7 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
 
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kInternalError),
-                  testing::Eq(nullptr)));
+              Run(SharingSendMessageResult::kInternalError, IsNull()));
 
   auto simulate_internal_error =
       [&](const components_sharing_message::FCMChannelConfiguration&
@@ -286,9 +284,7 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
                                               /*response=*/nullptr);
       };
 
-  EXPECT_CALL(
-      *mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_sharing_fcm_sender_, SendMessageToFcmTarget)
       .WillOnce(simulate_internal_error);
 
   sharing_message_sender_.SendMessageToDevice(
@@ -301,8 +297,7 @@ TEST_F(SharingMessageSenderTest, SendUnencryptedMessageToDevice_InternalError) {
 
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kInternalError),
-                  testing::Eq(nullptr)));
+              Run(SharingSendMessageResult::kInternalError, IsNull()));
 
   auto simulate_internal_error =
       [&](const SharingTargetDeviceInfo& device,
@@ -318,9 +313,7 @@ TEST_F(SharingMessageSenderTest, SendUnencryptedMessageToDevice_InternalError) {
                                               /*response=*/nullptr);
       };
 
-  EXPECT_CALL(
-      *mock_sharing_ios_push_sender_,
-      DoSendUnencryptedMessageToDevice(testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_sharing_ios_push_sender_, DoSendUnencryptedMessageToDevice)
       .WillOnce(simulate_internal_error);
 
   sharing_message_sender_.SendUnencryptedMessageToDevice(
@@ -336,9 +329,8 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
 
   components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kSuccessful),
-                  ProtoEquals(expected_response_message)));
+  EXPECT_CALL(mock_callback, Run(SharingSendMessageResult::kSuccessful,
+                                 ProtoEquals(expected_response_message)));
 
   auto simulate_expected_ack_message_received =
       [&](const components_sharing_message::FCMChannelConfiguration&
@@ -376,9 +368,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
                                               std::move(response_message));
       };
 
-  EXPECT_CALL(
-      *mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_sharing_fcm_sender_, SendMessageToFcmTarget)
       .WillOnce(simulate_expected_ack_message_received);
 
   sharing_message_sender_.SendMessageToDevice(
@@ -394,9 +384,8 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceivedBeforeMessageId) {
 
   components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
-  EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kSuccessful),
-                  ProtoEquals(expected_response_message)));
+  EXPECT_CALL(mock_callback, Run(SharingSendMessageResult::kSuccessful,
+                                 ProtoEquals(expected_response_message)));
 
   auto simulate_expected_ack_message_received =
       [&](const components_sharing_message::FCMChannelConfiguration&
@@ -419,9 +408,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceivedBeforeMessageId) {
                                 SharingChannelType::kFcmSenderId);
       };
 
-  EXPECT_CALL(
-      *mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_sharing_fcm_sender_, SendMessageToFcmTarget)
       .WillOnce(simulate_expected_ack_message_received);
 
   sharing_message_sender_.SendMessageToDevice(
@@ -439,8 +426,7 @@ TEST_F(SharingMessageSenderTest, NonExistingDelegate) {
 
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kInternalError),
-                  testing::Eq(nullptr)));
+              Run(SharingSendMessageResult::kInternalError, IsNull()));
 
   sharing_message_sender.SendMessageToDevice(
       device_info, kTimeToLive, components_sharing_message::SharingMessage(),
@@ -456,12 +442,9 @@ TEST_F(SharingMessageSenderTest, RequestCancelled) {
   components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
-              Run(testing::Eq(SharingSendMessageResult::kCancelled),
-                  testing::Eq(nullptr)));
+              Run(SharingSendMessageResult::kCancelled, IsNull()));
 
-  EXPECT_CALL(
-      *mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_));
+  EXPECT_CALL(*mock_sharing_fcm_sender_, SendMessageToFcmTarget);
 
   base::OnceClosure cancel_callback =
       sharing_message_sender_.SendMessageToDevice(
@@ -505,8 +488,7 @@ TEST_F(SharingMessageSenderTest, SendMessageToServerTarget_Success) {
                                               std::move(response_message));
       };
 
-  EXPECT_CALL(*mock_sharing_fcm_sender_,
-              DoSendMessageToServerTarget(testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_sharing_fcm_sender_, DoSendMessageToServerTarget)
       .WillOnce(simulate_expected_ack_message_received);
 
   sharing_message_sender_.SendMessageToServerTarget(
