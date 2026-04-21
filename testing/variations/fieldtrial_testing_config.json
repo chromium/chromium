@@ -15998,6 +15998,21 @@
             ]
         }
     ],
+    "NoAccountsWebSignin": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260414",
+                    "enable_features": [
+                        "NoAccountWebSignin"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoOpParentalControlsV2": [
         {
             "platforms": [
