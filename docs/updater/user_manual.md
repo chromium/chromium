@@ -84,7 +84,7 @@ If the app is running as root, it must add ` --system` to the install command
 above, use `-S` instead of `-U` in the ksadmin command, and use the ksadmin in
 `/Library` instead of `~/Library`.
 
-Additional [registration arguments](functional_spec#keystone-shims) are
+Additional [registration arguments](functional_spec.md#keystone-shims) are
 available to register additional data and provide alternative ways to track the
 version of a product.
 
@@ -109,8 +109,8 @@ ready-to-bundle [GoogleUpdater.zip here](http://go/googleupdatermacoszip).
 
 ## Updating Applications
 
-Serving updates to your application depends on your server integration.
-Googlers should consult the [guide here](go/omaharelease-getting-started).
+Serving updates to your application depends on your server integration. Googlers
+should consult the [guide here](http://go/omaharelease-getting-started).
 
 Updates are delivered as CRX archives containing your application's installer
 executables. When run, the executables should emplace the new version of your
@@ -118,7 +118,7 @@ software on the disk.
 
 More details are available:
 [Windows details](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/installer_api.h),
-[macOS details](install_api_mac.md).
+[macOS details](installer_api_mac.md).
 
 ## Uninstalling Applications and the Updater
 
