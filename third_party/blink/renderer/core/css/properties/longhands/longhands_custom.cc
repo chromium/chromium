@@ -6521,7 +6521,7 @@ const CSSValue* MarginBottom::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
     if (!style.MarginBottom().IsFixed()) {
-      return ZoomAdjustedPixelValue(box->MarginBottom(), style);
+      return ZoomAdjustedPixelValue(box->MarginOutsets().bottom, style);
     }
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
@@ -6578,7 +6578,7 @@ const CSSValue* MarginLeft::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
     if (!style.MarginLeft().IsFixed()) {
-      return ZoomAdjustedPixelValue(box->MarginLeft(), style);
+      return ZoomAdjustedPixelValue(box->MarginOutsets().left, style);
     }
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.MarginLeft(),
@@ -6607,7 +6607,7 @@ const CSSValue* MarginRight::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
     if (!style.MarginRight().IsFixed()) {
-      return ZoomAdjustedPixelValue(box->MarginRight(), style);
+      return ZoomAdjustedPixelValue(box->MarginOutsets().right, style);
     }
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
@@ -6636,7 +6636,7 @@ const CSSValue* MarginTop::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(layout_object)) {
     if (!style.MarginTop().IsFixed()) {
-      return ZoomAdjustedPixelValue(box->MarginTop(), style);
+      return ZoomAdjustedPixelValue(box->MarginOutsets().top, style);
     }
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.MarginTop(),

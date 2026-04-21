@@ -75,10 +75,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   // Rerturn the overridden size set by SetOverriddenSize();
   PhysicalSize StitchedSize() const override;
 
-  LayoutUnit MarginTop() const override;
-  LayoutUnit MarginBottom() const override;
-  LayoutUnit MarginLeft() const override;
-  LayoutUnit MarginRight() const override;
+  PhysicalBoxStrut MarginOutsets() const override;
 
   bool IsLayoutCustomScrollbarPart() const final {
     NOT_DESTROYED();

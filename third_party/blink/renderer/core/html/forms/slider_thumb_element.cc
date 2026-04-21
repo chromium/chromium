@@ -111,19 +111,21 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
   LayoutUnit position;
   LayoutUnit current_position;
   const auto* input_box = To<LayoutBox>(input_object);
-  PhysicalOffset thumb_offset =
+  const PhysicalOffset thumb_offset =
       thumb_box->LocalToAncestorPoint(PhysicalOffset(), input_box) -
       track_box->LocalToAncestorPoint(PhysicalOffset(), input_box);
-  PhysicalSize size = thumb_box->StitchedSize();
+  const PhysicalSize size = thumb_box->StitchedSize();
+  const PhysicalBoxStrut margins = thumb_box->MarginOutsets();
+
   if (!writing_direction.IsHorizontal()) {
     track_size = track_box->ContentHeight() - size.height;
     position = point_in_track.top - size.height / 2;
-    position -= is_flipped ? thumb_box->MarginBottom() : thumb_box->MarginTop();
+    position -= is_flipped ? margins.bottom : margins.top;
     current_position = thumb_offset.top;
   } else {
     track_size = track_box->ContentWidth() - size.width;
     position = point_in_track.left - size.width / 2;
-    position -= is_flipped ? thumb_box->MarginRight() : thumb_box->MarginLeft();
+    position -= is_flipped ? margins.right : margins.left;
     current_position = thumb_offset.left;
   }
   position = std::min(position, track_size).ClampNegativeToZero();

@@ -82,7 +82,7 @@ PhysicalRect GetBoxRect(LayoutBox* layout_box, V8CSSBoxType::Enum box_type) {
   switch (box_type) {
     case V8CSSBoxType::Enum::kMargin: {
       PhysicalRect border_box = layout_box->PhysicalBorderBoxRect();
-      PhysicalBoxStrut margins = layout_box->MarginBoxOutsets();
+      PhysicalBoxStrut margins = layout_box->MarginOutsets();
       border_box.Expand(margins);
       return border_box;
     }

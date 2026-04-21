@@ -1135,7 +1135,7 @@ LayoutUnit LayoutBox::ScrollHeight() const {
                   ScrollableOverflowRect().Bottom() - BorderTop());
 }
 
-PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
+PhysicalBoxStrut LayoutBox::MarginOutsets() const {
   NOT_DESTROYED();
   if (PhysicalFragmentCount()) {
     // We get margin data from the first physical fragment. Margins are

@@ -326,20 +326,18 @@ gfx::Rect CustomScrollbar::ButtonRect(ScrollbarPart part_type) const {
 
 gfx::Rect CustomScrollbar::TrackRect(int start_length, int end_length) const {
   const LayoutCustomScrollbarPart* part = GetPart(kTrackBGPart);
+  const PhysicalBoxStrut margins =
+      part ? part->MarginOutsets() : PhysicalBoxStrut();
 
   if (Orientation() == kHorizontalScrollbar) {
-    int margin_left = part ? part->MarginLeft().ToInt() : 0;
-    int margin_right = part ? part->MarginRight().ToInt() : 0;
-    start_length += margin_left;
-    end_length += margin_right;
+    start_length += margins.left.ToInt();
+    end_length += margins.right.ToInt();
     int total_length = start_length + end_length;
     return gfx::Rect(X() + start_length, Y(), Width() - total_length, Height());
   }
 
-  int margin_top = part ? part->MarginTop().ToInt() : 0;
-  int margin_bottom = part ? part->MarginBottom().ToInt() : 0;
-  start_length += margin_top;
-  end_length += margin_bottom;
+  start_length += margins.top.ToInt();
+  end_length += margins.bottom.ToInt();
   int total_length = start_length + end_length;
 
   return gfx::Rect(X(), Y() + start_length, Width(), Height() - total_length);
@@ -352,14 +350,15 @@ gfx::Rect CustomScrollbar::TrackPieceRectWithMargins(
   if (!part_layout_object)
     return old_rect;
 
+  const PhysicalBoxStrut margins = part_layout_object->MarginOutsets();
+
   gfx::Rect rect = old_rect;
   if (Orientation() == kHorizontalScrollbar) {
-    rect.set_x((rect.x() + part_layout_object->MarginLeft()).ToInt());
-    rect.set_width((rect.width() - part_layout_object->MarginWidth()).ToInt());
+    rect.set_x((rect.x() + margins.left).ToInt());
+    rect.set_width((rect.width() - margins.HorizontalSum()).ToInt());
   } else {
-    rect.set_y((rect.y() + part_layout_object->MarginTop()).ToInt());
-    rect.set_height(
-        (rect.height() - part_layout_object->MarginHeight()).ToInt());
+    rect.set_y((rect.y() + margins.top).ToInt());
+    rect.set_height((rect.height() - margins.VerticalSum()).ToInt());
   }
   return rect;
 }

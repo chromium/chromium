@@ -142,10 +142,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     return To<Element>(LayoutBoxModelObject::GetNode());
   }
 
-  LayoutUnit MarginLeft() const final;
-  LayoutUnit MarginRight() const final;
-  LayoutUnit MarginTop() const final;
-  LayoutUnit MarginBottom() const final;
+  PhysicalBoxStrut MarginOutsets() const final;
 
   // Returns the bounding box of all quads returned by `LocalQuadsForSelf`.
   gfx::RectF LocalBoundingBoxRectF() const;

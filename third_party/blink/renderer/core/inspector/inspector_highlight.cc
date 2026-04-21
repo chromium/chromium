@@ -1322,20 +1322,20 @@ const DevtoolsFlexInfo* GetFlexLinesAndItems(LayoutBox* layout_box,
 
       const LayoutObject* object = child_fragment->GetLayoutObject();
       const auto* box = To<LayoutBox>(object);
+      const PhysicalBoxStrut margins = box->MarginOutsets();
 
-      LayoutUnit baseline =
+      const LayoutUnit baseline =
           LogicalBoxFragment(layout_box->StyleRef().GetWritingDirection(),
                              *To<PhysicalBoxFragment>(child_fragment))
               .FirstBaselineOrSynthesize(
                   layout_box->StyleRef().GetFontBaseline());
       float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(
-          baseline + box->MarginTop(), box->StyleRef());
+          baseline + margins.top, box->StyleRef());
 
       PhysicalRect item_rect =
-          PhysicalRect(fragment_offset.left - box->MarginLeft(),
-                       fragment_offset.top - box->MarginTop(),
-                       fragment_size.width + box->MarginWidth(),
-                       fragment_size.height + box->MarginHeight());
+          PhysicalRect(fragment_offset.left, fragment_offset.top,
+                       fragment_size.width, fragment_size.height);
+      item_rect.Expand(margins);
 
       LayoutUnit item_start = is_horizontal ? item_rect.X() : item_rect.Y();
       LayoutUnit item_end = is_horizontal ? item_rect.X() + item_rect.Width()
@@ -2077,10 +2077,8 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
 
     border_box = layout_box->PhysicalBorderBoxRect();
 
-    margin_box = PhysicalRect(border_box.X() - layout_box->MarginLeft(),
-                              border_box.Y() - layout_box->MarginTop(),
-                              border_box.Width() + layout_box->MarginWidth(),
-                              border_box.Height() + layout_box->MarginHeight());
+    margin_box = border_box;
+    margin_box.Expand(layout_box->MarginOutsets());
   } else {
     auto* layout_inline = To<LayoutInline>(layout_object);
 
@@ -2101,10 +2099,11 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
                          layout_inline->PaddingRight(),
                      padding_box.Height() - layout_inline->PaddingTop() -
                          layout_inline->PaddingBottom());
-    // Ignore marginTop and marginBottom for inlines.
-    margin_box = PhysicalRect(
-        border_box.X() - layout_inline->MarginLeft(), border_box.Y(),
-        border_box.Width() + layout_inline->MarginWidth(), border_box.Height());
+    // Ignore top/bottom margins for inlines.
+    const PhysicalBoxStrut margins = layout_inline->MarginOutsets();
+    margin_box = PhysicalRect(border_box.X() - margins.left, border_box.Y(),
+                              border_box.Width() + margins.HorizontalSum(),
+                              border_box.Height());
   }
 
   *content = layout_object->LocalRectToAbsoluteQuad(content_box);

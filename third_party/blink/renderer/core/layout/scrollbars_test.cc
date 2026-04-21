@@ -4843,10 +4843,10 @@ TEST_P(ScrollbarTrackMarginsTest,
       margin-bottom: 40.8px;
     })CSS");
 
-  EXPECT_EQ(10, horizontal_track_->MarginLeft());
-  EXPECT_EQ(31, horizontal_track_->MarginRight());
-  EXPECT_EQ(20, vertical_track_->MarginTop());
-  EXPECT_EQ(41, vertical_track_->MarginBottom());
+  EXPECT_EQ(10, horizontal_track_->MarginOutsets().left);
+  EXPECT_EQ(31, horizontal_track_->MarginOutsets().right);
+  EXPECT_EQ(20, vertical_track_->MarginOutsets().top);
+  EXPECT_EQ(41, vertical_track_->MarginOutsets().bottom);
 }
 
 TEST_P(ScrollbarTrackMarginsTest,
@@ -4861,10 +4861,10 @@ TEST_P(ScrollbarTrackMarginsTest,
       margin-bottom: 41px;
     })CSS");
 
-  EXPECT_EQ(14, horizontal_track_->MarginLeft());
-  EXPECT_EQ(39, horizontal_track_->MarginRight());
-  EXPECT_EQ(26, vertical_track_->MarginTop());
-  EXPECT_EQ(51, vertical_track_->MarginBottom());
+  EXPECT_EQ(14, horizontal_track_->MarginOutsets().left);
+  EXPECT_EQ(39, horizontal_track_->MarginOutsets().right);
+  EXPECT_EQ(26, vertical_track_->MarginOutsets().top);
+  EXPECT_EQ(51, vertical_track_->MarginOutsets().bottom);
 }
 
 class ScrollbarColorSchemeTest : public ScrollbarAppearanceTest {};

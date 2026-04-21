@@ -440,23 +440,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual LayoutUnit ScrollWidth() const;
   virtual LayoutUnit ScrollHeight() const;
 
-  PhysicalBoxStrut MarginBoxOutsets() const;
-  LayoutUnit MarginTop() const override {
-    NOT_DESTROYED();
-    return MarginBoxOutsets().top;
-  }
-  LayoutUnit MarginBottom() const override {
-    NOT_DESTROYED();
-    return MarginBoxOutsets().bottom;
-  }
-  LayoutUnit MarginLeft() const override {
-    NOT_DESTROYED();
-    return MarginBoxOutsets().left;
-  }
-  LayoutUnit MarginRight() const override {
-    NOT_DESTROYED();
-    return MarginBoxOutsets().right;
-  }
+  PhysicalBoxStrut MarginOutsets() const override;
 
   // Get the scroll marker group associated with this box, if any.
   LayoutBlock* GetScrollMarkerGroup();

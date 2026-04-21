@@ -328,24 +328,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return BorderInlineEnd() + PaddingInlineEnd();
   }
 
-  virtual LayoutUnit MarginTop() const = 0;
-  virtual LayoutUnit MarginBottom() const = 0;
-  virtual LayoutUnit MarginLeft() const = 0;
-  virtual LayoutUnit MarginRight() const = 0;
-
-  DISABLE_CFI_PERF LayoutUnit MarginHeight() const {
-    NOT_DESTROYED();
-    return MarginTop() + MarginBottom();
-  }
-  DISABLE_CFI_PERF LayoutUnit MarginWidth() const {
-    NOT_DESTROYED();
-    return MarginLeft() + MarginRight();
-  }
-
-  PhysicalBoxStrut MarginOutsets() const {
-    NOT_DESTROYED();
-    return {MarginTop(), MarginRight(), MarginBottom(), MarginLeft()};
-  }
+  virtual PhysicalBoxStrut MarginOutsets() const = 0;
 
   virtual LayoutUnit ContainingBlockLogicalWidthForContent() const;
 

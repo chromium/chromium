@@ -58,15 +58,6 @@ gfx::Rect ToPixelSnappedLogicalRect(const LogicalRect& rect) {
       SnapSizeToPixel(rect.size.block_size, rect.offset.block_offset));
 }
 
-PhysicalToLogicalGetter<LayoutUnit, LayoutBox> LogicalMargin(
-    const LayoutBox& layout_box,
-    const ComputedStyle& container_style) {
-  return PhysicalToLogicalGetter<LayoutUnit, LayoutBox>(
-      container_style.GetWritingDirection(), layout_box, &LayoutBox::MarginTop,
-      &LayoutBox::MarginRight, &LayoutBox::MarginBottom,
-      &LayoutBox::MarginLeft);
-}
-
 // Unlike LayoutBoxModelObject::PhysicalBorderToLogical(), this function
 // applies container's WritingDirectionMode.
 PhysicalToLogicalGetter<LayoutUnit, LayoutBox> LogicalBorder(
@@ -196,7 +187,7 @@ static bool CheckShapeImageOrigin(Document& document,
 static PhysicalRect GetShapeImagePhysicalMarginRect(
     const LayoutBox& layout_box,
     const PhysicalSize& reference_physical_size) {
-  PhysicalBoxStrut margin_border_padding = layout_box.MarginBoxOutsets() +
+  PhysicalBoxStrut margin_border_padding = layout_box.MarginOutsets() +
                                            layout_box.BorderOutsets() +
                                            layout_box.PaddingOutsets();
   return PhysicalRect(
@@ -310,7 +301,9 @@ LayoutUnit ShapeOutsideInfo::BlockStartOffset() const {
       layout_box_->ContainingBlock()->StyleRef();
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -LogicalMargin(*layout_box_, container_style).BlockStart();
+      return -layout_box_->MarginOutsets()
+                  .ConvertToLogical(container_style.GetWritingDirection())
+                  .block_start;
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:
@@ -330,7 +323,9 @@ LayoutUnit ShapeOutsideInfo::InlineStartOffset() const {
       layout_box_->ContainingBlock()->StyleRef();
   switch (ReferenceBox(*layout_box_->StyleRef().ShapeOutside())) {
     case CSSBoxType::kMargin:
-      return -LogicalMargin(*layout_box_, container_style).InlineStart();
+      return -layout_box_->MarginOutsets()
+                  .ConvertToLogical(container_style.GetWritingDirection())
+                  .inline_start;
     case CSSBoxType::kBorder:
       return LayoutUnit();
     case CSSBoxType::kPadding:

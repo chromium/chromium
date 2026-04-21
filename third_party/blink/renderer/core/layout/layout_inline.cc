@@ -529,35 +529,22 @@ PhysicalRect LayoutInline::BoundingBoxRelativeToFirstFragment() const {
   return bounding_box;
 }
 
-static LayoutUnit ComputeMargin(const LayoutInline* layout_object,
-                                const Length& margin) {
-  if (margin.IsFixed())
-    return LayoutUnit(margin.Pixels());
-  if (margin.IsPercent() || margin.IsCalculated()) {
-    return MinimumValueForLength(
-        margin, layout_object->ContainingBlock()->ContentLogicalWidth());
-  }
-  return LayoutUnit();
-}
+PhysicalBoxStrut LayoutInline::MarginOutsets() const {
+  auto compute_margin = [&](const Length& margin) -> LayoutUnit {
+    if (margin.IsFixed()) {
+      return LayoutUnit(margin.Pixels());
+    }
+    if (margin.IsPercent() || margin.IsCalculated()) {
+      return MinimumValueForLength(margin,
+                                   ContainingBlock()->ContentLogicalWidth());
+    }
+    return LayoutUnit();
+  };
 
-LayoutUnit LayoutInline::MarginLeft() const {
-  NOT_DESTROYED();
-  return ComputeMargin(this, StyleRef().MarginLeft());
-}
-
-LayoutUnit LayoutInline::MarginRight() const {
-  NOT_DESTROYED();
-  return ComputeMargin(this, StyleRef().MarginRight());
-}
-
-LayoutUnit LayoutInline::MarginTop() const {
-  NOT_DESTROYED();
-  return ComputeMargin(this, StyleRef().MarginTop());
-}
-
-LayoutUnit LayoutInline::MarginBottom() const {
-  NOT_DESTROYED();
-  return ComputeMargin(this, StyleRef().MarginBottom());
+  return {compute_margin(StyleRef().MarginTop()),
+          compute_margin(StyleRef().MarginRight()),
+          compute_margin(StyleRef().MarginBottom()),
+          compute_margin(StyleRef().MarginLeft())};
 }
 
 bool LayoutInline::NodeAtPoint(HitTestResult& result,
