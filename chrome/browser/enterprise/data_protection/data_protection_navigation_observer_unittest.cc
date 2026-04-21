@@ -196,10 +196,8 @@ class DataProtectionNavigationObserverTest
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
             profile(),
-            base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new enterprise_connectors::RealtimeReportingClient(context));
-            }));
+            base::BindRepeating(
+                &enterprise_connectors::test::BuildRealtimeReportingClient));
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile())
         ->SetBrowserCloudPolicyClientForTesting(client_.get());

@@ -768,7 +768,8 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     cloud_policy_client_->SetDMToken(kDmToken);
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile_,
-        base::BindRepeating(&safe_browsing::BuildRealtimeReportingClient));
+        base::BindRepeating(
+            &enterprise_connectors::test::BuildRealtimeReportingClient));
     RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetBrowserCloudPolicyClientForTesting(cloud_policy_client_.get());
     identity_test_environment_ =

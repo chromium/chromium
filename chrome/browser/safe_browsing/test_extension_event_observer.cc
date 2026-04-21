@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,12 +66,6 @@ std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(
     content::BrowserContext* context) {
   return std::unique_ptr<KeyedService>(
       new extensions::SafeBrowsingPrivateEventRouter(context));
-}
-
-std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
-    content::BrowserContext* context) {
-  return std::unique_ptr<KeyedService>(
-      new enterprise_connectors::RealtimeReportingClient(context));
 }
 
 }  // namespace safe_browsing

@@ -250,8 +250,10 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
   cloud_policy_client_ = std::make_unique<policy::MockCloudPolicyClient>();
   cloud_policy_client_->SetDMToken("dm-token");
   enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
-      ->SetTestingFactory(&profile_,
-                          base::BindRepeating(&BuildRealtimeReportingClient));
+      ->SetTestingFactory(
+          &profile_,
+          base::BindRepeating(
+              &enterprise_connectors::test::BuildRealtimeReportingClient));
   enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
       &profile_)
       ->SetBrowserCloudPolicyClientForTesting(cloud_policy_client_.get());

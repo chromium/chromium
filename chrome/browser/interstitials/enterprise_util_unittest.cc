@@ -118,10 +118,9 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
-            profile, base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new enterprise_connectors::RealtimeReportingClient(context));
-            }));
+            profile,
+            base::BindRepeating(
+                &enterprise_connectors::test::BuildRealtimeReportingClient));
     enterprise_connectors::test::SetOnSecurityEventReporting(
         profile->GetPrefs(), /*enabled=*/true, /*enabled_event_names=*/{},
         /*enabled_opt_in_events=*/{});

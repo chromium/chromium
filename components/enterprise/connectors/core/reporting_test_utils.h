@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
-#include "components/policy/test_support/embedded_policy_test_server.h"
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "components/enterprise/data_controls/core/browser/verdict.h"
@@ -25,6 +24,7 @@
 class PrefService;
 
 namespace policy {
+class EmbeddedPolicyTestServer;
 class MockCloudPolicyClient;
 }
 

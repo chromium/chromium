@@ -189,10 +189,9 @@ class PrintContentAnalysisUtilsTest
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context) {
-          return std::unique_ptr<KeyedService>(
-              new enterprise_connectors::RealtimeReportingClient(context));
-        }));
+        profile(),
+        base::BindRepeating(
+            &enterprise_connectors::test::BuildRealtimeReportingClient));
 
     RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetBrowserCloudPolicyClientForTesting(client_.get());

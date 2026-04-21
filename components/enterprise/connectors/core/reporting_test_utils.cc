@@ -21,6 +21,7 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -547,8 +547,10 @@ class DownloadProtectionServiceTestBase
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
-        ->SetTestingFactory(profile(),
-                            base::BindRepeating(&BuildRealtimeReportingClient));
+        ->SetTestingFactory(
+            profile(),
+            base::BindRepeating(
+                &enterprise_connectors::test::BuildRealtimeReportingClient));
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 

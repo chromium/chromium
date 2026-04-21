@@ -1106,6 +1106,12 @@ void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
   prefs->ClearPref(AnalysisConnectorScopePref(connector));
 }
 
+std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
+    content::BrowserContext* context) {
+  return std::make_unique<enterprise_connectors::RealtimeReportingClient>(
+      context);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
   auto policy_data = std::make_unique<enterprise_management::PolicyData>();

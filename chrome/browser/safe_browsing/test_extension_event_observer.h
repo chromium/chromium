@@ -46,8 +46,6 @@ class TestExtensionEventObserver
 std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(
     content::BrowserContext* context);
 
-std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
-    content::BrowserContext* context);
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_TEST_EXTENSION_EVENT_OBSERVER_H_

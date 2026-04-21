@@ -35,6 +35,12 @@ namespace policy {
 class MockCloudPolicyClient;
 }
 
+namespace content {
+class BrowserContext;
+}
+
+class KeyedService;
+
 namespace enterprise_connectors::test {
 
 // Helper class that represents a report that's expected from a test. The
@@ -324,6 +330,9 @@ void SetAnalysisConnector(PrefService* prefs,
                           const std::string& pref_value,
                           bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector);
+
+std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
+    content::BrowserContext* context);
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Helper function to set the profile DM token. It installs a
