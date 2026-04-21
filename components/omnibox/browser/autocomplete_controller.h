@@ -514,7 +514,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   const omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
   GetOmniboxPositionExperimentStatsV2() const;
 
-  base::ObserverList<Observer> observers_;
+  base::ReentrantObserverList<Observer> observers_;
 
   // The client passed to the providers.
   const std::unique_ptr<AutocompleteProviderClient> provider_client_;
