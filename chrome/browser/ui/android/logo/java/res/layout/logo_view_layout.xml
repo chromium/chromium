@@ -4,13 +4,19 @@ Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.logo.LogoView
+<org.chromium.chrome.browser.logo.LogoContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/search_provider_logo"
+    android:id="@+id/logo_container_view"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/ntp_logo_height"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:layout_marginTop="@dimen/ntp_logo_margin_top"
-    android:layout_marginBottom="@dimen/ntp_logo_margin_bottom" />
+    android:layout_marginBottom="@dimen/ntp_logo_margin_bottom">
+
+    <org.chromium.chrome.browser.logo.LogoView
+        android:id="@+id/search_provider_logo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ntp_logo_height"
+        android:layout_marginTop="@dimen/ntp_logo_margin_top"/>
+</org.chromium.chrome.browser.logo.LogoContainerView>

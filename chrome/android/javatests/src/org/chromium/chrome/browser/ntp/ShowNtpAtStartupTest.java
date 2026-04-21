@@ -30,7 +30,6 @@ import android.graphics.Bitmap.Config;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.RequiresApi;
@@ -68,8 +67,8 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LegacyLogoView;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoContainerView;
 import org.chromium.chrome.browser.logo.LogoUtils;
-import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
@@ -318,7 +317,8 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    public void testNtpLogoSize() {
+    @EnableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
+    public void testNtpLogoSize_logoViewRefactorFlagEnabled() {
         mActivityTestRule.startOnNtp();
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
@@ -326,7 +326,24 @@ public class ShowNtpAtStartupTest {
         int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
-        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+        testLogoSizeImpl_logoViewRefactorEnabled(
+                expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @DisableFeatures({ChromeFeatureList.LOGO_VIEW_REFACTOR})
+    public void testNtpLogoSize_logoViewRefactorFlagDisabled() {
+        mActivityTestRule.startOnNtp();
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int expectedTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+
+        // Verifies the logo size is decreased, and top bottom margins are updated.
+        testLogoSizeImpl_logoViewRefactorDisabled(
+                expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
     }
 
     @Test
@@ -341,8 +358,9 @@ public class ShowNtpAtStartupTest {
         final int[] expectedValues = new int[3];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    LogoView logoView =
-                            (LogoView) ntp.getView().findViewById(R.id.search_provider_logo);
+                    LogoContainerView logoView =
+                            (LogoContainerView)
+                                    ntp.getView().findViewById(R.id.logo_container_view);
                     Logo logo =
                             new Logo(Bitmap.createBitmap(1, 1, Config.ALPHA_8), null, null, null);
                     logoView.updateLogo(logo);
@@ -359,7 +377,8 @@ public class ShowNtpAtStartupTest {
         int expectedBottomMargin = expectedValues[2];
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
-        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+        testLogoSizeImpl_logoViewRefactorEnabled(
+                expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
     }
 
     @Test
@@ -392,7 +411,8 @@ public class ShowNtpAtStartupTest {
         int expectedBottomMargin = expectedValues[2];
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
-        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+        testLogoSizeImpl_logoViewRefactorDisabled(
+                expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
     }
 
     @Test
@@ -439,14 +459,33 @@ public class ShowNtpAtStartupTest {
         verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
     }
 
-    private void testLogoSizeImpl(
+    private void testLogoSizeImpl_logoViewRefactorEnabled(
             int expectedLogoHeight, int expectedTopMargin, int expectedBottomMargin) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
-        ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
+        View logoContainerView = ntp.getView().findViewById(R.id.logo_container_view);
+        View logoView = ntp.getView().findViewById(R.id.search_provider_logo);
+
+        MarginLayoutParams logoContainerLayoutParams =
+                (MarginLayoutParams) logoContainerView.getLayoutParams();
+        MarginLayoutParams logoViewLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+
+        Assert.assertEquals(expectedLogoHeight, logoViewLayoutParams.height);
+        Assert.assertEquals(expectedTopMargin, logoViewLayoutParams.topMargin);
+        Assert.assertEquals(expectedBottomMargin, logoContainerLayoutParams.bottomMargin);
+    }
+
+    private void testLogoSizeImpl_logoViewRefactorDisabled(
+            int expectedLogoHeight, int expectedTopMargin, int expectedBottomMargin) {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        HomeSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
+        View logoView = ntp.getView().findViewById(R.id.search_provider_logo);
 
         // Verifies the logo size and margins.
         MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();

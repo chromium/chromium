@@ -34,8 +34,6 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Instrumentation tests for {@link LogoView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -56,8 +54,6 @@ public class LogoViewTest {
 
     private LogoView mView;
     private Bitmap mBitmap;
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private PropertyModel mModel;
 
     @Before
     public void setup() {
@@ -68,15 +64,18 @@ public class LogoViewTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
+                            android.widget.FrameLayout parent =
+                                    new android.widget.FrameLayout(activity);
                             mView = new LogoView(activity, null);
-                            LayoutParams params =
+                            parent.addView(
+                                    mView,
                                     new LayoutParams(
+                                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+                            MarginLayoutParams params =
+                                    new MarginLayoutParams(
                                             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                            activity.setContentView(mView, params);
-                            mModel = new PropertyModel(LogoProperties.ALL_KEYS);
-                            mPropertyModelChangeProcessor =
-                                    PropertyModelChangeProcessor.create(
-                                            mModel, mView, new LogoViewBinder());
+                            activity.setContentView(parent, params);
                         });
     }
 
@@ -147,11 +146,11 @@ public class LogoViewTest {
     @Test
     public void testShowLoadingView() {
         Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null, null);
-        mModel.set(LogoProperties.LOGO, logo);
+        mView.updateLogo(logo);
         mView.endAnimationsForTesting();
         Assert.assertNotNull(mView.getLogoDrawableForTesting());
         mView.setLoadingViewVisibilityForTesting(View.VISIBLE);
-        mModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
+        mView.showLoadingView();
         Assert.assertNull(mView.getLogoDrawableForTesting());
         Assert.assertEquals(View.GONE, mView.getLoadingViewVisibilityForTesting());
     }
@@ -182,7 +181,7 @@ public class LogoViewTest {
 
         // Test doodle animation.
         Logo logo = new Logo(mBitmap, null, ALT_TEXT, null);
-        mModel.set(LogoProperties.LOGO, logo);
+        mView.updateLogo(logo);
         ObjectAnimator fadeAnimation = mView.getFadeAnimationForTesting();
         Assert.assertNotNull(fadeAnimation);
 
@@ -223,13 +222,6 @@ public class LogoViewTest {
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
         mView.setLogoTopMargin(100);
         Assert.assertEquals(100, params.topMargin);
-    }
-
-    @Test
-    public void testSetLogoBottomMargin() {
-        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
-        mView.setLogoBottomMargin(50);
-        Assert.assertEquals(50, params.bottomMargin);
     }
 
     @Test

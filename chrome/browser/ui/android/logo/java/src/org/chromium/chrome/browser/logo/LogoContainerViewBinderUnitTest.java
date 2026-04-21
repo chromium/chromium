@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -38,7 +39,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -49,24 +52,21 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.LoadingView;
 
-// TODO(crbug.com/40881870): For the LogoViewTest and LogoViewBinderUnitTest, that's the nice thing
-//  about only have 1 test file, where all test cases go into the single test file.
-
-/** Unit tests for the {@link LogoViewBinder}. */
+/** Unit tests for the {@link LogoContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class LogoViewBinderUnitTest {
+public class LogoContainerViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mLogoModel;
-    private LogoView mLogoView;
+    private LogoContainerView mLogoView;
     private LogoMediator mLogoMediator;
     private static final double DELTA = 1e-5;
     private static final String ANIMATED_LOGO_URL =
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
 
-    @Mock private LogoView mMockLogoView;
+    @Mock private LogoContainerView mMockLogoView;
 
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
 
@@ -92,13 +92,17 @@ public class LogoViewBinderUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mLogoView = new LogoView(mActivity, null);
+        mLogoView =
+                (LogoContainerView)
+                        android.view.LayoutInflater.from(mActivity)
+                                .inflate(R.layout.logo_view_layout, null);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mActivity.setContentView(mLogoView, params);
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
+                PropertyModelChangeProcessor.create(
+                        mLogoModel, mLogoView, new LogoContainerViewBinder());
         mLogoMediator =
                 new LogoMediator(
                         /* logoClickedCallback= */ null,
@@ -128,10 +132,17 @@ public class LogoViewBinderUnitTest {
 
         assertEquals(View.VISIBLE, mLogoView.getVisibility());
         assertEquals(0.3, mLogoView.getAlpha(), DELTA);
-        ViewGroup.MarginLayoutParams marginLayoutParams =
+
+        // Check container layout params for bottom margin
+        ViewGroup.MarginLayoutParams containerParams =
                 (ViewGroup.MarginLayoutParams) mLogoView.getLayoutParams();
-        assertEquals(10, marginLayoutParams.topMargin);
-        assertEquals(20, marginLayoutParams.bottomMargin);
+        assertEquals(20, containerParams.bottomMargin);
+
+        // Check child LogoView layout params for top margin
+        LogoView childLogoView = mLogoView.findViewById(R.id.search_provider_logo);
+        ViewGroup.MarginLayoutParams childParams =
+                (ViewGroup.MarginLayoutParams) childLogoView.getLayoutParams();
+        assertEquals(10, childParams.topMargin);
 
         mLogoModel.set(LogoProperties.VISIBILITY, false);
         assertEquals(View.GONE, mLogoView.getVisibility());
@@ -207,7 +218,7 @@ public class LogoViewBinderUnitTest {
         mLogoMediator.setImageFetcherForTesting(mImageFetcher);
         mLogoMediator.setAnimatedLogoUrlForTesting(ANIMATED_LOGO_URL);
         mLogoModel.set(LogoProperties.LOGO_CLICK_HANDLER, mLogoMediator::onLogoClicked);
-        mLogoView.onClick(mLogoView);
+        mLogoView.findViewById(R.id.search_provider_logo).performClick();
         assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting("NewTabPage.LogoClick", 1));
         verify(mImageFetcher, times(1)).fetchGif(any(), any());
@@ -217,7 +228,8 @@ public class LogoViewBinderUnitTest {
     @SmallTest
     public void testShowSearchProviderInitialView() {
         PropertyModel logoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(logoModel, mMockLogoView, new LogoViewBinder());
+        PropertyModelChangeProcessor.create(
+                logoModel, mMockLogoView, new LogoContainerViewBinder());
         logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
         verify(mMockLogoView).showSearchProviderInitialView();
         logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
@@ -254,7 +266,8 @@ public class LogoViewBinderUnitTest {
     @SmallTest
     public void testShowDefaultGoogleLogo() {
         PropertyModel logoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(logoModel, mMockLogoView, new LogoViewBinder());
+        PropertyModelChangeProcessor.create(
+                logoModel, mMockLogoView, new LogoContainerViewBinder());
 
         logoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
         verify(mMockLogoView).maybeShowDefaultLogoDrawable();
@@ -264,7 +277,8 @@ public class LogoViewBinderUnitTest {
     @SmallTest
     public void testSetLogoTopMargin() {
         mLogoModel.set(LogoProperties.LOGO_TOP_MARGIN, 10);
-        MarginLayoutParams params = (MarginLayoutParams) mLogoView.getLayoutParams();
+        LogoView childLogoView = mLogoView.findViewById(R.id.search_provider_logo);
+        MarginLayoutParams params = (MarginLayoutParams) childLogoView.getLayoutParams();
         assertEquals(10, params.topMargin);
     }
 
@@ -280,7 +294,31 @@ public class LogoViewBinderUnitTest {
     @SmallTest
     public void testSetLogoHeight() {
         mLogoModel.set(LogoProperties.LOGO_HEIGHT, 50);
-        MarginLayoutParams params = (MarginLayoutParams) mLogoView.getLayoutParams();
+        LogoView childLogoView = mLogoView.findViewById(R.id.search_provider_logo);
+        MarginLayoutParams params = (MarginLayoutParams) childLogoView.getLayoutParams();
         assertEquals(50, params.height);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowLoadingView() {
+        mLogoView.setLoadingViewVisibilityForTesting(View.GONE);
+        mLogoModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(View.VISIBLE, mLogoView.getLoadingViewVisibilityForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetLogoAvailableCallback() {
+        final boolean[] callbackCalled = new boolean[1];
+        Callback<Logo> callback = (logo) -> callbackCalled[0] = true;
+        mLogoModel.set(LogoProperties.LOGO_AVAILABLE_CALLBACK, callback);
+        assertFalse(callbackCalled[0]);
+
+        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888), null, null, null);
+        mLogoModel.set(LogoProperties.LOGO, logo);
+        mLogoView.endAnimationsForTesting();
+        assertTrue(callbackCalled[0]);
     }
 }

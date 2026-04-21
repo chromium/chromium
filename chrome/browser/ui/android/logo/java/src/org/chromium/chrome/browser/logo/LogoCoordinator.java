@@ -86,11 +86,13 @@ public class LogoCoordinator {
             stub.setLayoutResource(R.layout.legacy_logo_view_layout);
         }
         stub.inflate();
-        mLogoView = parentView.findViewById(R.id.search_provider_logo);
 
         if (ChromeFeatureList.sLogoViewRefactor.isEnabled()) {
-            PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
+            mLogoView = parentView.findViewById(R.id.logo_container_view);
+            PropertyModelChangeProcessor.create(
+                    mLogoModel, mLogoView, new LogoContainerViewBinder());
         } else {
+            mLogoView = parentView.findViewById(R.id.search_provider_logo);
             PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LegacyLogoViewBinder());
         }
 
@@ -187,8 +189,8 @@ public class LogoCoordinator {
     @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
-        if (mLogoView instanceof LogoView) {
-            ((LogoView) mLogoView).destroy();
+        if (mLogoView instanceof LogoContainerView) {
+            ((LogoContainerView) mLogoView).destroy();
         } else if (mLogoView instanceof LegacyLogoView) {
             ((LegacyLogoView) mLogoView).destroy();
         }

@@ -154,17 +154,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /**
-     * Sets the logo bottom margin.
-     *
-     * @param bottomMargin The bottom margin in pixels.
-     */
-    void setLogoBottomMargin(int bottomMargin) {
-        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
-        marginLayoutParams.bottomMargin = bottomMargin;
-        setLayoutParams(marginLayoutParams);
-    }
-
-    /**
      * Sets the logo height.
      *
      * @param height The height of the logo in pixels.
@@ -535,7 +524,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         }
     }
 
-    public void endAnimationsForTesting() {
+    void endAnimationsForTesting() {
         if (mFadeAnimation != null) mFadeAnimation.end();
     }
 

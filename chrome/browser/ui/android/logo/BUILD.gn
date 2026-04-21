@@ -12,11 +12,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/logo/LegacyLogoView.java",
     "java/src/org/chromium/chrome/browser/logo/LegacyLogoViewBinder.java",
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoContainerView.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoContainerViewBinder.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoProperties.java",
     "java/src/org/chromium/chrome/browser/logo/LogoView.java",
-    "java/src/org/chromium/chrome/browser/logo/LogoViewBinder.java",
   ]
 
   deps = [
@@ -82,10 +83,10 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/logo/DoodleCacheUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LegacyLogoViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LegacyLogoViewTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoContainerViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoUtilsUnitTest.java",
-    "java/src/org/chromium/chrome/browser/logo/LogoViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoViewTest.java",
   ]
 

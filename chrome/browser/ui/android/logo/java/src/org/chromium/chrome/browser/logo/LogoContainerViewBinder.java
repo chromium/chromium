@@ -13,11 +13,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Responsible for building and setting properties on the logo. */
 @NullMarked
-class LogoViewBinder
+class LogoContainerViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> {
     @Override
     public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        LogoView logoView = (LogoView) view;
+        LogoContainerView logoView = (LogoContainerView) view;
 
         if (LogoProperties.ALPHA == propertyKey) {
             logoView.setAlpha(model.get(LogoProperties.ALPHA));
@@ -53,7 +53,7 @@ class LogoViewBinder
         } else if (LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO == propertyKey) {
             logoView.maybeShowDefaultLogoDrawable();
         } else {
-            assert false : "Unhandled property detected in LogoViewBinder!";
+            assert false : "Unhandled property detected in LogoContainerViewBinder!";
         }
     }
 }
