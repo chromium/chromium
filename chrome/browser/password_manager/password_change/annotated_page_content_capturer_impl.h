@@ -37,11 +37,14 @@ class AnnotatedPageContentCapturerImpl : public AnnotatedPageContentCapturer,
  private:
   void CapturePageContent(
       optimization_guide::AIPageContentResultOrError result);
+  void RetryCapture();
 
   blink::mojom::AIPageContentOptionsPtr options_;
   optimization_guide::OnAIPageContentDone callback_;
   AnnotatedPageContentCapturer::GetAIPageContentFunction get_page_content_;
   std::unique_ptr<PasswordChangePageStabilityWaiter> page_stability_waiter_;
+
+  int retry_count_ = 0;
 
   base::WeakPtrFactory<AnnotatedPageContentCapturerImpl> weak_ptr_factory_{
       this};

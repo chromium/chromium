@@ -2710,6 +2710,28 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.PageContentCaptureDuration"
+    units="ms" expires_after="2026-10-04">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The total time spent capturing page content for Automated Password Change,
+    including all retries and delays. Recorded when the capture succeeds or
+    fails after max retries.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChange.PageContentCaptureResult"
+    enum="Boolean" expires_after="2026-10-04">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the page content capture for Automated Password Change was
+    successful (potentially after retries). Recorded when the capture succeeds
+    or fails after max retries.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.PrivacyNoticeBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2026-05-30">
   <owner>atsvirchkova@google.com</owner>
