@@ -1917,9 +1917,10 @@ NavigationRequest::NavigationRequest(
   NavigationControllerImpl* controller = GetNavigationController();
 
   if (frame_entry) {
-    frame_entry_item_sequence_number_ = frame_entry->item_sequence_number();
-    frame_entry_document_sequence_number_ =
-        frame_entry->document_sequence_number();
+    origin_related_state_.emplace(OriginRelatedState{
+        .item_sequence_number = frame_entry->item_sequence_number(),
+        .document_sequence_number = frame_entry->document_sequence_number(),
+    });
   }
 
   // Sanitize the referrer.
@@ -3466,9 +3467,8 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
     commit_params_->page_state =
         blink::PageState::CreateFromURL(GetURL()).ToEncodedData();
 
-  // ISNs and DSNs are process-specific.
-  frame_entry_item_sequence_number_ = -1;
-  frame_entry_document_sequence_number_ = -1;
+  // Clear any state specific to the origin, such as ISNs and DSNs.
+  origin_related_state_.reset();
 }
 
 void NavigationRequest::RegisterSubresourceOverride(
@@ -9605,8 +9605,8 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
   // we are sure this isn't hit.
   DCHECK_EQ(params->method, common_params().method);
-  params->item_sequence_number = frame_entry_item_sequence_number_;
-  params->document_sequence_number = frame_entry_document_sequence_number_;
+  params->item_sequence_number = frame_entry_item_sequence_number();
+  params->document_sequence_number = frame_entry_document_sequence_number();
   params->transition = ui::PageTransitionFromInt(common_params().transition);
   params->history_list_was_cleared = false;
   params->request_id = GetGlobalRequestID().request_id;

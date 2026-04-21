@@ -1498,7 +1498,17 @@ class CONTENT_EXPORT NavigationRequest
   // redirect or results in an origin change, in which case the
   // NavigationRequest is no longer tied to the original entry.
   int64_t frame_entry_document_sequence_number() const {
-    return frame_entry_document_sequence_number_;
+    return origin_related_state_
+               ? origin_related_state_->document_sequence_number
+               : -1;
+  }
+
+  // Returns the item sequence number from the cached OriginRelatedState, or -1
+  // if the navigation performs a redirect or results in an origin change, in
+  // which case the NavigationRequest is no longer tied to the original entry.
+  int64_t frame_entry_item_sequence_number() const {
+    return origin_related_state_ ? origin_related_state_->item_sequence_number
+                                 : -1;
   }
 
   bool is_ad_tagged() const { return is_ad_tagged_; }
@@ -3016,10 +3026,24 @@ class CONTENT_EXPORT NavigationRequest
   // or not.
   const bool is_back_forward_cache_restore_;
 
-  // These are set to the values from the FrameNavigationEntry this
-  // NavigationRequest is associated with (if any).
-  int64_t frame_entry_item_sequence_number_ = -1;
-  int64_t frame_entry_document_sequence_number_ = -1;
+  // Origin-related state that is specific to the origin when the navigation
+  // began. This can be cleared if the origin of the navigation changes (e.g.,
+  // due to redirects or CSP). Stored as std::optional so that it is nullopt
+  // when there is no associated FrameNavigationEntry or when the origin of the
+  // navigation changes.
+  //
+  // A subset of this state is cached from the FrameNavigationEntry this
+  // NavigationRequest is associated with (if any), so that the
+  // NavigationRequest can clear or modify it without modifying the
+  // FrameNavigationEntry itself (e.g., in case the navigation is canceled and
+  // attempted again later, perhaps without a redirect).
+  // TODO(crbug.com/421948889): Add expected_commit_origin field, along with
+  // clearing logic for when the origin changes during navigation.
+  struct OriginRelatedState {
+    int64_t item_sequence_number;
+    int64_t document_sequence_number;
+  };
+  std::optional<OriginRelatedState> origin_related_state_;
 
   // If non-empty, it represents the IsolationInfo explicitly asked to be used
   // for this NavigationRequest.
