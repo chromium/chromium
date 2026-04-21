@@ -63,7 +63,7 @@ TEST_F(BackGestureAffordanceTest,
                                                          display_id);
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
-  std::unique_ptr<aura::Window> bottom_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> bottom_window = CreateWindowWithAppType();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   split_view_controller->SnapWindow(bottom_window.get(),

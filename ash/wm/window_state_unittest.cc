@@ -2253,9 +2253,9 @@ TEST_F(WindowStateTest, SnappedWindowsInExternalDisplay) {
 
   // Create two windows inside the external display.
   std::unique_ptr<aura::Window> w1 =
-      CreateTestWindow(gfx::Rect(801, 0, 200, 100));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {801, 0, 200, 100});
   std::unique_ptr<aura::Window> w2 =
-      CreateTestWindow(gfx::Rect(1000, 0, 200, 100));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {1000, 0, 200, 100});
   ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w1.get()).id());
   ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(w2.get()).id());
 

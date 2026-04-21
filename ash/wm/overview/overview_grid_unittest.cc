@@ -205,8 +205,10 @@ TEST_F(OverviewGridTest, WindowWithBackdrop) {
   // Create one non resizable window and one normal window and verify that the
   // backdrop shows over the non resizable window, and that normal window
   // becomes maximized upon entering tablet mode.
-  auto window1 = CreateTestWindow(gfx::Rect(100, 100));
-  auto window2 = CreateTestWindow(gfx::Rect(400, 400));
+  auto window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   window1->SetProperty(aura::client::kResizeBehaviorKey,
                        aura::client::kResizeBehaviorNone);
   wm::ActivateWindow(window1.get());
@@ -327,8 +329,8 @@ TEST_F(OverviewGridTest, RecordsDelayedDeskBarPresentationMetric) {
   // Since the windows are not maximized, the desk bar should open after
   // the overview animation is complete, causing
   // `kOverviewDelayedDeskBarPresentationHistogram` to be recorded.
-  std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
 
   ui::Compositor* const compositor = window1->GetHost()->compositor();
   base::HistogramTester histogram_tester;
@@ -349,8 +351,8 @@ TEST_F(OverviewGridTest, DoesNotRecordDelayedDeskBarPresentationMetric) {
   // Since the windows are maximized, the desk bar should open immediately when
   // we enter overview and `kOverviewDelayedDeskBarPresentationHistogram` should
   // not be recorded.
-  std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
   WindowState::Get(window1.get())->Maximize();
   WindowState::Get(window2.get())->Maximize();
 

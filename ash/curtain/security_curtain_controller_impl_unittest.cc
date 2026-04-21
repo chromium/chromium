@@ -364,7 +364,8 @@ TEST_F(SecurityCurtainControllerImplTest,
 }
 
 TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotOccludeOtherWindows) {
-  auto other_window = CreateTestWindow(gfx::Rect(100, 100));
+  auto other_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   other_window->TrackOcclusionState();
   ASSERT_THAT(other_window->GetOcclusionState(),
               Eq(aura::Window::OcclusionState::VISIBLE));
@@ -376,7 +377,8 @@ TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotOccludeOtherWindows) {
 }
 
 TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotStealFocus) {
-  auto other_window = CreateTestWindow(gfx::Rect(100, 100));
+  auto other_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   other_window->Focus();
   ASSERT_THAT(other_window->HasFocus(), Eq(true));
 

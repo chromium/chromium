@@ -99,9 +99,9 @@ class FrameThrottlingControllerTest : public AshTestBase {
 };
 
 TEST_F(FrameThrottlingControllerTest, ManualThrottling) {
-  std::unique_ptr<aura::Window> window_1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_1 = CreateWindowWithAppType();
   window_1->SetEmbedFrameSinkId({1, 1});
-  std::unique_ptr<aura::Window> window_2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_2 = CreateWindowWithAppType();
   window_2->SetEmbedFrameSinkId({2, 2});
 
   // 10 Hz is lower than the default, but there are no other windows actively
@@ -154,7 +154,7 @@ TEST_F(FrameThrottlingControllerTest, ManualAndCompositingBasedThrottling) {
       ash_test_helper()->GetHost(), {kBrowserWindowFrameSinkId});
   base::RunLoop().RunUntilIdle();
 
-  std::unique_ptr<aura::Window> manual_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> manual_window = CreateWindowWithAppType();
   manual_window->SetEmbedFrameSinkId(kManualWindowFrameSinkId);
 
   // 10 Hz is lower than the default frame rate, so it should be rejected.

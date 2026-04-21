@@ -563,7 +563,7 @@ TEST_F(WindowRestoreControllerTest, Stacking) {
   // Create a window that is a child of the active desk's container.
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
       Shell::Get()->GetPrimaryRootWindow());
-  auto non_restored_sibling = CreateTestWindow();
+  auto non_restored_sibling = CreateWindowWithAppType();
   EXPECT_THAT(desk_container->children(),
               ElementsAre(non_restored_sibling.get()));
 
@@ -964,8 +964,9 @@ TEST_F(WindowRestoreControllerTest, TabletToClamshell) {
 
   // The tablet mode window manager watches windows when they are added, then
   // tracks them when the window is shown. They must be resizable when tracked,
-  // so we use a views::test::TestWidgetBuilder instead of `CreateTestWindow()`,
-  // which would show the window before we can make it resizable.
+  // so we use a views::test::TestWidgetBuilder instead of
+  // `CreateWindowWithAppType()`, which would
+  // show the window before we can make it resizable.
   const gfx::Rect expected_bounds(300, 300);
   views::Widget* widget =
       CreateWidgetBuilderWithDelegate()

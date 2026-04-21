@@ -212,7 +212,7 @@ TEST_P(StatusAreaParamerterizedAlignmentPixelTest, DISABLED_OverflowTray) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
   ShellTestApi().SetTabletModeEnabledForTest(true);
   std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
   notification_test_api()->AddNotification();

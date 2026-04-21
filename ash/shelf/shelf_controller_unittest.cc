@@ -56,8 +56,8 @@ TEST_F(ShelfControllerTest, ShelfIDUpdate) {
   const ShelfID id1("id1");
   const ShelfID id2("id2");
 
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   window->SetProperty(kShelfIDKey, id1.Serialize());
   wm::ActivateWindow(window.get());
   EXPECT_EQ(id1, model->active_shelf_id());

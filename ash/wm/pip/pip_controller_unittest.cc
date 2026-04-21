@@ -57,7 +57,8 @@ class PipControllerTest : public AshTestBase {
 
  protected:
   std::unique_ptr<aura::Window> CreatePipWindow(gfx::Rect bounds) {
-    std::unique_ptr<aura::Window> window(CreateTestWindow(bounds));
+    std::unique_ptr<aura::Window> window =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
     WindowState* window_state = WindowState::Get(window.get());
     const WMEvent enter_pip(WM_EVENT_PIP);
     window_state->OnWMEvent(&enter_pip);

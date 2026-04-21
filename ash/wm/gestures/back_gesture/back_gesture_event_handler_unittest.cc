@@ -338,8 +338,8 @@ TEST_F(BackGestureEventHandlerTest, DestroyWindowDuringDrag) {
 
 // Tests back gesture while in split view mode.
 TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -406,8 +406,8 @@ TEST_F(BackGestureEventHandlerTest, BackGestureInSplitViewMode) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
-  std::unique_ptr<aura::Window> left_window = CreateTestWindow();
-  std::unique_ptr<aura::Window> right_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> left_window = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> right_window = CreateWindowWithAppType();
 
   // Start overview first and then snap window in splitview to make sure
   // window activation order remains the same.
@@ -673,8 +673,8 @@ TEST_F(BackGestureEventHandlerTest,
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
-  std::unique_ptr<aura::Window> left_window = CreateTestWindow();
-  std::unique_ptr<aura::Window> right_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> left_window = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> right_window = CreateWindowWithAppType();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   split_view_controller->SnapWindow(left_window.get(), SnapPosition::kPrimary);
@@ -767,8 +767,8 @@ TEST_F(BackGestureEventHandlerTest,
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
-  std::unique_ptr<aura::Window> left_window = CreateTestWindow();
-  std::unique_ptr<aura::Window> right_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> left_window = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> right_window = CreateWindowWithAppType();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   split_view_controller->SnapWindow(left_window.get(), SnapPosition::kPrimary);

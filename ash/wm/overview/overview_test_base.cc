@@ -63,7 +63,8 @@ bool OverviewTestBase::WindowsOverlapping(aura::Window* window1,
 
 std::unique_ptr<aura::Window> OverviewTestBase::CreateUnsnappableWindow(
     const gfx::Rect& bounds) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorNone);
   return window;

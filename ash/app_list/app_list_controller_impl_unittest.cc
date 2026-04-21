@@ -488,7 +488,7 @@ TEST_F(AppListControllerImplTest,
 
   // Create |window1| which contains a textfield as child view.
   std::unique_ptr<aura::Window> window1 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 200, 200));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   auto* widget = views::Widget::GetWidgetForNativeView(window1.get());
   std::unique_ptr<views::Textfield> text_field =
       std::make_unique<views::Textfield>();
@@ -499,7 +499,7 @@ TEST_F(AppListControllerImplTest,
 
   // Note that the bounds of |text_field| cannot be too small. Otherwise, it
   // may not receive the gesture event.
-  text_field->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  text_field->SetBoundsRect(gfx::Rect(100, 100));
   const auto* text_field_p = text_field.get();
   widget->GetRootView()->AddChildView(std::move(text_field));
   wm::ActivateWindow(window1.get());
@@ -507,7 +507,7 @@ TEST_F(AppListControllerImplTest,
 
   // Create |window2|.
   std::unique_ptr<aura::Window> window2 =
-      AshTestBase::CreateTestWindow(gfx::Rect(200, 0, 200, 200));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 0, 200, 200});
   window2->Show();
 
   // Tap at the textfield in |window1|. The virtual keyboard should be visible.
@@ -545,8 +545,8 @@ TEST_F(AppListControllerImplTest,
   ash::TabletModeControllerTestApi().EnterTabletMode();
   ash::TabletModeControllerTestApi().LeaveTabletMode();
 
-  std::unique_ptr<aura::Window> w(
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   EnterOverview();
 
   // Press home button - verify overview exits and the app list is shown.
@@ -831,7 +831,8 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
 }
 
 TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   std::unique_ptr<aura::Window> w2 =
       CreateTestWindowInShell({.bounds = gfx::Rect(400, 400),
                                .window_type = aura::client::WINDOW_TYPE_POPUP});
@@ -1336,7 +1337,8 @@ TEST_F(AppListControllerImplKioskTest,
 TEST_F(AppListControllerImplKioskTest,
        DoNotMinimizeAppWindowInTabletModeWhenGoHomeCalled) {
   // Emulation of a Kiosk app window.
-  std::unique_ptr<aura::Window> w(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
@@ -1348,7 +1350,8 @@ TEST_F(AppListControllerImplKioskTest,
 TEST_F(AppListControllerImplKioskTest,
        DoNotShowAppListInTabletModeWhenPressHomeButton) {
   // Emulation of a Kiosk app window.
-  std::unique_ptr<aura::Window> w(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   PressHomeButton();

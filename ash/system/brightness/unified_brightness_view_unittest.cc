@@ -223,7 +223,7 @@ TEST_F(UnifiedBrightnessViewTest, MoreButton) {
   CloseBubble();
 
   // Create and trusted pin a window.
-  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   wm::ActivateWindow(window.get());
   window_util::PinWindow(window.get(), /*trusted=*/true);
 

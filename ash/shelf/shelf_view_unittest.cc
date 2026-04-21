@@ -1655,7 +1655,7 @@ TEST_P(LtrRtlShelfViewTest, HomeButtonMetricsInTablet) {
       GetPrimaryShelf()->navigation_widget()->GetHomeButton();
 
   // Make sure we're not showing the app list.
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   wm::ActivateWindow(window.get());
   EXPECT_FALSE(home_button->IsShowingAppList());
 
@@ -2758,7 +2758,7 @@ class LockedFullscreenShelfViewTest : public ShelfViewTest,
 TEST_P(LockedFullscreenShelfViewTest, ContextMenuVisibilityWithPinnedWindow) {
   // Create an item on the shelf and a test window for testing purposes.
   const ShelfAppButton* const shelf_button = GetButtonByID(AddApp());
-  const std::unique_ptr<aura::Window> window = CreateTestWindow();
+  const std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   // Open context menu before pinning the window.
   base::test::TestFuture<void> context_menu_future;
@@ -3802,7 +3802,13 @@ TEST_F(ShelfViewGestureTapTest, TapAfterShowingSystemModalWindow) {
 
   auto item_1_delegate_owned =
       std::make_unique<SystemModalWindowShelfItemDelegate>(base::BindRepeating(
-          &AshTestBase::CreateTestWindow, base::Unretained(this)));
+          [](AshTestBase* test_base, const gfx::Rect& bounds,
+             aura::client::WindowType type, int shell_window_id) {
+            EXPECT_EQ(type, aura::client::WINDOW_TYPE_NORMAL);
+            return test_base->CreateWindowWithAppType(
+                chromeos::AppType::NON_APP, bounds, shell_window_id);
+          },
+          base::Unretained(this)));
   SystemModalWindowShelfItemDelegate* item_1_delegate =
       item_1_delegate_owned.get();
   model_->ReplaceShelfItemDelegate(id1, std::move(item_1_delegate_owned));

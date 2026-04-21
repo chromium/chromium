@@ -979,7 +979,7 @@ TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
 
   // Check that the accelerator increments the correct bucket.
   // Create an active window for the toggle menu to work.
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
   histogram_tester.ExpectBucketCount(chromeos::GetEntryTypeHistogramName(),
                                      MultitaskMenuEntryType::kAccel, 1);

@@ -316,7 +316,7 @@ TEST_F(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
 TEST_F(TrayEventFilterTest, ShowHotseatClosesBubble) {
   TabletModeControllerTestApi().EnterTabletMode();
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
   ASSERT_EQ(HotseatState::kHidden,
             GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());

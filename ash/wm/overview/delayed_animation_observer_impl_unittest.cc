@@ -91,7 +91,7 @@ using EnterAnimationObserverTest = AshTestBase;
 // Tests that adding a EnterAnimationObserver works as intended.
 TEST_F(EnterAnimationObserverTest, Basic) {
   TestOverviewDelegate delegate;
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   {
     ui::ScopedLayerAnimationSettings animation_settings(
@@ -118,7 +118,7 @@ using ExitAnimationObserverTest = AshTestBase;
 // Tests that adding a ExitAnimationObserver works as intended.
 TEST_F(ExitAnimationObserverTest, Basic) {
   TestOverviewDelegate delegate;
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   {
     ui::ScopedLayerAnimationSettings animation_settings(

@@ -286,7 +286,8 @@ TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
   EXPECT_TRUE(GetFocusedView());
   ToggleOverview();
 
-  window3 = CreateTestWindow(gfx::Rect(1000, 0, 100, 100));
+  window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {1000, 0, 100, 100});
   ToggleOverview();
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);

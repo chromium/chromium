@@ -272,7 +272,7 @@ TEST_F(MahiPanelWidgetTest, WidgetDoesNotHideOnFullScreen) {
   EXPECT_TRUE(widget->IsVisible());
 
   // Create a fullscreen window. The panel widget should still be visible.
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   window->SetProperty(aura::client::kShowStateKey,
                       ui::mojom::WindowShowState::kFullscreen);
   EXPECT_TRUE(widget->IsVisible());

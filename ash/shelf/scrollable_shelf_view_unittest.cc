@@ -1530,11 +1530,11 @@ TEST_P(ScrollableShelfViewRTLTest, ActivateAppScrollShelfToMakeAppVisible) {
   // Create new windows for the first and last apps on the shelf. Set the
   // `kShelfIDKey` property to associate windows with shelf apps.
   std::unique_ptr<aura::Window> first_app_window =
-      CreateTestWindow(first_window_bounds);
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, first_window_bounds);
   first_app_window->SetProperty(kShelfIDKey,
                                 ShelfModel::Get()->items()[0].id.Serialize());
   std::unique_ptr<aura::Window> last_app_window =
-      CreateTestWindow(last_window_bounds);
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, last_window_bounds);
   last_app_window->SetProperty(
       kShelfIDKey,
       ShelfModel::Get()->items()[last_button_index].id.Serialize());

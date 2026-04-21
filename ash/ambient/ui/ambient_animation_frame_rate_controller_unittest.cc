@@ -125,7 +125,7 @@ class AmbientAnimationFrameRateControllerTest : public AshTestBase {
 
 TEST_F(AmbientAnimationFrameRateControllerTest, BasicThrottling) {
   constexpr viz::FrameSinkId kTestFrameSinkId = {99, 99};
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   window->SetEmbedFrameSinkId(kTestFrameSinkId);
 
   std::vector<cc::SkottieMarker> markers = {
@@ -226,7 +226,7 @@ TEST_F(AmbientAnimationFrameRateControllerTest, BasicThrottling) {
 TEST_F(AmbientAnimationFrameRateControllerTest,
        MarkersAtBordersOfAnimationCycle) {
   constexpr viz::FrameSinkId kTestFrameSinkId = {99, 99};
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   window->SetEmbedFrameSinkId(kTestFrameSinkId);
 
   std::vector<cc::SkottieMarker> markers = {
@@ -273,7 +273,7 @@ TEST_F(AmbientAnimationFrameRateControllerTest,
 
 TEST_F(AmbientAnimationFrameRateControllerTest, NoMarkers) {
   constexpr viz::FrameSinkId kTestFrameSinkId = {99, 99};
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   window->SetEmbedFrameSinkId(kTestFrameSinkId);
 
   lottie::Animation animation(base::MakeRefCounted<TestSkottieWrapper>(
@@ -297,7 +297,7 @@ TEST_F(AmbientAnimationFrameRateControllerTest, NoMarkers) {
 // The time steps in this test skip multiple markers at a time.
 TEST_F(AmbientAnimationFrameRateControllerTest, LargeTimesteps) {
   constexpr viz::FrameSinkId kTestFrameSinkId = {99, 99};
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   window->SetEmbedFrameSinkId(kTestFrameSinkId);
 
   std::vector<cc::SkottieMarker> markers = {
@@ -347,11 +347,11 @@ TEST_F(AmbientAnimationFrameRateControllerTest, LargeTimesteps) {
 
 TEST_F(AmbientAnimationFrameRateControllerTest, MultipleWindows) {
   constexpr viz::FrameSinkId kTestFrameSinkId1 = {99, 99};
-  std::unique_ptr<aura::Window> window_1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_1 = CreateWindowWithAppType();
   window_1->SetEmbedFrameSinkId(kTestFrameSinkId1);
 
   constexpr viz::FrameSinkId kTestFrameSinkId2 = {999, 999};
-  std::unique_ptr<aura::Window> window_2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_2 = CreateWindowWithAppType();
   window_2->SetEmbedFrameSinkId(kTestFrameSinkId2);
 
   std::vector<cc::SkottieMarker> markers = {
@@ -405,11 +405,11 @@ TEST_F(AmbientAnimationFrameRateControllerTest, MultipleWindows) {
 TEST_F(AmbientAnimationFrameRateControllerTest,
        HandlesWindowAndAnimationDestroyedFirst) {
   constexpr viz::FrameSinkId kTestFrameSinkId1 = {99, 99};
-  std::unique_ptr<aura::Window> window_1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_1 = CreateWindowWithAppType();
   window_1->SetEmbedFrameSinkId(kTestFrameSinkId1);
 
   constexpr viz::FrameSinkId kTestFrameSinkId2 = {999, 999};
-  std::unique_ptr<aura::Window> window_2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_2 = CreateWindowWithAppType();
   window_2->SetEmbedFrameSinkId(kTestFrameSinkId2);
 
   std::vector<cc::SkottieMarker> markers = {

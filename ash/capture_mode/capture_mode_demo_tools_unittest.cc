@@ -90,7 +90,8 @@ class CaptureModeDemoToolsTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    window_ = CreateTestWindow(gfx::Rect(20, 30, 601, 300));
+    window_ =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {20, 30, 601, 300});
 
     // Focus on non-input-text field at beginning.
     fake_text_input_client_ =
@@ -798,7 +799,8 @@ TEST_F(CaptureModeDemoToolsTest,
 // window bounds change.
 TEST_F(CaptureModeDemoToolsTest, CaptureBoundsChangeTest) {
   UpdateDisplay("800x700");
-  const auto window = CreateTestWindow(gfx::Rect(100, 150, 300, 500));
+  const auto window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 150, 300, 500});
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->state(),

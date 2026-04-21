@@ -69,13 +69,16 @@ TEST_F(SplitViewMultiDisplayClamshellTest, MoveWindowToDisplayShortcut) {
   UpdateDisplay("1200x900,800x600");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
-  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> w2(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
 
   // Also create `w3` and `w4` on each display so we can start partial overview.
-  std::unique_ptr<aura::Window> w3(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> w4(
-      CreateTestWindow(gfx::Rect(1200, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  std::unique_ptr<aura::Window> w4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {1200, 0, 200, 200});
 
   auto* split_view_controller1 =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -155,9 +158,10 @@ TEST_F(SplitViewMultiDisplayClamshellTest, SnapToCorrectDisplay) {
   UpdateDisplay("800x600,800x600");
 
   // Create 2 test windows with non-overlapping bounds so we can drag them.
-  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
-  std::unique_ptr<aura::Window> w2(
-      CreateTestWindow(gfx::Rect(400, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 0, 400, 400});
 
   // Drag to snap `w1` to primary on display 1.
   auto* event_generator = GetEventGenerator();
@@ -199,9 +203,10 @@ TEST_F(SplitViewMultiDisplayClamshellTest, SnapToCorrectDisplay) {
 // Pressing escape key after each test to avoid Snap Group creation with
 // `kSnapGroup` enabled.
 TEST_F(SplitViewMultiDisplayClamshellTest, SnapDifferentDisplaySizes) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> w2(
-      CreateTestWindow(gfx::Rect(400, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 0, 200, 200});
   auto* event_generator = GetEventGenerator();
 
   const auto test_display_specs = {"800x600,1200x900", "1200x900,800x600",
@@ -266,13 +271,16 @@ TEST_F(SplitViewMultiDisplayClamshellTest, SnapDifferentDisplaySizes) {
 TEST_F(SplitViewMultiDisplayClamshellTest, LandscapeAndPortrait) {
   UpdateDisplay("800x600,600x800");
 
-  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> w2(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  std::unique_ptr<aura::Window> w2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
 
   // Also create `w3` and `w4` on each display so we can start partial overview.
-  std::unique_ptr<aura::Window> w3(CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
-  std::unique_ptr<aura::Window> w4(
-      CreateTestWindow(gfx::Rect(800, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  std::unique_ptr<aura::Window> w4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 0, 200, 200});
 
   auto* event_generator = GetEventGenerator();
   wm::ActivateWindow(w1.get());

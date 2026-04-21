@@ -1001,9 +1001,9 @@ TEST_F(SplitViewControllerTest, SplitDividerHandlesNativeWidgetDestruction) {
 // Tests that the split divider has the correct state when the dragged overview
 // item is destroyed.
 TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window3 = CreateWindowWithAppType();
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
@@ -1037,9 +1037,9 @@ TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
 // Tests that the split divider has the correct state when the drag of the
 // overview item is cancelled.
 TEST_F(SplitViewControllerTest, DividerStateWhenOverviewItemDragCancelled) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window3 = CreateWindowWithAppType();
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
@@ -3172,7 +3172,7 @@ TEST_F(SplitViewControllerTest, ItemsRemovedFromOverviewOnSnap) {
 // Test that resizing ends properly if split view ends during divider dragging.
 TEST_F(SplitViewControllerTest, EndSplitViewWhileDragging) {
   // Enter split view mode.
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ToggleOverview();
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
 
@@ -3439,8 +3439,8 @@ TEST_F(SplitViewControllerTest, SplitViewDividerObserveSnappedWindow) {
 // Tests that the bounds of the window and divider get updated correctly when
 // snapping with different ratios.
 TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
 
   // Snap `window1` to primary position and `window2` to secondary position,
   // both with default snap ratios.
@@ -3493,8 +3493,8 @@ TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
 
 // Tests that swap partial windows keeps the window sizes.
 TEST_F(SplitViewControllerTest, SwapPartialWindows) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
 
   // Snap `window1` to primary with 2/3 width and `window2` to secondary with
   // 1/3 width. Verify the divider is at 2/3 of the work area.
@@ -3804,8 +3804,8 @@ TEST_F(SplitViewControllerTest, AutoSnapPartialWindows) {
 // below the dragged window. On window drag ended, the divider will be placed
 // back on top of the two observed windows.
 TEST_F(SplitViewControllerTest, StackingOrderWithDivider) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
   SplitViewController* controller = split_view_controller();
   controller->SnapWindow(w1.get(), SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->primary_window(), w1.get());
@@ -3834,8 +3834,8 @@ TEST_F(SplitViewControllerTest, StackingOrderWithDivider) {
 // Tests that the divider remains visible when minimizing and restoring the
 // window in tablet split view.
 TEST_F(SplitViewControllerTest, DividerStaysVisibleDuringMinimizeAndRestore) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
   SplitViewController* controller = split_view_controller();
   controller->SnapWindow(w1.get(), SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->primary_window(), w1.get());
@@ -3869,8 +3869,8 @@ TEST_F(SplitViewControllerTest, PerformantResize) {
   UpdateDisplay("900x600");
   const gfx::Rect work_area =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
   SplitViewController* controller = split_view_controller();
   controller->SnapWindow(w1.get(), SnapPosition::kPrimary);
   controller->SnapWindow(w2.get(), SnapPosition::kSecondary);
@@ -3906,10 +3906,11 @@ TEST_F(SplitViewControllerTest, PerformantResize) {
 // crash. The stacking order and parent of the split view divider will be
 // updated correctly with window activation and dragging operations.
 TEST_F(SplitViewControllerTest, SnapWindowsWithDifferentParentContainers) {
-  std::unique_ptr<aura::Window> always_on_top_window(CreateTestWindow());
+  std::unique_ptr<aura::Window> always_on_top_window =
+      CreateWindowWithAppType();
   always_on_top_window->SetProperty(aura::client::kZOrderingKey,
                                     ui::ZOrderLevel::kFloatingWindow);
-  std::unique_ptr<aura::Window> normal_window(CreateTestWindow());
+  std::unique_ptr<aura::Window> normal_window = CreateWindowWithAppType();
   SplitViewController* controller = split_view_controller();
   controller->SnapWindow(always_on_top_window.get(), SnapPosition::kPrimary);
   controller->SnapWindow(normal_window.get(), SnapPosition::kSecondary);

@@ -118,7 +118,7 @@ TEST_F(QuickInsertWidgetTest, ClickingOutsideClosesQuickInsertWidget) {
 
 TEST_F(QuickInsertWidgetTest, LosingFocusClosesQuickInsertWidget) {
   // Create something other than Quick Insert to focus.
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   window->Show();
 
   // Create the fake Quick Insert and make sure it has focus.

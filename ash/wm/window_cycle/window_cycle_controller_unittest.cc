@@ -1062,8 +1062,10 @@ TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
 TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   UpdateDisplay("500x400,401+0-800x700");
 
-  std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(200, 200));
-  std::unique_ptr<Window> w1 = CreateTestWindow(gfx::Rect(420, 10, 200, 200));
+  std::unique_ptr<Window> w0 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  std::unique_ptr<Window> w1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {420, 10, 200, 200});
   // |w0| needs to be activated to ensure it is the display for new windows.
   wm::ActivateWindow(w0.get());
   // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse input
@@ -1091,9 +1093,9 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
 
 // Test that alt-tab handles window destruction properly.
 TEST_F(WindowCycleControllerTest, WindowDestruction) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
 
   // Start cycling and then destroy a window. We should still be cycling and
   // there should now only be two items.
@@ -1135,13 +1137,13 @@ TEST_F(WindowCycleControllerTest, MouseEventWhenCycleViewDoesNotExist) {
 // the hovered item.
 TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
   UpdateDisplay("1200x800");
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
-  std::unique_ptr<Window> w3 = CreateTestWindow();
-  std::unique_ptr<Window> w4 = CreateTestWindow();
-  std::unique_ptr<Window> w5 = CreateTestWindow();
-  std::unique_ptr<Window> w6 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w3 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w4 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w5 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w6 = CreateWindowWithAppType();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
@@ -1188,9 +1190,9 @@ TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
 // Tests that the left and right keys cycle after the cycle list has been
 // initialized.
 TEST_F(WindowCycleControllerTest, LeftRightCycle) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
@@ -1225,9 +1227,9 @@ TEST_F(WindowCycleControllerTest, LeftRightCycle) {
 // Tests that pressing the space key, pressing the enter key, or releasing the
 // alt key during window cycle confirms a selection.
 TEST_F(WindowCycleControllerTest, KeysConfirmSelection) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
@@ -1263,9 +1265,9 @@ TEST_F(WindowCycleControllerTest, KeysConfirmSelection) {
 // Tests that pressing the enter key or space key really quickly doesn't crash.
 // See crbug.com/1187242.
 TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
@@ -1308,9 +1310,9 @@ TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
 // See crbug.com/1143275.
 TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
   UpdateDisplay("1200x800");
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
   EventCounter event_count;
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
@@ -1356,9 +1358,9 @@ TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
 // When a user has the window cycle list open and clicks outside of it, it
 // should cancel cycling.
 TEST_F(WindowCycleControllerTest, MousePressOutsideOfListCancelsCycling) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
@@ -1378,7 +1380,7 @@ TEST_F(WindowCycleControllerTest, MousePressOutsideOfListCancelsCycling) {
 // When the user has one window open, the window cycle view isn't shown. In this
 // case we should not eat mouse events.
 TEST_F(WindowCycleControllerTest, MouseEventsNotEatenWhenCycleViewNotVisible) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
   EventCounter event_count;
   w0->AddPreTargetHandler(&event_count);
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -1400,11 +1402,16 @@ TEST_F(WindowCycleControllerTest, MouseEventsNotEatenWhenCycleViewNotVisible) {
 TEST_F(WindowCycleControllerTest,
        ThreeFingerHorizontalScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window5 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   const float horizontal_scroll =
       WindowCycleEventFilter::kHorizontalThresholdDp;
 
@@ -1452,11 +1459,16 @@ TEST_F(WindowCycleControllerTest,
 // Tests two finger horizontal scroll gesture to move selection left or right.
 TEST_F(WindowCycleControllerTest, TwoFingerHorizontalScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window5 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   const float horizontal_scroll =
       WindowCycleEventFilter::kHorizontalThresholdDp;
 
@@ -1490,11 +1502,16 @@ TEST_F(WindowCycleControllerTest, TwoFingerHorizontalScrollInWindowCycleList) {
 // Tests mouse wheel scroll gesture to move selection left or right.
 TEST_F(WindowCycleControllerTest, MouseWheelScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window5 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   const float horizontal_scroll =
       WindowCycleEventFilter::kHorizontalThresholdDp;
 
@@ -1527,8 +1544,8 @@ TEST_F(WindowCycleControllerTest, MouseWheelScrollInWindowCycleList) {
 // Tests that swiping up closes window cycle if it's open and starts overview
 // mode.
 TEST_F(WindowCycleControllerTest, VerticalScroll) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
   const float vertical_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
   const float horizontal_scroll =
       WindowCycleEventFilter::kHorizontalThresholdDp;
@@ -1564,11 +1581,16 @@ TEST_F(WindowCycleControllerTest, VerticalScroll) {
 TEST_F(WindowCycleControllerTest, TouchScroll) {
   UpdateDisplay("900x600");
   const gfx::Rect bounds(0, 0, 200, 200);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window5 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
   auto* event_generator = GetEventGenerator();
 
@@ -1654,10 +1676,14 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
 // Tests that a vertical touch scroll doesn't crash. See crbug.com/1224969.
 TEST_F(WindowCycleControllerTest, VerticalTouchScroll) {
   const gfx::Rect bounds(0, 0, 200, 200);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
   auto* event_generator = GetEventGenerator();
 
@@ -1683,9 +1709,9 @@ TEST_F(WindowCycleControllerTest, VerticalTouchScroll) {
 // When a user taps on an item, it should set the focus ring to that item. After
 // they release their finger it should confirm the selection.
 TEST_F(WindowCycleControllerTest, TapSelect) {
-  std::unique_ptr<aura::Window> w0 = CreateTestWindow();
-  std::unique_ptr<aura::Window> w1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> w2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
@@ -1813,10 +1839,10 @@ TEST_F(WindowCycleControllerTest, ArrowKeyBeforeCycleViewUI) {
 TEST_F(WindowCycleControllerTest, SimulateFlingInAltTab) {
   gfx::ScopedAnimationDurationScaleMode animation_scale(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
-  std::unique_ptr<Window> w3 = CreateTestWindow();
+  std::unique_ptr<Window> w0 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w2 = CreateWindowWithAppType();
+  std::unique_ptr<Window> w3 = CreateWindowWithAppType();
 
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
@@ -1839,7 +1865,7 @@ TEST_F(WindowCycleControllerTest, SimulateFlingInAltTab) {
 }
 
 TEST_F(WindowCycleControllerTest, WindowCycleItemViewAccessibleProperties) {
-  std::unique_ptr<Window> window = CreateTestWindow();
+  std::unique_ptr<Window> window = CreateWindowWithAppType();
   std::unique_ptr<WindowCycleItemView> item_view =
       std::make_unique<WindowCycleItemView>(window.get());
 
@@ -1902,11 +1928,16 @@ class ReverseGestureWindowCycleControllerTest
 TEST_F(ReverseGestureWindowCycleControllerTest,
        MouseWheelScrollInWindowCycleList) {
   const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window5 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   const float horizontal_scroll =
       WindowCycleEventFilter::kHorizontalThresholdDp;
 
@@ -1956,11 +1987,16 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
 TEST_F(ReverseGestureWindowCycleControllerTest,
        WindowCycleListTrackpadGestures) {
   const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window5 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   const float horizontal_scroll =
       WindowCycleEventFilter::kHorizontalThresholdDp;
 
@@ -3524,7 +3560,7 @@ class SameAppWindowCycleControllerTest : public WindowCycleControllerTest {
 
   std::unique_ptr<aura::Window> CreateTestWindowWithAppID(
       std::string app_id_key) {
-    std::unique_ptr<aura::Window> window = CreateTestWindow();
+    std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
     window->SetProperty(kAppIDKey, std::move(app_id_key));
     return window;
   }

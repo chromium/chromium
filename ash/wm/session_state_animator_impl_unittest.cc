@@ -121,8 +121,9 @@ TEST_F(SessionStateAnimatiorImplContainersTest,
 
   // Create windows in containers of all displays so that the containers will
   // be animated.
-  auto window_1 = CreateTestWindow(gfx::Rect(0, 0, 30, 20));
-  auto window_2 = CreateTestWindow(gfx::Rect(600, 0, 30, 20));
+  auto window_1 = CreateWindowWithAppType(chromeos::AppType::NON_APP, {30, 20});
+  auto window_2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {600, 0, 30, 20});
 
   SessionStateAnimatorImpl animator;
 

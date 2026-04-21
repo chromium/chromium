@@ -3482,7 +3482,8 @@ TEST_P(
           Shell::GetPrimaryRootWindow());
   const gfx::Size big(work_area.width() * 2 / 3, work_area.height() * 2 / 3);
   const gfx::Size small(250, 100);
-  std::unique_ptr<aura::Window> win1 = CreateTestWindow(gfx::Rect(small));
+  std::unique_ptr<aura::Window> win1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, gfx::Rect(small));
   aura::test::TestWindowDelegate win2_delegate;
   win2_delegate.set_minimum_size(big);
   std::unique_ptr<aura::Window> win2(CreateTestWindowInShell(
@@ -7589,13 +7590,13 @@ TEST_P(DesksTest, DragMiniViewWhileRemoving) {
 TEST_P(DesksTest, FastDeskSwitches) {
   // Add 3 more desks and add a couple windows on each one.
   // Released windows are destroyed during shutdown.
-  CreateTestWindow().release();
-  CreateTestWindow().release();
+  CreateWindowWithAppType().release();
+  CreateWindowWithAppType().release();
 
   for (int i = 0; i < 3; ++i) {
     NewDesk();
-    CreateTestWindow().release();
-    CreateTestWindow().release();
+    CreateWindowWithAppType().release();
+    CreateWindowWithAppType().release();
   }
 
   // Start at the rightmost, 4th desk.

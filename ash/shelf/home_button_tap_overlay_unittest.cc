@@ -155,7 +155,7 @@ class HomeButtonTapOverlayTest
 
  private:
   void CreateTestWindow() {
-    window_ = AshTestBase::CreateTestWindow({400, 400});
+    window_ = CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   }
 
   std::unique_ptr<aura::Window> window_;

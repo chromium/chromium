@@ -1265,8 +1265,8 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    dragged_window_ = CreateTestWindow();
-    non_dragged_window_ = CreateTestWindow();
+    dragged_window_ = CreateWindowWithAppType();
+    non_dragged_window_ = CreateWindowWithAppType();
     dragged_window_->SetProperty(chromeos::kAppTypeKey,
                                  chromeos::AppType::CHROME_APP);
   }

@@ -37,7 +37,7 @@ class FullscreenNotificationBubbleTest : public AshTestBase {
     AshTestBase::SetUp();
 
     // Create a test window in full screen mode.
-    window_ = CreateTestWindow();
+    window_ = CreateWindowWithAppType();
     window_->SetProperty(aura::client::kShowStateKey,
                          ui::mojom::WindowShowState::kFullscreen);
 

@@ -3182,8 +3182,8 @@ TEST_P(WallpaperControllerTest, ReloadWallpaper) {
 
   // Start wallpaper preview.
   SimulateUserLogin(kAccountId1);
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
   ClearWallpaperCount();
   controller_->SetDecodedCustomWallpaper(
@@ -3706,8 +3706,8 @@ TEST_P(WallpaperControllerTest, ClosePreviewWallpaperOnOverviewStart) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a custom wallpaper for the user and enable preview. Verify that the
@@ -3762,8 +3762,8 @@ TEST_P(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   TestWallpaperControllerObserver observer(controller_);
@@ -3819,8 +3819,8 @@ TEST_P(WallpaperControllerTest,
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   TestWallpaperControllerObserver observer(controller_);
@@ -3876,8 +3876,8 @@ TEST_P(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a custom wallpaper for the user and enable preview. Verify that the
@@ -3994,8 +3994,8 @@ TEST_P(WallpaperControllerTest, CancelPreviewWallpaper) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a custom wallpaper for the user and enable preview. Verify that the
@@ -4073,8 +4073,8 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a custom wallpaper for the user and enable preview. Verify that the
@@ -4200,8 +4200,8 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
 TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  std::unique_ptr<aura::Window> test_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> test_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
 
   base::RunLoop test_loop;
   controller_->AddFirstWallpaperAnimationEndCallback(test_loop.QuitClosure(),
@@ -5954,8 +5954,8 @@ TEST_P(WallpaperControllerTest, ConfirmGooglePhotosPreviewWallpaper) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a Google Photos wallpaper for the user and enable preview. Verify that
@@ -6016,8 +6016,8 @@ TEST_P(WallpaperControllerTest, CancelGooglePhotosPreviewWallpaper) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a Google Photos wallpaper for the user and enable preview. Verify that
@@ -6068,8 +6068,8 @@ TEST_P(WallpaperControllerTest, GooglePhotosWallpaperSyncedDuringPreview) {
   EXPECT_TRUE(user_wallpaper_info.MatchesSelection(default_wallpaper_info));
 
   // Simulate opening the wallpaper picker window.
-  std::unique_ptr<aura::Window> wallpaper_picker_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> wallpaper_picker_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
   // Set a Google Photos wallpaper for the user and enable preview. Verify that

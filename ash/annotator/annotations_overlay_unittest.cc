@@ -39,7 +39,8 @@ class AnnotationsOverlayTest : public AshTestBase {
     AshTestBase::SetUp();
     annotator_helper_.SetUp();
 
-    window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
+    window_ =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {20, 30, 200, 200});
   }
 
   void TearDown() override {

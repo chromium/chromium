@@ -185,7 +185,7 @@ TEST_F(ScreenOrientationControllerTest, LockOrientation) {
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 
-  auto modal = CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  auto modal = CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   modal->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());

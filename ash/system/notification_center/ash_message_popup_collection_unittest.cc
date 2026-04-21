@@ -627,8 +627,8 @@ TEST_F(AshMessagePopupCollectionTest, BaselineUpdates_InAppMode) {
 
   // Enter app mode by showing a window, pop-up collection bottom should update
   // its bounds to be lower down the screen than before.
-  std::unique_ptr<aura::Window> window(
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   EXPECT_GT(popup_collection->popup_collection_bounds().bottom(),
             previous_popup_collection_bottom);
   EXPECT_EQ(ShelfBackgroundType::kInApp,
@@ -998,7 +998,7 @@ TEST_F(AshMessagePopupCollectionTest, HistogramRecordedForSliderAndHotseat) {
 
   TabletModeControllerTestApi().EnterTabletMode();
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
   ASSERT_EQ(HotseatState::kHidden,
             GetPrimaryShelf()->shelf_layout_manager()->hotseat_state());

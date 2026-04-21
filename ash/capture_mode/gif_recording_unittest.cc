@@ -409,7 +409,7 @@ TEST_F(GifRecordingTest, GifIsNotSupportedForFullscreenOrWindow) {
       {"Testing window", CaptureModeSource::kWindow},
   };
 
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.scope_name);

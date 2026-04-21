@@ -29,7 +29,7 @@ class WindowTransientDescendantIteratorTest : public AshTestBase {
       std::vector<std::unique_ptr<aura::Window>>* out_result) {
     ASSERT_TRUE(out_result->empty());
     for (char c : {'A', 'B', 'C', 'D'}) {
-      auto window = CreateTestWindow();
+      auto window = CreateWindowWithAppType();
       window->SetName(std::string(1, c));
       if (!out_result->empty())
         ::wm::AddTransientChild(out_result->back().get(), window.get());
@@ -49,12 +49,12 @@ class WindowTransientDescendantIteratorTest : public AshTestBase {
   void CreateTestInOrderTree(
       std::vector<std::unique_ptr<aura::Window>>* out_result) {
     ASSERT_TRUE(out_result->empty());
-    auto window_a = CreateTestWindow();
-    auto window_b = CreateTestWindow();
-    auto window_c = CreateTestWindow();
-    auto window_d = CreateTestWindow();
-    auto window_e = CreateTestWindow();
-    auto window_f = CreateTestWindow();
+    auto window_a = CreateWindowWithAppType();
+    auto window_b = CreateWindowWithAppType();
+    auto window_c = CreateWindowWithAppType();
+    auto window_d = CreateWindowWithAppType();
+    auto window_e = CreateWindowWithAppType();
+    auto window_f = CreateWindowWithAppType();
 
     window_a->SetName("A");
     window_b->SetName("B");

@@ -168,7 +168,7 @@ TEST_F(GraduationNudgeControllerTest, EnableAppWhenHotseatHidden) {
   GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
 
   std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   // Activate the window and go to tablet mode.
   wm::ActivateWindow(window.get());
   TabletModeControllerTestApi().EnterTabletMode();

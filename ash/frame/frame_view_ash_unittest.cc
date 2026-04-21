@@ -403,7 +403,8 @@ TEST_F(FrameViewAshTest, NoCrashOnTabletChangesWithinWindowDestruction) {
         window_observation_{this};
   };
 
-  auto test_window = CreateTestWindow(gfx::Rect(200, 200));
+  auto test_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   WindowTestObserver obs(test_window.get());
   test_window.reset();
 }

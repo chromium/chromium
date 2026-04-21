@@ -3309,7 +3309,7 @@ TEST_F(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
             shelf_layout_manager->shelf_background_type());
 
   // Add a window. It should be in-app because it is in tablet mode.
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   wm::ActivateWindow(window.get());
   EXPECT_EQ(ShelfBackgroundType::kInApp,
             shelf_layout_manager->shelf_background_type());
@@ -3324,7 +3324,7 @@ TEST_F(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
   EXPECT_EQ(ShelfVisibilityState::SHELF_VISIBLE, shelf->GetVisibilityState());
 
   // Create and fullscreen a window. The shelf should be auto hidden.
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   window->SetProperty(aura::client::kShowStateKey,
                       ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(ShelfVisibilityState::SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -4271,8 +4271,8 @@ TEST_F(AppListPresenterHomeLauncherTest, BackdropTest) {
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_FALSE(test_helper.GetBackdropWindow());
 
-  std::unique_ptr<aura::Window> non_fullscreen_window(
-      CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> non_fullscreen_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   non_fullscreen_window->Show();
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_TRUE(test_helper.GetBackdropWindow());

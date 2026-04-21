@@ -167,18 +167,6 @@ class AshTestBase : public testing::Test {
       views::WidgetDelegate* delegate = nullptr,
       bool show = true);
 
-  // Creates a visible window in the appropriate container. If
-  // |bounds_in_screen| is empty the window is added to the primary root
-  // window, otherwise the window is added to the display matching
-  // |bounds_in_screen|. |shell_window_id| is the shell window id to give to
-  // the new window.
-  // If |type| is WINDOW_TYPE_NORMAL this creates a views::Widget, otherwise
-  // this creates an aura::Window.
-  [[nodiscard]] std::unique_ptr<aura::Window> CreateTestWindow(
-      const gfx::Rect& bounds_in_screen = gfx::Rect(),
-      aura::client::WindowType type = aura::client::WINDOW_TYPE_NORMAL,
-      int shell_window_id = kShellWindowId_Invalid);
-
   // Creates a visible top-level window with a delegate.
   [[nodiscard]] std::unique_ptr<aura::Window> CreateToplevelTestWindow(
       const gfx::Rect& bounds_in_screen = gfx::Rect(),

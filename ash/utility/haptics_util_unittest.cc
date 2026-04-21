@@ -76,7 +76,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
 
   UpdateDisplay("800x600");
   gfx::Rect bounds(200, 200, 300, 300);
-  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
 
   // Each element in the vector represents a test case. The first in the pair is
@@ -135,7 +136,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
 
   UpdateDisplay("800x600");
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(200, 200, 300, 300));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200, 300, 300});
   ui::test::EventGenerator* event_generator = GetEventGenerator();
 
   // Each element in the vector represents a test case. The first in the pair is
@@ -298,7 +299,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
       std::make_unique<HapticsTrackingTestInputController>();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ui::test::EventGenerator* event_generator = GetEventGenerator();
 
   // Add three desks for a total of two.

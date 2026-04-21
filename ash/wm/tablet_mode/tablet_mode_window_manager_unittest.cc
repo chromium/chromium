@@ -1838,7 +1838,7 @@ TEST_F(TabletModeWindowManagerTest,
 // Tests partial split clamshell <-> tablet transition.
 TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   // 1. Create a window and snap to primary 2/3.
-  auto window1 = CreateTestWindow();
+  auto window1 = CreateWindowWithAppType();
   OverviewController* overview_controller = OverviewController::Get();
   const WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
                                                  chromeos::kTwoThirdSnapRatio);
@@ -1866,7 +1866,7 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
             window1->bounds().width());
 
   // 2. Create another window and snap to secondary at 1/3.
-  auto window2 = CreateTestWindow();
+  auto window2 = CreateWindowWithAppType();
   const WindowSnapWMEvent snap_secondary_one_third(
       WM_EVENT_SNAP_SECONDARY, chromeos::kOneThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_one_third);

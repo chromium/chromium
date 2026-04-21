@@ -854,7 +854,8 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
   WriteTextToClipboardAndConfirm(u"test");
 
   gfx::Rect test_window_rect(100, 100, 100, 100);
-  std::unique_ptr<aura::Window> window(CreateTestWindow(test_window_rect));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, test_window_rect);
 
   // Show the menu with an `OnMenuClosingCallback`.
   GetClipboardHistoryController()->ShowMenu(

@@ -237,7 +237,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   }
 
   void CreateFullscreenWindow() {
-    window_ = CreateTestWindow();
+    window_ = CreateWindowWithAppType();
     window_->SetProperty(aura::client::kShowStateKey,
                          ui::mojom::WindowShowState::kFullscreen);
     window_state_ = WindowState::Get(window_.get());

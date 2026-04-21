@@ -401,8 +401,8 @@ TEST_F(ToastManagerImplTest, ShutdownWithExtendedHotseat) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {700, 100, 200, 200});
 
   GetPrimaryShelf()->hotseat_widget()->SetState(HotseatState::kExtended);
 
@@ -456,8 +456,8 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {700, 100, 200, 200});
   shelf->hotseat_widget()->set_manually_extended(true);
   shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState(
       /*force_layout=*/false);
@@ -494,10 +494,10 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnAnotherMonitor) {
 
   // Create two windows, one on each display. The window creation order should
   // result in the window on the primary display being active.
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
-  std::unique_ptr<aura::Window> primary_display_window(
-      CreateTestWindow(gfx::Rect(0, 100, 200, 200)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {700, 100, 200, 200});
+  std::unique_ptr<aura::Window> primary_display_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {0, 100, 200, 200});
 
   // Extend the hotseat on the secondary display.
   shelf->hotseat_widget()->set_manually_extended(true);

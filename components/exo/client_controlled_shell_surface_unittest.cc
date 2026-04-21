@@ -2138,8 +2138,8 @@ TEST_F(ClientControlledShellSurfaceTest,
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
-  auto primary_window = CreateTestWindow();
-  auto secondary_window = CreateTestWindow();
+  auto primary_window = CreateWindowWithAppType();
+  auto secondary_window = CreateWindowWithAppType();
 
   split_view_controller->SnapWindow(primary_window.get(),
                                     ash::SnapPosition::kPrimary);
@@ -2166,8 +2166,8 @@ TEST_F(ClientControlledShellSurfaceTest,
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
-  auto primary_window = CreateTestWindow();
-  auto secondary_window = CreateTestWindow();
+  auto primary_window = CreateWindowWithAppType();
+  auto secondary_window = CreateWindowWithAppType();
 
   split_view_controller->SnapWindow(primary_window.get(),
                                     ash::SnapPosition::kPrimary);

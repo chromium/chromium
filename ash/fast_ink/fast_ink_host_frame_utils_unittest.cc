@@ -60,8 +60,8 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
     gfx::Rect screen_bounds = root_window->GetBoundsInScreen();
 
     auto host_window =
-        CreateTestWindow(screen_bounds, aura::client::WINDOW_TYPE_NORMAL,
-                         kShellWindowId_OverlayContainer);
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, screen_bounds,
+                                kShellWindowId_OverlayContainer);
 
     // `host_window` is owned by the root_window and it will be deleted as
     // window hierarchy is deleted during Shell deletion.

@@ -24,7 +24,7 @@ using WmShadowControllerDelegateTest = AshTestBase;
 
 TEST_F(WmShadowControllerDelegateTest,
        UpdateShadowRoundedCornersEnterExitOverview) {
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
 
   auto* window_rounded_corner =
       window->GetProperty(aura::client::kWindowRoundedCornersKey);

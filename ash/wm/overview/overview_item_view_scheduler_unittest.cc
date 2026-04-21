@@ -36,7 +36,7 @@ class OverviewItemViewSchedulerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    overview_item_window_ = CreateTestWindow();
+    overview_item_window_ = CreateWindowWithAppType();
     ASSERT_FALSE(window_util::IsMinimizedOrTucked(overview_item_window_.get()));
     overview_item_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

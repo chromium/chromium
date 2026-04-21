@@ -152,8 +152,8 @@ TEST_F(ScreenAshTest,
        GetDisplayNearestWindowShouldNotCrashWhenWindowIsBeingDestroyed) {
   UpdateDisplay("400x500,300x200");
 
-  std::unique_ptr<aura::Window> window_on_second_display(
-      CreateTestWindow(gfx::Rect(400, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window_on_second_display =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 0, 100, 100});
 
   base::test::TestFuture<void> root_window_destroyed_waiter;
   RootWindowDestructorObserver observer(

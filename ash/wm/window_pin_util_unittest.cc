@@ -18,19 +18,19 @@ namespace {
 class WindowPinUtilTest : public ash::AshTestBase {};
 
 TEST_F(WindowPinUtilTest, IsPinned_Pinned) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ash::PinWindow(window.get(), /*trusted=*/false);
   EXPECT_TRUE(ash::IsWindowPinned(window.get()));
 }
 
 TEST_F(WindowPinUtilTest, IsPinned_TrustedPinned) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ash::PinWindow(window.get(), /*trusted=*/true);
   EXPECT_TRUE(ash::IsWindowPinned(window.get()));
 }
 
 TEST_F(WindowPinUtilTest, IsPinned_Unpinned) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ash::PinWindow(window.get(), /*trusted=*/true);
   ASSERT_TRUE(ash::IsWindowPinned(window.get()));
 
@@ -39,7 +39,7 @@ TEST_F(WindowPinUtilTest, IsPinned_Unpinned) {
 }
 
 TEST_F(WindowPinUtilTest, IsPinned_FullscreenNotPinned) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   wm::SetWindowFullscreen(window.get(), /*fullscreen=*/true);
   EXPECT_FALSE(ash::IsWindowPinned(window.get()));
 }

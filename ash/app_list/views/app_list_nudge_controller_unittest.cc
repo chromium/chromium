@@ -162,7 +162,7 @@ TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
 
   // Open a window to make the app list invisible. This will update the prefs in
   // nudge controller.
-  std::unique_ptr<aura::Window> window = AshTestBase::CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   wm::ActivateWindow(window.get());
   EXPECT_EQ(2, GetReorderNudgeShownCount());
   // Close the window and return back to app list.

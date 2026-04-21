@@ -204,7 +204,8 @@ class TabletModeControllerTest : public AshTestBase {
   // Creates a test window snapped on the left in desktop mode.
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedLeft(
       const gfx::Rect& bounds = gfx::Rect()) {
-    std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+    std::unique_ptr<aura::Window> window =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
     WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
     WindowState::Get(window.get())->OnWMEvent(&snap_to_left);
     return window;
@@ -213,7 +214,8 @@ class TabletModeControllerTest : public AshTestBase {
   // Creates a test window snapped on the right in desktop mode.
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedRight(
       const gfx::Rect& bounds = gfx::Rect()) {
-    std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+    std::unique_ptr<aura::Window> window =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
     WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
     WindowState::Get(window.get())->OnWMEvent(&snap_to_right);
     return window;
@@ -1371,7 +1373,7 @@ TEST_F(TabletModeControllerForceClamshellModeTest, ForceClamshellModeTest) {
 // Test that if the active window is not snapped before tablet mode, then split
 // view is not activated.
 TEST_F(TabletModeControllerTest, StartTabletActiveNoSnap) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(SplitViewController::State::kNoSnap,
             split_view_controller()->state());
@@ -1475,7 +1477,7 @@ TEST_F(TabletModeControllerTest, StartTabletActiveAppListPreviousLeftSnap) {
 // previous window is snapped on the left, then split view is activated with the
 // previous window on the left.
 TEST_F(TabletModeControllerTest, StartTabletActiveDraggedPreviousLeftSnap) {
-  std::unique_ptr<aura::Window> dragged_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> dragged_window = CreateWindowWithAppType();
   std::unique_ptr<aura::Window> snapped_window =
       CreateDesktopWindowSnappedLeft();
   wm::ActivateWindow(dragged_window.get());
@@ -1500,7 +1502,7 @@ TEST_F(TabletModeControllerTest, StartTabletActiveDraggedPreviousLeftSnap) {
 TEST_F(TabletModeControllerTest,
        StartTabletActiveHiddenFromOverviewPreviousLeftSnap) {
   std::unique_ptr<aura::Window> window_hidden_from_overview =
-      CreateTestWindow();
+      CreateWindowWithAppType();
   window_hidden_from_overview->SetProperty(kHideInOverviewKey, true);
   std::unique_ptr<aura::Window> snapped_window =
       CreateDesktopWindowSnappedLeft();
@@ -1518,7 +1520,7 @@ TEST_F(TabletModeControllerTest,
 // split view is activated with the parent on the left.
 TEST_F(TabletModeControllerTest,
        StartTabletActiveDraggedPreviousTransientChildOfLeftSnap) {
-  std::unique_ptr<aura::Window> dragged_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> dragged_window = CreateWindowWithAppType();
   std::unique_ptr<aura::Window> parent = CreateDesktopWindowSnappedLeft();
   std::unique_ptr<aura::Window> child =
       CreateTestWindowInShell({.window_type = aura::client::WINDOW_TYPE_POPUP});
@@ -1734,7 +1736,7 @@ TEST_F(TabletModeControllerTest,
       CreateDesktopWindowSnappedLeft(gfx::Rect(0, 0, 400, 400));
   EXPECT_EQ(Shell::GetPrimaryRootWindow(), window1->GetRootWindow());
   std::unique_ptr<aura::Window> window2 =
-      CreateTestWindow(gfx::Rect(800, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 0, 400, 400});
   EXPECT_NE(Shell::GetPrimaryRootWindow(), window2->GetRootWindow());
   wm::ActivateWindow(window1.get());
   tablet_mode_controller()->SetEnabledForTest(true);
@@ -1795,8 +1797,9 @@ TEST_F(TabletModeControllerTest,
   base::HistogramTester histogram_tester;
   // We have two windows, which both animated into tablet mode, but we only
   // observe and record smoothness for one.
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto window2 = CreateTestWindow(gfx::Rect(300, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {300, 200});
   // Tests that we get one enter and one exit animation smoothess histogram when
   // entering and exiting tablet mode with a normal window.
   ui::Layer* layer = window->layer();
@@ -2093,7 +2096,7 @@ TEST_F(TabletModeControllerScreenshotTest, NoAnimationNoScreenshot) {
 
   // If the top window is already maximized, there is no animation, so no
   // screenshot should be shown.
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   WindowState::Get(window.get())->Maximize();
   window->layer()->GetAnimator()->StopAnimating();
 
@@ -2110,8 +2113,9 @@ TEST_F(TabletModeControllerScreenshotTest, NoAnimationNoScreenshot) {
 // already in overview mode. See https://crbug.com/1002735.
 TEST_F(TabletModeControllerScreenshotTest, FromOverviewNoScreenshot) {
   // Create two maximized windows.
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto window2 = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   WindowState::Get(window.get())->Maximize();
   WindowState::Get(window2.get())->Maximize();
   window->layer()->GetAnimator()->StopAnimating();
@@ -2144,7 +2148,7 @@ TEST_F(TabletModeControllerScreenshotTest, FromOverviewNoScreenshot) {
 // Regression test for screenshot staying visible when entering tablet mode when
 // a window creation animation is still underway. See https://crbug.com/1035356.
 TEST_F(TabletModeControllerScreenshotTest, EnterTabletModeWhileAnimating) {
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   ASSERT_TRUE(window->layer()->GetAnimator()->is_animating());
 
   // Enter tablet mode.
@@ -2191,8 +2195,9 @@ class LayerStartAnimationWaiter : public ui::LayerAnimationObserver {
 // Tests that the screenshot is visible when a window animation happens when
 // entering tablet mode.
 TEST_F(TabletModeControllerScreenshotTest, ScreenshotVisibility) {
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto window2 = CreateTestWindow(gfx::Rect(300, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {300, 200});
 
   window->layer()->GetAnimator()->StopAnimating();
   window2->layer()->GetAnimator()->StopAnimating();
@@ -2225,7 +2230,7 @@ TEST_F(TabletModeControllerScreenshotTest, ScreenshotVisibility) {
 // crash. (See https://crbug.com/1012879).
 TEST_F(TabletModeControllerScreenshotTest, NoCrashWhenExitingWithoutWaiting) {
   // One non-maximized window is needed for screenshot to be taken.
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   window->layer()->GetAnimator()->StopAnimating();
 
   SetTabletMode(true);
@@ -2247,8 +2252,8 @@ TEST_F(TabletModeControllerScreenshotTest, NoCrashWhenExitingWithoutWaiting) {
 // regression test. See https://crbug.com/1096128.
 TEST_F(TabletModeControllerScreenshotTest, TransientChildTypeWindow) {
   // Create a window with a transient child that is of WINDOW_TYPE_POPUP.
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
-  auto child = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+  auto child = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   child->SetProperty(aura::client::kResizeBehaviorKey,
                      aura::client::kResizeBehaviorCanResize);
   ::wm::AddTransientChild(window.get(), child.get());

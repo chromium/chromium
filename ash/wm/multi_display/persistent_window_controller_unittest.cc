@@ -488,7 +488,8 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
 TEST_F(PersistentWindowControllerTest, RestoreBounds) {
   UpdateDisplay("500x600,500x600");
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow(gfx::Rect(200, 200));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
   const int64_t secondary_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -536,7 +537,8 @@ TEST_F(PersistentWindowControllerTest, RestoreBounds) {
 TEST_F(PersistentWindowControllerTest, RestoreBoundsOnInternalDisplayRemoval) {
   UpdateDisplay("500x600,500x700");
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow(gfx::Rect(200, 100));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 100});
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
   const int64_t secondary_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -603,9 +605,12 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
 
   // Add three windows, all on the secondary display.
   const gfx::Rect bounds(500, 0, 200, 200);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
 
   // MRU order should be opposite of the order the windows were created. Verify
   // that all three windows are indeed on the secondary display.
@@ -669,10 +674,14 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
   // Add four windows, two on each display.
   const gfx::Rect primary_bounds(200, 200);
   const gfx::Rect secondary_bounds(500, 0, 200, 200);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(primary_bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(secondary_bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(primary_bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(secondary_bounds);
+  std::unique_ptr<aura::Window> window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, primary_bounds);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, secondary_bounds);
+  std::unique_ptr<aura::Window> window3 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, primary_bounds);
+  std::unique_ptr<aura::Window> window4 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, secondary_bounds);
 
   // MRU order should be opposite of the order the windows were created.
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
@@ -750,7 +759,8 @@ TEST_F(PersistentWindowControllerTest, DisconnectingPrimaryDisplay) {
 
   // Add a window on the larger display.
   const gfx::Rect bounds(0, 200, 1500, 200);
-  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);
 
   // Disconnect the large display. The windows should move to the new primary
   // display (small display) and shrink to fit.
@@ -999,7 +1009,7 @@ TEST_F(PersistentWindowControllerTest, WindowStateChangeInSamePhysicalDisplay) {
 
   // Starts with a window in the secondary display.
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(501, 0, 200, 100));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {501, 0, 200, 100});
   WindowState* window_state = WindowState::Get(window.get());
   // Maximize the window.
   window_state->Maximize();

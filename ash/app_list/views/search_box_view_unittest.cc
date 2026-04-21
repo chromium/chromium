@@ -1509,9 +1509,9 @@ TEST_P(SunfishLauncherButtonTest, TabletModeSwitchesToLastWindow) {
   }
   ash::TabletModeControllerTestApi().EnterTabletMode();
   // Activate some windows.
-  std::unique_ptr<aura::Window> w1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> w2 = CreateTestWindow();
-  std::unique_ptr<aura::Window> w3 = CreateTestWindow();
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w3 = CreateWindowWithAppType();
   wm::ActivateWindow(w3.get());
   wm::ActivateWindow(w2.get());
   wm::ActivateWindow(w1.get());

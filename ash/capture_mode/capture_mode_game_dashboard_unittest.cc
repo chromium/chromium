@@ -949,8 +949,8 @@ TEST_F(GameDashboardCaptureModeTest, AvoidToolbarAndCameraPreviewIntersection) {
 
 TEST_F(GameDashboardCaptureModeTest, CursorAndClickBehaviorWhenAnchored) {
   // Create second window on screen that underlaps `game_window_` slightly.
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindow(gfx::Rect(50, 150, 100, 100)));
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {50, 150, 100, 100});
 
   // The game window should be the top most active window.
   wm::ActivateWindow(game_window());

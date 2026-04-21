@@ -33,7 +33,7 @@ ui::MouseEvent CreateEventWithTarget(aura::Window* target) {
 using BubbleUtilsTest = AshTestBase;
 
 TEST_F(BubbleUtilsTest, EventClosesBubble) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ui::MouseEvent event = CreateEventWithTarget(window.get());
 
   EXPECT_TRUE(bubble_utils::ShouldCloseBubbleForEvent(event));
@@ -43,7 +43,7 @@ TEST_F(BubbleUtilsTest, EventInCaptureModeDoesNotCloseBubble) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kAccelTakePartialScreenshot);
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   ui::MouseEvent event = CreateEventWithTarget(window.get());
 
   EXPECT_FALSE(bubble_utils::ShouldCloseBubbleForEvent(event));
@@ -56,7 +56,7 @@ TEST_F(BubbleUtilsTest, EventInContainerDoesNotCloseBubble) {
                             kShellWindowId_HelpBubbleContainer};
   for (int container_id : kTestCases) {
     // Create a window and place it in the appropriate container.
-    std::unique_ptr<aura::Window> window = CreateTestWindow();
+    std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
     window->set_owned_by_parent(false);
     Shell::GetPrimaryRootWindowController()
         ->GetContainer(container_id)

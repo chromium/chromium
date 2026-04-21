@@ -42,7 +42,7 @@ class MruWindowTrackerTest : public AshTestBase {
   // `app_restore::kActivationIndexKey`.
   std::unique_ptr<aura::Window> CreateTestWindowRestoredWindow(
       int activation_index) {
-    auto window = CreateTestWindow();
+    auto window = CreateWindowWithAppType();
     window->SetProperty(app_restore::kActivationIndexKey, activation_index);
     WindowRestoreController::Get()->StackWindow(window.get());
     return window;
@@ -51,9 +51,9 @@ class MruWindowTrackerTest : public AshTestBase {
 
 // Basic test that the activation order is tracked.
 TEST_F(MruWindowTrackerTest, Basic) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
-  std::unique_ptr<aura::Window> w3(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w3 = CreateWindowWithAppType();
   wm::ActivateWindow(w3.get());
   wm::ActivateWindow(w2.get());
   wm::ActivateWindow(w1.get());
@@ -68,7 +68,7 @@ TEST_F(MruWindowTrackerTest, Basic) {
 
 // Tests that windows being dragged are only in the WindowList once.
 TEST_F(MruWindowTrackerTest, DraggedWindowsInListOnlyOnce) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
   wm::ActivateWindow(w1.get());
 
   // Start dragging the window.
@@ -103,7 +103,7 @@ TEST_F(MruWindowTrackerTest, RestoreMruOrder) {
               testing::ElementsAre(w5.get(), w3.get(), w2.get()));
 
   // Simulate a user creating a window while Full Restore is ongoing.
-  auto user_created_window = CreateTestWindow();
+  auto user_created_window = CreateWindowWithAppType();
   wm::ActivateWindow(user_created_window.get());
   EXPECT_THAT(mru_window_tracker()->GetMruWindowsForTesting(),
               testing::ElementsAre(w5.get(), w3.get(), w2.get(),
@@ -125,11 +125,11 @@ TEST_F(MruWindowTrackerTest, RestoreMruOrder) {
 // Tests that window restore'd windows are included in the MRU window list. See
 // https://crbug.com/1229260.
 TEST_F(MruWindowTrackerTest, WindowRestoredWindowsInMruWindowList) {
-  // Create an `aura::Window` using `CreateTestWindow()` so that the window is
-  // parented to something. Then set its
-  // `app_restore::kLaunchedFromAppRestoreKey` to simulate it being window
-  // restore'd.
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  // Create an `aura::Window` using `CreateWindowWithAppType(
+  // chromeos::AppType::NON_APP)` so that the window is parented to something.
+  // Then set its `app_restore::kLaunchedFromAppRestoreKey` to simulate it being
+  // window restore'd.
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
   w1->SetProperty(app_restore::kLaunchedFromAppRestoreKey, true);
 
   // Build the MRU window list. `w1` should be included despite not being
@@ -158,9 +158,9 @@ class MruWindowTrackerOrderTest : public MruWindowTrackerTest,
 
 // Test basic functionalities of MruWindowTracker.
 TEST_P(MruWindowTrackerOrderTest, Basic) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
-  std::unique_ptr<aura::Window> w3(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w2 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w3 = CreateWindowWithAppType();
 
   // Make w3 always on top.
   w3->SetProperty(aura::client::kZOrderingKey,
@@ -168,9 +168,9 @@ TEST_P(MruWindowTrackerOrderTest, Basic) {
   // They're in different container.
   EXPECT_NE(w3->parent(), w1->parent());
 
-  std::unique_ptr<aura::Window> w4(CreateTestWindow());
-  std::unique_ptr<aura::Window> w5(CreateTestWindow());
-  std::unique_ptr<aura::Window> w6(CreateTestWindow());
+  std::unique_ptr<aura::Window> w4 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w5 = CreateWindowWithAppType();
+  std::unique_ptr<aura::Window> w6 = CreateWindowWithAppType();
 
   wm::ActivateWindow(w6.get());
   wm::ActivateWindow(w5.get());

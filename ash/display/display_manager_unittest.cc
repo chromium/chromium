@@ -5255,7 +5255,7 @@ TEST_F(DisplayManagerTest, ExitMirrorModeInTabletMode) {
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
 
   // Create a window to force in-app shelf.
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   // Exit mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);

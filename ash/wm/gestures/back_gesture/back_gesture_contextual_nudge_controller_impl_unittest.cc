@@ -225,13 +225,13 @@ TEST_F(BackGestureContextualNudgeControllerTest,
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
       nullptr));
 
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
   // If nudge() is true, it indicates that it's currently in animation.
   EXPECT_TRUE(nudge());
 
   // At this moment, change window activation should cancel the previous nudge
   // showup animation on |window1|, and start show nudge on |window2|.
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
   EXPECT_FALSE(nudge()->ShouldNudgeCountAsShown());
   EXPECT_TRUE(contextual_tooltip::ShouldShowNudge(
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
@@ -256,7 +256,7 @@ TEST_F(BackGestureContextualNudgeControllerTest,
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
       nullptr));
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
 
   TabletModeControllerTestApi().LeaveTabletMode();
@@ -273,7 +273,7 @@ TEST_F(BackGestureContextualNudgeControllerTestCantGoBack, WindowTest) {
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
       nullptr));
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_FALSE(nudge());
   EXPECT_TRUE(contextual_tooltip::ShouldShowNudge(
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
@@ -284,7 +284,7 @@ TEST_F(BackGestureContextualNudgeControllerTest, ShowNudgeOnExistingWindow) {
   TabletModeControllerTestApi tablet_mode_api;
   tablet_mode_api.LeaveTabletMode();
   EXPECT_FALSE(nudge());
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_FALSE(nudge());
 
   tablet_mode_api.EnterTabletMode();
@@ -307,7 +307,7 @@ TEST_F(BackGestureContextualNudgeControllerTest, NotShownWithDragHandleNudge) {
       user1_pref_service(), contextual_tooltip::TooltipType::kInAppToHome,
       nullptr));
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_FALSE(nudge());
   EXPECT_FALSE(contextual_tooltip::ShouldShowNudge(
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
@@ -333,7 +333,7 @@ TEST_F(BackGestureContextualNudgeControllerTest,
       user1_pref_service(), contextual_tooltip::TooltipType::kInAppToHome,
       nullptr));
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_FALSE(nudge());
   EXPECT_FALSE(contextual_tooltip::ShouldShowNudge(
       user1_pref_service(), contextual_tooltip::TooltipType::kBackGesture,
@@ -346,7 +346,7 @@ TEST_F(BackGestureContextualNudgeControllerTest,
   ASSERT_TRUE(nudge_controller()->auto_show_timer_for_testing()->IsRunning());
   nudge_controller()->auto_show_timer_for_testing()->FireNow();
 
-  std::unique_ptr<aura::Window> window_2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_2 = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
 }
 
@@ -358,7 +358,7 @@ TEST_F(BackGestureContextualNudgeControllerTest,
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Verify the nudge is created and wait until nudge animation is shown.
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
   SetNudgeShownForTesting();
 
@@ -380,7 +380,7 @@ TEST_F(BackGestureContextualNudgeControllerTest,
   ASSERT_TRUE(nudge_controller()->auto_show_timer_for_testing()->IsRunning());
   nudge_controller()->auto_show_timer_for_testing()->FireNow();
 
-  std::unique_ptr<aura::Window> window_2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window_2 = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
 }
 
@@ -389,7 +389,7 @@ TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Verify the nudge is created and wait until nudge animation is shown.
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
   SetNudgeShownForTesting();
 
@@ -399,7 +399,7 @@ TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
 TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs, TimeoutMetricsTest) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
   WaitNudgeAnimationDone();
   EXPECT_FALSE(nudge());
@@ -409,7 +409,7 @@ TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
        LogDismissMetricsAfterNudgeShown) {
   gfx::ScopedAnimationDurationScaleMode non_zero(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
   // Before nudge is still waiting to be shown, exit tablet mode. The nudge will
   // be dismissed immediately.
@@ -418,7 +418,7 @@ TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
   EXPECT_FALSE(nudge());
 
   tablet_mode_api.EnterTabletMode();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
   SetNudgeShownForTesting();
 
@@ -432,7 +432,7 @@ TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
 TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
        HideNudgesForShelfControls) {
   SCOPED_TRACE(testing::Message() << "Pref=" << GetParam());
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_TRUE(nudge());
   SetNudgeShownForTesting();
 
@@ -457,7 +457,7 @@ TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
       ->session_controller()
       ->GetLastActiveUserPrefService()
       ->SetBoolean(GetParam(), true);
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   EXPECT_FALSE(nudge());
 }
 

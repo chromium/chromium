@@ -56,7 +56,7 @@ TEST_F(GameModeControllerForBorealisTest,
 
 TEST_F(GameModeControllerForBorealisTest,
        NonBorealisWindowDoesNotEnterGameMode) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   views::Widget::GetTopLevelWidgetForNativeView(window.get())
       ->SetFullscreen(true);
   EXPECT_TRUE(ash::WindowState::Get(window.get())->IsFullscreen());

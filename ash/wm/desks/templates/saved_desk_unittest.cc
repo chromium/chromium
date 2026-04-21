@@ -1978,11 +1978,8 @@ TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
 
   disable_app_id_check_.reset();
 
-  // Use `CreateTestWindow()` instead of
-  // `CreateWindowWithAppType(AppType::SYSTEM_APP)`, which by default
-  // creates a supported window.
-  auto test_window = CreateTestWindow();
-
+  // Create NON_APP window that are not supported.
+  auto test_window = CreateWindowWithAppType();
   // Also create an app window which should not have an app id, making it
   // "unsupported".
   auto no_app_id_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
@@ -2007,8 +2004,8 @@ TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
 
 // Tests that adding and removing unsupported windows is counted correctly.
 TEST_F(SavedDeskTest, AddRemoveUnsupportedWindows) {
-  auto window1 = CreateTestWindow();
-  auto window2 = CreateTestWindow();
+  auto window1 = CreateWindowWithAppType();
+  auto window2 = CreateWindowWithAppType();
 
   ToggleOverview();
   EXPECT_TRUE(InOverviewSession());
@@ -2685,7 +2682,7 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorWhenNoWindowOpen) {
 // Tests that the children of the overview grid matches the order they are
 // displayed so accessibility traverses it correctly.
 TEST_F(SavedDeskTest, AccessibilityGridItemTraversalOrder) {
-  auto window = CreateTestWindow(gfx::Rect(100, 100));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
 
   AddEntry(base::Uuid::GenerateRandomV4(), "template_4", base::Time::Now(),
            DeskTemplateType::kTemplate);
@@ -2825,7 +2822,7 @@ TEST_F(SavedDeskTest, DeleteTemplateRecordsMetric) {
            DeskTemplateType::kTemplate);
 
   // This window should be hidden whenever the saved desk grid is open.
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateWindowWithAppType();
 
   // This action should record deletions and grid shows in a UMA histogram.
   base::HistogramTester histogram_tester;

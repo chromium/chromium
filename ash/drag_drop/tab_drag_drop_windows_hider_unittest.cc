@@ -30,7 +30,7 @@ TEST_F(TabDragDropWindowsHiderTest, WindowVisibilityChangedDuringDrag) {
   std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
 
   // Create a sub window and hide it.
-  std::unique_ptr<aura::Window> sub_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> sub_window = CreateWindowWithAppType();
   dummy_window_->AddChild(sub_window.get());
   sub_window->Hide();
   auto hider = std::make_unique<TabDragDropWindowsHider>(source_window.get());

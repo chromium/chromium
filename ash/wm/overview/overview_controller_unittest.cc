@@ -205,7 +205,7 @@ using OverviewControllerTest = AshTestBase;
 TEST_F(OverviewControllerTest,
        PressOverviewKeyDuringWindowDragInClamshellMode) {
   ASSERT_FALSE(display::Screen::Get()->InTabletMode());
-  std::unique_ptr<aura::Window> dragged_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> dragged_window = CreateWindowWithAppType();
   std::unique_ptr<WindowResizer> resizer =
       CreateWindowResizer(dragged_window.get(), gfx::PointF(), HTCAPTION,
                           ::wm::WINDOW_MOVE_SOURCE_MOUSE);
@@ -307,7 +307,7 @@ TEST_F(OverviewControllerTest, PipMustNotInOverviewGridTest) {
 
 // Tests that beginning window selection hides the app list.
 TEST_F(OverviewControllerTest, SelectingHidesAppList) {
-  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplay().id());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -322,10 +322,10 @@ TEST_F(OverviewControllerTest, SelectingHidesAppList) {
 TEST_F(OverviewControllerTest, ExcludedWindowsHidden) {
   // Create three windows, one normal, one which is not user positionable (and
   // so should be hidden) and one specifically set to be hidden in overview.
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
   std::unique_ptr<aura::Window> window2 =
       CreateTestWindowInShell({.window_type = aura::client::WINDOW_TYPE_POPUP});
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window3 = CreateWindowWithAppType();
   window3->SetProperty(kHideInOverviewKey, true);
 
   // After creation, all windows are visible.
@@ -392,7 +392,7 @@ TEST_F(OverviewControllerTest, ObserverCallsMatch) {
   }
 
   // Create one window for the next set of tests.
-  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
 
   for (bool is_tablet_mode : {false, true}) {
     SCOPED_TRACE(is_tablet_mode ? "Tablet Mode" : "Clamshell Mode");
@@ -670,7 +670,7 @@ TEST_F(OverviewControllerTest, OverviewEnterExitWhileDeskAnimation) {
 // Tests that clipping the window to remove the top view inset (header) works as
 // expected.
 TEST_F(OverviewControllerTest, WindowClipping) {
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  std::unique_ptr<aura::Window> window = CreateWindowWithAppType();
   window->SetBounds(gfx::Rect(300, 300));
   window->SetProperty(aura::client::kTopViewInset, 20);
   ASSERT_EQ(gfx::Rect(), window->layer()->GetTargetClipRect());

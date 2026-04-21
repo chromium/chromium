@@ -31,8 +31,10 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
     UpdateDisplay("800x600");
     TabletModeControllerTestApi().EnterTabletMode();
 
-    background_window_ = CreateTestWindow(gfx::Rect(200, 200));
-    foreground_window_ = CreateTestWindow(gfx::Rect(200, 200));
+    background_window_ =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
+    foreground_window_ =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
     ToggleFullscreen(foreground_window_.get(), /*immersive=*/false);
     ToggleFullscreen(background_window_.get(), /*immersive=*/false);
   }

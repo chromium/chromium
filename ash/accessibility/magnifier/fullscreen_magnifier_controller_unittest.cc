@@ -955,7 +955,8 @@ TEST_F(FullscreenMagnifierControllerTest, DragWindow) {
 
   // Create a window and start dragging by grabbing its caption.
   const gfx::Rect initial_window_bounds(200, 200, 400, 400);
-  auto window = CreateTestWindow(initial_window_bounds);
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP,
+                                        initial_window_bounds);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(gfx::Point(205, 205));
   event_generator->PressLeftButton();
@@ -982,7 +983,7 @@ TEST_F(FullscreenMagnifierControllerTest, DragWindowAcrossDisplays) {
 
   // Create a window and start dragging by grabbing its caption.
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(100, 100, 300, 300));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100, 300, 300});
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(gfx::Point(105, 105));
   event_generator->PressLeftButton();

@@ -42,7 +42,7 @@ using ScopedOverviewTransformWindowTest = AshTestBase;
 // *_NEAR) within a single pixel.
 TEST_F(ScopedOverviewTransformWindowTest, TransformedRectMaintainsAspect) {
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(10, 10, 100, 100));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {10, 10, 100, 100});
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
 
   gfx::RectF rect(50.f, 50.f, 200.f, 400.f);
@@ -85,7 +85,7 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformedRectMaintainsAspect) {
 // Tests that transformed Rect fits in target bounds and is vertically centered.
 TEST_F(ScopedOverviewTransformWindowTest, TransformedRectIsCentered) {
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(10, 10, 100, 100));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {10, 10, 100, 100});
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
   gfx::RectF rect(50.f, 50.f, 200.f, 400.f);
   gfx::RectF bounds(100.f, 100.f, 50.f, 50.f);
@@ -105,7 +105,7 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformedRectIsCentered) {
 // when inset and header height are specified.
 TEST_F(ScopedOverviewTransformWindowTest, TransformedRectIsCenteredWithInset) {
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(10, 10, 100, 100));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {10, 10, 100, 100});
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
   gfx::RectF rect(50.f, 50.f, 400.f, 200.f);
   gfx::RectF bounds(100.f, 100.f, 50.f, 50.f);
@@ -137,7 +137,8 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformingLetteredRect) {
   // Create a window whose width is more than twice the height.
   const gfx::Rect original_bounds(10, 10, 300, 100);
   const int scale = 3;
-  std::unique_ptr<aura::Window> window = CreateTestWindow(original_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, original_bounds);
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
   EXPECT_EQ(OverviewItemFillMode::kLetterBoxed, transform_window.fill_mode());
 
@@ -170,7 +171,8 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformingPillaredRect) {
   // Create a window whose height is more than twice the width.
   const gfx::Rect original_bounds(10, 10, 150, 450);
   const int scale = 3;
-  std::unique_ptr<aura::Window> window = CreateTestWindow(original_bounds);
+  std::unique_ptr<aura::Window> window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, original_bounds);
   ScopedOverviewTransformWindow transform_window(nullptr, window.get());
   EXPECT_EQ(OverviewItemFillMode::kPillarBoxed, transform_window.fill_mode());
 
@@ -206,9 +208,12 @@ TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
   // when the 400x300 is rotated to 300x400, and should be considered a normal
   // overview window after display change.
   UpdateDisplay("400x300");
-  std::unique_ptr<aura::Window> wide = CreateTestWindow(gfx::Rect(400, 160));
-  std::unique_ptr<aura::Window> tall = CreateTestWindow(gfx::Rect(100, 300));
-  std::unique_ptr<aura::Window> normal = CreateTestWindow(gfx::Rect(300, 300));
+  std::unique_ptr<aura::Window> wide =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 160});
+  std::unique_ptr<aura::Window> tall =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 300});
+  std::unique_ptr<aura::Window> normal =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {300, 300});
 
   ScopedOverviewTransformWindow scoped_wide(nullptr, wide.get());
   ScopedOverviewTransformWindow scoped_tall(nullptr, tall.get());
@@ -239,7 +244,7 @@ TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
 // Tests that transients which should be invisible in overview do not have their
 // transforms or opacities altered.
 TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   auto child =
       CreateTestWindowInShell({.bounds = gfx::Rect(100, 190, 100, 10),
                                .window_type = aura::client::WINDOW_TYPE_POPUP});
@@ -277,7 +282,7 @@ TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
 // ScopedOverviewTransformWindow.
 TEST_F(ScopedOverviewTransformWindowTest,
        InvisibleTransientsPropertyChangeAfterInit) {
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   auto child =
       CreateTestWindowInShell({.bounds = gfx::Rect(100, 190, 100, 10),
                                .window_type = aura::client::WINDOW_TYPE_POPUP});
@@ -307,7 +312,7 @@ TEST_F(ScopedOverviewTransformWindowTest,
 // visible even if the window is added after initializing
 // ScopedOverviewTransformWindow.
 TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransientsAddedAfterInit) {
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   auto child =
       CreateTestWindowInShell({.bounds = gfx::Rect(100, 190, 100, 10),
                                .window_type = aura::client::WINDOW_TYPE_POPUP});
@@ -344,7 +349,7 @@ TEST_F(ScopedOverviewTransformWindowTest, EventTargetingPolicy) {
     return popup;
   };
 
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
   window->SetEventTargetingPolicy(etp::kTargetAndDescendants);
 
   auto transient = create_popup();
@@ -369,7 +374,8 @@ TEST_F(ScopedOverviewTransformWindowTest, EventTargetingPolicy) {
 
     // Tests that adding a transient child which does not have |window| as its
     // descendant does not have its targeting policy altered.
-    auto window2 = CreateTestWindow(gfx::Rect(200, 200));
+    auto window2 =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {200, 200});
     auto transient3 = create_popup();
     ::wm::AddTransientChild(window2.get(), transient3.get());
     EXPECT_EQ(etp::kTargetAndDescendants, transient3->event_targeting_policy());

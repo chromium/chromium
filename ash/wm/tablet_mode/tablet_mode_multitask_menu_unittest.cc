@@ -178,7 +178,7 @@ TEST_F(TabletModeMultitaskMenuTest, BasicShowMenu) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, SwipeDownTargetArea) {
-  auto window = CreateTestWindow(gfx::Rect(800, 600));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
 
   // Scroll down from the top left. Verify no menu.
   GenerateScroll(0, 1, kMenuDragPoint);
@@ -229,9 +229,11 @@ TEST_F(TabletModeMultitaskMenuTest, PressMoveAndReleaseTouch) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitView) {
-  auto window1 = CreateTestWindow(gfx::Rect(800, 600));
+  auto window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
   PressHalfButton(window1.get(), /*left=*/true);
-  auto window2 = CreateTestWindow(gfx::Rect(800, 600));
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
   PressHalfButton(window2.get(), /*left=*/false);
 
   // Swipe down on the left window. Test that the menu is shown.
@@ -259,9 +261,11 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownInSplitViewWhileAnimating) {
   // Create a larger display so the menu is within the window bounds when split.
   UpdateDisplay("1600x1000");
 
-  auto window1 = CreateTestWindow(gfx::Rect(800, 600));
+  auto window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
   PressHalfButton(window1.get(), /*left=*/true);
-  auto window2 = CreateTestWindow(gfx::Rect(800, 600));
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
   PressHalfButton(window2.get(), /*left=*/false);
 
   // Start swipe down on the left window, then swap to the right window. Swipe
@@ -297,7 +301,7 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownInPinnedWindow) {
 
 // Tests that swipe down outside the menu doesn't crash. Test for b/266742428.
 TEST_F(TabletModeMultitaskMenuTest, SwipeDownMenuTwice) {
-  auto window = CreateTestWindow(gfx::Rect(800, 600));
+  auto window = CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
 
   // Scroll down to show the menu.
   GenerateScroll(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
@@ -322,7 +326,7 @@ TEST_F(TabletModeMultitaskMenuTest, SwipeDownMenuTwice) {
 
 // Tests no crash on multiple finger scrolls.
 TEST_F(TabletModeMultitaskMenuTest, MultiFingerSroll) {
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   const int center_x = window->bounds().CenterPoint().x();
 
   // Scroll down with 2 fingers.
@@ -338,7 +342,7 @@ TEST_F(TabletModeMultitaskMenuTest, MultiFingerSroll) {
 
 // Tests that a partial drag will show or hide the menu as expected.
 TEST_F(TabletModeMultitaskMenuTest, PartialDrag) {
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   // Scroll down less than half of the menu height. Tests that the menu does not
   // open.
   GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
@@ -353,7 +357,7 @@ TEST_F(TabletModeMultitaskMenuTest, PartialDrag) {
 
 // Tests that the menu is closed when the window is closed or destroyed.
 TEST_F(TabletModeMultitaskMenuTest, OnWindowDestroying) {
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
 
   ShowMultitaskMenu(*window);
   ASSERT_TRUE(GetMultitaskMenu());
@@ -399,8 +403,10 @@ TEST_F(TabletModeMultitaskMenuTest, CloseMultitaskMenuOnButtonPress) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, CloseOnDoubleTapDivider) {
-  auto window1 = CreateTestWindow(gfx::Rect(800, 600));
-  auto window2 = CreateTestWindow(gfx::Rect(800, 600));
+  auto window1 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
+  auto window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {800, 600});
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -422,7 +428,7 @@ TEST_F(TabletModeMultitaskMenuTest, CloseOnDoubleTapDivider) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, HideMultitaskMenuInOverview) {
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
 
   ShowMultitaskMenu(*window);
 
@@ -444,7 +450,7 @@ TEST_F(TabletModeMultitaskMenuTest, HalfButtonFunctionality) {
   // Create a test window wide enough to show the menu even after it is split in
   // half.
   UpdateDisplay("1600x1000");
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
   ShowMultitaskMenu(*window);
 
   // Press the primary half split button.
@@ -481,7 +487,7 @@ TEST_F(TabletModeMultitaskMenuTest, HalfButtonFunctionality) {
 }
 
 TEST_F(TabletModeMultitaskMenuTest, PartialButtonFunctionality) {
-  auto window = CreateTestWindow();
+  auto window = CreateWindowWithAppType();
 
   // Test that primary button snaps to 0.67f screen ratio.
   PressPartialPrimary(*window);
@@ -512,9 +518,9 @@ TEST_F(TabletModeMultitaskMenuTest, PartialButtonFunctionality) {
 // Tests that the menu bounds are adjusted if the window is narrower than the
 // menu for two partial split windows.
 TEST_F(TabletModeMultitaskMenuTest, AdjustedMenuBounds) {
-  auto window1 = CreateTestWindow();
+  auto window1 = CreateWindowWithAppType();
   PressPartialPrimary(*window1);
-  auto window2 = CreateTestWindow();
+  auto window2 = CreateWindowWithAppType();
   PressPartialSecondary(*window2);
 
   auto* split_view_controller =

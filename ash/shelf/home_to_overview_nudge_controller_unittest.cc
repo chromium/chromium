@@ -117,7 +117,7 @@ class HomeToOverviewNudgeControllerTest : public NoSessionAshTestBase {
 
     for (int i = 0; i < count; ++i) {
       std::unique_ptr<aura::Window> window =
-          CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+          CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
       WindowState::Get(window.get())->Minimize();
       windows.push_back(std::move(window));
     }
@@ -190,10 +190,10 @@ TEST_F(HomeToOverviewNudgeControllerWithNudgesDisabledTest,
   SimulateUserLogin(kRegularUserLoginInfo);
 
   std::unique_ptr<aura::Window> window_1 =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   WindowState::Get(window_1.get())->Minimize();
   std::unique_ptr<aura::Window> window_2 =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   WindowState::Get(window_2.get())->Minimize();
 
   EXPECT_FALSE(GetPrimaryShelf()
@@ -262,7 +262,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownOnHomeScreen) {
 
   // Create and minimize another test window to force a transition to home.
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
   WindowState::Get(window.get())->Minimize();
 
@@ -301,7 +301,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownLimitedNumberOfTimes) {
     ASSERT_TRUE(GetNudgeController()->nudge_for_testing());
 
     std::unique_ptr<aura::Window> window =
-        CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
     wm::ActivateWindow(window.get());
     test_clock_.Advance(base::Hours(25));
     WindowState::Get(window.get())->Minimize();
@@ -414,7 +414,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, InAppShelfShownBeforeShowTimer) {
   EXPECT_TRUE(GetNudgeController()->HasShowTimerForTesting());
 
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
@@ -453,7 +453,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NudgeHiddenDuringShowAnimation) {
   WidgetCloseObserver widget_close_observer(nudge_widget);
 
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
 
   EXPECT_FALSE(GetNudgeWidget());
@@ -496,7 +496,7 @@ TEST_F(HomeToOverviewNudgeControllerTest, NoCrashIfNudgeWidgetGetsClosed) {
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
 
   std::unique_ptr<aura::Window> window =
-      CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});
   wm::ActivateWindow(window.get());
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
 }

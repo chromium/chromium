@@ -148,7 +148,8 @@ class CaptureModeCameraTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     FakeFolderSelectionDialogFactory::Start();
-    window_ = CreateTestWindow(gfx::Rect(30, 40, 600, 500));
+    window_ =
+        CreateWindowWithAppType(chromeos::AppType::NON_APP, {30, 40, 600, 500});
   }
 
   void TearDown() override {
@@ -1829,8 +1830,8 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
 TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
   UpdateDisplay("1366x768");
   // Create one more window besides `window_`.
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(150, 50, 800, 700)));
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {150, 50, 800, 700});
   window()->SetBounds(gfx::Rect(30, 40, 800, 700));
 
   auto* controller =
@@ -2872,7 +2873,7 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnMultiDisplays) {
 
   // Create a window in the second display and set its bounds small enough to
   // not fit the camera preview.
-  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
   window1->SetBoundsInScreen(gfx::Rect(1400, 500, 100, 100),
                              display::Screen::Get()->GetDisplayNearestWindow(
                                  Shell::GetAllRootWindows()[1]));
@@ -3842,8 +3843,8 @@ TEST_P(CaptureModeCameraPreviewTest,
 TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDeintersectsWithPipWindow) {
   // Create a window at the bottom right of the display, then convert it to a
   // PIP window.
-  std::unique_ptr<aura::Window> pip_window(
-      CreateTestWindow(gfx::Rect(700, 450, 104, 100)));
+  std::unique_ptr<aura::Window> pip_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {700, 450, 104, 100});
   ConvertToPipWindow(pip_window.get());
   const gfx::Rect origin_pip_window_bounds = pip_window->GetBoundsInScreen();
 
@@ -3867,8 +3868,8 @@ TEST_P(CaptureModeCameraPreviewTest,
        CameraPreviewDeintersectsWithPipWindowDuringRecording) {
   // Create a window at the top left of the display, then convert it to a PIP
   // window.
-  std::unique_ptr<aura::Window> pip_window(
-      CreateTestWindow(gfx::Rect(0, 0, 104, 100)));
+  std::unique_ptr<aura::Window> pip_window =
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {104, 100});
   ConvertToPipWindow(pip_window.get());
   const gfx::Rect origin_pip_window_bounds = pip_window->GetBoundsInScreen();
 
