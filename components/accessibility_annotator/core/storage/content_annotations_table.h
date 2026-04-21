@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_types.h"
@@ -79,9 +80,9 @@ class ContentAnnotationsTable {
   std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
   GetAllContentAnnotations();
 
-  // Deletes a record from content_annotations table by visit_id. Returns true
+  // Deletes records from content_annotations table by visit_ids. Returns true
   // on success.
-  bool DeleteContentAnnotation(history::VisitID visit_id);
+  bool DeleteContentAnnotations(base::span<const history::VisitID> visit_ids);
 
   // Clears all records from content_annotations table. Returns true on success.
   bool ClearAllContentAnnotations();

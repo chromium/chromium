@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -57,7 +58,7 @@ class AccessibilityAnnotatorDatabase {
       history::VisitID visit_id);
   std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
   GetAllContentAnnotations();
-  bool DeleteContentAnnotation(history::VisitID visit_id);
+  bool DeleteContentAnnotations(base::span<const history::VisitID> visit_ids);
   bool ClearAllContentAnnotations();
 
  private:

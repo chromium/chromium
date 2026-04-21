@@ -11,6 +11,7 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/transaction.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
@@ -181,17 +182,33 @@ ContentAnnotationsTable::GetAllContentAnnotations() {
   return results;
 }
 
-bool ContentAnnotationsTable::DeleteContentAnnotation(
-    history::VisitID visit_id) {
+bool ContentAnnotationsTable::DeleteContentAnnotations(
+    base::span<const history::VisitID> visit_ids) {
   if (!db_ || !encryptor_) {
+    return false;
+  }
+
+  if (visit_ids.empty()) {
+    return true;
+  }
+
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
     return false;
   }
 
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM content_annotations WHERE visit_id = ?"));
-  statement.BindInt64(0, visit_id);
 
-  return statement.Run();
+  for (history::VisitID visit_id : visit_ids) {
+    statement.Reset(true);
+    statement.BindInt64(0, visit_id);
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
 }
 
 bool ContentAnnotationsTable::ClearAllContentAnnotations() {

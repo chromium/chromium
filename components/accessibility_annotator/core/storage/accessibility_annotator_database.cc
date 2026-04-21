@@ -158,14 +158,14 @@ AccessibilityAnnotatorDatabase::GetAllContentAnnotations() {
   return content_annotations_table_.GetAllContentAnnotations();
 }
 
-bool AccessibilityAnnotatorDatabase::DeleteContentAnnotation(
-    history::VisitID visit_id) {
+bool AccessibilityAnnotatorDatabase::DeleteContentAnnotations(
+    base::span<const history::VisitID> visit_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
     return false;
   }
 
-  return content_annotations_table_.DeleteContentAnnotation(visit_id);
+  return content_annotations_table_.DeleteContentAnnotations(visit_ids);
 }
 
 bool AccessibilityAnnotatorDatabase::ClearAllContentAnnotations() {

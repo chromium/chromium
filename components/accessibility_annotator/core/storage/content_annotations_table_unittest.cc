@@ -110,27 +110,30 @@ TEST_F(ContentAnnotationsTableTest, AddAndGetContentAnnotation) {
   EXPECT_EQ(retrieved->classifier_results, data.classifier_results);
 }
 
-// Tests that DeleteContentAnnotation successfully removes the row for the given
-// `visit_id`.
-TEST_F(ContentAnnotationsTableTest, DeleteContentAnnotation) {
+// Tests that DeleteContentAnnotations successfully removes the rows for the given
+// visit IDs.
+TEST_F(ContentAnnotationsTableTest, DeleteContentAnnotations) {
   ASSERT_TRUE(table_.CreateTablesIfNecessary());
 
-  history::VisitID visit_id(1);
+  history::VisitID visit_id_1(1);
+  history::VisitID visit_id_2(2);
+  history::VisitID visit_id_3(3);
+
   // Successfully add to the table.
-  EXPECT_TRUE(table_.AddContentAnnotation(visit_id, CreateDefaultTestData()));
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id_1, CreateDefaultTestData()));
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id_2, CreateDefaultTestData()));
+  EXPECT_TRUE(table_.AddContentAnnotation(visit_id_3, CreateDefaultTestData()));
 
-  // Verify that the row for `visit_id` is present.
-  std::optional<ContentAnnotationsData> retrieved =
-      table_.GetContentAnnotation(visit_id);
-  EXPECT_TRUE(retrieved.has_value());
+  // Verify that content annotations are present in the table.
+  EXPECT_EQ(table_.GetAllContentAnnotations().size(), 3u);
 
-  // Successfully delete the row for `visit_id`.
-  EXPECT_TRUE(table_.DeleteContentAnnotation(visit_id));
+  // Successfully delete multiple rows.
+  EXPECT_TRUE(table_.DeleteContentAnnotations({visit_id_1, visit_id_2}));
 
-  // Verify that the row for `visit_id` is no longer present.
-  std::optional<ContentAnnotationsData> retrieved_after =
-      table_.GetContentAnnotation(visit_id);
-  EXPECT_FALSE(retrieved_after.has_value());
+  EXPECT_EQ(table_.GetAllContentAnnotations().size(), 1u);
+  EXPECT_FALSE(table_.GetContentAnnotation(visit_id_1).has_value());
+  EXPECT_FALSE(table_.GetContentAnnotation(visit_id_2).has_value());
+  EXPECT_TRUE(table_.GetContentAnnotation(visit_id_3).has_value());
 }
 
 // Tests that ClearAllContentAnnotations successfully removes all rows.
@@ -183,7 +186,7 @@ TEST_F(ContentAnnotationsTableTest, FunctionsFailWithoutInit) {
   EXPECT_FALSE(uninitialized_table.AddContentAnnotation(visit_id, data));
   EXPECT_FALSE(uninitialized_table.GetContentAnnotation(visit_id).has_value());
   EXPECT_TRUE(uninitialized_table.GetAllContentAnnotations().empty());
-  EXPECT_FALSE(uninitialized_table.DeleteContentAnnotation(visit_id));
+  EXPECT_FALSE(uninitialized_table.DeleteContentAnnotations({visit_id}));
   EXPECT_FALSE(uninitialized_table.ClearAllContentAnnotations());
 }
 

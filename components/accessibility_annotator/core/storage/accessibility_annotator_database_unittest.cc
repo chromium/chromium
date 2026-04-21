@@ -140,7 +140,7 @@ TEST_F(AccessibilityAnnotatorDatabaseTest,
   EXPECT_FALSE(db_->AddContentAnnotation(visit_id, CreateTestData()));
   EXPECT_FALSE(db_->GetContentAnnotation(visit_id).has_value());
   EXPECT_TRUE(db_->GetAllContentAnnotations().empty());
-  EXPECT_FALSE(db_->DeleteContentAnnotation(visit_id));
+  EXPECT_FALSE(db_->DeleteContentAnnotations({visit_id}));
   EXPECT_FALSE(db_->ClearAllContentAnnotations());
 }
 
@@ -202,22 +202,31 @@ TEST_F(AccessibilityAnnotatorDatabaseTest, GetAndClearAllContentAnnotations) {
   EXPECT_TRUE(db_->GetAllContentAnnotations().empty());
 }
 
-// Tests deleting a content annotation.
-TEST_F(AccessibilityAnnotatorDatabaseTest, DeleteContentAnnotation) {
+// Tests deleting content annotations.
+TEST_F(AccessibilityAnnotatorDatabaseTest, DeleteContentAnnotations) {
   ASSERT_TRUE(
       db_->Init(GetDbPath(), os_crypt_async::GetTestEncryptorForTesting()));
-  history::VisitID visit_id(1);
+  history::VisitID visit_id_1(1);
+  history::VisitID visit_id_2(2);
+  history::VisitID visit_id_3(3);
 
-  // Add the content annotation to the database successfully.
-  EXPECT_TRUE(db_->AddContentAnnotation(visit_id, CreateTestData()));
+  // Add the content annotations to the database successfully.
+  EXPECT_TRUE(db_->AddContentAnnotation(visit_id_1, CreateTestData()));
+  EXPECT_TRUE(db_->AddContentAnnotation(visit_id_2, CreateTestData()));
+  EXPECT_TRUE(db_->AddContentAnnotation(visit_id_3, CreateTestData()));
 
-  // Verify that the content annotation is present in the database.
-  EXPECT_TRUE(db_->GetContentAnnotation(visit_id).has_value());
+  // Verify that the content annotations are present in the database.
+  EXPECT_EQ(db_->GetAllContentAnnotations().size(), 3u);
 
-  // Delete the content annotation from the database successfully and verify
-  // that it is no longer present.
-  EXPECT_TRUE(db_->DeleteContentAnnotation(visit_id));
-  EXPECT_FALSE(db_->GetContentAnnotation(visit_id).has_value());
+  // Delete multiple content annotations.
+  EXPECT_TRUE(db_->DeleteContentAnnotations({visit_id_1, visit_id_2}));
+
+  // Verify that the content annotations are deleted from the database and the
+  // expected content annotation remains.
+  EXPECT_EQ(db_->GetAllContentAnnotations().size(), 1u);
+  EXPECT_FALSE(db_->GetContentAnnotation(visit_id_1).has_value());
+  EXPECT_FALSE(db_->GetContentAnnotation(visit_id_2).has_value());
+  EXPECT_TRUE(db_->GetContentAnnotation(visit_id_3).has_value());
 }
 
 }  // namespace accessibility_annotator
