@@ -31,6 +31,10 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
   return kDefaultBrowserPromptSurfaceParam.Get();
 }
 
+BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
     std::to_array<base::FeatureParam<DefaultBrowserPromptSurface>::Option>({
         {DefaultBrowserPromptSurface::kInfobar, "infobar"},
@@ -41,9 +45,12 @@ constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
          "modal_dialog_without_settings_illustration"},
     });
 
-BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_ENUM_PARAM(DefaultBrowserPromptSurface,
+                        kDefaultBrowserPromptSurfaceParam,
+                        &kDefaultBrowserPromptSurfaces,
+                        "prompt_surface",
+                        DefaultBrowserPromptSurface::kInfobar,
+                        kDefaultBrowserPromptSurfaceOptions);
 
 BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -53,12 +60,5 @@ BASE_FEATURE(kDefaultBrowserChangedOsNotification,
 
 BASE_FEATURE(kDefaultBrowserVisualGuidedSetter,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE_ENUM_PARAM(DefaultBrowserPromptSurface,
-                        kDefaultBrowserPromptSurfaceParam,
-                        &kDefaultBrowserPromptSurfaces,
-                        "prompt_surface",
-                        DefaultBrowserPromptSurface::kInfobar,
-                        kDefaultBrowserPromptSurfaceOptions);
 
 }  // namespace default_browser
