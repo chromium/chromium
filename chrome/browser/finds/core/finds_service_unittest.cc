@@ -933,6 +933,18 @@ TEST_F(FindsServiceTest, ScheduleNotificationForInternalsPage) {
   EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
 }
 
+TEST_F(FindsServiceTest, ClearNotificationsBeforeScheduling) {
+  testing::InSequence enforce_call_order;
+  EXPECT_CALL(
+      *notification_schedule_service_,
+      DeleteNotifications(notifications::SchedulerClientType::kChromeFinds))
+      .Times(1);
+  EXPECT_CALL(*notification_schedule_service_, Schedule(_)).Times(1);
+
+  bool success = service_->ScheduleNotificationForInternalsPage();
+  EXPECT_TRUE(success);
+}
+
 TEST_F(FindsServiceTest, MaybeRescheduleNotifications_Empty_NoOp) {
   EXPECT_CALL(*notification_schedule_service_, GetClientOverview(_, _))
       .WillOnce(

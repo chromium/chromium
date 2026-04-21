@@ -484,6 +484,10 @@ bool FindsService::ScheduleNotificationWithModelResult(
   notifications::ScheduleParams scheduler_params = GetCurrentScheduleParams();
   notifications::NotificationData data =
       GetNotificationData(suggestion, theme.theme_type());
+  // Shouldn't happen, but proactively delete stale notifications that have been
+  // scheduled but not yet sent out.
+  notification_schedule_service_->DeleteNotifications(
+      notifications::SchedulerClientType::kChromeFinds);
   notification_schedule_service_->Schedule(
       std::make_unique<notifications::NotificationParams>(
           notifications::SchedulerClientType::kChromeFinds, std::move(data),
