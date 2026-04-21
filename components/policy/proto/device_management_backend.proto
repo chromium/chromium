@@ -2617,6 +2617,8 @@ message AttestationPayload {
   optional string attestation_blob = 3;
   // Error from blob generation if there is one.
   optional string attestation_error = 4;
+  // Version of the content binding method used.
+  optional int32 content_binding_version = 5;
 }
 
 // Report user level status on all platforms. It includes the information of the
