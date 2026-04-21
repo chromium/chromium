@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/net/always_on_vpn_manager.h"
@@ -20,9 +22,6 @@ AlwaysOnVpnPreConnectUrlAllowlistService::
         PolicyBlocklistService* policy_blocklist_service)
     : pref_service_(pref_service),
       policy_blocklist_service_(policy_blocklist_service) {
-  network_state_handler_observer_.Observe(
-      ash::NetworkHandler::Get()->network_state_handler());
-
   profile_pref_change_registrar_.Init(pref_service);
   profile_pref_change_registrar_.Add(
       arc::prefs::kAlwaysOnVpnLockdown,
@@ -34,6 +33,23 @@ AlwaysOnVpnPreConnectUrlAllowlistService::
       base::BindRepeating(
           &AlwaysOnVpnPreConnectUrlAllowlistService::OnPrefChanged,
           base::Unretained(this)));
+  Init();
+}
+
+void AlwaysOnVpnPreConnectUrlAllowlistService::Init() {
+  if (!ash::NetworkHandler::IsInitialized()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AlwaysOnVpnPreConnectUrlAllowlistService::Init,
+                       weak_factory_.GetWeakPtr()),
+        base::Milliseconds(100));
+    return;
+  }
+
+  if (!network_state_handler_observer_.IsObserving()) {
+    network_state_handler_observer_.Observe(
+        ash::NetworkHandler::Get()->network_state_handler());
+  }
   DeterminePreConnectUrlAllowlistEnforcement();
 }
 
@@ -59,6 +75,10 @@ void AlwaysOnVpnPreConnectUrlAllowlistService::DefaultNetworkChanged(
 
 void AlwaysOnVpnPreConnectUrlAllowlistService::
     DeterminePreConnectUrlAllowlistEnforcement() {
+  if (!ash::NetworkHandler::IsInitialized()) {
+    return;
+  }
+
   // TODO(b/188864779, acostinas): After the ARC legacy migration is completed,
   // read the Always-on VPN state from the network profile property instead
   // of the user pref.
