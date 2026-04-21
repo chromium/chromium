@@ -145,7 +145,7 @@ public class ModalDialogViewBinder
             view.setOnTouchFilteredCallback(
                     model.get(ModalDialogProperties.TOUCH_FILTERED_CALLBACK));
         } else if (ModalDialogProperties.CONTENT_DESCRIPTION == propertyKey) {
-            // Intentionally left empty since this is a property used for the dialog container.
+            view.setContentDescription(model.get(ModalDialogProperties.CONTENT_DESCRIPTION));
         } else if (ModalDialogProperties.BUTTON_STYLES == propertyKey) {
             assert checkFilledButtonConsistency(model);
             assert checkButtonStyleIsOnlyConfiguredWithDefaultButtons(model);

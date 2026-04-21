@@ -135,6 +135,9 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
             PropertyModel model,
             @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
             @Nullable Callback<View> onDialogShownCallback) {
+        assert model.get(ModalDialogProperties.TITLE) != null
+                        || model.get(ModalDialogProperties.CONTENT_DESCRIPTION) != null
+                : "Tab modal dialog must have either a title or a content description.";
         if (mDialogContainer == null) mDialogContainer = createDialogContainer();
 
         model.set(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE, true);

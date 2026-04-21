@@ -128,18 +128,6 @@ public class ModalDialogManager {
         }
 
         /**
-         * @param model The dialog model from which the properties should be obtained.
-         * @return The property value for {@link ModalDialogProperties#CONTENT_DESCRIPTION}, or a
-         *         fallback content description if it is not set.
-         */
-        protected static String getContentDescription(PropertyModel model) {
-            String description = model.get(ModalDialogProperties.CONTENT_DESCRIPTION);
-            if (description == null) description = model.get(ModalDialogProperties.TITLE);
-            assert description != null;
-            return description;
-        }
-
-        /**
          * Creates a view for the specified dialog model and puts the view in a container.
          *
          * @param model The dialog model that needs to be shown.

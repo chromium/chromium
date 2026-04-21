@@ -168,6 +168,10 @@ public class WebSigninRedirectCoordinator {
                         .with(ModalDialogProperties.CONTROLLER, createController())
                         .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.CONTENT_DESCRIPTION,
+                                mTab.getContext()
+                                        .getString(R.string.signin_web_signin_loading_dialog_title))
                         .build();
 
         mDialogManager.showDialog(mModel, ModalDialogType.TAB);
