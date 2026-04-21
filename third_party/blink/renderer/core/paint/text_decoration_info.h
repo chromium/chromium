@@ -57,6 +57,7 @@ struct ResolvedDecoration {
   float ascent = 0.f;
   float computed_font_size = 0.f;
   float resolved_thickness = 0.f;
+  float effective_zoom = 1.0f;
   // This field is available only if a decorating box is applied and `lines`
   // has underline.
   LayoutUnit offset_from_decorating_box;
@@ -65,8 +66,6 @@ struct ResolvedDecoration {
   bool has_underline = false;
   bool has_overline = false;
   bool is_flipped_underline_and_overline = false;
-
-  // TODO(crbug.com/501752810): Move more fields from TextDecorationInfo.
 
   bool HasUnderline() const { return has_underline; }
   bool HasOverline() const { return has_overline; }

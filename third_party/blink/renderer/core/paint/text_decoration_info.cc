@@ -266,6 +266,7 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
   decoration.ascent =
       font_data ? font_data->GetFontMetrics().FloatAscent() : 0.f;
 
+  decoration.effective_zoom = decorating_box_style_->EffectiveZoom();
   decoration.offset_from_decorating_box =
       decoration.HasUnderline() && decorating_box
           ? OffsetFromDecoratingBox(*decorating_box)
@@ -319,16 +320,14 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
       spelling_wave = std::nullopt;
     } else {
       style = kWavyStroke;
-      spelling_wave =
-          MakeSpellingGrammarWave(decorating_box_style_->EffectiveZoom());
+      spelling_wave = MakeSpellingGrammarWave(decoration.effective_zoom);
     }
 #elif BUILDFLAG(IS_APPLE)
     style = kDottedStroke;
     antialias = true;
 #else
     style = kWavyStroke;
-    spelling_wave =
-        MakeSpellingGrammarWave(decorating_box_style_->EffectiveZoom());
+    spelling_wave = MakeSpellingGrammarWave(decoration.effective_zoom);
 #endif
   } else {
     style = TextDecorationStyleToStrokeStyle(
@@ -464,12 +463,12 @@ float TextDecorationInfo::ComputeThickness(
     // "TextAppearance.Suggestion"
     // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/res/res/values/styles.xml;l=309
     return (base::FeatureList::IsEnabled(features::kAndroidSpellcheckNativeUi))
-               ? 2.5f * decorating_box_style_->EffectiveZoom()
-               : 1.f * decorating_box_style_->EffectiveZoom();
+               ? 2.5f * decoration.effective_zoom
+               : 1.f * decoration.effective_zoom;
 #elif BUILDFLAG(IS_APPLE)
-    return 2.f * decorating_box_style_->EffectiveZoom();
+    return 2.f * decoration.effective_zoom;
 #else
-    return 1.f * decorating_box_style_->EffectiveZoom();
+    return 1.f * decoration.effective_zoom;
 #endif
   }
   const float thickness = ComputeDecorationThickness(
