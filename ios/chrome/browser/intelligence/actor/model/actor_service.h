@@ -44,15 +44,15 @@ class ActorService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // Executes the given action.
-  // TODO(crbug.com/498191921): This is legacy/deprecated. Use `CreateTask` and
-  // `ExecuteTools` instead. It will be cleaned up soon.
-  void ExecuteAction(const optimization_guide::proto::Action& action,
-                     ToolExecutionCallback callback);
-
   // Creates a new task.
   ActorTaskId CreateTask(const std::string& title,
                          bool allow_incognito_web_states);
+
+  // Creates a vector of ActorTools from a vector of Action protos. On failure,
+  // returns the error encountered by the factory.
+  CreateActorToolsResult CreateActorTools(
+      const std::vector<optimization_guide::proto::Action>& actions,
+      ActorTaskId task_id);
 
   // Submits actions to an active task with a task update string (a short blurb
   // which tells the user what the Actor is currently doing in plain language).

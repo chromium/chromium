@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/token.h"
 #import "base/types/strong_alias.h"
+#import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -17,11 +19,14 @@ class ActorTaskTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    task_ = std::make_unique<ActorTask>(ActorTaskId(1), "Test Task");
+    journal_ = std::make_unique<AggregatedJournal>();
+    task_ = std::make_unique<ActorTask>(ActorTaskId(1), "Test Task",
+                                        journal_.get());
   }
 
   void TearDown() override {
     task_.reset();
+    journal_.reset();
     PlatformTest::TearDown();
   }
 
@@ -34,6 +39,9 @@ class ActorTaskTest : public PlatformTest {
     return task_->controlled_web_states_;
   }
 
+  void SetTaskState(ActorTaskState state) { task_->SetState(state); }
+
+  std::unique_ptr<AggregatedJournal> journal_;
   std::unique_ptr<ActorTask> task_;
 };
 
@@ -78,6 +86,23 @@ TEST_F(ActorTaskTest, ControlledWebStatesGetter) {
   const auto& controlled_states = GetControlledWebStates();
   EXPECT_EQ(1u, controlled_states.size());
   EXPECT_EQ(web_state.get(), controlled_states[0].get());
+}
+
+// Tests that SetState updates the state and logs to the journal.
+TEST_F(ActorTaskTest, SetState) {
+  SetTaskState(ActorTaskState::kActing);
+
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+
+  std::vector<JournalEntry> logs = journal_->GetLogs();
+  ASSERT_EQ(1u, logs.size());
+  EXPECT_EQ("ActorTask::SetState", logs[0].event);
+
+  ASSERT_EQ(2u, logs[0].details.size());
+  EXPECT_EQ("current_state", logs[0].details[0].key);
+  EXPECT_EQ("Init", logs[0].details[0].value);
+  EXPECT_EQ("new_state", logs[0].details[1].key);
+  EXPECT_EQ("Acting", logs[0].details[1].value);
 }
 
 }  // namespace actor

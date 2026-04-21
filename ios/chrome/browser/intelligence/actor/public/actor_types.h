@@ -14,6 +14,12 @@
 
 namespace actor {
 
+class ActorTool;
+
+// Result of creating a batch of ActorTools from Action protos.
+using CreateActorToolsResult =
+    base::expected<std::vector<std::unique_ptr<ActorTool>>, ActorToolError>;
+
 // Strongly typed, performant unique ID representing an ActorTask.
 using ActorTaskId = base::IdType32<class ActorTaskIdMarker>;
 static_assert(ActorTaskId(0).is_null(), "0 must be a null ActorTaskId");

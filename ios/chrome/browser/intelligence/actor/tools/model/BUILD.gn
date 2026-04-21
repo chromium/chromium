@@ -11,7 +11,7 @@ source_set("actor_tool_factory") {
     "actor_tool_factory.mm",
   ]
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     ":click_tool",
     ":history_tool",
     ":navigate_tool",
@@ -27,7 +27,7 @@ source_set("actor_tool_factory") {
   ]
 }
 
-source_set("actor_interface") {
+source_set("actor_tool_interface") {
   sources = [
     "actor_tool.h",
     "actor_tool.mm",
@@ -45,13 +45,13 @@ source_set("actor_interface") {
   ]
 }
 
-source_set("web_actor_interface") {
+source_set("web_actor_tool_interface") {
   sources = [
     "web_actor_tool.h",
     "web_actor_tool.mm",
   ]
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     ":java_script_features",
     "//base",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -70,7 +70,7 @@ source_set("navigate_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -90,7 +90,7 @@ source_set("wait_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -105,7 +105,7 @@ source_set("history_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -181,9 +181,9 @@ source_set("click_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     ":java_script_features",
-    ":web_actor_interface",
+    ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -202,9 +202,9 @@ source_set("select_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     ":java_script_features",
-    ":web_actor_interface",
+    ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -221,9 +221,9 @@ source_set("type_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     ":java_script_features",
-    ":web_actor_interface",
+    ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -240,10 +240,10 @@ source_set("scroll_tool") {
   ]
 
   deps = [
-    ":actor_interface",
     ":actor_tool_constants",
+    ":actor_tool_interface",
     ":java_script_features",
-    ":web_actor_interface",
+    ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -260,9 +260,9 @@ source_set("scroll_to_tool") {
   ]
 
   deps = [
-    ":actor_interface",
+    ":actor_tool_interface",
     ":java_script_features",
-    ":web_actor_interface",
+    ":web_actor_tool_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
@@ -288,7 +288,7 @@ source_set("java_script_features") {
 
   deps = [
     ":action_target_ts",
-    ":actor_interface",
+    ":actor_tool_interface",
     ":click_tool_ts",
     ":scroll_tool_ts",
     ":select_tool_ts",
@@ -347,9 +347,9 @@ source_set("unit_tests") {
   ]
   deps = [
     ":action_target_ts",
-    ":actor_interface",
     ":actor_tool_constants",
     ":actor_tool_factory",
+    ":actor_tool_interface",
     ":actor_tool_java_script_feature_test_base",
     ":click_tool",
     ":click_tool_ts",

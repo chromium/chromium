@@ -61,7 +61,10 @@ TEST_F(ActorServiceJournalTest, ToolCreationFails) {
 
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://example.com");
-  service.ExecuteAction(action, base::DoNothing());
+  std::vector<optimization_guide::proto::Action> actions;
+  actions.push_back(std::move(action));
+  auto tools_result = service.CreateActorTools(actions, ActorTaskId());
+  EXPECT_FALSE(tools_result.has_value());
 
   AggregatedJournal* journal = service.GetJournal();
   ASSERT_NE(nullptr, journal);
@@ -72,6 +75,12 @@ TEST_F(ActorServiceJournalTest, ToolCreationFails) {
   EXPECT_EQ("Attempting to create tool: NavigateTool", logs[0].event);
   EXPECT_EQ(JournalEntryType::kInstant, logs[1].type);
   EXPECT_EQ("Failed to create tool: NavigateTool", logs[1].event);
+
+  ASSERT_EQ(1u, logs[1].details.size());
+  EXPECT_EQ("error", logs[1].details[0].key);
+  EXPECT_EQ(GetActorToolErrorMessage(
+                ActorToolError{ActorToolErrorCode::kUnsupportedAction}),
+            logs[1].details[0].value);
 }
 
 TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
@@ -92,23 +101,40 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
 
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://example.com");
+  std::vector<optimization_guide::proto::Action> actions;
+  actions.push_back(std::move(action));
 
-  service.ExecuteAction(action, base::DoNothing());
+  ActorTaskId task_id = service.CreateTask("Test Task", false);
+  auto tools_result = service.CreateActorTools(actions, task_id);
+  ASSERT_TRUE(tools_result.has_value());
+  service.PerformActions(task_id, std::move(tools_result.value()), "Testing",
+                         base::DoNothing());
 
   AggregatedJournal* journal = service.GetJournal();
   std::vector<JournalEntry> logs = journal->GetLogs();
 
-  ASSERT_EQ(3u, logs.size());
-  EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);  // Attempting
-  EXPECT_EQ(JournalEntryType::kBegin, logs[1].type);    // Execute Begin
-  EXPECT_EQ(JournalEntryType::kEnd, logs[2].type);      // Execute End
+  ASSERT_EQ(10u, logs.size());
+  EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);  // Attempting.
+  EXPECT_EQ(JournalEntryType::kInstant, logs[1].type);  // ActorTask::SetState.
+  EXPECT_EQ(JournalEntryType::kInstant, logs[2].type);  // ActorEngine::Act.
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[3].type);  // StateChange (PreExecutionChecks).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[4].type);  // StateChange (ToolVerify).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[5].type);  // StateChange (UiPreInvoke).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[6].type);  // StateChange (ToolInvoke).
+  EXPECT_EQ(JournalEntryType::kBegin, logs[7].type);    // Execute Begin.
+  EXPECT_EQ(JournalEntryType::kEnd, logs[8].type);      // Execute End.
+  EXPECT_EQ(JournalEntryType::kInstant, logs[9].type);  // StateChange (Failed).
 
   // Verify error detail in End log
-  ASSERT_EQ(1u, logs[2].details.size());
-  EXPECT_EQ("error", logs[2].details[0].key);
-  EXPECT_EQ(base::NumberToString(
-                static_cast<int>(ActorToolErrorCode::kNavigationInvalidURL)),
-            logs[2].details[0].value);
+  ASSERT_EQ(1u, logs[8].details.size());
+  EXPECT_EQ("error", logs[8].details[0].key);
+  EXPECT_EQ(GetActorToolErrorMessage(
+                ActorToolError{ActorToolErrorCode::kNavigationInvalidURL}),
+            logs[8].details[0].value);
 }
 
 TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
@@ -128,21 +154,41 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
 
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://example.com");
+  std::vector<optimization_guide::proto::Action> actions;
+  actions.push_back(std::move(action));
 
-  service.ExecuteAction(action, base::DoNothing());
+  ActorTaskId task_id = service.CreateTask("Test Task", false);
+  auto tools_result = service.CreateActorTools(actions, task_id);
+  ASSERT_TRUE(tools_result.has_value());
+  service.PerformActions(task_id, std::move(tools_result.value()), "Testing",
+                         base::DoNothing());
 
   AggregatedJournal* journal = service.GetJournal();
   std::vector<JournalEntry> logs = journal->GetLogs();
 
-  ASSERT_EQ(3u, logs.size());
-  EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);  // Attempting
-  EXPECT_EQ(JournalEntryType::kBegin, logs[1].type);    // Execute Begin
-  EXPECT_EQ("Execute Tool: NavigateTool", logs[1].event);
-  EXPECT_EQ(JournalEntryType::kEnd, logs[2].type);  // Execute End
-  EXPECT_EQ("Execute Tool: NavigateTool", logs[2].event);
+  ASSERT_EQ(11u, logs.size());
+  EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);  // Attempting.
+  EXPECT_EQ(JournalEntryType::kInstant, logs[1].type);  // ActorTask::SetState.
+  EXPECT_EQ(JournalEntryType::kInstant, logs[2].type);  // ActorEngine::Act.
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[3].type);  // StateChange (PreExecutionChecks).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[4].type);  // StateChange (ToolVerify).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[5].type);  // StateChange (UiPreInvoke).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[6].type);  // StateChange (ToolInvoke).
+  EXPECT_EQ(JournalEntryType::kBegin, logs[7].type);  // Execute Begin.
+  EXPECT_EQ("Execute Tool 0", logs[7].event);
+  EXPECT_EQ(JournalEntryType::kEnd, logs[8].type);  // Execute End.
+  EXPECT_EQ("Execute Tool 0", logs[8].event);
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[9].type);  // StateChange (UiPostInvoke).
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[10].type);  // StateChange (Completed).
 
   // Verify no error detail in End log on success
-  EXPECT_EQ(0u, logs[2].details.size());
+  EXPECT_EQ(0u, logs[8].details.size());
 }
 
 }  // namespace actor

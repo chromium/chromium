@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -56,19 +57,61 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
     return;
   }
 
-  service->ExecuteAction(
-      action, base::BindOnce(^(actor::ToolExecutionResult result) {
-        if (result.has_value()) {
-          completion(nil);
-        } else {
-          NSString* errorMsg =
-              base::SysUTF8ToNSString(GetActorToolErrorMessage(result.error()));
-          completion([NSError
-              errorWithDomain:@"ActorToolErrorCode"
-                         code:(NSInteger)result.error().code
-                     userInfo:@{NSLocalizedDescriptionKey : errorMsg}]);
-        }
-      }));
+  actor::ActorTaskId task_id =
+      service->CreateTask("EG Test Task", /*allow_incognito_web_states=*/false);
+
+  std::vector<optimization_guide::proto::Action> actions = {action};
+  actor::CreateActorToolsResult tools_result =
+      service->CreateActorTools(actions, task_id);
+
+  if (!tools_result.has_value()) {
+    NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
+        "Failed to create tools: %s",
+        actor::GetActorToolErrorMessage(tools_result.error()).c_str()));
+    NSError* error =
+        [NSError errorWithDomain:kActorAppInterfaceErrorDomain
+                            code:(NSInteger)tools_result.error().code
+                        userInfo:@{NSLocalizedDescriptionKey : errorMsg}];
+    completion(error);
+    return;
+  }
+
+  auto action_performed_callback =
+      base::BindOnce(^(std::vector<actor::ActionResult> results) {
+        [ActorAppInterface handleActionResults:std::move(results)
+                                    completion:completion];
+      });
+
+  service->PerformActions(task_id, std::move(tools_result.value()),
+                          "Executing EG Test action",
+                          std::move(action_performed_callback));
+}
+
++ (void)handleActionResults:(std::vector<actor::ActionResult>)results
+                 completion:(void (^)(NSError* error))completion {
+  if (results.empty()) {
+    NSError* error = [NSError
+        errorWithDomain:kActorAppInterfaceErrorDomain
+                   code:ActorToolErrorNoActuationResults
+               userInfo:@{
+                 NSLocalizedDescriptionKey : @"No action results returned"
+               }];
+    completion(error);
+    return;
+  }
+
+  const auto& result = results[0];
+  if (result.tool_result.has_value()) {
+    completion(nil);
+  } else {
+    NSString* errorMsg = base::SysUTF8ToNSString(
+        GetActorToolErrorMessage(result.tool_result.error()));
+    NSError* error =
+        [NSError errorWithDomain:@"ActorToolErrorCode"
+                            code:(NSInteger)result.tool_result.error().code
+                        userInfo:@{NSLocalizedDescriptionKey : errorMsg}];
+    completion(error);
+  }
 }
 
 + (NSData*)fetchLatestAPC {

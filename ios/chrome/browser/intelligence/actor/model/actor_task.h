@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
@@ -21,13 +22,16 @@ namespace actor {
 
 class ActorEngine;
 class ActorTool;
+class AggregatedJournal;
 
 // A class representing a task managed by `ActorService`. A task should live for
 // a whole Actor journey and be passed multiple sets of actions to execute
 // sequentially.
 class ActorTask {
  public:
-  ActorTask(ActorTaskId task_id, const std::string& title);
+  ActorTask(ActorTaskId task_id,
+            const std::string& title,
+            AggregatedJournal* journal);
   ~ActorTask();
 
   ActorTask(const ActorTask&) = delete;
@@ -65,6 +69,9 @@ class ActorTask {
  private:
   friend class ActorTaskTest;
 
+  // Sets the task state and logs the transition.
+  void SetState(ActorTaskState new_state);
+
   // Called when tools execution is completed.
   void OnActCompleted(PerformActionsCallback callback,
                       std::vector<ActionResult> results);
@@ -80,6 +87,9 @@ class ActorTask {
 
   // The execution engine for this task.
   std::unique_ptr<ActorEngine> engine_;
+
+  // The aggregated journal for logging.
+  raw_ptr<AggregatedJournal> journal_;
 
   // Set of web states actively controlled (observed and/or being actuated on)
   // by this task.

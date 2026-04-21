@@ -6,6 +6,7 @@
 
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +38,11 @@ class MockTool : public ActorTool {
 // Test fixture for ActorEngine.
 class ActorEngineTest : public PlatformTest {
  protected:
+  ActorEngineTest()
+      : journal_(std::make_unique<AggregatedJournal>()),
+        task_(ActorTaskId(), "Test Task", journal_.get()),
+        engine_(task_.task_id(), journal_.get()) {}
+
   // Wrapper methods to access private members of ActorEngine for testing.
 
   void SetNextActionIndex(size_t index) { engine_.next_action_index_ = index; }
@@ -60,6 +66,8 @@ class ActorEngineTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<AggregatedJournal> journal_;
+  ActorTask task_;
   ActorEngine engine_;
 };
 

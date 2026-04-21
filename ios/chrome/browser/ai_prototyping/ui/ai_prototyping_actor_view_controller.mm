@@ -409,21 +409,47 @@ bool IsWebActuationTool(NSString* tool) {
       @"ui" : @[ _tabIdContainer, _frameIdContainer, _jsonContainer ],
       @"template" : @[
         @{
-          @"click" : @{
-            @"tab_id" : @(0),
-            @"target" : @{@"coordinate" : @{@"x" : @(100), @"y" : @(100)}},
-            @"click_type" : @(1),
-            @"click_count" : @(1)
+          @"scroll" : @{
+            @"tab_id" : kTabIdMacro,
+            @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}},
+            @"direction" : @(4),
+            @"distance" : @"123.45"
           }
         },
-        @{@"wait" : @{@"wait_time_ms" : @(3000), @"observe_tab_id" : @(0)}}, @{
+        @{
+          @"scroll_to" : @{
+            @"tab_id" : kTabIdMacro,
+            @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}}
+          }
+        },
+        @{
           @"click" : @{
-            @"tab_id" : @(0),
+            @"tab_id" : kTabIdMacro,
             @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}},
             @"click_type" : @(1),
             @"click_count" : @(1)
           }
-        }
+        },
+        @{
+          @"type" : @{
+            @"tab_id" : kTabIdMacro,
+            @"target" : @{@"coordinate" : @{@"x" : @(200), @"y" : @(200)}},
+            @"text" : @"Foobarbaz",
+            @"follow_by_enter" : @(NO),
+            @"mode" : @(1),
+          }
+        },
+        @{
+          @"navigate" :
+              @{@"tab_id" : kTabIdMacro, @"url" : @"https://www.google.com"}
+        },
+        @{
+          @"wait" : @{@"wait_time_ms" : @(500), @"observe_tab_id" : kTabIdMacro}
+        },
+        @{@"back" : @{@"tab_id" : kTabIdMacro}}, @{
+          @"wait" : @{@"wait_time_ms" : @(500), @"observe_tab_id" : kTabIdMacro}
+        },
+        @{@"forward" : @{@"tab_id" : kTabIdMacro}}
       ]
     },
     kToolNavigate : @{

@@ -24,6 +24,38 @@
 
 namespace actor {
 
+namespace {
+
+// Logs a failure to create a tool to the journal.
+void LogToolCreationFailed(AggregatedJournal* journal,
+                           ActorTaskId task_id,
+                           const std::string& tool_name,
+                           const ActorToolError& error) {
+  CHECK(journal);
+
+  std::vector<JournalDetails> details = {
+      {"error", GetActorToolErrorMessage(error)}};
+
+  journal->Log(
+      GURL(), task_id,
+      base::StringPrintf("Failed to create tool: %s", tool_name.c_str()),
+      std::move(details));
+}
+
+// Logs an attempt to create a tool to the journal.
+void LogToolCreationAttempt(AggregatedJournal* journal,
+                            ActorTaskId task_id,
+                            const std::string& tool_name) {
+  CHECK(journal);
+
+  journal->Log(
+      GURL(), task_id,
+      base::StringPrintf("Attempting to create tool: %s", tool_name.c_str()),
+      std::vector<JournalDetails>());
+}
+
+}  // namespace
+
 ActorService::ActorService(ProfileIOS* profile)
     : ActorService(profile, std::make_unique<ActorToolFactory>()) {}
 
@@ -39,88 +71,56 @@ ActorService::~ActorService() = default;
 
 void ActorService::Shutdown() {}
 
-void ActorService::ExecuteAction(
-    const optimization_guide::proto::Action& action,
-    ToolExecutionCallback callback) {
-  CHECK(IsActorEnabled());
-
-  if (action.action_case() ==
-      optimization_guide::proto::Action::ACTION_NOT_SET) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kUnsupportedAction}));
-    return;
-  }
-
-  if (IsToolDisabled(action.action_case())) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kToolDisabledByFeature}));
-    return;
-  }
-
-  std::string tool_name =
-      ActorActionCaseToToolName(action.action_case()).value_or("unknown tool");
-
-  // Log immediate attempt to create tool.
-  journal_->Log(
-      GURL(), ActorTaskId(),
-      base::StringPrintf("Attempting to create tool: %s", tool_name.c_str()),
-      {});
-
-  base::expected<std::unique_ptr<ActorTool>, ActorToolError>
-      create_tool_result = tool_factory_->CreateTool(action, profile_);
-
-  if (!create_tool_result.has_value()) {
-    // Log immediate failure to create tool.
-    journal_->Log(
-        GURL(), ActorTaskId(),
-        base::StringPrintf("Failed to create tool: %s", tool_name.c_str()),
-        {{"error", base::NumberToString(
-                       static_cast<int>(create_tool_result.error().code))}});
-    std::move(callback).Run(base::unexpected(create_tool_result.error()));
-    return;
-  }
-
-  // The `tool` is moved into the callback to ensure it stays alive until
-  // the async operation completes.
-  std::unique_ptr<ActorTool> tool = std::move(create_tool_result.value());
-  ActorTool* tool_ptr = tool.get();
-
-  // Start a Begin log when the Execute call starts.
-  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry =
-      journal_->CreatePendingAsyncEntry(
-          GURL(), ActorTaskId(), 0,
-          base::StringPrintf("Execute Tool: %s", tool_name.c_str()), {});
-
-  ToolExecutionCallback wrapped_callback = base::BindOnce(
-      [](std::unique_ptr<ActorTool> tool,
-         std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry,
-         ToolExecutionCallback callback, ToolExecutionResult result) {
-        std::vector<JournalDetails> details;
-        if (!result.has_value()) {
-          // Log if an error happens between Begin and End.
-          details.push_back({"error", base::NumberToString(static_cast<int>(
-                                          result.error().code))});
-        }
-        // End log when the Execute call finishes.
-        entry->EndEntry(std::move(details));
-
-        std::move(callback).Run(std::move(result));
-
-        // `tool` is destroyed here when the lambda finishes.
-        //
-        // The lifetime of `tool` will be better managed once we set up the
-        // orchestration layer.
-      },
-      std::move(tool), std::move(entry), std::move(callback));
-
-  tool_ptr->Execute(std::move(wrapped_callback));
-}
-
 ActorTaskId ActorService::CreateTask(const std::string& title,
                                      bool allow_incognito_web_states) {
+  CHECK(IsActorEnabled());
+
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
-  active_tasks_[task_id] = std::make_unique<ActorTask>(task_id, title);
+  active_tasks_[task_id] =
+      std::make_unique<ActorTask>(task_id, title, journal_.get());
   return task_id;
+}
+
+CreateActorToolsResult ActorService::CreateActorTools(
+    const std::vector<optimization_guide::proto::Action>& actions,
+    ActorTaskId task_id) {
+  CHECK(IsActorEnabled());
+
+  std::vector<std::unique_ptr<ActorTool>> tools;
+  tools.reserve(actions.size());
+
+  for (const auto& action : actions) {
+    std::string tool_name = ActorActionCaseToToolName(action.action_case())
+                                .value_or("unknown tool");
+
+    LogToolCreationAttempt(journal_.get(), task_id, tool_name);
+
+    if (action.action_case() ==
+        optimization_guide::proto::Action::ACTION_NOT_SET) {
+      ActorToolError error{ActorToolErrorCode::kUnsupportedAction};
+      LogToolCreationFailed(journal_.get(), task_id, tool_name, error);
+      return base::unexpected(error);
+    }
+
+    if (IsToolDisabled(action.action_case())) {
+      ActorToolError error{ActorToolErrorCode::kToolDisabledByFeature};
+      LogToolCreationFailed(journal_.get(), task_id, tool_name, error);
+      return base::unexpected(error);
+    }
+
+    base::expected<std::unique_ptr<ActorTool>, ActorToolError>
+        create_tool_result = tool_factory_->CreateTool(action, profile_);
+
+    if (!create_tool_result.has_value()) {
+      LogToolCreationFailed(journal_.get(), task_id, tool_name,
+                            create_tool_result.error());
+      return base::unexpected(create_tool_result.error());
+    }
+
+    tools.push_back(std::move(create_tool_result.value()));
+  }
+
+  return tools;
 }
 
 void ActorService::PerformActions(
@@ -128,6 +128,8 @@ void ActorService::PerformActions(
     std::vector<std::unique_ptr<ActorTool>> actions,
     const std::string& task_update,
     PerformActionsCallback callback) {
+  CHECK(IsActorEnabled());
+
   auto it = active_tasks_.find(task_id);
   if (it == active_tasks_.end()) {
     // TODO(crbug.com/503054406): Return high level error for non-existent
