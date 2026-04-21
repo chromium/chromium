@@ -163,6 +163,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/orientation1_identity.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation6_rotate_90_cw.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation8_rotate_90_ccw.jxl
+../../web_tests/external/wpt/jpegxl/resources/progressive-lf.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive_ac.jxl
 ../../web_tests/external/wpt/jpegxl/resources/smallest_valid.jxl
 ../../web_tests/external/wpt/jpegxl/resources/spline_on_first_frame.jxl
