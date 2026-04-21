@@ -880,7 +880,7 @@ TEST_F(PermissionSubscriptionTest,
 #endif
 TEST_P(PermissionSubscriptionGeolocationTest,
        MAYBE_SubscribeUnsubscribeForNewTabPage) {
-  NavigateAndCommit(GURL(chrome::kChromeUINewTabURL));
+  NavigateAndCommit(chrome::ChromeUINewTabURLAsGURL());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
             main_rfh()->GetLastCommittedOrigin().GetURL());
   content::PermissionController::SubscriptionId subscription_id =
