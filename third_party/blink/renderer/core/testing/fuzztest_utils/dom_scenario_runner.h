@@ -73,7 +73,7 @@ class DomScenarioRunner
 
   // Applies the modifications from the scenario to the existing DOM.
   void ApplyModifications(Element* root,
-                          const std::vector<NodeSpecification>& node_specs,
+                          const DomScenario& input,
                           const HeapVector<Member<Element>>& created_elements);
 
   // Helper functions to set element properties during creation and

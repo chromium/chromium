@@ -77,7 +77,7 @@ void DomScenarioRunner::RunTest(const DomScenario& input) {
   CreateInitialDOM(input, root, created_elements);
   AdvanceAnimations();
   CancelWebAnimations(created_elements);
-  ApplyModifications(root, input.node_specs, created_elements);
+  ApplyModifications(root, input, created_elements);
   AdvanceAnimations();
   CancelWebAnimations(created_elements);
   ExitFullscreen();
@@ -155,15 +155,19 @@ void DomScenarioRunner::CreateInitialDOM(
 
 void DomScenarioRunner::ApplyModifications(
     Element* root,
-    const std::vector<NodeSpecification>& node_specs,
+    const DomScenario& input,
     const HeapVector<Member<Element>>& created_elements) {
+  const auto& node_specs = input.node_specs;
   CHECK_EQ(node_specs.size(), created_elements.size());
 
   for (size_t i = 0; i < node_specs.size(); ++i) {
     const auto& node_spec = node_specs[i];
     const auto& modified_state = node_spec.modified_state;
     Element* element = created_elements[i];
-    SetParent(element, i, modified_state.parent_index, root, created_elements,
+    int parent_index = input.allow_reparenting
+                           ? modified_state.parent_index
+                           : node_spec.initial_state.parent_index;
+    SetParent(element, i, parent_index, root, created_elements,
               modified_state.in_shadow_dom, modified_state.use_slot_projection);
     // Set attributes first because there's a chance that one of the fuzzed
     // attributes is style. Should that occur we want the style domain to win.

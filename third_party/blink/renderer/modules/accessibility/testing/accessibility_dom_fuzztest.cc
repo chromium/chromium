@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -319,6 +320,130 @@ class AnimationAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class ReadingFlowAndOrder : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    auto known_idref = fuzztest::Map(
+        [](int i) { return base::StrCat({"id_", base::NumberToString(i)}); },
+        fuzztest::InRange(0, kNumNodes - 1));
+    auto aria_owns_domain =
+        fuzztest::OneOf(known_idref,
+                        fuzztest::Map(
+                            [](const std::string& id1, const std::string& id2) {
+                              return base::StrCat({id1, " ", id2});
+                            },
+                            known_idref, known_idref),
+                        fuzztest::Map(
+                            [](const std::string& id1, const std::string& id2,
+                               const std::string& id3) {
+                              return base::StrCat({id1, " ", id2, " ", id3});
+                            },
+                            known_idref, known_idref, known_idref));
+    auto tabindex_domain = fuzztest::Map(
+        [](int tab) {
+          return std::make_pair(html_names::kTabindexAttr.ToQualifiedName(),
+                                base::NumberToString(tab));
+        },
+        fuzztest::Arbitrary<int>());
+    return fuzztest::OneOf(
+        tabindex_domain, AnyAriaAttributeNameValuePair(),
+        AttributeNameValuePairDomain(html_names::kAriaOwnsAttr,
+                                     std::move(aria_owns_domain)));
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    auto grid_styles = fuzztest::Map(
+        [](const std::string& area_template,
+           const std::string& reading_flow_value) {
+          return base::StrCat({"display: grid; grid-template-areas: \"",
+                               area_template,
+                               "\"; grid-template-columns: 1fr 1fr 1fr; "
+                               "grid-template-rows: 1fr 1fr; reading-flow: ",
+                               reading_flow_value});
+        },
+        fuzztest::ElementOf<std::string>({
+            "a b c\" \"d e f",
+            "c a b\" \"f d e",
+            "b c a\" \"e f d",
+            "d e f\" \"a b c",
+            "f d e\" \"c a b",
+            "e f d\" \"b c a",
+        }),
+        AnyCSSReadingFlowValue());
+    auto flex_styles = fuzztest::Map(
+        [](const std::string& direction,
+           const std::string& reading_flow_value) {
+          return base::StrCat({"display: flex; flex-direction: ", direction,
+                               "; reading-flow: ", reading_flow_value});
+        },
+        AnyCSSFlexDirectionValue(), AnyCSSReadingFlowValue());
+    return fuzztest::OneOf(grid_styles, flex_styles);
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  static constexpr int kNumNodes = 7;
+  int GetMaxDomNodes() override { return kNumNodes; }
+  int GetMaxAttributesPerNode() override { return 2; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+  bool AllowReparenting() override { return false; }
+  std::optional<PredefinedNodesConfig> GetPredefinedNodes() override {
+    auto child_styles = []() {
+      return fuzztest::OneOf(
+          fuzztest::Map(
+              [](const std::string& area) {
+                return base::StrCat({"grid-area: ", area, ";"});
+              },
+              fuzztest::ElementOf<std::string>({"a", "b", "c", "d", "e", "f"})),
+          fuzztest::Map(
+              [](int order) {
+                return base::StrCat(
+                    {"order: ", base::NumberToString(order), ";"});
+              },
+              fuzztest::Arbitrary<int>()));
+    };
+    // Only tags and parent indices are fixed; everything else is fuzzed
+    // via initial_states_domain and modified_states_domain.
+    auto tag = [](html_names::HTMLTag t) {
+      return html_names::TagToQualifiedName(t);
+    };
+    auto nodes = std::vector<NodeSpecification>{
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        {.tag = tag(html_names::HTMLTag::kButton),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kInput),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kButton),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kButton),
+         .initial_state = {.parent_index = 0}}};
+    auto make_states_domain = [&]() {
+      return fuzztest::Map(
+          [](NodeState container, std::vector<NodeState> children) {
+            children.insert(children.begin(), std::move(container));
+            return children;
+          },
+          AnyNodeState(this, kNumNodes, AnyAriaAttributeNameValuePair(),
+                       AnyStyles()),
+          fuzztest::VectorOf(AnyNodeState(this, kNumNodes,
+                                          AnyAttributeNameValuePair(),
+                                          child_styles()))
+              .WithSize(kNumNodes - 1));
+    };
+    return PredefinedNodesConfig{std::move(nodes), make_states_domain(),
+                                 make_states_domain()};
+  }
+};
+
 class AccessibilityDomScenarioRunner : public DomScenarioRunner {
  public:
   AccessibilityDomScenarioRunner() = default;
@@ -330,6 +455,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void ProblematicMarkup(const DomScenario& input) { RunTest(input); }
   void ValidTableAndAria(const DomScenario& input) { RunTest(input); }
   void AnimationAndAria(const DomScenario& input) { RunTest(input); }
+  void ReadingFlowAndOrder(const DomScenario& input) { RunTest(input); }
 
  protected:
   // Observer hooks to add accessibility tree printing.
@@ -376,5 +502,8 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, ValidTableAndAria)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, AnimationAndAria)
     .WithDomains(BuildDomScenarios<AnimationAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, ReadingFlowAndOrder)
+    .WithDomains(BuildDomScenarios<ReadingFlowAndOrder>());
 
 }  // namespace blink

@@ -44,6 +44,9 @@ std::string DomScenarioToString(const DomScenario& scenario) {
   if (scenario.use_shadow_dom) {
     base::StrAppend(&out, {"Shadow DOM: enabled\n"});
   }
+  if (!scenario.allow_reparenting) {
+    base::StrAppend(&out, {"Reparenting: disabled\n"});
+  }
 
   base::StrAppend(
       &out, {"Nodes (", base::ToString(scenario.node_specs.size()), "):\n"});
@@ -298,7 +301,8 @@ fuzztest::Domain<DomScenario> AnyDomScenarioForSpec(
 
         return fuzztest::StructOf<DomScenario>(
             spec->GetRootElementTag(), node_specs_domain, spec->AnyStylesheet(),
-            fuzztest::Just(spec->UseShadowDOM()));
+            fuzztest::Just(spec->UseShadowDOM()),
+            fuzztest::Just(spec->AllowReparenting()));
       },
       fuzztest::InRange(1, spec->GetMaxDomNodes()));
 }

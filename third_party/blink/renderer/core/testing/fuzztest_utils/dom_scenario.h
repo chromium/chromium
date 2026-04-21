@@ -62,7 +62,8 @@ struct DomScenario {
   QualifiedName root_tag;
   std::vector<NodeSpecification> node_specs;
   std::string stylesheet;
-  bool use_shadow_dom;
+  bool use_shadow_dom = false;
+  bool allow_reparenting = true;
   std::string ToString() const;
 };
 
@@ -96,6 +97,10 @@ class DomScenarioDomainSpecification {
   // If true, nodes can be fuzzed to have in_shadow_dom=true, which causes
   // the runner to wrap them in a div shadow host.
   virtual bool UseShadowDOM() { return false; }
+
+  // If false, the runner keeps initial parent relationships when applying
+  // modifications.
+  virtual bool AllowReparenting() { return true; }
 };
 
 // Domain for a node's state (parent index, attributes, styles, text).

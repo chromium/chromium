@@ -52,6 +52,8 @@ functions, as well as support for other specifications, are encouraged.
   - `UseShadowDOM()` (optional) - returns true to enable shadow DOM fuzzing,
     which wraps nodes in shadow hosts with optional slot projection (defaults
     to false)
+  - `AllowReparenting()` (optional) - returns false to keep parent/child
+    relationships fixed when applying modifications.
 - **`AnyDomScenarioForSpec()`** - Generates FuzzTest domains from specifications
 - **`DomScenarioRunner`** - Base class that executes `DomScenario` test cases
   by creating initial DOM, applying modifications, and updating style
