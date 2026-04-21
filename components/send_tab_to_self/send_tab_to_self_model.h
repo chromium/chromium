@@ -28,7 +28,11 @@ enum class SendTabToSelfResult {
   kFailureNotTrackingMetadata = 2,
   kFailureInvalidUrl = 3,
   kFailureModelNotReady = 4,
-  kMaxValue = kFailureModelNotReady,
+  kFailureCommitAttemptFailed = 5,
+  kFailureCommitAttemptError = 6,
+  kFailureSyncDisabled = 7,
+  kFailureEntryRemoved = 8,
+  kMaxValue = kFailureEntryRemoved,
 };
 
 // The send tab to self model contains a list of entries of shared urls.

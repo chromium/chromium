@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -17,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -29,6 +31,7 @@
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -166,6 +169,17 @@ SendTabToSelfBridge::~SendTabToSelfBridge() {
   }
 }
 
+SendTabToSelfBridge::PendingCommit::PendingCommit(
+    std::string guid,
+    base::OnceCallback<void(SendTabToSelfResult)> callback)
+    : guid(std::move(guid)), callback(std::move(callback)) {}
+
+SendTabToSelfBridge::PendingCommit::~PendingCommit() = default;
+
+SendTabToSelfBridge::PendingCommit::PendingCommit(PendingCommit&&) = default;
+
+SendTabToSelfBridge::PendingCommit&
+SendTabToSelfBridge::PendingCommit::operator=(PendingCommit&&) = default;
 
 std::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
@@ -280,6 +294,8 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
   NotifyRemoteSendTabToSelfEntryAdded(added);
   NotifyRemoteSendTabToSelfEntryOpened(opened);
 
+  NotifySuccessForPendingCommits();
+
   return std::nullopt;
 }
 
@@ -345,7 +361,60 @@ void SendTabToSelfBridge::ApplyDisableSyncChanges(
 
   entries_.clear();
   mru_entry_ = nullptr;
+
+  for (auto& [hash, pending] : pending_commits_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(pending.callback),
+                                  SendTabToSelfResult::kFailureSyncDisabled));
+  }
+  pending_commits_.clear();
+
   NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
+}
+
+void SendTabToSelfBridge::OnCommitAttemptErrors(
+    const syncer::FailedCommitResponseDataList& error_response_list) {
+  for (const syncer::FailedCommitResponseData& error : error_response_list) {
+    auto it = pending_commits_.find(error.client_tag_hash);
+    if (it != pending_commits_.end()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(it->second.callback),
+                         SendTabToSelfResult::kFailureCommitAttemptError));
+      pending_commits_.erase(it);
+    }
+  }
+}
+
+syncer::DataTypeSyncBridge::CommitAttemptFailedBehavior
+SendTabToSelfBridge::OnCommitAttemptFailed(syncer::SyncCommitError error) {
+  for (auto& [hash, pending] : pending_commits_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(pending.callback),
+                       SendTabToSelfResult::kFailureCommitAttemptFailed));
+  }
+  pending_commits_.clear();
+  // Even if the immediate UI notification failed, the sync engine should
+  // keep trying to commit the entry in the background (e.g. if the failure was
+  // due to a transient network issue).
+  return CommitAttemptFailedBehavior::kShouldRetryOnNextCycle;
+}
+
+void SendTabToSelfBridge::NotifySuccessForPendingCommits() {
+  base::EraseIf(pending_commits_, [this](auto& pair) {
+    if (!change_processor()->IsEntityUnsynced(pair.second.guid)) {
+      // If the entity is no longer unsynced, the sync engine has successfully
+      // committed it to the server and received an acknowledgment. This allows
+      // notifying the UI to show the success confirmation (e.g. the "Sent"
+      // toast).
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(pair.second.callback),
+                                    SendTabToSelfResult::kSuccess));
+      return true;
+    }
+    return false;
+  });
 }
 
 std::vector<std::string> SendTabToSelfBridge::GetAllGuids() const {
@@ -428,7 +497,11 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   change_processor()->Put(guid, std::move(entity_data),
                           batch->GetMetadataChangeList());
 
-  std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
+  if (commit_confirmation) {
+    pending_commits_.emplace(
+        syncer::ClientTagHash::FromUnhashed(syncer::SEND_TAB_TO_SELF, guid),
+        PendingCommit{guid, std::move(commit_confirmation)});
+  }
 
   for (SendTabToSelfModelObserver& observer : observers_) {
     observer.EntryAddedLocally(entry.get());
@@ -828,6 +901,13 @@ void SendTabToSelfBridge::DeleteAllEntries() {
   unknown_opened_entries_.clear();
   mru_entry_ = nullptr;
 
+  for (auto& [hash, pending] : pending_commits_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(pending.callback),
+                                  SendTabToSelfResult::kFailureEntryRemoved));
+  }
+  pending_commits_.clear();
+
   Commit(std::move(batch));
 
   NotifyRemoteSendTabToSelfEntryDeleted(all_guids);
@@ -841,6 +921,15 @@ void SendTabToSelfBridge::EraseEntryInBatch(const std::string& guid,
   entries_.erase(guid);
   unknown_opened_entries_.erase(guid);
   batch->DeleteData(guid);
+
+  if (auto it = pending_commits_.find(
+          syncer::ClientTagHash::FromUnhashed(syncer::SEND_TAB_TO_SELF, guid));
+      it != pending_commits_.end()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(it->second.callback),
+                                  SendTabToSelfResult::kFailureEntryRemoved));
+    pending_commits_.erase(it);
+  }
 }
 
 }  // namespace send_tab_to_self

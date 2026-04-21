@@ -5,7 +5,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 
 #include <map>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -17,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -666,16 +666,6 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
   InitializeBridge();
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(_)).Times(0);
 
-  // Add Entry should succeed in this case.
-  EXPECT_CALL(*processor(), Put(_, _, _));
-  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
-      mock_callback_success;
-  EXPECT_CALL(mock_callback_success, Run(SendTabToSelfResult::kSuccess));
-  EXPECT_NE(nullptr, bridge()->AddEntry(GURL("http://www.example.com/"), "d",
-                                        kLocalDeviceCacheGuid, PageContext(),
-                                        NavigationHistory(),
-                                        mock_callback_success.Get()));
-
   // Add Entry should fail on invalid URLs.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
@@ -703,6 +693,111 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
                                         kLocalDeviceCacheGuid, PageContext(),
                                         NavigationHistory(),
                                         mock_callback_fail_3.Get()));
+}
+
+// Tests that the pending commit callback is fired with success when the
+// local change processor marks the entity as successfully synced.
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnIncrementalSync) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  // Still unsynced, should not fire.
+  ON_CALL(*processor(), IsEntityUnsynced(entry->GetGUID()))
+      .WillByDefault(testing::Return(true));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        syncer::EntityChangeList());
+  EXPECT_FALSE(future.IsReady());
+
+  // Once synced, it should fire.
+  ON_CALL(*processor(), IsEntityUnsynced(entry->GetGUID()))
+      .WillByDefault(testing::Return(false));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        syncer::EntityChangeList());
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kSuccess);
+}
+
+// Tests that the pending commit callback is fired with a commit error
+// when the sync engine reports a specific error for the entity.
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnCommitError) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  syncer::FailedCommitResponseData error_data;
+  error_data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+      syncer::SEND_TAB_TO_SELF, entry->GetGUID());
+
+  bridge()->OnCommitAttemptErrors({error_data});
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureCommitAttemptError);
+}
+
+// Tests that the pending commit callback is fired with a commit attempt failed
+// error when the overall commit attempt to the server fails (e.g. server
+// error).
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnCommitAttemptFailed) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  bridge()->OnCommitAttemptFailed(syncer::SyncCommitError::kServerError);
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureCommitAttemptFailed);
+}
+
+// Tests that the pending commit callback is fired with a sync disabled error
+// when sync is disabled while there are still pending commits.
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnDisableSync) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureSyncDisabled);
+}
+
+// Tests that the pending commit callback is fired with an entry removed error
+// when the entry is deleted (e.g. via history deletion) while a commit is
+// still pending.
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnHistoryDeletion) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  history::URLRows urls_to_remove;
+  urls_to_remove.emplace_back(entry->GetURL());
+
+  bridge()->OnHistoryDeletions(
+      nullptr, history::DeletionInfo::ForUrls(urls_to_remove, {}));
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureEntryRemoved);
+}
+
+// Tests that the pending commit callback is fired with an entry removed error
+// when all history is deleted while a commit is still pending.
+TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnAllHistoryDeletion) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  bridge()->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureEntryRemoved);
 }
 
 TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {

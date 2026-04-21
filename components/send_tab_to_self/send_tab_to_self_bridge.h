@@ -83,6 +83,10 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
+  void OnCommitAttemptErrors(
+      const syncer::FailedCommitResponseDataList& error_response_list) override;
+  CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      syncer::SyncCommitError error) override;
 
   // SendTabToSelfModel overrides.
   std::vector<std::string> GetAllGuids() const override;
@@ -171,8 +175,30 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   void EraseEntryInBatch(const std::string& guid,
                          syncer::DataTypeStore::WriteBatch* batch);
 
+  // Notifies callbacks for entries that have been successfully committed.
+  void NotifySuccessForPendingCommits();
+
+  struct PendingCommit {
+    PendingCommit(std::string guid,
+                  base::OnceCallback<void(SendTabToSelfResult)> callback);
+    ~PendingCommit();
+    PendingCommit(PendingCommit&&);
+    PendingCommit& operator=(PendingCommit&&);
+
+    std::string guid;
+    base::OnceCallback<void(SendTabToSelfResult)> callback;
+  };
+
   // |entries_| is keyed by GUIDs.
   SendTabToSelfEntries entries_;
+
+  // Callbacks waiting for a commit response from the Sync server.
+  // The key is the ClientTagHash of the SendTabToSelf entry.
+  // The value contains the entry's GUID and the callback that will be
+  // invoked when the commit is either acknowledged by the sync server
+  // or fails due to a sync error.
+  // TODO(crbug.com/492072882): Change this to a timed callback.
+  base::flat_map<syncer::ClientTagHash, PendingCommit> pending_commits_;
 
   // Stores guids of entries that have been opened from a layer other than
   // SendTabToSelfModel, along with the time the open was requested. Once
