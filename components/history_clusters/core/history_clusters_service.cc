@@ -539,9 +539,6 @@ void HistoryClustersService::PopulateClusterKeywordCache(
         static_cast<int>(cache->size()));
     WriteAllCacheToPrefs();
   } else {
-    base::UmaHistogramCounts100000(
-        "History.Clusters.Backend.KeywordCache.ShortKeywordsCount",
-        static_cast<int>(cache->size()));
     WriteShortCacheToPrefs();
   }
 

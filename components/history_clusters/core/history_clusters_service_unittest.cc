@@ -1473,8 +1473,6 @@ TEST_F(HistoryClustersServiceKeywordTest,
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.KeywordCache.AllKeywordsCount", 5, 1);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.KeywordCache.ShortKeywordsCount", 0);
 }
 
 class HistoryClustersServiceJourneysDisabledTest

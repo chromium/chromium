@@ -767,23 +767,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordsCount"
-    units="count" expires_after="2024-11-03">
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Logs the number of keyword stored in the short cache. Each keyword may
-    actually be multiple words.
-
-    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
-    more words.
-
-    Logged each time the short cache is refreshed, i.e. on omnibox key stroke if
-    the primary cache is not stale and limited to at most once every 10 seconds.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Backend.NumClustersReturned"
     units="number clusters returned" expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
