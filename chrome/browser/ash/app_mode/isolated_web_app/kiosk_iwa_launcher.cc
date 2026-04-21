@@ -99,7 +99,7 @@ void KioskIwaLauncher::InstallIsolatedWebApp(
       web_app::WebAppProvider::GetForWebApps(profile());
   CHECK(provider);
 
-  iwa_installer_ = web_app::IwaInstallerFactory::Create(
+  iwa_installer_ = std::make_unique<web_app::IwaInstaller>(
       install_options, web_app::IwaInstaller::InstallSourceType::kKiosk,
       profile()->GetURLLoaderFactory(), iwa_install_log_, provider,
       base::BindOnce(&KioskIwaLauncher::OnInstallComplete,

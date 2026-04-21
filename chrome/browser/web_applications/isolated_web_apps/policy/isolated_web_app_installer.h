@@ -75,44 +75,10 @@ class IwaInstaller {
     kKiosk = 1,   // Kiosk app defined via DeviceLocalAccount policy.
   };
 
-  // This pure virtual class represents the IWA installation logic.
-  // It is introduced primarily for testability reasons.
-  class IwaInstallCommandWrapper {
-   public:
-    IwaInstallCommandWrapper() = default;
-    IwaInstallCommandWrapper(const IwaInstallCommandWrapper&) = delete;
-    IwaInstallCommandWrapper& operator=(const IwaInstallCommandWrapper&) =
-        delete;
-    virtual ~IwaInstallCommandWrapper() = default;
-    virtual void Install(
-        const IsolatedWebAppInstallSource& install_source,
-        const IsolatedWebAppUrlInfo& url_info,
-        const IwaVersion& expected_version,
-        WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) = 0;
-  };
-
-  class IwaInstallCommandWrapperImpl : public IwaInstallCommandWrapper {
-   public:
-    explicit IwaInstallCommandWrapperImpl(web_app::WebAppProvider* provider);
-    IwaInstallCommandWrapperImpl(const IwaInstallCommandWrapperImpl&) = delete;
-    IwaInstallCommandWrapperImpl& operator=(
-        const IwaInstallCommandWrapperImpl&) = delete;
-    void Install(const IsolatedWebAppInstallSource& install_source,
-                 const IsolatedWebAppUrlInfo& url_info,
-                 const IwaVersion& expected_version,
-                 WebAppCommandScheduler::InstallIsolatedWebAppCallback callback)
-        override;
-    ~IwaInstallCommandWrapperImpl() override = default;
-
-   private:
-    const raw_ptr<web_app::WebAppProvider> provider_;
-  };
-
   IwaInstaller(
       IsolatedWebAppExternalInstallOptions install_options,
       InstallSourceType install_source_type,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper,
       base::ListValue& log,
       WebAppProvider* provider,
       ResultCallback callback);
@@ -176,7 +142,7 @@ class IwaInstaller {
   IsolatedWebAppExternalInstallOptions install_options_;
   InstallSourceType install_source_type_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper_;
+
   raw_ref<base::ListValue> log_;
   const raw_ptr<web_app::WebAppProvider> provider_;
   ResultCallback callback_;
@@ -192,29 +158,6 @@ class IwaInstaller {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<IwaInstaller> weak_factory_{this};
-};
-
-class IwaInstallerFactory {
- public:
-  using IwaInstallerFactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<IwaInstaller>(
-          IsolatedWebAppExternalInstallOptions,
-          IwaInstaller::InstallSourceType,
-          scoped_refptr<network::SharedURLLoaderFactory>,
-          base::ListValue&,
-          WebAppProvider*,
-          IwaInstaller::ResultCallback)>;
-
-  static std::unique_ptr<IwaInstaller> Create(
-      IsolatedWebAppExternalInstallOptions install_options,
-      IwaInstaller::InstallSourceType install_source_type,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::ListValue& log,
-      WebAppProvider* provider,
-      IwaInstaller::ResultCallback callback);
-
-  static IwaInstallerFactoryCallback& GetIwaInstallerFactory();
-  static IwaInstallerFactoryCallback GetDefaultIwaInstallerFactory();
 };
 
 std::ostream& operator<<(std::ostream& os,

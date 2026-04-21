@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -158,10 +157,10 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
             test_update_server().CreateForceInstallPolicyEntry(
                 bundle_id, update_channel, pinned_version))
             .value();
-    return IwaInstallerFactory::Create(install_options,
-                                       IwaInstaller::InstallSourceType::kPolicy,
-                                       profile()->GetURLLoaderFactory(), log,
-                                       &provider(), future.GetCallback());
+    return std::make_unique<IwaInstaller>(
+        install_options, IwaInstaller::InstallSourceType::kPolicy,
+        profile()->GetURLLoaderFactory(), log, &provider(),
+        future.GetCallback());
   }
 
   std::unique_ptr<IwaInstaller> CreateIwaInstaller(
