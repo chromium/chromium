@@ -29,6 +29,12 @@
 
 namespace {
 
+#if defined(SYS_SECCOMP)
+constexpr int kSigsysSeccompCode = SYS_SECCOMP;
+#else
+constexpr int kSigsysSeccompCode = 1;
+#endif
+
 struct arch_sigsys {
   // RAW_PTR_EXCLUSION: Points to a code address given to us by the kernel.
   RAW_PTR_EXCLUSION void* ip;
@@ -151,7 +157,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
   // Various sanity checks to make sure we actually received a signal
   // triggered by a BPF filter. If something else triggered SIGSYS
   // (e.g. kill()), there is really nothing we can do with this signal.
-  if (nr != LINUX_SIGSYS || info->si_code != SYS_SECCOMP || !ctx ||
+  if (nr != LINUX_SIGSYS || info->si_code != kSigsysSeccompCode || !ctx ||
       info->si_errno <= 0 ||
       static_cast<size_t>(info->si_errno) > trap_array_size_) {
     // ATI drivers seem to send SIGSYS, so this cannot be FATAL.
@@ -161,7 +167,6 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
     errno = old_errno;
     return;
   }
-
 
   // Obtain the siginfo information that is specific to SIGSYS.
   struct arch_sigsys sigsys;
