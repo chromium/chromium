@@ -295,17 +295,7 @@ bool VariationsSeedStore::LoadSeedSync(VariationsSeed* seed,
            /*require_synchronous=*/true);
   CHECK(success.has_value())
       << "LoadSeed callback should have run synchronously.";
-
-  if (!success.value()) {
-    return false;
-  }
-
-  // TODO(crbug.com/437811262): Remove after milestone M146. This code is used
-  // to populate the pref with the serial number of the latest seed. This value
-  // is already stored when we fetch a new seed, so we don't need to store it
-  // again here.
-  StoreLatestSerialNumber(seed->serial_number());
-  return true;
+  return success.value();
 }
 
 void VariationsSeedStore::StoreSeedData(
