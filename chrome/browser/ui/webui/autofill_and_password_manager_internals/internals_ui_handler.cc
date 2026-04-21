@@ -31,6 +31,9 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/autofill_and_password_manager_internals_resources.h"
 #include "components/grit/autofill_and_password_manager_internals_resources_map.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/core/browser/password_change_service_interface.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -41,6 +44,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
@@ -150,6 +154,10 @@ void InternalsUIHandler::RegisterMessages() {
       "setDomNodeId", base::BindRepeating(&InternalsUIHandler::SetDomNodeId,
                                           base::Unretained(this)));
 #endif
+  web_ui()->RegisterMessageCallback(
+      "setPasswordChangeOverrideUrl",
+      base::BindRepeating(&InternalsUIHandler::OnSetPasswordChangeOverrideUrl,
+                          base::Unretained(this)));
 }
 
 void InternalsUIHandler::OnJavascriptAllowed() {
@@ -318,6 +326,27 @@ void InternalsUIHandler::EndSubscription() {
       get_log_router_function_.Run(Profile::FromWebUI(web_ui()));
   if (log_router) {
     log_router->UnregisterReceiver(this);
+  }
+}
+
+void InternalsUIHandler::OnSetPasswordChangeOverrideUrl(
+    const base::ListValue& args) {
+  if (args.size() != 1 || !args[0].is_string()) {
+    return;
+  }
+  password_manager::ContentPasswordManagerDriverFactory* factory =
+      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+          web_ui()->GetWebContents());
+  if (factory) {
+    password_manager::PasswordManagerClient* client =
+        factory->password_client();
+    if (client) {
+      password_manager::PasswordChangeServiceInterface* service =
+          client->GetPasswordChangeService();
+      if (service) {
+        service->AddChangePasswordUrlOverride(GURL(args[0].GetString()));
+      }
+    }
   }
 }
 

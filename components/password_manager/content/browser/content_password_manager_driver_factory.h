@@ -54,6 +54,10 @@ class ContentPasswordManagerDriverFactory
   // chrome://password-manager-internals is available.
   void RequestSendLoggingAvailability();
 
+  PasswordManagerClient* password_client() const {
+    return password_client_.get();
+  }
+
  private:
   friend class content::WebContentsUserData<
       ContentPasswordManagerDriverFactory>;

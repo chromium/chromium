@@ -33,6 +33,9 @@ class PasswordChangeServiceInterface {
   virtual void RecordLoginAttemptQuality(
       LogInWithChangedPasswordOutcome outcome,
       const GURL& page_url) const = 0;
+
+  // Add overridden change password URL.
+  virtual void AddChangePasswordUrlOverride(const GURL& url) = 0;
 };
 
 // Return overridden change password URL passed to chrome switch.

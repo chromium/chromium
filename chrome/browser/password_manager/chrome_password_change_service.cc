@@ -44,31 +44,7 @@ inline constexpr base::TimeDelta kThrottleDuration = base::Days(14);
 // already.
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
-// Returns whether chrome switch for change password URLs is used.
-bool HasChangePasswordUrlOverride() {
-  return !password_manager::GetChangePasswordUrlOverrides().empty();
-}
 
-// Returns whether overridden change password URL matches with `url`.
-GURL GetChangePasswordURLOverride(const GURL& url) {
-  if (!HasChangePasswordUrlOverride()) {
-    return GURL();
-  }
-
-  if (!url.is_valid()) {
-    return GURL();
-  }
-
-  for (auto& override_url : password_manager::GetChangePasswordUrlOverrides()) {
-    if (!override_url.is_valid() ||
-        !affiliations::IsExtendedPublicSuffixDomainMatch(url, override_url,
-                                                         {})) {
-      continue;
-    }
-    return std::move(override_url);
-  }
-  return GURL();
-}
 
 std::string GetVariationConfigCountryCode() {
   variations::VariationsService* variation_service =
@@ -115,7 +91,9 @@ ChromePasswordChangeService::ChromePasswordChangeService(
       optimization_keyed_service_(optimization_keyed_service),
       settings_service_(settings_service),
       feature_manager_(std::move(feature_manager)),
-      log_router_(log_router) {}
+      log_router_(log_router) {
+  override_urls_ = password_manager::GetChangePasswordUrlOverrides();
+}
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
   CHECK(password_change_delegates_.empty());
@@ -172,6 +150,38 @@ bool ChromePasswordChangeService::UserIsActivePasswordChangeUser() const {
     return false;
   }
   return IsPasswordChangeAvailable();
+}
+
+void ChromePasswordChangeService::AddChangePasswordUrlOverride(
+    const GURL& url) {
+  if (url.is_valid()) {
+    override_urls_.emplace_back(url);
+  }
+}
+
+bool ChromePasswordChangeService::HasChangePasswordUrlOverride() const {
+  return !override_urls_.empty();
+}
+
+GURL ChromePasswordChangeService::GetChangePasswordURLOverride(
+    const GURL& url) const {
+  if (override_urls_.empty()) {
+    return GURL();
+  }
+
+  if (!url.is_valid()) {
+    return GURL();
+  }
+
+  for (const auto& override_url : override_urls_) {
+    CHECK(override_url.is_valid());
+    if (!affiliations::IsExtendedPublicSuffixDomainMatch(url, override_url,
+                                                         {})) {
+      continue;
+    }
+    return override_url;
+  }
+  return GURL();
 }
 
 void ChromePasswordChangeService::OfferPasswordChangeUi(

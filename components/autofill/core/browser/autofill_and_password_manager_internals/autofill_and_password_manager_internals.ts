@@ -291,6 +291,18 @@ function setUpPasswordManagerInternals() {
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
+
+  const overrideContainer =
+      getRequiredElement('password-change-override-container');
+  overrideContainer.style.display = 'block';
+
+  const overrideInput =
+      getRequiredElement<HTMLInputElement>('password-change-override-url');
+  const overrideButton = getRequiredElement('password-change-override-button');
+  overrideButton.addEventListener('click', () => {
+    chrome.send('setPasswordChangeOverrideUrl', [overrideInput.value]);
+    overrideInput.value = '';
+  });
 }
 
 function enableResetCacheButton() {
