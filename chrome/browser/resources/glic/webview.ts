@@ -4,6 +4,9 @@
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+// <if expr="not enable_extensions_core">
+import {OriginCheckParams} from '/shared/guest_view/request_throttlers.js';
+// </if>
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 // <if expr="not is_android">
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -164,6 +167,13 @@ export class WebviewController {
           this.webview.request.onBeforeRequest.removeListener(onBeforeRequest);
         }
       });
+    } else {
+      // <if expr="not enable_extensions_core">
+      const allowedOriginsParams = getAllowedOriginsParams();
+      if (allowedOriginsParams !== null) {
+        this.webview.allowedOriginsParams = allowedOriginsParams;
+      }
+      // </if>
     }
 
     this.webview.id = 'guestFrame';
@@ -541,6 +551,20 @@ export function matcherForOrigin(originPattern: string): URLPattern|null {
     return null;
   }
 }
+
+// <if expr="not enable_extensions_core">
+function getAllowedOriginsParams(): OriginCheckParams|null {
+  if (loadTimeData.getBoolean('devMode')) {
+    return null;
+  }
+  const allowedOrigins: string[] =
+      [new URL(loadTimeData.getString('glicGuestURL')).origin];
+  allowedOrigins.push(...loadTimeData.getString('glicAllowedOrigins')
+                          .split(' ')
+                          .map(origin => origin.trim()));
+  return new OriginCheckParams([ResourceType.MAIN_FRAME], allowedOrigins);
+}
+// </if>
 
 export function urlMatchesAllowedOrigin(url: string) {
   // For development.
