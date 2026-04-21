@@ -73,9 +73,9 @@ const base::FeatureParam<int> kRepeatableQueriesMinVisitCount(
 
 BASE_FEATURE(kPopulateVisitedLinkDatabase, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, makes links `:visited` even when the visit results in an HTTP
+// Makes links `:visited` even when the visit results in an HTTP
 // response code of 404.
-BASE_FEATURE(kVisitedLinksOn404, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVisitedLinksOn404, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, uses new scoring function for Most Visited Tiles computation.
 BASE_FEATURE(kMostVisitedTilesNewScoring,

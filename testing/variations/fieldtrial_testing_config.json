@@ -24246,26 +24246,6 @@
             ]
         }
     ],
-    "VisitedLinksOn404": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VisitedLinksOn404"
-                    ]
-                }
-            ]
-        }
-    ],
     "VisitedURLRankingService": [
         {
             "platforms": [
