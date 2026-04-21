@@ -730,8 +730,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
       webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
   attributes.layout =
       BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
-  attributes.rounding_type =
-      BlinkRoundingTypeToComponent(options->roundingType().AsEnum());
+  attributes.output_shape_rounding =
+      BlinkRoundingTypeToComponent(options->outputShapeRounding().AsEnum());
   if (options->hasOutputSizes()) {
     // TODO(ningxin.hu@intel.com): report a DevTools warning message if rounding
     // type is provided but ignored.

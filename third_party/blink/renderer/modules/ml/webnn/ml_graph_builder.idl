@@ -164,7 +164,7 @@ dictionary MLPool2dOptions : MLOperatorOptions {
   sequence<[EnforceRange] unsigned long> strides;
   sequence<[EnforceRange] unsigned long> dilations;
   MLInputOperandLayout layout = "nchw";
-  MLRoundingType roundingType = "floor";
+  MLRoundingType outputShapeRounding = "floor";
   sequence<[EnforceRange] unsigned long> outputSizes;
 };
 

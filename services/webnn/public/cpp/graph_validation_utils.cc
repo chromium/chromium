@@ -2355,7 +2355,7 @@ base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
                     ceil_output_width)));
     }
   } else {
-    switch (attributes.rounding_type) {
+    switch (attributes.output_shape_rounding) {
       case RoundingType::kFloor:
         output_height = floor_output_height;
         output_width = floor_output_width;
