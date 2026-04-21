@@ -16444,36 +16444,6 @@
             ]
         }
     ],
-    "OfferPinToTaskbarInFirstRunExperience": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "MostlyLaunched",
-                    "enable_features": [
-                        "OfferPinToTaskbarInFirstRunExperience"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OfferPinToTaskbarWhenSettingDefault": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OfferPinToTaskbarWhenSettingDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "OffloadAcceptCHFrameCheck": [
         {
             "platforms": [
@@ -20961,7 +20931,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -20982,7 +20951,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -20994,7 +20962,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21005,7 +20972,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21016,7 +20982,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21027,7 +20992,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21038,7 +21002,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21049,7 +21012,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21060,7 +21022,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21071,7 +21032,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21082,7 +21042,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 },
@@ -21093,7 +21052,6 @@
                         "random_seed": "3"
                     },
                     "enable_features": [
-                        "OfferPinToTaskbarInfoBar",
                         "SeparateDefaultAndPinPrompt"
                     ]
                 }
