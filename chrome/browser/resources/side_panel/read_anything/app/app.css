@@ -315,6 +315,13 @@ img.distilled-full-width-img {
   height: auto;
 }
 
+img.possibly-transparent-img {
+  filter:
+    drop-shadow(0 0 1px color-mix(in srgb, var(--foreground-color) 100%, transparent))
+    drop-shadow(0 0 1px color-mix(in srgb, var(--foreground-color) 100%, transparent));
+  clip-path: inset(0);
+}
+
 .settings-overlay {
   width: 100vw;
   height: 100vh;

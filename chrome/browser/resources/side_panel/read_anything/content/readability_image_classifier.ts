@@ -14,6 +14,7 @@
 export class ReadabilityImageClassifier {
   static readonly INLINE_CLASS = 'distilled-inline-img';
   static readonly FULL_WIDTH_CLASS = 'distilled-full-width-img';
+  static readonly POSSIBLY_TRANSPARENT_CLASS = 'possibly-transparent-img';
   static readonly DOMINANT_IMAGE_MIN_VIEWPORT_RATIO = 0.8;
   static readonly SRC_CANDIDATES = [
     // Used by lazysizes and UI Frameworks like Bootstrap.
@@ -215,6 +216,22 @@ export class ReadabilityImageClassifier {
     return this.classifyByFallback_(img);
   }
 
+  imageMightBeTransparent(img: HTMLImageElement): boolean {
+    if (!img.src) {
+      return false;
+    }
+
+    const src = img.src.toLowerCase();
+    if (src.startsWith('data:image/')) {
+      return src.includes('image/png') || src.includes('image/svg+xml') ||
+          src.includes('image/webp') || src.includes('image/gif') ||
+          src.includes('image/avif');
+    }
+
+    const transparentExtensionRegex = /\.(png|svg|webp|gif|avif)(?:[\?#]|$)/i;
+    return transparentExtensionRegex.test(src);
+  }
+
   // Post-processes all images in an element to apply classification classes
   // and deduplicate images that appear multiple times due to layout artifacts.
   static processImagesIn(element: HTMLElement): void {
@@ -230,10 +247,18 @@ export class ReadabilityImageClassifier {
       img.classList.add(classification);
     };
 
+    const applyTransparencyClassIfNeeded = (img: HTMLImageElement) => {
+      if (classifier.imageMightBeTransparent(img)) {
+        img.classList.add(
+            ReadabilityImageClassifier.POSSIBLY_TRANSPARENT_CLASS);
+      }
+    };
+
     // Type definition for the handler
     const imageLoadHandler = (event: Event) => {
       const img = event.currentTarget as HTMLImageElement;
       applyClassification(img);
+      applyTransparencyClassIfNeeded(img);
     };
 
     // Track seen image sources and their indices to deduplicate.
@@ -281,6 +306,7 @@ export class ReadabilityImageClassifier {
       // If the image is already loaded (e.g., from cache), manually trigger.
       if (img.complete) {
         applyClassification(img);
+        applyTransparencyClassIfNeeded(img);
       } else {
         img.onload = imageLoadHandler;
       }

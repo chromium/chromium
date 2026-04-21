@@ -259,4 +259,65 @@ suite('ReadabilityImageClassifier', function() {
     assertTrue(testContainer.contains(fig0), 'fig0 should be kept');
     assertFalse(testContainer.contains(fig1), 'fig1 should be removed');
   });
+
+  test(
+      'should detect possibly transparent images and apply class', async () => {
+        const TRANSPARENT_CLASS =
+            ReadabilityImageClassifier.POSSIBLY_TRANSPARENT_CLASS;
+        const imagePromises = [
+          // 1. Standard transparent formats
+          createImageTest(
+              'img_png', 50, 50, 'p', '<img>',
+              {src: 'https://example.com/logo.png'}),
+          createImageTest('img_gif', 50, 50, 'p', '<img>', {src: 'anim.gif'}),
+          createImageTest('img_avif', 50, 50, 'p', '<img>', {src: 'pic.avif'}),
+
+          // 2. URLs with query parameters and hashes
+          createImageTest(
+              'img_svg_query', 50, 50, 'p', '<img>',
+              {src: 'https://example.com/icon.svg?v=123'}),
+          createImageTest(
+              'img_webp_hash', 50, 50, 'p', '<img>',
+              {src: '/images/asset.webp#anchor'}),
+
+          // 3. Opaque formats, should not get the class
+          createImageTest('img_jpg', 50, 50, 'p', '<img>', {src: 'photo.jpg'}),
+          createImageTest(
+              'img_jpeg', 50, 50, 'p', '<img>', {src: 'photo.jpeg?size=large'}),
+
+          // 4. Data URIs (Base64)
+          createImageTest(
+              'data_png', 50, 50, 'p', '<img>',
+              {src: 'data:image/png;base64,iVBORw0KGgo...'}),
+          createImageTest(
+              'data_svg', 50, 50, 'p', '<img>',
+              {src: 'data:image/svg+xml;charset=utf-8,...'}),
+          createImageTest(
+              'data_jpg', 50, 50, 'p', '<img>',
+            { src: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...' }),
+        ];
+
+        await Promise.all(imagePromises);
+        ReadabilityImageClassifier.processImagesIn(testContainer);
+
+        const assertHasTransparentClass = (id: string, expected: boolean) => {
+          const el = document.getElementById(id);
+          assertTrue(!!el);
+          assertEquals(expected, el.classList.contains(TRANSPARENT_CLASS));
+        };
+
+        // Assertions for transparent formats
+        assertHasTransparentClass('img_png', true);
+        assertHasTransparentClass('img_gif', true);
+        assertHasTransparentClass('img_avif', true);
+        assertHasTransparentClass('img_svg_query', true);
+        assertHasTransparentClass('img_webp_hash', true);
+        assertHasTransparentClass('data_png', true);
+        assertHasTransparentClass('data_svg', true);
+
+        // Assertions for opaque formats
+        assertHasTransparentClass('img_jpg', false);
+        assertHasTransparentClass('img_jpeg', false);
+        assertHasTransparentClass('data_jpg', false);
+      });
 });
