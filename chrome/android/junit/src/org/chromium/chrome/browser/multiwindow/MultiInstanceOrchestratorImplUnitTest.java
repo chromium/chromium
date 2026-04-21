@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -23,7 +25,6 @@ import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WIN
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import org.junit.After;
@@ -54,6 +55,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -101,6 +104,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
     @Before
     public void setup() {
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         MultiWindowTestUtils.enableMultiInstance();
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiInstanceOrchestratorImpl.setTabReparentingDelegateForTesting(mTabReparentingDelegate);
@@ -123,7 +127,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         when(mActivity.getPackageName()).thenReturn(packageName);
 
         when(mTabbedActivity1.getPackageName()).thenReturn(packageName);
-        when(mTabbedActivity1.getResources()).thenReturn(mock(Resources.class));
+        when(mTabbedActivity1.getResources())
+                .thenReturn(ContextUtils.getApplicationContext().getResources());
         when(mTabbedActivity1.getTabModelSelector()).thenReturn(mTabModelSelector1);
         when(mTabModelSelector1.getTotalTabCount()).thenReturn(5);
 
@@ -143,14 +148,16 @@ public class MultiInstanceOrchestratorImplUnitTest {
         doReturn(true).when(mActivity).isInMultiWindowMode();
 
         // Act.
-        mMultiInstanceOrchestrator.createNewWindow(
-                mActivity,
-                /* isIncognito= */ false,
-                /* additionalIntentExtras= */ null,
-                /* startActivityOptions= */ null,
-                NewWindowAppSource.UNKNOWN);
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindow(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.UNKNOWN);
 
         // Verify.
+        assertFalse(result);
         verify(mActivity, never()).startActivity(any());
     }
 
@@ -162,16 +169,18 @@ public class MultiInstanceOrchestratorImplUnitTest {
         extrasBundle.putInt("my_extra", 1);
 
         // Act.
-        mMultiInstanceOrchestrator.createNewWindow(
-                mActivity,
-                /* isIncognito= */ false,
-                extrasBundle,
-                /* startActivityOptions= */ null,
-                NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindow(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        extrasBundle,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
 
         // Verify.
+        assertTrue(result);
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mActivity).startActivity(intentCaptor.capture());
+        verify(mActivity).startActivity(intentCaptor.capture(), eq(null));
         assertEquals(
                 "Intent consumer update failed.",
                 1,
@@ -185,15 +194,131 @@ public class MultiInstanceOrchestratorImplUnitTest {
         Bundle startActivityBundle = mock(Bundle.class);
 
         // Act.
-        mMultiInstanceOrchestrator.createNewWindow(
-                mActivity,
-                /* isIncognito= */ false,
-                /* additionalIntentExtras= */ null,
-                startActivityBundle,
-                NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindow(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        /* additionalIntentExtras= */ null,
+                        startActivityBundle,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
 
         // Verify.
+        assertTrue(result);
         verify(mActivity).startActivity(any(), eq(startActivityBundle));
+    }
+
+    @Test
+    public void testCreateNewWindow_startActivityThrows() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        doThrow(new RuntimeException()).when(mActivity).startActivity(any(), any());
+
+        // Act.
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindow(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertFalse(result);
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents_instanceLimit_showsMessage() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
+
+        // Act.
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindowFromWebContents(
+                        mTabbedActivity1,
+                        profile,
+                        webContents,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertFalse(result);
+        verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
+        when(mTabReparentingDelegate.createNewWindowFromWebContents(
+                        any(), any(), any(), any(), any(), anyInt()))
+                .thenReturn(true);
+
+        // Act.
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindowFromWebContents(
+                        mTabbedActivity1,
+                        profile,
+                        webContents,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertTrue(result);
+        verify(mMultiInstanceManager1, never()).showInstanceCreationLimitMessage();
+        verify(mTabReparentingDelegate)
+                .createNewWindowFromWebContents(
+                        eq(mTabbedActivity1),
+                        eq(profile),
+                        eq(webContents),
+                        eq(null),
+                        eq(null),
+                        eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents_withExtrasAndOptions() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
+        when(mTabReparentingDelegate.createNewWindowFromWebContents(
+                        any(), any(), any(), any(), any(), anyInt()))
+                .thenReturn(true);
+
+        Bundle extras = new Bundle();
+        extras.putInt("extra", 1);
+        Bundle options = mock(Bundle.class);
+
+        // Act.
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindowFromWebContents(
+                        mTabbedActivity1,
+                        profile,
+                        webContents,
+                        extras,
+                        options,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertTrue(result);
+        verify(mMultiInstanceManager1, never()).showInstanceCreationLimitMessage();
+        verify(mTabReparentingDelegate)
+                .createNewWindowFromWebContents(
+                        eq(mTabbedActivity1),
+                        eq(profile),
+                        eq(webContents),
+                        eq(extras),
+                        eq(options),
+                        eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
     }
 
     @Test

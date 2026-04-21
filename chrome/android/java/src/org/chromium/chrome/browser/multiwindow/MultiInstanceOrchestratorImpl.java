@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -77,25 +79,53 @@ import java.util.Set;
     }
 
     @Override
-    public void createNewWindow(
+    public boolean createNewWindow(
             Activity sourceActivity,
             boolean isIncognito,
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions,
             @NewWindowAppSource int source) {
         Intent intent = MultiWindowUtils.createNewWindowIntent(sourceActivity, isIncognito, source);
-        if (intent == null) return;
+        if (intent == null) return false;
 
         if (additionalIntentExtras != null) {
             intent.putExtras(additionalIntentExtras);
         }
 
         MultiInstanceManager.onMultiInstanceModeStarted();
-        if (startActivityOptions == null) {
-            sourceActivity.startActivity(intent);
-        } else {
+        try {
             sourceActivity.startActivity(intent, startActivityOptions);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
         }
+    }
+
+    @Override
+    public boolean createNewWindowFromWebContents(
+            Activity sourceActivity,
+            Profile profile,
+            WebContents webContents,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return false;
+
+        if (!MultiWindowUtils.isWithinInstanceLimit()) {
+            var multiInstanceManager = getMultiInstanceManager(sourceActivity);
+            if (multiInstanceManager != null) {
+                multiInstanceManager.showInstanceCreationLimitMessage();
+            }
+            return false;
+        }
+
+        return mTabReparentingDelegate.createNewWindowFromWebContents(
+                sourceActivity,
+                profile,
+                webContents,
+                additionalIntentExtras,
+                startActivityOptions,
+                source);
     }
 
     @Override

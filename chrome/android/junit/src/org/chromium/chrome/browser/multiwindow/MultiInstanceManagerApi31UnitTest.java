@@ -1917,7 +1917,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         mMultiInstanceManager.openNewWindow(false);
 
-        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        verify(mCurrentActivity).startActivity(intentCaptor.capture(), eq(null));
         Intent intent = intentCaptor.getValue();
         assertNotNull(intent.getComponent());
         assertEquals(

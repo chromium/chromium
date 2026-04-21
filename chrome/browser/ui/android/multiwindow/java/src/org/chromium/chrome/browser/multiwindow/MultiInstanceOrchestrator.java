@@ -10,9 +10,11 @@ import android.os.Bundle;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -41,10 +43,31 @@ public interface MultiInstanceOrchestrator {
      *     to create the new window.
      * @param startActivityOptions An optional bundle that will be used to start the activity.
      * @param source The new window creation source used for metrics.
+     * @return true if the window was successfully created, false otherwise.
      */
-    void createNewWindow(
+    boolean createNewWindow(
             Activity sourceActivity,
             boolean isIncognito,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source);
+
+    /**
+     * Creates a new ChromeTabbedActivity instance from an existing {@link WebContents}.
+     *
+     * @param sourceActivity The activity used to launch the intent.
+     * @param profile The {@link Profile} associated with the web contents.
+     * @param webContents The {@link WebContents} to use in the new window.
+     * @param additionalIntentExtras An optional bundle specifying extras to add to the intent used
+     *     to create the new window.
+     * @param startActivityOptions An optional bundle that will be used to start the activity.
+     * @param source The new window creation source used for metrics.
+     * @return true if the window was successfully created, false otherwise.
+     */
+    boolean createNewWindowFromWebContents(
+            Activity sourceActivity,
+            Profile profile,
+            WebContents webContents,
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions,
             @NewWindowAppSource int source);

@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVAL
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.SystemClock;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -22,9 +23,12 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -33,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -58,6 +63,33 @@ import java.util.List;
                         source);
         ReparentingTabsTask.from(tabs)
                 .begin(context, intent, /* startActivityOptions= */ null, finalizeCallback);
+    }
+
+    /* package */ boolean createNewWindowFromWebContents(
+            Activity sourceActivity,
+            Profile profile,
+            WebContents webContents,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source) {
+        TabDelegateFactory delegateFactory = CustomTabDelegateFactory.createEmpty();
+        Tab tab =
+                TabBuilder.createDetachedSpareTab(
+                        sourceActivity, delegateFactory, profile, webContents);
+
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        sourceActivity, profile.isIncognitoBranded(), source);
+        if (intent == null) {
+            tab.destroy();
+            return false;
+        }
+        if (additionalIntentExtras != null) {
+            intent.putExtras(additionalIntentExtras);
+        }
+
+        return ReparentingTabsTask.from(List.of(tab))
+                .begin(sourceActivity, intent, startActivityOptions, /* finalizeCallback= */ null);
     }
 
     /* package */ void reparentTabsToExistingWindow(

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -52,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +80,8 @@ public class TabReparentingDelegateUnitTest {
     @Mock private ReparentingTabGroupTask mReparentingTabGroupTask;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private Profile mProfile;
+    @Mock private WebContents mWebContents;
 
     @Captor private ArgumentCaptor<Runnable> mOnSaveTabListRunnableCaptor;
 
@@ -87,6 +92,7 @@ public class TabReparentingDelegateUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
+        TabBuilder.setTabForTesting(mTab1);
 
         mDelegate = new TabReparentingDelegate();
         TabReparentingDelegate.setPersistentStoreForTesting(mTabPersistentStore);
@@ -163,6 +169,82 @@ public class TabReparentingDelegateUnitTest {
                         .getIntExtra(
                                 IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
                                 NewWindowAppSource.UNKNOWN));
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents_success() {
+        // Act.
+        boolean result =
+                mDelegate.createNewWindowFromWebContents(
+                        mCurrentActivity,
+                        mProfile,
+                        mWebContents,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertTrue(result);
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTabsTask)
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(null), eq(null));
+        Intent intent = intentCaptor.getValue();
+        org.junit.Assert.assertNotNull(intent);
+        org.junit.Assert.assertFalse(
+                intent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ true));
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents_success_withExtrasAndOptions() {
+        // Setup.
+        when(mProfile.isIncognitoBranded()).thenReturn(true);
+
+        Bundle extras = new Bundle();
+        extras.putInt("extra", 1);
+        Bundle options = mock(Bundle.class);
+
+        // Act.
+        boolean result =
+                mDelegate.createNewWindowFromWebContents(
+                        mCurrentActivity,
+                        mProfile,
+                        mWebContents,
+                        extras,
+                        options,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertTrue(result);
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTabsTask)
+                .begin(eq(mCurrentActivity), intentCaptor.capture(), eq(options), eq(null));
+        Intent intent = intentCaptor.getValue();
+        org.junit.Assert.assertNotNull(intent);
+        org.junit.Assert.assertTrue(
+                intent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ false));
+        org.junit.Assert.assertEquals(1, intent.getIntExtra("extra", 0));
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents_reparentingTaskFailed() {
+        // Setup.
+        when(mReparentingTabsTask.begin(any(), any(), any(), any())).thenReturn(false);
+
+        // Act.
+        boolean result =
+                mDelegate.createNewWindowFromWebContents(
+                        mCurrentActivity,
+                        mProfile,
+                        mWebContents,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertFalse(result);
+        verify(mReparentingTabsTask).begin(eq(mCurrentActivity), any(), eq(null), eq(null));
     }
 
     @Test
