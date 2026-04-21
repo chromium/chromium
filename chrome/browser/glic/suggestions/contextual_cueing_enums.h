@@ -69,7 +69,8 @@ enum class GlicAutoOpenResult {
   kPreventedFromVerticalTabs = 2,
   kPreventedFromExistingSidePanelOpen = 3,
   kFailedUnknown = 4,
-  kMaxValue = kFailedUnknown,
+  kPreventedFromWindowTooNarrow = 5,
+  kMaxValue = kPreventedFromWindowTooNarrow,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:GlicAutoOpenResult)
 

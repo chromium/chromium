@@ -249,6 +249,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Prevented From Vertical Tabs"/>
   <int value="3" label="Prevented From Existing Side Panel Open"/>
   <int value="4" label="Failed with unknown reason"/>
+  <int value="5" label="Prevented From Window Too Narrow"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/suggestions/contextual_cueing_enums.h:GlicAutoOpenResult) -->

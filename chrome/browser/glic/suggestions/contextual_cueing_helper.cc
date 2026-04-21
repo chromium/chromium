@@ -64,6 +64,12 @@
 
 namespace glic {
 
+namespace {
+void RecordAutoOpenResult(GlicAutoOpenResult result) {
+  base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result", result);
+}
+}  // namespace
+
 class ScopedNudgeDecisionRecorder {
  public:
   ScopedNudgeDecisionRecorder(
@@ -432,9 +438,9 @@ void ContextualCueingHelper::OnCueingDecision(
       decision_result->auto_open_eligible &&
       base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
 
+  std::optional<GlicAutoOpenResult> prevented_reason;
   if (should_open_side_panel) {
-    std::optional<GlicAutoOpenResult> prevented_reason;
-
+    // Prevention reasons for generically auto-opening the side panel.
     if (existing_side_panel_open) {
       prevented_reason =
           GlicAutoOpenResult::kPreventedFromExistingSidePanelOpen;
@@ -445,16 +451,29 @@ void ContextualCueingHelper::OnCueingDecision(
     }
 
     if (prevented_reason) {
-      base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result",
-                                    *prevented_reason);
+      RecordAutoOpenResult(*prevented_reason);
       should_open_side_panel = false;
     }
   }
 
-  const bool is_auto_open_pdf_side_panel_cue =
+  bool is_auto_open_pdf_side_panel_cue =
       should_open_side_panel &&
       web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
       glic::GlicEnabling::IsAutoOpenForPdfEnabled(profile);
+
+  if (is_auto_open_pdf_side_panel_cue) {
+    // Prevention reasons for auto-opening on pdfs
+    if (web_contents()->GetContainerBounds().width() <
+        kMinWindowWidthForPdfAutoOpen.Get()) {
+      prevented_reason = GlicAutoOpenResult::kPreventedFromWindowTooNarrow;
+    }
+
+    if (prevented_reason) {
+      RecordAutoOpenResult(*prevented_reason);
+      is_auto_open_pdf_side_panel_cue = false;
+      should_open_side_panel = false;
+    }
+  }
 
   // Check nudge rate-limiting/backoff caps. Auto-open PDF side panel bypasses
   // this check for a more deterministic feel.
@@ -489,13 +508,11 @@ void ContextualCueingHelper::OnCueingDecision(
         options.prompts.push_back(decision_result->prompt_suggestion);
       }
       glic_service->Invoke(std::move(options));
-      base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result",
-                                    GlicAutoOpenResult::kSuccess);
+      RecordAutoOpenResult(GlicAutoOpenResult::kSuccess);
       return;
     }
     // Fall through to nudge if side panel open fails.
-    base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result",
-                                  GlicAutoOpenResult::kFailedUnknown);
+    RecordAutoOpenResult(GlicAutoOpenResult::kFailedUnknown);
   }
 
   GetGlicNudgeController()->UpdateNudgeLabel(

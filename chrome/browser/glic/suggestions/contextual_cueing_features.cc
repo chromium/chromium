@@ -100,6 +100,11 @@ const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay(
     "PdfPageCountCaptureDelay",
     base::Seconds(4));
 
+const base::FeatureParam<int> kMinWindowWidthForPdfAutoOpen(
+    &kEnableAutoOpenGlicSidePanel,
+    "MinWindowWidthForPdfAutoOpen",
+    1000);
+
 const base::FeatureParam<bool> kEnablePageContentExtraction(
     &kContextualCueing,
     "EnablePageContentExtraction",
