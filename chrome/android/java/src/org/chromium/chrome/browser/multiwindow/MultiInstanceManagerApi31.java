@@ -729,14 +729,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
         }
 
-        if (expiredInstances.size() > 0) {
+        // This method could be invoked during early startup before mTabModelOrchestratorSupplier is
+        // initialized. In that case, skip cleanup of expired instances and / or instances exceeding
+        // the inactive instance limit, and defer to a subsequent call to handle it.
+        if (!expiredInstances.isEmpty() && mTabModelOrchestratorSupplier.get() != null) {
             closeWindows(expiredInstances, CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
         }
 
         int numInactiveInstances = inactiveInstances.size();
-
-        // This could be invoked during early startup before mTabModelOrchestratorSupplier is
-        // initialized. In that case, skip and let a subsequent call handle it.
         int inactiveInstanceLimit =
                 RecentlyClosedEntriesManager.MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS;
         if (numInactiveInstances > inactiveInstanceLimit
