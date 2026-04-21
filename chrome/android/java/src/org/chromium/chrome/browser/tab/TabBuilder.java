@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
+import android.graphics.Rect;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -304,6 +309,53 @@ public class TabBuilder {
                         initiallyHidden
                                 ? TabCreationState.LIVE_IN_BACKGROUND
                                 : TabCreationState.LIVE_IN_FOREGROUND);
+    }
+
+    /**
+     * Creates an instance of a {@link Tab} that is fully detached from any activity.
+     *
+     * <p>Also performs general tab initialization as well as detached specifics.
+     *
+     * @param context The context to use.
+     * @param delegateFactory The {@link TabDelegateFactory} to use in the tab.
+     * @param profile The {@link Profile} to use in the tab.
+     * @param webContents The {@link WebContents} to use in the tab. If null the default is used.
+     * @return The newly created and initialized spare tab. Callers are responsible for managing the
+     *     lifecycle of this Tab (e.g. reparenting it), otherwise it will leak memory.
+     */
+    public static Tab createDetachedSpareTab(
+            Context context,
+            TabDelegateFactory delegateFactory,
+            Profile profile,
+            @Nullable WebContents webContents) {
+        if (sTabForTesting != null) return sTabForTesting;
+
+        WindowAndroid window = new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
+
+        // Creates a tab with renderer initialized for spareTab. See https://crbug.com/1412572.
+        Tab tab =
+                TabBuilder.createLiveTab(profile, true)
+                        .setWindow(window)
+                        .setLaunchType(TabLaunchType.UNSET)
+                        .setDelegateFactory(delegateFactory)
+                        .setInitiallyHidden(true)
+                        .setInitializeRenderer(true)
+                        .setWebContents(webContents)
+                        .build();
+
+        // Resize the webContents to avoid expensive post load resize when attaching the tab.
+        Rect bounds = TabUtils.estimateContentSize(context);
+        int width = bounds.right - bounds.left;
+        int height = bounds.bottom - bounds.top;
+        webContents = tab.getWebContents();
+        assumeNonNull(webContents);
+        webContents.setSize(width, height);
+
+        // Detach the tab from the current activity.
+        webContents.setTopLevelNativeWindow(null);
+        tab.updateAttachment(null, null);
+
+        return tab;
     }
 
     public static void setTabForTesting(Tab tab) {
