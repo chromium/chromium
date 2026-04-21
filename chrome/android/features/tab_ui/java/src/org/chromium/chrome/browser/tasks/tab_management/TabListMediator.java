@@ -388,12 +388,7 @@ class TabListMediator implements TabListNotificationHandler {
 
                     PropertyModel model = mModelList.getModelFromTabId(tabId);
                     if (model != null) {
-                        boolean isTabGroupCard = mActionsOnAllRelatedTabs && isTabInTabGroup(tab);
-                        model.set(
-                                TabProperties.ACTOR_UI_STATE,
-                                (isTabGroupCard || state.tabIndicator == TabIndicatorStatus.NONE)
-                                        ? null
-                                        : state);
+                        updateActorUiState(model, tab, state);
                     }
 
                     if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
@@ -1822,6 +1817,10 @@ class TabListMediator implements TabListNotificationHandler {
         setupPersistedTabDataFetcherForTab(tab, index);
 
         updateFaviconForTab(model, tab, null, null);
+
+        ActorUiTabController controller = ActorUiTabController.from(tab);
+        updateActorUiState(model, tab, controller == null ? null : controller.getUiTabState());
+
         boolean forceUpdate = isTabSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
@@ -1836,6 +1835,15 @@ class TabListMediator implements TabListNotificationHandler {
                         || isInTabGroup)) {
             updateThumbnailFetcher(model, tab.getId());
         }
+    }
+
+    private void updateActorUiState(PropertyModel model, Tab tab, @Nullable UiTabState state) {
+        boolean isTabGroupCard = mActionsOnAllRelatedTabs && isTabInTabGroup(tab);
+        model.set(
+                TabProperties.ACTOR_UI_STATE,
+                (isTabGroupCard || state == null || state.tabIndicator == TabIndicatorStatus.NONE)
+                        ? null
+                        : state);
     }
 
     @VisibleForTesting
@@ -2203,15 +2211,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
-        boolean isInTabGroup = isTabInTabGroup(tab);
-        ActorUiTabController controller = ActorUiTabController.from(tab);
-        UiTabState initialState = null;
-        if (controller != null && !(mActionsOnAllRelatedTabs && isInTabGroup)) {
-            UiTabState state = controller.getUiTabState();
-            if (state != null && state.tabIndicator != TabIndicatorStatus.NONE) {
-                initialState = state;
-            }
-        }
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
@@ -2237,8 +2236,13 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
                         .with(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab))
                         .with(TabProperties.IS_PINNED, tab.getIsPinned())
-                        .with(TabProperties.ACTOR_UI_STATE, initialState)
+                        .with(TabProperties.ACTOR_UI_STATE, null)
                         .build();
+
+        ActorUiTabController controller = ActorUiTabController.from(tab);
+        updateActorUiState(tabInfo, tab, controller == null ? null : controller.getUiTabState());
+
+        boolean isInTabGroup = isTabInTabGroup(tab);
         if (!mActionsOnAllRelatedTabs || isInTabGroup) {
             tabInfo.set(
                     TabProperties.FAVICON_FETCHER,
@@ -2857,7 +2861,14 @@ class TabListMediator implements TabListNotificationHandler {
         tab.addObserver(mTabObserver);
 
         ActorUiTabController controller = ActorUiTabController.from(tab);
-        if (controller != null) controller.addObserver(mActorObserver);
+        if (controller != null) {
+            controller.addObserver(mActorObserver);
+
+            @Nullable PropertyModel model = mModelList.getModelFromTabId(tab.getId());
+            if (model != null) {
+                updateActorUiState(model, tab, controller.getUiTabState());
+            }
+        }
     }
 
     private void removeObserversForTab(Tab tab) {

@@ -5796,6 +5796,49 @@ public class TabListMediatorUnitTest {
         assertNull(groupModel.get(TabProperties.ACTOR_UI_STATE));
     }
 
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_RefreshOnReset() {
+        // Initial state: Active task.
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        PropertyModel model = mModelList.get(0).model;
+        assertEquals(
+                TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
+
+        // Exit Tab Switcher.
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        // Task ends while hidden.
+        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+
+        // Re-enter Tab Switcher.
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        model = mModelList.get(0).model;
+
+        assertNull(model.get(TabProperties.ACTOR_UI_STATE));
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_RefreshOnUpdateTab() {
+        // Initial state: No task.
+        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        PropertyModel model = mModelList.get(0).model;
+        assertNull(model.get(TabProperties.ACTOR_UI_STATE));
+
+        // Task starts while Tab Switcher is reset with same list.
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        model = mModelList.get(0).model;
+
+        assertNotNull(model.get(TabProperties.ACTOR_UI_STATE));
+        assertEquals(
+                TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
+    }
+
     private void setUpTabGroupCardDescriptionString() {
         doAnswer(
                         invocation -> {
