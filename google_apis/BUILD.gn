@@ -52,8 +52,11 @@ if (use_official_google_api_keys == "") {
 # Official API keys should always be used for Chrome-branded builds except on
 # iOS (see https://crbug.com/1183709) and Fuchsia (see the description of
 # https://crbug.com/1171510 for background).
+# Note, fuchsia builds with both current_os == "fuchsia" and
+# target_os == "fuchsia". current_os can be "linux" when building
+# //chrome/test/chromedriver
 assert(use_official_google_api_keys || !is_internal_chrome_branded || is_ios ||
-       is_fuchsia)
+       is_fuchsia || target_os == "fuchsia")
 
 declare_args() {
   # Whether the SetAPIKey() method is defined.
