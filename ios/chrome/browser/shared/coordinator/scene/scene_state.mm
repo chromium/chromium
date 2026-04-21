@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
@@ -70,6 +71,7 @@
     _agents = [[NSMutableArray alloc] init];
     _tabGridState = [[TabGridState alloc] init];
     _incognitoState = [[IncognitoState alloc] initWithSceneState:self];
+    _layoutState = [[LayoutState alloc] init];
 
     // AppState might be nil in tests.
     if (appState) {

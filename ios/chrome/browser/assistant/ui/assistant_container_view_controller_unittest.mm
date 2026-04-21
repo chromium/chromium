@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -279,6 +280,23 @@ TEST_F(AssistantContainerViewControllerTest, HandleDimmingViewTap) {
   [view_controller_.view layoutIfNeeded];
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
+}
+
+// Tests that LayoutState updates trigger layout updates.
+TEST_F(AssistantContainerViewControllerTest, UpdatesLayoutOnLayoutStateChange) {
+  LayoutState* layout_state = [[LayoutState alloc] init];
+  view_controller_.layoutState = layout_state;
+
+  // Initially unsupported, should be in sheet mode.
+  EXPECT_EQ(view_controller_.presentationContext,
+            AssistantPresentationContext::kSheet);
+
+  // Update state to supported.
+  layout_state.containedLayoutSupported = YES;
+
+  // Should switch to panel mode.
+  EXPECT_EQ(view_controller_.presentationContext,
+            AssistantPresentationContext::kPanel);
 }
 
 }  // namespace

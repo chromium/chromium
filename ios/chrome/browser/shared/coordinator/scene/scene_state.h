@@ -17,6 +17,7 @@
 @class AppState;
 @protocol BrowserProviderInterface;
 @class IncognitoState;
+@class LayoutState;
 @class ProfileState;
 @class SceneController;
 @class SceneState;
@@ -127,6 +128,9 @@ class SigninInProgress;
 
 // Object containing the state of the tab grid.
 @property(nonatomic, strong, readonly) TabGridState* tabGridState;
+
+// Object containing the state of the layout.
+@property(nonatomic, strong, readonly) LayoutState* layoutState;
 
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.

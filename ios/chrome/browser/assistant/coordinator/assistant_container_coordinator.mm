@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_coordinator.h"
 
+#import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
@@ -14,6 +15,8 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -50,6 +53,7 @@
 }
 
 - (void)start {
+  CHECK(self.sceneState.layoutState);
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(AssistantContainerCommands)];
@@ -76,7 +80,8 @@
 
   _contentViewController = viewController;
   _delegate = delegate;
-  _animator = [[AssistantContainerAnimator alloc] init];
+  _animator = [[AssistantContainerAnimator alloc]
+      initWithLayoutState:self.sceneState.layoutState];
 
   _containerViewController = [[AssistantContainerViewController alloc]
       initWithViewController:_contentViewController];
@@ -85,6 +90,8 @@
   if (!_detents.empty()) {
     _containerViewController.detents = _detents;
   }
+
+  _containerViewController.layoutState = self.sceneState.layoutState;
 
   // Resolve layout guide.
   GuideName* guideName = kSecondaryToolbarGuide;
@@ -108,26 +115,26 @@
 
   __weak __typeof(self) weakSelf = self;
   if (IsAssistantSidePanelEnabled()) {
-    bool isSidePanelLayout =
-        IsSidePanelLayout(self.baseViewController.traitCollection);
-
     [self.presenter
         addAssistantContainerViewController:_containerViewController];
 
-    if (isSidePanelLayout) {
+    if (self.sceneState.layoutState.containedLayoutSupported) {
       [_animator
           animateSidePanelPresentation:_containerViewController
                     baseViewController:self.presenter
+                              animated:YES
                             completion:^{
                               [weakSelf didCompletePresentationAnimation];
                             }];
-    } else {
-      [self.baseViewController.view layoutIfNeeded];
-      [_animator animatePresentation:_containerViewController
-                          completion:^{
-                            [weakSelf didCompletePresentationAnimation];
-                          }];
+      return;
     }
+
+    [self.baseViewController.view layoutIfNeeded];
+    [_animator animatePresentation:_containerViewController
+                          animated:YES
+                        completion:^{
+                          [weakSelf didCompletePresentationAnimation];
+                        }];
     return;
   }
 
@@ -163,6 +170,7 @@
   [self.baseViewController.view layoutIfNeeded];
 
   [_animator animatePresentation:_containerViewController
+                        animated:YES
                       completion:^{
                         [weakSelf didCompletePresentationAnimation];
                       }];
@@ -228,29 +236,23 @@
 
   __weak __typeof(self) weakSelf = self;
 
-  if (IsSidePanelLayout(self.baseViewController.traitCollection)) {
-    if (animated) {
-      [_animator
-          animateSidePanelDismissal:_containerViewController
-                 baseViewController:self.presenter
-                         completion:^{
-                           [weakSelf
-                               didCompleteDismissalAnimationAnimated:animated];
-                         }];
-    } else {
-      [weakSelf didCompleteDismissalAnimationAnimated:animated];
-    }
-    return;
-  }
-  if (animated) {
+  if (self.sceneState.layoutState.containedLayoutSupported) {
     [_animator
-        animateDismissal:_containerViewController
-              completion:^{
-                [weakSelf didCompleteDismissalAnimationAnimated:animated];
-              }];
+        animateSidePanelDismissal:_containerViewController
+               baseViewController:self.presenter
+                         animated:animated
+                       completion:^{
+                         [weakSelf
+                             didCompleteDismissalAnimationAnimated:animated];
+                       }];
     return;
   }
-  [self didCompleteDismissalAnimationAnimated:animated];
+
+  [_animator animateDismissal:_containerViewController
+                     animated:animated
+                   completion:^{
+                     [weakSelf didCompleteDismissalAnimationAnimated:animated];
+                   }];
 }
 
 #pragma mark - Private

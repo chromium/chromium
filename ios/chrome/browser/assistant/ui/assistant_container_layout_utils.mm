@@ -40,7 +40,7 @@ const CGFloat kAssistantContainerMargin = 8.0;
 const CGFloat kAssistantSidePanelCornerRadius = 22.0;
 
 const NSTimeInterval kAssistantSheetSpringDuration = 0.3;
-const NSTimeInterval kAssistantSidePanelAnimationDuration = 0.5;
+
 const NSTimeInterval kAssistantSidePanelInsetAnimationDuration = 0.2;
 const CGFloat kAssistantSheetSpringDamping = 0.85;
 

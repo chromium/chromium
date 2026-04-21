@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/scene/ui/scene_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/scene/ui/scene_view_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -24,7 +25,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-@interface SceneViewController () <SceneViewDelegate>
+@interface SceneViewController () <LayoutStateObserver, SceneViewDelegate>
 @end
 
 @implementation SceneViewController {
@@ -118,7 +119,8 @@
   [self
       registerForTraitChanges:
           @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                   withAction:@selector(updateAssistantLayout)];
+                   withAction:@selector(onSystemTraitChange)];
+  [self onSystemTraitChange];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -220,7 +222,7 @@
                      _assistantShadowView);
 
   [self updateAssistantLayoutConstraints];
-  [self updateAssistantVisualStyling:IsSidePanelLayout(self.traitCollection)];
+  [self updateAssistantVisualStyling:self.layoutState.containedLayoutSupported];
 }
 
 - (void)removeAssistantContainerViewController {
@@ -281,7 +283,53 @@
   }
 }
 
+#pragma mark - Accessors
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  [_layoutState removeObserver:self];
+  _layoutState = layoutState;
+  [_layoutState addObserver:self];
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    willChangeContainedLayout:(BOOL)containedLayoutActive
+    withTransitionCoordinator:(id<LayoutTransitionCoordinating>)coordinator {
+  __weak __typeof(self) weakSelf = self;
+  void (^animationBlock)(void) = ^{
+    [weakSelf setAssistantContainerVisible:containedLayoutActive];
+    [weakSelf setAssistantPanelActive:containedLayoutActive];
+  };
+
+  if (coordinator) {
+    [coordinator animateAlongsideTransition:animationBlock completion:nil];
+  } else {
+    animationBlock();
+  }
+}
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeContainedLayoutSupported:(BOOL)supported {
+  [self updateAssistantLayout];
+}
+
 #pragma mark - Private
+
+// Updates the layout state when system traits change.
+- (void)onSystemTraitChange {
+  BOOL supported = IsSidePanelLayout(self.traitCollection);
+  self.layoutState.containedLayoutSupported = supported;
+
+  if (supported && _assistantContainerViewController) {
+    self.layoutState.containedLayoutActive = YES;
+  } else if (!supported) {
+    self.layoutState.containedLayoutActive = NO;
+  }
+}
 
 // Helper to update app content constraints for panel layout.
 - (void)updateAppContentConstraintsForPanel:(BOOL)active {
@@ -355,7 +403,7 @@
 // Updates both constraints and visual styling for the Assistant container.
 - (void)updateAssistantLayout {
   [self updateAssistantLayoutConstraints];
-  [self updateAssistantVisualStyling:IsSidePanelLayout(self.traitCollection)];
+  [self updateAssistantVisualStyling:self.layoutState.containedLayoutSupported];
 }
 
 // Updates the active assistant constraints for the current active layout.
@@ -381,7 +429,7 @@
   [self setupAssistantPanelConstraints:containerView];
   [self setupAssistantSheetConstraints:containerView];
 
-  if (IsSidePanelLayout(self.traitCollection)) {
+  if (self.layoutState.containedLayoutSupported) {
     _assistantContainerViewController.presentationContext =
         AssistantPresentationContext::kPanel;
     _activeAssistantConstraints = _assistantPanelConstraints;
@@ -471,7 +519,7 @@
 
   CGFloat panelWidth = [self assistantSidePanelWidth];
 
-  if (IsSidePanelLayout(self.traitCollection) &&
+  if (self.layoutState.containedLayoutSupported &&
       _assistantContainerViewController && panelWidth > 0) {
     CGFloat safeAreaTop = self.view.safeAreaInsets.top;
     CGFloat margin = _assistantVisible ? kAssistantContainerMargin : 0.0;
@@ -535,7 +583,7 @@
 
 // Calculates left inset for the Assistant Side Panel.
 - (CGFloat)sidePanelLeftInset {
-  if (!IsSidePanelLayout(self.traitCollection) ||
+  if (!self.layoutState.containedLayoutSupported ||
       !_assistantContainerViewController) {
     return 0;
   }
@@ -592,7 +640,7 @@
   UIView* view = self.view;
   _assistantLeadingConstraint = [assistantView.leadingAnchor
       constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor
-                     constant:kAssistantContainerMargin];
+                     constant:-kAssistantSidePanelMaxWidth];
 
   NSArray* panelConstraints = @[
     _assistantLeadingConstraint,

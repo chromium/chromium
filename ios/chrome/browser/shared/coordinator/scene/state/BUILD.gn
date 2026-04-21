@@ -6,6 +6,9 @@ source_set("state") {
   sources = [
     "incognito_state.h",
     "incognito_state.mm",
+    "layout_state.h",
+    "layout_state.mm",
+    "layout_transition_coordinating.h",
     "tab_grid_state.h",
     "tab_grid_state.mm",
   ]

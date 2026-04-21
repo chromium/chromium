@@ -35,8 +35,6 @@ extern const CGFloat kAssistantSidePanelCornerRadius;
 
 // Spring duration for sheet.
 extern const NSTimeInterval kAssistantSheetSpringDuration;
-// Duration for side panel slide.
-extern const NSTimeInterval kAssistantSidePanelAnimationDuration;
 // Duration for inset changes.
 extern const NSTimeInterval kAssistantSidePanelInsetAnimationDuration;
 // Spring damping ratio.

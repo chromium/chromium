@@ -7,25 +7,57 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_transition_coordinating.h"
 
 namespace {
 // Animation constants.
 constexpr CGFloat kSpringDamping = 0.8;
 constexpr CGFloat kTranslationMargin = 20.0;
+constexpr NSTimeInterval kAssistantSidePanelAnimationDuration = 0.5;
+constexpr NSTimeInterval kAssistantBottomSheetAnimationDuration = 0.4;
 }  // namespace
 
-@implementation AssistantContainerAnimator
+@interface AssistantContainerAnimator () <LayoutTransitionCoordinating>
+@end
+
+@implementation AssistantContainerAnimator {
+  // The layout state used for animation.
+  __weak LayoutState* _layoutState;
+  // Animations to be run alongside the transition.
+  NSMutableArray* _animations;
+  // Completion blocks to be executed after the transition.
+  NSMutableArray* _completions;
+}
+
+- (instancetype)initWithLayoutState:(LayoutState*)layoutState {
+  self = [super init];
+  if (self) {
+    _layoutState = layoutState;
+    _animations = [[NSMutableArray alloc] init];
+    _completions = [[NSMutableArray alloc] init];
+  }
+  return self;
+}
 
 - (void)animatePresentation:
             (UIViewController<AssistantContainerAnimatable>*)viewController
+                   animated:(BOOL)animated
                  completion:(void (^)(void))completion {
-  [self animate:viewController presentation:YES completion:completion];
+  [self animateBottomSheet:viewController
+                 presented:YES
+                  animated:animated
+                completion:completion];
 }
 
 - (void)animateDismissal:
             (UIViewController<AssistantContainerAnimatable>*)viewController
+                animated:(BOOL)animated
               completion:(void (^)(void))completion {
-  [self animate:viewController presentation:NO completion:completion];
+  [self animateBottomSheet:viewController
+                 presented:NO
+                  animated:animated
+                completion:completion];
 }
 
 - (void)animateSidePanelPresentation:
@@ -33,10 +65,12 @@ constexpr CGFloat kTranslationMargin = 20.0;
                   baseViewController:
                       (UIViewController<AssistantContainerPresenter>*)
                           baseViewController
+                            animated:(BOOL)animated
                           completion:(void (^)(void))completion {
   [self animateSidePanel:viewController
       baseViewController:baseViewController
-            presentation:YES
+               presented:YES
+                animated:animated
               completion:completion];
 }
 
@@ -45,22 +79,39 @@ constexpr CGFloat kTranslationMargin = 20.0;
                baseViewController:
                    (UIViewController<AssistantContainerPresenter>*)
                        baseViewController
+                         animated:(BOOL)animated
                        completion:(void (^)(void))completion {
   [self animateSidePanel:viewController
       baseViewController:baseViewController
-            presentation:NO
+               presented:NO
+                animated:animated
               completion:completion];
+}
+
+#pragma mark - LayoutTransitionCoordinating
+
+// Implements UIViewControllerTransitionCoordinator method to run animations
+// alongside the transition.
+- (void)animateAlongsideTransition:(void (^)(void))animation
+                        completion:(void (^)(void))completion {
+  if (animation) {
+    [_animations addObject:animation];
+  }
+  if (completion) {
+    [_completions addObject:completion];
+  }
 }
 
 #pragma mark - Private
 
-// Animates the side panel. If `presentation` is YES, the side panel slides in
+// Animates the side panel. If `presented` is YES, the side panel slides in
 // from the left. Otherwise, it slides out to the left.
 - (void)animateSidePanel:
             (UIViewController<AssistantContainerAnimatable>*)viewController
       baseViewController:
           (UIViewController<AssistantContainerPresenter>*)baseViewController
-            presentation:(BOOL)presentation
+               presented:(BOOL)presented
+                animated:(BOOL)animated
               completion:(void (^)(void))completion {
   UIView* assistantView = viewController.view;
   if (!assistantView) {
@@ -72,29 +123,60 @@ constexpr CGFloat kTranslationMargin = 20.0;
 
   [baseViewController.view layoutIfNeeded];
 
-  [baseViewController setAssistantContainerVisible:!presentation];
+  LayoutState* layoutState = _layoutState;
+  if (layoutState.containedLayoutActive == presented) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
 
-  [UIView animateWithDuration:kAssistantSidePanelAnimationDuration
-      delay:0
-      usingSpringWithDamping:kSpringDamping
-      initialSpringVelocity:0
-      options:0
-      animations:^{
-        [baseViewController setAssistantContainerVisible:presentation];
-        [baseViewController setAssistantPanelActive:presentation];
-      }
-      completion:^(BOOL finished) {
-        if (completion) {
-          completion();
+  if (!animated) {
+    layoutState.containedLayoutActive = presented;
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [layoutState setContainedLayoutActive:presented
+              withTransitionCoordinator:self];
+
+  if (completion) {
+    [_completions addObject:completion];
+  }
+
+  if (_animations.count > 0 || _completions.count > 0) {
+    NSArray* animations = [_animations copy];
+    NSArray* completions = [_completions copy];
+    [_animations removeAllObjects];
+    [_completions removeAllObjects];
+
+    [UIView animateWithDuration:kAssistantSidePanelAnimationDuration
+        delay:0
+        usingSpringWithDamping:kSpringDamping
+        initialSpringVelocity:0
+        options:0
+        animations:^{
+          for (void (^anim)(void) in animations) {
+            anim();
+          }
         }
-      }];
+        completion:^(BOOL finished) {
+          for (void (^comp)(void) in completions) {
+            comp();
+          }
+        }];
+  }
 }
 
-// Animates the container view. If `presentation` is YES, the container slides
-// up from the bottom. Otherwise, it slides down.
-- (void)animate:(UIViewController<AssistantContainerAnimatable>*)viewController
-    presentation:(BOOL)presentation
-      completion:(void (^)(void))completion {
+// Animates the bottom sheet container view. If `presented` is YES, the
+// container slides up from the bottom. Otherwise, it slides down.
+- (void)animateBottomSheet:
+            (UIViewController<AssistantContainerAnimatable>*)viewController
+                 presented:(BOOL)presented
+                  animated:(BOOL)animated
+                completion:(void (^)(void))completion {
   UIView* view = viewController.view;
   UIView* containerView = viewController.assistantContainerView;
   UIView* dimmingView = viewController.dimmingView;
@@ -113,7 +195,7 @@ constexpr CGFloat kTranslationMargin = 20.0;
   UIViewAnimationOptions options;
   CGFloat targetAlpha = 0.0;
 
-  if (presentation) {
+  if (presented) {
     targetAlpha = dimmingView.alpha;
     dimmingView.alpha = 0.0;
     containerView.transform = hiddenTransform;
@@ -124,8 +206,19 @@ constexpr CGFloat kTranslationMargin = 20.0;
     options = UIViewAnimationOptionCurveEaseIn;
   }
 
-  // Animate.
-  [UIView animateWithDuration:kAssistantSidePanelAnimationDuration
+  if (!animated) {
+    [UIView performWithoutAnimation:^{
+      containerView.transform = targetTransform;
+      dimmingView.alpha = targetAlpha;
+    }];
+    viewController.isAnimating = NO;
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [UIView animateWithDuration:kAssistantBottomSheetAnimationDuration
       delay:0
       usingSpringWithDamping:kSpringDamping
       initialSpringVelocity:0

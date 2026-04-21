@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -54,6 +55,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 }  // namespace
 
 @interface AssistantContainerViewController () <FullscreenUIElement,
+                                                LayoutStateObserver,
                                                 UIGestureRecognizerDelegate>
 @end
 
@@ -137,8 +139,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   [self
       registerForTraitChanges:
           @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                   withAction:@selector
-                   (updatePresentationContextFromTraitCollection)];
+                   withAction:@selector(onTraitChange)];
 
   // Apply pending configuration.
   if (_childViewController) {
@@ -290,6 +291,20 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 }
 
 #pragma mark - Properties
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  [_layoutState removeObserver:self];
+  _layoutState = layoutState;
+  [_layoutState addObserver:self];
+
+  if (_layoutState) {
+    [self updatePresentationContextForSupportedState:
+              _layoutState.containedLayoutSupported];
+  }
+}
 
 - (void)setPresentationContext:
     (AssistantPresentationContext)presentationContext {
@@ -876,26 +891,40 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
   // Trigger initial adaptive layout once the view is successfully in the
   // hierarchy.
-  [self updatePresentationContextFromTraitCollection];
+  [self applyLayoutForPresentationContext];
+  [self
+      updatePresentationContextForSupportedState:self.layoutState
+                                                     .containedLayoutSupported];
 }
 
-// Updates the presentation context based on the current trait collection.
-- (void)updatePresentationContextFromTraitCollection {
+// Updates the presentation context based on the layout state.
+- (void)updatePresentationContextForSupportedState:(BOOL)supported {
   if (!self.view.window) {
     return;
   }
 
   AssistantPresentationContext targetContext =
-      IsSidePanelLayout(self.traitCollection)
-          ? AssistantPresentationContext::kPanel
-          : AssistantPresentationContext::kSheet;
+      supported ? AssistantPresentationContext::kPanel
+                : AssistantPresentationContext::kSheet;
 
   if (_presentationContext != targetContext) {
     self.presentationContext = targetContext;
-  } else if (_presentationContext == AssistantPresentationContext::kSheet) {
+  }
+}
+
+// Called when system traits change.
+- (void)onTraitChange {
+  if (_presentationContext == AssistantPresentationContext::kSheet) {
     // Re-evaluate sheet constraints on pure trait changes.
     [self applySheetLayoutConstraints];
   }
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeContainedLayoutSupported:(BOOL)supported {
+  [self updatePresentationContextForSupportedState:supported];
 }
 
 // Configures the constraints for the panel layout.

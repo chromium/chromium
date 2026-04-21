@@ -69,6 +69,8 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -214,6 +216,8 @@ void OnListFamilyMembersResponse(
   // The view controller to use as a the rootViewController for this scene's
   // window.
   SceneViewController* _viewController;
+  // The layout state for this scene.
+  LayoutState* _layoutState;
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
@@ -251,8 +255,10 @@ void OnListFamilyMembersResponse(
                    incognitoBrowser:_incognitoBrowser.get()];
   _tabGridCoordinator.delegate = self.tabGridDelegate;
   [_tabGridCoordinator start];
+  _layoutState = self.sceneState.layoutState;
   if (IsUseSceneViewControllerEnabled()) {
     _viewController = [[SceneViewController alloc] init];
+    _viewController.layoutState = _layoutState;
     _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
     _viewController.delegate = self;
     UIViewController* tabGridViewController =

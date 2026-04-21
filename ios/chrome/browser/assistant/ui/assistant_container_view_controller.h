@@ -12,9 +12,10 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
 
-enum class AssistantContainerDetent : NSInteger;
 @protocol AssistantContainerDelegate;
+enum class AssistantContainerDetent : NSInteger;
 class FullscreenController;
+@class LayoutState;
 
 // View Controller for the Assistant Container.
 @interface AssistantContainerViewController
@@ -38,6 +39,9 @@ class FullscreenController;
 
 // The delegate for the container events.
 @property(nonatomic, weak) id<AssistantContainerDelegate> delegate;
+
+// The layout state.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // Animates the container to a specific detent.
 // If the detent is not found, acts as a no-op.

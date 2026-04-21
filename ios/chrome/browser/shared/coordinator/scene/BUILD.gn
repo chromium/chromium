@@ -284,6 +284,7 @@ source_set("unit_tests") {
     "scene_controller_unittest.mm",
     "scene_delegate_unittests.mm",
     "scene_util_unittest.mm",
+    "state/layout_state_unittest.mm",
     "task_updater_scene_agent_unittest.mm",
   ]
   deps = [

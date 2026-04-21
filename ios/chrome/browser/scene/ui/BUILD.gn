@@ -19,6 +19,7 @@ source_set("ui") {
     "//ios/chrome/browser/app_bar/ui",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",

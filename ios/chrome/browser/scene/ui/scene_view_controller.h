@@ -10,15 +10,19 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
+@class AssistantContainerViewController;
+@protocol BWGCommands;
 @protocol SceneViewControllerDelegate;
 @class LayoutGuideCenter;
-@protocol BWGCommands;
-@class AssistantContainerViewController;
+@class LayoutState;
 
 // A view controller that can act as the `rootViewController` for a scene's
 // window.
 @interface SceneViewController
-    : UIViewController <FullscreenUIElement, AssistantContainerPresenter>
+    : UIViewController <AssistantContainerPresenter, FullscreenUIElement>
+
+// The layout state to observe.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // A view to contain the TabGrid and BVC.
 @property(nonatomic, readonly) UIView* appContainer;
