@@ -1194,8 +1194,8 @@ targets.mixin(
     name = "linux_amd_rx_5500_xt",
     swarming = targets.swarming(
         dimensions = {
-            "gpu": "1002:7340-23.2.1",
-            "os": "Ubuntu-22.04",
+            "gpu": "1002:7340-23.2.1|1002:7340-25.2.8",
+            "os": "Ubuntu-22.04|Ubuntu-24.04",
             "display_attached": "1",
             "pool": "chromium.tests.gpu",
         },
