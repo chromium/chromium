@@ -424,7 +424,7 @@ class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
   ExtensionId extension_id_;
 };
 
-// Test failing on Linux: https://crbug.com/1321186
+// Test failing on Linux: https://crbug.com/40837231
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_TerminateExtensionWithTooManyReloads \
   DISABLED_TerminateExtensionWithTooManyReloads

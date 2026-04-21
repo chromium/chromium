@@ -1078,7 +1078,7 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // Ideally, the URL would only be "fixed" for user input (e.g. for URLs
   // entered into the Omnibox), but some extensions rely on the legacy behavior
   // where all navigations were subject to the "fixing".  See also
-  // https://crbug.com/1145381.
+  // https://crbug.com/40155847.
   url = url_formatter::FixupURL(url.spec());
 
   // Reject invalid URLs.

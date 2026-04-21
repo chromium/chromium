@@ -16,7 +16,7 @@ assert(enable_extensions_core,
 # and any necessary steps to register or instantiate them.
 # Embedders should usually depend on this.
 # Right now, there's currently a number of other targets that are (not ideally)
-# sharded out. See https://crbug.com/883570.
+# sharded out. See https://crbug.com/40593486.
 group("api") {
   public_deps = [ "//chrome/browser/extensions/api:api_implementations" ]
 }

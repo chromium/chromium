@@ -221,7 +221,7 @@ TEST_F(BookmarksApiUnittest,
 
 // Tests that attempting to creating a bookmark with a non-folder parent does
 // not add the bookmark to that parent.
-// Regression test for https://crbug.com/1441071.
+// Regression test for https://crbug.com/40909688.
 TEST_F(BookmarksApiUnittest, Create_NonFolderParent) {
   auto create_function = base::MakeRefCounted<BookmarksCreateFunction>();
   std::string error = api_test_utils::RunFunctionAndReturnError(
@@ -582,7 +582,7 @@ TEST_F(BookmarksApiUnittest, Move_LocalToAccount) {
 
 // Tests that attempting to move a bookmark to a non-folder parent does
 // not add the bookmark to that parent.
-// Regression test for https://crbug.com/1491227.
+// Regression test for https://crbug.com/40074470.
 TEST_F(BookmarksApiUnittest, Move_NonFolderParent) {
   auto move_function = base::MakeRefCounted<BookmarksMoveFunction>();
   std::string error = api_test_utils::RunFunctionAndReturnError(

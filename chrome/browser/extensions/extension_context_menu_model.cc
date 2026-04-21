@@ -625,7 +625,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       // Do nothing if the extension cannot have its site permissions updated.
       // Page access option should only be enabled when the extension site
       // permissions can be changed. However, sometimes the command still gets
-      // invoked (crbug.com/1468151). Thus, we exit early to prevent any
+      // invoked (crbug.com/40068180). Thus, we exit early to prevent any
       // crashes.
       if (!PermissionsManager::Get(profile_)->CanAffectExtension(*extension)) {
         return;

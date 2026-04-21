@@ -2849,7 +2849,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 
 // Tests two concurrent remote consent flows. Both of them should succeed.
 // The second flow starts while the first one is blocked on an interactive mint
-// token flow. This is a regression test for https://crbug.com/1091423.
+// token flow. This is a regression test for https://crbug.com/40134189.
 IN_PROC_BROWSER_TEST_F(
     GetAuthTokenFunctionTest,
     RemoteConsentMultipleActiveRequests_BlockedOnInteractive) {
@@ -2913,7 +2913,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests two concurrent remote consent flows. Both of them should succeed.
 // The second flow starts while the first one is blocked on a non-interactive
-// mint token flow. This is a regression test for https://crbug.com/1091423.
+// mint token flow. This is a regression test for https://crbug.com/40134189.
 IN_PROC_BROWSER_TEST_F(
     GetAuthTokenFunctionTest,
     RemoteConsentMultipleActiveRequests_BlockedOnNoninteractive) {

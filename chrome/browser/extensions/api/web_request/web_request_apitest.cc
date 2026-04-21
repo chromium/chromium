@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Tests registering webRequest events in multiple contexts in the same
 // extension (which will thus be in the same process). Regression test for
-// https://crbug.com/1297276.
+// https://crbug.com/40215092.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        ListenersInMultipleContexts) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebRequestTypes) {
 
 // Test that a request to an OpenSearch description document (OSDD) generates
 // an event with the expected details.
-// Flaky on Windows and Mac: https://crbug.com/1218893
+// Flaky on Windows and Mac: https://crbug.com/40771884
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_WebRequestTestOSDD DISABLED_WebRequestTestOSDD
 #else
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
 }
 
 // This is flaky on wide variety of platforms (beyond that tracked previously in
-// https://crbug.com/41478509). See https://crbug.com/1026001.
+// https://crbug.com/41478509). See https://crbug.com/40108056.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
                        DISABLED_WebRequestAuthRequiredParallel) {
   const bool incognito = GetEnableIncognito();
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_extra_headers")) << message_;
 }
 
-// Flaky on all platforms: https://crbug.com/1003661
+// Flaky on all platforms: https://crbug.com/40098675
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        DISABLED_WebRequestExtraHeaders_Auth) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1571,7 +1571,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
-// TODO: crbug.com/1450976 - Re-enable tests on Mac and CrOS.
+// TODO: crbug.com/40915577 - Re-enable tests on Mac and CrOS.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WebRequestCORSWithExtraHeaders \
   DISABLED_WebRequestCORSWithExtraHeaders
@@ -3660,7 +3660,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
             redirect_successful_listener.extension_id_for_message());
 }
 
-// Regression test for http://crbug.com/1074282.
+// Regression test for http://crbug.com/40686766.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        StaleHeadersAfterRedirect) {
   TestExtensionDir test_dir;
@@ -4438,7 +4438,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/40614965.
-// Flaky on Linux. See http://crbug.com/1423252
+// Flaky on Linux. See http://crbug.com/40897394
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_Initiator_SplitIncognito DISABLED_Initiator_SplitIncognito
 #else
@@ -4572,7 +4572,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Regression test for https://crbug.com/1019614.
+// Regression test for https://crbug.com/40105411.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        HSTSUpgradeAfterRedirect) {
   net::EmbeddedTestServer https_test_server(
@@ -5813,7 +5813,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
               net::IsolationInfo::FrameAncestorRelation::kSameOrigin)));
 }
 
-// Regression test for crbug.com/1510422 to validate that redirection to an
+// Regression test for crbug.com/41483019 to validate that redirection to an
 // invalid URL by extension does not crash the browser.
 IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
                        VerifyInvalidUrlRedirection) {
@@ -6040,7 +6040,7 @@ INSTANTIATE_TEST_SUITE_P(/* No prefix */,
                          ProxyCORSWebRequestApiTestWithContextTypeMv3,
                          ::testing::Values(ContextType::kFromManifest));
 
-// Regression test for crbug.com/1212625
+// Regression test for crbug.com/40183308
 // Test that CORS preflight request which requires proxy auth completes
 // successfully instead of being cancelled after proxy auth required response.
 // This case requires an extension with a webRequest extraHeaders listener that
@@ -6744,7 +6744,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 // Tests a service worker-based extension registering multiple webRequest events
 // in multiple contexts. This ensures the subevent name logic for service worker
 // extensions doesn't result in any collisions of listener IDs, similar to the
-// issue found in https://crbug.com/1297276.
+// issue found in https://crbug.com/40215092.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                        MultipleListenersAndContexts) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -8012,7 +8012,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAuthTest,
 
 // Tests the behavior of an extension that registers an event listener
 // asynchronously.
-// Regression test for https://crbug.com/1397879 and https://crbug.com/1434212.
+// Regression test for https://crbug.com/40882914 and
+// https://crbug.com/40904083.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -8045,7 +8046,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
          });
          // Register an additional event properly so that the service worker
          // still has _a_ listener registered in the process.
-         // https://crbug.com/1434212.
+         // https://crbug.com/40904083.
          chrome.webRequest.onHeadersReceived.addListener(
              (details) => {},
              {urls: ['<all_urls>'], types: ['main_frame']},
@@ -8245,7 +8246,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 // manually create and add a WebRequestEvent that specifies a webViewInstanceId.
 // TODO(tjudkins): It would be good to also stop this on the JS layer by not
 // allowing extensions to manually create and add WebRequestEvents.
-// Regression test for crbug.com/1472830
+// Regression test for crbug.com/40926777
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                        TestWebviewIdSpecifiedOnEvent_NoPermission) {
   ASSERT_TRUE(StartEmbeddedTestServer());

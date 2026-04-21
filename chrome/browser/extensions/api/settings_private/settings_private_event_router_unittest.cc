@@ -84,7 +84,7 @@ class SettingsPrivateEventRouterTest : public testing::Test {
 };
 
 // Tests that events from incognito profiles do not get routed to regular
-// profiles. Regression test for https://crbug.com/1381219.
+// profiles. Regression test for https://crbug.com/40245106.
 TEST_F(SettingsPrivateEventRouterTest, IncognitoEventRouting) {
   // Create a testing profile. Override relevant factories.
   TestingProfile* profile = manager_.CreateTestingProfile("test");

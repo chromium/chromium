@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorker) {
 
 // Tests that a message port disconnects if the extension SW is forcefully
 // stopped.
-// Regression test for https://crbug.com/1033783.
+// Regression test for https://crbug.com/40663477.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        TabToWorker_StopWorkerDisconnects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Regression test for https://crbug.com/1176400.
+// Regression test for https://crbug.com/40168341.
 // Tests that service worker shutdown closes messaging channel properly.
 // TODO(crbug.com/417786914): Support native messaging tests on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, WorkerToTab) {
 // Tests that chrome.tabs.sendMessage from SW extension without specifying
 // callback doesn't crash.
 //
-// Regression test for https://crbug.com/1218569.
+// Regression test for https://crbug.com/40771696.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        TabsSendMessageWithoutCallback) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ConnectExternalToWorker) {
 // that stopping the service worker based extension doesn't DCHECK in
 // message_port_extension's message port.
 //
-// Regression test for https://crbug.com/1075751.
+// Regression test for https://crbug.com/40687864.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        UnrelatedPortsArentAffectedByServiceWorker) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 }
 
 // Tests ActiviyLog from SW based extension.
-// Regression test for https://crbug.com/1213074, https://crbug.com/1217343.
+// Regression test for https://crbug.com/40768552, https://crbug.com/40771031.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTestWithActivityLog, ActivityLog) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

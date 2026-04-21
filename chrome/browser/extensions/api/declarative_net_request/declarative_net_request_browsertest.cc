@@ -1905,7 +1905,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MAYBE_AllowRedirect) {
   }
 }
 
-// Test is flaky on win. http://crbug.com/1241762.
+// Test is flaky on win. http://crbug.com/40786216.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Enable_Disable_Reload_Uninstall \
   DISABLED_Enable_Disable_Reload_Uninstall
@@ -2490,7 +2490,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, HostAccessPermission) {
 }
 
 #if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
-// Times out on mac-debug: https://crbug.com/1159418
+// Times out on mac-debug: https://crbug.com/40737441
 // Flaky on Android: https://crbug.com/371298229
 #define MAYBE_ChromeURLS DISABLED_ChromeURLS
 #else
@@ -3266,7 +3266,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
 // Tests that static ruleset preferences are deleted on uninstall for an edge
 // case where ruleset loading is completed after extension uninstallation.
-// Regression test for crbug.com/1067441.
+// Regression test for crbug.com/40125030.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        RulesetPrefsDeletedOnUninstall) {
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({} /* rules */));
@@ -3325,7 +3325,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 // Tests that redirecting requests using the declarativeNetRequest API works
 // with runtime host permissions.
 // Disabled due to flakes across all desktop platforms; see
-// https://crbug.com/1274533
+// https://crbug.com/40807649
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        DISABLED_WithheldPermissions_Redirect) {
   // Load an extension which redirects all script requests made to
@@ -4296,7 +4296,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
 // Test that the action matched badge text for an extension is visible in an
 // incognito context if the extension is incognito enabled.
-// Test is disabled on Mac/Linux/CrOS. See https://crbug.com/1280116
+// Test is disabled on Mac/Linux/CrOS. See https://crbug.com/40811259
 // TODO(crbug.com/393191910): Port to desktop Android. The test fails with
 // no stack and no logs.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -6179,7 +6179,7 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Test for https://crbug.com/1355162.
+// Test for https://crbug.com/40235851.
 // Ensure the following happens when DeclarativeNetRequest API blocks a
 // WebBundle:
 // - A request for the WebBundle fails.

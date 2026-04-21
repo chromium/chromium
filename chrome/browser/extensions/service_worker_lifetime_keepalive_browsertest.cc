@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
 // Test the flow of an extension function resolving after an extension service
 // worker has timed out and been terminated.
-// Regression test for https://crbug.com/1453534.
+// Regression test for https://crbug.com/40065560.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ExtensionFunctionGetsResolvedAfterWorkerTermination) {
   static constexpr char kManifest[] =
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 // Tests that we can safely shut down a BrowserContext when an extension has
 // an active message port to another extension, where each are running in
 // split incognito mode.
-// Regression test for https://crbug.com/1476316.
+// Regression test for https://crbug.com/40070712.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ShutdownWithActiveMessagePipe_SplitModeExtension) {
   // A split-mode extension. This will have a separate process for the on- and
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // service worker layer. Since the context is being shut down, this can
   // fail with `content::ServiceWorkerExternalRequestResult::kNullContext`. This
   // is fine, since the whole context is going away.
-  // See https://crbug.com/1476316.
+  // See https://crbug.com/40070712.
   ProfileDestructionWaiter profile_destruction_waiter(incognito_profile);
   CloseTabForWebContents(incognito_contents);
   profile_destruction_waiter.Wait();

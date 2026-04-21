@@ -106,7 +106,7 @@ bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script,
 
 }  // namespace
 
-// Flaky on Mac. See https://crbug.com/1242373.
+// Flaky on Mac. See https://crbug.com/40195042.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Extension DISABLED_Extension
 #else
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, MAYBE_ExtensionNoPermission) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Regression test for crbug.com/1051198
+// Regression test for crbug.com/40051481
 // TODO(crbug.com/496276762): Fix on desktop Android. IsClipboardPasteAllowed()
 // always returns true, because it thinks there was a recent user interaction.
 IN_PROC_BROWSER_TEST_F(ClipboardApiTest, BrowserPermissionCheck) {

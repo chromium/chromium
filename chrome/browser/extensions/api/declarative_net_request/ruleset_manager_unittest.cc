@@ -577,7 +577,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
 }
 
 // Ensures that an allow rule doesn't win over a higher priority modifyHeaders
-// rule. Regression test for crbug.com/1244249.
+// rule. Regression test for crbug.com/40787767.
 TEST_P(RulesetManagerTest, ModifyHeadersWithAllowRules) {
   int rule_id = kMinValidID;
 

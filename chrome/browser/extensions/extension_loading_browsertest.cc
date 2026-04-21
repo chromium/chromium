@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 }
 
 // Tests that changing a Service Worker based extension to an event page doesn't
-// crash. Regression test for https://crbug.com/1239752.
+// crash. Regression test for https://crbug.com/40784969.
 //
 // This test loads a SW based extension that has an event listener for
 // chrome.tabs.onCreated. The event would be registered in ExtensionPrefs. The

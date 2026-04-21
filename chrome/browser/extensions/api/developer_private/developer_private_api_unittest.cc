@@ -2375,7 +2375,7 @@ TEST_F(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
   //
   // Make sure we're comparing absolute paths to avoid failures like
-  // https://crbug.com/1453671 on macOS 14.
+  // https://crbug.com/40916556 on macOS 14.
   base::FilePath absolute_extension_path =
       base::MakeAbsoluteFilePath(extension->path());
   base::FilePath absolute_expected_extension_install_directory =

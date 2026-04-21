@@ -377,7 +377,7 @@ class NetworkingPrivateChromeOSApiTest
     NetworkingPrivateChromeOSApiTestBase::SetUpCommandLine(command_line);
 
     // TODO(pneubeck): Remove the following hack, once the NetworkingPrivateAPI
-    // uses the ProfileHelper to obtain the userhash crbug/238623.
+    // uses the ProfileHelper to obtain the userhash crbug.com/41011101.
     cryptohome::AccountIdentifier login_user;
     login_user.set_account_id(user_manager::CanonicalizeUserID(
         command_line->GetSwitchValueNative(ash::switches::kLoginUser)));

@@ -228,7 +228,7 @@ TEST_F(ExtensionCookiesTest, PartitionKeySerialization) {
   partition_key_for_nonce_and_regular->top_level_site = top_level_site;
   partition_key_for_opaque->top_level_site = "";
 
-  // Partition key to confirm crbug.com/1522601 is addressed.
+  // Partition key to confirm crbug.com/41495564 is addressed.
   std::optional<extensions::api::cookies::CookiePartitionKey>
       partition_key_with_no_top_level_site_set =
           extensions::api::cookies::CookiePartitionKey();

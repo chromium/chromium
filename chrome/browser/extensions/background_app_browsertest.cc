@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundAppBrowserTest, ReloadBackgroundApp) {
 
 // Make sure that the background mode notification is sent for an app install,
 // but not again on browser restart. Regression test for
-// https://crbug.com/1008890
+// https://crbug.com/40650240
 IN_PROC_BROWSER_TEST_F(BackgroundAppBrowserTest, PRE_InstallBackgroundApp) {
   InstallExtension(test_data_dir_.AppendASCII("background_app"), 1);
   EXPECT_EQ(1, g_browser_process->background_mode_manager()

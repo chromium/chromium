@@ -118,7 +118,7 @@ TEST_F(PageCaptureApiUnitTest, PageNavigationDuringSaveAsMHTML) {
   // the extension function running, then trigger a synchronous navigation
   // using the WebContentsTester immediately which will happen before the
   // messaging between threads finishes.
-  // Regression test for crbug.com/1494490
+  // Regression test for crbug.com/40075347
   function->SetBrowserContextForTesting(profile());
   function->SetArgs(
       base::ListValue().Append(base::DictValue().Set("tabId", tab_id)));

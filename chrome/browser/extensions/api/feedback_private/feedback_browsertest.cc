@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ExtraDiagnostics) {
 
 // Ensures that when triggered from Assistant with Google account, Assistant
 // checkbox are not hidden.
-// Disabled due to flake: https://crbug.com/1240591
+// Disabled due to flake: https://crbug.com/40194309
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedbackFromAssistant) {
   WaitForExtensionViewsToLoad();
 
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AppendQuestionnaireNotGoogler) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Disabled due to flake: https://crbug.com/1069870
+// Disabled due to flake: https://crbug.com/40126107
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   const std::pair<std::string, std::string> test_cases[] = {
       {"https://www.google.com/", "https://www.google.com/"},
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   }
 }
 
-// Disabled due to flake: https://crbug.com/1180373
+// Disabled due to flake: https://crbug.com/40750267
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   WaitForExtensionViewsToLoad();
 

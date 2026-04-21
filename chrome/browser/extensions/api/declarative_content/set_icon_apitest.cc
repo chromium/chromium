@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Overview) {
   EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 }
 
-// Regression test for crbug.com/1231027.
+// Regression test for crbug.com/40779405.
 IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
   const Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);

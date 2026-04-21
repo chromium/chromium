@@ -1503,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
 }
 #endif
 
-// TODO(http://crbug.com/1455574) Re-enable.
+// TODO(http://crbug.com/40272850) Re-enable.
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
                        ShowAddShortcutDialog) {
   base::HistogramTester histogram_tester;

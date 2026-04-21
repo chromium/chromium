@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetCurrent) {
   ASSERT_TRUE(RunExtensionTest("tabs/get_current")) << message_;
 }
 
-// Disabled for being flaky. See crbug.com/1472144
+// Disabled for being flaky. See crbug.com/40926473
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_Connect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
@@ -316,7 +316,7 @@ class ExtensionApiCaptureTest : public ExtensionApiTabTest {
   }
 };
 
-// https://crbug.com/1450747 Flaky on Mac.
+// https://crbug.com/40915448 Flaky on Mac.
 // TODO(crbug.com/488154807): Flaky on desktop Android.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
       << message_;
 }
 
-// https://crbug.com/1450933 Flaky on Mac.
+// https://crbug.com/40915548 Flaky on Mac.
 // TODO(crbug.com/451698327): Disabled on Linux dbg due to flakiness.
 // TODO(crbug.com/488154807): Flaky on desktop Android.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
       << message_;
 }
 
-// https://crbug.com/1107934 Flaky on Windows, Linux, ChromeOS.
+// https://crbug.com/40707203 Flaky on Windows, Linux, ChromeOS.
 // TODO(crbug.com/488154807): Flaky on desktop Android.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessageFromOptionsPage) {
 // Tests that extension with "tabs" permission does not leak tab info to another
 // extension without "tabs" permission.
 //
-// Regression test for https://crbug.com/1302959
+// Regression test for https://crbug.com/40058969
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
   constexpr char kManifestWithTabsPermission[] =
       R"({
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsPermissionDoesNotLeakTabInfo) {
           chrome.test.assertEq(3, Array.from(arguments).length);
           // Note: we'll search within all of the arguments, just to make sure
           // we don't miss any inadvertently added ones. See
-          // https://crbug.com/1302959 for details.
+          // https://crbug.com/40058969 for details.
           let argumentsStr = JSON.stringify(arguments);
           let containsUrlStr = argumentsStr.indexOf(urlStr) != -1;
           chrome.test.assertFalse(containsUrlStr);

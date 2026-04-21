@@ -80,7 +80,7 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
 
 // Verify that setting window.location in an NTP-replacement extension results
 // in the NTP web contents being focused - this is a regression test for
-// https://crbug.com/1027719.  We expect the tab contents to be focused when
+// https://crbug.com/40660393.  We expect the tab contents to be focused when
 // navigating away from the NTP - this is what happens in the location
 // assignment case.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 }
 
 // Verify that navigating via chrome.tabs.update does not steal the focus from
-// the omnibox.  This is a regression test for https://crbug.com/1085779.
+// the omnibox.  This is a regression test for https://crbug.com/40693812.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
                        NtpReplacementExtension_TabsUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 
 // Verify that calling window.location.replace in an NTP-replacement extension
 // results in the NTP web contents being focused.  See also
-// https://crbug.com/1027719 (which talks about a similar, but a slightly
+// https://crbug.com/40660393 (which talks about a similar, but a slightly
 // different scenario of assigning to window.location).  We expect the tab
 // contents to be focused when navigating away from the NTP - this is what
 // happens in the location replacement case.
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
-// Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
+// Tab focus should not be stolen by the omnibox - https://crbug.com/40718931.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
-// Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
+// Tab focus should not be stolen by the omnibox - https://crbug.com/40718931.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
                        TabFocusStealingFromMainFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());

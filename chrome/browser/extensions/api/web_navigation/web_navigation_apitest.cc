@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest,
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223028
+// https://crbug.com/40187444
 #define MAYBE_IFrame DISABLED_IFrame
 #else
 #define MAYBE_IFrame IFrame

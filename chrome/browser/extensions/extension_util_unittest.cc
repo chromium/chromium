@@ -166,7 +166,7 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccessWhileDisabled) {
 
   // Disabling the extension and then removing the file access should reload it
   // again back to not having file access. Regression test for
-  // crbug.com/1385343.
+  // crbug.com/40061772.
   registrar()->DisableExtension(extension_id,
                                 {disable_reason::DISABLE_USER_ACTION});
   {

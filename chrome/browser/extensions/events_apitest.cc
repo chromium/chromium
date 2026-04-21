@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
 
 // Tests that registering a listener for an event that requires a permission and
 // then removing that permission using the permissions API does not lead to a
-// crash. Regression test for crbug.com/1402642.
+// crash. Regression test for crbug.com/40884929.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
   // Add an extension which registers an event on a permission which it has
   // declared as optional.
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
 }
 
 // Tests that events broadcast right after a profile has started to be destroyed
-// do not cause a crash. Regression test for crbug.com/1335837.
+// do not cause a crash. Regression test for crbug.com/40847328.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
   // Minimize background page expiration time for testing purposes.
   ProcessManager::SetEventPageIdleTimeForTesting(1);

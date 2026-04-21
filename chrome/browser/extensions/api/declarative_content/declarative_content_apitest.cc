@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 
 // Test that an extension with a RequestContentScript rule in its manifest can
 // be loaded.
-// Regression for crbug.com/1211316, which could cause this test to flake if
+// Regression for crbug.com/40767553, which could cause this test to flake if
 // RulesRegistry::OnExtensionLoaded() was called before
 // UserScriptManager::OnExtensionLoaded().
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,

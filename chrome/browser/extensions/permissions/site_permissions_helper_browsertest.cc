@@ -338,7 +338,7 @@ class SitePermissionsHelperExecuteSciptBrowserTest
 
 // Tests that active tab is cleared when we revoke site permissions of an
 // extension that injects a script programmatically into the page. To fix
-// crbug.com/1433399.
+// crbug.com/40264393.
 IN_PROC_BROWSER_TEST_F(
     SitePermissionsHelperExecuteSciptBrowserTest,
     UpdateSiteAccess_RevokingSitePermission_AlsoClearsActiveTab) {
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that active tab is cleared when we revoke site permissions after
 // granting active tab permissions of an extension that injects a script
-// programmatically into the page.  To fix crbug.com/1433399.
+// programmatically into the page.  To fix crbug.com/40264393.
 IN_PROC_BROWSER_TEST_F(
     SitePermissionsHelperExecuteSciptBrowserTest,
     UpdateSiteAccess_RevokingSitePermissionAfterGrantTab_AlsoClearsActiveTab) {
@@ -586,7 +586,7 @@ class SitePermissionsHelperContentScriptBrowserTest
 };
 
 // Tests that active tab is cleared when we revoke site permissions of an
-// extension that injects a content script. To fix crbug.com/1433399.
+// extension that injects a content script. To fix crbug.com/40264393.
 IN_PROC_BROWSER_TEST_F(
     SitePermissionsHelperContentScriptBrowserTest,
     UpdateSiteAccess_RevokingSitePermission_AlsoClearsActiveTab) {

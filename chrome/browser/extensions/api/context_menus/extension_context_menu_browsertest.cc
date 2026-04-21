@@ -888,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, EventPage) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 }
 
-// Flaky on Mac and Windows. https://crbug.com/1035062
+// Flaky on Mac and Windows. https://crbug.com/40112041
 // Not relevant on Android, which only supports service worker.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_IncognitoSplitContextMenuCount \

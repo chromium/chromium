@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
 // Verify correct keepalive count behavior on network request events.
 // Regression test for http://crbug.com/40437330.
-// Disabled on Linux for flakiness: http://crbug.com/1030435.
+// Disabled on Linux for flakiness: http://crbug.com/40109993.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_KeepaliveOnNetworkRequest DISABLED_KeepaliveOnNetworkRequest
 #else

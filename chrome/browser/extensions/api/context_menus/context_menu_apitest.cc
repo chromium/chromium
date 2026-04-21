@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, Count) {
   ASSERT_TRUE(RunExtensionTest("context_menus/count")) << message_;
 }
 
-// crbug.com/51436 -- creating context menus from multiple script contexts
+// crbug.com/41190960 -- creating context menus from multiple script contexts
 // should work.
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest,
                        ContextMenusFromMultipleContexts) {

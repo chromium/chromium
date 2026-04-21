@@ -179,8 +179,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
       << "Page action popup should have been removed.";
 }
 
-// Test http://crbug.com/57333: that two page action extensions using the same
-// icon for the page action icon and the extension icon do not crash.
+// Test http://crbug.com/41231177: that two page action extensions using the
+// same icon for the page action icon and the extension icon do not crash.
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestCrash57333) {
   // Load extension A.
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("page_action")

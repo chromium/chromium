@@ -48,7 +48,7 @@ bool ExtensionMigrator::IsAppPresent(const std::string& app_id) {
 
   // If the extension was previously force-installed by policy, don't migrate it
   // or keep it installed. This prevents the extension getting stuck in a
-  // "non-uninstallable" state. crbug.com/1416682
+  // "non-uninstallable" state. crbug.com/40893640
   return extension && !Manifest::IsPolicyLocation(extension->location());
 }
 

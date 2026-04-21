@@ -123,7 +123,7 @@ bool GetPacUrlFromExtensionPref(const base::DictValue& proxy_config,
     return true;
   }
 
-  // TODO(battre): Handle UTF-8 URLs (http://crbug.com/72692).
+  // TODO(battre): Handle UTF-8 URLs (http://crbug.com/40522867).
   std::string pac_url;
   const base::Value* pac_url_val =
       pac_dict->Find(proxy_api_constants::kProxyConfigPacScriptUrl);
@@ -195,7 +195,7 @@ bool GetProxyServer(const base::DictValue& proxy_server,
     scheme = default_scheme;
   }
 
-  // TODO(battre): handle UTF-8 in hostnames (http://crbug.com/72692).
+  // TODO(battre): handle UTF-8 in hostnames (http://crbug.com/40522867).
   std::u16string host16;
   if (const std::string* ptr =
           proxy_server.FindString(proxy_api_constants::kProxyConfigRuleHost)) {
@@ -306,7 +306,7 @@ bool JoinUrlList(const base::ListValue& list,
       result.append(joiner);
     }
 
-    // TODO(battre): handle UTF-8 (http://crbug.com/72692).
+    // TODO(battre): handle UTF-8 (http://crbug.com/40522867).
     const std::string* entry = val.GetIfString();
     if (!entry) {
       LOG(ERROR) << "'rules.bypassList' could not be parsed.";

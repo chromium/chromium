@@ -166,7 +166,7 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   // still need to check if it's an otherwise-restricted URL.
   // NOTE: blob URLs are generally restricted but debugger should be able to
   // attach if it has access to the origin that created the blob.
-  // See https://crbug.com/1492134.
+  // See https://crbug.com/40285404.
   const GURL& url_for_restriction_check =
       url.SchemeIsBlob() ? url::Origin::Create(url).GetURL() : url;
   if (extension.permissions_data()->IsRestrictedUrl(url_for_restriction_check,
@@ -242,7 +242,7 @@ bool ExtensionMayAttachToRenderFrameHost(
        &result](content::RenderFrameHost* render_frame_host) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         // If |render_frame_host| is attached to an inner MimeHandlerViewGuest
-        // skip it. This is done to fix crbug.com/1293856 because an extension
+        // skip it. This is done to fix crbug.com/40213673 because an extension
         // cannot inspect another extension.
         if (MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;

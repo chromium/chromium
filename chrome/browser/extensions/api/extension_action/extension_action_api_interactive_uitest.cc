@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupFailures) {
 
 // Tests that openPopup() will not succeed if a popup is only visible on a tab
 // because of a declarative condition.
-// https://crbug.com/1289846.
+// https://crbug.com/40058555.
 IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
                        DontOpenPopupForDeclarativelyShownAction) {
   ASSERT_TRUE(StartEmbeddedTestServer());

@@ -2651,7 +2651,7 @@ TEST_P(MultipleRulesetsTest,
   VerifyGetEnabledRulesetsFunction(*extension(), {kId2, kId3});
 
   // Ensure the set of enabled rulesets persists across extension reloads.
-  // Regression test for crbug.com/1346185.
+  // Regression test for crbug.com/40232393.
   const ExtensionId extension_id = extension()->id();
   registrar()->DisableExtension(extension_id,
                                 {disable_reason::DISABLE_USER_ACTION});
@@ -2670,7 +2670,7 @@ TEST_P(MultipleRulesetsTest,
 }
 
 // Tests attempting to disable rulesets when there are no rulesets active.
-// Regression test for https://crbug.com/1354385.
+// Regression test for https://crbug.com/40859034.
 TEST_P(MultipleRulesetsTest,
        UpdateAndGetEnabledRulesets_DisableRulesetsWhenEmptyEnabledRulesets) {
   AddRuleset(CreateRuleset(kId1, 90, 0, false));

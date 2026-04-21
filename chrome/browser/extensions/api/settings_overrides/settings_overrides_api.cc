@@ -70,7 +70,7 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     if (data) {
       // We need to override the prepopulate_id and Sync GUID of the generated
       // engine; otherwise, we will collide the original and also clone the
-      // Sync GUID of the original. See https://crbug.com/1166372#c13
+      // Sync GUID of the original. See https://crbug.com/40742063#c13
       //
       // Note that prepopulate_id must be set first, since GenerateSyncGUID()
       // internally depends on it.

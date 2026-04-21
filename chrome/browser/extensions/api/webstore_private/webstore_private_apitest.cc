@@ -1110,7 +1110,7 @@ class ExtensionWebstoreGetWebGLStatusTest : public PlatformBrowserTest {
 };
 
 // Tests getWebGLStatus function when WebGL is allowed.
-// Flaky on Mac. https://crbug.com/1346413.
+// Flaky on Mac. https://crbug.com/40854135.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Allowed DISABLED_Allowed
 #else

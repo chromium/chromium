@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that a page can't use history.back() on another page to navigate to a
 // non-web accessible resource of an extension.
-// Regression test for https://crbug.com/1043965.
+// Regression test for https://crbug.com/40051315.
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
                        WebNavigationToNonWebAccessibleResource_ViaHistoryBack) {
   const Extension* extension = LoadExtension(

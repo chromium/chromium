@@ -904,7 +904,7 @@ void MenuManager::WriteToStorage(const Extension* extension,
   }
 
   // Schedule a task to write to storage since there could be many calls in a
-  // short span of time. See crbug.com/1476858.
+  // short span of time. See crbug.com/40928526.
   write_tasks_[extension_key].Start(
       FROM_HERE, base::Seconds(kWriteDelayInSeconds),
       base::BindOnce(&MenuManager::WriteToStorageInternal,

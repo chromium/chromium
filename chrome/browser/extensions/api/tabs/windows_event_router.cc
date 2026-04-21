@@ -137,7 +137,7 @@ bool WillDispatchWindowFocusedEvent(
   // When switching between windows in the default and incognito profiles,
   // dispatch WINDOW_ID_NONE to extensions whose profile lost focus that
   // can't see the new focused window across the incognito boundary.
-  // See crbug.com/46610.
+  // See crbug.com/40409084.
   bool cant_cross_incognito =
       new_active_context && new_active_context != browser_context &&
       !util::CanCrossIncognito(extension, browser_context);

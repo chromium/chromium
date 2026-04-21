@@ -594,7 +594,7 @@ const char kForceInstallNotEmptyHelp[] =
 
 }
 
-// See http://crbug.com/57378 for flakiness details.
+// See http://crbug.com/41231588 for flakiness details.
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
   // Mark as enterprise managed.
   policy::ScopedDomainEnterpriseManagement scoped_domain;

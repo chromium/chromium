@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
   // meantime.
   // Each entry should have a bug number associated with it.
   static const constexpr char* kAllowedUnknownHistogramEntries[] = {
-      // https://crbug.com/1339382.
+      // https://crbug.com/40849649.
       "offscreen.hasDocument",
   };
 

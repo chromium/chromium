@@ -208,7 +208,7 @@ using NotificationsApiTestWithServiceWorker = NotificationsApiTest;
 
 }  // namespace
 
-// Flaky on TSan, see crbug.com/1304777.
+// Flaky on TSan, see crbug.com/40826670.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestEvents DISABLED_TestEvents
 #else

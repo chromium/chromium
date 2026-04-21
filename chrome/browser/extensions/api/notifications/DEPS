@@ -1,6 +1,6 @@
 specific_include_rules = {
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
+  # https://crbug.com/40131924
   "notifications_apitest\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",

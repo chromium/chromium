@@ -8,7 +8,7 @@
 
 using ClipboardExtensionApiTest = extensions::ExtensionApiTest;
 
-// Disable due to flaky, https://crbug.com/1206809
+// Disable due to flaky, https://crbug.com/40765283
 IN_PROC_BROWSER_TEST_F(ClipboardExtensionApiTest,
                        DISABLED_ClipboardDataChanged) {
   ExtensionTestMessageListener result_listener("success 2");

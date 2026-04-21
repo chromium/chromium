@@ -60,7 +60,7 @@ class PackExtensionOnStartupBrowserTest : public InProcessBrowserTest {
 
 // Tests that appending the --pack-extension switch on startup succeeds with
 // a "real" browser (i.e., outside of unit tests).
-// Regression test for https://crbug.com/1498558.
+// Regression test for https://crbug.com/40287489.
 IN_PROC_BROWSER_TEST_F(PackExtensionOnStartupBrowserTest,
                        PackExtensionOnStartup) {
   // Interesting case: because the --pack-extension switch results in Chrome

@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
   EXPECT_EQ(kExtensionId, extension->id());
 }
 
-// Flaky on a Windows bot. See crbug.com/1030332.
+// Flaky on a Windows bot. See crbug.com/40109939.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else

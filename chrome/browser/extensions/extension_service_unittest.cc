@@ -2496,7 +2496,7 @@ TEST_F(ExtensionServiceTest, TestInstallThemeWithExtensionsDisabled) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Flaky on these platforms. http://crbug.com/1148894
+// Flaky on these platforms. http://crbug.com/40157248
 #define MAYBE_InstallTheme DISABLED_InstallTheme
 #else
 #define MAYBE_InstallTheme InstallTheme
@@ -2924,7 +2924,7 @@ TEST_F(ExtensionServiceTest, DefaultPackedFileAccessWithCreationFlag) {
 // access, but the associated pref for file access becomes mismatched to say
 // that the extension shouldn't have file access, then on the next reload of the
 // extension (e.g. on Chrome startup) the pref will take precedence.
-// Regression test for crbug.com/1414398.
+// Regression test for crbug.com/40062996.
 TEST_F(ExtensionServiceTest, FileAccessFlagAndPrefMismatch) {
   InitializeEmptyExtensionService();
   GURL file_url("file:///etc/passwd");
@@ -3774,7 +3774,7 @@ TEST_F(ExtensionServiceTest, SetUnsetBlocklistInPrefs) {
 
 // Tests that an extension that was disabled through Omaha won't be
 // re-enabled if it's not present in the Safe Browsing blocklist.
-// Regression test for https://crbug.com/1107040.
+// Regression test for https://crbug.com/40140699.
 TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   TestBlocklist test_blocklist;
   // A profile with 3 extensions installed: good0, good1, and good2.

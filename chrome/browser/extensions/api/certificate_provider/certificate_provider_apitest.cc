@@ -94,7 +94,7 @@ using testing::_;
 
 namespace {
 
-// TODO(https://issues.chromium.org/issues/434006732): switch to
+// TODO(https://crbug.com/434006732): switch to
 // crypto::sign::Sign() once that supports all the algorithms needed here.
 bool RsaSignRawData(uint16_t openssl_signature_algorithm,
                     const std::vector<uint8_t>& input,
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 
 // Test that the certificateProvider events are delivered correctly in the
 // scenario when the event listener is in a lazy background page that gets idle.
-// Disabled due to flakiness - https://crbug.com/1279724
+// Disabled due to flakiness - https://crbug.com/40811018
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest,
                        DISABLED_LazyBackgroundPage) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));

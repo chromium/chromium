@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, CrossOriginIsolation) {
 }
 
 // Tests the interaction of Cross-Origin-Embedder-Policy with extension host
-// permissions. See crbug.com/1246109.
+// permissions. See crbug.com/40789023.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        CrossOriginEmbedderPolicy_HostPermissions) {
   TestExtensionDir test_dir_1;
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
 }
 
 // Test that an extension service worker for a cross origin isolated extension
-// is not cross origin isolated. See crbug.com/1131404.
+// is not cross origin isolated. See crbug.com/40150182.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
   RestrictProcessCount();
 
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 }
 
 // Verify extension resource access if it's in an iframe. Regression test for
-// crbug.com/1343610.
+// crbug.com/40060244.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
   EXPECT_TRUE(embedded_test_server()->Start());
 

@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsMainWorld) {
 
 // Unregisters a pending script and verifies that the script is unregistered
 // and doesn't inject.
-// Regression test for https://crbug.com/1496907.
+// Regression test for https://crbug.com/40286917.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        RapidDynamicContentScriptRegistrationAndUnregistration) {
   static constexpr char kManifest[] =
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   // Verify that only the second script injects (i.e., that the first script
-  // really was unregistered). Regression test for https://crbug.com/1496907.
+  // really was unregistered). Regression test for https://crbug.com/40286917.
   auto* web_contents = GetActiveWebContents();
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that if an extension with persistent scripts is quickly unloaded while
 // these scripts are being fetched, requests that wait on that extension's
-// script load will be unblocked. Regression for crbug.com/1250575
+// script load will be unblocked. Regression for crbug.com/40198053
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RapidLoadUnload) {
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptSpecialCharacters) {
 }
 
 // Tests that calling scripting.executeScript works on a newly created tab
-// before the initial commit has happened. Regression for crbug.com/1191971.
+// before the initial commit has happened. Regression for crbug.com/40756964.
 // TODO(crbug.com/391921606): Port to desktop Android when we have test
 // navigation utilities that support "wait for tab".
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 #endif
 
 // Verifies dynamic scripts are properly injected in incognito.
-// Regression test for https://crbug.com/1495191.
+// Regression test for https://crbug.com/40286428.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        PRE_DynamicContentScriptsInjectInIncognito) {
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.

@@ -842,7 +842,7 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusRunning) {
 }
 
 // Verifies that the total password count is reported accurately.
-// Regression test for crbug.com/1432734.
+// Regression test for crbug.com/40264087.
 TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusCount) {
   identity_test_env().MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);

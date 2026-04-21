@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
 // Extension is site_for_cookies, initiator and requested URL are permitted,
 // initiator and requested URL are same-site => SameSite cookies are sent.
-// crbug.com/1153083: flaky on linux, win, and mac
+// crbug.com/40158945: flaky on linux, win, and mac
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
                        OnePermittedSameSiteFrame_Navigation) {
   SetCookies(kPermittedHost);
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, NestedSameSitePermitted) {
 // https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-5.2.1)
 // If we also want to ensure first-partyness between each frame and its
 // immediate parent, then we should not send SameSite cookies here. See
-// crbug.com/1027258.
+// crbug.com/40108668.
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest, NestedCrossSitePermitted) {
   SetCookies(kPermittedHost);
   content::RenderFrameHost* main_frame = NavigateMainFrameToExtensionPage();

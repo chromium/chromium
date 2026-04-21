@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
 }
 
 // Tests the behavior of the Safe Browsing API as described in
-// crbug.com/1064722.
+// crbug.com/40681445.
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);

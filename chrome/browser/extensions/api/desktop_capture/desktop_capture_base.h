@@ -52,7 +52,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
   // be suppressed when that is the case, so this flag has to be plumbed down
   // with the other flags that affect the picker. However, unlike the other
   // flags, this one only communicates intent, and has no other effect.
-  // It is a necessary evil, a work-around to address crbug.com/1354189.
+  // It is a necessary evil, a work-around to address crbug.com/40858915.
   // This will go away once the Extension API itself goes away.
   //
   // |origin| is the origin for which the stream is created.

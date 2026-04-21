@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideHistory) {
   }
 }
 
-// Regression test for http://crbug.com/41442.
+// Regression test for http://crbug.com/40384582.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldNotCreateDuplicateEntries) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("override/history"));

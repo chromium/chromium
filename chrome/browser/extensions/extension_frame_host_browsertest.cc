@@ -219,7 +219,7 @@ class ExtensionFrameHostBrowserTest : public ExtensionApiTest {
 
 // Test that when ExtensionFrameHost dispatches an invalid request it gets
 // an error associated with it. This is a regression test for
-// https://crbug.com/1196377.
+// https://crbug.com/40759577.
 // NOTE: If this test fails or crashes, and you changed ExtensionBrowserClient
 // recently, see the note in SetUpOnMainThread() above.
 IN_PROC_BROWSER_TEST_F(ExtensionFrameHostBrowserTest, InvalidNameRequest) {

@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
   EXPECT_EQ("word incognito", incognito_listener.message());
 }
 
-// The test is flaky on Win10. crbug.com/1045731.
+// The test is flaky on Win10. crbug.com/40670412.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PopupStaysClosed DISABLED_PopupStaysClosed
 #else
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
 #endif
 // Tests that the autocomplete popup doesn't reopen after accepting input for
 // a given query.
-// http://crbug.com/88552
+// http://crbug.com/40594300
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 }
 
 // Tests deleting a deletable omnibox extension suggestion result.
-// Flaky on Windows and Linux TSan. https://crbug.com/1287949
+// Flaky on Windows and Linux TSan. https://crbug.com/40816589
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_DeleteOmniboxSuggestionResult \
   DISABLED_DeleteOmniboxSuggestionResult
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestionFailures) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/405219624): Port these tests to desktop Android. Most require
 // access to the Views location bar, which is not available on Android.
-// Flaky on Linux TSan. https://crbug.com/1304694
+// Flaky on Linux TSan. https://crbug.com/40826642
 #if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_SetDefaultSuggestion DISABLED_SetDefaultSuggestion
 #else
@@ -871,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
 }
 
 // Tests an extension passing empty suggestions. Regression test for
-// https://crbug.com/1330137.
+// https://crbug.com/40227079.
 // TODO(crbug.com/326903502): Flaky on TSan.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_PassEmptySuggestions DISABLED_PassEmptySuggestions

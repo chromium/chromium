@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScriptsInLocales) {
 
 // Tests that a deleted content_script results in content verification failure.
 //
-// Regression test for crbug.com/1296310.
+// Regression test for crbug.com/40214734.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        DeletedContentScriptFailsContentVerification) {
   TestContentScriptExtension("content_verifier/content_script.crx",
@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 // Tests that navigating to an extension resource with incorrect case does not
 // disable the extension, both in case-sensitive and case-insensitive systems.
 //
-// Regression test for https://crbug.com/1033294.
+// Regression test for https://crbug.com/40111280.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        RemainsEnabledOnNavigateToPathWithIncorrectCase) {
   const Extension* extension = InstallExtensionFromWebstore(

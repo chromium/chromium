@@ -266,7 +266,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
 
   auto attributes = base::DictValue().Set("_malware", true);
   // kTestExtensionId is already uninstalled. Performing action on it should
-  // not crash. Regression test for https://crbug.com/1305490.
+  // not crash. Regression test for https://crbug.com/40827106.
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 }
 

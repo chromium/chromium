@@ -195,7 +195,7 @@ size_t GetExtensionBackgroundProcessCount() {
 
   // Go through all profiles to ensure we have total count of extension
   // processes containing background pages, otherwise one profile can
-  // starve the other. See https://crbug.com/98737.
+  // starve the other. See https://crbug.com/40637462.
   std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   for (Profile* profile : profiles) {
@@ -234,7 +234,7 @@ std::optional<GURL> ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // process model only uses the origin of a hosted app's effective URL.  Note
   // also that we must not return an invalid effective URL here, since that
   // might lead to incorrect security decisions - see
-  // https://crbug.com/1016954.
+  // https://crbug.com/40104314.
   const Extension* hosted_app =
       registry->enabled_extensions().GetHostedAppByURL(url);
   if (hosted_app)
@@ -247,7 +247,7 @@ std::optional<GURL> ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // This is important to prevent the SiteInstance and (unprivileged) process
   // hosting a disabled extension URL from incorrectly getting reused after
   // re-enabling the extension, which would lead to renderer kills
-  // (https://crbug.com/1197360).
+  // (https://crbug.com/40760109).
   if (url.SchemeIs(kExtensionScheme) &&
       !registry->enabled_extensions().GetExtensionOrAppByURL(url)) {
     return GURL(extensions::kExtensionInvalidRequestURL);

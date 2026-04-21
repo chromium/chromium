@@ -270,7 +270,7 @@ void TabCaptureRegistry::OnRequestUpdate(
       request->capture_state() != tab_capture::TabCaptureState::kStopped &&
       request->capture_state() != tab_capture::TabCaptureState::kError) {
     // Despite other code preventing multiple captures of the same tab, we can
-    // reach this case due to a race condition (see crbug.com/1370338).
+    // reach this case due to a race condition (see crbug.com/40869705).
     // TODO(crbug.com/40874553): Handle status updates for multiple capturers.
     return;
   }

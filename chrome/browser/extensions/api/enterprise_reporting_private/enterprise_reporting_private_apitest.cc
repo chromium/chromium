@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
-// TODO(http://crbug.com/1408618): Failing consistently on Mac.
+// TODO(http://crbug.com/40888560): Failing consistently on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_GetPlistSettings_Success DISABLED_GetPlistSettings_Success
 #else

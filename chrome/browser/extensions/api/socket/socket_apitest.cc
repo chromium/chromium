@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Flaky on Windows. https://crbug.com/1319604.
+// Flaky on Windows. https://crbug.com/40836222.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SocketTCPExtension DISABLED_SocketTCPExtension
 #else

@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeApiTest,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Regression test for https://crbug.com/1298195 - whether a tab opened
+// Regression test for https://crbug.com/40822787 - whether a tab opened
 // from the background page (via `window.open(...)`) will be correctly
 // marked as `mojom::ViewType::kTabContents`.
 //

@@ -152,7 +152,7 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   // Close background hosts when the last profile is closed so that they
   // have time to shutdown various objects on different threads. The
   // KeyedService::Shutdown override is called too late in the shutdown
-  // sequence. http://crbug.com/15708
+  // sequence. http://crbug.com/40952676
   auto close_background_hosts = [](Profile* profile) {
     ProcessManager* manager =
         ProcessManagerFactory::GetForBrowserContextIfExists(profile);

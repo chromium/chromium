@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
 // we have a check that the receiver of an extension event can never be a
 // webpage context. The old webstore gets around this by appearing as a hosted
 // app extension context, but the new webstore has the APIs exposed directly to
-// the webpage context it uses. Regression test for crbug.com/1441136.
+// the webpage context it uses. Regression test for crbug.com/40064270.
 IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
   const GURL webstore_url = GetParam().Resolve("/webstore/mock_store.html");
 

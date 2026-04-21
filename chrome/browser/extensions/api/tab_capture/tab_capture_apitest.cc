@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
 
   perm_granter->GrantIfRequested(extension_b);
 
-  // To reproduce crbug.com/1370338, we have extension_b spam tab capture
+  // To reproduce crbug.com/40869705, we have extension_b spam tab capture
   // requests until one or the other extension successfully captures the tab.
   while (!extension_a_success.was_satisfied() &&
          !extension_b_success.was_satisfied()) {

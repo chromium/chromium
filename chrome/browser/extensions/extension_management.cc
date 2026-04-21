@@ -233,7 +233,7 @@ base::DictValue ExtensionManagement::GetRecommendedInstallList() const {
 
 bool ExtensionManagement::HasAllowlistedExtension() {
   // TODO(rdevlin.cronin): investigate implementation correctness per
-  // https://crbug.com/1258180.
+  // https://crbug.com/40200962.
   if (default_settings_->installation_mode !=
           ManagedInstallationMode::kBlocked &&
       default_settings_->installation_mode !=

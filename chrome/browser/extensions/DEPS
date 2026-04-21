@@ -16,7 +16,7 @@ include_rules = [
 
   # The extensions system should not depend on Chrome Platform Apps (or any
   # other component of the apps system).
-  # https://crbug.com/873872.
+  # https://crbug.com/41407829.
   "-chrome/browser/apps",
 ]
 specific_include_rules = {
@@ -60,7 +60,7 @@ specific_include_rules = {
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
+  # https://crbug.com/40131924
   "browsertest_util\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
@@ -69,13 +69,13 @@ specific_include_rules = {
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
+  # https://crbug.com/40131924
   "chrome_extension_host_delegate\\.cc": [
     "+chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h",
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
+  # https://crbug.com/40131924
   "extension_apitest\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
@@ -84,7 +84,7 @@ specific_include_rules = {
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
+  # https://crbug.com/40131924
   "extension_browsertest_platform_delegate_non_android\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
@@ -93,7 +93,7 @@ specific_include_rules = {
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
+  # https://crbug.com/40131924
   "external_pref_loader\\.cc": [
     "+chrome/browser/apps/user_type_filter.h",
   ],

@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 
 // Tests updating an extension and installing it immediately while it has an
 // active new tab page override and a new tab is open.
-// Regression test for https://crbug.com/1498035.
+// Regression test for https://crbug.com/40939356.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
                        ImmediateUpdateWithNewTabPageOverrideActive) {
   // An extension manifest with a service worker and a new tab page override.
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verifies that a service worker registration associated with an extension's
 // manifest cannot be removed via the `chrome.browsingData` API.
-// Regression test for https://crbug.com/1392498.
+// Regression test for https://crbug.com/40247767.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
                        RegistrationCannotBeRemovedByBrowsingDataAPI) {
   // Load two extensions: one with a service worker-based background context and
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 // Tests that modifying local files for an unpacked extension does not result
 // in the service worker being seen as "updated" (which would result in a
 // "waiting" service worker, violating expectations in the extensions system).
-// https://crbug.com/1271154.
+// https://crbug.com/40805401.
 // TODO(crbug.com/355339195): Re-enable this test
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ModifyingLocalFilesForUnpackedExtensions \

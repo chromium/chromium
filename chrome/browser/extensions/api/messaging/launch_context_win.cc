@@ -167,7 +167,7 @@ base::FilePath LaunchContext::FindManifest(const std::string& host_name,
   std::wstring host_name_wide = base::UTF8ToWide(host_name);
 
   // If permitted, look in HKEY_CURRENT_USER first. If the manifest isn't found
-  // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/1034919#c6
+  // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/40111968#c6
   std::wstring path_str;
   bool found = false;
   if (allow_user_level_hosts) {
@@ -250,7 +250,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
   base::Process launched_process;
   if (use_direct_launch) {
     // Compat: If the target is SUBSYSTEM_WINDOWS, then don't set |start_hidden|
-    // in order to mimic legacy behavior: https://crbug.com/1442359.
+    // in order to mimic legacy behavior: https://crbug.com/40266927.
     // A Windows executable will have LOWORD of 0x4550. A GUI executable will
     // have a non-Zero HIWORD while a console executable will have a 0 HIWORD.
     uintptr_t exe_type = ::SHGetFileInfoW(

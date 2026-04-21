@@ -1187,7 +1187,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
 }
 
 // Tests that the parent_disabled_permissions disable reason is never set for
-// regular users. Prevents a regression to crbug/1100395.
+// regular users. Prevents a regression to crbug.com/40702957.
 TEST_F(ExtensionInfoGeneratorUnitTest,
        NoParentDisabledPermissionsForRegularUsers) {
   // Preconditions.

@@ -448,7 +448,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 }
 
-// Regression test for https://crbug.com/1267860. It should not crash if the
+// Regression test for https://crbug.com/40803100. It should not crash if the
 // extension is uninstalled before it is removed from the blocklist.
 TEST_F(SafeBrowsingVerdictHandlerUnitTest,
        ExtensionUninstalledWhenBlocklisted) {
@@ -475,7 +475,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
   SetBlocklistStateForExtension(kGood0, NOT_BLOCKLISTED, test_blocklist);
 }
 
-// Regression test for https://crbug.com/1267860. It should not crash if the
+// Regression test for https://crbug.com/40803100. It should not crash if the
 // extension is uninstalled during blocklist fetching.
 TEST_F(SafeBrowsingVerdictHandlerUnitTest,
        ExtensionUninstalledWhenBlocklistFetching) {

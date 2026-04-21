@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
 
 // Verify that navigating a subframe to an enabled -> disabled -> enabled
 // extension URL doesn't result in a renderer process termination.  See
-// https://crbug.com/1197360.
+// https://crbug.com/40760109.
 IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
                        VisitReenabledExtensionInSubframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // Go back and then forward.  This should go back to the original URL in the
   // iframe, then go forward to the now-disabled extension URL.  Using a
   // history navigation makes the latter navigation a browser-initiated one,
-  // which is important for reproducing https://crbug.com/1197360.
+  // which is important for reproducing https://crbug.com/40760109.
   content::RenderFrameDeletedObserver observer(subframe);
   web_contents->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));

@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest, RunOnDeletedNode) {
 
 // Tests that calling bookmarkManagerPrivate.cut() to cut a permanent bookmark
 // node into the clipboard gracefully fails.
-// Regression test for https://crbug.com/1021829.
+// Regression test for https://crbug.com/40657280.
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
                        RunCutOnPermanentNode) {
   auto cut_function = base::MakeRefCounted<BookmarkManagerPrivateCutFunction>();

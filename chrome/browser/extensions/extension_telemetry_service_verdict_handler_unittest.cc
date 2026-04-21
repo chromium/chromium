@@ -182,7 +182,7 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
   Blocklist::BlocklistStateMap state_map;
   state_map[kTestExtensionId] = BlocklistState::BLOCKLISTED_MALWARE;
   // kTestExtensionId is already uninstalled. Performing action on it should
-  // not crash. Regression test for https://crbug.com/1305490.
+  // not crash. Regression test for https://crbug.com/40827106.
   service()->PerformActionBasedOnExtensionTelemetryServiceVerdicts(state_map);
 }
 

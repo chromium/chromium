@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionCrash25562) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This page action will not show an icon, since it doesn't specify one but
-  // is included here to test for a crash (http://crbug.com/25562).
+  // is included here to test for a crash (http://crbug.com/41022457).
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("browsertest")
                     .AppendASCII("crash_25562")));
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
 
 // TODO(crbug.com/417057394): Remove log statements once the flakiness has been
 // figured out.
-// Regression test for crbug.com/44415.
+// Regression test for crbug.com/41149291.
 IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
   ExtensionRegistry* registry = extensions::ExtensionRegistry::Get(profile());
 
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
   ReloadExtension(extensionB->id());
 
   LOG(INFO) << "Reloading extensionA again";
-  // This is where it would crash, before http://crbug.com/44415 was fixed.
+  // This is where it would crash, before http://crbug.com/41149291 was fixed.
   ReloadExtension(extensionA->id());
 }
 

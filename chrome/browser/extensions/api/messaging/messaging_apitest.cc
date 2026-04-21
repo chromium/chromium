@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
 
 // Tests that the channel name used in runtime.connect() cannot redirect the
 // message to another event (like onMessage).
-// See https://crbug.com/1430999.
+// See https://crbug.com/40263335.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
   static constexpr char kManifest[] =
       R"({
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
          });
          chrome.runtime.onMessage.addListener((msg) => {
            // We don't expect anything to hit the `onMessage` listener.
-           // See https://crbug.com/1430999.
+           // See https://crbug.com/40263335.
            chrome.test.fail(`Unexpected onMessage received: ${msg}`);
          });)";
   TestExtensionDir test_dir;

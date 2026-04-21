@@ -228,7 +228,7 @@ if (!is_android) {
 if (is_win) {
   # The files below are required to exercise the code that properly launches
   # Native Hosts with paths containing characters that are problematic for
-  # cmd.exe. crbug.com/335558
+  # cmd.exe. crbug.com/41084583
   executable("native_messaging_test_echo_host") {
     testonly = true
     sources = [ "native_messaging_test_echo_host.cc" ]

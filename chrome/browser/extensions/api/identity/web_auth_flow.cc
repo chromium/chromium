@@ -327,7 +327,7 @@ void WebAuthFlow::DidFinishNavigation(
 
   // Websites may create and remove <iframe> during the auth flow. In
   // particular, to integrate CAPTCHA tests. Chrome shouldn't abort the auth
-  // flow if a navigation failed in a sub-frame. https://crbug.com/1049565.
+  // flow if a navigation failed in a sub-frame. https://crbug.com/40672617.
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }

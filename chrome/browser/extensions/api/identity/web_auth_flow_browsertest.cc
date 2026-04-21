@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(
             auth_url);
 }
 
-// This is a regression test for crbug/1445824, makes sure the opened popup
+// This is a regression test for crbug.com/40268316, makes sure the opened popup
 // window does not trigger Session restore.
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
                        InteractiveNoBrowser_NotActivatingSessionRestore) {

@@ -533,7 +533,7 @@ void ChromeAppSorting::SetExtensionVisible(const ExtensionId& extension_id,
 void ChromeAppSorting::OnWebAppInstalled(const webapps::AppId& app_id) {
   const web_app::WebApp* web_app = web_app_registrar_->GetAppById(app_id);
   // There seems to be a racy bug where |web_app| can be a nullptr. Until that
-  // bug is solved, check for that here. https://crbug.com/1101668
+  // bug is solved, check for that here. https://crbug.com/40703690
   if (!web_app)
     return;
   if (web_app->user_page_ordinal().IsValid() &&

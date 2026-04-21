@@ -382,7 +382,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       // Reloading an extension reads files from disk.  We do this on the
       // UI thread because reloads should be very rare, and the complexity
       // added by delaying the time when the extensions service knows about
-      // all extensions is significant.  See crbug.com/37548 for details.
+      // all extensions is significant.  See crbug.com/40366546 for details.
       // |allow_blocking| disables tests that file operations run on the file
       // thread.
       base::ScopedAllowBlocking allow_blocking;

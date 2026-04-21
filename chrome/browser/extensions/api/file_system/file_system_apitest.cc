@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-// TODO(http://crbug.com/1230100): Timing-out on Mac ASan.
+// TODO(http://crbug.com/40778804): Timing-out on Mac ASan.
 #define MAYBE_FileSystemApiSaveMultipleFilesTest \
   DISABLED_FileSystemApiSaveMultipleFilesTest
 #else

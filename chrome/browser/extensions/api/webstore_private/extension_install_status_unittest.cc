@@ -386,7 +386,7 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByManifestType) {
 
   // Request has been approved. Note that currently, manifest type blocking
   // actually overrides per-id setup. We will find the right priority with
-  // crbug.com/1088016.
+  // crbug.com/40133200.
   SetExtensionSettings(R"({
     "*": {
       "allowed_types": ["theme", "hosted_app"]

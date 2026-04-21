@@ -700,7 +700,7 @@ class ImeObserverChromeOS
     switch (mode) {
       case ash::AutocapitalizationMode::kUnspecified:
         // Autocapitalize flag may be missing for native text fields,
-        // crbug/1002713. As a safe default, use
+        // crbug.com/40098281. As a safe default, use
         // input_method_private::AUTO_CAPITALIZE_TYPE_OFF
         // ("off" in API specs). This corresponds to Blink's "off" represented
         // by ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE. Note: This fallback must

@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
       << message_;
 }
 
-// crbug.com/39249 -- content scripts js should not run on view source.
+// crbug.com/40373984 -- content scripts js should not run on view source.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ViewSource) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/view_source")) << message_;
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, RunAtTimingsAllFire) {
     EXPECT_TRUE(listener_idle.WaitUntilSatisfied());
 
     // Load the page a second time to check for any issues with cached XSL
-    // resources. See: crbug.com/1041916. Note that test_xsl.xsl has
+    // resources. See: crbug.com/40668194. Note that test_xsl.xsl has
     // mock-http-headers to make sure it is cached.
     listener_start.Reset();
     listener_end.Reset();
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 }
 
 // Tests that content scripts detaching its Window during evaluation shouldn't
-// crash. Regression test for https://crbug.com/1220761.
+// crash. Regression test for https://crbug.com/40773121.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, DetachDuringEvaluation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   EXPECT_EQ(0, get_style_sheet_count());
 
   // Check extensions override page styles if they have more specific rules.
-  // Regression test for https://crbug.com/1175506.
+  // Regression test for https://crbug.com/40167984.
   // This page has four divs (with ids div1, div2, div3, and div4). The page
   // specifies styles for them, but the extension has more specific styles for
   // divs 1, 2, and 3.
@@ -1509,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, StorageApiAllowMixedAccessTest) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Regression test for https://crbug.com/1449796 - verifying that the IPC
+// Regression test for https://crbug.com/40915015 - verifying that the IPC
 // verification doesn't incorrectly think that an IPC from a content script
 // running in an MHTML frame is malicious (in this scenario the `source_url`
 // field of the IPC may be a bit unusual and doesn't necessarily match the
@@ -2258,7 +2258,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
     EXPECT_TRUE(data_url_host->GetParent());
     EXPECT_EQ(data_url(), data_url_host->GetLastCommittedURL());
     // The extension should be allowed to inject since it has access to the
-    // related frame. https://crbug.com/1111028.
+    // related frame. https://crbug.com/40142417.
     EXPECT_TRUE(DidScriptRunInFrame(data_url_host));
   }
 }
@@ -2509,7 +2509,7 @@ class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
 };
 
 // Tests Activity Log for content script executions.
-// Regression test for https://crbug.com/1519380.
+// Regression test for https://crbug.com/41492360.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithActivityLog,
                        ActivityLogRecorded) {
   ASSERT_TRUE(StartEmbeddedTestServer());

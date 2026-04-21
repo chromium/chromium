@@ -185,7 +185,7 @@ bool SetOpenerOfTab(Profile& profile,
                     ::tabs::TabInterface& tab,
                     ::tabs::TabInterface& opener,
                     std::string& error) {
-  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+  // Bug fix for crbug.com/40055514. Don't let the extension update the tab
   // if the user is dragging tabs.
   if (!ExtensionTabUtil::IsTabStripEditable(profile)) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
@@ -2446,7 +2446,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     bool pinned = *params->update_properties.pinned;
 
     if (target_tab->IsPinned() != pinned) {
-      // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+      // Bug fix for crbug.com/40055514. Don't let the extension update the tab
       // if the user is dragging tabs.
       if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
         return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
@@ -2556,7 +2556,7 @@ bool TabsUpdateFunction::UpdateActiveTab(
   }
 #endif
 
-  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+  // Bug fix for crbug.com/40055514. Don't let the extension update the tab
   // if the user is dragging tabs.
   if (!ExtensionTabUtil::IsTabStripEditable(profile)) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
@@ -2588,7 +2588,7 @@ bool TabsUpdateFunction::UpdateHighlightedTab(
     return true;
   }
 
-  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+  // Bug fix for crbug.com/40055514. Don't let the extension update the tab
   // if the user is dragging tabs.
   if (!ExtensionTabUtil::IsTabStripEditable(profile)) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
@@ -2670,7 +2670,7 @@ bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
       load_params.initiator_origin->GetURL());
 
   // Marking the navigation as initiated via an API means that the focus
-  // will stay in the omnibox - see https://crbug.com/1085779.
+  // will stay in the omnibox - see https://crbug.com/40693812.
   load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
 
   base::WeakPtr<content::NavigationHandle> navigation_handle =

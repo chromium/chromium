@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
 
 // Tests opening and immediately closing an offscreen document (so that the
 // close happens before it's fully loaded). Regression test for
-// https://crbug.com/1450784.
+// https://crbug.com/40065191.
 IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
   static constexpr char kManifest[] =
       R"({

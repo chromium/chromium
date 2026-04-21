@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
 
 // Not specifying a tab defaults to the extension's background page.
 // Service worker-based extensions don't have one, so they must specify
-// a tab. This is a regression test for crbug.com/1271590.
+// a tab. This is a regression test for crbug.com/40205786.
 IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, ServiceWorkerMustSpecifyTab) {
   static constexpr char kManifest[] =
       R"({

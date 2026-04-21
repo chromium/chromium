@@ -100,7 +100,7 @@ class DeclarativeNetRequestSafeRulesLazyApiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on ASAN/MSAN: https://crbug.com/1167168
+// Flaky on ASAN/MSAN: https://crbug.com/40742546
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_DynamicRulesLimits DISABLED_DynamicRulesLimits
 #else

@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebContentsBrowserTest, WebContents) {
 }
 
 // Ensure that platform app frames can't be loaded in a tab even on a redirect.
-// Regression test for crbug.com/1110551.
+// Regression test for crbug.com/40052959.
 IN_PROC_BROWSER_TEST_F(ExtensionWebContentsBrowserTest,
                        TabNavigationToPlatformApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebContentsBrowserTest,
 }
 
 // Ensure that the extension's background page can't be navigated away.
-// Regression test for crbug.com/1130083.
+// Regression test for crbug.com/40149659.
 IN_PROC_BROWSER_TEST_F(ExtensionWebContentsBrowserTest,
                        BackgroundPageNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());

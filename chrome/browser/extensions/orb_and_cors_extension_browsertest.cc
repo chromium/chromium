@@ -266,7 +266,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
         });
 
     // We allow more than 1 console message, because the test might flakily see
-    // extra console messages - see https://crbug.com/1085629.
+    // extra console messages - see https://crbug.com/40693726.
     EXPECT_THAT(messages, testing::Contains(testing::HasSubstr(
                               "has been blocked by CORS policy")));
   }
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 }
 // Verification that granting file access to extensions doesn't relax CORS in
 // case of requests to file: URLs (even from content scripts of extensions with
-// <all_urls> permission).  See also https://crbug.com/1049604#c14.
+// <all_urls> permission).  See also https://crbug.com/40672635#c14.
 IN_PROC_BROWSER_TEST_F(
     OrbAndCorsExtensionBrowserTest,
     FromProgrammaticContentScript_PermissionToAllUrls_FileUrls) {
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(
   //
   // The script below uses the XMLHttpRequest API, rather than fetch API,
   // because the fetch API doesn't support file: requests currently
-  // (see https://crbug.com/1051594#c9 and https://crbug.com/1051597#c19).
+  // (see https://crbug.com/40673850#c9 and https://crbug.com/40673851#c19).
   {
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     ObserveResourceLoads();
@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 // Test that verifies the current, baked-in (but not necessarily desirable
 // behavior) where a content script injected by an extension can bypass
 // CORS (and ORB) for any hosts the extension has access to.
-// See also https://crbug.com/1034408 and https://crbug.com/40577839.
+// See also https://crbug.com/40111762 and https://crbug.com/40577839.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_RedirectToNoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1505,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 }
 
 // Test that requests from an extension background page use relaxed ORB
-// processing in `no-cors` mode.  See also https://crbug.com/1252173.
+// processing in `no-cors` mode.  See also https://crbug.com/40793005.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_NoSniffXml_NoCors) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1532,7 +1532,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Verify that no blocking occurred (this is a bit unusual, as "no-cors"
   // responses are normally "opaque" - their body is normally not exposed to
-  // Javascript).  See also https://crbug.com/1252173.
+  // Javascript).  See also https://crbug.com/40793005.
   EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 }
 
@@ -1999,8 +1999,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
-// Flaky on Linux, especially under sanitizers: https://crbug.com/1073052
-// Flaky UAF on Mac under ASAN: https://crbug.com/1082355
+// Flaky on Linux, especially under sanitizers: https://crbug.com/40127384
+// Flaky UAF on Mac under ASAN: https://crbug.com/40691871
 #define MAYBE_FromBackgroundServiceWorker_NoSniffXml \
   DISABLED_FromBackgroundServiceWorker_NoSniffXml
 #else
@@ -2819,7 +2819,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 // Similar to FromBackgroundPage_ActiveTabPermission_SplitMode, but goes through
 // steps that (at one point) forced additional, persistent leaking of incognito
 // permission into the regular profile's background page.  See also
-// https://crbug.com/1167262.
+// https://crbug.com/40742611.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_ActiveTabPermission_SplitMode2) {
   TestExtensionDir extension_dir;

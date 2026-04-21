@@ -15,7 +15,7 @@ namespace extensions {
 namespace {
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// Removal of its use is tracked in https://crbug.com/40233280 but deprecation
 // warnings are disabled in the meanwhile.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"

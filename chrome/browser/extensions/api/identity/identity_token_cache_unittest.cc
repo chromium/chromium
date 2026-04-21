@@ -81,7 +81,7 @@ TEST_F(IdentityTokenCacheTest, AccessTokenCacheHit) {
 }
 
 // The cache should return NOTFOUND status when a token expires.
-// Regression test for https://crbug.com/1127187.
+// Regression test for https://crbug.com/40718910.
 TEST_F(IdentityTokenCacheTest, ExpiredAccessTokenCacheHit) {
   std::string token_string = "token";
   std::set<std::string> scopes = {"foo", "bar"};

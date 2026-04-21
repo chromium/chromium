@@ -119,7 +119,7 @@ TEST_F(ExtensionMigratorTest, HasBothOldAndNew) {
 }
 
 // Tests that a previously-force-installed extension can be uninstalled.
-// crbug.com/1416682
+// crbug.com/40893640
 TEST_F(ExtensionMigratorTest, HasPreviouslyForceInstalledNew) {
   InitWithExistingProfile();
   scoped_refptr<const Extension> extension =

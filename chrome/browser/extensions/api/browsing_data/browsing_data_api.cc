@@ -190,7 +190,7 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kCacheStorageKey,
              delete_site_data);
-  // PluginData is not supported anymore. (crbug.com/1135791)
+  // PluginData is not supported anymore. (crbug.com/40152007)
   SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kPluginDataKeyDeprecated,
              false);
@@ -516,7 +516,7 @@ bool BrowsingDataRemoveFunction::IsPauseSyncAllowed() {
 
 bool BrowsingDataRemoveAppcacheFunction::GetRemovalMask(
     uint64_t* removal_mask) {
-  // TODO(http://crbug.com/1266606): deprecate and remove this extension api
+  // TODO(http://crbug.com/40802227): deprecate and remove this extension api
   *removal_mask = 0;
   LogUnsupportedDataTypeWarning("appcache");
   return true;
@@ -569,7 +569,7 @@ bool BrowsingDataRemoveLocalStorageFunction::GetRemovalMask(
 
 bool BrowsingDataRemovePluginDataFunction::GetRemovalMask(
     uint64_t* removal_mask) {
-  // Plugin data is not supported anymore. (crbug.com/1135788)
+  // Plugin data is not supported anymore. (crbug.com/40152004)
   *removal_mask = 0;
   LogUnsupportedDataTypeWarning(
       extension_browsing_data_api_constants::kPluginDataKeyDeprecated);

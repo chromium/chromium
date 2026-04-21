@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, PageActionKeyUpdated) {
 }
 
 // Verify that keyboard shortcut takes effect without reloading the extension.
-// Regression test for https://crbug.com/1190476.
+// Regression test for https://crbug.com/40756021.
 IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ActionKeyUpdated) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("keybinding/action")) << message_;

@@ -11,7 +11,8 @@
 
 namespace extensions {
 
-// TODO(haven): Clean up this class to remove refcounting.  http://crbug/370590
+// TODO(haven): Clean up this class to remove refcounting.
+// http://crbug.com/41105723
 
 typedef RefCountedVector<api::image_writer_private::RemovableStorageDevice>
     StorageDeviceList;

@@ -757,7 +757,7 @@ TEST_F(PermissionsUpdaterTest, GrantingBroadRuntimePermissions) {
 
 // Validates that we don't overwrite an extension's desired active permissions
 // based on its current active permissions during an optional permissions grant.
-// Regression test for https://crbug.com/1343643.
+// Regression test for https://crbug.com/40231457.
 TEST_F(PermissionsUpdaterTest,
        DontOverwriteDesiredActivePermissionsOnOptionalPermissionsGrant) {
   InitializeEmptyExtensionService();
@@ -811,7 +811,7 @@ TEST_F(PermissionsUpdaterTest,
 // Validates that we don't overwrite an extension's desired active permissions
 // based on its initial effective active permissions on load (which could be
 // different, in the case of withheld host permissions).
-// Regression test for https://crbug.com/1343643.
+// Regression test for https://crbug.com/40231457.
 TEST_F(PermissionsUpdaterTest,
        DontOverwriteDesiredActivePermissionsOnExtensionLoad) {
   InitializeEmptyExtensionService();

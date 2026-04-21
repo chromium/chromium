@@ -426,7 +426,7 @@ class ExtensionWebUIListenersTest : public ExtensionWebUITest {
   }
 };
 
-// Tests crbug.com/1253745 where adding and removing listeners in a WebUI frame
+// Tests crbug.com/40199285 where adding and removing listeners in a WebUI frame
 // causes all listeners to be removed.
 IN_PROC_BROWSER_TEST_F(ExtensionWebUIListenersTest, MultipleURLListeners) {
   // Use the same URL both for the parent and child frames for convenience.

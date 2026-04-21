@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 }
 
 // Tests that policy blocked hosts supersede the `debugger`
-// permission. Regression test for crbug.com/1139156.
+// permission. Regression test for crbug.com/40053634.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url("https://example.com/test");
@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ReloadAndResetHistory) {
 
 // Tests that an extension is not allowed to inspect a worker through the
 // inspectWorker debugger command.
-// Regression test for https://crbug.com/1059577.
+// Regression test for https://crbug.com/40051715.
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
                        DebuggerNotAllowedToInvokeInspectWorker) {
   GURL url(embedded_test_server()->GetURL(
@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
 
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.
-// This is a regression test for https://crbug.com/1188889.
+// This is a regression test for https://crbug.com/40055226.
 // TODO(crbug.com/41483732): Re-enable this test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)

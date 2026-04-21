@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WebRequest) {
 
 // Tests more chrome.webRequest APIs. Any potentially flaky tests are isolated
 // here.
-// Flaky (crbug.com/1072715).
+// Flaky (crbug.com/40685897).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, DISABLED_WebRequest2) {
   ASSERT_TRUE(
       RunExtensionTest("service_worker/worker_based_background/web_request2"))
@@ -2142,7 +2142,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // 1) Was allowed in incognito.
 // 2) An incognito window was open.
 // 3) Toggle the allow in incognito switch to off
-// Regression test for crbug.com/1394588
+// Regression test for crbug.com/40881657
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        DisallowIncognitoWithOnInstalledListener) {
   ResultCatcher catcher;
@@ -2252,7 +2252,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 
 // Tests that a worker that failed to start due to 'install' error, runs its
 // PendingTasks with a null context and clears them correctly.
-// Regression test for https://crbug.com/1019161.
+// Regression test for https://crbug.com/40050562.
 // See also https://crbug.com/371011217.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        WorkerStartFailureRunsPendingTasksWithNullContext) {
@@ -2544,7 +2544,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestEarlyListenerTest,
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-// Disabled on win due to flakiness: https://crbug.com/1127126.
+// Disabled on win due to flakiness: https://crbug.com/40718882.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_FilteredEventsAfterRestart \
   DISABLED_PRE_FilteredEventsAfterRestart
@@ -2587,7 +2587,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // extension. This is because the extension registered a listener for
 // tabs.onMoved before browser restarted in PRE_EventsAfterRestart.
 //
-// Disabled on win due to flakiness: https://crbug.com/1127126.
+// Disabled on win due to flakiness: https://crbug.com/40718882.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        MAYBE_FilteredEventsAfterRestart) {
   // Verify there is no RenderProcessHost for the extension.
@@ -2860,7 +2860,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, Component) {
 // disabled successfully. This test ensures that the DCHECK in
 // ServiceWorkerTaskQueue::StopObserving does not fail in such a scenario.
 
-// Regression test for https://crbug.com/1223476
+// Regression test for https://crbug.com/40187639
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        ObserveServiceWorkerContext) {
   static constexpr char kManifest[] = R"({
@@ -2922,7 +2922,7 @@ class ServiceWorkerTestWithEarlyReadyMesssage
 // browser restart, the tests verifies that the extension still runs after
 // browser restart.
 //
-// Regression test for crbug.com/1271154.
+// Regression test for crbug.com/40805401.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
                        PRE_MissingRegistrationMitigated) {
   const Extension* extension = LoadExtension(

@@ -252,7 +252,7 @@ void UserScriptListener::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   // It's possible to unload extensions before loading extensions when the
   // ExtensionService uninstalls an orphaned extension. In this case we don't
-  // need to update |profile_data_|. See crbug.com/1036028
+  // need to update |profile_data_|. See crbug.com/40664533
   if (profile_data_.count(browser_context) == 0) {
     return;
   }

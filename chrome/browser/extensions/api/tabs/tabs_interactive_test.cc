@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 using TabsApiInteractiveTest = ExtensionApiTest;
 
 // Tests that a window created with `focused: false` does not cover the focused
-// window. Regression test for https://crbug.com/1302159.
+// window. Regression test for https://crbug.com/40058935.
 IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
                        OpeningAnUnfocusedWindowDoesntCoverTheFocusedWindow) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
   // The new browser should be inactive, since it was created with
   // `focused: false`. The old browser should remain active.
   // This assertion fails on Wayland. This is possibly due to
-  // https://crbug.com/1280332, where bubbles are drawn on the same window,
+  // https://crbug.com/40058249, where bubbles are drawn on the same window,
   // but that is yet to be confirmed.
   if (check_window_active_state) {
     EXPECT_FALSE(new_browser->GetWindow()->IsActive());

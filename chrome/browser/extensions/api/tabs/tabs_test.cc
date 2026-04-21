@@ -3369,7 +3369,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutNewTab) {
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
   url::Origin web_origin = url::Origin::Create(web_url);
 
-  // https://crbug.com/1145381: about:version is rewritten to chrome://version
+  // https://crbug.com/40155847: about:version is rewritten to chrome://version
   // when entered in the omnibox or used in a bookmark.  Such rewriting is
   // definitely undesirable for http-initiated navigations (see r818969), but
   // it is less clear what should happen in extension-initiated navigations.
@@ -3561,7 +3561,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Bug fix for crbug.com/1196309. Ensure that an extension can't update the tab
+// Bug fix for crbug.com/40055468. Ensure that an extension can't update the tab
 // strip while a tab drag is in progress.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, IsTabStripEditable) {
   // Add a couple of web contents to the browser and get their tab IDs.
@@ -3635,7 +3635,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, IsTabStripEditable) {
                                    utils::FunctionMode::kNone));
   }
 
-  // Bug fix for crbug.com/1198717. Error updating tabs while drag in progress.
+  // Bug fix for crbug.com/40055542. Error updating tabs while drag in progress.
   {
     std::string args =
         base::StringPrintf("[%d, {\"highlighted\": true}]", tab_ids[1]);
@@ -3656,7 +3656,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, IsTabStripEditable) {
     EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 
-  // Bug fix for crbug.com/1197146. Tab group modification during drag.
+  // Bug fix for crbug.com/40055487. Tab group modification during drag.
   {
     std::string args = base::StringPrintf("[{\"tabIds\": [%d]}]", tab_ids[0]);
     scoped_refptr<TabsGroupFunction> function =
