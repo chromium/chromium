@@ -313,6 +313,11 @@ class ContextualSearchboxHandler
       std::map<std::string, std::string> additional_params,
       std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 
+  // Callback invoked when relevant tabs are determined for the query to inform
+  // if the smart tab sharing promo should be shown to the user.
+  void OnRelevantTabsReceivedToMaybeShowPromo(
+      std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
+
   std::optional<base::Uuid> GetTaskId();
 
   std::optional<std::pair<base::UnguessableToken,

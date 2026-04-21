@@ -854,8 +854,14 @@ TEST_F(SmartTabSharingTest, SubmitQuery_SmartTabSharingOverrideDisabled) {
                                                       testing::_, testing::_))
       .Times(1)
       .WillOnce([](const auto& options, const auto& query,
-                   const auto& explicit_urls,
-                   auto callback) { std::move(callback).Run({}); });
+                   const auto& explicit_urls, auto callback) {
+        // The min model score should be set to the promo value.
+        ASSERT_EQ(
+            options.min_model_score.value_or(-1.0f),
+            static_cast<float>(
+                contextual_tasks::GetSmartTabSharingPromoScoreThreshold()));
+        std::move(callback).Run({});
+      });
 
   SubmitQueryAndWaitForNavigation();
 }
@@ -870,8 +876,10 @@ TEST_F(SmartTabSharingTest,
                                                       testing::_, testing::_))
       .Times(1)
       .WillOnce([](const auto& options, const auto& query,
-                   const auto& explicit_urls,
-                   auto callback) { std::move(callback).Run({}); });
+                   const auto& explicit_urls, auto callback) {
+        ASSERT_FALSE(options.min_model_score.has_value());
+        std::move(callback).Run({});
+      });
 
   SubmitQueryAndWaitForNavigation();
 }

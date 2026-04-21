@@ -868,8 +868,7 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
         }
       }
     }
-    if (contextual_tasks::GetIsSmartTabSharingEnabled() &&
-        IsSmartTabSharingActive()) {
+    if (contextual_tasks::GetIsSmartTabSharingEnabled()) {
       contextual_tasks::TabSelectionOptions tab_selection_options;
       tab_selection_options.tab_selection_timeout =
           contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
@@ -878,14 +877,30 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
         tab_selection_options.browser_window_interface =
             browser_window_interface->GetWeakPtr();
       }
+      if (IsSmartTabSharingActive()) {
+        // Explicitly do not set threshold - it should just use the default
+        // if smart tab sharing is active.
+
+        contextual_tasks_context_service_->GetRelevantTabsForQuery(
+            tab_selection_options, query_text, explicit_urls,
+            base::BindOnce(&ContextualSearchboxHandler::
+                               ContextualizeQueryWithRelevantTabsAndOpenUrl,
+                           weak_ptr_factory_.GetWeakPtr(), query_text,
+                           disposition, aim_entry_point,
+                           std::move(additional_params)));
+
+        return;
+      }
+
+      // Run tab relevancy logic to determine if smart tab sharing promo should
+      // be shown, but do not block the query.
+      tab_selection_options.min_model_score = static_cast<float>(
+          contextual_tasks::GetSmartTabSharingPromoScoreThreshold());
       contextual_tasks_context_service_->GetRelevantTabsForQuery(
           tab_selection_options, query_text, explicit_urls,
           base::BindOnce(&ContextualSearchboxHandler::
-                             ContextualizeQueryWithRelevantTabsAndOpenUrl,
-                         weak_ptr_factory_.GetWeakPtr(), query_text,
-                         disposition, aim_entry_point,
-                         std::move(additional_params)));
-      return;
+                             OnRelevantTabsReceivedToMaybeShowPromo,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else {
       // Run dark experiment if smart tab sharing is not enabled and do not
       // block.
@@ -951,6 +966,11 @@ void ContextualSearchboxHandler::ContextualizeQueryWithRelevantTabsAndOpenUrl(
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
                          std::move(additional_params));
+}
+
+void ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo(
+    std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
+  // TODO: b/502330712 - If non-empty, propagate to UI to show the promo.
 }
 
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
