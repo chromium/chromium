@@ -1543,12 +1543,6 @@ chromium-metrics-reviews@google.com.
              (iOS and Android)"/>
 </enum>
 
-<enum name="SyncErrorPromptUIAction">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Dismissed"/>
-  <int value="2" label="Button clicked"/>
-</enum>
-
 <!-- LINT.IfChange(TokenBindingBoundTokenPrevalence) -->
 
 <enum name="TokenBindingBoundTokenPrevalence">

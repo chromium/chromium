@@ -2636,38 +2636,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARK_SYNC_LIMIT_ERROR_DESCRIPTION" desc="Description for the error when the user has too many bookmarks and sync is paused.">
         To save bookmarks in your account, delete your unused bookmarks
       </message>
-      <message name="IDS_PASSWORD_SYNC_ERROR_SUMMARY" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords can't be synced (due to missing trusted vault keys). [CHAR_LIMIT=32]">
-        Password sync isn't working
-      </message>
       <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_TITLE" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys). The message prompts the user to fix this issue.">
         Get all your passwords
       </message>
-      <message name="IDS_SYNC_NEEDS_VERIFICATION_TITLE" desc="Title of the error message shown when sync needs to verify the user.">
-        Sync needs to verify it's you
-      </message>
-      <message name="IDS_HINT_SYNC_AUTH_ERROR_MODERN" desc="Hint message to resolve sync auth error updated to align with the UPM error message.">
-        Sign back in to start sync
-      </message>
-      <message name="IDS_HINT_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Hint message to resolve sync degraded recoverability, for users that have not chosen to encrypt all sync data">
-        Make sure you can always access your sync data
-      </message>
-      <message name="IDS_HINT_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Hint message to resolve sync degraded recoverability, for users that have chosen to encrypt all sync data.">
-        Make sure you can always access your saved passwords
-      </message>
-      <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_FOR_EVERYTHING" desc="Hint message to resolve sync encryption error, required to resume sync.">
-        To start sync, verify it's you
-      </message>
-      <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Hint message to resolve sync encryption error, required to resume syncing passwords.">
-        To sync your passwords, verify it's you
-      </message>
       <message name="IDS_PASSWORD_SYNC_TRUSTED_VAULT_ERROR_HINT" desc="Hint message that explains a sync error: Passwords stored in the user's Google Account can't be synced to the device (due to missing trusted vault keys).">
          Verify it’s you to get all your passwords on this device
-      </message>
-      <message name="IDS_HINT_PASSPHRASE_REQUIRED" desc="Hint message to resolve passphrase required error.">
-        To start sync, enter your passphrase
-      </message>
-      <message name="IDS_HINT_CLIENT_OUT_OF_DATE" desc="Hint message to resolve sync protocol error for out-of-date client.">
-        Update <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> to start sync
       </message>
       <message name="IDS_SYNC_ERROR_CARD_OUTDATED_GMS" desc="Error message to update Google Play services to continue syncing passwords.">
         To save and use new passwords in your Google Account, update Google Play services
@@ -2676,9 +2649,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_AUTH_ERROR_CARD_BUTTON" desc="Button text for auth error in sync error cards.">
         Sign in again
       </message>
-      <message name="IDS_TRUSTED_VAULT_ERROR_CARD_BUTTON" desc="Button text for trusted vault error in sync error cards.">
-        Verify it's you
-      </message>
 
       <!-- Sync error strings -->
       <message name="IDS_WIPING_PROFILE_DATA_TITLE" desc="Title for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
@@ -2686,9 +2656,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_WIPING_PROFILE_DATA_MESSAGE" desc="Message for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
         Please wait…
-      </message>
-      <message name="IDS_SYNC_ERROR_OUTDATED_GMS" desc="Sync error string for the Sync row in the main menu, and also the title for the sync error card, in case Google Play services needs to be updated to continue syncing passwords.">
-        Update Google Play services
       </message>
 
       <!-- Identity error card message strings -->

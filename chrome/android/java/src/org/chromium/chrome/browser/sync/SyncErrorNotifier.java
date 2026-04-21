@@ -267,22 +267,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     }
 
     private @StringRes int getNotificationTitle() {
-        // Check if this is a sync error or an identity error.
-        if (mSyncService.isSyncFeatureEnabled()) {
-            // Sync error messages.
-            switch (mNotificationState) {
-                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                    return R.string.password_sync_error_summary;
-                case NotificationState.REQUIRE_PASSPHRASE:
-                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                    return R.string.sync_error_card_title;
-                case NotificationState.HIDDEN:
-                default:
-                    assert false;
-            }
-        }
-
-        // Identity error messages.
         switch (mNotificationState) {
             case NotificationState.REQUIRE_PASSPHRASE:
                 return R.string.identity_error_message_title_passphrase_required;
@@ -297,23 +281,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     }
 
     private @StringRes int getNotificationText() {
-        // Check if this is a sync error or an identity error.
-        if (mSyncService.isSyncFeatureEnabled()) {
-            // Sync error messages.
-            switch (mNotificationState) {
-                case NotificationState.REQUIRE_PASSPHRASE:
-                    return R.string.hint_passphrase_required;
-                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                    return R.string.hint_sync_retrieve_keys_for_passwords;
-                case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                    return R.string.hint_sync_retrieve_keys_for_everything;
-                case NotificationState.HIDDEN:
-                default:
-                    assert false;
-            }
-        }
-
-        // Identity error messages.
         switch (mNotificationState) {
             case NotificationState.REQUIRE_PASSPHRASE:
             case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING:

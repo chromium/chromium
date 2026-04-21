@@ -7013,7 +7013,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Verify
       </message>
       <if expr="is_android">
-        <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message." formatter_data="android_java">
+        <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message.">
           Sign in
         </message>
       </if>

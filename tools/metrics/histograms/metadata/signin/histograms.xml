@@ -3586,30 +3586,6 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SyncErrorMessage{SyncErrorReason}"
-    enum="SyncErrorPromptUIAction" expires_after="2026-09-13">
-  <owner>triploblastic@chromium.org</owner>
-  <owner>bsazonov@chromium.org</owner>
-  <summary>
-    Records various UI and user action events related to the sync error message.
-    Android only.
-  </summary>
-  <token key="SyncErrorReason">
-    <variant name=".AuthError" summary="Auth error."/>
-    <variant name=".ClientOutOfDate" summary="Client out of date."/>
-    <variant name=".PassphraseRequired" summary="Passphrase required."/>
-    <variant name=".SyncSetupIncomplete" summary="Sync setup incomplete."/>
-    <variant name=".TrustedVaultKeyRequiredForEverything"
-        summary="Trusted vault keys required for everything."/>
-    <variant name=".TrustedVaultKeyRequiredForPasswords"
-        summary="Trusted vault keys required for passwords."/>
-    <variant name=".TrustedVaultRecoverabilityDegradedForEverything"
-        summary="Trusted vault recoverability degraded for everything."/>
-    <variant name=".TrustedVaultRecoverabilityDegradedForPasswords"
-        summary="Trusted vault recoverability degraded for passwords."/>
-  </token>
-</histogram>
-
 <histogram name="Signin.SyncOptIn.Completed{Profile}" enum="SigninAccessPoint"
     expires_after="2026-09-27">
   <owner>bsazonov@chromium.org</owner>

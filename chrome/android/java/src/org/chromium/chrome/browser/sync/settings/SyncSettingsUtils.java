@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.ApkInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
@@ -63,8 +62,7 @@ public class SyncSettingsUtils {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     // These are the actions users can taken on error cards, messages, and notifications.
-    // Keep in sync with SyncErrorUiAction enum in sync/enums.xml, and SyncErrorPromptUIAction enum
-    // in signin/enums.xml.
+    // Keep in sync with SyncErrorUiAction enum in sync/enums.xml.
     // LINT.IfChange(SyncErrorUiAction)
     @IntDef({
         ErrorUiAction.SHOWN,
@@ -101,69 +99,6 @@ public class SyncSettingsUtils {
             return UserActionableError.NONE;
         }
         return syncService.getUserActionableError();
-    }
-
-    /**
-     * Gets hint message to resolve sync error.
-     *
-     * @param context The application context.
-     * @param error The sync error.
-     */
-    public static @Nullable String getSyncErrorHint(
-            Context context, @UserActionableError int error) {
-        switch (error) {
-            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-                return context.getString(R.string.hint_sync_auth_error_modern);
-            case UserActionableError.NEEDS_CLIENT_UPGRADE:
-                return context.getString(
-                        R.string.hint_client_out_of_date, ApkInfo.getHostPackageLabel());
-            case UserActionableError.NEEDS_PASSPHRASE:
-                return context.getString(R.string.hint_passphrase_required);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                return context.getString(R.string.hint_sync_retrieve_keys_for_everything);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return context.getString(R.string.hint_sync_retrieve_keys_for_passwords);
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                return context.getString(R.string.hint_sync_recoverability_degraded_for_everything);
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.hint_sync_recoverability_degraded_for_passwords);
-            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
-                return context.getString(R.string.sync_error_card_outdated_gms);
-            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                return context.getString(R.string.bookmark_sync_limit_error_description);
-            case UserActionableError.NONE:
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Gets the title for a sync error.
-     *
-     * @param context The application context.
-     * @param error The sync error.
-     */
-    public static @Nullable String getSyncErrorCardTitle(
-            Context context, @UserActionableError int error) {
-        switch (error) {
-            case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-            case UserActionableError.NEEDS_CLIENT_UPGRADE:
-            case UserActionableError.NEEDS_PASSPHRASE:
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                return context.getString(R.string.sync_error_card_title);
-            case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                return context.getString(R.string.password_sync_error_summary);
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.sync_needs_verification_title);
-            case UserActionableError.NEEDS_UPM_BACKEND_UPGRADE:
-                return context.getString(R.string.sync_error_outdated_gms);
-            case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                return context.getString(R.string.bookmark_sync_limit_error_title);
-            case UserActionableError.NONE:
-            default:
-                return null;
-        }
     }
 
     /**

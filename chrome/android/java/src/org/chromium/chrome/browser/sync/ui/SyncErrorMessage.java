@@ -252,31 +252,12 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     private void recordHistogram(@ErrorUiAction int action) {
         assert mError != UserActionableError.NONE;
         String name =
-                (mSyncService.hasSyncConsent()
-                                ? "Signin.SyncErrorMessage"
-                                : "Sync.IdentityErrorMessage")
-                        + SyncSettingsUtils.getHistogramSuffixForError(mError);
+                "Sync.IdentityErrorMessage" + SyncSettingsUtils.getHistogramSuffixForError(mError);
         RecordHistogram.recordEnumeratedHistogram(name, action, ErrorUiAction.NUM_ENTRIES);
     }
 
     private String getPrimaryButtonText(Context context) {
         assert mError != UserActionableError.NONE;
-        // Check if this is for a sync error.
-        if (mSyncService.hasSyncConsent()) {
-            switch (mError) {
-                case UserActionableError.SIGN_IN_NEEDS_UPDATE:
-                    return context.getString(R.string.password_error_sign_in_button_title);
-                case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING:
-                case UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
-                case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                case UserActionableError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                    return context.getString(R.string.trusted_vault_error_card_button);
-                case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
-                    return context.getString(R.string.learn_more);
-                default:
-                    return context.getString(R.string.open_settings_button);
-            }
-        }
 
         // Strings for identity error.
         switch (mError) {
@@ -324,11 +305,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
 
     private @Nullable String getTitle(Context context) {
         assert mError != UserActionableError.NONE;
-        // Check if this is for a sync error.
-        if (mSyncService.hasSyncConsent()) {
-            // Use the same title with sync error card of sync settings.
-            return SyncSettingsUtils.getSyncErrorCardTitle(context, mError);
-        }
 
         // Strings for identity error.
         switch (mError) {
@@ -362,10 +338,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
 
     private @Nullable String getMessage(Context context) {
         assert mError != UserActionableError.NONE;
-        // Check if this is for a sync error.
-        if (mSyncService.hasSyncConsent()) {
-            return SyncSettingsUtils.getSyncErrorHint(context, mError);
-        }
 
         // Strings for identity error.
         switch (mError) {
