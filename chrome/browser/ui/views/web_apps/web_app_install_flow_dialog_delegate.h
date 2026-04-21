@@ -80,6 +80,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
 
  private:
   void OnLearnMoreButtonClicked();
+  void UpdateDialogTitle(InstallDialogStep step);
   base::WeakPtrFactory<WebAppInstallFlowDialogDelegate> weak_ptr_factory_{this};
 };
 

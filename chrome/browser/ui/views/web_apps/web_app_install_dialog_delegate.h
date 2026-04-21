@@ -117,6 +117,8 @@ class WebAppInstallDialogDelegate : public WebAppModalDialogDelegate {
   // WebAppModalDialogDelegate overrides:
   void CloseDialogAsIgnored() override;
 
+  InstallDialogType dialog_type() { return dialog_type_; }
+
  protected:
   std::unique_ptr<WebAppInstallInfo> install_info_;
 

@@ -116,6 +116,8 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
     flow_view_->UpdateStepVisibility(current_step_);
   }
 
+  UpdateDialogTitle(current_step_);
+
   // Last dialog to show the install button.
   // TODO(crbug.com/380497638): Trigger the installation earlier in the flow.
   if (current_step_ == InstallDialogStep::kSuccessful && dialog_model()) {
@@ -142,6 +144,38 @@ void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
           WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false),
       base::DoNothing());
+}
+
+// Updates dialog title based on current step.
+void WebAppInstallFlowDialogDelegate::UpdateDialogTitle(
+    InstallDialogStep step) {
+  std::u16string title;
+  switch (step) {
+    case InstallDialogStep::kInstallDialog:
+      NOTREACHED();
+    case InstallDialogStep::kInstallerOptions:
+      title = l10n_util::GetStringUTF16(dialog_type() == InstallDialogType::kDiy
+                                            ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
+                                            : IDS_INSTALL_PWA_DIALOG_TITLE);
+      break;
+      // TODO(crbug.com/503767931): Localize string.
+    case InstallDialogStep::kProgress:
+      title = u"Installing app...";
+      break;
+    // TODO(crbug.com/503767931): Localize string.
+    case InstallDialogStep::kSuccessful:
+      title = u"Successfully installed";
+      break;
+  }
+
+  if (dialog_model() && dialog_model()->host()) {
+    auto* host =
+        static_cast<views::BubbleDialogModelHost*>(dialog_model()->host());
+    host->SetTitle(title);
+    host->SetAccessibleTitle(title);
+    // Clear the subtitle for all subsequent steps.
+    host->SetSubtitle(std::u16string());
+  }
 }
 
 // Builds and shows an install dialog flow according to the install_type.
@@ -215,6 +249,13 @@ void WebAppInstallFlowDialogDelegate::Show(
           l10n_util::GetStringUTF16(install_type == InstallDialogType::kDiy
                                         ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
                                         : IDS_INSTALL_PWA_DIALOG_TITLE))
+      .SetTitle(
+          l10n_util::GetStringUTF16(install_type == InstallDialogType::kDiy
+                                        ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
+                                        : IDS_INSTALL_PWA_DIALOG_TITLE))
+      // TODO(b/473080055): Use a translated string. Should use the correct
+      // subtitle if DIY vs simple and detailed like the title above.
+      .SetSubtitle(u"Access this site on a dedicated window on your computer")
       .AddExtraButton(
           base::BindRepeating(
               [](base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate,
@@ -252,8 +293,6 @@ void WebAppInstallFlowDialogDelegate::Show(
           WebAppInstallFlowDialogDelegate::kInstallDialogFlowViewId);
 
   if (install_type == InstallDialogType::kDiy) {
-    dialog_model_builder.SetSubtitle(
-        l10n_util::GetStringUTF16(IDS_DIY_APP_INSTALL_DIALOG_SUBTITLE));
     dialog_model_builder.SetInitiallyFocusedField(kInstallDialogFlowViewId);
   }
 

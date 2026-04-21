@@ -52,22 +52,6 @@ WebAppInstallIntroView::WebAppInstallIntroView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       vertical_spacing));
 
-  // TODO(b/473080055): Use a translated string.
-  auto* title = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(install_type == InstallDialogType::kDiy
-                                    ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
-                                    : IDS_INSTALL_PWA_DIALOG_TITLE),
-      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
-  title->SetMultiLine(false);
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  // TODO(b/473080055): Use a translated string.
-  auto* description = AddChildView(std::make_unique<views::Label>(
-      u"Access this site on a dedicated window on your computer",
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
-  description->SetMultiLine(true);
-  description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
   switch (install_type) {
     case InstallDialogType::kDiy:
       AddChildView(std::make_unique<SiteIconTextAndOriginView>(
