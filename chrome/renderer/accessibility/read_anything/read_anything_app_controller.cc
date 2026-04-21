@@ -787,8 +787,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // starts with the flag-determined distillation method before potentially
   // falling back to Screen2x if needed. If the new page is a PDF, the
   // distillation method is set to Screen2x directly.
-  // We also update |next_distillation_method| since showLoading will clear the
-  // previous active distillation in case there's any.
+  // We also update |current_content_distillation_method| since showLoading will
+  // clear the previous active distillation in case there's any.
   auto initial_method = GetInitialDistillationMethod(is_pdf);
   model_.set_next_distillation_method(initial_method);
   model_.set_current_content_distillation_method(initial_method);
@@ -975,11 +975,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // consider the processing pipeline paused if distillation is in progress.
   model_.set_screen2x_distiller_running(false);
 
-  // Update active distillation method now that screen2x distillation has
-  // finished.
-  model_.set_current_content_distillation_method(
-      ReadAnythingAppModel::DistillationMethod::kScreen2x);
-
   // If speech is playing, we don't want to redraw and disrupt speech. We will
   // re-distill once speech pauses.
   if (IsUpdateProcessingPaused()) {
@@ -1134,6 +1129,11 @@ bool ReadAnythingAppController::PostProcessSelection() {
 }
 
 void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
+  // Draw is only used for the Screen2x distillation path. Readability
+  // distillation uses UpdateContent instead.
+  DCHECK(!model_.is_readability_next_distillation_method())
+      << "Draw called during Readability distillation path.";
+
   // For Google Docs, do not show any text before the doc finishing loading.
   if (pdf_draw_debouncer_->IsRunning() ||
       (IsGoogleDocs() && !model_.page_finished_loading())) {
@@ -1158,6 +1158,12 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
     VLOG(1) << "Not recomputing display nodes, content node size: "
             << model_.content_node_ids().size();
   }
+
+  // Update the current distillation method to Screen2x now that the content is
+  // about to be drawn.
+  model_.set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
   ExecuteJavaScript("chrome.readingMode.updateContent();");
@@ -1178,6 +1184,16 @@ void ReadAnythingAppController::DrawSelection() {
 }
 
 void ReadAnythingAppController::DrawEmptyState() {
+  // Draw is only used for the Screen2x distillation path. Readability
+  // distillation uses UpdateContent instead.
+  DCHECK(!model_.is_readability_next_distillation_method())
+      << "DrawEmptyState called during Readability distillation path.";
+
+  // Update the current distillation method to Screen2x now that the content is
+  // about to be drawn.
+  model_.set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
 }
 
@@ -2594,6 +2610,14 @@ void ReadAnythingAppController::SetContentForTesting(
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
                           false);
+
+  // Set the distillation method to Screen2x before calling OnAXTreeDistilled.
+  // This satisfies the DCHECK in Draw().
+  model_.set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  model_.set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
   OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
 
   // Trigger a selection event (for testing selections).
@@ -2924,13 +2948,6 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
 
   dom_distiller_title_ = title;
   dom_distiller_content_html_ = content;
-
-  // Readability distillation uses the DOM and Google docs rendering is
-  // canvas-based instead of DOM, so display empty.
-  if (IsGoogleDocs()) {
-    DrawEmptyState();
-    return;
-  }
 
   // If readability distillation returns empty content, consider distillation as
   // failure and default to Screen2X distillation.

@@ -5252,6 +5252,40 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   EXPECT_EQ(controller().GetTextContent(kTargetNodeId), u"Child Node");
 }
 
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       CurrentContentDistillationMethod_Screen2x_UpdatesUntilDrawn) {
+  // Mock Readability content being the current_distillation_method.
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Start speech to pause updates.
+  read_aloud_model().SetSpeechPlaying(true);
+  ASSERT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // Trigger Screen2x distillation completion.
+  controller().OnAXTreeDistilled(tree_id_, {1});
+
+  // Readability should still be the current distillation method because Draw()
+  // was blocked.
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Stop speech.
+  controller().OnIsSpeechActiveChanged(false);
+
+  // Now that speech has stopped, the model should require distillation.
+  EXPECT_TRUE(model().requires_distillation());
+
+  // Update distillation method to Screen2x so that Draw() can be called.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  // Once distillation finishes and Draw() is called, the method should update.
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+}
+
 TEST_F(ReadAnythingAppControllerTest, Draw_DebouncesForPdf) {
   static constexpr ui::AXNodeID kId = 4;
   ui::AXNodeData node;
