@@ -105,14 +105,14 @@ class TestPasswordManagerDriver : public StubPasswordManagerDriver {
 
 PasswordRequirementsSpec GetDomainWideRequirements() {
   PasswordRequirementsSpec spec;
-  spec.set_max_length(7);
+  spec.set_max_length(9);
   spec.set_priority(20);
   return spec;
 }
 
 PasswordRequirementsSpec GetFieldRequirements() {
   PasswordRequirementsSpec spec;
-  spec.set_max_length(8);
+  spec.set_max_length(12);
   spec.set_priority(10);
   return spec;
 }

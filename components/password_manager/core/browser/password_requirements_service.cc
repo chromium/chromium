@@ -8,19 +8,45 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_printer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-constexpr size_t kCacheSizeForDomainKeyedSpecs = 200;
-constexpr size_t kCacheSizeForSignatureKeyedSpecs = 500;
-}  // namespace
-
 using autofill::PasswordRequirementsSpec;
 using autofill::PasswordRequirementsSpecFetcher;
 using autofill::PasswordRequirementsSpecFetcherImpl;
+
+constexpr size_t kCacheSizeForDomainKeyedSpecs = 200;
+constexpr size_t kCacheSizeForSignatureKeyedSpecs = 500;
+
+// Ensures that `spec` is a valid spec that the crowdsourcing server can
+// produce. If not, replaces it with an empty spec.
+PasswordRequirementsSpec GetSanitizedSpec(
+    const autofill::PasswordRequirementsSpec& spec) {
+  if (spec.has_lower_case() && spec.lower_case().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_upper_case() && spec.upper_case().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_alphabetic() && spec.alphabetic().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_numeric() && spec.numeric().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_max_length() &&
+      spec.max_length() <
+          autofill::password_generation::kMinimumPasswordLength) {
+    return PasswordRequirementsSpec();
+  }
+  return spec;
+}
+
+}  // namespace
 
 namespace password_manager {
 
@@ -98,7 +124,7 @@ void PasswordRequirementsService::OnFetchedRequirements(
     const PasswordRequirementsSpec& spec) {
   VLOG(1) << "PasswordRequirementsService::OnFetchedRequirements("
           << main_frame_domain << ", " << spec << ")";
-  specs_for_domains_.Put(main_frame_domain, spec);
+  specs_for_domains_.Put(main_frame_domain, GetSanitizedSpec(spec));
 }
 
 void PasswordRequirementsService::AddSpec(
@@ -108,17 +134,18 @@ void PasswordRequirementsService::AddSpec(
     const PasswordRequirementsSpec& spec) {
   VLOG(1) << "PasswordRequirementsService::AddSpec(" << form_signature << ", "
           << field_signature << ", " << spec << ")";
+  PasswordRequirementsSpec sanitized_spec = GetSanitizedSpec(spec);
   specs_for_signatures_.Put(std::make_pair(form_signature, field_signature),
-                            spec);
+                            sanitized_spec);
 
   auto iter_by_domain = specs_for_domains_.Get(main_frame_domain);
   if (iter_by_domain != specs_for_domains_.end()) {
     PasswordRequirementsSpec& existing_spec = iter_by_domain->second;
-    if (existing_spec.priority() > spec.priority()) {
+    if (existing_spec.priority() > sanitized_spec.priority()) {
       return;
     }
   }
-  specs_for_domains_.Put(main_frame_domain, spec);
+  specs_for_domains_.Put(main_frame_domain, sanitized_spec);
 }
 
 void PasswordRequirementsService::FetchPasswordRequirementsSpec(
@@ -157,8 +184,9 @@ void PasswordRequirementsService::HandlePasswordRequirementsSpecFetched(
     const GURL& main_frame_domain,
     FetchPasswordRequirementsSpecCallback callback,
     const PasswordRequirementsSpec& spec) {
-  specs_for_domains_.Put(main_frame_domain, spec);
-  std::move(callback).Run(spec);
+  PasswordRequirementsSpec sanitized_spec = GetSanitizedSpec(spec);
+  specs_for_domains_.Put(main_frame_domain, sanitized_spec);
+  std::move(callback).Run(sanitized_spec);
 }
 
 std::unique_ptr<PasswordRequirementsService> CreatePasswordRequirementsService(

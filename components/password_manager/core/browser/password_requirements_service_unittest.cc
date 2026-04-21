@@ -81,17 +81,17 @@ TEST_F(PasswordRequirementsServiceTest, ExerciseEverything) {
   // but these are chosen to be representative of what we expect the server
   // to send with regards to priorities.
   autofill::PasswordRequirementsSpec spec_l0_p0;  // empty spec.
-  autofill::PasswordRequirementsSpec spec_l7_p0;
-  spec_l7_p0.set_max_length(7u);
-  autofill::PasswordRequirementsSpec spec_l8_p10;
-  spec_l8_p10.set_max_length(8u);
-  spec_l8_p10.set_priority(10);
-  autofill::PasswordRequirementsSpec spec_l9_p20;
-  spec_l9_p20.set_max_length(9u);
-  spec_l9_p20.set_priority(20);
-  autofill::PasswordRequirementsSpec spec_l10_p30;
-  spec_l10_p30.set_max_length(10u);
-  spec_l10_p30.set_priority(30);
+  autofill::PasswordRequirementsSpec spec_l9_p0;
+  spec_l9_p0.set_max_length(9u);
+  autofill::PasswordRequirementsSpec spec_l11_p10;
+  spec_l11_p10.set_max_length(11u);
+  spec_l11_p10.set_priority(10);
+  autofill::PasswordRequirementsSpec spec_l12_p20;
+  spec_l12_p20.set_max_length(12u);
+  spec_l12_p20.set_priority(20);
+  autofill::PasswordRequirementsSpec spec_l15_p30;
+  spec_l15_p30.set_max_length(15u);
+  spec_l15_p30.set_priority(30);
 
   struct {
     const char* test_name;
@@ -105,37 +105,37 @@ TEST_F(PasswordRequirementsServiceTest, ExerciseEverything) {
       },
       {
           .test_name = "Only domain wide spec",
-          .spec_for_domain = &spec_l7_p0,
-          .expected = &spec_l7_p0,
+          .spec_for_domain = &spec_l9_p0,
+          .expected = &spec_l9_p0,
       },
       {
           .test_name = "Only signature based spec",
-          .spec_for_signature = &spec_l7_p0,
-          .expected = &spec_l7_p0,
+          .spec_for_signature = &spec_l9_p0,
+          .expected = &spec_l9_p0,
       },
       {
           .test_name = "Domain spec can override spec based on signature",
-          .spec_for_signature = &spec_l8_p10,
-          .spec_for_domain = &spec_l9_p20,
-          .expected = &spec_l9_p20,  // priority 20 trumps priority 10.
+          .spec_for_signature = &spec_l11_p10,
+          .spec_for_domain = &spec_l12_p20,
+          .expected = &spec_l12_p20,  // priority 20 trumps priority 10.
       },
       {
           .test_name = "Signature spec can override spec based on domain",
-          .spec_for_signature = &spec_l10_p30,
-          .spec_for_domain = &spec_l9_p20,
-          .expected = &spec_l10_p30,  // priority 30 trumps priority 20.
+          .spec_for_signature = &spec_l15_p30,
+          .spec_for_domain = &spec_l12_p20,
+          .expected = &spec_l15_p30,  // priority 30 trumps priority 20.
       },
       {
           .test_name = "Dealing with unset priority in domain",
-          .spec_for_signature = &spec_l8_p10,
-          .spec_for_domain = &spec_l7_p0,  // No prioritiy specified.
-          .expected = &spec_l8_p10,
+          .spec_for_signature = &spec_l11_p10,
+          .spec_for_domain = &spec_l9_p0,  // No priority specified.
+          .expected = &spec_l11_p10,
       },
       {
           .test_name = "Dealing with unset priority in signature",
-          .spec_for_signature = &spec_l7_p0,  // No prioritiy specified.
-          .spec_for_domain = &spec_l8_p10,
-          .expected = &spec_l8_p10,
+          .spec_for_signature = &spec_l9_p0,  // No priority specified.
+          .spec_for_domain = &spec_l11_p10,
+          .expected = &spec_l11_p10,
       },
   };
 
@@ -218,6 +218,67 @@ TEST_F(PasswordRequirementsServiceTest, FetchWithEmptyDomain) {
   EXPECT_FALSE(spec.has_min_length());
   EXPECT_FALSE(spec.has_max_length());
   EXPECT_FALSE(spec.has_priority());
+}
+
+// Tests that specifications with restricted character sets or too short lengths
+// are completely sanitized (replaced with an empty spec).
+TEST_F(PasswordRequirementsServiceTest, SanitizeMaliciousSpecs) {
+  autofill::PasswordRequirementsSpec malicious_spec_lower;
+  malicious_spec_lower.mutable_lower_case()->set_character_set("abc");
+  malicious_spec_lower.set_priority(100);
+
+  autofill::PasswordRequirementsSpec malicious_spec_upper;
+  malicious_spec_upper.mutable_upper_case()->set_character_set("ABC");
+  malicious_spec_upper.set_priority(100);
+
+  autofill::PasswordRequirementsSpec malicious_spec_alphabetic;
+  malicious_spec_alphabetic.mutable_alphabetic()->set_character_set("abcABC");
+  malicious_spec_alphabetic.set_priority(100);
+
+  autofill::PasswordRequirementsSpec malicious_spec_numeric;
+  malicious_spec_numeric.mutable_numeric()->set_character_set("123");
+  malicious_spec_numeric.set_priority(100);
+
+  autofill::PasswordRequirementsSpec malicious_spec_short;
+  malicious_spec_short.set_max_length(3u);  // Less than kMinimumPasswordLength
+  malicious_spec_short.set_priority(100);
+
+  struct {
+    const char* test_name;
+    raw_ptr<const autofill::PasswordRequirementsSpec> malicious_spec;
+  } tests[] = {
+      {"Lower case override", &malicious_spec_lower},
+      {"Upper case override", &malicious_spec_upper},
+      {"Alphabetic override", &malicious_spec_alphabetic},
+      {"Numeric override", &malicious_spec_numeric},
+      {"Too short max length", &malicious_spec_short},
+  };
+
+  for (const auto& test : tests) {
+    SCOPED_TRACE(test.test_name);
+    service_.ClearDataForTesting();
+
+    // Add via PrefetchSpec (which uses OnFetchedRequirements).
+    fetcher_ptr_->SetDataToReturn(test_origin_, *test.malicious_spec);
+    service_.PrefetchSpec(test_origin_);
+    auto result_prefetch = service_.GetSpec(test_origin_, test_form_signature_,
+                                            test_field_signature_);
+    EXPECT_FALSE(result_prefetch.has_priority());
+    EXPECT_FALSE(result_prefetch.has_lower_case());
+    EXPECT_FALSE(result_prefetch.has_max_length());
+
+    service_.ClearDataForTesting();
+
+    // Add via AddSpec.
+    service_.AddSpec(test_origin_, test_form_signature_, test_field_signature_,
+                     *test.malicious_spec);
+
+    auto result_add = service_.GetSpec(test_origin_, test_form_signature_,
+                                       test_field_signature_);
+    EXPECT_FALSE(result_add.has_priority());
+    EXPECT_FALSE(result_add.has_lower_case());
+    EXPECT_FALSE(result_add.has_max_length());
+  }
 }
 }  // namespace
 
