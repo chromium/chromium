@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_logging.gni")
@@ -1026,7 +1027,9 @@ source_set("unit_tests") {
     data_deps = [ "//remoting/test:capability_test_stub" ]
   }
 
-  if (is_posix) {
+  if (is_posix && !is_chromeos && !is_msan) {
+    # PAM tests fail on MSan because libpam is uninstrumented (crbug.com/504793694).
+    # They also don't work on ChromeOS as PAM is not used there for remoting.
     sources += [ "pam_authorization_factory_posix_unittest.cc" ]
     deps += [ ":pam_authorization" ]
   }
@@ -1243,10 +1246,10 @@ if (enable_me2me_host) {
     }
 
     if (is_posix) {
-      deps += [
-        ":pam_authorization",
-        ":signal_handler",
-      ]
+      deps += [ ":signal_handler" ]
+      if (!is_chromeos) {
+        deps += [ ":pam_authorization" ]
+      }
     }
 
     if (!is_ios) {
