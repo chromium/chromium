@@ -5072,8 +5072,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.PaymentsBottomSheet.TimeToTrigger.{Outcome}" units="ms"
-    expires_after="2026-08-30">
+<histogram name="IOS.PaymentsBottomSheetV3.TimeToTrigger.{Outcome}" units="ms"
+    expires_after="2027-04-01">
   <owner>vincb@google.com</owner>
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -6615,6 +6615,35 @@ chromium-metrics-reviews@google.com.
     destination album if necessary, upload the media item and add it to the
     destination album. See IOS.SaveToPhotos.UploadFailureLatency for recording
     of unsuccessful completion.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScanCardBottomSheet.TimeToTrigger.{Outcome}" units="ms"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the elapsed time between receiving the signal to trigger the Scan
+    Card and Autofill bottom sheet and actually making a decision on triggering
+    the sheet, split by {Outcome}. Recorded when making the decision to trigger
+    the sheet.
+  </summary>
+  <token key="Outcome">
+    <variant name="NotTriggered" summary="The sheet was not triggered."/>
+    <variant name="Triggered" summary="The sheet was actually triggered."/>
+  </token>
+</histogram>
+
+<histogram name="IOS.ScanCardBottomSheet.Triggered" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the outcome of attempting to trigger the Scan Card and Autofill
+    bottom sheet as a boolean, true if it triggered or false if it didn't.
+    Recorded when the decision is made on triggering the sheet which corresponds
+    to when the activation signal is received from the sheet's form activity
+    listeners.
   </summary>
 </histogram>
 

@@ -85,17 +85,27 @@ bool HasScanCardSaveAndFillSuggestion(NSArray<FormSuggestion*>* suggestions) {
 }
 
 // Records the histograms related to the outcome of triggering the
-// Payments Bottom Sheet V3 (triggered or didn't trigger).
-void RecordPaymentsBottomSheetTriggerOutcome(bool did_trigger,
-                                             base::TimeDelta trigger_walltime) {
+// Payments Bottom Sheet V3 or the Scan Card and Autofill Bottom Sheet
+// (triggered or didn't trigger).
+void RecordPaymentsOrScanCardBottomSheetTriggerOutcome(
+    bool is_scan_card_flow,
+    bool did_trigger,
+    base::TimeDelta trigger_walltime) {
   if (did_trigger) {
-    base::UmaHistogramTimes("IOS.PaymentsBottomSheet.TimeToTrigger.Triggered",
-                            trigger_walltime);
+    base::UmaHistogramTimes(
+        is_scan_card_flow ? "IOS.ScanCardBottomSheet.TimeToTrigger.Triggered"
+                          : "IOS.PaymentsBottomSheetV3.TimeToTrigger.Triggered",
+        trigger_walltime);
   } else {
     base::UmaHistogramTimes(
-        "IOS.PaymentsBottomSheet.TimeToTrigger.NotTriggered", trigger_walltime);
+        is_scan_card_flow
+            ? "IOS.ScanCardBottomSheet.TimeToTrigger.NotTriggered"
+            : "IOS.PaymentsBottomSheetV3.TimeToTrigger.NotTriggered",
+        trigger_walltime);
   }
-  base::UmaHistogramBoolean("IOS.PaymentsBottomSheetV3.Triggered",
+  base::UmaHistogramBoolean(is_scan_card_flow
+                                ? "IOS.ScanCardBottomSheet.Triggered"
+                                : "IOS.PaymentsBottomSheetV3.Triggered",
                             /*sample=*/did_trigger);
 }
 
@@ -279,13 +289,18 @@ void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
     NSArray<FormSuggestion*>* suggestions,
     id<FormInputSuggestionsProvider> provider) {
   auto trigger_walltime = base::TimeTicks::Now() - start_timestamp;
+
+  bool is_scan_card_flow = HasScanCardSaveAndFillSuggestion(suggestions);
   bool has_cc_suggestions = HasAnyCreditCardSuggestion(suggestions);
-  RecordPaymentsBottomSheetTriggerOutcome(/*did_trigger=*/has_cc_suggestions,
-                                          trigger_walltime);
-  if (has_cc_suggestions) {
-    ShowPaymentsBottomSheet(params, /*detach=*/false);
-  } else if (HasScanCardSaveAndFillSuggestion(suggestions)) {
+
+  RecordPaymentsOrScanCardBottomSheetTriggerOutcome(
+      is_scan_card_flow, is_scan_card_flow || has_cc_suggestions,
+      trigger_walltime);
+
+  if (is_scan_card_flow) {
     ShowScanCardSaveAndFillBottomSheet(params);
+  } else if (has_cc_suggestions) {
+    ShowPaymentsBottomSheet(params, /*detach=*/false);
   } else {
     // Give back the preempted focus to the keyboard if the sheet cannot be
     // triggered.
