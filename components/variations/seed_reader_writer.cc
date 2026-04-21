@@ -736,6 +736,9 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   // We still need to update the session country code in local state as it is
   // used by hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs() and
   // for some platform experience features.
+  // Note: It is possible for the country code to be empty, e.g. if the seed was
+  // fetched over HTTP (and hence untrusted). Keep the existing values in this
+  // case.
   if (!seed_info.session_country_code.empty()) {
     local_state_->SetString(fields_prefs_->session_country_code,
                             stored_seed_info_.session_country_code());
@@ -933,6 +936,9 @@ StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
   local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
   local_state_->SetTime(fields_prefs_->client_fetch_time,
                         seed_info.client_fetch_time);
+  // Note: It is possible for the country code to be empty, e.g. if the seed was
+  // fetched over HTTP (and hence untrusted). Keep the existing values in this
+  // case.
   if (!seed_info.session_country_code.empty()) {
     local_state_->SetString(fields_prefs_->session_country_code,
                             seed_info.session_country_code);

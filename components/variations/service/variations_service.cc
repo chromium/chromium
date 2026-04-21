@@ -901,8 +901,17 @@ void VariationsService::OnSimpleLoaderComplete(
 
   std::string_view signature =
       GetHeaderValue(headers.get(), "X-Seed-Signature");
-  std::string_view country_code = GetHeaderValue(headers.get(), "X-Country");
-  std::string_view geo_level1 = GetHeaderValue(headers.get(), "X-Geo-Level-1");
+  std::string_view country_code;
+  std::string_view geo_level1;
+  // Only trust the header contents when the seed was fetched over HTTPS. This
+  // does not apply to the seed signature as that can't be easily forged.
+  // Note: In the case of an insecure fetch, the empty `country_code` and
+  // `geo_level1` strings will be ignored downstream and the existing location
+  // values in Local State will be preserved.
+  if (!last_request_was_http_retry_) {
+    country_code = GetHeaderValue(headers.get(), "X-Country");
+    geo_level1 = GetHeaderValue(headers.get(), "X-Geo-Level-1");
+  }
   StoreSeed(std::move(*response_body), std::string(signature),
             std::string(country_code), std::string(geo_level1),
             response_date.value_or(base::Time()), is_delta_compressed,

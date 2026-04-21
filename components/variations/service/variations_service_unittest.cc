@@ -663,6 +663,38 @@ TEST_F(VariationsServiceTest, CountryHeader) {
   EXPECT_EQ("test-geo-level", service.stored_geo_level());
 }
 
+TEST_F(VariationsServiceTest, CountryHeaderNotTrustedOverHTTP) {
+  std::string serialized_seed = SerializeSeed(CreateTestSeed());
+  VariationsService::EnableFetchForTesting();
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/false);
+  EXPECT_FALSE(service.seed_stored());
+  service.set_intercepts_fetch(false);
+
+  std::string headers("HTTP/1.1 200 OK\n\n");
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->headers->SetHeader("X-Country", "test");
+  head->headers->SetHeader("X-Geo-Level-1", "test-geo-level");
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = serialized_seed.size();
+  service.test_url_loader_factory()->AddResponse(
+      service.interception_url(), std::move(head), serialized_seed, status);
+
+  service.set_last_request_was_retry(false);
+  service.set_insecure_url(service.interception_url());
+  EXPECT_TRUE(service.CallMaybeRetryOverHTTP());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(service.seed_stored());
+  EXPECT_TRUE(service.stored_country().empty());
+  EXPECT_TRUE(service.stored_geo_level().empty());
+}
+
 TEST_F(VariationsServiceTest, Observer) {
   VariationsService service(
       std::make_unique<TestVariationsServiceClient>(),
