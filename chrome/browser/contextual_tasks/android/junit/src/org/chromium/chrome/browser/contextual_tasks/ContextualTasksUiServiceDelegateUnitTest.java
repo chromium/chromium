@@ -23,12 +23,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -45,11 +47,14 @@ public class ContextualTasksUiServiceDelegateUnitTest {
     @Mock private ContextualTasksUiServiceDelegate.Natives mMockJni;
     @Mock private HelpAndFeedbackLauncher mMockHelpAndFeedbackLauncher;
     @Mock private Activity mMockActivity;
+    @Mock private ContextualTasksFuseboxManager mFuseboxManager;
+    @Mock private WebContents mWebContents;
 
     private ContextualTasksUiServiceDelegate mDelegate;
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
 
     private static final String TEST_URL = "https://example.com";
+    private static final String TEST_TASK_ID = "test-task-id";
     private static final long NATIVE_DELEGATE_PTR = 1234L;
     private static final long TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR = 5678L;
 
@@ -60,6 +65,16 @@ public class ContextualTasksUiServiceDelegateUnitTest {
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockHelpAndFeedbackLauncher);
+    }
+
+    @Test
+    public void testOnWebUIReady() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        ContextualTasksFuseboxManager.KEY.attachToHost(mUserDataHost, mFuseboxManager);
+
+        mDelegate.onWebUIReady(TEST_TASK_ID, mWebContents);
+
+        verify(mFuseboxManager).onWebUIReady(eq(TEST_TASK_ID), eq(mWebContents));
     }
 
     @Test

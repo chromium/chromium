@@ -34,4 +34,8 @@ void ContextualTasksUiServiceDelegateDesktop::OpenFeedbackUi(
 void ContextualTasksUiServiceDelegateDesktop::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {}
 
+void ContextualTasksUiServiceDelegateDesktop::OnWebUIReady(
+    const base::Uuid& task_id,
+    content::WebContents* web_contents) {}
+
 }  // namespace contextual_tasks

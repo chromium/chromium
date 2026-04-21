@@ -44,8 +44,15 @@ void ContextualTasksUiServiceDelegateAndroid::OpenFeedbackUi(
       browser_window_interface->GetWindow()->GetNativeWindow();
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ContextualTasksUiServiceDelegate_openFeedbackUi(
-      env, java_delegate_, window_android->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, page_url.spec()));
+      env, java_delegate_, window_android, page_url.spec());
+}
+
+void ContextualTasksUiServiceDelegateAndroid::OnWebUIReady(
+    const base::Uuid& task_id,
+    content::WebContents* web_contents) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ContextualTasksUiServiceDelegate_onWebUIReady(
+      env, java_delegate_, task_id.AsLowercaseString(), web_contents);
 }
 
 void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(

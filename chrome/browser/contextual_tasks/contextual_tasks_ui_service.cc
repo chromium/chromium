@@ -1347,6 +1347,12 @@ void ContextualTasksUiService::OnTaskChanged(
   }
 }
 
+void ContextualTasksUiService::OnWebUIReady(
+    const base::Uuid& task_id,
+    content::WebContents* web_contents) {
+  delegate_->OnWebUIReady(task_id, web_contents);
+}
+
 void ContextualTasksUiService::MoveTaskUiToNewTab(
     const base::Uuid& task_id,
     BrowserWindowInterface* browser,

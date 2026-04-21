@@ -195,6 +195,9 @@ class ContextualTasksUI
 
   std::unique_ptr<contextual_search::InputStateModel> TakeInputStateModel()
       override;
+  void SetComposeboxHandler(
+      contextual_tasks::ContextualTasksComposeboxHandlerInterface* handler)
+      override;
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override;
   const GURL& GetInnerFrameUrl() const override;
   content::WebContents* GetInnerWebContents() const override;
@@ -249,12 +252,11 @@ class ContextualTasksUI
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-  void SetComposeboxHandlerForTesting(
+#if !BUILDFLAG(IS_ANDROID)
+  void SetComposeboxHandlerForTesting(  // IN-TEST
       std::unique_ptr<
-          contextual_tasks::ContextualTasksComposeboxHandlerInterface>
-          handler) {
-    composebox_handler_ = std::move(handler);
-  }
+          contextual_tasks::ContextualTasksComposeboxHandlerInterface> handler);
+#endif
 
   // Shows an OAuth error dialog.
   void ShowOauthErrorDialog();
@@ -329,10 +331,19 @@ class ContextualTasksUI
 
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
 
-  std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
-      composebox_handler_;
+  // Pointer to the composebox handler. On desktop, this points to
+  // owned_composebox_handler_ which is owned by this class.
+  // On android, this points to the ComposeboxQueryControllerBridge which is
+  // owned by the FuseboxSessionState whose lifecycle is managed by the
+  // ContextualTasksFuseboxManager.
+  raw_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+      composebox_handler_ = nullptr;
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Desktop only. The composebox handler.
+  std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+      owned_composebox_handler_;
+
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};
 

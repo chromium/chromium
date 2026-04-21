@@ -183,6 +183,10 @@ class ContextualTasksUiService : public KeyedService {
                              const base::Uuid& task_id,
                              bool is_shown_in_tab);
 
+  // Called when the WebUI is ready.
+  virtual void OnWebUIReady(const base::Uuid& task_id,
+                            content::WebContents* web_contents);
+
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL.
   virtual void StartTaskUiInSidePanel(

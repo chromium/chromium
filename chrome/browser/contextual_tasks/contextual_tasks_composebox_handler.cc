@@ -207,7 +207,9 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
   }
 }
 
-ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
+ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() {
+  web_ui_interface_->SetComposeboxHandler(nullptr);
+}
 
 void ContextualTasksComposeboxHandler::MarkContextUploadFinished(
     const base::UnguessableToken& token) {

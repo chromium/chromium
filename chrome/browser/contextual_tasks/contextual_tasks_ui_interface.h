@@ -28,6 +28,7 @@ class ClientToAimMessage;
 }  // namespace lens
 
 namespace contextual_tasks {
+class ContextualTasksComposeboxHandlerInterface;
 namespace mojom {
 class Page;
 }  // namespace mojom
@@ -110,6 +111,10 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // for the same task will return nullptr.
   virtual std::unique_ptr<contextual_search::InputStateModel>
   TakeInputStateModel() = 0;
+
+  // Registers the composebox handler with this UI.
+  virtual void SetComposeboxHandler(
+      ContextualTasksComposeboxHandlerInterface* handler) = 0;
 
   // Helpers.
 

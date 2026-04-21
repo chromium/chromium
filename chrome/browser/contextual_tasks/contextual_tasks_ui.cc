@@ -282,6 +282,16 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   AddInitialTaskStateToDataSource(source,
                                   web_ui->GetWebContents()->GetVisibleURL());
 
+  std::string task_id_str;
+  if (net::GetValueForKeyInQuery(web_ui->GetWebContents()->GetVisibleURL(),
+                                 contextual_tasks::kTaskQueryParam,
+                                 &task_id_str)) {
+    base::Uuid task_id = base::Uuid::ParseLowercase(task_id_str);
+    if (task_id.is_valid()) {
+      ui_service_->OnWebUIReady(task_id, web_ui->GetWebContents());
+    }
+  }
+
   // TODO(447633840): This is a placeholder URL until the real page is ready.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
@@ -760,7 +770,8 @@ void ContextualTasksUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                           base::Unretained(this)));
-  composebox_handler_ = std::move(handler);
+  owned_composebox_handler_ = std::move(handler);
+  SetComposeboxHandler(owned_composebox_handler_.get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -839,6 +850,20 @@ ContextualTasksUI::TakeInputStateModel() {
 
   return helper->TakeInputStateModelForTask(task_id_.value());
 }
+
+void ContextualTasksUI::SetComposeboxHandler(
+    contextual_tasks::ContextualTasksComposeboxHandlerInterface* handler) {
+  composebox_handler_ = handler;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksUI::SetComposeboxHandlerForTesting(  // IN-TEST
+    std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
+        handler) {
+  owned_composebox_handler_ = std::move(handler);
+  SetComposeboxHandler(owned_composebox_handler_.get());
+}
+#endif
 
 void ContextualTasksUI::MoveTaskUiToNewTab() {
   auto* browser = GetBrowser();

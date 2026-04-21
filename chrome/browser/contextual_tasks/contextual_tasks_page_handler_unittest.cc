@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -63,73 +64,6 @@ constexpr char kQueryUrl[] = "https://google.com/search?q=test";
 constexpr char kThreadUrl[] = "https://google.com/search?mtid=123";
 constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kExamplePdfUrl[] = "https://example.com/file.pdf";
-
-class MockPage : public mojom::Page {
- public:
-  MockPage() = default;
-  ~MockPage() override = default;
-
-  mojo::PendingRemote<mojom::Page> BindAndGetRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
-  MOCK_METHOD(void, SetTaskDetails, (const base::Uuid& uuid), (override));
-  MOCK_METHOD(void, SetAimUrl, (const GURL& url), (override));
-  MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
-  MOCK_METHOD(void,
-              PostMessageToWebview,
-              (const std::vector<uint8_t>& message),
-              (override));
-  MOCK_METHOD(void, OnHandshakeComplete, (), (override));
-  MOCK_METHOD(void,
-              SetOAuthToken,
-              (const std::string& oauth_token),
-              (override));
-  MOCK_METHOD(void,
-              OnContextUpdated,
-              (std::vector<mojom::ContextInfoPtr> context),
-              (override));
-  MOCK_METHOD(void, HideInput, (), (override));
-  MOCK_METHOD(void, RestoreInput, (), (override));
-  MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
-  MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
-  MOCK_METHOD(void,
-              OnLensOverlayStateChanged,
-              (bool is_showing, bool maybe_show_overlay_hint_text),
-              (override));
-  MOCK_METHOD(void, ShowErrorPage, (), (override));
-  MOCK_METHOD(void, HideErrorPage, (), (override));
-  MOCK_METHOD(void, ShowOauthErrorDialog, (), (override));
-  MOCK_METHOD(void,
-              UpdateComposeboxPosition,
-              (mojom::ComposeboxPositionPtr position),
-              (override));
-  MOCK_METHOD(void, LockInput, (), (override));
-  MOCK_METHOD(void, UnlockInput, (), (override));
-  MOCK_METHOD(void, SetShowReopenTabs, (bool show), (override));
-  MOCK_METHOD(void,
-              InjectInput,
-              (const std::string& title,
-               const std::string& thumbnail,
-               const base::UnguessableToken& file_token,
-               bool supports_unimodal),
-              (override));
-  MOCK_METHOD(void,
-              InjectInputWithIcon,
-              (const std::string& title,
-               contextual_tasks::mojom::IconType icon_id,
-               const base::UnguessableToken& file_token,
-               bool supports_unimodal),
-              (override));
-  MOCK_METHOD(void,
-              RemoveInjectedInput,
-              (const base::UnguessableToken& file_token),
-              (override));
-  MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
-
-  mojo::Receiver<mojom::Page> receiver_{this};
-};
 
 class TestContextualTasksUI : public ContextualTasksUI {
  public:
@@ -235,7 +169,7 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
   raw_ptr<MockContextualTasksService> mock_contextual_tasks_service_;
   raw_ptr<MockContextualTasksUiService> mock_contextual_tasks_ui_service_;
-  NiceMock<MockPage> page_;
+  NiceMock<MockContextualTasksPage> page_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

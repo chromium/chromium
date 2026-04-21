@@ -24,6 +24,10 @@ class MockContextualTasksUiServiceDelegate
               ShowUndoSnackbar,
               (BrowserWindowInterface * browser_window_interface),
               (override));
+  MOCK_METHOD(void,
+              OnWebUIReady,
+              (const base::Uuid& task_id, content::WebContents* web_contents),
+              (override));
 };
 
 }  // namespace contextual_tasks

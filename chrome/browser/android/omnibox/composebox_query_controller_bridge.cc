@@ -104,6 +104,9 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
       !contextual_tasks_web_contents->IsBeingDestroyed()) {
     contextual_tasks_web_ui_interface_ =
         contextual_tasks::GetWebUiInterface(contextual_tasks_web_contents);
+    if (contextual_tasks_web_ui_interface_) {
+      contextual_tasks_web_ui_interface_->SetComposeboxHandler(this);
+    }
   }
 
   auto query_controller_config_params = std::make_unique<

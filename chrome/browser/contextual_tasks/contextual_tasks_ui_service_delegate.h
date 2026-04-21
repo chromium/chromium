@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
+
+namespace content {
+class WebContents;
+}
 
 namespace contextual_tasks {
 
@@ -25,6 +30,10 @@ class ContextualTasksUiServiceDelegate {
   // Called to show the undo closure snackbar.
   virtual void ShowUndoSnackbar(
       BrowserWindowInterface* browser_window_interface) = 0;
+
+  // Called when the WebUI is ready.
+  virtual void OnWebUIReady(const base::Uuid& task_id,
+                            content::WebContents* web_contents) = 0;
 };
 
 }  // namespace contextual_tasks

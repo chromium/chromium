@@ -32,6 +32,8 @@ class ContextualTasksUiServiceDelegateAndroid
                       const GURL& page_url) override;
   void ShowUndoSnackbar(
       BrowserWindowInterface* browser_window_interface) override;
+  void OnWebUIReady(const base::Uuid& task_id,
+                    content::WebContents* web_contents) override;
 
  protected:
   Profile* profile() const { return profile_; }

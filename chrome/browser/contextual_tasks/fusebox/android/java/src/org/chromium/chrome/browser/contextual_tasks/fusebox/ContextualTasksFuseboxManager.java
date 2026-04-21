@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class ContextualTasksFuseboxManager {
-    private static final UnownedUserDataKey<ContextualTasksFuseboxManager> KEY =
+    public static final UnownedUserDataKey<ContextualTasksFuseboxManager> KEY =
             new UnownedUserDataKey<>();
 
     private final Activity mActivity;
@@ -107,13 +107,23 @@ public class ContextualTasksFuseboxManager {
     }
 
     /**
-     * Called to initialize the {@ link FuseboxSessionState} associated with a task. Ignored if the
+     * Called when the WebUI is ready. Triggers the initialization of the fusebox session state.
+     *
+     * @param taskId The ID of the task.
+     * @param webContents The WebContents of the contextual tasks WebUI.
+     */
+    public void onWebUIReady(String taskId, WebContents webContents) {
+        ensureFuseboxSessionState(taskId, webContents);
+    }
+
+    /**
+     * Called to initialize the {@link FuseboxSessionState} associated with a task. Ignored if the
      * task is already associated with a {@link FuseboxSessionState}.
      *
      * @param taskId The ID of the task.
      * @param webContents The WebContents of the contextual tasks WebUI associated with the fusebox.
      */
-    public void ensureFuseboxSessionState(String taskId, @Nullable WebContents webContents) {
+    public void ensureFuseboxSessionState(String taskId, WebContents webContents) {
         FuseboxSessionState fuseboxSessionState = mTaskSessionMap.get(taskId);
         if (fuseboxSessionState == null) {
             fuseboxSessionState = new FuseboxSessionState(webContents);
@@ -134,12 +144,11 @@ public class ContextualTasksFuseboxManager {
 
     private void updateFuseboxVisibility(@Nullable Tab currentTab) {
         String taskId = getTaskIdForTab(currentTab);
-        if (currentTab != null
-                && !TextUtils.isEmpty(taskId)
-                && isContextualTasksUrl(currentTab.getUrl())) {
+        WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
+        GURL url = currentTab == null ? null : currentTab.getUrl();
 
-            ensureFuseboxSessionState(taskId, currentTab.getWebContents());
-
+        if (webContents != null && !TextUtils.isEmpty(taskId) && isContextualTasksUrl(url)) {
+            ensureFuseboxSessionState(taskId, webContents);
             ensureFuseboxInitialized();
             setFuseboxVisible(true);
         } else {
@@ -148,7 +157,7 @@ public class ContextualTasksFuseboxManager {
         }
     }
 
-    private boolean isContextualTasksUrl(GURL url) {
+    private boolean isContextualTasksUrl(@Nullable GURL url) {
         if (url == null || url.isEmpty() || !url.isValid()) return false;
         // TODO(crbug.com/491504815): Do an exact check, or better yet call native.
         return url.getSpec().startsWith("chrome://contextual-tasks");

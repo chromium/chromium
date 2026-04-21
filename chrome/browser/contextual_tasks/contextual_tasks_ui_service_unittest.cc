@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1484,6 +1485,24 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnStartupIfAlreadyEligible) {
       profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
       identity_test_env_->identity_manager(), aim_eligibility_service_.get(),
       std::move(mock_synchronizer));
+}
+
+TEST_F(ContextualTasksUiServiceTest, OnWebUIReady) {
+  auto delegate = std::make_unique<MockContextualTasksUiServiceDelegate>();
+  auto* delegate_ptr = delegate.get();
+  ContextualTasksUiService service(
+      profile_.get(), std::move(delegate), contextual_tasks_service_.get(),
+      /*identity_manager=*/nullptr, /*aim_eligibility_service=*/nullptr,
+      /*cookie_synchronizer=*/nullptr);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*delegate_ptr, OnWebUIReady(task_id, web_contents.get()))
+      .Times(1);
+
+  service.OnWebUIReady(task_id, web_contents.get());
 }
 
 }  // namespace contextual_tasks

@@ -17,12 +17,14 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** An interface to handle platform specific implementations of ContextualTasksUiService. */
@@ -77,7 +79,9 @@ public class ContextualTasksUiServiceDelegate {
 
     @CalledByNative
     @VisibleForTesting
-    void openFeedbackUi(WindowAndroid windowAndroid, String pageUrl) {
+    void openFeedbackUi(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            @JniType("std::string") String pageUrl) {
         Activity activity = windowAndroid.getActivity().get();
         assert activity != null : "ActivityWindowAndroid should have an Activity.";
         if (activity == null) {
@@ -86,6 +90,21 @@ public class ContextualTasksUiServiceDelegate {
 
         HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
                 .showFeedback(activity, pageUrl, "cobrowse");
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    void onWebUIReady(
+            @JniType("std::string") String taskId,
+            @JniType("content::WebContents*") WebContents webContents) {
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return;
+
+        ContextualTasksFuseboxManager fuseboxManager =
+                ContextualTasksFuseboxManager.from(windowAndroid);
+        if (fuseboxManager == null) return;
+
+        fuseboxManager.onWebUIReady(taskId, webContents);
     }
 
     @CalledByNative
